@@ -60,3 +60,5 @@ target/
 
 # pyenv python configuration file
 .python-version
+/pystac.iml
+.idea/*
