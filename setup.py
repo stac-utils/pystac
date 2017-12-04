@@ -4,10 +4,13 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from glob import glob
 import io
 from os.path import (
     join,
-    dirname
+    dirname,
+    basename,
+    splitext
 )
 
 with open('README.rst') as readme_file:
@@ -43,7 +46,8 @@ setup(
     author="Raster Foundry",
     author_email='info@rasterfoundry.com',
     url='https://github.com/notthatbreezy/pystac',
-    packages=find_packages(include=['pystac']),
+    packages=find_packages(),
+    py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
     entry_points={
         'console_scripts': [
             'pystac=pystac.cli:main'
