@@ -37,7 +37,8 @@ def generate_thumbnail(prefix: str, tif_path: str) -> str:
             x_size = 512
             y_size = int(512 * aspect)
 
-        resample_cmd = ['gdal_translate', tif_path, resampled_tif_path, '-outsize', str(x_size), str(y_size)]
+        resample_cmd = ['gdal_translate', tif_path, resampled_tif_path, '-outsize',
+                        str(x_size), str(y_size)]
         warp_cmd = ['gdalwarp', '-dstnodata', '0', '-dstalpha', '-t_srs', 'epsg:3857',
                     resampled_tif_path, warped_tif_path]
         thumbnail_cmd = ['gdal_translate', '-of', 'PNG', warped_tif_path, thumbnail_path]
@@ -70,10 +71,12 @@ def extract_footprint(tif_path: str) -> Polygon:
             x_size = 512
             y_size = int(512 * aspect)
 
-        resample_cmd = ['gdal_translate', tif_path, resampled_tif_path, '-outsize', str(x_size), str(y_size)]
-        warp_cmd = ['gdalwarp', '-co', 'compress=LZW', '-dstnodata', '0', '-dstalpha', '-t_srs', 'epsg:4326',
-                    resampled_tif_path, warped_path]
-        polygonize_cmd = ['gdal_polygonize.py', '-b', '4', warped_path, '-f', 'GEOJSON', geojson_path]
+        resample_cmd = ['gdal_translate', tif_path, resampled_tif_path, '-outsize',
+                        str(x_size), str(y_size)]
+        warp_cmd = ['gdalwarp', '-co', 'compress=LZW', '-dstnodata', '0', '-dstalpha',
+                    '-t_srs', 'epsg:4326', resampled_tif_path, warped_path]
+        polygonize_cmd = ['gdal_polygonize.py', '-b', '4', warped_path, '-f',
+                          'GEOJSON', geojson_path]
 
         subprocess.check_call(resample_cmd)
         subprocess.check_call(warp_cmd)

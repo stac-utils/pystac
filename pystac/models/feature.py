@@ -44,5 +44,3 @@ class Feature(STACObject):
             links=[link.dict for link in self.links],
             assets=[asset.dict for asset in self.assets]
         )
-
-

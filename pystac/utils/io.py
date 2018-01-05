@@ -4,8 +4,6 @@ import logging
 import shutil
 import tempfile
 
-import requests
-
 
 logger = logging.getLogger(__name__)
 

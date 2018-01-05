@@ -100,7 +100,8 @@ def write_product(filepath: str) -> Product:
 @click.option('--relative/--absolute', default=True,
               help='whether assets should be referenced with relative or absolute paths')
 @click.option('--self-override-directory',
-              help='overrides directory when creating absolute self URL, useful when generating a remote asset catalog')
+              help='overrides directory when creating absolute self URL, useful when generating' +
+              'a remote asset catalog')
 def create_feature(directory: str, prefix: str, product: str, relative: bool = True,
                    self_override_directory: str = None) -> Feature:
     """Creates a STAC feature of iserv data given a directory, prefix, and product

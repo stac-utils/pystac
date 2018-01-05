@@ -7,7 +7,6 @@
 import unittest
 from click.testing import CliRunner
 
-from pystac import pystac
 from pystac import cli
 
 
