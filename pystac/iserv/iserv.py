@@ -1,4 +1,5 @@
 """Creates a data/tile footprint"""
+from datetime import datetime
 import logging
 import os
 
@@ -45,17 +46,24 @@ def create_asset(filepath: str, is_relative: bool, product: str) -> Asset:
     return Asset(href, file_format, product, name)
 
 
-def get_properties(tif_path: str) -> Properties:
+def get_properties(tif_path: str, iserv_prefix: str) -> Properties:
     """Extracts properties of a tif by parsing EXIF tags
 
     Args:
         tif_path (str): path to tif file
+        iserv_prefix (str): used as a fallback if exif datetime tag is missing
     """
 
     with rasterio.open(tif_path) as src:
         tags = src.tags()
-    date_str = tags['EXIF_DateTime']
-    datetime_start = datetime_end = parse(date_str)
+    datetime_tag = tags.get('EXIF_DateTime')
+    if datetime_tag:
+        datetime_start = datetime_end = parse(datetime_tag)
+    else:
+        year = int(iserv_prefix[3:7])
+        month = int(iserv_prefix[7:9])
+        day = int(iserv_prefix[9:11])
+        datetime_end = datetime_start = datetime(year, month, day)
     imagery_license = 'CC0'
     provider = 'NASA, ISERV'
     return Properties(datetime_start, datetime_end, provider, imagery_license)
@@ -100,7 +108,7 @@ def create_feature(directory: str, prefix: str, product: str, relative: bool = T
     \b
     Args:
         directory (str): location of ISERV data
-        prefix (str): prefix of ISERV data (e.g.
+        prefix (str): prefix of ISERV data (e.g. IP0201306202030583203N09762W)
         product (str): URI of product definition for ISERV data
         relative (bool): whether assets should be referenced with relative or absolute paths
         self_override_directory (str): override directory when generating self link for asset
@@ -122,7 +130,7 @@ def create_feature(directory: str, prefix: str, product: str, relative: bool = T
     thumbnail_link = Link('thumbnail', thumbnail_location)
     links = [self_link, thumbnail_link]
 
-    properties = get_properties(tif_path)
+    properties = get_properties(tif_path, prefix)
     feature = Feature(prefix, geometry, properties, links, assets)
 
     feature_location = os.path.join(directory, prefix + '.json')
