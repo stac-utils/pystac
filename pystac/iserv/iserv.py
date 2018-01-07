@@ -16,6 +16,7 @@ from pystac.models import (
     Link,
     Properties
 )
+from pystac.utils.cog import generate_cog
 from pystac.utils.io import list_files_prefix
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,10 @@ def create_asset(filepath: str, is_relative: bool, product: str) -> Asset:
         href = filepath
 
     file_extension = filepath.split('.')[-1].lower()
-    if file_extension == 'tif':
+    if '-COG' in filepath:
+        file_format = 'cog'
+        name = 'RGB Cloud Optimized Geotiff'
+    elif file_extension == 'tif':
         file_format = 'tif'
         name = 'RGB Tif'
     elif file_extension == 'jpg':
@@ -117,7 +121,11 @@ def create_feature(directory: str, prefix: str, product: str, relative: bool = T
     files = list_files_prefix(directory, prefix)
     tif_path = [f for f in files if f.endswith('.TIF')][0]
     geometry = extract_footprint(tif_path)
-    assets = [create_asset(f, relative, product) for f in files if not f.endswith('.json')]
+
+    cog_path = os.path.join(directory, prefix + '-COG.tif')
+    generate_cog(tif_path, cog_path)
+    files.append(cog_path)
+    assets = [create_asset(f, relative, product) for f in set(files) if not f.endswith('.json')]
 
     if self_override_directory:
         self_location = os.path.join(self_override_directory, prefix + '.json')
