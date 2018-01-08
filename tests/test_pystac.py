@@ -26,7 +26,7 @@ class TestPystac(unittest.TestCase):
     def test_command_line_interface(self):
         """Test the CLI."""
         runner = CliRunner()
-        result = runner.invoke(cli.main)
+        result = runner.invoke(cli.main, ['iserv'])
         assert result.exit_code == 0
         assert 'pystac.cli.main' in result.output
         help_result = runner.invoke(cli.main, ['--help'])
