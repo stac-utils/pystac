@@ -1,4 +1,0 @@
-python-dateutil==2.6.1
-rasterio==1.0a12
-Click>=6.0
-geojson==2.3.0
