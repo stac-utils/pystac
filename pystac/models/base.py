@@ -1,11 +1,26 @@
-import json
+from marshmallow import (
+    Schema,
+    fields,
+    post_load
+)
 
 
 class STACObject(object):
-    @property
-    def dict(self):
-        raise NotImplementedError('Dict Serialization Not Implemented')
+
+    def __init__(self, stac):
+        self.stac = stac
 
     @property
-    def json(self) -> str:
-        return json.dumps(self.dict)
+    def dict(self):
+        return self.stac
+
+    @property
+    def json(self):
+        return STACObjectSchema().dumps(
+            self
+        )
+
+
+class STACObjectSchema(Schema):
+
+    stac = fields.Dict()
