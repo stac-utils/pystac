@@ -10,6 +10,7 @@ click = "*"
 geojson = "*"
 requests = "*"
 typing = "*"
+marshmallow = "==3.0.0b8"
 
 [dev-packages]
 "flake8" = "*"
