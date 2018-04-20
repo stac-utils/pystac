@@ -4,6 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+python-dateutil = "*"
+rasterio = "*"
+click = "*"
+geojson = "*"
+requests = "*"
+typing = "*"
 
 [dev-packages]
 "flake8" = "*"
