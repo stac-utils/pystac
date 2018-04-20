@@ -17,6 +17,7 @@ marshmallow = "==3.0.0b8"
 tox = "*"
 coverage = "*"
 sphinx = "*"
+ipython = "*"
 
 [requires]
 python_version = "2.7.14"
