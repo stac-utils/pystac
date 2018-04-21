@@ -1,8 +1,9 @@
 from pystac.models.base import STACObject
+from marshmallow import Schema, fields
 
 
 class Asset(STACObject):
-    def __init__(self, href: str, file_format: str, product: str = "", name: str = ""):
+    def __init__(self, href, file_format, product="", name=""):
         """Asset referenced by feature
 
         Args:
@@ -16,8 +17,9 @@ class Asset(STACObject):
         self.name = name
         self.href = href
 
+
     @property
-    def dict(self) -> dict:
+    def dict(self):
         base_properties = dict(
             href=self.href
         )
@@ -28,3 +30,18 @@ class Asset(STACObject):
         if self.format:
             base_properties['format'] = self.format
         return base_properties
+
+
+    @property
+    def json(self):
+        return AssetSchema().dumps(
+            self
+        )
+
+
+class AssetSchema(Schema):
+
+    format = fields.Str()
+    product = fields.Str()
+    name = fields.Str()
+    href = fields.Str() #  TBD fields.URL()
