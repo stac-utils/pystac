@@ -2,7 +2,7 @@ from pystac.models.base import STACObject
 
 
 class Link(STACObject):
-    def __init__(self, link_type: str, href: str):
+    def __init__(self, link_type, href):
         """Link to related objects, must have a type and href
 
         Args:
@@ -13,8 +13,20 @@ class Link(STACObject):
         self.href = href
 
     @property
-    def dict(self) -> dict:
+    def dict(self):
         return dict(
             type=self.link_type,
             href=self.href
         )
+
+    @property
+    def json(self):
+        return LinkSchema().dumps(
+            self
+        )
+
+
+class LinkSchema(Schema):
+
+    link_type = fields.Str()
+    href = fields.Str() #  TBD with fields.URL()
