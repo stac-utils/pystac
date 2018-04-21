@@ -1,4 +1,8 @@
 from pystac.models.base import STACObject
+from marshmallow import (
+    Schema,
+    fields
+)
 
 
 class Link(STACObject):
