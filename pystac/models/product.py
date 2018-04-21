@@ -1,11 +1,13 @@
-from typing import List
-
-from pystac.models.band import Band
+from pystac.models.band import BandSchema
 from pystac.models.base import STACObject
+from marshmallow import (
+    Schema,
+    fields
+)
 
 
 class Product(STACObject):
-    def __init__(self, product_id: str, bands: List[Band], filetype: str, origin: str, **kwargs):
+    def __init__(self, product_id, bands, filetype, origin, **kwargs):
         """Product specification for items/assets in STAC
 
         Args:
@@ -30,3 +32,18 @@ class Product(STACObject):
         )
         product.update(self.other_properties)
         return product
+
+    @property
+        def json(self):
+            return ProductSchema().dumps(
+                self
+            )
+
+
+class ProductSchema(Schema):
+
+    product_id = fields.Str()
+    bands = fields.Nested(BandSchema, many=True)
+    filetype = fields.Str()
+    origin = fields.Str()
+    other_properties = fields.Dict()
