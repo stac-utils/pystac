@@ -1,10 +1,14 @@
 from pystac.models.base import STACObject
+from marshmallow import (
+    Schema,
+    fields
+)
 
 
 class Band(STACObject):
-    def __init__(self, common_name: str, gsd: float,
-                 center_wavelength: float, effective_bandwidth: float,
-                 image_band_index: int):
+    def __init__(self, common_name, gsd,
+                 center_wavelength, effective_bandwidth,
+                 image_band_index):
         """Band object used in product specifications
 
         Args:
@@ -30,3 +34,18 @@ class Band(STACObject):
             effective_bandwidth=self.effective_bandwidth,
             image_band_index=self.image_band_index
         )
+    
+    @property
+    def json(self):
+        return BandSchema().dumps(
+            self
+        )
+
+
+class BandSchema(Schema):
+
+    common_name = fields.Str()
+    gsd = fields.Float()
+    center_wavelength = fields.Float()
+    effective_bandwidth = fields.Float()
+    image_band_index = fields.Integer()
