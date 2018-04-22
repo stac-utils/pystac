@@ -34,10 +34,10 @@ class Product(STACObject):
         return product
 
     @property
-        def json(self):
-            return ProductSchema().dumps(
-                self
-            )
+    def json(self):
+        return ProductSchema().dumps(
+            self
+        )
 
 
 class ProductSchema(Schema):
