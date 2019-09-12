@@ -1,0 +1,53 @@
+{
+    "id": "area-1-1",
+    "stac_version": "0.8.0",
+    "description": "test collection country-1",
+    "links": [
+        {
+            "rel": "item",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-1/area-1-1-imagery.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "item",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-1/area-1-1-labels.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "root",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "self",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-1/collection.json",
+            "type": "application/json"
+        }
+    ],
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -2.5048828125,
+                    3.8916575492899987,
+                    -1.9610595703125,
+                    4.275202171119132
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2019-09-11T19:21:31Z",
+                    null
+                ]
+            ]
+        }
+    },
+    "license": "proprietary"
+}

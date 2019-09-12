@@ -1,0 +1,27 @@
+{
+    "id": "test",
+    "stac_version": "0.8.0",
+    "description": "test catalog",
+    "links": [
+        {
+            "rel": "root",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "self",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
+            "type": "application/json"
+        }
+    ]
+}
