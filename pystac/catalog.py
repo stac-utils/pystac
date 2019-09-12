@@ -5,6 +5,7 @@ from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
 from pystac.link import Link
+from pystac.item import Asset
 from pystac.resolved_object_cache import ResolvedObjectCache
 
 class Catalog(STACObject):

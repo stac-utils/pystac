@@ -1,5 +1,6 @@
 from copy import (copy, deepcopy)
 import dateutil.parser
+import json
 
 from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
@@ -45,7 +46,7 @@ class Item(STACObject):
         links = list(map(lambda x: x.to_dict(), self.links))
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0))
+        self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0, tzinfo=None))
 
         d = {
             'type': 'Feature',

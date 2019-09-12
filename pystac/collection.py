@@ -194,10 +194,10 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = '{}Z'.format(i[0].replace(microsecond=0).isoformat())
+                start = '{}Z'.format(i[0].replace(microsecond=0, tzinfo=None).isoformat())
 
             if i[1]:
-                end = '{}Z'.format(i[1].replace(microsecond=0).isoformat())
+                end = '{}Z'.format(i[1].replace(microsecond=0, tzinfo=None).isoformat())
 
             encoded_intervals.append([start, end])
 
