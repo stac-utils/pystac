@@ -2,7 +2,6 @@ import os
 import json
 from datetime import datetime
 
-from shapely.geometry import shape
 import jsonschema
 from jsonschema.validators import RefResolver
 
@@ -59,7 +58,10 @@ RANDOM_GEOM = {
     ]
 }
 
-RANDOM_BBOX = list(shape(RANDOM_GEOM).envelope.bounds)
+RANDOM_BBOX = [RANDOM_GEOM['coordinates'][0][0][0],
+               RANDOM_GEOM['coordinates'][0][0][1],
+               RANDOM_GEOM['coordinates'][0][1][0],
+               RANDOM_GEOM['coordinates'][0][1][1]]
 
 RANDOM_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(RANDOM_GEOM['coordinates']),
                        temporal=TemporalExtent.from_now())
@@ -110,10 +112,15 @@ class TestCases:
         return root_cat
 
 class SchemaValidator:
-    REPO = 'http://0.0.0.0:8000'
-    # REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
-    #TAG = 'v{}'.format(pystac.STAC_VERSION)
+    REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
+
+    # TODO: Replace once 0.8 release is out.
+    # TAG = 'v{}'.format(STAC_VERSION)
     TAG = 'v0.8.0-rc1'
+
+    # TODO: Switch back once schema fix PR is merged.
+    # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
+    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/lossyrob/stac-spec/fix/label-classes/'
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',
@@ -123,8 +130,7 @@ class SchemaValidator:
     }
 
     for c in schemas:
-        # schemas[c] = '{}/{}/{}'.format(REPO, TAG, schemas[c])
-        schemas[c] = '{}/{}'.format(REPO, schemas[c])
+        schemas[c] = '{}/{}'.format(SCHEMA_BASE_URI, schemas[c])
 
     def __init__(self):
         self.schema_cache = {}

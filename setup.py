@@ -1,3 +1,4 @@
+import os
 from imp import load_source
 from setuptools import setup, find_packages
 from glob import glob
@@ -9,7 +10,12 @@ from os.path import (
     splitext
 )
 
-with open('README.md') as readme_file:
+here = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(here, 'requirements.txt')) as f:
+    install_requires = f.read().split('\n')
+
+with open(os.path.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()
 
 setup(
@@ -23,7 +29,7 @@ setup(
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
     include_package_data=False,
-    install_requires=[],
+    install_requires=install_requires,
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=[

@@ -1,3 +1,4 @@
 ## PySTAC
+![Build Status](https://api.travis-ci.org/azavea/pystac.svg?branch=develop)
 
-TKTK
+PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacgeo.org) in Python.
