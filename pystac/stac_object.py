@@ -2,7 +2,7 @@ from abc import (ABC, abstractmethod)
 from pystac.link import Link
 
 class STACObject(ABC):
-    """A STAC Object has links, can can be cloned or copied."""
+    """A STAC Object has links, and can be cloned or copied."""
 
     def __init__(self):
         self.links = []

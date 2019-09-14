@@ -13,3 +13,6 @@ stdout*
 /integration*
 .idea/
 docs/_build/
+
+# Sphinx documentation
+docs/_build/
