@@ -5,16 +5,18 @@
     "version": "0.1.0",
     "stac_version": "0.6.0",
     "extent": {
-        "spatial": [
+        "spatial": {
+            "bbox":[[
             -180,
             -90,
             180,
             90
-        ],
-        "temporal": [
-            "2013-06-01",
+        ]]},
+        "temporal": {
+            "interval": [[
+            "2013-06-01T00:00:00Z",
             null
-        ]
+        ]]}
     },
     "provider": [
         {
