@@ -1,5 +1,5 @@
-import json
 import os
+import json
 
 class STAC_IO:
     """Methods used to read and save STAC json.

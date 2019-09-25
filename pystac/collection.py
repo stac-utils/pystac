@@ -107,6 +107,7 @@ class Collection(Catalog):
                                 providers=providers,
                                 properties=properties,
                                 summaries=summaries)
+        
         for l in d['links']:
             collection.add_link(Link.from_dict(l))
 
@@ -213,6 +214,7 @@ class TemporalExtent:
         for i in d['interval']:
             start = None
             end = None
+            
             if i[0]:
                 start = dateutil.parser.parse(i[0])
             if i[1]:
