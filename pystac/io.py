@@ -1,19 +1,22 @@
-import os
 import json
+import os
 
 class STAC_IO:
     """Methods used to read and save STAC json.
     Allows users of the library to set their own methods
     (e.g. for reading and writing from cloud storage)
     """
+    @staticmethod
     def default_read_text_method(uri):
         with open(uri) as f:
             return f.read()
 
+    @staticmethod
     def default_write_text_method(uri, txt):
         with open(uri, 'w') as f:
             f.write(txt)
 
+    @staticmethod
     def default_stac_object_from_dict_method(d):
         if 'type' in d:
             return Item.from_dict(d)

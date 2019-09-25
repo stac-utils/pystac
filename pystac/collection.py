@@ -2,8 +2,9 @@ from datetime import datetime
 from datetime import timezone
 import dateutil.parser
 from copy import copy
+import json
 
-from pystac import STACError
+from pystac import STACError, STAC_IO
 from pystac.catalog import Catalog
 from pystac.link import Link
 
@@ -33,6 +34,7 @@ class Collection(Catalog):
         self.providers = providers
         self.properties = properties
         self.summaries = summaries
+        self.collection = True
 
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
@@ -153,7 +155,7 @@ class SpatialExtent:
 
     @staticmethod
     def from_dict(d):
-        return SpatialExtent(bboxes=d['bbox'])
+        return SpatialExtent(bboxes=d)
 
     @staticmethod
     def from_coordinates(coordinates):
@@ -210,10 +212,11 @@ class TemporalExtent:
     def from_dict(d):
         """Parses temporal extent from list of strings"""
         parsed_intervals = []
-        for i in d['interval']:
+        if not isinstance(d[0], list):
+            d = [d]
+        for i in d:
             start = None
             end = None
-
             if i[0]:
                 start = dateutil.parser.parse(i[0])
             if i[1]:

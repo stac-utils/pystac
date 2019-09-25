@@ -1,13 +1,13 @@
 import os
 import json
 
+from pystac import STACError
 from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
 from pystac.link import Link
 from pystac.item import Asset
 from pystac.resolved_object_cache import ResolvedObjectCache
-
 class Catalog(STACObject):
     DEFAULT_FILE_NAME = "catalog.json"
 
@@ -16,6 +16,7 @@ class Catalog(STACObject):
         self.description = description
         self.title = title
         self.links = [Link.root(self)]
+        self.collection = False
 
         if href is not None:
             self.set_self_href(href)
@@ -96,6 +97,39 @@ class Catalog(STACObject):
             d['title'] = self.title
 
         return d
+    
+    def items(self):
+        for l in self.get_items():
+            yield l
+        for cat in self.get_children():
+            for l in cat.get_items():
+                yield l
+            for subcat in cat.get_children():
+                yield from subcat.items()
+
+    def catalogs(self, col_only=False):
+        if (not col_only or self.collection):
+            yield self
+        for cat in self.get_children():
+            if (not col_only or cat.collection):
+                yield cat
+            for subcat in cat.get_children():
+                yield from subcat.catalogs(col_only)
+    
+    def collections(self):
+        return self.catalogs(col_only=True)
+    
+    @property
+    def catalog_list(self):
+        return [c for c in self.catalogs()]
+    
+    @property
+    def collection_list(self):
+        return [c for c in self.collections()]
+
+    @property
+    def item_list(self):
+        return [i for i in self.items()]
 
     def clone(self):
         clone = Catalog(id=self.id,
@@ -114,6 +148,12 @@ class Catalog(STACObject):
             child.set_uris_from_root(child_root)
         for item in self.get_items():
             item.set_self_href(os.path.join(root_uri, '{}.json'.format(item.id)))
+
+    def set_relative_to_parent(self):
+        if (self.get_parent()):
+            p = self.get_parent().get_single_link('self').target
+            p = os.path.join(os.path.dirname(p), self.id)
+            self.set_uris_from_root(p)
 
     def set_relative_paths(self, include_assets=True):
         """Converts all HREFs in links (and optionally assets) into relative paths.
@@ -211,6 +251,10 @@ class Catalog(STACObject):
             if include_hrefs:
                 s += ' {}'.format(item.get_self_href())
             print(s)
+
+    @property
+    def filename(self):
+        return self.get_single_link('self').target
 
     @staticmethod
     def from_dict(d):

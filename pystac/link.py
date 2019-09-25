@@ -2,8 +2,9 @@ import os
 from copy import copy
 from urllib.parse import urlparse
 
-from pystac import STACError
 from pystac.io import STAC_IO
+from pystac import STACError
+
 
 class Link:
     def __init__(self, rel, target, media_type=None, title=None, properties=None):
@@ -39,8 +40,9 @@ class Link:
                                                          abs_path)
                     else:
                         target_path = abs_path
-            print(target_path)
-
+            # print(target_path)
+            # TODO: pickup here: scenario in which we're reading a collection from a different source. 
+            # TODO: Why does it need to read it?  
             obj = STAC_IO.read_stac_json(target_path, root=root, parent=parent)
             obj.set_self_href(target_path)
         else:
