@@ -34,7 +34,6 @@ class Collection(Catalog):
         self.providers = providers
         self.properties = properties
         self.summaries = summaries
-        self.collection = True
 
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
@@ -108,7 +107,6 @@ class Collection(Catalog):
                                 providers=providers,
                                 properties=properties,
                                 summaries=summaries)
-
         for l in d['links']:
             collection.add_link(Link.from_dict(l))
 
@@ -155,7 +153,7 @@ class SpatialExtent:
 
     @staticmethod
     def from_dict(d):
-        return SpatialExtent(bboxes=d)
+        return SpatialExtent(bboxes=d['bbox'])
 
     @staticmethod
     def from_coordinates(coordinates):
@@ -212,9 +210,7 @@ class TemporalExtent:
     def from_dict(d):
         """Parses temporal extent from list of strings"""
         parsed_intervals = []
-        if not isinstance(d[0], list):
-            d = [d]
-        for i in d:
+        for i in d['interval']:
             start = None
             end = None
             if i[0]:

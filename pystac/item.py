@@ -91,8 +91,6 @@ class Item(STACObject):
         return clone
 
     def save(self):
-        import pdb
-        pdb.set_trace()
         STAC_IO.save_json(self.get_self_href(), self.to_dict())
 
     @staticmethod
@@ -119,11 +117,7 @@ class Item(STACObject):
             item.add_link(Link.from_dict(l))
 
         for k, v in d['assets'].items():
-            if 'href' in v: # pick up here
-                item.assets[k] = Asset.from_dict(v)
-            else:
-                print(v)
-
+            item.assets[k] = Asset.from_dict(v)
 
         return item
 

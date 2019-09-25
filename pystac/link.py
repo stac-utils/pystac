@@ -41,8 +41,7 @@ class Link:
                     else:
                         target_path = abs_path
             # print(target_path)
-            # TODO: pickup here: scenario in which we're reading a collection from a different source. 
-            # TODO: Why does it need to read it?  
+            
             obj = STAC_IO.read_stac_json(target_path, root=root, parent=parent)
             obj.set_self_href(target_path)
         else:

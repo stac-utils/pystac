@@ -6,16 +6,20 @@
     "version": "0.1.0",
     "stac_version": "0.6.0",
     "extent": {
-        "spatial": [
-            -180,
-            -90,
-            180,
-            90
-        ],
-        "temporal": [
-            "2013-06-01",
-            null
-        ]
+        "spatial": {
+            "bbox":[[
+                -180,
+                -90,
+                180,
+                90
+            ]]
+        },  
+        "temporal": {
+            "interval": [[
+                "2013-06-01",
+                null
+            ]]
+        } 
     },
     "providers": [
         {
@@ -234,7 +238,6 @@
             "rel": "parent",
             "href": "../catalog.json"
         },
-
         {
             "rel": "item",
             "href": "item.json"
