@@ -139,7 +139,7 @@ class Catalog(STACObject):
 
         STAC_IO.save_json(self.get_self_href(), self.to_dict())
 
-    def map_items(self, item_mapper):
+    def map_items(self, item_mapper, **kwargs):
         """Creates a copy of a catalog, with each item passed through the item_mapper function.
 
         Args:
@@ -155,7 +155,7 @@ class Catalog(STACObject):
 
             item_links = []
             for item_link in catalog.get_item_links():
-                mapped = item_mapper(item_link.target)
+                mapped = item_mapper(item_link.target, **kwargs)
                 if type(mapped) is not list:
                     item_link.target = mapped
                     item_links.append(item_link)
