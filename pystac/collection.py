@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from datetime import timezone
 import dateutil.parser
@@ -6,6 +7,7 @@ from copy import copy
 from pystac import STACError
 from pystac.catalog import Catalog
 from pystac.link import Link
+from pystac.io import STAC_IO
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
