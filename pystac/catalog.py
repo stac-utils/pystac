@@ -97,7 +97,7 @@ class Catalog(STACObject):
             d['title'] = self.title
 
         return d
-    
+
     def clone(self):
         clone = Catalog(id=self.id,
                         description=self.description,
