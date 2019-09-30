@@ -1,0 +1,183 @@
+{
+    "id": "L1C_T53MNQ_A017245_20181011T011722",
+    "bbox": [
+        135.6392640640852,
+        -5.5163474919383235,
+        135.99106604778748,
+        -4.522714358156175
+    ],
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    135.86122387616518,
+                    -4.522878416491893
+                ],
+                [
+                    135.98956822680043,
+                    -4.522714358156175
+                ],
+                [
+                    135.99106604778748,
+                    -5.515865360071359
+                ],
+                [
+                    135.6392640640852,
+                    -5.5163474919383235
+                ],
+                [
+                    135.73459752529413,
+                    -5.090534108006068
+                ],
+                [
+                    135.86122387616518,
+                    -4.522878416491893
+                ]
+            ]
+        ]
+    },
+    "properties": {
+        "collection": "sentinel-2-l1c",
+        "datetime": "2018-10-11T01:17:22.460Z",
+        "eo:platform": "Sentinel-2A",
+        "eo:cloud_cover": 21,
+        "eo:epsg": "32753",
+        "sentinel:product_id": "S2A_MSIL1C_20181011T011721_N0206_R088_T53MNQ_20181011T025055"
+    },
+    "assets": {
+        "B01": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B01.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                0
+            ],
+            "title": "Band 1 (coastal)"
+        },
+        "B02": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B02.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                1
+            ],
+            "title": "Band 2 (blue)"
+        },
+        "B03": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B03.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                2
+            ],
+            "title": "Band 3 (green)"
+        },
+        "B04": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B04.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                3
+            ],
+            "title": "Band 4 (red)"
+        },
+        "B05": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B05.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                4
+            ],
+            "title": "Band 5"
+        },
+        "B06": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B06.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                5
+            ],
+            "title": "Band 6"
+        },
+        "B07": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B07.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                6
+            ],
+            "title": "Band 7"
+        },
+        "B08": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B08.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                7
+            ],
+            "title": "Band 8 (nir)"
+        },
+        "B09": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B09.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                9
+            ],
+            "title": "Band 9"
+        },
+        "B10": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B10.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                10
+            ],
+            "title": "Band 10 (cirrus)"
+        },
+        "B11": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B11.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                11
+            ],
+            "title": "Band 11 (swir16)"
+        },
+        "B12": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B12.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                12
+            ],
+            "title": "Band 12 (swir22)"
+        },
+        "B8A": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/B8A.jp2",
+            "type": "image/jp2",
+            "eo:bands": [
+                8
+            ],
+            "title": "Band 8A"
+        },
+        "thumbnail": {
+            "href": "https://roda.sentinel-hub.com/sentinel-s2-l1c/tiles/53/M/NQ/2018/10/11/0/preview.jpg"
+        },
+        "tki": {
+            "href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/53/M/NQ/2018/10/11/0/TKI.jp2",
+            "description": "True Color Image"
+        },
+        "metadata": {
+            "href": "https://roda.sentinel-hub.com/sentinel-s2-l1c/tiles/53/M/NQ/2018/10/11/0/metadata.xml"
+        }
+    },
+    "links": [
+        {
+            "rel": "self",
+            "href": "item.json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../catalog.json"
+        },
+        {
+            "rel": "parent",
+            "href": "catalog.json"
+        },
+        {
+            "rel": "collection",
+            "href": "../catalog.json"
+        }
+    ],
+    "type": "Feature"
+}
