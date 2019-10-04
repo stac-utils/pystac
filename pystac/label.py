@@ -78,8 +78,8 @@ class LabelItem(Item):
     def __repr__(self):
         return '<LabelItem id={}>'.format(self.id)
 
-    def to_dict(self):
-        d = super(LabelItem, self).to_dict()
+    def to_dict(self, include_self_link=True):
+        d = super(LabelItem, self).to_dict(include_self_link)
         d['properties']['label:description'] = self.label_description
         d['properties']['label:type'] = self.label_type
         d['properties']['label:property'] = self.label_property

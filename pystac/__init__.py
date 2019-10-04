@@ -4,8 +4,8 @@ class STACError(Exception):
     pass
 
 from pystac.io import STAC_IO
-from pystac.link import Link
-from pystac.catalog import Catalog
+from pystac.link import (Link, LinkType)
+from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
 from pystac.item import (Item, Asset)
 from pystac.eo import *
