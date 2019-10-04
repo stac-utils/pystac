@@ -1,5 +1,7 @@
 from abc import (ABC, abstractmethod)
+
 from pystac.link import Link
+from pystac.io import STAC_IO
 
 class STACObject(ABC):
     """A STAC Object has links, and can be cloned or copied."""
@@ -8,10 +10,12 @@ class STACObject(ABC):
         self.links = []
 
     def add_link(self, link):
+        link.set_owner(self)
         self.links.append(link)
 
     def add_links(self, links):
-        self.links.extend(links)
+        for link in links:
+            self.add_link(link)
 
     def get_single_link(self, rel):
         return next((l for l in self.links if l.rel == rel), None)
@@ -54,7 +58,7 @@ class STACObject(ABC):
         for i in range(0, len(self.links)):
             link = self.links[i]
             if link.rel == rel:
-                link.resolve_stac_object(root=self.get_root(), parent=parent)
+                link.resolve_stac_object(root=self.get_root())
                 result.append(link.target)
         return result
 
@@ -70,31 +74,36 @@ class STACObject(ABC):
         else:
             self.links = []
 
-    def full_copy(self, root=None, parent=None):
-        clone = self.clone()
+    def make_links_relative(self):
+        for l in self.links:
+            if not l.rel == 'self':
+                l.make_relative()
 
-        if root is None:
-            root = clone
-        clone.set_root(root)
-        if parent:
-            clone.set_parent(parent)
+    def make_links_absolute(self):
+        for l in self.links:
+            l.make_absolute()
 
-        for link in (clone.get_child_links() + clone.get_item_links()):
-            link.resolve_stac_object()
-            target = link.target
-            if target in root._resolved_objects:
-                target = root._resolved_objects.get(target)
-            else:
-                copied_target = target.full_copy(root=root, parent=clone)
-                root._resolved_objects.set(copied_target)
-                target = copied_target
-            if link.rel in ['child', 'item']:
-                target.set_root(root)
-                target.set_parent(clone)
-            link.target = target
+    def save_object(self, include_self_link=True):
+        """Saves this STAC Object to it's 'self' HREF.
 
-        return clone
+        Args:
+          include_self_link: If this is true, include the 'self' link with this object. Otherwise,
+              leave out the self link (required for relative links and self contained catalogs).
+        """
+        STAC_IO.save_json(self.get_self_href(),
+                          self.to_dict(include_self_link=include_self_link))
+
+    @abstractmethod
+    def to_dict(self, include_self_link=True):
+        pass
 
     @abstractmethod
     def clone(self):
+        pass
+
+    @abstractmethod
+    def full_copy(self, root=None, parent=None):
+        """Create a full copy of this STAC object and any children or items
+        contained by this object.
+        """
         pass

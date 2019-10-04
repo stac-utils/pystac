@@ -8,7 +8,7 @@ from datetime import datetime
 from pystac import *
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
-
+# TODO: Move this to catlog
 class FullCopyTest(unittest.TestCase):
     def check_link(self, l, tag):
         if l.is_resolved():
@@ -43,9 +43,9 @@ class FullCopyTest(unittest.TestCase):
                         datetime=datetime.utcnow(),
                         properties={})
 
-            cat.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-1-source'))
+            cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-1-source'))
             cat2 = cat.full_copy()
-            cat2.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-1-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-1-dest'))
 
             self.check_catalog(cat, 'source')
             self.check_catalog(cat2, 'dest')
@@ -78,10 +78,10 @@ class FullCopyTest(unittest.TestCase):
 
             cat.add_items([image_item, label_item])
 
-            cat.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-2-source'))
+            cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-source'))
             cat.save()
             cat2 = cat.full_copy()
-            cat2.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-2-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-dest'))
             cat2.save()
 
             self.check_catalog(cat, 'source')
@@ -91,10 +91,10 @@ class FullCopyTest(unittest.TestCase):
     def test_full_copy_3(self):
         with TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.test_case_1()
-            root_cat.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-3-source'))
+            root_cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-source'))
             root_cat.save()
             cat2 = root_cat.full_copy()
-            cat2.set_uris_from_root(os.path.join(tmp_dir, 'catalog-full-copy-3-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-dest'))
             cat2.save()
 
             self.check_catalog(root_cat, 'source')

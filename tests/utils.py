@@ -118,9 +118,9 @@ class SchemaValidator:
     # TAG = 'v{}'.format(STAC_VERSION)
     TAG = 'v0.8.0-rc1'
 
-    # TODO: Switch back once schema fix PR is merged.
+    # TODO: Replace once 0.8 release is out.
     # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/lossyrob/stac-spec/fix/label-classes/'
+    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',
@@ -135,27 +135,29 @@ class SchemaValidator:
     def __init__(self):
         self.schema_cache = {}
 
-    def get_schema(self, obj):
-        schema_uri = SchemaValidator.schemas.get(type(obj))
+    def get_schema(self, obj_type):
+        schema_uri = SchemaValidator.schemas.get(obj_type)
 
         if schema_uri is None:
-            raise Exception('No schema for type {}'.format(type(obj)))
-        schema = self.schema_cache.get(obj)
+            raise Exception('No schema for type {}'.format(obj_type))
+        schema = self.schema_cache.get(obj_type)
         if schema is None:
             schema = json.loads(STAC_IO.read_text(schema_uri))
-            self.schema_cache[type(obj)] = schema
+            self.schema_cache[obj_type] = schema
 
         resolver = RefResolver(base_uri=schema_uri,
                                referrer=schema)
 
         return (schema, resolver)
 
-    def validate(self, obj):
-        schema, resolver = self.get_schema(obj)
-        seralized = obj.to_dict()
+    def validate_object(self, obj):
+        return self.validate_dict(obj.to_dict(), type(obj))
+
+    def validate_dict(self, d, obj_type):
+        schema, resolver = self.get_schema(obj_type)
 
         try:
-            jsonschema.validate(instance=seralized, schema=schema, resolver=resolver)
+            return jsonschema.validate(instance=d, schema=schema, resolver=resolver)
         except jsonschema.exceptions.ValidationError as e:
-            print('Validation error in {}'.format(obj))
+            print('Validation error in {}'.format(obj_type))
             raise e

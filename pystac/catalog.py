@@ -9,6 +9,32 @@ from pystac.link import Link
 from pystac.item import Asset
 from pystac.resolved_object_cache import ResolvedObjectCache
 
+class CatalogType:
+    """A 'self-contained catalog' is one that is designed for portability.
+    Users may want to download a catalog from online and be able to use it on their
+    local computer, so all links need to be relative.
+
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#self-contained-catalogs
+    """
+    SELF_CONTAINED = 'SELF_CONTAINED'
+
+    """
+    Absolute Published Catalog is a catalog that uses absolute links for everything,
+    both in the links objects and in the asset hrefs.
+
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs
+    """
+    ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
+
+    """
+    Relative Published Catalog is a catalog that uses relative links for everything,
+    but includes an absolute self link at the root catalog, to identify its online location.
+
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs
+    """
+    RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
+
+
 class Catalog(STACObject):
     DEFAULT_FILE_NAME = "catalog.json"
 
@@ -85,12 +111,16 @@ class Catalog(STACObject):
     def get_item_links(self):
         return self.get_links('item')
 
-    def to_dict(self):
+    def to_dict(self, include_self_link=True):
+        links = self.links
+        if not include_self_link:
+            links = filter(lambda l: l.rel != 'self', links)
+
         d = {
             'id': self.id,
             'stac_version': STAC_VERSION,
             'description': self.description,
-            'links': [l.to_dict() for l in self.links]
+            'links': [l.to_dict() for l in links]
         }
 
         if self.title is not None:
@@ -108,36 +138,111 @@ class Catalog(STACObject):
 
         return clone
 
-    def set_uris_from_root(self, root_uri):
+    def make_all_links_relative(self):
+        super().make_links_relative()
+
+        for child in self.get_children():
+            child.make_links_relative()
+        for item in self.get_items():
+            item.make_links_relative()
+
+    def make_all_links_absolute(self):
+        super().make_links_absolute()
+
+        for child in self.get_children():
+            child.make_links_absolute()
+        for item in self.get_items():
+            item.make_links_absolute()
+
+    def make_all_asset_hrefs_relative(self):
+        return self.map_items(lambda i: i.make_asset_hrefs_relative())
+
+    def make_all_asset_hrefs_absolute(self):
+        return self.map_items(lambda i: i.make_asset_hrefs_absolute())
+
+    def normalize_and_save(self,
+                           root_uri,
+                           catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+        self.normalize_hrefs(root_uri)
+        self.save(catalog_type)
+
+    def normalize_hrefs(self, root_uri):
         self.set_self_href(os.path.join(root_uri, self.DEFAULT_FILE_NAME))
         for child in self.get_children():
             child_root = os.path.join(root_uri, '{}/'.format(child.id))
-            child.set_uris_from_root(child_root)
+            child.normalize_hrefs(child_root)
         for item in self.get_items():
-            item.set_self_href(os.path.join(root_uri, '{}.json'.format(item.id)))
+            item.set_self_href(os.path.join(root_uri,
+                                            '{}'.format(item.id),
+                                            '{}.json'.format(item.id)))
 
-    def set_relative_paths(self, include_assets=True):
-        """Converts all HREFs in links (and optionally assets) into relative paths.
+    def save(self, catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+        """Save this catalog and all it's children/item to files determined by the object's
+        self link HREF.
 
-        Any path that does not share a root with the self HREF (i.e. cannot be made relative)
-        will be skipped.
+        If the catalog type is CatalogType.ABSOLUTE_PUBLISHED, all self links will be included.
+        If the catalog type is CatalogType.RELATIVE_PUBLISHED, this catalog's self link will be
+           included, but no child catalog will have self links.
+        If the catalog  type is CatalogType.SELF_CONTAINED, no self links will be included.
         """
-        self_href = self.get_self_href()
-        if self_href is None:
-            raise STACError('Self HREFs must be set in order to make relative paths.')
+        include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED,
+                                             CatalogType.RELATIVE_PUBLISHED]
 
-        os.path.basename(self_href)
+        if catalog_type ==  CatalogType.RELATIVE_PUBLISHED:
+            child_catalog_type = CatalogType.SELF_CONTAINED
+        else:
+            child_catalog_type = catalog_type
 
-    def save(self):
+        items_include_self_link = catalog_type != CatalogType.ABSOLUTE_PUBLISHED
+
         for child_link in self.get_child_links():
             if child_link.is_resolved():
-                child_link.target.save()
+                child_link.target.save(catalog_type=child_catalog_type)
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
-                item_link.target.save()
+                item_link.target.save_object(include_self_link=items_include_self_link)
 
-        STAC_IO.save_json(self.get_self_href(), self.to_dict())
+        self.save_object(include_self_link=include_self_link)
+
+    def walk(self):
+        """Walks through children and items of catalogs.
+
+        Returns:
+           An iterator that yields a 3-tuple (parent_catalog, children, items).
+        """
+        children = self.get_children()
+        items = self.get_items()
+
+        yield (self, children, items)
+        for child in children:
+            yield from child.walk()
+
+
+    def full_copy(self, root=None, parent=None):
+        clone = self.clone()
+
+        if root is None:
+            root = clone
+        clone.set_root(root)
+        if parent:
+            clone.set_parent(parent)
+
+        for link in (clone.get_child_links() + clone.get_item_links()):
+            link.resolve_stac_object()
+            target = link.target
+            if target in root._resolved_objects:
+                target = root._resolved_objects.get(target)
+            else:
+                copied_target = target.full_copy(root=root, parent=clone)
+                root._resolved_objects.set(copied_target)
+                target = copied_target
+            if link.rel in ['child', 'item']:
+                target.set_root(root)
+                target.set_parent(clone)
+            link.target = target
+
+        return clone
 
     def map_items(self, item_mapper):
         """Creates a copy of a catalog, with each item passed through the item_mapper function.
@@ -206,7 +311,7 @@ class Catalog(STACObject):
             s += ' {}'.format(self.get_self_href())
         print(s)
         for child in self.get_children():
-            child.describe(indent=indent+4)
+            child.describe(indent=indent+4, include_hrefs=include_hrefs)
         for item in self.get_items():
             s = '{}* {}'.format(' ' * (indent+2), item)
             if include_hrefs:

@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from datetime import timezone
 import dateutil.parser
@@ -7,6 +8,7 @@ import json
 from pystac import STACError, STAC_IO
 from pystac.catalog import Catalog
 from pystac.link import Link
+from pystac.io import STAC_IO
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
@@ -42,8 +44,8 @@ class Collection(Catalog):
         super(Collection, self).add_item(item, title)
         item.set_collection(self)
 
-    def to_dict(self):
-        d = super(Collection, self).to_dict()
+    def to_dict(self, include_self_link=True):
+        d = super(Collection, self).to_dict(include_self_link)
         d['extent'] = self.extent.to_dict()
         d['license'] = self.license
         if self.stac_extensions is not None:

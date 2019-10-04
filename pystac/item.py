@@ -6,6 +6,7 @@ from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
 from pystac.link import Link
+from pystac.utils import (make_relative_href, make_absolute_href)
 
 class Item(STACObject):
     def __init__(self,
@@ -38,12 +39,23 @@ class Item(STACObject):
     def add_asset(self, key, href, title=None, media_type=None, properties=None):
         self.assets[key] = Asset(href, title=title, media_type=media_type, properties=None)
 
+    def make_asset_hrefs_relative(self):
+        for asset in self.assets.values():
+            asset.href = make_relative_href(asset.href, self.get_self_href())
+
+    def make_asset_hrefs_absolute(self):
+        for asset in self.assets.values():
+            asset.href = make_absolute_href(asset.href, self.get_self_href())
+
     def set_collection(self, collection):
         self.links = [l for l in self.links if l.rel != 'collection']
         self.links.append(Link.collection(collection))
 
-    def to_dict(self):
-        links = list(map(lambda x: x.to_dict(), self.links))
+    def to_dict(self, include_self_link=True):
+        links = self.links
+        if not include_self_link:
+            links = filter(lambda x: x.rel != 'self', links)
+
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
         self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0, tzinfo=None))
@@ -55,7 +67,7 @@ class Item(STACObject):
             'properties': self.properties,
             'geometry': self.geometry,
             'bbox': self.bbox,
-            'links': links,
+            'links': [l.to_dict() for l in links],
             'assets': assets
         }
 
@@ -90,8 +102,8 @@ class Item(STACObject):
 
         return clone
 
-    def save(self):
-        STAC_IO.save_json(self.get_self_href(), self.to_dict())
+    def save(self, include_self_link=True):
+        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link))
 
     @staticmethod
     def from_dict(d):
