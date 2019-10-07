@@ -274,6 +274,8 @@ class Catalog(STACObject):
             item_links = []
             for item_link in catalog.get_item_links():
                 mapped = item_mapper(item_link.target)
+                if mapped is None:
+                    raise Exception('item_mapper cannot return None.')
                 if type(mapped) is not list:
                     item_link.target = mapped
                     item_links.append(item_link)
@@ -300,6 +302,8 @@ class Catalog(STACObject):
         def apply_asset_mapper(tup):
             k, v = tup
             result = asset_mapper(k, v)
+            if result is None:
+                raise Exception('asset_mapper cannot return None.')
             if issubclass(type(result), Asset):
                 return [(k, result)]
             elif isinstance(result, tuple):
