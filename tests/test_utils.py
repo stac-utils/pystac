@@ -1,6 +1,6 @@
 import unittest
 
-from pystac.utils import (make_relative_href, make_absolute_href)
+from pystac.utils import (make_relative_href, make_absolute_href, is_absolute_href)
 
 class UtilsTest(unittest.TestCase):
     def test_make_relative_href(self):
@@ -67,4 +67,18 @@ class UtilsTest(unittest.TestCase):
 
         for source_href, start_href, expected in test_cases:
             actual = make_absolute_href(source_href, start_href)
+            self.assertEqual(actual, expected)
+
+    def test_is_absolute_href(self):
+        # Test cases of (href, expected)
+        test_cases = [
+            ('item.json', False),
+            ('./item.json', False),
+            ('../item.json', False),
+            ('/item.json', True),
+            ('http://stacgeo.org/item.json', True)
+        ]
+
+        for href, expected in test_cases:
+            actual = is_absolute_href(href)
             self.assertEqual(actual, expected)

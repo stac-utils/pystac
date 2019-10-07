@@ -1,7 +1,6 @@
 from collections import ChainMap
 from copy import (copy, deepcopy)
 
-# TODO: Version fo this that doesn't track in case users don't want tracked resolving.
 class ResolvedObjectCache:
     """This class tracks resolved objects tied to root catalogs.
     A STAC object is 'resolved' when it is a Python Object; a link
@@ -21,8 +20,6 @@ class ResolvedObjectCache:
     def __init__(self, ids_to_objects=None):
         self.ids_to_objects = ids_to_objects or {}
 
-    # TODO: Is it ok to just use the STAC Object ID? Or can IDs be non-unique inside
-    # root catalogs?
     def get_or_set(self, obj):
         if obj.id in self.ids_to_objects:
             return self.ids_to_objects[obj.id]
