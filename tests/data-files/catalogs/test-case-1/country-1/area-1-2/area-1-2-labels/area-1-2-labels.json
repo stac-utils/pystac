@@ -3,7 +3,7 @@
     "stac_version": "0.8.0",
     "id": "area-1-2-labels",
     "properties": {
-        "datetime": "2019-09-11 19:21:32Z",
+        "datetime": "2019-10-04 18:55:37Z",
         "label:description": "labels for area-1-2",
         "label:type": "vector",
         "label:property": [
@@ -56,12 +56,12 @@
         -2.5048828125,
         3.8916575492899987,
         -1.9610595703125,
-        4.275202171119132
+        3.8916575492899987
     ],
     "links": [
         {
             "rel": "source",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-2/area-1-2-imagery.json",
+            "href": "../area-1-2-imagery/area-1-2-imagery.json",
             "type": "application/json",
             "label:assets": [
                 "ortho"
@@ -69,22 +69,22 @@
         },
         {
             "rel": "collection",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-2/collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "root",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "parent",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-2/collection.json",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-1/area-1-2/collection.json",
             "type": "application/json"
         },
         {
             "rel": "self",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-1/area-1-2/area-1-2-labels.json",
+            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-1/area-1-2/area-1-2-labels/area-1-2-labels.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../collection.json",
             "type": "application/json"
         }
     ],
