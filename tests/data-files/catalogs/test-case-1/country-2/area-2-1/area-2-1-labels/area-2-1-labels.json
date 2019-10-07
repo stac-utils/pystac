@@ -62,19 +62,11 @@
         {
             "rel": "source",
             "href": "../area-2-1-imagery/area-2-1-imagery.json",
-            "type": "application/json",
-            "label:assets": [
-                "ortho"
-            ]
-        },
-        {
-            "rel": "collection",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-2/area-2-1/collection.json",
             "type": "application/json"
         },
         {
-            "rel": "self",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-2/area-2-1/area-2-1-labels/area-2-1-labels.json",
+            "rel": "collection",
+            "href": "../collection.json",
             "type": "application/json"
         },
         {
@@ -88,7 +80,12 @@
             "type": "application/json"
         }
     ],
-    "assets": {},
+    "assets": {
+        "labels": {
+            "href": "http://example.com/area-2-1-labels.geojson",
+            "type": "application/geo+json"
+        }
+    },
     "stac_extensions": [
         "label"
     ]

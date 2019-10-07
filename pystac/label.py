@@ -26,7 +26,7 @@ class LabelItem(Item):
                  href=None,
                  label_task=None,
                  label_method=None,
-                 label_overviews=None):
+                 label_overview=None):
         if stac_extensions is None:
             stac_extensions = []
         if 'label' not in stac_extensions:
@@ -44,7 +44,7 @@ class LabelItem(Item):
         self.label_type = label_type
         self.label_task = label_task
         self.label_method = label_method
-        self.label_overviews = label_overviews
+        self.label_overview = label_overview
 
         # Be kind if folks didn't use lists for some properties
         if self.label_property is not None:
@@ -89,7 +89,7 @@ class LabelItem(Item):
             d['properties']['label:task'] = self.label_task
         if self.label_method is not None:
             d['properties']['label:method'] = self.label_method
-        if self.label_overviews is not None:
+        if self.label_overview is not None:
             d['properties']['label:overview'] = [ov.to_dict() for ov in self.label_overview]
 
         return d
@@ -131,8 +131,10 @@ class LabelItem(Item):
                            stac_extensions=copy(self.stac_extensions),
                            label_task=self.label_task,
                            label_method=self.label_method,
-                           label_overviews=deepcopy(self.label_overviews))
-        clone.links = [l.clone() for l in self.links]
+                           label_overview=deepcopy(self.label_overview))
+        for link in self.links:
+            clone.add_link(link.clone())
+
         clone.assets = dict([(k, a.clone()) for (k, a) in self.assets.items()])
         return clone
 
@@ -149,13 +151,13 @@ class LabelItem(Item):
         label_type = props['label:type']
         label_task = props.get('label:task')
         label_method = props.get('label:method')
-        label_overviews = props.get('label:overview')
-        if label_overviews is not None:
-            if type(label_overviews) is list:
-                label_overviews = [LabelOverview.from_dict(ov) for ov in label_overviews]
+        label_overview = props.get('label:overview')
+        if label_overview is not None:
+            if type(label_overview) is list:
+                label_overview = [LabelOverview.from_dict(ov) for ov in label_overview]
             else:
                 # Read STAC with mistaken single overview object (should be list)
-                label_overviews = LabelOverview.from_dict(label_overviews)
+                label_overview = LabelOverview.from_dict(label_overview)
 
         li = LabelItem(id=item.id,
                        geometry=item.geometry,
@@ -169,24 +171,16 @@ class LabelItem(Item):
                        stac_extensions=item.stac_extensions,
                        label_task=label_task,
                        label_method=label_method,
-                       label_overviews=label_overviews)
+                       label_overview=label_overview)
 
-        li.links = item.links
-        li.assets = item.assets
+        for link in item.links:
+            li.add_link(link)
+        li.assets = copy(item.assets)
 
         return li
 
-    def full_copy(self, root=None, parent=None):
-        result = super(LabelItem, self).full_copy(root, parent)
-
-        source_link = result.get_single_link('source')
-        if source_link and root:
-            source_link.resolve_stac_object(root=root)
-            target = root._resolved_objects.get_or_set(source_link.target)
-            source_link.target = target
-
-        return result
-
+    def _object_links(self):
+        return super()._object_links() + ['source']
 
 class LabelClasses:
     def __init__(self, classes, name=None):

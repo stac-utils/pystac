@@ -41,12 +41,7 @@
     "links": [
         {
             "rel": "collection",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-2/area-2-2/collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "self",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/test-case-1/country-2/area-2-2/area-2-2-imagery/area-2-2-imagery.json",
+            "href": "../collection.json",
             "type": "application/json"
         },
         {
@@ -62,11 +57,11 @@
     ],
     "assets": {
         "ortho": {
-            "href": "area-2-2_ortho.tif",
+            "href": "http://example.com/area-2-2_ortho.tif",
             "type": "image/vnd.stac.geotiff"
         },
         "dsm": {
-            "href": "area-2-2_dsm.tif",
+            "href": "http://example.com/area-2-2_dsm.tif",
             "type": "image/vnd.stac.geotiff"
         }
     }

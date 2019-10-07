@@ -4,11 +4,6 @@
     "description": "test catalog",
     "links": [
         {
-            "rel": "root",
-            "href": "./catalog.json",
-            "type": "application/json"
-        },
-        {
             "rel": "child",
             "href": "./country-1/catalog.json",
             "type": "application/json"
@@ -16,6 +11,11 @@
         {
             "rel": "child",
             "href": "./country-2/catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "root",
+            "href": "./catalog.json",
             "type": "application/json"
         }
     ]
