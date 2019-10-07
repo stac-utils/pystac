@@ -1,31 +1,26 @@
 {
-    "id": "area-2-2",
+    "id": "area-2-1",
     "stac_version": "0.8.0",
     "description": "test collection country-2",
     "links": [
         {
             "rel": "item",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-2/area-2-2-imagery.json",
+            "href": "./area-2-1-imagery/area-2-1-imagery.json",
             "type": "application/json"
         },
         {
             "rel": "item",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-2/area-2-2-labels.json",
+            "href": "./area-2-1-labels/area-2-1-labels.json",
             "type": "application/json"
         },
         {
             "rel": "root",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
+            "href": "../../catalog.json",
             "type": "application/json"
         },
         {
             "rel": "parent",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "self",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-2/collection.json",
+            "href": "../catalog.json",
             "type": "application/json"
         }
     ],
@@ -43,7 +38,7 @@
         "temporal": {
             "interval": [
                 [
-                    "2019-09-11T19:21:31Z",
+                    "2019-10-04T18:55:37Z",
                     null
                 ]
             ]

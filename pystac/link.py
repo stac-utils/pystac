@@ -4,44 +4,67 @@ from urllib.parse import urlparse
 
 from pystac import STACError
 from pystac.io import STAC_IO
+from pystac.utils import (make_absolute_href, make_relative_href)
+
+class LinkType:
+    ABSOLUTE = 'ABSOLUTE'
+    RELATIVE = 'RELATIVE'
 
 class Link:
-    def __init__(self, rel, target, media_type=None, title=None, properties=None):
+    def __init__(self,
+                 rel,
+                 target,
+                 media_type=None,
+                 title=None,
+                 properties=None,
+                 link_type=LinkType.ABSOLUTE):
         self.rel = rel
         self.target = target # An object or an href
         self.media_type = media_type
         self.title = title
         self.properties = properties
+        self.link_type = link_type
+        self.owner = None
+
+    def set_owner(self, owner):
+        self.owner = owner
+        return self
+
+    def make_absolute(self):
+        self.link_type = LinkType.ABSOLUTE
+        return self
+
+    def make_relative(self):
+        self.link_type = LinkType.RELATIVE
+        return self
 
     def __repr__(self):
         return '<Link rel={} target={}>'.format(self.rel, self.target)
 
-    def resolve_stac_object(self, root=None, parent=None):
+    def resolve_stac_object(self, root=None):
+        """Resolves a STAC object from the HREF of this link, if the link is not
+        already resolved.
+
+        Params:
+          root -    The root of the catalog for this link. This root's resolved object cache is used
+                    to search for previously resolved instances of the STAC object.
+        """
         if isinstance(self.target, str):
             # If it's a relative link, base it off the parent.
             target_path = self.target
             parsed = urlparse(self.target)
             if parsed.scheme == '':
                 if not os.path.isabs(parsed.path):
-                    if parent is None:
+                    if self.owner is None:
                         raise STACError('Relative path {} encountered '
-                                        'without parent.'.format(target_path))
-                    parent_href = parent.get_self_href()
-                    if parent_href is None:
+                                        'without owner.'.format(target_path))
+                    owner_href = self.owner.get_self_href()
+                    if owner_href is None:
                         raise STACError('Relative path {} encountered '
-                                        'without parent "self" link set.'.format(target_path))
-                    parsed_parent = urlparse(parent_href)
-                    parent_dir = os.path.dirname(parsed_parent.path)
-                    abs_path = os.path.abspath(os.path.join(parent_dir, target_path))
-                    if parsed_parent.scheme != '':
-                        target_path = '{}://{}{}'.format(parsed_parent.scheme,
-                                                         parsed_parent.netloc,
-                                                         abs_path)
-                    else:
-                        target_path = abs_path
-            print(target_path)
+                                        'without owner "self" link set.'.format(target_path))
+                    target_path = make_absolute_href(self.target, owner_href)
 
-            obj = STAC_IO.read_stac_json(target_path, root=root, parent=parent)
+            obj = STAC_IO.read_stac_object(target_path)
             obj.set_self_href(target_path)
         else:
             obj = self.target
@@ -52,8 +75,8 @@ class Link:
         else:
             self.target = obj
 
-        if parent:
-            self.target.set_parent(parent)
+        if self.owner:
+            self.target.set_parent(self.owner)
 
         return self
 
@@ -63,9 +86,19 @@ class Link:
     def to_dict(self):
         d = { 'rel': self.rel }
         if self.is_resolved():
-            d['href'] = self.target.get_self_href()
+            target_href = self.target.get_self_href()
         else:
-            d['href'] = self.target
+            target_href = self.target
+
+        if self.link_type == LinkType.RELATIVE:
+            if self.owner is not None:
+                target_href = make_relative_href(target_href, self.owner.get_self_href())
+        elif self.link_type == LinkType.ABSOLUTE:
+            if self.owner is not None:
+                target_href = make_absolute_href(target_href, self.owner.get_self_href())
+
+        d['href'] = target_href
+
 
         if self.media_type is not None:
             d['type'] = self.media_type

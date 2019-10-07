@@ -40,8 +40,12 @@ class STAC_IO:
         cls.write_text_method(uri, txt)
 
     @classmethod
-    def read_stac_json(cls, uri, root=None, parent=None):
-        d = json.loads(STAC_IO.read_text(uri))
+    def read_json(cls, uri):
+        return json.loads(STAC_IO.read_text(uri))
+
+    @classmethod
+    def read_stac_object(cls, uri):
+        d = cls.read_json(uri)
         return cls.stac_object_from_dict(d)
 
     @classmethod

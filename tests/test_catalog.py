@@ -11,8 +11,7 @@ class CatalogTest(unittest.TestCase):
             cat_dir = os.path.join(tmp_dir, 'catalog')
             catalog = TestCases.test_case_1()
 
-            catalog.set_uris_from_root(cat_dir)
-            catalog.save()
+            catalog.normalize_and_save(cat_dir)
 
             read_catalog = Catalog.from_file('{}/catalog.json'.format(cat_dir))
 
@@ -44,7 +43,7 @@ class CatalogTest(unittest.TestCase):
 
             new_cat = catalog.map_items(item_mapper)
 
-            new_cat.set_uris_from_root(os.path.join(tmp_dir, 'cat'))
+            new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save()
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
@@ -70,7 +69,7 @@ class CatalogTest(unittest.TestCase):
             new_cat = catalog.map_items(item_mapper)
 
 
-            new_cat.set_uris_from_root(os.path.join(tmp_dir, 'cat'))
+            new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save()
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
@@ -93,3 +92,7 @@ class CatalogTest(unittest.TestCase):
             for item in catalog.get_all_items():
                 self.assertFalse(('ITEM_MAPPER_1' in item.properties) or
                                  ('ITEM_MAPPER_2' in item.properties))
+
+        ## TODO: Test map assets
+
+        ## TODO: Test make all links relative/absolute
