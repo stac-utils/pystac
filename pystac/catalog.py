@@ -1,6 +1,7 @@
 import os
 import json
 
+from pystac import STACError
 from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
@@ -174,7 +175,7 @@ class Catalog(STACObject):
 
     def normalize_and_save(self,
                            root_href,
-                           catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+                           catalog_type):
         self.normalize_hrefs(root_href)
         self.save(catalog_type)
 
@@ -200,7 +201,7 @@ class Catalog(STACObject):
 
         return self
 
-    def save(self, catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+    def save(self, catalog_type):
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF.
 
@@ -358,6 +359,8 @@ class Catalog(STACObject):
 
     @staticmethod
     def from_file(uri):
+        if not is_absolute_href(uri):
+            uri = make_absolute_href(uri)
         d = json.loads(STAC_IO.read_text(uri))
         c = Catalog.from_dict(d)
         c.set_self_href(uri)

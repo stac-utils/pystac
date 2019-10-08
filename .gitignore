@@ -16,3 +16,10 @@ docs/_build/
 
 # Sphinx documentation
 docs/_build/
+
+.ipynb_checkpoints/
+
+tutorials/pystac-example*
+tutorials/spacenet-stac/
+tutorials/spacenet-cog-stac/
+tutorials/data/
