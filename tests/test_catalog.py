@@ -14,7 +14,7 @@ class CatalogTest(unittest.TestCase):
             cat_dir = os.path.join(tmp_dir, 'catalog')
             catalog = TestCases.test_case_1()
 
-            catalog.normalize_and_save(cat_dir)
+            catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             read_catalog = Catalog.from_file('{}/catalog.json'.format(cat_dir))
 
@@ -47,7 +47,7 @@ class CatalogTest(unittest.TestCase):
             new_cat = catalog.map_items(item_mapper)
 
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
-            new_cat.save()
+            new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
@@ -73,7 +73,7 @@ class CatalogTest(unittest.TestCase):
 
 
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
-            new_cat.save()
+            new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
             result_items = result_cat.get_all_items()
@@ -111,7 +111,7 @@ class CatalogTest(unittest.TestCase):
             new_cat = catalog.map_assets(asset_mapper)
 
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
-            new_cat.save()
+            new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
@@ -142,7 +142,7 @@ class CatalogTest(unittest.TestCase):
             new_cat = catalog.map_assets(asset_mapper)
 
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
-            new_cat.save()
+            new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
@@ -183,7 +183,7 @@ class CatalogTest(unittest.TestCase):
             new_cat = catalog.map_assets(asset_mapper)
 
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
-            new_cat.save()
+            new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
@@ -323,10 +323,10 @@ class FullCopyTest(unittest.TestCase):
             cat.add_items([image_item, label_item])
 
             cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-source'))
-            cat.save()
+            cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = cat.full_copy()
             cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-dest'))
-            cat2.save()
+            cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(cat, 'source')
             self.check_catalog(cat2, 'dest')
@@ -336,10 +336,10 @@ class FullCopyTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.test_case_1()
             root_cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-source'))
-            root_cat.save()
+            root_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = root_cat.full_copy()
             cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-dest'))
-            cat2.save()
+            cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(root_cat, 'source')
             self.check_catalog(cat2, 'dest')
@@ -348,10 +348,10 @@ class FullCopyTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.test_case_2()
             root_cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-4-source'))
-            root_cat.save()
+            root_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = root_cat.full_copy()
             cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-4-dest'))
-            cat2.save()
+            cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(root_cat, 'source')
             self.check_catalog(cat2, 'dest')

@@ -175,7 +175,7 @@ class Catalog(STACObject):
 
     def normalize_and_save(self,
                            root_href,
-                           catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+                           catalog_type):
         self.normalize_hrefs(root_href)
         self.save(catalog_type)
 
@@ -201,7 +201,7 @@ class Catalog(STACObject):
 
         return self
 
-    def save(self, catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
+    def save(self, catalog_type):
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF.
 
