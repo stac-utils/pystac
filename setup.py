@@ -23,6 +23,7 @@ setup(
     version=__version__,
     description=("Python library for working with Spatiotemporal Asset Catalog (STAC)."),
     long_description=readme,
+    long_description_content_type="text/markdown",
     author="Azavea",
     author_email='info@azavea.com',
     url='https://github.com/azavea/pystac.git',
