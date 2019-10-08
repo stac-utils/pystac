@@ -73,43 +73,50 @@ class TestCases:
 
     @staticmethod
     def test_case_1():
-        root_cat = Catalog(id='test', description='test catalog')
-        for country in TEST_LABEL_CATALOG:
-            country_cat = Catalog(id=country, description='test catalog {}'.format(country))
-            for area in TEST_LABEL_CATALOG[country]:
-                area_collection = Collection(id=area,
-                                             description='test collection {}'.format(country),
-                                             extent=RANDOM_EXTENT)
-                image_item = Item(id='{}-imagery'.format(area),
-                                  geometry=RANDOM_GEOM,
-                                  bbox=RANDOM_BBOX,
-                                  datetime=datetime.utcnow(),
-                                  properties={})
-                for key in ['ortho', 'dsm']:
-                    image_item.add_asset(key,
-                                         href=TEST_LABEL_CATALOG[country][area][key],
-                                         media_type=Asset.MEDIA_TYPE.GEOTIFF)
+        return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
+    @staticmethod
+    def test_case_2():
+        return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-2/catalog.json'))
 
-                label_item = LabelItem(id='{}-labels'.format(area),
-                                       geometry=RANDOM_GEOM,
-                                       bbox=RANDOM_BBOX,
-                                       datetime=datetime.utcnow(),
-                                       properties={},
-                                       label_description='labels for {}'.format(area),
-                                       label_type='vector',
-                                       label_property=['label'],
-                                       label_classes=[LabelClasses(classes=['one', 'two'],
-                                                                   name='label')],
-                                       label_task=['classification'],
-                                       label_method=['manual'])
-                label_item.add_source(image_item, assets=['ortho'])
+    @staticmethod
+    def test_case_3():
+        root_cat = Catalog(id='test3',
+                           description='test case 3 catalog',
+                           title='test case 3 title')
 
-                area_collection.add_item(image_item)
-                area_collection.add_item(label_item)
-                country_cat.add_child(area_collection)
-            root_cat.add_child(country_cat)
+        image_item = Item(id='imagery-item',
+                          geometry=RANDOM_GEOM,
+                          bbox=RANDOM_BBOX,
+                          datetime=datetime.utcnow(),
+                          properties={})
+
+        image_item.add_asset('ortho',
+                             Asset(href='some/geotiff.tiff',
+                                   media_type=Asset.MEDIA_TYPE.GEOTIFF))
+
+        overviews = [LabelOverview('label', counts=[LabelCount('one', 1),
+                                                    LabelCount('two', 2)])]
+
+        label_item = LabelItem(id='label-items',
+                               geometry=RANDOM_GEOM,
+                               bbox=RANDOM_BBOX,
+                               datetime=datetime.utcnow(),
+                               properties={},
+                               label_description='ML Labels',
+                               label_type='vector',
+                               label_property=['label'],
+                               label_classes=[LabelClasses(classes=['one', 'two'],
+                                                           name='label')],
+                               label_task=['classification'],
+                               label_method=['manual'],
+                               label_overview=overviews)
+        label_item.add_source(image_item, assets=['ortho'])
+
+        root_cat.add_item(image_item)
+        root_cat.add_item(label_item)
 
         return root_cat
+
 
 class SchemaValidator:
     REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
@@ -120,7 +127,8 @@ class SchemaValidator:
 
     # TODO: Replace once 0.8 release is out.
     # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
+    # SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
+    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/lossyrob/stac-spec/fix/labeloverview-list'
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',

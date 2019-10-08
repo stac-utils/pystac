@@ -1,9 +1,29 @@
 {
     "type": "Feature",
     "stac_version": "0.8.0",
-    "id": "area-2-1-imagery",
+    "id": "area-2-1-labels",
     "properties": {
-        "datetime": "2019-09-11 19:21:32Z"
+        "datetime": "2019-10-04 18:55:37Z",
+        "label:description": "labels for area-2-1",
+        "label:type": "vector",
+        "label:property": [
+            "label"
+        ],
+        "label:classes": [
+            {
+                "name": "label",
+                "classes": [
+                    "one",
+                    "two"
+                ]
+            }
+        ],
+        "label:task": [
+            "classification"
+        ],
+        "label:method": [
+            "manual"
+        ]
     },
     "geometry": {
         "type": "Polygon",
@@ -36,38 +56,37 @@
         -2.5048828125,
         3.8916575492899987,
         -1.9610595703125,
-        4.275202171119132
+        3.8916575492899987
     ],
     "links": [
         {
+            "rel": "source",
+            "href": "../area-2-1-imagery/area-2-1-imagery.json",
+            "type": "application/json"
+        },
+        {
             "rel": "collection",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-1/collection.json",
+            "href": "../collection.json",
             "type": "application/json"
         },
         {
             "rel": "root",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/catalog.json",
+            "href": "../../../catalog.json",
             "type": "application/json"
         },
         {
             "rel": "parent",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-1/collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "self",
-            "href": "/Users/rob/proj/stac/pystac/tests/data-files/catalogs/testcase1/country-2/area-2-1/area-2-1-imagery.json",
+            "href": "../collection.json",
             "type": "application/json"
         }
     ],
     "assets": {
-        "ortho": {
-            "href": "area-2-1_ortho.tif",
-            "type": "image/vnd.stac.geotiff"
-        },
-        "dsm": {
-            "href": "area-2-1_dsm.tif",
-            "type": "image/vnd.stac.geotiff"
+        "labels": {
+            "href": "http://example.com/area-2-1-labels.geojson",
+            "type": "application/geo+json"
         }
-    }
+    },
+    "stac_extensions": [
+        "label"
+    ]
 }

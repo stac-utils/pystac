@@ -7,8 +7,9 @@ import json
 
 from pystac import STACError, STAC_IO
 from pystac.catalog import Catalog
-from pystac.link import Link
+from pystac.link import (Link, LinkType)
 from pystac.io import STAC_IO
+from pystac.utils import is_absolute_href
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
@@ -111,7 +112,14 @@ class Collection(Catalog):
                                 summaries=summaries)
 
         for l in d['links']:
-            collection.add_link(Link.from_dict(l))
+            if not l['rel'] == 'root':
+                collection.add_link(Link.from_dict(l))
+            else:
+                # If a root link was included, we want to inheret
+                # whether it was relative or not.
+                if not is_absolute_href(l['href']):
+                    collection.get_single_link('root').link_type = LinkType.RELATIVE
+
 
         return collection
 
