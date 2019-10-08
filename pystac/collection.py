@@ -9,7 +9,7 @@ from pystac import STACError, STAC_IO
 from pystac.catalog import Catalog
 from pystac.link import (Link, LinkType)
 from pystac.io import STAC_IO
-from pystac.utils import is_absolute_href
+from pystac.utils import (make_absolute_href, is_absolute_href)
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
@@ -125,6 +125,8 @@ class Collection(Catalog):
 
     @staticmethod
     def from_file(uri):
+        if not is_absolute_href(uri):
+            uri = make_absolute_href(uri)
         d = json.loads(STAC_IO.read_text(uri))
         c = Collection.from_dict(d)
         c.set_self_href(uri)

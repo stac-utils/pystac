@@ -359,6 +359,8 @@ class Catalog(STACObject):
 
     @staticmethod
     def from_file(uri):
+        if not is_absolute_href(uri):
+            uri = make_absolute_href(uri)
         d = json.loads(STAC_IO.read_text(uri))
         c = Catalog.from_dict(d)
         c.set_self_href(uri)

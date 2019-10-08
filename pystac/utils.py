@@ -19,7 +19,11 @@ def make_relative_href(source_href, start_href, start_is_dir=False):
     return relpath
 
 
-def make_absolute_href(source_href, start_href, start_is_dir=False):
+def make_absolute_href(source_href, start_href=None, start_is_dir=False):
+    if start_href is None:
+        start_href = os.getcwd()
+        start_is_dir = True
+
     parsed_source = urlparse(source_href)
     if parsed_source.scheme == '':
         if not os.path.isabs(parsed_source.path):
