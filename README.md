@@ -54,3 +54,13 @@ Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 ```
 > python -m unittest discover tests
 ```
+
+## Running the tutorials
+
+There are tutorials written as jupyter notebooks in the `tutorials` folder. To run them, run a jupyter notebook with the `tutorials` directory as the notebook directory:
+
+```
+> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=tutorials
+```
+
+Requires [Jupyter](https://jupyter.org/) be installed.
