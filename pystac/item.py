@@ -18,13 +18,15 @@ class Item(STACObject):
                  datetime,
                  properties,
                  stac_extensions=None,
-                 href=None):
+                 href=None,
+                 collection=None):
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
         self.datetime = datetime
         self.properties = properties
         self.stac_extensions = stac_extensions
+        self.collection = collection
 
         self.links = []
         self.assets = {}
@@ -62,6 +64,7 @@ class Item(STACObject):
                 link_type = LinkType.ABSOLUTE
         self.remove_links('collection')
         self.add_link(Link.collection(collection, link_type=link_type))
+        self.collection = collection.id
         return self
 
     def to_dict(self, include_self_link=True):
@@ -130,6 +133,9 @@ class Item(STACObject):
         bbox = d['bbox']
         properties = d['properties']
         stac_extensions = d.get('stac_extensions')
+        collection = None
+        if 'collection' in d.keys():
+            collection = d['collection']
 
         datetime = properties.get('datetime')
         if datetime is None:
@@ -141,7 +147,8 @@ class Item(STACObject):
                     bbox=bbox,
                     datetime=datetime,
                     properties=properties,
-                    stac_extensions=stac_extensions)
+                    stac_extensions=stac_extensions,
+                    collection=collection)
 
         for l in d['links']:
             item.add_link(Link.from_dict(l))
