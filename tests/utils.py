@@ -127,8 +127,7 @@ class SchemaValidator:
 
     # TODO: Replace once 0.8 release is out.
     # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    # SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
-    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/lossyrob/stac-spec/fix/labeloverview-list'
+    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',
