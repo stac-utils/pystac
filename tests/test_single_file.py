@@ -35,7 +35,8 @@ class SingleFileTest(unittest.TestCase):
                 
                 dk.sort()
                 keys = list(sf.to_dict().keys())
-                self.assertEqual(keys.sort(), dk)
+                keys.sort()
+                self.assertEqual(keys, dk)
 
                 tmp_uri = join(tmp_dir, 'test-single-file-{}.json'.format(i))
                 sf.save(tmp_uri)
