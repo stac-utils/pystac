@@ -33,7 +33,9 @@ class SingleFileTest(unittest.TestCase):
                     self.assertIsInstance(sf.search, Search)
                     dk.append('search')
                 
-                self.assertEqual(list(sf.to_dict().keys()), dk)
+                dk.sort()
+                keys = list(sf.to_dict().keys())
+                self.assertEqual(keys.sort(), dk)
 
                 tmp_uri = join(tmp_dir, 'test-single-file-{}.json'.format(i))
                 sf.save(tmp_uri)
@@ -60,5 +62,7 @@ class SearchTest(unittest.TestCase):
                 self.assertIsInstance(s.parameters, dict)
             
             self.assertIsInstance(s.to_dict(), dict)
-            self.assertEqual(list(s.to_dict().keys()), ['endpoint', 'parameters'])
+            keys = list(s.to_dict().keys())
+            keys.sort()
+            self.assertEqual(keys, ['endpoint', 'parameters'])
         
