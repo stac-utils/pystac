@@ -7,7 +7,7 @@ from pystac.link import Link, LinkType
 
 
 class ItemCollection:
-    DEFAULT_FILE_NAME = "item_collection.geojson"
+    DEFAULT_FILE_NAME = "item_collection.json"
 
     def __init__(self, features, links=[], type='FeatureCollection'):
         self.type = type

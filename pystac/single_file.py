@@ -40,18 +40,16 @@ class SingleFile(ItemCollection):
         d['type'] = self.type
         d['features'] = [f.to_dict() for f in self.features]
         d['collections'] = [c.to_dict() for c in self.collections]
-        d['search'] = self.search.to_dict()
+        if self.search:
+            d['search'] = self.search.to_dict()
 
         return d
     
-    def save(self, uri=None):
-        if not uri:
-            uri = self.get_self_href()
-        
+    def save(self, uri):
         STAC_IO.save_json(os.path.abspath(uri), self.to_dict())
 
 class Search:
-    def __init__(self, endpoint, parameters):
+    def __init__(self, endpoint=None, parameters=None):
         self.endpoint = endpoint
         self.parameters = parameters
     

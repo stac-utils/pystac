@@ -10,6 +10,7 @@ from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
 from pystac.item import (Item, Asset)
 from pystac.item_collection import ItemCollection
+from pystac.single_file import SingleFile
 from pystac.eo import *
 from pystac.label import *
 
