@@ -89,6 +89,9 @@ class Item(STACObject):
 
         if self.stac_extensions is not None:
             d['stac_extensions'] = self.stac_extensions
+        
+        if self.collection:
+            d['collection'] = self.collection
 
         return d
 
