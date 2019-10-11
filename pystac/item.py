@@ -8,7 +8,9 @@ from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
 from pystac.link import (Link, LinkType)
-from pystac.utils import (make_relative_href, make_absolute_href, is_absolute_href)
+from pystac.utils import (
+    make_relative_href, make_absolute_href, is_absolute_href)
+
 
 class Item(STACObject):
     def __init__(self,
@@ -72,9 +74,11 @@ class Item(STACObject):
         if not include_self_link:
             links = filter(lambda x: x.rel != 'self', links)
 
-        assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
+        assets = dict(
+            map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0, tzinfo=None))
+        self.properties['datetime'] = '{}Z'.format(
+            self.datetime.replace(microsecond=0, tzinfo=None))
 
         d = {
             'type': 'Feature',
@@ -89,7 +93,7 @@ class Item(STACObject):
 
         if self.stac_extensions is not None:
             d['stac_extensions'] = self.stac_extensions
-        
+
         if self.collection:
             d['collection'] = self.collection
 
@@ -127,7 +131,8 @@ class Item(STACObject):
                 asset.href = new_relative_href
 
     def save(self, include_self_link=True):
-        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link))
+        STAC_IO.save_json(self.get_self_href(),
+                          self.to_dict(include_self_link))
 
     @staticmethod
     def from_dict(d):
@@ -142,7 +147,8 @@ class Item(STACObject):
 
         datetime = properties.get('datetime')
         if datetime is None:
-            raise STACError('Item dict is missing a "datetime" property in the "properties" field')
+            raise STACError(
+                'Item dict is missing a "datetime" property in the "properties" field')
         datetime = dateutil.parser.parse(datetime)
 
         item = Item(id=id,
@@ -168,6 +174,7 @@ class Item(STACObject):
         d = json.loads(STAC_IO.read_text(uri))
         return Item.from_dict(d)
 
+
 class Asset:
     class MEDIA_TYPE:
         TIFF = 'image/tiff'
@@ -181,8 +188,9 @@ class Asset:
         TEXT = 'text/plain'
         GEOJSON = 'application/geo+json'
         GEOPACKAGE = 'application/geopackage+sqlite3'
-        HDF5 = 'application/x-hdf5' # Hierarchical Data Format version 5
-        HDF = 'application/x-hdf' # Hierarchical Data Format versions 4 and earlier.
+        HDF5 = 'application/x-hdf5'  # Hierarchical Data Format version 5
+        # Hierarchical Data Format versions 4 and earlier.
+        HDF = 'application/x-hdf'
 
     def __init__(self, href, title=None, media_type=None, properties=None):
         self.href = href
@@ -220,15 +228,16 @@ class Asset:
             d['title'] = self.title
 
         if self.properties is not None:
-            for k, v in self.properties.items():
-                d[k] = v
+            for k in self.properties:
+                d[k] = self.properties[k]
 
         return deepcopy(d)
 
     def clone(self):
         return Asset(href=self.href,
                      title=self.title,
-                     media_type=self.media_type)
+                     media_type=self.media_type,
+                     properties=self.properties)
 
     def __repr__(self):
         return '<Asset href={}>'.format(self.href)
@@ -247,3 +256,9 @@ class Asset:
                      media_type=media_type,
                      title=title,
                      properties=properties)
+
+    def is_eo(self):
+        if self.properties:
+            if self.properties.get('eo:bands', None):
+                return True
+        return False
