@@ -120,14 +120,8 @@ class TestCases:
 
 class SchemaValidator:
     REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
-
-    # TODO: Replace once 0.8 release is out.
-    # TAG = 'v{}'.format(STAC_VERSION)
-    TAG = 'v0.8.0-rc1'
-
-    # TODO: Replace once 0.8 release is out.
-    # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
+    TAG = 'v{}'.format(STAC_VERSION)
+    SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',

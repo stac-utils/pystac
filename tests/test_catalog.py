@@ -27,8 +27,9 @@ class CatalogTest(unittest.TestCase):
 
     def test_read_remote(self):
         catalog_url = ('https://raw.githubusercontent.com/radiantearth/stac-spec/'
-                       '252cc892cdccf7ba0b9564bcae42bb6ec4189f14'
-                       '/extensions/label/examples/multidataset/catalog.json')
+                       'v{}'
+                       '/extensions/label/examples/multidataset/catalog.json'.format(
+                           STAC_VERSION))
         cat = Catalog.from_file(catalog_url)
 
         zanzibar = cat.get_child('zanzibar-collection')
