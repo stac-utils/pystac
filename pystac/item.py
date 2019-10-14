@@ -188,7 +188,7 @@ class Asset:
         self.href = href
         self.title = title
         self.media_type = media_type
-        self.properties = None
+        self.properties = properties
 
         # The Item which owns this Asset.
         self.item = None
@@ -220,8 +220,8 @@ class Asset:
             d['title'] = self.title
 
         if self.properties is not None:
-            for k in properties:
-                d[k] = properties[k]
+            for k, v in self.properties.items():
+                d[k] = v
 
         return d
 
@@ -239,7 +239,6 @@ class Asset:
         href = d.pop('href')
         media_type = d.pop('type', None)
         title = d.pop('title', None)
-
         properties = None
         if any(d):
             properties = d

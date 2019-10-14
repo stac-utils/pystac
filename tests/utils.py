@@ -162,3 +162,6 @@ class SchemaValidator:
         except jsonschema.exceptions.ValidationError as e:
             print('Validation error in {}'.format(obj_type))
             raise e
+
+def test_to_from_dict(stac_object_class, d):
+    return stac_object_class.from_dict(d).to_dict() == d
