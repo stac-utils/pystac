@@ -216,6 +216,6 @@ def band_range(common_name):
 
 def band_desc(common_name):
     r = band_range(common_name)
-    if not r:
+    if isinstance(r, str):
         return "Common name: {}".format(common_name)
     return "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
