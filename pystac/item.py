@@ -74,7 +74,7 @@ class Item(STACObject):
 
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0, tzinfo=None))
+        self.properties['datetime'] = self.datetime.isoformat()
 
         d = {
             'type': 'Feature',

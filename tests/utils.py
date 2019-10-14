@@ -1,7 +1,8 @@
 import os
 import json
 from datetime import datetime
-
+from copy import copy
+from dateutil.parser import parse
 import jsonschema
 from jsonschema.validators import RefResolver
 
@@ -164,4 +165,23 @@ class SchemaValidator:
             raise e
 
 def test_to_from_dict(stac_object_class, d):
-    return stac_object_class.from_dict(d).to_dict() == d
+    def _parse_times(dd):
+        a_dict = copy(dd)
+        for k, v in a_dict.items():
+            if isinstance(v, dict):
+                _parse_times(v)
+            elif isinstance(v, (tuple, list, set)):
+                for vv in v:
+                    if isinstance(vv, dict):
+                        _parse_times(vv)
+            else:
+                if k == 'datetime':
+                    if not isinstance(v, datetime):
+                        a_dict[k] = parse(v)
+        
+        return a_dict
+
+    d1 = _parse_times(d) 
+    d2 = _parse_times(stac_object_class.from_dict(d).to_dict())
+               
+    return d1 == d2
