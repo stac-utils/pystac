@@ -6,7 +6,7 @@
         "datetime": "2019-10-04 18:55:37Z",
         "label:description": "labels for area-1-1",
         "label:type": "vector",
-        "label:property": [
+        "label:properties": [
             "label"
         ],
         "label:classes": [

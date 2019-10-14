@@ -104,12 +104,12 @@ class TestCases:
                                properties={},
                                label_description='ML Labels',
                                label_type='vector',
-                               label_property=['label'],
+                               label_properties=['label'],
                                label_classes=[LabelClasses(classes=['one', 'two'],
                                                            name='label')],
                                label_task=['classification'],
                                label_method=['manual'],
-                               label_overview=overviews)
+                               label_overviews=overviews)
         label_item.add_source(image_item, assets=['ortho'])
 
         root_cat.add_item(image_item)
@@ -120,14 +120,8 @@ class TestCases:
 
 class SchemaValidator:
     REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
-
-    # TODO: Replace once 0.8 release is out.
-    # TAG = 'v{}'.format(STAC_VERSION)
-    TAG = 'v0.8.0-rc1'
-
-    # TODO: Replace once 0.8 release is out.
-    # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/radiantearth/stac-spec/dev'
+    TAG = 'v{}'.format(STAC_VERSION)
+    SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',
