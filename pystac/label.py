@@ -20,13 +20,13 @@ class LabelItem(Item):
                  properties,
                  label_description,
                  label_type,
-                 label_property=None,
+                 label_properties=None,
                  label_classes=None,
                  stac_extensions=None,
                  href=None,
                  label_task=None,
                  label_method=None,
-                 label_overview=None):
+                 label_overviews=None):
         if stac_extensions is None:
             stac_extensions = []
         if 'label' not in stac_extensions:
@@ -38,18 +38,18 @@ class LabelItem(Item):
                                         properties=properties,
                                         stac_extensions=stac_extensions,
                                         href=href)
-        self.label_property = label_property
+        self.label_properties = label_properties
         self.label_classes = label_classes
         self.label_description = label_description
         self.label_type = label_type
         self.label_task = label_task
         self.label_method = label_method
-        self.label_overview = label_overview
+        self.label_overviews = label_overviews
 
         # Be kind if folks didn't use lists for some properties
-        if self.label_property is not None:
-            if not type(self.label_property) is list:
-                self.label_property = [self.label_property]
+        if self.label_properties is not None:
+            if not type(self.label_properties) is list:
+                self.label_properties = [self.label_properties]
 
         if self.label_method is not None:
             if not type(self.label_method) is list:
@@ -65,8 +65,8 @@ class LabelItem(Item):
                             "{}; was {}".format(LabelType.ALL, self.label_type))
 
         if self.label_type == LabelType.VECTOR:
-            if self.label_property is None:
-                raise STACError('label_property must be set for vector label type')
+            if self.label_properties is None:
+                raise STACError('label_properties must be set for vector label type')
 
         if self.label_task is not None:
             for task in self.label_task:
@@ -82,15 +82,15 @@ class LabelItem(Item):
         d = super(LabelItem, self).to_dict(include_self_link)
         d['properties']['label:description'] = self.label_description
         d['properties']['label:type'] = self.label_type
-        d['properties']['label:property'] = self.label_property
+        d['properties']['label:properties'] = self.label_properties
         if self.label_classes:
             d['properties']['label:classes'] = [classes.to_dict() for classes in self.label_classes]
         if self.label_task is not None:
             d['properties']['label:task'] = self.label_task
         if self.label_method is not None:
             d['properties']['label:method'] = self.label_method
-        if self.label_overview is not None:
-            d['properties']['label:overview'] = [ov.to_dict() for ov in self.label_overview]
+        if self.label_overviews is not None:
+            d['properties']['label:overviews'] = [ov.to_dict() for ov in self.label_overviews]
 
         return d
 
@@ -126,12 +126,12 @@ class LabelItem(Item):
                            properties=deepcopy(self.properties),
                            label_description=self.label_description,
                            label_type=self.label_type,
-                           label_property=self.label_property,
+                           label_properties=self.label_properties,
                            label_classes=copy(self.label_classes),
                            stac_extensions=copy(self.stac_extensions),
                            label_task=self.label_task,
                            label_method=self.label_method,
-                           label_overview=deepcopy(self.label_overview))
+                           label_overviews=deepcopy(self.label_overviews))
         for link in self.links:
             clone.add_link(link.clone())
 
@@ -143,7 +143,7 @@ class LabelItem(Item):
         item = Item.from_dict(d)
         props = item.properties
 
-        label_property = props.get('label:property')
+        label_properties = props.get('label:properties')
         label_classes = props.get('label:classes')
         if label_classes is not None:
             label_classes = [LabelClasses.from_dict(classes) for classes in label_classes]
@@ -151,13 +151,13 @@ class LabelItem(Item):
         label_type = props['label:type']
         label_task = props.get('label:task')
         label_method = props.get('label:method')
-        label_overview = props.get('label:overview')
-        if label_overview is not None:
-            if type(label_overview) is list:
-                label_overview = [LabelOverview.from_dict(ov) for ov in label_overview]
+        label_overviews = props.get('label:overviews')
+        if label_overviews is not None:
+            if type(label_overviews) is list:
+                label_overviews = [LabelOverview.from_dict(ov) for ov in label_overviews]
             else:
                 # Read STAC with mistaken single overview object (should be list)
-                label_overview = LabelOverview.from_dict(label_overview)
+                label_overviews = LabelOverview.from_dict(label_overviews)
 
         li = LabelItem(id=item.id,
                        geometry=item.geometry,
@@ -166,12 +166,12 @@ class LabelItem(Item):
                        properties=item.properties,
                        label_description=label_description,
                        label_type=label_type,
-                       label_property=label_property,
+                       label_properties=label_properties,
                        label_classes=label_classes,
                        stac_extensions=item.stac_extensions,
                        label_task=label_task,
                        label_method=label_method,
-                       label_overview=label_overview)
+                       label_overviews=label_overviews)
 
         for link in item.links:
             li.add_link(link)
