@@ -104,12 +104,12 @@ class TestCases:
                                properties={},
                                label_description='ML Labels',
                                label_type='vector',
-                               label_property=['label'],
+                               label_properties=['label'],
                                label_classes=[LabelClasses(classes=['one', 'two'],
                                                            name='label')],
                                label_task=['classification'],
                                label_method=['manual'],
-                               label_overview=overviews)
+                               label_overviews=overviews)
         label_item.add_source(image_item, assets=['ortho'])
 
         root_cat.add_item(image_item)

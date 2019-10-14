@@ -314,7 +314,7 @@ class FullCopyTest(unittest.TestCase):
                                    properties={},
                                    label_description='labels',
                                    label_type='vector',
-                                   label_property='label',
+                                   label_properties='label',
                                    label_classes=[LabelClasses(classes=['one', 'two'],
                                                                name='label')],
                                    label_task='classification')

@@ -22,7 +22,7 @@
         "label:task": [
             "detection"
         ],
-        "label:property": [
+        "label:properties": [
             "label"
         ]
     },
