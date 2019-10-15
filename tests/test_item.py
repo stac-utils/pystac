@@ -16,7 +16,7 @@ class ItemTest(unittest.TestCase):
         with open(m) as f:
             item_dict = json.load(f)['features'][0]
         
-        self.assertTrue(test_to_from_dict(Item, item_dict))
+        test_to_from_dict(self, Item, item_dict)
         item = Item.from_dict(item_dict)
         self.assertEqual(item.get_self_href(), 'http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json')
 
