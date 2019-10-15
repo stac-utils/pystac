@@ -1,5 +1,5 @@
 import os
-from copy import copy
+from copy import (copy, deepcopy)
 from urllib.parse import urlparse
 
 from pystac import STACError
@@ -127,7 +127,7 @@ class Link:
             for k, v in self.properties.items():
                 d[k] = v
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         return Link(rel=self.rel,

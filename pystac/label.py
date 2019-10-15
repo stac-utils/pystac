@@ -92,7 +92,7 @@ class LabelItem(Item):
         if self.label_overviews is not None:
             d['properties']['label:overviews'] = [ov.to_dict() for ov in self.label_overviews]
 
-        return d
+        return deepcopy(d)
 
     def add_source(self, source_item, title=None, assets=None):
         properties = None

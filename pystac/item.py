@@ -74,7 +74,7 @@ class Item(STACObject):
 
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = self.datetime.isoformat()
+        self.properties['datetime'] = '{}Z'.format(self.datetime.replace(microsecond=0, tzinfo=None))
 
         d = {
             'type': 'Feature',
@@ -93,7 +93,7 @@ class Item(STACObject):
         if self.collection:
             d['collection'] = self.collection
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         clone = Item(id=self.id,
@@ -223,7 +223,7 @@ class Asset:
             for k, v in self.properties.items():
                 d[k] = v
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         return Asset(href=self.href,

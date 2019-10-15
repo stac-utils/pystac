@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from datetime import timezone
 import dateutil.parser
-from copy import copy
+from copy import (copy, deepcopy)
 import json
 
 from pystac import STACError, STAC_IO
@@ -62,7 +62,7 @@ class Collection(Catalog):
         if self.summaries is not None:
             d['summaries'] = self.summaries
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         clone = Collection(id=self.id,
@@ -139,10 +139,12 @@ class Extent:
         self.temporal = temporal
 
     def to_dict(self):
-        return {
+        d = {
             'spatial': self.spatial.to_dict(),
             'temporal': self.temporal.to_dict()
         }
+
+        return deepcopy(d)
 
     def clone(self):
         return Extent(spatial=copy(self.spatial),
@@ -159,7 +161,8 @@ class SpatialExtent:
         self.bboxes = bboxes
 
     def to_dict(self):
-        return { 'bbox' : self.bboxes }
+        d = { 'bbox' : self.bboxes }
+        return deepcopy(d)
 
     def clone(self):
         return SpatialExtent(self.bboxes)
@@ -214,7 +217,8 @@ class TemporalExtent:
 
             encoded_intervals.append([start, end])
 
-        return { 'interval': encoded_intervals }
+        d = {'interval': encoded_intervals}
+        return deepcopy(d)
 
     def clone(self):
         return TemporalExtent(intervals=copy(self.intervals))
@@ -256,7 +260,7 @@ class Provider:
         if self.url is not None:
             d['url'] = self.url
 
-        return d
+        return deepcopy(d)
 
     @staticmethod
     def from_dict(d):
