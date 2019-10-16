@@ -1,4 +1,6 @@
-from pystac.item import Item, Asset
+from copy import deepcopy
+
+from pystac.item import (Item, Asset)
 from pystac import STACError
 
 
@@ -55,10 +57,13 @@ class EOItem(Item):
         eo_params = {}
         for eof in EOItem.EO_FIELDS:
             if eo_key(eof) in item.properties.keys():
-                eo_params[eof] = item.properties[eo_key(eof)]
+                eo_params[eof] = item.properties.pop(eo_key(eof))
             elif eof in ('gsd', 'platform', 'instrument', 'bands'):
                 raise STACError(
                     "Missing required field '{}' in properties".format(eo_key(eof)))
+
+        if not any(item.properties):
+            item.properties = None
 
         e = cls(item.id, item.geometry, item.bbox, item.datetime,
                 item.properties, stac_extensions=item.stac_extensions,
@@ -90,14 +95,26 @@ class EOItem(Item):
 
     def clone(self):
         c = super(EOItem, self).clone()
+        self.add_eo_fields_to_dict(c.properties)
         return EOItem.from_item(c)
 
     def to_dict(self):
         d = super().to_dict()
+        if 'properties' not in d.keys():
+            d['properties'] = {}
+        self.add_eo_fields_to_dict(d['properties'])
+        return deepcopy(d)
+
+    def add_eo_fields_to_dict(self, d):
         for eof in EOItem.EO_FIELDS:
-            if eo_key(eof) in d['properties'].keys():
-                d[eo_key(eof)] = d['properties'][eo_key(eof)]
-        return d
+            try:
+                a = getattr(self, eof)
+                if a is not None:
+                    d[eo_key(eof)] = a
+                    if eof == 'bands':
+                        d['eo:bands'] = [b.to_dict() for b in d['eo:bands']]
+            except AttributeError:
+                pass
 
 
 class EOAsset(Asset):
@@ -138,19 +155,15 @@ class Band:
                  common_name=None,
                  gsd=None,
                  center_wavelength=None,
-                 full_width_max=None,
+                 full_width_half_max=None,
                  description=None,
                  accuracy=None):
         self.name = name
         self.common_name = common_name
         self.gsd = gsd
         self.center_wavelength = center_wavelength
-        self.full_width_max = full_width_max
-        # neither of these are in the examples so autogenerating
-        # description
+        self.full_width_half_max = full_width_half_max
         self.description = description
-        if not self.description:
-            self.description = band_desc(self.common_name)
         self.accuracy = accuracy
 
     def __repr__(self):
@@ -162,12 +175,12 @@ class Band:
         common_name = d.get('common_name', None)
         gsd = d.get('gsd', None)
         center_wavelength = d.get('center_wavelength', None)
-        full_width_max = d.get('full_width_max', None)
+        full_width_half_max = d.get('full_width_half_max', None)
         description = d.get('description', None)
         accuracy = d.get('accuracy', None)
 
         return Band(name, common_name, gsd, center_wavelength,
-                    full_width_max, description, accuracy)
+                    full_width_half_max, description, accuracy)
 
     def to_dict(self):
         d = {}
@@ -179,13 +192,13 @@ class Band:
             d['gsd'] = self.gsd
         if self.center_wavelength:
             d['center_wavelength'] = self.center_wavelength
-        if self.full_width_max:
-            d['full_width_max'] = self.full_width_max
+        if self.full_width_half_max:
+            d['full_width_half_max'] = self.full_width_half_max
         if self.description:
             d['description'] = self.description
         if self.accuracy:
             d['accuracy'] = self.accuracy
-        return d
+        return deepcopy(d)
 
 
 def eo_key(key):
