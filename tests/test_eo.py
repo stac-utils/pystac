@@ -81,13 +81,72 @@ class EOItemTest(unittest.TestCase):
 
 
 class EOAssetTest(unittest.TestCase):
-    def test_eo_asset(self):
-        pass
+    def setUp(self):
+        self.EO_ITEM_URI = TestCases.get_path(
+            'data-files/eo/eo-landsat-example.json')
+        self.EO_ASSET_URI = TestCases.get_path('data-files/eo/eo-asset.json')
+        self.ASSET_URI = TestCases.get_path('data-files/eo/asset.json')
+        with open(self.EO_ASSET_URI) as f:
+            self.EO_ASSET_DICT = json.load(f)
+        with open(self.ASSET_URI) as f:
+            self.ASSET_DICT = json.load(f)
+        self.EO_ASSET_2_URI = TestCases.get_path(
+            'data-files/eo/eo-asset-2.json')
+        with open(self.EO_ASSET_2_URI) as f:
+            self.EO_ASSET_2_DICT = json.load(f)
+
+    def test_to_from_dict(self):
+        test_to_from_dict(self, EOAsset, self.EO_ASSET_DICT)
+        test_to_from_dict(self, EOAsset, self.EO_ASSET_2_DICT)
+
+    def test_from_asset(self):
+        a1 = Asset.from_dict(self.ASSET_DICT)
+        with self.assertRaises(STACError):
+            EOAsset.from_asset(a1)
+
+        a2 = Asset.from_dict(self.EO_ASSET_DICT)
+        eoa = EOAsset.from_asset(a2)
+        self.assertIsNone(eoa.properties)
+        self.assertListEqual(eoa.bands, [0])
+
+    def test_clone(self):
+        eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
+        eoa_clone = eoa.clone()
+        compare_eo_assets(self, eoa, eoa_clone)
+
+        eoa2 = EOAsset.from_dict(self.EO_ASSET_2_DICT)
+        self.assertDictEqual(eoa2.properties, {"extra property": "extra"})
+
+    def test_get_band_objs(self):
+        eoi = EOItem.from_file(self.EO_ITEM_URI)
+        eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
+        eoi.add_asset('test-asset', eoa)
+        self.assertEqual(eoa.item, eoi)
+        bd = {
+            "name": "B1",
+            "common_name": "coastal",
+            "gsd": 30,
+            "center_wavelength": 0.44,
+            "full_width_half_max": 0.02
+        }
+        b1 = Band.from_dict(bd)
+        eoa_bands = eoa.get_band_objs()
+        compare_bands(self, b1, eoa_bands[0])
 
 
 class BandTest(unittest.TestCase):
-    def test_band(self):
-        pass
+    def setUp(self):
+        self.EO_ITEM_URI = TestCases.get_path(
+            'data-files/eo/eo-landsat-example.json')
+        with open(self.EO_ITEM_URI) as f:
+            self.EO_BANDS_LIST = json.load(f)['properties']['eo:bands']
+
+    def test_constructor(self):
+        self.assertIsInstance(Band(), Band)
+
+    def test_to_from_dict(self):
+        for b in self.EO_BANDS_LIST:
+            test_to_from_dict(self, Band, b)
 
 
 class EOUtilsTest(unittest.TestCase):

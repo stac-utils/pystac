@@ -1,15 +1,15 @@
-import os
-
-from copy import (copy, deepcopy)
-import dateutil.parser
 import json
+import os
+from copy import copy, deepcopy
 
-from pystac import STAC_VERSION
-from pystac.stac_object import STACObject
+import dateutil.parser
+
+from pystac import (STAC_VERSION, STACError)
 from pystac.io import STAC_IO
-from pystac.link import (Link, LinkType)
-from pystac.utils import (
-    make_relative_href, make_absolute_href, is_absolute_href)
+from pystac.link import Link, LinkType
+from pystac.stac_object import STACObject
+from pystac.utils import (is_absolute_href, make_absolute_href,
+                          make_relative_href)
 
 
 class Item(STACObject):

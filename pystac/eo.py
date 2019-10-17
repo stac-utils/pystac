@@ -130,12 +130,26 @@ class EOAsset(Asset):
     @classmethod
     def from_asset(cls, asset):
         a = asset.clone()
-        bands = a.properties.get('eo:bands')
-        return cls(a.href, bands, a.title, a.media_type, a.properties)
+        if not a.properties or 'eo:bands' not in a.properties.keys():
+            raise STACError('Missing eo:bands property in asset')
+        bands = a.properties.pop('eo:bands')
+        properties = None
+        if any(a.properties):
+            properties = a.properties
+        return cls(a.href, bands, a.title, a.media_type, properties)
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['eo:bands'] = self.bands
+
+        return d
 
     def clone(self):
-        c = super().clone()
-        return EOAsset.from_asset(c)
+        return EOAsset(href=self.href,
+                       title=self.title,
+                       media_type=self.media_type,
+                       bands=self.bands,
+                       properties=self.properties)
 
     def __repr__(self):
         return '<EOAsset href={}>'.format(self.href)
