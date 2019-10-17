@@ -25,10 +25,14 @@ class EOItem(Item):
                  azimuth=None,
                  sun_azimuth=None,
                  sun_elevation=None,
-                 stac_extensions=['eo'],
+                 stac_extensions=None,
                  href=None,
                  collection=None,
                  assets={}):
+        if stac_extensions is None:
+            stac_extensions = []
+        if 'eo' not in stac_extensions:
+            stac_extensions.append('eo')
         super().__init__(id, geometry, bbox, datetime,
                          properties, stac_extensions, href,
                          collection)
@@ -43,6 +47,7 @@ class EOItem(Item):
         self.azimuth = azimuth
         self.sun_azimuth = sun_azimuth
         self.sun_elevation = sun_elevation
+         
 
     def __repr__(self):
         return '<EOItem id={}>'.format(self.id)
