@@ -1,5 +1,6 @@
 import os
 import json
+from copy import (deepcopy, copy)
 
 from pystac import STACError
 from pystac import STAC_VERSION
@@ -135,7 +136,7 @@ class Catalog(STACObject):
         if self.title is not None:
             d['title'] = self.title
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         clone = Catalog(id=self.id,

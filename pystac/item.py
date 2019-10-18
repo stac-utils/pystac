@@ -18,13 +18,15 @@ class Item(STACObject):
                  datetime,
                  properties,
                  stac_extensions=None,
-                 href=None):
+                 href=None,
+                 collection=None):
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
         self.datetime = datetime
         self.properties = properties
         self.stac_extensions = stac_extensions
+        self.collection = collection
 
         self.links = []
         self.assets = {}
@@ -62,6 +64,7 @@ class Item(STACObject):
                 link_type = LinkType.ABSOLUTE
         self.remove_links('collection')
         self.add_link(Link.collection(collection, link_type=link_type))
+        self.collection = collection.id
         return self
 
     def to_dict(self, include_self_link=True):
@@ -86,8 +89,11 @@ class Item(STACObject):
 
         if self.stac_extensions is not None:
             d['stac_extensions'] = self.stac_extensions
+        
+        if self.collection:
+            d['collection'] = self.collection
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         clone = Item(id=self.id,
@@ -130,6 +136,9 @@ class Item(STACObject):
         bbox = d['bbox']
         properties = d['properties']
         stac_extensions = d.get('stac_extensions')
+        collection = None
+        if 'collection' in d.keys():
+            collection = d['collection']
 
         datetime = properties.get('datetime')
         if datetime is None:
@@ -141,7 +150,8 @@ class Item(STACObject):
                     bbox=bbox,
                     datetime=datetime,
                     properties=properties,
-                    stac_extensions=stac_extensions)
+                    stac_extensions=stac_extensions,
+                    collection=collection)
 
         for l in d['links']:
             item.add_link(Link.from_dict(l))
@@ -178,7 +188,7 @@ class Asset:
         self.href = href
         self.title = title
         self.media_type = media_type
-        self.properties = None
+        self.properties = properties
 
         # The Item which owns this Asset.
         self.item = None
@@ -210,10 +220,10 @@ class Asset:
             d['title'] = self.title
 
         if self.properties is not None:
-            for k in properties:
-                d[k] = properties[k]
+            for k, v in self.properties.items():
+                d[k] = v
 
-        return d
+        return deepcopy(d)
 
     def clone(self):
         return Asset(href=self.href,
@@ -229,7 +239,6 @@ class Asset:
         href = d.pop('href')
         media_type = d.pop('type', None)
         title = d.pop('title', None)
-
         properties = None
         if any(d):
             properties = d
