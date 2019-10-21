@@ -10,6 +10,7 @@ from pystac.catalog import Catalog
 from pystac.link import (Link, LinkType)
 from pystac.io import STAC_IO
 from pystac.utils import (make_absolute_href, is_absolute_href)
+from pystac.eo import EOItem, eo_key
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
@@ -44,7 +45,65 @@ class Collection(Catalog):
     def add_item(self, item, title=None):
         super(Collection, self).add_item(item, title)
         item.set_collection(self)
+        for extension in item.stac_extensions:
+            if extension not in self.stac_extensions:
+                self.stac_extensions.append(extension)
+            if extension == 'eo':
+                self.merge_with_eo_item(item)
 
+    def merge_with_eo_item(self, item):
+        for field in EOItem.EO_FIELDS:
+            attr = getattr(item, field)
+            if field == 'bands':
+                attr = [b.to_dict() for b in attr]
+            eok = eo_key(field)
+            if attr is None:
+                if eok in self.properties.keys():
+                    # when you add an EOItem to a collection, 
+                    # if the EOItem doesn't have a specific field
+                    # it inherets that field from the collection
+                    # it is joining
+                    # should this happen?
+                    setattr(item, field, self.properties[eok])
+            else:
+                if eok in self.properties.keys():
+                    if self.properties[eok] != attr:
+                        self.properties[eok] = None
+                else:
+                    self.properties[eok] = attr
+    
+    def get_eo_attribute(self, eo_attr):
+        # not sure if this will be more useful using the
+        # 'eo' prefix or not so 
+        if not eo_attr.startswith('eo:'):
+            eo_attr = 'eo:{}'.format(eo_attr)
+        if eo_attr in self.properties.keys():
+            if self.properties[eo_attr] is None:
+                eoas = []
+                for item in self.get_items():
+                    if isinstance(item, EOItem):
+                        attr = getattr(item, eo_attr.replace('eo:', ''))
+                        if eo_attr == 'eo:bands':
+                            attr = [b.to_dict() for b in attr]
+                        eoas.append(attr)
+                return eoas
+            else:
+                return self.properties[eo_attr]
+        else:
+            return None
+    
+    def eo_attr_uniform(self, eo_attr):
+        eoa = self.get_eo_attribute(eo_attr)
+        if eoa is None:
+            return None
+        elif isinstance(eoa, list):
+            if 'bands' in eo_attr:
+                if isinstance(eoa[0], dict):
+                    return True
+            return False
+        else:
+            return True
+        
     def to_dict(self, include_self_link=True):
         d = super(Collection, self).to_dict(include_self_link)
         d['extent'] = self.extent.to_dict()
