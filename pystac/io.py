@@ -22,7 +22,20 @@ class STAC_IO:
         else:
             return Catalog.from_dict(d)
 
+    """Users of PySTAC can replace the read_text_method in order
+    to expand the ability of PySTAC to read different file systems.
+    For example, a client of the library might replace this class
+    member in it's own __init__.py with a method that can read from
+    cloud storage.
+    """
     read_text_method = default_read_text_method
+
+    """Users of PySTAC can replace the writte_text_method in order
+    to expand the ability of PySTAC to write to different file systems.
+    For example, a client of the library might replace this class
+    member in it's own __init__.py with a method that can read from
+    cloud storage.
+    """
     write_text_method = default_write_text_method
 
     # Replaced in __init__ to account for extension objects.
