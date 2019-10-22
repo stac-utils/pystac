@@ -14,14 +14,6 @@ class STAC_IO:
         with open(uri, 'w') as f:
             f.write(txt)
 
-    def default_stac_object_from_dict_method(d):
-        if 'type' in d:
-            return Item.from_dict(d)
-        elif 'extent' in d:
-            return Collection.from_dict(d)
-        else:
-            return Catalog.from_dict(d)
-
     """Users of PySTAC can replace the read_text_method in order
     to expand the ability of PySTAC to read different file systems.
     For example, a client of the library might replace this class
@@ -39,7 +31,7 @@ class STAC_IO:
     write_text_method = default_write_text_method
 
     # Replaced in __init__ to account for extension objects.
-    stac_object_from_dict = default_stac_object_from_dict_method
+    stac_object_from_dict = None
 
     # This is set in __init__.py
     STAC_OBJECT_CLASSES = None
