@@ -2,9 +2,11 @@ import json
 import os
 import unittest
 
+from jsonschema import ValidationError
+
 from pystac import *
-from pystac.eo import (Band, EOAsset, EOItem, band_desc, band_range, eo_key)
-from tests.utils import (TestCases, test_to_from_dict)
+from pystac.eo import Band, EOAsset, EOItem, band_desc, band_range, eo_key
+from tests.utils import SchemaValidator, TestCases, test_to_from_dict
 
 
 class EOItemTest(unittest.TestCase):
@@ -78,7 +80,15 @@ class EOItemTest(unittest.TestCase):
         comp_d = {k: v for k, v in deepcopy(
             self.eo_dict['properties']).items() if k.startswith('eo:')}
         self.assertDictEqual(d, comp_d)
+    
+    def test_validate_eo(self):
+        sv = SchemaValidator()
+        self.assertIsNone(sv.validate_dict(self.eo_dict, EOItem))
 
+        with open(self.URI_2) as f:
+            eo_dict_2 = json.load(f)
+        with self.assertRaises(ValidationError):
+            sv.validate_dict(eo_dict_2, EOItem)
 
 class EOAssetTest(unittest.TestCase):
     def setUp(self):

@@ -122,13 +122,15 @@ class TestCases:
 class SchemaValidator:
     REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
     TAG = 'v{}'.format(STAC_VERSION)
-    SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
+    # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
+    SCHEMA_BASE_URI = 'https://raw.githubusercontent.com/simonkassel/stac-spec/sk/refactor-extension-schemas'
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',
         Collection: 'collection-spec/json-schema/collection.json',
         Item: 'item-spec/json-schema/item.json',
-        LabelItem: 'extensions/label/schema.json',
+        LabelItem: 'extensions/label/json-schema/stac-label-item-schema.json',
+        EOItem: 'extensions/eo/json-schema/stac-extension-eo.json'
     }
 
     for c in schemas:
@@ -146,7 +148,7 @@ class SchemaValidator:
         if schema is None:
             schema = json.loads(STAC_IO.read_text(schema_uri))
             self.schema_cache[obj_type] = schema
-
+            
         resolver = RefResolver(base_uri=schema_uri,
                                referrer=schema)
 
