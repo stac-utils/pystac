@@ -131,8 +131,8 @@ class SchemaValidator:
         Catalog: 'catalog-spec/json-schema/catalog.json',
         Collection: 'collection-spec/json-schema/collection.json',
         Item: 'item-spec/json-schema/item.json',
-        LabelItem: 'extensions/label/json-schema/stac-label-item-schema.json',
-        EOItem: 'extensions/eo/json-schema/stac-extension-eo.json'
+        LabelItem: 'extensions/label/json-schema/label-item.json',
+        EOItem: 'extensions/eo/json-schema/eo-item.json'
     }
 
     for c in schemas:
