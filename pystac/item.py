@@ -189,8 +189,7 @@ class Asset:
         GEOJSON = 'application/geo+json'
         GEOPACKAGE = 'application/geopackage+sqlite3'
         HDF5 = 'application/x-hdf5'  # Hierarchical Data Format version 5
-        # Hierarchical Data Format versions 4 and earlier.
-        HDF = 'application/x-hdf'
+        HDF = 'application/x-hdf' # Hierarchical Data Format versions 4 and earlier.
 
     def __init__(self, href, title=None, media_type=None, properties=None):
         self.href = href
@@ -228,8 +227,8 @@ class Asset:
             d['title'] = self.title
 
         if self.properties is not None:
-            for k in self.properties:
-                d[k] = self.properties[k]
+            for k, v in self.properties.items():
+                d[k] = v
 
         return deepcopy(d)
 
@@ -256,9 +255,3 @@ class Asset:
                      media_type=media_type,
                      title=title,
                      properties=properties)
-
-    def is_eo(self):
-        if self.properties:
-            if self.properties.get('eo:bands', None):
-                return True
-        return False

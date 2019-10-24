@@ -78,7 +78,7 @@ class EOItem(Item):
         e.assets = item.assets
 
         for k, v in item.assets.items():
-            if v.is_eo():
+            if is_eo(v):
                 e.assets[k] = EOAsset.from_asset(v)
             e.assets[k].set_owner(e)
 
@@ -88,7 +88,7 @@ class EOItem(Item):
         return {k: v for k, v in self.assets.items() if isinstance(v, EOAsset)}
 
     def add_asset(self, key, asset):
-        if asset.is_eo() and not isinstance(asset, EOAsset):
+        if is_eo(asset) and not isinstance(asset, EOAsset):
             asset = EOAsset.from_asset(asset)
         asset.set_owner(self)
         self.assets[key] = asset
@@ -103,8 +103,8 @@ class EOItem(Item):
         self.add_eo_fields_to_dict(c.properties)
         return EOItem.from_item(c)
 
-    def to_dict(self):
-        d = super().to_dict()
+    def to_dict(self, include_self_link=True):
+        d = super().to_dict(include_self_link=include_self_link)
         if 'properties' not in d.keys():
             d['properties'] = {}
         self.add_eo_fields_to_dict(d['properties'])
@@ -251,3 +251,10 @@ def band_desc(common_name):
     if isinstance(r, str):
         return "Common name: {}".format(common_name)
     return "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
+
+
+def is_eo(obj):
+    if obj.properties:
+        if obj.properties.get('eo:bands', None):
+            return True
+    return False

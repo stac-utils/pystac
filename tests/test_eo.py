@@ -2,6 +2,7 @@ import json
 import os
 import unittest
 from jsonschema import ValidationError
+from tempfile import TemporaryDirectory
 
 from pystac import *
 from pystac.eo import (Band, EOAsset, EOItem, band_desc, band_range, eo_key)
@@ -88,6 +89,20 @@ class EOItemTest(unittest.TestCase):
             eo_dict_2 = json.load(f)
         with self.assertRaises(ValidationError):
             sv.validate_dict(eo_dict_2, EOItem)
+
+        with TemporaryDirectory() as tmp_dir:
+            cat_dir = os.path.join(tmp_dir, 'catalog')
+            catalog = TestCases.test_case_1()
+            eo_item = EOItem.from_dict(self.eo_dict)
+            catalog.add_item(eo_item)
+            catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+
+            cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
+            eo_item_read = cat_read.get_item("LC08_L1TP_107018_20181001_20181001_01_RT")
+            sv = SchemaValidator()
+            sv.validate_object(eo_item_read)
+            sv.validate_dict(eo_item_read.to_dict(), EOItem)
+            
 
 class EOAssetTest(unittest.TestCase):
     def setUp(self):
