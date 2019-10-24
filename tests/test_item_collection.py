@@ -3,16 +3,25 @@ from os.path import basename, join, isfile
 import unittest
 from tempfile import TemporaryDirectory
 import json
+from jsonschema import ValidationError
 
 from pystac import *
 from pystac.utils import is_absolute_href
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, SchemaValidator)
 
 class ItemCollectionTest(unittest.TestCase):
+    def setUp(self):
+        self.IC_MINIMAL_URI = TestCases.get_path('data-files/itemcollections/minimal-itemcollection.json')
+        with open(self.IC_MINIMAL_URI) as f:
+            self.IC_MINIMAL_DICT = json.load(f)
+        
+        self.IC_URI = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
+        with open(self.IC_URI) as f:
+            self.IC_DICT = json.load(f)
+
     def test_minimal_item_collection(self):
          with TemporaryDirectory() as tmp_dir:
-            m = TestCases.get_path('data-files/itemcollections/minimal-itemcollection.json')
-            ic = ItemCollection.from_file(m)
+            ic = ItemCollection.from_file(self.IC_MINIMAL_URI)
             self.assertIsInstance(ic, ItemCollection)
             self.assertEqual(len(ic.links), 1)
             self.assertEqual(ic.get_self_href(), './{}'.format(ItemCollection.DEFAULT_FILE_NAME))
@@ -20,15 +29,17 @@ class ItemCollectionTest(unittest.TestCase):
 
             ic.links = [Link(l.rel, join(tmp_dir, basename(l.target))) for l in ic.links]
             ic.save()
-            self.assertTrue(isfile(join(tmp_dir, ItemCollection.DEFAULT_FILE_NAME)))
+            tmp_uri = join(tmp_dir, ItemCollection.DEFAULT_FILE_NAME)
+            self.assertTrue(isfile(tmp_uri))
+            with open(tmp_uri) as f:
+                ic_val_dict = json.load(f)
+            SchemaValidator().validate_dict(ic_val_dict, ItemCollection)
 
     def test_item_collection_features(self):
-        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
-        ic = ItemCollection.from_file(m)
+        ic = ItemCollection.from_file(self.IC_URI)
         self.assertIsInstance(ic, ItemCollection)
 
-        with open(m) as f:
-            ic_json = json.load(f)
+        ic_json = deepcopy(self.IC_DICT)
         
         self.assertEqual(ic_json.keys(), ic.to_dict().keys())
         self.assertEqual(ic_json['links'], ic.to_dict(include_self_link=True)['links'])
@@ -48,3 +59,15 @@ class ItemCollectionTest(unittest.TestCase):
         self.assertGreater(len(ic_empty.links), 0)
         for link in ic_empty.links:
             self.assertIsInstance(link, Link)
+    
+    def test_validate_item_collection(self):
+        sv = SchemaValidator()
+        ic_1 = ItemCollection([])
+        sv.validate_object(ic_1)
+        sv.validate_dict(self.IC_DICT, ItemCollection)
+        ic_2 = ItemCollection.from_file(self.IC_URI)
+        ic_val_dict = ic_2.to_dict()
+        ic_val_dict['features'] = 'not an array'
+        with self.assertRaises(ValidationError):
+            sv.validate_dict(ic_val_dict, ItemCollection)            
+            

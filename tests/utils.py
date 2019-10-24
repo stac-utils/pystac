@@ -131,8 +131,10 @@ class SchemaValidator:
         Catalog: 'catalog-spec/json-schema/catalog.json',
         Collection: 'collection-spec/json-schema/collection.json',
         Item: 'item-spec/json-schema/item.json',
+        ItemCollection: 'item-spec/json-schema/itemcollection.json',
         LabelItem: 'extensions/label/json-schema/label-item.json',
-        EOItem: 'extensions/eo/json-schema/eo-item.json'
+        EOItem: 'extensions/eo/json-schema/eo-item.json',
+        SingleFileSTAC: 'extensions/single-file-stac/json-schema/single-file.json'
     }
 
     for c in schemas:
@@ -163,7 +165,7 @@ class SchemaValidator:
         schema, resolver = self.get_schema(obj_type)
 
         try:
-            return jsonschema.validate(instance=d, schema=schema, resolver=resolver)
+            return jsonschema.validate(instance=d, schema=schema, resolver=resolver)            
         except jsonschema.exceptions.ValidationError as e:
             print('Validation error in {}'.format(obj_type))
             raise e

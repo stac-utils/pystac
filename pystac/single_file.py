@@ -7,7 +7,7 @@ from pystac.item import Item
 from pystac.item_collection import ItemCollection
 
 
-class SingleFile(ItemCollection):
+class SingleFileSTAC(ItemCollection):
     def __init__(self, type, features, collections, search=None):
         self.type = type
         self.features = features
@@ -20,7 +20,7 @@ class SingleFile(ItemCollection):
     @staticmethod
     def from_file(uri):
         d = json.loads(STAC_IO.read_text(uri))
-        c = SingleFile.from_dict(d)
+        c = SingleFileSTAC.from_dict(d)
         return c
 
     @staticmethod
@@ -32,7 +32,7 @@ class SingleFile(ItemCollection):
         if 'search' in d.keys():
             sd = d['search']
             search_obj = Search(sd['endpoint'], sd['parameters'])
-        return SingleFile(type, features, collections, search_obj)
+        return SingleFileSTAC(type, features, collections, search_obj)
 
     def to_dict(self):
         d = {}
