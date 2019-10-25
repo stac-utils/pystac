@@ -4,13 +4,10 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 
-from pystac.version import (__version__, STAC_VERSION)
-
-
 class STACError(Exception):
     pass
 
-
+from pystac.version import (__version__, STAC_VERSION)
 from pystac.io import STAC_IO
 from pystac.stac_object import STACObject
 from pystac.link import (Link, LinkType)

@@ -12,7 +12,6 @@ install:
 
 script:
   - .travis/style_checks
-  - mypy -m pystac
   - python -m unittest discover tests/
 
 deploy:
