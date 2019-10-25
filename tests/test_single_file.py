@@ -56,7 +56,7 @@ class SingleFileSTACTest(unittest.TestCase):
                 val_dict = json.load(f)
         sv.validate_dict(val_dict, SingleFileSTAC)
 
-        val_dict['properties']['endpoint'] = 1
+        val_dict['search']['endpoint'] = 1
         with self.assertRaises(ValidationError):
             sv.validate_dict(val_dict, SingleFileSTAC)
 
