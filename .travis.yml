@@ -11,6 +11,11 @@ install:
   - pip install -r requirements-dev.txt
 
 script:
+  - flake8 pystac
+  - flake8 tests
+  - yapf -dpr pystac
+  - yapf -dpr tests
+  - mypy -m pystac
   - python -m unittest discover tests/
 
 deploy:

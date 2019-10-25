@@ -3,3 +3,7 @@ pylint==1.9.1
 Sphinx==1.8.0
 sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
+sphinxcontrib-napoleon==0.7
+mypy==0.740
+flake8==3.7.*
+yapf==0.28.*

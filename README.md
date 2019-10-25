@@ -49,11 +49,51 @@ To ensure development libraries are installed, install everything in `requiremen
 > pip install -r requirements-dev.txt
 ```
 
+### Unit Tests
+
 Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 
 ```
 > python -m unittest discover tests
 ```
+
+### Code quality checks
+
+PySTAC uses [flake8](), [yapf](), and [mypy]() for code formatting and type checking.
+
+To run the style checks:
+
+```
+> flake8 pystac
+> flake8 tests
+```
+
+To format code:
+
+```
+> yapf -ipr pystac
+> yapf -ipr tests
+```
+
+To run the mypy static checker:
+
+```
+> mypy -m pystac
+```
+
+### Documentation
+
+To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirementts-dev.txt`), and use the Makefile in the docs folder:
+
+```
+> cd docs
+> make html
+> make livehtml
+```
+
+Use 'make' without arguments to see a list of available commands.
+
+
 
 ## Running the tutorials
 
