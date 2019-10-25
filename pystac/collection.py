@@ -1,15 +1,14 @@
 import json
 from datetime import datetime
-from datetime import timezone
 import dateutil.parser
 from copy import (copy, deepcopy)
-import json
 
-from pystac import STACError, STAC_IO
+from pystac import STACError
 from pystac.catalog import Catalog
 from pystac.link import (Link, LinkType)
 from pystac.io import STAC_IO
 from pystac.utils import (make_absolute_href, is_absolute_href)
+
 
 class Collection(Catalog):
     DEFAULT_FILE_NAME = "collection.json"
@@ -70,8 +69,8 @@ class Collection(Catalog):
                            extent=self.extent.clone(),
                            title=self.title,
                            license=self.license,
-                           stac_extensions = self.stac_extensions,
-                           keywords = self.keywords,
+                           stac_extensions=self.stac_extensions,
+                           keywords=self.keywords,
                            version=self.version,
                            providers=self.providers,
                            properties=self.properties,
@@ -118,8 +117,8 @@ class Collection(Catalog):
                 # If a root link was included, we want to inheret
                 # whether it was relative or not.
                 if not is_absolute_href(l['href']):
-                    collection.get_single_link('root').link_type = LinkType.RELATIVE
-
+                    collection.get_single_link(
+                        'root').link_type = LinkType.RELATIVE
 
         return collection
 
@@ -147,8 +146,7 @@ class Extent:
         return deepcopy(d)
 
     def clone(self):
-        return Extent(spatial=copy(self.spatial),
-                      temporal=copy(self.temporal))
+        return Extent(spatial=copy(self.spatial), temporal=copy(self.temporal))
 
     @staticmethod
     def from_dict(d):
@@ -161,7 +159,7 @@ class SpatialExtent:
         self.bboxes = bboxes
 
     def to_dict(self):
-        d = { 'bbox' : self.bboxes }
+        d = {'bbox': self.bboxes}
         return deepcopy(d)
 
     def clone(self):
@@ -176,7 +174,8 @@ class SpatialExtent:
         def process_coords(l, xmin=None, ymin=None, xmax=None, ymax=None):
             for coord in l:
                 if type(coord[0]) is list:
-                    xmin, ymin, xmax, ymax = process_coords(coord, xmin, ymin, xmax, ymax)
+                    xmin, ymin, xmax, ymax = process_coords(
+                        coord, xmin, ymin, xmax, ymax)
                 else:
                     x, y = coord
                     if xmin is None or x < xmin:
@@ -210,10 +209,12 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = '{}Z'.format(i[0].replace(microsecond=0, tzinfo=None).isoformat())
+                start = '{}Z'.format(i[0].replace(microsecond=0,
+                                                  tzinfo=None).isoformat())
 
             if i[1]:
-                end = '{}Z'.format(i[1].replace(microsecond=0, tzinfo=None).isoformat())
+                end = '{}Z'.format(i[1].replace(microsecond=0,
+                                                tzinfo=None).isoformat())
 
             encoded_intervals.append([start, end])
 
@@ -241,7 +242,8 @@ class TemporalExtent:
 
     @staticmethod
     def from_now():
-        return TemporalExtent(intervals=[[datetime.utcnow().replace(microsecond=0), None]])
+        return TemporalExtent(
+            intervals=[[datetime.utcnow().replace(microsecond=0), None]])
 
 
 class Provider:
@@ -252,7 +254,7 @@ class Provider:
         self.url = url
 
     def to_dict(self):
-        d = { 'name': self.name }
+        d = {'name': self.name}
         if self.description is not None:
             d['description'] = self.description
         if self.roles is not None:

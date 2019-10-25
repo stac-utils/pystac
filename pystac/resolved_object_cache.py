@@ -1,5 +1,6 @@
 from collections import ChainMap
-from copy import (copy, deepcopy)
+from copy import copy
+
 
 class ResolvedObjectCache:
     """This class tracks resolved objects tied to root catalogs.
@@ -41,5 +42,7 @@ class ResolvedObjectCache:
 
     @staticmethod
     def merge(first, second):
-        return ResolvedObjectCache(dict(ChainMap(copy(first.ids_to_objects),
-                                                 copy(second.ids_to_objects))))
+        return ResolvedObjectCache(
+            dict(
+                ChainMap(copy(first.ids_to_objects),
+                         copy(second.ids_to_objects))))

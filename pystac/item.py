@@ -148,7 +148,8 @@ class Item(STACObject):
         datetime = properties.get('datetime')
         if datetime is None:
             raise STACError(
-                'Item dict is missing a "datetime" property in the "properties" field')
+                'Item dict is missing a "datetime" property in the "properties" field'
+            )
         datetime = dateutil.parser.parse(datetime)
 
         item = Item(id=id,
@@ -191,7 +192,7 @@ class Asset:
         GEOJSON = 'application/geo+json'
         GEOPACKAGE = 'application/geopackage+sqlite3'
         HDF5 = 'application/x-hdf5'  # Hierarchical Data Format version 5
-        HDF = 'application/x-hdf' # Hierarchical Data Format versions 4 and earlier.
+        HDF = 'application/x-hdf'  # Hierarchical Data Format versions 4 and earlier.
 
     def __init__(self, href, title=None, media_type=None, properties=None):
         self.href = href
@@ -213,14 +214,13 @@ class Asset:
         href is relative)."""
         if not is_absolute_href(self.href):
             if self.item is not None:
-                return make_absolute_href(href, self.owner.get_self_href())
+                return make_absolute_href(self.href,
+                                          self.owner.get_self_href())
 
         return self.href
 
     def to_dict(self):
-        d = {
-            'href': self.href
-        }
+        d = {'href': self.href}
 
         if self.media_type is not None:
             d['type'] = self.media_type

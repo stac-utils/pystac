@@ -5,8 +5,10 @@ from pystac import STACError
 
 
 class EOItem(Item):
-    EO_FIELDS = ['gsd', 'platform', 'instrument', 'bands', 'constellation', 'epsg',
-                 'cloud_cover', 'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation']
+    EO_FIELDS = [
+        'gsd', 'platform', 'instrument', 'bands', 'constellation', 'epsg',
+        'cloud_cover', 'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation'
+    ]
 
     def __init__(self,
                  id,
@@ -33,9 +35,8 @@ class EOItem(Item):
             stac_extensions = []
         if 'eo' not in stac_extensions:
             stac_extensions.append('eo')
-        super().__init__(id, geometry, bbox, datetime,
-                         properties, stac_extensions, href,
-                         collection)
+        super().__init__(id, geometry, bbox, datetime, properties,
+                         stac_extensions, href, collection)
         self.gsd = gsd
         self.platform = platform
         self.instrument = instrument
@@ -47,7 +48,6 @@ class EOItem(Item):
         self.azimuth = azimuth
         self.sun_azimuth = sun_azimuth
         self.sun_elevation = sun_elevation
-         
 
     def __repr__(self):
         return '<EOItem id={}>'.format(self.id)
@@ -65,14 +65,20 @@ class EOItem(Item):
                 eo_params[eof] = item.properties.pop(eo_key(eof))
             elif eof in ('gsd', 'platform', 'instrument', 'bands'):
                 raise STACError(
-                    "Missing required field '{}' in properties".format(eo_key(eof)))
+                    "Missing required field '{}' in properties".format(
+                        eo_key(eof)))
 
         if not any(item.properties):
             item.properties = None
 
-        e = cls(item.id, item.geometry, item.bbox, item.datetime,
-                item.properties, stac_extensions=item.stac_extensions,
-                collection=item.collection, **eo_params)
+        e = cls(item.id,
+                item.geometry,
+                item.bbox,
+                item.datetime,
+                item.properties,
+                stac_extensions=item.stac_extensions,
+                collection=item.collection,
+                **eo_params)
 
         e.links = item.links
         e.assets = item.assets
@@ -123,7 +129,12 @@ class EOItem(Item):
 
 
 class EOAsset(Asset):
-    def __init__(self, href, bands, title=None, media_type=None, properties=None):
+    def __init__(self,
+                 href,
+                 bands,
+                 title=None,
+                 media_type=None,
+                 properties=None):
         super().__init__(href, title, media_type, properties)
         self.bands = bands
 

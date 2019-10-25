@@ -6,13 +6,13 @@ from pystac.utils import make_absolute_href
 
 from tests.utils import (TestCases, SchemaValidator)
 
+
 class STACWritingTest(unittest.TestCase):
     """Tests writing STACs, using JSON Schema validation,
     and ensure that links are correctly set to relative or absolute.
     """
     def setUp(self):
         self.schema_validator = SchemaValidator()
-
 
     def validate_catalog(self, catalog):
         self.schema_validator.validate_object(catalog)
@@ -54,25 +54,25 @@ class STACWritingTest(unittest.TestCase):
 
             for child_link in cat.get_child_links():
                 child_href = make_absolute_href(child_link.target, href)
-                validate_catalog_link_type(child_href,
-                                           link_type,
-                                           catalog_type==CatalogType.ABSOLUTE_PUBLISHED)
+                validate_catalog_link_type(
+                    child_href, link_type,
+                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
             for item_link in cat.get_item_links():
                 item_href = make_absolute_href(item_link.target, href)
-                validate_item_link_type(item_href,
-                                        link_type,
-                                        catalog_type==CatalogType.ABSOLUTE_PUBLISHED)
+                validate_item_link_type(
+                    item_href, link_type,
+                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
         link_type = LinkType.RELATIVE
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             link_type = LinkType.ABSOLUTE
 
-        root_should_include_href = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED,
-                                                    CatalogType.RELATIVE_PUBLISHED]
+        root_should_include_href = catalog_type in [
+            CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
+        ]
 
-        validate_catalog_link_type(root_href,
-                                   link_type,
+        validate_catalog_link_type(root_href, link_type,
                                    root_should_include_href)
 
     def do_test(self, catalog, catalog_type):

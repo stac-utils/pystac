@@ -1,12 +1,12 @@
 import os
 import json
 
+
 class STAC_IO:
     """Methods used to read and save STAC json.
     Allows users of the library to set their own methods
     (e.g. for reading and writing from cloud storage)
     """
-
     def default_read_text_method(uri):
         """Default method for reading text. Only handles local file paths."""
         with open(uri) as f:
@@ -32,7 +32,6 @@ class STAC_IO:
     member in it's own __init__.py with a method that can read from
     cloud storage.
     """
-
 
     # Replaced in __init__ to account for extension objects.
     stac_object_from_dict = None

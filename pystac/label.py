@@ -6,10 +6,12 @@ from pystac import STACError
 from pystac.item import Item
 from pystac.link import Link
 
+
 class LabelType:
     VECTOR = 'vector'
     RASTER = 'raster'
     ALL = [VECTOR, RASTER]
+
 
 class LabelItem(Item):
     def __init__(self,
@@ -60,20 +62,23 @@ class LabelItem(Item):
                 self.label_task = [self.label_task]
 
         # Some light validation
-        if not self.label_type in LabelType.ALL:
+        if self.label_type not in LabelType.ALL:
             raise STACError("label_type must be one of "
-                            "{}; was {}".format(LabelType.ALL, self.label_type))
+                            "{}; was {}".format(LabelType.ALL,
+                                                self.label_type))
 
         if self.label_type == LabelType.VECTOR:
             if self.label_properties is None:
-                raise STACError('label_properties must be set for vector label type')
+                raise STACError(
+                    'label_properties must be set for vector label type')
 
         if self.label_task is not None:
             for task in self.label_task:
                 if task in ['classification', 'detection', 'segmentation']:
                     if self.label_classes is None:
                         raise STACError('label_classes must be set '
-                                        'for task "{}"'.format(self.label_task))
+                                        'for task "{}"'.format(
+                                            self.label_task))
 
     def __repr__(self):
         return '<LabelItem id={}>'.format(self.id)
@@ -84,20 +89,24 @@ class LabelItem(Item):
         d['properties']['label:type'] = self.label_type
         d['properties']['label:properties'] = self.label_properties
         if self.label_classes:
-            d['properties']['label:classes'] = [classes.to_dict() for classes in self.label_classes]
+            d['properties']['label:classes'] = [
+                classes.to_dict() for classes in self.label_classes
+            ]
         if self.label_task is not None:
             d['properties']['label:task'] = self.label_task
         if self.label_method is not None:
             d['properties']['label:method'] = self.label_method
         if self.label_overviews is not None:
-            d['properties']['label:overviews'] = [ov.to_dict() for ov in self.label_overviews]
+            d['properties']['label:overviews'] = [
+                ov.to_dict() for ov in self.label_overviews
+            ]
 
         return deepcopy(d)
 
     def add_source(self, source_item, title=None, assets=None):
         properties = None
         if assets is not None:
-            properties = { 'label:assets': assets }
+            properties = {'label:assets': assets}
         link = Link('source',
                     source_item,
                     title=title,
@@ -119,19 +128,19 @@ class LabelItem(Item):
                         media_type='application/geo+json')
 
     def clone(self):
-        clone =  LabelItem(id=self.id,
-                           geometry=deepcopy(self.geometry),
-                           bbox=copy(self.bbox),
-                           datetime=copy(self.datetime),
-                           properties=deepcopy(self.properties),
-                           label_description=self.label_description,
-                           label_type=self.label_type,
-                           label_properties=self.label_properties,
-                           label_classes=copy(self.label_classes),
-                           stac_extensions=copy(self.stac_extensions),
-                           label_task=self.label_task,
-                           label_method=self.label_method,
-                           label_overviews=deepcopy(self.label_overviews))
+        clone = LabelItem(id=self.id,
+                          geometry=deepcopy(self.geometry),
+                          bbox=copy(self.bbox),
+                          datetime=copy(self.datetime),
+                          properties=deepcopy(self.properties),
+                          label_description=self.label_description,
+                          label_type=self.label_type,
+                          label_properties=self.label_properties,
+                          label_classes=copy(self.label_classes),
+                          stac_extensions=copy(self.stac_extensions),
+                          label_task=self.label_task,
+                          label_method=self.label_method,
+                          label_overviews=deepcopy(self.label_overviews))
         for link in self.links:
             clone.add_link(link.clone())
 
@@ -146,7 +155,9 @@ class LabelItem(Item):
         label_properties = props.get('label:properties')
         label_classes = props.get('label:classes')
         if label_classes is not None:
-            label_classes = [LabelClasses.from_dict(classes) for classes in label_classes]
+            label_classes = [
+                LabelClasses.from_dict(classes) for classes in label_classes
+            ]
         label_description = props['label:description']
         label_type = props['label:type']
         label_task = props.get('label:task')
@@ -154,7 +165,9 @@ class LabelItem(Item):
         label_overviews = props.get('label:overviews')
         if label_overviews is not None:
             if type(label_overviews) is list:
-                label_overviews = [LabelOverview.from_dict(ov) for ov in label_overviews]
+                label_overviews = [
+                    LabelOverview.from_dict(ov) for ov in label_overviews
+                ]
             else:
                 # Read STAC with mistaken single overview object (should be list)
                 label_overviews = LabelOverview.from_dict(label_overviews)
@@ -182,17 +195,19 @@ class LabelItem(Item):
     def _object_links(self):
         return super()._object_links() + ['source']
 
+
 class LabelClasses:
     def __init__(self, classes, name=None):
         self.name = name
         self.classes = classes
 
     def to_dict(self):
-        return { 'name': self.name, 'classes': self.classes }
+        return {'name': self.name, 'classes': self.classes}
 
     @staticmethod
     def from_dict(d):
         return LabelClasses(name=d['name'], classes=d['classes'])
+
 
 class LabelOverview:
     def __init__(self, property_key, counts=None, statistics=None):
@@ -201,7 +216,7 @@ class LabelOverview:
         self.statistics = statistics
 
     def merge_counts(self, other):
-        assert(self.property_key == other.property_key)
+        assert (self.property_key == other.property_key)
 
         new_counts = None
         if self.counts is None:
@@ -211,20 +226,23 @@ class LabelOverview:
                 new_counts = self.counts
             else:
                 count_by_prop = {}
+
                 def add_counts(counts):
                     for c in counts:
-                        if not c.name in count_by_prop:
+                        if c.name not in count_by_prop:
                             count_by_prop[c.name] = c.count
                         else:
                             count_by_prop[c.name] += c.count
+
                 add_counts(self.counts)
                 add_counts(other.counts)
-                new_counts = [LabelCount(k, v)
-                              for k, v in count_by_prop.items()]
+                new_counts = [
+                    LabelCount(k, v) for k, v in count_by_prop.items()
+                ]
         return LabelOverview(self.property_key, counts=new_counts)
 
     def to_dict(self):
-        d = { 'property_key': self.property_key }
+        d = {'property_key': self.property_key}
         if self.counts:
             d['counts'] = [c.to_dict() for c in self.counts]
         if self.statistics:
@@ -246,18 +264,19 @@ class LabelOverview:
                              counts=counts,
                              statistics=statistics)
 
+
 class LabelCount:
     def __init__(self, name, count):
         self.name = name
         self.count = count
 
     def to_dict(self):
-        return { 'name': self.name,
-                 'count': self.count }
+        return {'name': self.name, 'count': self.count}
 
     @staticmethod
     def from_dict(d):
         return LabelCount(d['name'], d['count'])
+
 
 class LabelStatistics:
     def __init__(self, name, value):
@@ -265,8 +284,7 @@ class LabelStatistics:
         self.value = value
 
     def to_dict(self):
-        return { 'name': self.name,
-                 'value': self.value }
+        return {'name': self.name, 'value': self.value}
 
     @staticmethod
     def from_dict(d):

@@ -59,9 +59,9 @@ Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 
 ### Code quality checks
 
-PySTAC uses [flake8](), [yapf](), and [mypy]() for code formatting and type checking.
+PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/), [yapf](https://github.com/google/yapf), and [mypy](http://mypy-lang.org/) for code formatting and type checking.
 
-To run the style checks:
+To run the flake8 style checks:
 
 ```
 > flake8 pystac
@@ -74,6 +74,8 @@ To format code:
 > yapf -ipr pystac
 > yapf -ipr tests
 ```
+
+You could also run the `.travis/style_checks` script to check flake8 and yapf.
 
 To run the mypy static checker:
 

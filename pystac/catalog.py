@@ -42,7 +42,6 @@ class Catalog(STACObject):
 
     See: https://github.com/radiantearth/stac-spec/blob/v0.8.0/catalog/catalog-spec.md
     """
-
     """Default file name that will be given to this STAC item in a cononical format."""
     DEFAULT_FILE_NAME = "catalog.json"
 
@@ -63,8 +62,8 @@ class Catalog(STACObject):
 
     def set_root(self, root, link_type=LinkType.ABSOLUTE):
         STACObject.set_root(self, root, link_type)
-        root._resolved_objects = ResolvedObjectCache.merge(root._resolved_objects,
-                                                           self._resolved_objects)
+        root._resolved_objects = ResolvedObjectCache.merge(
+            root._resolved_objects, self._resolved_objects)
 
     def add_child(self, child, title=None):
         child.set_root(self.get_root())
@@ -180,16 +179,16 @@ class Catalog(STACObject):
             for item in items:
                 item.make_asset_hrefs_absolute()
 
-    def normalize_and_save(self,
-                           root_href,
-                           catalog_type):
+    def normalize_and_save(self, root_href, catalog_type):
         self.normalize_hrefs(root_href)
         self.save(catalog_type)
 
     def normalize_hrefs(self, root_href):
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
+            root_href = make_absolute_href(root_href,
+                                           os.getcwd(),
+                                           start_is_dir=True)
 
         # Fully resolve the STAC to avoid linking issues.
         # This particularly can happen with unresolved links that have
@@ -230,15 +229,18 @@ class Catalog(STACObject):
         else:
             self.make_all_links_relative()
 
-        include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED,
-                                             CatalogType.RELATIVE_PUBLISHED]
+        include_self_link = catalog_type in [
+            CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
+        ]
 
         if catalog_type == CatalogType.RELATIVE_PUBLISHED:
             child_catalog_type = CatalogType.SELF_CONTAINED
         else:
             child_catalog_type = catalog_type
 
-        items_include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
+        items_include_self_link = catalog_type in [
+            CatalogType.ABSOLUTE_PUBLISHED
+        ]
 
         for child_link in self.get_child_links():
             if child_link.is_resolved():
@@ -246,7 +248,8 @@ class Catalog(STACObject):
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
-                item_link.target.save_object(include_self_link=items_include_self_link)
+                item_link.target.save_object(
+                    include_self_link=items_include_self_link)
 
         self.save_object(include_self_link=include_self_link)
 
@@ -270,8 +273,9 @@ class Catalog(STACObject):
         """Creates a copy of a catalog, with each item passed through the item_mapper function.
 
         Args:
-           item_mapper:   A function that takes in an item, and returns either an item or list of items.
-              The item that is passed into the item_mapper is a copy, so the method can mutate it safetly.
+            item_mapper:   A function that takes in an item, and returns either
+                an item or list of items. The item that is passed into the item_mapper
+                is a copy, so the method can mutate it safetly.
         """
 
         new_cat = self.full_copy()
@@ -290,9 +294,9 @@ class Catalog(STACObject):
                     item_links.append(item_link)
                 else:
                     for i in mapped:
-                        l = item_link.clone()
-                        l.target = i
-                        item_links.append(l)
+                        new_link = item_link.clone()
+                        new_link.target = i
+                        item_links.append(new_link)
             catalog.clear_items()
             catalog.add_links(item_links)
 
@@ -304,9 +308,10 @@ class Catalog(STACObject):
         through the asset_mapper function.
 
         Args:
-           asset_mapper:   A function that takes in an key and an Asset, and returns
-             either an Asset, a (key, Asset), or a dictionary of Assets with unique keys.
-             The Asset that is passed into the item_mapper is a copy, so the method can mutate it safetly.
+            asset_mapper:   A function that takes in an key and an Asset, and returns
+               either an Asset, a (key, Asset), or a dictionary of Assets with unique keys.
+               The Asset that is passed into the item_mapper is a copy, so the method can
+               mutate it safetly.
         """
         def apply_asset_mapper(tup):
             k, v = tup
@@ -324,8 +329,10 @@ class Catalog(STACObject):
                 return assets
 
         def item_mapper(item):
-            new_assets = [x for result in map(apply_asset_mapper, item.assets.items())
-                            for x in result]
+            new_assets = [
+                x for result in map(apply_asset_mapper, item.assets.items())
+                for x in result
+            ]
             item.assets = dict(new_assets)
             return item
 
@@ -337,9 +344,9 @@ class Catalog(STACObject):
             s += ' {}'.format(self.get_self_href())
         print(s)
         for child in self.get_children():
-            child.describe(indent=indent+4, include_hrefs=include_hrefs)
+            child.describe(indent=indent + 4, include_hrefs=include_hrefs)
         for item in self.get_items():
-            s = '{}* {}'.format(' ' * (indent+2), item)
+            s = '{}* {}'.format(' ' * (indent + 2), item)
             if include_hrefs:
                 s += ' {}'.format(item.get_self_href())
             print(s)
@@ -350,9 +357,7 @@ class Catalog(STACObject):
         description = d['description']
         title = d.get('title')
 
-        cat = Catalog(id=id,
-                      description=description,
-                      title=title)
+        cat = Catalog(id=id, description=description, title=title)
 
         for l in d['links']:
             if not l['rel'] == 'root':
