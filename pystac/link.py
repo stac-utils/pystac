@@ -7,6 +7,7 @@ from pystac.io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 class LinkType:
+    """Enumerates link types; used to determine if a link is absolute or relative."""
     ABSOLUTE = 'ABSOLUTE'
     RELATIVE = 'RELATIVE'
 

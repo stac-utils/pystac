@@ -1,4 +1,4 @@
 Tutorials
 #########
 
-Tutorials live `here <https://github.com/azavea/pystac/tree/master/tutorials>`_
+Tutorials live `here <https://github.com/azavea/pystac/tree/develop/tutorials>`_

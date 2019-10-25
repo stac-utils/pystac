@@ -10,6 +10,11 @@ class STACObject(ABC):
         self.links = []
 
     def add_link(self, link):
+        """Add a link to this STACObject's set of links.
+
+        Args:
+             link (:class:`pystac.Link`): The link to add.
+        """
         if self.id == 'test' and link.rel == 'parent':
             raise Exception('{}'.format(self.links))
         link.set_owner(self)

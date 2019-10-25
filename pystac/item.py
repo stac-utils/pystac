@@ -177,6 +177,8 @@ class Item(STACObject):
 
 class Asset:
     class MEDIA_TYPE:
+        """A list of common media types that can be used in STAC Asset and Link metadata.
+        """
         TIFF = 'image/tiff'
         GEOTIFF = 'image/vnd.stac.geotiff'
         COG = 'image/vnd.stac.geotiff; cloud-optimized=true'
@@ -204,7 +206,7 @@ class Asset:
         self.item = item
 
     def get_absolute_href(self):
-        """Gets the aboslute href for this asset, if possible.
+        """Gets the absolute href for this asset, if possible.
 
         If this Asset has no associated Item, this will return whatever the
         href is (as it cannot determine the absolute path, if the asset

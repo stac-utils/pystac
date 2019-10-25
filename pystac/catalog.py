@@ -1,8 +1,7 @@
 import os
 import json
-from copy import (deepcopy, copy)
+from copy import deepcopy
 
-from pystac import STACError
 from pystac import STAC_VERSION
 from pystac.stac_object import STACObject
 from pystac.io import STAC_IO
@@ -11,33 +10,40 @@ from pystac.item import Asset
 from pystac.resolved_object_cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
+
 class CatalogType:
+    SELF_CONTAINED = 'SELF_CONTAINED'
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download a catalog from online and be able to use it on their
     local computer, so all links need to be relative.
 
-    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#self-contained-catalogs
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#self-contained-catalogs # noqa
     """
-    SELF_CONTAINED = 'SELF_CONTAINED'
 
+    ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
     """
     Absolute Published Catalog is a catalog that uses absolute links for everything,
     both in the links objects and in the asset hrefs.
 
-    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs # noqa
     """
-    ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
 
+    RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
     """
     Relative Published Catalog is a catalog that uses relative links for everything,
     but includes an absolute self link at the root catalog, to identify its online location.
 
-    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#published-catalogs # noqa
     """
-    RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
 
 
 class Catalog(STACObject):
+    """A PySTAC Catalog represents a STAC catalog in memory.
+
+    See: https://github.com/radiantearth/stac-spec/blob/v0.8.0/catalog/catalog-spec.md
+    """
+
+    """Default file name that will be given to this STAC item in a cononical format."""
     DEFAULT_FILE_NAME = "catalog.json"
 
     def __init__(self, id, description, title=None, href=None):
@@ -209,12 +215,13 @@ class Catalog(STACObject):
         Args:
 
             catalog_type: The catalog type that dictates the structure of the catalog to save.
-                If the catalog type is CatalogType.ABSOLUTE_PUBLISHED, all self links will be included,
-                and link type will be set to ABSOLUTE.
-                If the catalog type is CatalogType.RELATIVE_PUBLISHED, this catalog's self link will be
-                included, but no child catalog will have self links. Link types will be set to RELATIVE.
-                If the catalog  type is CatalogType.SELF_CONTAINED, no self links will be included.
+                If the catalog type is CatalogType.ABSOLUTE_PUBLISHED,
+                all self links will be included, and link type will be set to ABSOLUTE.
+                If the catalog type is CatalogType.RELATIVE_PUBLISHED, this catalog's self
+                link will be included, but no child catalog will have self links.
                 Link types will be set to RELATIVE.
+                If the catalog  type is CatalogType.SELF_CONTAINED, no self links will be
+                included. Link types will be set to RELATIVE.
         """
 
         # Ensure relative vs absolute
@@ -226,7 +233,7 @@ class Catalog(STACObject):
         include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED,
                                              CatalogType.RELATIVE_PUBLISHED]
 
-        if catalog_type ==  CatalogType.RELATIVE_PUBLISHED:
+        if catalog_type == CatalogType.RELATIVE_PUBLISHED:
             child_catalog_type = CatalogType.SELF_CONTAINED
         else:
             child_catalog_type = catalog_type
