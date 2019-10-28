@@ -15,8 +15,6 @@ class STACObject(ABC):
         Args:
              link (:class:`pystac.Link`): The link to add.
         """
-        if self.id == 'test' and link.rel == 'parent':
-            raise Exception('{}'.format(self.links))
         link.set_owner(self)
         self.links.append(link)
         return self
