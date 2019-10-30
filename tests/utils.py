@@ -8,7 +8,8 @@ from jsonschema.validators import RefResolver
 
 from pystac import (Catalog, Item, Asset, LabelItem, LabelCount, LabelOverview,
                     LabelClasses, Collection, Extent, TemporalExtent,
-                    SpatialExtent, STAC_VERSION, STAC_IO, EOItem, MediaType)
+                    SpatialExtent, STAC_VERSION, STAC_IO, EOItem, MediaType,
+                    ItemCollection, SingleFileSTAC)
 
 TEST_LABEL_CATALOG = {
     'country-1': {
@@ -86,8 +87,7 @@ class TestCases:
 
         image_item.add_asset(
             'ortho',
-            Asset(href='some/geotiff.tiff',
-                  media_type=MediaType.GEOTIFF))
+            Asset(href='some/geotiff.tiff', media_type=MediaType.GEOTIFF))
 
         overviews = [
             LabelOverview('label',
@@ -134,7 +134,8 @@ class SchemaValidator:
         ItemCollection: 'item-spec/json-schema/itemcollection.json',
         LabelItem: 'extensions/label/json-schema/label-item.json',
         EOItem: 'extensions/eo/json-schema/eo-item.json',
-        SingleFileSTAC: 'extensions/single-file-stac/json-schema/single-file.json'
+        SingleFileSTAC:
+        'extensions/single-file-stac/json-schema/single-file.json'
     }
 
     for c in schemas:

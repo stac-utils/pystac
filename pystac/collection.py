@@ -54,7 +54,6 @@ class Collection(Catalog):
     """
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC item in a cononical format."""
-
     def __init__(self,
                  id,
                  description,
@@ -68,7 +67,8 @@ class Collection(Catalog):
                  providers=None,
                  properties=None,
                  summaries=None):
-        super(Collection, self).__init__(id, description, title, stac_extensions, href)
+        super(Collection, self).__init__(id, description, title,
+                                         stac_extensions, href)
         self.extent = extent
         self.license = license
 

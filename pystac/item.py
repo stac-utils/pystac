@@ -110,7 +110,8 @@ class Item(STACObject):
         """
         self_href = self.get_self_href()
         if self_href is None:
-            raise STACError('Cannot make asset HREFs relative if no self_href is set.')
+            raise STACError(
+                'Cannot make asset HREFs relative if no self_href is set.')
         for asset in self.assets.values():
             asset.href = make_relative_href(asset.href, self_href)
         return self
@@ -131,8 +132,9 @@ class Item(STACObject):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError('Cannot make relative asset HREFs absolute '
-                                        'if no self_href is set.')
+                        raise STACError(
+                            'Cannot make relative asset HREFs absolute '
+                            'if no self_href is set.')
                 asset.href = make_absolute_href(asset.href, self_href)
 
         return self
@@ -226,7 +228,8 @@ class Item(STACObject):
             if not is_absolute_href(asset_href):
                 if old_self_href is not None:
                     abs_href = make_absolute_href(asset_href, old_self_href)
-                    new_relative_href = make_relative_href(abs_href, new_self_href)
+                    new_relative_href = make_relative_href(
+                        abs_href, new_self_href)
                     asset.href = new_relative_href
 
     @staticmethod

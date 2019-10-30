@@ -1,5 +1,4 @@
 import json
-import os
 
 from pystac.io import STAC_IO
 from pystac.item import Item
@@ -15,11 +14,15 @@ class ItemCollection:
         self.links = links
 
         if [l for l in self.links if l.rel == 'self'] == []:
-            self.links.append(Link('self', './{}'.format(self.DEFAULT_FILE_NAME), link_type=LinkType.RELATIVE))
+            self.links.append(
+                Link('self',
+                     './{}'.format(self.DEFAULT_FILE_NAME),
+                     link_type=LinkType.RELATIVE))
 
-    def __repr__(self):    
-        return '<ItemCollection item ids={}>'.format([f.id for f in self.features])
-    
+    def __repr__(self):
+        return '<ItemCollection item ids={}>'.format(
+            [f.id for f in self.features])
+
     @staticmethod
     def from_dict(d):
         features = [Item.from_dict(feature) for feature in d['features']]
@@ -33,7 +36,7 @@ class ItemCollection:
         d = json.loads(STAC_IO.read_text(uri))
         c = ItemCollection.from_dict(d)
         return c
-    
+
     def to_dict(self, include_self_link=False):
         links = self.links
         if not include_self_link:
@@ -46,15 +49,16 @@ class ItemCollection:
         }
 
         return d
-    
+
     def get_self_href(self):
         self_link = next((l for l in self.links if l.rel == 'self'), None)
         if self_link:
             return self_link.target
         return self_link
-    
+
     def get_items(self):
         return self.features
 
     def save(self, include_self_link=True):
-        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link = include_self_link))
+        STAC_IO.save_json(self.get_self_href(),
+                          self.to_dict(include_self_link=include_self_link))

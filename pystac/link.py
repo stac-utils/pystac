@@ -283,7 +283,10 @@ class Link:
     @staticmethod
     def self_href(href):
         """Creates a self link to a file's location."""
-        return Link('self', href, media_type='application/json', link_type=LinkType.ABSOLUTE)
+        return Link('self',
+                    href,
+                    media_type='application/json',
+                    link_type=LinkType.ABSOLUTE)
 
     @staticmethod
     def child(c, title=None, link_type=LinkType.ABSOLUTE):

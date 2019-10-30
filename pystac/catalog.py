@@ -19,7 +19,7 @@ class CatalogType:
 
     See:
         `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#self-contained-catalogs>`_
-    """
+    """ # noqa E501
 
     ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
     """
@@ -28,7 +28,7 @@ class CatalogType:
 
     See:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
-    """
+    """ # noqa E501
 
     RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
     """
@@ -37,7 +37,7 @@ class CatalogType:
 
     See:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
-    """
+    """ # noqa E501
 
 
 class Catalog(STACObject):
@@ -66,11 +66,14 @@ class Catalog(STACObject):
             all links associated with this Catalog.
     """
 
-
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC item in a cononical format."""
-
-    def __init__(self, id, description, title=None, stac_extensions=None, href=None):
+    def __init__(self,
+                 id,
+                 description,
+                 title=None,
+                 stac_extensions=None,
+                 href=None):
         self.id = id
         self.description = description
         self.title = title
@@ -492,14 +495,14 @@ class Catalog(STACObject):
             include_hrefs (bool) - If True, print out each object's self link
                 HREF along with the object ID.
         """
-        s = '{}* {}'.format(' ' * indent, self)
+        s = '{}* {}'.format(' ' * _indent, self)
         if include_hrefs:
             s += ' {}'.format(self.get_self_href())
         print(s)
         for child in self.get_children():
-            child.describe(include_hrefs=include_hrefs, _indent=indent + 4)
+            child.describe(include_hrefs=include_hrefs, _indent=_indent + 4)
         for item in self.get_items():
-            s = '{}* {}'.format(' ' * (indent + 2), item)
+            s = '{}* {}'.format(' ' * (_indent + 2), item)
             if include_hrefs:
                 s += ' {}'.format(item.get_self_href())
             print(s)

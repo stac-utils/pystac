@@ -7,7 +7,7 @@ from pystac import STACError
 from pystac.io import STAC_IO
 from pystac.item import Item
 from pystac.link import Link
-from pystac.utils import is_absolute_href
+from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
 class LabelType:
@@ -17,6 +17,7 @@ class LabelType:
 
     ALL = [VECTOR, RASTER]
     """Convenience attribute for checking if values are valid label types"""
+
 
 class LabelItem(Item):
     """A Label Item represents a polygon, set of polygons, or raster data defining
@@ -56,7 +57,8 @@ class LabelItem(Item):
 
     See:
         `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/label#item-fields>`_
-    """
+    """ # noqa E501
+
     def __init__(self,
                  id,
                  geometry,
@@ -299,7 +301,6 @@ class LabelClasses:
         name (str or None): The property key within the asset's each Feature corresponding to
             class labels. If labels are raster-formatted, this is None.
     """
-
     def __init__(self, classes, name=None):
         self.name = name
         self.classes = classes

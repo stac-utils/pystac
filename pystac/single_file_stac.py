@@ -13,9 +13,10 @@ class SingleFileSTAC(ItemCollection):
         self.features = features
         self.collections = collections
         self.search = search
-    
+
     def __repr__(self):
-        return '<SingleFile collection ids={}>'.format([c.id for c in self.collections])
+        return '<SingleFile collection ids={}>'.format(
+            [c.id for c in self.collections])
 
     @staticmethod
     def from_file(uri):
@@ -36,7 +37,7 @@ class SingleFileSTAC(ItemCollection):
 
     def to_dict(self):
         d = {}
-        
+
         d['type'] = self.type
         d['features'] = [f.to_dict() for f in self.features]
         d['collections'] = [c.to_dict() for c in self.collections]
@@ -44,15 +45,16 @@ class SingleFileSTAC(ItemCollection):
             d['search'] = self.search.to_dict()
 
         return d
-    
+
     def save(self, uri):
         STAC_IO.save_json(os.path.abspath(uri), self.to_dict())
+
 
 class Search:
     def __init__(self, endpoint=None, parameters=None):
         self.endpoint = endpoint
         self.parameters = parameters
-    
+
     @staticmethod
     def from_dict(d):
         return Search(d['endpoint'], d['parameters'])

@@ -15,7 +15,6 @@ class STACObject(ABC):
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
     """
-
     def __init__(self):
         self.links = []
 
@@ -325,7 +324,7 @@ class STACObject(ABC):
 
         See:
             `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
-        """
+        """ # noqa E501
         pass
 
     @abstractmethod

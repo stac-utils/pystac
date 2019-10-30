@@ -4,12 +4,14 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 
+
 class STACError(Exception):
     """A STACError is raised for errors relating to STAC, e.g. for
     invalid formats or trying to operate on a STAC that does not have
     the required information available.
     """
     pass
+
 
 from pystac.version import (__version__, STAC_VERSION)
 from pystac.io import STAC_IO
@@ -21,7 +23,7 @@ from pystac.collection import (Collection, Extent, SpatialExtent,
                                TemporalExtent, Provider)
 from pystac.item import (Item, Asset)
 from pystac.item_collection import ItemCollection
-from pystac.single_file import SingleFileSTAC
+from pystac.single_file_stac import SingleFileSTAC
 from pystac.eo import *
 from pystac.label import *
 

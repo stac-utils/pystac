@@ -160,14 +160,14 @@ class EOItem(Item):
             eo_key = EOItem._eo_key(eof)
             if eo_key in item.properties.keys():
                 if eof == 'bands':
-                    eo_params[eof] = [Band.from_dict(b)
-                                      for b in item.properties.pop(eo_key)]
+                    eo_params[eof] = [
+                        Band.from_dict(b) for b in item.properties.pop(eo_key)
+                    ]
                 else:
                     eo_params[eof] = item.properties.pop(eo_key)
             elif eof in ('gsd', 'platform', 'instrument', 'bands'):
                 raise STACError(
-                    "Missing required field '{}' in properties".format(
-                        eo_key))
+                    "Missing required field '{}' in properties".format(eo_key))
 
         if not any(item.properties):
             item.properties = None
@@ -398,15 +398,16 @@ class Band:
         full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
             as measured at half the maximum transmission, in micrometers (μm).
     """
-    def __init__(self,
-                 name=None,
-                 common_name=None,
-                 description=None,
-                 gsd=None,
-                 accuracy=None,
-                 center_wavelength=None,
-                 full_width_half_max=None,
-                 ):
+    def __init__(
+            self,
+            name=None,
+            common_name=None,
+            description=None,
+            gsd=None,
+            accuracy=None,
+            center_wavelength=None,
+            full_width_half_max=None,
+    ):
         self.name = name
         self.common_name = common_name
         self.description = description
@@ -428,7 +429,7 @@ class Band:
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
             None if this is not a recognized common name.
-        """
+        """ # noqa E501
         name_to_range = {
             'coastal': (0.40, 0.45),
             'blue': (0.45, 0.50),
@@ -460,12 +461,12 @@ class Band:
         Returns:
             str or None: If a recognized common name, returns a description including the
             band range. Otherwise returns None.
-        """
+        """ # noqa E501
         r = Band.band_range(common_name)
         if r is not None:
-            r = "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
+            r = "Common name: {}, Range: {} to {}".format(
+                common_name, r[0], r[1])
         return r
-
 
     @staticmethod
     def from_dict(d):

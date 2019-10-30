@@ -1,33 +1,39 @@
-import os
 from os.path import basename, join, isfile
 import unittest
 from tempfile import TemporaryDirectory
 import json
 from jsonschema import ValidationError
+from copy import deepcopy
 
-from pystac import *
-from pystac.utils import is_absolute_href
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, SchemaValidator)
+from pystac import (ItemCollection, Link, Item)
+from tests.utils import (TestCases, SchemaValidator)
+
 
 class ItemCollectionTest(unittest.TestCase):
     def setUp(self):
-        self.IC_MINIMAL_URI = TestCases.get_path('data-files/itemcollections/minimal-itemcollection.json')
+        self.IC_MINIMAL_URI = TestCases.get_path(
+            'data-files/itemcollections/minimal-itemcollection.json')
         with open(self.IC_MINIMAL_URI) as f:
             self.IC_MINIMAL_DICT = json.load(f)
-        
-        self.IC_URI = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
+
+        self.IC_URI = TestCases.get_path(
+            'data-files/itemcollections/sample-item-collection.json')
         with open(self.IC_URI) as f:
             self.IC_DICT = json.load(f)
 
     def test_minimal_item_collection(self):
-         with TemporaryDirectory() as tmp_dir:
+        with TemporaryDirectory() as tmp_dir:
             ic = ItemCollection.from_file(self.IC_MINIMAL_URI)
             self.assertIsInstance(ic, ItemCollection)
             self.assertEqual(len(ic.links), 1)
-            self.assertEqual(ic.get_self_href(), './{}'.format(ItemCollection.DEFAULT_FILE_NAME))
+            self.assertEqual(ic.get_self_href(),
+                             './{}'.format(ItemCollection.DEFAULT_FILE_NAME))
             self.assertEqual(len(ic.links), 1)
 
-            ic.links = [Link(l.rel, join(tmp_dir, basename(l.target))) for l in ic.links]
+            ic.links = [
+                Link(l.rel, join(tmp_dir, basename(l.target)))
+                for l in ic.links
+            ]
             ic.save()
             tmp_uri = join(tmp_dir, ItemCollection.DEFAULT_FILE_NAME)
             self.assertTrue(isfile(tmp_uri))
@@ -40,14 +46,16 @@ class ItemCollectionTest(unittest.TestCase):
         self.assertIsInstance(ic, ItemCollection)
 
         ic_json = deepcopy(self.IC_DICT)
-        
+
         self.assertEqual(ic_json.keys(), ic.to_dict().keys())
-        self.assertEqual(ic_json['links'], ic.to_dict(include_self_link=True)['links'])
-        self.assertNotEqual(ic_json['links'], ic.to_dict(include_self_link=False)['links'])
+        self.assertEqual(ic_json['links'],
+                         ic.to_dict(include_self_link=True)['links'])
+        self.assertNotEqual(ic_json['links'],
+                            ic.to_dict(include_self_link=False)['links'])
 
         for item in ic.get_items():
             self.assertIsInstance(item, Item)
-        
+
         for link in ic.links:
             self.assertIsInstance(link, Link)
 
@@ -59,7 +67,7 @@ class ItemCollectionTest(unittest.TestCase):
         self.assertGreater(len(ic_empty.links), 0)
         for link in ic_empty.links:
             self.assertIsInstance(link, Link)
-    
+
     def test_validate_item_collection(self):
         sv = SchemaValidator()
         ic_1 = ItemCollection([])
@@ -69,5 +77,4 @@ class ItemCollectionTest(unittest.TestCase):
         ic_val_dict = ic_2.to_dict()
         ic_val_dict['features'] = 'not an array'
         with self.assertRaises(ValidationError):
-            sv.validate_dict(ic_val_dict, ItemCollection)            
-            
+            sv.validate_dict(ic_val_dict, ItemCollection)
