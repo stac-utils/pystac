@@ -81,7 +81,7 @@
     "links": [
       {
         "rel": "self",
-        "href": "./item-collection.json"
+        "href": "./sample-item-collection.json"
       }
     ]
   }
