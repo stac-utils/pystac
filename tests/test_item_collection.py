@@ -1,3 +1,4 @@
+import os
 from os.path import basename, join, isfile
 import unittest
 from tempfile import TemporaryDirectory
@@ -23,11 +24,12 @@ class ItemCollectionTest(unittest.TestCase):
 
     def test_minimal_item_collection(self):
         with TemporaryDirectory() as tmp_dir:
+            path = os.path.join(tmp_dir, 'item_collection.json')
             ic = ItemCollection.from_file(self.IC_MINIMAL_URI)
+            ic.set_self_href(path)
             self.assertIsInstance(ic, ItemCollection)
             self.assertEqual(len(ic.links), 1)
-            self.assertEqual(ic.get_self_href(),
-                             './{}'.format(ItemCollection.DEFAULT_FILE_NAME))
+            self.assertEqual(ic.get_self_href(), path)
             self.assertEqual(len(ic.links), 1)
 
             ic.links = [
@@ -35,9 +37,8 @@ class ItemCollectionTest(unittest.TestCase):
                 for l in ic.links
             ]
             ic.save()
-            tmp_uri = join(tmp_dir, ItemCollection.DEFAULT_FILE_NAME)
-            self.assertTrue(isfile(tmp_uri))
-            with open(tmp_uri) as f:
+            self.assertTrue(isfile(path))
+            with open(path) as f:
                 ic_val_dict = json.load(f)
             SchemaValidator().validate_dict(ic_val_dict, ItemCollection)
 
@@ -60,13 +61,12 @@ class ItemCollectionTest(unittest.TestCase):
             self.assertIsInstance(link, Link)
 
         href = ic.get_self_href()
-        self.assertEqual(href, './sample-item-collection.json')
+        self.assertEqual(href,
+                         'http://stacspec.org/sample-item-collection.json')
 
         ic_empty = ItemCollection([])
         self.assertIsInstance(ic_empty, ItemCollection)
-        self.assertGreater(len(ic_empty.links), 0)
-        for link in ic_empty.links:
-            self.assertIsInstance(link, Link)
+        self.assertEqual(len(ic_empty.links), 0)
 
     def test_validate_item_collection(self):
         sv = SchemaValidator()
@@ -77,4 +77,5 @@ class ItemCollectionTest(unittest.TestCase):
         ic_val_dict = ic_2.to_dict()
         ic_val_dict['features'] = 'not an array'
         with self.assertRaises(ValidationError):
+            print('[Validation error expected] - ', end='')
             sv.validate_dict(ic_val_dict, ItemCollection)

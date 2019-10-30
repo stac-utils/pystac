@@ -81,7 +81,7 @@
     "links": [
       {
         "rel": "self",
-        "href": "./sample-item-collection.json"
+        "href": "http://stacspec.org/sample-item-collection.json"
       }
     ]
   }

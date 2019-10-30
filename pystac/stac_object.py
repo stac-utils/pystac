@@ -5,19 +5,12 @@ from pystac.link import (Link, LinkType)
 from pystac.io import STAC_IO
 
 
-class STACObject(ABC):
-    """A STACObject is the base class for any element of STAC that
-    has links e.g. (Catalogs, Collections, or Items). A STACObject has
-    common functionality, can be converted to and from Python ``dicts`` representing
-    JSON, and can be cloned or copied.
+class LinkMixin:
+    """Mixin class for adding and accessing links.
 
-    Attributes:
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
-            all links associated with this STACObject.
+    Implementing classes must have a `links` attribute that is
+    a list of links.
     """
-    def __init__(self):
-        self.links = []
-
     def add_link(self, link):
         """Add a link to this object's set of links.
 
@@ -57,6 +50,101 @@ class STACObject(ABC):
         """
 
         return next((l for l in self.links if l.rel == rel), None)
+
+    def get_links(self, rel=None):
+        """Gets the :class:`~pystac.Link` instances associated with this object.
+
+        Args:
+            rel (str or None): If set, filter links such that only those
+                matching this relationship are returned.
+
+        Returns:
+            List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
+                or else all links associated with this object.
+        """
+        if rel is None:
+            return self.links
+        else:
+            return [l for l in self.links if l.rel == rel]
+
+    def clear_links(self, rel=None):
+        """Clears all :class:`~pystac.Link` instances associated with this object.
+
+        Args:
+            rel (str or None): If set, only clear links that match this relationship.
+        """
+        if rel is not None:
+            self.links = [l for l in self.links if l.rel != rel]
+        else:
+            self.links = []
+        return self
+
+    def make_links_relative(self):
+        """Sets each link associated with this object to be relative.
+        This does not include the self link, as those must always be absolute.
+        See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
+        """
+        for l in self.links:
+            if l.rel != 'self':
+                l.make_relative()
+        return self
+
+    def make_links_absolute(self):
+        """Sets each link associated with this object to be absolute.
+        See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
+        """
+        for l in self.links:
+            if l.rel != 'self':
+                l.make_absolute()
+        return self
+
+    def get_self_href(self):
+        """Gets the absolute HREF that is represented by the ``rel == 'self'``
+        :class:`~pystac.Link`.
+
+        Returns:
+            str or None: The absolute HREF of this object, or ``None`` if
+            there is no self link defined.
+
+        Note:
+            A self link can exist for objects, even if the link is not read or
+            written to the JSON-serialized version of the object. Any object
+            read from :func:`STACObject.from_file <pystac.STACObject.from_file>` will
+            have the HREF the file was read from set as it's self HREF. All self
+            links have absolute (as opposed to relative) HREFs.
+        """
+        self_link = self.get_single_link('self')
+        if self_link:
+            return self_link.target
+        else:
+            return None
+
+    def set_self_href(self, href):
+        """Sets the absolute HREF that is represented by the ``rel == 'self'``
+        :class:`~pystac.Link`.
+
+        Args:
+            str: The absolute HREF of this object. If the given HREF
+                is not absolute, it will be transformed to an absolute
+                HREF based on the current working directory.
+        """
+        self.remove_links('self')
+        self.add_link(Link.self_href(href))
+        return self
+
+
+class STACObject(LinkMixin, ABC):
+    """A STACObject is the base class for any element of STAC that
+    has links e.g. (Catalogs, Collections, or Items). A STACObject has
+    common functionality, can be converted to and from Python ``dicts`` representing
+    JSON, and can be cloned or copied.
+
+    Attributes:
+        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+            all links associated with this STACObject.
+    """
+    def __init__(self):
+        self.links = []
 
     def get_root(self):
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
@@ -137,40 +225,6 @@ class STACObject(ABC):
         self.add_link(Link.parent(parent, link_type=link_type))
         return self
 
-    def get_self_href(self):
-        """Gets the absolute HREF that is represented by the ``rel == 'self'``
-        :class:`~pystac.Link`.
-
-        Returns:
-            str or None: The absolute HREF of this object, or ``None`` if
-            there is no self link defined.
-
-        Note:
-            A self link can exist for objects, even if the link is not read or
-            written to the JSON-serialized version of the object. Any object
-            read from :func:`STACObject.from_file <pystac.STACObject.from_file>` will
-            have the HREF the file was read from set as it's self HREF. All self
-            links have absolute (as opposed to relative) HREFs.
-        """
-        self_link = self.get_single_link('self')
-        if self_link:
-            return self_link.target
-        else:
-            return None
-
-    def set_self_href(self, href):
-        """Sets the absolute HREF that is represented by the ``rel == 'self'``
-        :class:`~pystac.Link`.
-
-        Args:
-            str: The absolute HREF of this object. If the given HREF
-                is not absolute, it will be transformed to an absolute
-                HREF based on the current working directory.
-        """
-        self.remove_links('self')
-        self.add_link(Link.self_href(href))
-        return self
-
     def get_stac_objects(self, rel):
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
@@ -187,53 +241,6 @@ class STACObject(ABC):
                 link.resolve_stac_object(root=self.get_root())
                 result.append(link.target)
         return result
-
-    def get_links(self, rel=None):
-        """Gets the :class:`~pystac.Link` instances associated with this object.
-
-        Args:
-            rel (str or None): If set, filter links such that only those
-                matching this relationship are returned.
-
-        Returns:
-            List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
-                or else all links associated with this object.
-        """
-        if rel is None:
-            return self.links
-        else:
-            return [l for l in self.links if l.rel == rel]
-
-    def clear_links(self, rel=None):
-        """Clears all :class:`~pystac.Link` instances associated with this object.
-
-        Args:
-            rel (str or None): If set, only clear links that match this relationship.
-        """
-        if rel is not None:
-            self.links = [l for l in self.links if l.rel != rel]
-        else:
-            self.links = []
-        return self
-
-    def make_links_relative(self):
-        """Sets each link associated with this object to be relative.
-        This does not include the self link, as those must always be absolute.
-        See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
-        """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_relative()
-        return self
-
-    def make_links_absolute(self):
-        """Sets each link associated with this object to be absolute.
-        See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
-        """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_absolute()
-        return self
 
     def save_object(self, include_self_link=True):
         """Saves this STAC Object to it's 'self' HREF.

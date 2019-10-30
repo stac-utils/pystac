@@ -475,13 +475,13 @@ class Band:
         Returns:
             Band: The Band deserialized from the JSON dict.
         """
-        name = d.get('name', None)
-        common_name = d.get('common_name', None)
-        gsd = d.get('gsd', None)
-        center_wavelength = d.get('center_wavelength', None)
-        full_width_half_max = d.get('full_width_half_max', None)
-        description = d.get('description', None)
-        accuracy = d.get('accuracy', None)
+        name = d.get('name')
+        common_name = d.get('common_name')
+        gsd = d.get('gsd')
+        center_wavelength = d.get('center_wavelength')
+        full_width_half_max = d.get('full_width_half_max')
+        description = d.get('description')
+        accuracy = d.get('accuracy')
 
         return Band(name=name,
                     common_name=common_name,

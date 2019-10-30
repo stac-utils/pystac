@@ -53,7 +53,7 @@ class Collection(Catalog):
             all links associated with this Collection.
     """
     DEFAULT_FILE_NAME = "collection.json"
-    """Default file name that will be given to this STAC item in a cononical format."""
+    """Default file name that will be given to this STAC object in a cononical format."""
     def __init__(self,
                  id,
                  description,

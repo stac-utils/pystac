@@ -134,8 +134,15 @@ Asset
    :members:
    :undoc-members:
 
+ItemCollection
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.ItemCollection
+   :members:
+   :undoc-members:
+
 EO Extension
----------------
+------------
 
 These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo>`_.
 
@@ -208,6 +215,18 @@ LabelStatistics
 ~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.LabelStatistics
+   :members:
+   :undoc-members:
+
+Single File STAC Extension
+--------------------------
+
+These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/single-file-stac>`_.
+
+SingleFileSTAC
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.SingleFileSTAC
    :members:
    :undoc-members:
 

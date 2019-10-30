@@ -20,18 +20,17 @@ class SingleFileSTACTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             sf_from_file = SingleFileSTAC.from_file(self.EXAMPLE_SINGLE_FILE)
             sf_from_dict = SingleFileSTAC.from_dict(self.EXAMPLE_SF_DICT)
-            sf_from_const = SingleFileSTAC('FeatureClass', [], [])
-            single_file_stacs = [sf_from_file, sf_from_dict, sf_from_const]
+            sf_empty = SingleFileSTAC()
+            single_file_stacs = [sf_from_file, sf_from_dict, sf_empty]
+
             for i, sf in enumerate(single_file_stacs):
                 for feature in sf.get_items():
                     self.assertIsInstance(feature, Item)
                 for collection in sf.collections:
                     self.assertIsInstance(collection, Collection)
-                with self.assertRaises(AttributeError):
-                    sf.links
                 self.assertIsInstance(sf.to_dict(), dict)
 
-                dk = ['type', 'features', 'collections']
+                dk = ['type', 'features', 'collections', 'links']
                 if sf.search:
                     self.assertIsInstance(sf.search, Search)
                     dk.append('search')
@@ -58,6 +57,7 @@ class SingleFileSTACTest(unittest.TestCase):
 
         val_dict['search']['endpoint'] = 1
         with self.assertRaises(ValidationError):
+            print('[Validation error expected] - ', end='')
             sv.validate_dict(val_dict, SingleFileSTAC)
 
 
@@ -73,7 +73,7 @@ class SearchTest(unittest.TestCase):
             sd = json.load(f)['search']
             s_from_dict = Search.from_dict(sd)
 
-        for s in (s_empty, s_from_ic, s_from_dict):
+        for s in (s_from_ic, s_from_dict):
             self.assertIsInstance(s, Search)
             if s.endpoint:
                 self.assertIsInstance(s.endpoint, str)

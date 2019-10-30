@@ -67,7 +67,7 @@ class Catalog(STACObject):
     """
 
     DEFAULT_FILE_NAME = "catalog.json"
-    """Default file name that will be given to this STAC item in a cononical format."""
+    """Default file name that will be given to this STAC object in a cononical format."""
     def __init__(self,
                  id,
                  description,
@@ -128,7 +128,6 @@ class Catalog(STACObject):
 
         Args:
             items (Iterable[Item]): The items to add.
-            title (str): Optional title to give to the :class:`~pystac.Link`
         """
         for item in items:
             self.add_item(item)
