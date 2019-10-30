@@ -172,11 +172,11 @@ class EOItem(Item):
         if not any(item.properties):
             item.properties = None
 
-        e = cls(item.id,
-                item.geometry,
-                item.bbox,
-                item.datetime,
-                item.properties,
+        e = cls(id=item.id,
+                geometry=item.geometry,
+                bbox=item.bbox,
+                datetime=item.datetime,
+                properties=item.properties,
                 stac_extensions=item.stac_extensions,
                 collection=item.collection_id,
                 **eo_params)
@@ -482,8 +482,13 @@ class Band:
         description = d.get('description', None)
         accuracy = d.get('accuracy', None)
 
-        return Band(name, common_name, gsd, center_wavelength,
-                    full_width_half_max, description, accuracy)
+        return Band(name=name,
+                    common_name=common_name,
+                    description=description,
+                    gsd=gsd,
+                    accuracy=accuracy,
+                    center_wavelength=center_wavelength,
+                    full_width_half_max=full_width_half_max)
 
     def to_dict(self):
         """Generate a dictionary representing the JSON of this Band.

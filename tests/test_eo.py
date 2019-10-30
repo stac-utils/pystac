@@ -12,6 +12,7 @@ from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 class EOItemTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.URI_1 = TestCases.get_path(
             'data-files/eo/eo-landsat-example.json')
         self.URI_2 = TestCases.get_path(
@@ -78,7 +79,7 @@ class EOItemTest(unittest.TestCase):
 
     def test_add_eo_fields_to_dict(self):
         d = {}
-        self.eoi.add_eo_fields_to_dict(d)
+        self.eoi._add_eo_fields_to_dict(d)
         comp_d = {
             k: v
             for k, v in deepcopy(self.eo_dict['properties']).items()
@@ -185,12 +186,11 @@ class EOUtilsTest(unittest.TestCase):
     def test_band_description(self):
         desc = 'Common name: nir, Range: 0.75 to 1.0'
         self.assertEqual(Band.band_description('nir'), desc)
-        self.assertEqual(Band.band_description('uncommon name'),
-                         'Common name: uncommon name')
+        self.assertIsNone(Band.band_description('uncommon name'))
 
     def test_band_range(self):
         self.assertEqual(Band.band_range('pan'), (0.50, 0.70))
-        self.assertEqual(Band.band_range('uncommon name'), 'uncommon name')
+        self.assertIsNone(Band.band_range('uncommon name'))
 
     def test_eo_key(self):
         self.assertEqual(EOItem._eo_key(''), 'eo:')
@@ -221,7 +221,7 @@ def compare_eo_items(test_class, eoi_1, eoi_2):
             test_class.assertDictEqual(eoi_1.assets[key].to_dict(),
                                        eoi_2.assets[key].to_dict())
 
-    for eof in EOItem.EO_FIELDS:
+    for eof in EOItem._EO_FIELDS:
         if eof == 'bands':
             test_class.assertEqual(len(eoi_1.bands), len(eoi_2.bands))
             for eoi in (eoi_1, eoi_2):
