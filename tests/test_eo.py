@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from copy import deepcopy
 
 from pystac import (Catalog, CatalogType, Item, Asset, STACError)
-from pystac.eo import (Band, EOAsset, EOItem, band_desc, band_range, eo_key)
+from pystac.eo import (Band, EOAsset, EOItem)
 from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
@@ -40,11 +40,11 @@ class EOItemTest(unittest.TestCase):
         i = Item.from_file(self.URI_1)
         with self.assertRaises(AttributeError):
             getattr(i, 'bands')
-        self.assertTrue(eo_key('bands') in i.properties.keys())
+        self.assertTrue('eo:bands' in i.properties.keys())
         eoi = EOItem.from_item(i)
         self.assertIsNotNone(getattr(eoi, 'bands'))
         with self.assertRaises(KeyError):
-            eoi.properties[eo_key('bands')]
+            eoi.properties['eo:bands']
 
     def test_clone(self):
         eoi_clone = self.eoi.clone()
@@ -182,19 +182,19 @@ class BandTest(unittest.TestCase):
 
 
 class EOUtilsTest(unittest.TestCase):
-    def test_band_desc(self):
+    def test_band_description(self):
         desc = 'Common name: nir, Range: 0.75 to 1.0'
-        self.assertEqual(band_desc('nir'), desc)
-        self.assertEqual(band_desc('uncommon name'),
+        self.assertEqual(Band.band_description('nir'), desc)
+        self.assertEqual(Band.band_description('uncommon name'),
                          'Common name: uncommon name')
 
     def test_band_range(self):
-        self.assertEqual(band_range('pan'), (0.50, 0.70))
-        self.assertEqual(band_range('uncommon name'), 'uncommon name')
+        self.assertEqual(Band.band_range('pan'), (0.50, 0.70))
+        self.assertEqual(Band.band_range('uncommon name'), 'uncommon name')
 
     def test_eo_key(self):
-        self.assertEqual(eo_key(''), 'eo:')
-        self.assertEqual(eo_key('dsg'), 'eo:dsg')
+        self.assertEqual(EOItem._eo_key(''), 'eo:')
+        self.assertEqual(EOItem._eo_key('dsg'), 'eo:dsg')
 
 
 def compare_eo_items(test_class, eoi_1, eoi_2):
