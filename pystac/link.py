@@ -15,6 +15,51 @@ class LinkType:
 
 
 class Link:
+    """A link is connects a :class:`~pystac.STACObject` to another entity.
+
+    The target of a link can be either another STACObject, or
+    an HREF. When serialized, links always refer to the HREF of the target.
+    Links are lazily deserialized - this is, when you read in a link, it does
+    not automatically load in the STACObject that is the target
+    (if the link is pointing to a STACObject). When a user is crawling
+    through a catalog or when additional metadata is required, PySTAC uses the
+    :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` method
+    to load in and deserialize STACObjects. This mechanism is used within
+    the PySTAC codebase and normally does not need to be considered by the user -
+    ideally the lazy deserialization of STACObjects is transparent to clients of PySTAC.
+
+    Args:
+        rel (str): The relation of the link (e.g. 'child', 'item')
+        target (str or STACObject): The target of the link. If the link is
+            unresolved, or the link is to something that is not a STACObject,
+            the target is an HREF. If resolved, the target is a STACObject.
+        media_type (str): Optional description of the media type. Registered Media Types
+            are preferred. See :class:`~pystac.MediaType` for common media types.
+        title (str): Optional title for this link.
+        properties (dict): Optional, additional properties for this link. This is used by
+            extensions as a way to serialize and deserialize properties on link
+            object JSON.
+        link_type (str): The link type, either relative or absolute. Use one of
+            :class:`~pystac.LinkType`.
+
+    Attributes:
+        rel (str): The relation of the link (e.g. 'child', 'item')
+        target (str or STACObject): The target of the link. If the link is
+            unresolved, or the link is to something that is not a STACObject,
+            the target is an HREF. If resolved, the target is a STACObject.
+        media_type (str or None): Optional description of the media type. Registered Media Types
+            are preferred. See :class:`~pystac.MediaType` for common media types.
+        title (str or None): Optional title for this link.
+        properties (dict or None): Optional, additional properties for this link.
+            This is used by extensions as a way to serialize and deserialize properties
+            on link object JSON.
+        link_type (str): The link type, either relative or absolute. Use one of
+            :class:`~pystac.LinkType`.
+        owner (STACObject or None): The owner of this link. The link will use
+            its owner's root catalog :class:`~pystac.resolved_object_cache.ResolvedObjectCache`
+            to resolve objects, and will create absolute HREFs from relative HREFs against
+            the owner's self HREF.
+    """
     def __init__(self,
                  rel,
                  target,
@@ -31,36 +76,53 @@ class Link:
         self.owner = None
 
     def set_owner(self, owner):
+        """Sets the owner of this link.
+
+        Args:
+            owner (STACObject): The owner of this link.
+        """
         self.owner = owner
         return self
 
     def make_absolute(self):
+        """Sets the link type of this link to absolute"""
         self.link_type = LinkType.ABSOLUTE
         return self
 
     def make_relative(self):
+        """Sets the link type of this link to relative"""
         self.link_type = LinkType.RELATIVE
         return self
 
     def get_href(self):
         """Gets the HREF for this link.
 
-        If the link is relative and has an owner, will return a relative HREF, otherwise
-        will return the absolute href.
+        Returns:
+            str: Returns this link's HREF. If the link type is LinkType.RELATIVE,
+            and there is an owner of the link, then the HREF returned will be
+            relative. In all other cases, this method will return an absolute HREF.
         """
-        href = self.get_absolute_href()
         if self.link_type == LinkType.RELATIVE:
-            if self.owner is not None:
+            if self.is_resolved():
+                href = self.target.get_self_href()
+            else:
+                href = self.target
+
+            if is_absolute_href(href) and self.owner is not None:
                 href = make_relative_href(href, self.owner.get_self_href())
+        else:
+            href = self.get_absolute_href()
 
         return href
 
     def get_absolute_href(self):
         """Gets the aboslute href for this link, if possible.
 
-        If this link has no owner, this will return whatever the
-        target is (as it cannot determine the absolute path, if the link
-        href is relative)."""
+        Returns:
+            str: Returns this link's HREF. It attempts to derive an absolute HREF
+            from this link; however, if the link is relative, has no owner,
+            and has an unresolved target, this will return a relative HREF.
+        """
         if self.is_resolved():
             href = self.target.get_self_href()
         else:
@@ -116,9 +178,20 @@ class Link:
         return self
 
     def is_resolved(self):
+        """Determines if the link's target is a resolved STACObject.
+
+        Returns:
+            bool: True if this link is resolved.
+        """
         return not isinstance(self.target, str)
 
     def to_dict(self):
+        """Generate a dictionary representing the JSON of this serialized Link.
+
+        Returns:
+            dict: A serializion of the Link that can be written out as JSON.
+        """
+
         d = {'rel': self.rel}
 
         d['href'] = self.get_href()
@@ -136,6 +209,15 @@ class Link:
         return deepcopy(d)
 
     def clone(self):
+        """Clones this link.
+
+        This makes a copy of all link information, but does not clone a STACObject
+        if one is the target of this link.
+
+        Returns:
+            Link: The cloned link.
+        """
+
         return Link(rel=self.rel,
                     target=self.target,
                     media_type=self.media_type,
@@ -144,6 +226,14 @@ class Link:
 
     @staticmethod
     def from_dict(d):
+        """Deserializes a Link from a dict.
+
+        Args:
+            d (dict): The dict that represents the Link in JSON
+
+        Returns:
+            Link: Link instance constructed from the dict.
+        """
         d = copy(d)
         rel = d.pop('rel')
         href = d.pop('href')
@@ -192,8 +282,8 @@ class Link:
 
     @staticmethod
     def self_href(href):
-        """Creates a self link to the file's location."""
-        return Link('self', href, media_type='application/json')
+        """Creates a self link to a file's location."""
+        return Link('self', href, media_type='application/json', link_type=LinkType.ABSOLUTE)
 
     @staticmethod
     def child(c, title=None, link_type=LinkType.ABSOLUTE):

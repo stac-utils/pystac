@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 
 from pystac import (Catalog, CatalogType, STAC_VERSION, LinkType, Item, Asset,
-                    LabelItem, LabelClasses)
+                    LabelItem, LabelClasses, MediaType)
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
@@ -318,7 +318,7 @@ class FullCopyTest(unittest.TestCase):
                 image_item.add_asset(
                     key,
                     Asset(href='some/{}.tif'.format(key),
-                          media_type=Asset.MEDIA_TYPE.GEOTIFF))
+                          media_type=MediaType.GEOTIFF))
 
             label_item = LabelItem(id='Labels',
                                    geometry=RANDOM_GEOM,
@@ -332,7 +332,7 @@ class FullCopyTest(unittest.TestCase):
                                        LabelClasses(classes=['one', 'two'],
                                                     name='label')
                                    ],
-                                   label_task='classification')
+                                   label_tasks=['classification'])
             label_item.add_source(image_item, assets=['ortho'])
 
             cat.add_items([image_item, label_item])
