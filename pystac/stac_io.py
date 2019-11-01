@@ -15,7 +15,7 @@ class STAC_IO:
     def default_write_text_method(uri, txt):
         """Default method for writing text. Only handles local file paths."""
         dirname = os.path.dirname(uri)
-        if not os.path.isdir(dirname):
+        if dirname != '' and not os.path.isdir(dirname):
             os.makedirs(dirname)
         with open(uri, 'w') as f:
             f.write(txt)
@@ -37,10 +37,10 @@ class STAC_IO:
     """
 
     # Replaced in __init__ to account for extension objects.
-    stac_object_from_dict = None
+    _stac_object_from_dict = None
 
     # This is set in __init__.py
-    STAC_OBJECT_CLASSES = None
+    _STAC_OBJECT_CLASSES = None
 
     @classmethod
     def read_text(cls, uri):
@@ -96,11 +96,14 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri):
+    def read_stac_object(cls, uri, root=None):
         """Read a STACObject from a JSON file at the given URI.
 
         Args:
             uri (str): The URI from which to read.
+            root (Catalog or Collection): Optional root of the catalog for this object.
+                If provided, the root's resolved object cache can be used to search for
+                previously resolved instances of the STAC object.
 
         Returns:
             STACObject: The deserialized STACObject from the serialized JSON
@@ -113,7 +116,7 @@ class STAC_IO:
             with your own implementation.
         """
         d = cls.read_json(uri)
-        return cls.stac_object_from_dict(d)
+        return cls.stac_object_from_dict(d, href=uri, root=root)
 
     @classmethod
     def save_json(cls, uri, json_dict):
