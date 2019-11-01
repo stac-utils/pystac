@@ -46,8 +46,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinxcontrib.fulltoc',
-    'nbsphinx',
-    'RunNotebook'
+    'nbsphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
