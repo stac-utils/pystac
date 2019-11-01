@@ -28,16 +28,26 @@ PySTAC Features
 * Allows easy iteration over STAC objects. Stac objects are only read in when needed.
 * Allows users to easily write "absolute published", "relative published" and "self-contained" catalogs as `described in the best practices documentation <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_.
 
+Example
+=======
+
+.. code-block:: python
+
+   TKTK
+
 
 Acknowledgements
 ================
 
 This library builds on the code and concepts of `sat-stac <https://github.com/sat-utils/sat-stac>`_.
 
+Table of Contents
+=================
+
 .. toctree::
-   :hidden:
    :maxdepth: 2
 
+   quickstart
    concepts
    api
    tutorials

@@ -91,12 +91,15 @@ Use 'make' without arguments to see a list of available commands.
 
 
 
-## Running the tutorials
+## Runing the quickstart and tutorials
 
-There are tutorials written as jupyter notebooks in the `tutorials` folder. To run them, run a jupyter notebook with the `tutorials` directory as the notebook directory:
+There is a quickstart and tutorials written as jupyter notebooks in the `docs/tutorials` folder.
+To run the notebooks, run a jupyter notebook with the `docs` directory as the notebook directory:
 
 ```
-> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=tutorials
+> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=docs
 ```
+
+You can then navigate to the notebooks and execute them.
 
 Requires [Jupyter](https://jupyter.org/) be installed.

@@ -30,3 +30,24 @@ or an entire folder using:
 	python -m unittest discover -v -s tests/
 
 More details on using ``unittest`` are `here <https://docs.python.org/3/library/unittest.html>`_.
+
+Code quality checks
+^^^^^^^^^^^^^^^^^^^
+
+PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and `yapf <https://github.com/google/yapf>`_ for code formatting and style checks.
+
+To run the flake8 style checks:
+
+.. code-block:: bash
+
+   > flake8 pystac
+   > flake8 tests
+
+To format code:
+
+.. code-block:: bash
+
+   > yapf -ipr pystac
+   > yapf -ipr tests
+
+You could also run the ``.travis/style_checks`` script to check flake8 and yapf.

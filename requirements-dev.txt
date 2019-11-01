@@ -6,3 +6,4 @@ sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-napoleon==0.7
 flake8==3.7.*
 yapf==0.28.*
+nbsphinx==0.4.3

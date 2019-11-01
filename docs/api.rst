@@ -41,7 +41,6 @@ STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users
 .. autoclass:: pystac.STAC_IO
    :members:
    :undoc-members:
-   :exclude-members: stac_object_from_dict, STAC_OBJECT_CLASSES
 
 Errors
 ------
