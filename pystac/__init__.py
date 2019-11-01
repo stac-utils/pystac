@@ -53,7 +53,8 @@ def _stac_object_from_dict(d, href=None, root=None):
             # Dealing with an Item
             if any([k for k in d['properties'].keys() if k.startswith('eo:')]):
                 return EOItem.from_dict(d, href=href, root=root)
-            elif any([k for k in d['properties'].keys() if k.startswith('label:')]):
+            elif any(
+                [k for k in d['properties'].keys() if k.startswith('label:')]):
                 return LabelItem.from_dict(d, href=href, root=root)
             else:
                 return Item.from_dict(d, href=href, root=root)

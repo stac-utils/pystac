@@ -7,6 +7,7 @@ from pystac.stac_io import STAC_IO
 # Set the STAC_IO read method to read HTTP.
 # Skip SSL Certification because it fails on some machines.
 
+
 def unsafe_read_https_method(uri):
     parsed = urlparse(uri)
     if parsed.scheme == 'https':

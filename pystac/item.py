@@ -1,4 +1,3 @@
-import json
 import os
 from copy import copy, deepcopy
 from collections import ChainMap
@@ -6,7 +5,6 @@ from collections import ChainMap
 import dateutil.parser
 
 from pystac import (STAC_VERSION, STACError)
-from pystac.stac_io import STAC_IO
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href,
@@ -269,7 +267,8 @@ class Item(STACObject):
         # common properties to merge.
         collection_to_merge = None
         if collection_id is not None and root is not None:
-            collection_to_merge = root._resolved_objects.get_by_id(collection_id)
+            collection_to_merge = root._resolved_objects.get_by_id(
+                collection_id)
         else:
             collection_link = item.get_single_link('collection')
             if collection_link is not None:
@@ -280,22 +279,21 @@ class Item(STACObject):
                    not collection_link.is_resolved():
                     if href is not None:
                         collection_link = collection_link.clone()
-                        collection_link.target = make_absolute_href(collection_link.target,
-                                                                    href)
+                        collection_link.target = make_absolute_href(
+                            collection_link.target, href)
                     else:
                         collection_link = None
 
                 if collection_link is not None:
-                    collection_to_merge = collection_link.resolve_stac_object(root=root).target
+                    collection_to_merge = collection_link.resolve_stac_object(
+                        root=root).target
                     if item.collection_id is None:
                         item.collection_id = collection_to_merge.id
 
         if collection_to_merge is not None:
             if collection_to_merge.properties is not None:
                 item.properties = dict(
-                    ChainMap(
-                        item.properties,
-                        collection_to_merge.properties))
+                    ChainMap(item.properties, collection_to_merge.properties))
 
         return item
 

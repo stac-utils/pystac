@@ -1,11 +1,9 @@
 import os
-import json
 from copy import deepcopy
 
 import pystac
 from pystac import (STAC_VERSION, STACError)
 from pystac.stac_object import STACObject
-from pystac.stac_io import STAC_IO
 from pystac.link import (Link, LinkType)
 from pystac.resolved_object_cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
@@ -125,7 +123,8 @@ class Catalog(STACObject):
 
         # Prevent typo confusion
         if isinstance(item, pystac.Catalog):
-            raise STACError('Cannot add catalog as item. Use add_child instead.')
+            raise STACError(
+                'Cannot add catalog as item. Use add_child instead.')
 
         item.set_root(self.get_root())
         item.set_parent(self)

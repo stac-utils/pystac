@@ -1,13 +1,10 @@
-import json
 from datetime import datetime
 import dateutil.parser
 from copy import (copy, deepcopy)
 
 from pystac import STACError
 from pystac.catalog import Catalog
-from pystac.link import (Link, LinkType)
-from pystac.stac_io import STAC_IO
-from pystac.utils import (make_absolute_href, is_absolute_href)
+from pystac.link import Link
 
 
 class Collection(Catalog):
@@ -209,12 +206,12 @@ class Extent:
         # Handle pre-0.8 spatial extents
         spatial_extent_dict = d['spatial']
         if isinstance(spatial_extent_dict, list):
-            spatial_extent_dict = { 'bbox': [spatial_extent_dict] }
+            spatial_extent_dict = {'bbox': [spatial_extent_dict]}
 
         # Handle pre-0.8 temporal extents
         temporal_extent_dict = d['temporal']
         if isinstance(temporal_extent_dict, list):
-            temporal_extent_dict = { 'interval': [temporal_extent_dict] }
+            temporal_extent_dict = {'interval': [temporal_extent_dict]}
 
         return Extent(SpatialExtent.from_dict(spatial_extent_dict),
                       TemporalExtent.from_dict(temporal_extent_dict))

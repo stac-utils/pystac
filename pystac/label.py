@@ -1,13 +1,10 @@
 """STAC Model classes for Label extension.
 """
-import json
 from copy import (copy, deepcopy)
 
 from pystac import STACError
-from pystac.stac_io import STAC_IO
 from pystac.item import (Item, Asset)
 from pystac.link import Link
-from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
 class LabelType:
@@ -178,7 +175,6 @@ class LabelItem(Item):
         """
         return self.get_stac_objects('source')
 
-
     def add_labels(self, href, title=None, media_type=None, properties=None):
         """Adds a label asset to this LabelItem.
 
@@ -192,11 +188,12 @@ class LabelItem(Item):
                 object JSON.
         """
 
-        self.add_asset("labels",
-                       Asset(href=href,
-                             title=title,
-                             media_type=media_type,
-                             properties=properties))
+        self.add_asset(
+            "labels",
+            Asset(href=href,
+                  title=title,
+                  media_type=media_type,
+                  properties=properties))
 
     def add_geojson_labels(self, href, title=None, properties=None):
         """Adds a GeoJSON label asset to this LabelItem.

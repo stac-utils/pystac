@@ -82,7 +82,8 @@ class CatalogTest(unittest.TestCase):
                 os.path.join(tmp_dir, 'cat', 'catalog.json'))
             result_items = result_cat.get_all_items()
 
-            self.assertEqual(len(list(catalog_items)) * 2, len(list(result_items)))
+            self.assertEqual(
+                len(list(catalog_items)) * 2, len(list(result_items)))
 
             ones, twos = 0, 0
             for item in result_items:
@@ -109,7 +110,8 @@ class CatalogTest(unittest.TestCase):
                      properties={})
         item1.add_asset('ortho', Asset(href='/some/ortho.tif'))
         catalog.add_item(item1)
-        kitten = Catalog(id='test-kitten', description='A cuter version of catalog')
+        kitten = Catalog(id='test-kitten',
+                         description='A cuter version of catalog')
         catalog.add_child(kitten)
         item2 = Item(id='item2',
                      geometry=RANDOM_GEOM,
@@ -129,23 +131,22 @@ class CatalogTest(unittest.TestCase):
             img_href = item.assets['ortho'].href
             label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
             label_item = LabelItem(id='Labels',
-                              geometry=item.geometry,
-                              bbox=item.bbox,
-                              datetime=datetime.utcnow(),
-                              properties={},
-                              label_description='labels',
-                              label_type='vector',
-                              label_properties='label',
-                              label_classes=[
-                              LabelClasses(classes=['one', 'two'],
-                                           name='label')
-                              ],
-                              label_tasks=['classification'])
+                                   geometry=item.geometry,
+                                   bbox=item.bbox,
+                                   datetime=datetime.utcnow(),
+                                   properties={},
+                                   label_description='labels',
+                                   label_type='vector',
+                                   label_properties='label',
+                                   label_classes=[
+                                       LabelClasses(classes=['one', 'two'],
+                                                    name='label')
+                                   ],
+                                   label_tasks=['classification'])
             label_item.add_source(item, assets=['ortho'])
             label_item.add_geojson_labels(label_href)
 
             return [item, label_item]
-
 
         c = catalog.map_items(modify_item_title)
         c = c.map_items(create_label_item)
@@ -340,29 +341,29 @@ class CatalogTest(unittest.TestCase):
 
                 # Set each item's HREF based on it's datetime
                 for item in items:
-                    item_href = '{}/{}-{}/{}.json'.format(root_dir,
-                                                          item.datetime.year,
-                                                          item.datetime.month,
-                                                          item.id)
+                    item_href = '{}/{}-{}/{}.json'.format(
+                        root_dir, item.datetime.year, item.datetime.month,
+                        item.id)
                     item.set_self_href(item_href)
 
             catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-            read_catalog = Catalog.from_file(os.path.join(tmp_dir, 'catalog.json'))
+            read_catalog = Catalog.from_file(
+                os.path.join(tmp_dir, 'catalog.json'))
 
             for root, _, items in read_catalog.walk():
                 parent = root.get_parent()
                 if parent is None:
-                    self.assertEqual(root.get_self_href(), os.path.join(tmp_dir, 'catalog.json'))
+                    self.assertEqual(root.get_self_href(),
+                                     os.path.join(tmp_dir, 'catalog.json'))
                 else:
                     d = os.path.dirname(parent.get_self_href())
-                    self.assertEqual(root.get_self_href(), os.path.join(d,
-                                                                        root.id,
-                                                                        root.DEFAULT_FILE_NAME))
+                    self.assertEqual(
+                        root.get_self_href(),
+                        os.path.join(d, root.id, root.DEFAULT_FILE_NAME))
                 for item in items:
                     end = '{}-{}/{}.json'.format(item.datetime.year,
-                                                 item.datetime.month,
-                                                 item.id)
+                                                 item.datetime.month, item.id)
                     self.assertTrue(item.get_self_href().endswith(end))
 
 
