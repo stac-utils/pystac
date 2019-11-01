@@ -7,6 +7,7 @@ from tests.utils import (TestCases, test_to_from_dict)
 
 class ItemTest(unittest.TestCase):
     def test_to_from_dict(self):
+        self.maxDiff = None
         m = TestCases.get_path(
             'data-files/itemcollections/sample-item-collection.json')
         with open(m) as f:

@@ -6,7 +6,7 @@ from copy import (copy, deepcopy)
 from pystac import STACError
 from pystac.catalog import Catalog
 from pystac.link import (Link, LinkType)
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, is_absolute_href)
 
 
@@ -118,14 +118,14 @@ class Collection(Catalog):
                            properties=self.properties,
                            summaries=self.summaries)
 
-        clone._resolved_objects.set(clone)
+        clone._resolved_objects.cache(clone)
 
         clone.add_links([l.clone() for l in self.links])
 
         return clone
 
-    @staticmethod
-    def from_dict(d):
+    @classmethod
+    def from_dict(cls, d, href=None, root=None):
         id = d['id']
         description = d['description']
         license = d['license']
@@ -153,33 +153,13 @@ class Collection(Catalog):
                                 summaries=summaries)
 
         for l in d['links']:
-            if not l['rel'] == 'root':
-                collection.add_link(Link.from_dict(l))
-            else:
-                # If a root link was included, we want to inheret
-                # whether it was relative or not.
-                if not is_absolute_href(l['href']):
-                    collection.get_single_link(
-                        'root').link_type = LinkType.RELATIVE
+            if l['rel'] == 'root':
+                # Remove the link that's generated in Catalog's constructor.
+                collection.remove_links('root')
+
+            collection.add_link(Link.from_dict(l))
 
         return collection
-
-    @staticmethod
-    def from_file(href):
-        """Reads a Collection from a file.
-
-        Args:
-            href (str): The HREF to read the collection from.
-
-        Returns:
-            Collection: Collection that was read from the given file.
-        """
-        if not is_absolute_href(href):
-            href = make_absolute_href(href)
-        d = json.loads(STAC_IO.read_text(href))
-        c = Collection.from_dict(d)
-        c.set_self_href(href)
-        return c
 
 
 class Extent:
@@ -225,8 +205,19 @@ class Extent:
         Returns:
             Extent: The Extent deserialized from the JSON dict.
         """
-        return Extent(SpatialExtent.from_dict(d['spatial']),
-                      TemporalExtent.from_dict(d['temporal']))
+
+        # Handle pre-0.8 spatial extents
+        spatial_extent_dict = d['spatial']
+        if isinstance(spatial_extent_dict, list):
+            spatial_extent_dict = { 'bbox': [spatial_extent_dict] }
+
+        # Handle pre-0.8 temporal extents
+        temporal_extent_dict = d['temporal']
+        if isinstance(temporal_extent_dict, list):
+            temporal_extent_dict = { 'interval': [temporal_extent_dict] }
+
+        return Extent(SpatialExtent.from_dict(spatial_extent_dict),
+                      TemporalExtent.from_dict(temporal_extent_dict))
 
 
 class SpatialExtent:

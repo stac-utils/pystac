@@ -128,18 +128,10 @@ class EOItem(Item):
     def __repr__(self):
         return '<EOItem id={}>'.format(self.id)
 
-    @staticmethod
-    def from_dict(d):
-        """Deserializes an EOItem from a dict.
-
-        Args:
-            d (dict): The dict that represents the EOItem in JSON
-
-        Returns:
-            EOItem: EOItem instance constructed from the dict.
-        """
-        item = Item.from_dict(d)
-        return EOItem.from_item(item)
+    @classmethod
+    def from_dict(cls, d, href=None, root=None):
+        item = Item.from_dict(d, href=href, root=root)
+        return cls.from_item(item)
 
     @classmethod
     def from_item(cls, item):
@@ -211,17 +203,17 @@ class EOItem(Item):
             asset = EOAsset.from_asset(asset)
         return super().add_asset(key, asset)
 
-    @staticmethod
-    def from_file(href):
-        """Reads an EOItem from a file.
+    # @staticmethod
+    # def from_file(href):
+    #     """Reads an EOItem from a file.
 
-        Args:
-            href (str): The HREF to read the item from.
+    #     Args:
+    #         href (str): The HREF to read the item from.
 
-        Returns:
-            EOItem: EOItem that was read from the given file.
-        """
-        return EOItem.from_item(Item.from_file(href))
+    #     Returns:
+    #         EOItem: EOItem that was read from the given file.
+    #     """
+    #     return EOItem.from_item(Item.from_file(href))
 
     def clone(self):
         c = super(EOItem, self).clone()
@@ -349,7 +341,7 @@ class EOAsset(Asset):
     def __repr__(self):
         return '<EOAsset href={}>'.format(self.href)
 
-    def get_band_objs(self):
+    def get_bands(self):
         """Returns the band information from the owning item for the bands referenced
         by this EOAsset.
 

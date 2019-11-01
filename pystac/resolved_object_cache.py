@@ -25,7 +25,7 @@ class ResolvedObjectCache:
     def __init__(self, ids_to_objects=None):
         self.ids_to_objects = ids_to_objects or {}
 
-    def get_or_set(self, obj):
+    def get_or_cache(self, obj):
         """Gets the STACObject that is the cached version of the given STACObject; or, if
         none exists, sets the cached object to the given object.
 
@@ -52,10 +52,21 @@ class ResolvedObjectCache:
             STACObject or None: Either the cached object that has the same ID as the given
             object, or None
         """
+        return self.get_by_id(obj.id)
 
-        return self.ids_to_objects.get(obj.id)
+    def get_by_id(self, obj_id):
+        """Get the cached object that has the given ID.
 
-    def set(self, obj):
+        Args:
+            obj_id (str): The ID to be checked against the cache.
+
+        Returns:
+            STACObject or None: Either the cached object that has the given ID, or None
+        """
+
+        return self.ids_to_objects.get(obj_id)
+
+    def cache(self, obj):
         """Set the given object into the cache.
 
         Args:

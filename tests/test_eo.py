@@ -150,7 +150,7 @@ class EOAssetTest(unittest.TestCase):
         eoa2 = EOAsset.from_dict(self.EO_ASSET_2_DICT)
         self.assertDictEqual(eoa2.properties, {"extra property": "extra"})
 
-    def test_get_band_objs(self):
+    def test_get_bands(self):
         eoi = EOItem.from_file(self.EO_ITEM_URI)
         eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
         eoi.add_asset('test-asset', eoa)
@@ -163,7 +163,7 @@ class EOAssetTest(unittest.TestCase):
             "full_width_half_max": 0.02
         }
         b1 = Band.from_dict(bd)
-        eoa_bands = eoa.get_band_objs()
+        eoa_bands = eoa.get_bands()
         compare_bands(self, b1, eoa_bands[0])
 
 

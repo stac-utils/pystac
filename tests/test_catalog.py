@@ -21,11 +21,11 @@ class CatalogTest(unittest.TestCase):
             read_catalog = Catalog.from_file('{}/catalog.json'.format(cat_dir))
 
             collections = catalog.get_children()
-            self.assertEqual(len(collections), 2)
+            self.assertEqual(len(list(collections)), 2)
 
             items = read_catalog.get_all_items()
 
-            self.assertEqual(len(items), 8)
+            self.assertEqual(len(list(items)), 8)
 
     def test_read_remote(self):
         catalog_url = (
@@ -37,7 +37,7 @@ class CatalogTest(unittest.TestCase):
 
         zanzibar = cat.get_child('zanzibar-collection')
 
-        self.assertEqual(len(zanzibar.get_items()), 2)
+        self.assertEqual(len(list(zanzibar.get_items())), 2)
 
     def test_map_items(self):
         def item_mapper(item):
@@ -82,7 +82,7 @@ class CatalogTest(unittest.TestCase):
                 os.path.join(tmp_dir, 'cat', 'catalog.json'))
             result_items = result_cat.get_all_items()
 
-            self.assertEqual(len(catalog_items) * 2, len(result_items))
+            self.assertEqual(len(list(catalog_items)) * 2, len(list(result_items)))
 
             ones, twos = 0, 0
             for item in result_items:
@@ -99,6 +99,60 @@ class CatalogTest(unittest.TestCase):
             for item in catalog.get_all_items():
                 self.assertFalse(('ITEM_MAPPER_1' in item.properties)
                                  or ('ITEM_MAPPER_2' in item.properties))
+
+    def test_map_items_multiple_2(self):
+        catalog = Catalog(id='test-1', description='Test1')
+        item1 = Item(id='item1',
+                     geometry=RANDOM_GEOM,
+                     bbox=RANDOM_BBOX,
+                     datetime=datetime.utcnow(),
+                     properties={})
+        item1.add_asset('ortho', Asset(href='/some/ortho.tif'))
+        catalog.add_item(item1)
+        kitten = Catalog(id='test-kitten', description='A cuter version of catalog')
+        catalog.add_child(kitten)
+        item2 = Item(id='item2',
+                     geometry=RANDOM_GEOM,
+                     bbox=RANDOM_BBOX,
+                     datetime=datetime.utcnow(),
+                     properties={})
+        item2.add_asset('ortho', Asset(href='/some/other/ortho.tif'))
+        kitten.add_item(item2)
+
+        def modify_item_title(item):
+            item.title = 'Some new title'
+            return item
+
+        def create_label_item(item):
+            # Assumes the GEOJSON labels are in the
+            # same location as the image
+            img_href = item.assets['ortho'].href
+            label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
+            label_item = LabelItem(id='Labels',
+                              geometry=item.geometry,
+                              bbox=item.bbox,
+                              datetime=datetime.utcnow(),
+                              properties={},
+                              label_description='labels',
+                              label_type='vector',
+                              label_properties='label',
+                              label_classes=[
+                              LabelClasses(classes=['one', 'two'],
+                                           name='label')
+                              ],
+                              label_tasks=['classification'])
+            label_item.add_source(item, assets=['ortho'])
+            label_item.add_geojson_labels(label_href)
+
+            return [item, label_item]
+
+
+        c = catalog.map_items(modify_item_title)
+        c = c.map_items(create_label_item)
+        new_catalog = c
+
+        items = new_catalog.get_all_items()
+        self.assertTrue(len(list(items)) == 4)
 
     def test_map_assets_single(self):
         changed_asset = 'd43bead8-e3f8-4c51-95d6-e24e750a402b'
@@ -260,6 +314,57 @@ class CatalogTest(unittest.TestCase):
                 c2.make_all_links_absolute()
                 check_all_absolute(c2)
 
+    def test_set_hrefs_manually(self):
+        catalog = TestCases.test_case_1()
+
+        # Modify the datetimes
+        year = 2004
+        month = 2
+        for item in catalog.get_all_items():
+            item.datetime = item.datetime.replace(year=year, month=month)
+            year += 1
+            month += 1
+
+        with TemporaryDirectory() as tmp_dir:
+            for root, _, items in catalog.walk():
+
+                # Set root's HREF based off the parent
+                parent = root.get_parent()
+                if parent is None:
+                    root_dir = tmp_dir
+                else:
+                    d = os.path.dirname(parent.get_self_href())
+                    root_dir = os.path.join(d, root.id)
+                root_href = os.path.join(root_dir, root.DEFAULT_FILE_NAME)
+                root.set_self_href(root_href)
+
+                # Set each item's HREF based on it's datetime
+                for item in items:
+                    item_href = '{}/{}-{}/{}.json'.format(root_dir,
+                                                          item.datetime.year,
+                                                          item.datetime.month,
+                                                          item.id)
+                    item.set_self_href(item_href)
+
+            catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
+
+            read_catalog = Catalog.from_file(os.path.join(tmp_dir, 'catalog.json'))
+
+            for root, _, items in read_catalog.walk():
+                parent = root.get_parent()
+                if parent is None:
+                    self.assertEqual(root.get_self_href(), os.path.join(tmp_dir, 'catalog.json'))
+                else:
+                    d = os.path.dirname(parent.get_self_href())
+                    self.assertEqual(root.get_self_href(), os.path.join(d,
+                                                                        root.id,
+                                                                        root.DEFAULT_FILE_NAME))
+                for item in items:
+                    end = '{}-{}/{}.json'.format(item.datetime.year,
+                                                 item.datetime.month,
+                                                 item.id)
+                    self.assertTrue(item.get_self_href().endswith(end))
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, l, tag):
@@ -267,7 +372,8 @@ class FullCopyTest(unittest.TestCase):
             target_href = l.target.get_self_href()
         else:
             target_href = l.target
-        self.assertTrue(tag in target_href)
+        self.assertTrue(tag in target_href,
+                        '{} does not contain "{}"'.format(target_href, tag))
 
     def check_item(self, i, tag):
         for l in i.links:

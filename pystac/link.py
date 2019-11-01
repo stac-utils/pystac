@@ -3,7 +3,7 @@ from copy import (copy, deepcopy)
 from urllib.parse import urlparse
 
 from pystac import STACError
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href,
                           is_absolute_href)
 
@@ -140,9 +140,10 @@ class Link:
         """Resolves a STAC object from the HREF of this link, if the link is not
         already resolved.
 
-        Params:
-          root -    The root of the catalog for this link. This root's resolved object cache is used
-                    to search for previously resolved instances of the STAC object.
+        Args:
+            root (Catalog or Collection): Optional root of the catalog for this link.
+                If provided, the root's resolved object cache is used to search for
+                previously resolved instances of the STAC object.
         """
         if isinstance(self.target, str):
             # If it's a relative link, base it off the parent.
@@ -161,13 +162,13 @@ class Link:
                                 target_path))
                     target_path = make_absolute_href(self.target, owner_href)
 
-            obj = STAC_IO.read_stac_object(target_path)
+            obj = STAC_IO.read_stac_object(target_path, root=root)
             obj.set_self_href(target_path)
         else:
             obj = self.target
 
         if root is not None:
-            self.target = root._resolved_objects.get_or_set(obj)
+            self.target = root._resolved_objects.get_or_cache(obj)
             self.target.set_root(root, link_type=self.link_type)
         else:
             self.target = obj

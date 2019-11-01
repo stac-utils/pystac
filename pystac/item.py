@@ -1,11 +1,12 @@
 import json
 import os
 from copy import copy, deepcopy
+from collections import ChainMap
 
 import dateutil.parser
 
 from pystac import (STAC_VERSION, STACError)
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href,
@@ -232,24 +233,16 @@ class Item(STACObject):
                         abs_href, new_self_href)
                     asset.href = new_relative_href
 
-    @staticmethod
-    def from_dict(d):
-        """Deserializes an Item from a dict.
-
-        Args:
-            d (dict): The dict that represents the Item in JSON
-
-        Returns:
-            Item: Item instance constructed from the dict.
-        """
+    @classmethod
+    def from_dict(cls, d, href=None, root=None):
         id = d['id']
         geometry = d['geometry']
         bbox = d['bbox']
         properties = d['properties']
         stac_extensions = d.get('stac_extensions')
-        collection = None
+        collection_id = None
         if 'collection' in d.keys():
-            collection = d['collection']
+            collection_id = d['collection']
 
         datetime = properties.get('datetime')
         if datetime is None:
@@ -264,7 +257,7 @@ class Item(STACObject):
                     datetime=datetime,
                     properties=properties,
                     stac_extensions=stac_extensions,
-                    collection=collection)
+                    collection=collection_id)
 
         for l in d['links']:
             item.add_link(Link.from_dict(l))
@@ -272,22 +265,39 @@ class Item(STACObject):
         for k, v in d['assets'].items():
             item.assets[k] = Asset.from_dict(v)
 
+        # Find the collection, merge properties if there are
+        # common properties to merge.
+        collection_to_merge = None
+        if collection_id is not None and root is not None:
+            collection_to_merge = root._resolved_objects.get_by_id(collection_id)
+        else:
+            collection_link = item.get_single_link('collection')
+            if collection_link is not None:
+                # If there's a relative collection link, and we have an href passed
+                # in, we can resolve the collection from the link. If not,
+                # we'll skip merging in collection properties.
+                if collection_link.link_type == LinkType.RELATIVE and \
+                   not collection_link.is_resolved():
+                    if href is not None:
+                        collection_link = collection_link.clone()
+                        collection_link.target = make_absolute_href(collection_link.target,
+                                                                    href)
+                    else:
+                        collection_link = None
+
+                if collection_link is not None:
+                    collection_to_merge = collection_link.resolve_stac_object(root=root).target
+                    if item.collection_id is None:
+                        item.collection_id = collection_to_merge.id
+
+        if collection_to_merge is not None:
+            if collection_to_merge.properties is not None:
+                item.properties = dict(
+                    ChainMap(
+                        item.properties,
+                        collection_to_merge.properties))
+
         return item
-
-    @staticmethod
-    def from_file(href):
-        """Reads an Item from a file.
-
-        Args:
-            href (str): The HREF to read the item from.
-
-        Returns:
-            Item: Item that was read from the given file.
-        """
-        if not is_absolute_href(href):
-            href = make_absolute_href(href)
-        d = json.loads(STAC_IO.read_text(href))
-        return Item.from_dict(d)
 
 
 class Asset:

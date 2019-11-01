@@ -3,9 +3,9 @@ import json
 from copy import deepcopy
 
 import pystac
-from pystac import STAC_VERSION
+from pystac import (STAC_VERSION, STACError)
 from pystac.stac_object import STACObject
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.link import (Link, LinkType)
 from pystac.resolved_object_cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
@@ -85,6 +85,7 @@ class Catalog(STACObject):
             self.set_self_href(href)
 
         self._resolved_objects = ResolvedObjectCache()
+        self._resolved_objects.cache(self)
 
     def __repr__(self):
         return '<Catalog id={}>'.format(self.id)
@@ -104,6 +105,10 @@ class Catalog(STACObject):
             title (str): Optional title to give to the :class:`~pystac.Link`
         """
 
+        # Prevent typo confusion
+        if isinstance(child, pystac.Item):
+            raise STACError('Cannot add item as child. Use add_item instead.')
+
         child.set_root(self.get_root())
         child.set_parent(self)
         self.add_link(Link.child(child, title=title))
@@ -117,6 +122,11 @@ class Catalog(STACObject):
             item (Item): The item to add.
             title (str): Optional title to give to the :class:`~pystac.Link`
         """
+
+        # Prevent typo confusion
+        if isinstance(item, pystac.Catalog):
+            raise STACError('Cannot add catalog as item. Use add_child instead.')
+
         item.set_root(self.get_root())
         item.set_parent(self)
         self.add_link(Link.item(item, title=title))
@@ -156,7 +166,8 @@ class Catalog(STACObject):
         """Return all children of this catalog.
 
         Return:
-            List[Catalog or Collection]: List of children who's parent is this catalog.
+            Generator[Catalog or Collection]: Generator of children who's parent
+            is this catalog.
         """
         return self.get_stac_objects('child')
 
@@ -201,7 +212,7 @@ class Catalog(STACObject):
         """Return all items of this catalog.
 
         Return:
-            List[Item]: List of items who's parent is this catalog.
+            Generator[Item]: Generator of items who's parent is this catalog.
         """
         return self.get_stac_objects('item')
 
@@ -219,15 +230,13 @@ class Catalog(STACObject):
         any subcatalogs recursively.
 
         Returns:
-            List[Item]: All items that belong to this catalog, and all
+            Generator[Item]: All items that belong to this catalog, and all
                 catalogs or collections connected to this catalog through
                 child links.
         """
-        items = self.get_items()
+        yield from self.get_items()
         for child in self.get_children():
-            items += child.get_all_items()
-
-        return items
+            yield from child.get_all_items()
 
     def get_item_links(self):
         """Return all item links of this catalog.
@@ -258,7 +267,7 @@ class Catalog(STACObject):
         clone = Catalog(id=self.id,
                         description=self.description,
                         title=self.title)
-        clone._resolved_objects.set(clone)
+        clone._resolved_objects.cache(clone)
 
         clone.add_links([l.clone() for l in self.links])
 
@@ -393,10 +402,17 @@ class Catalog(STACObject):
     def walk(self):
         """Walks through children and items of catalogs.
 
+        For each catalog in the STAC's tree rooted at this catalog (including this catalog
+        itself), it yields a 3-tuple (root, subcatalogs, items). The root in that
+        3-tuple refers to the current catalog being walked, the subcatalogs are any
+        catalogs or collections for which the root is a parent, and items represents
+        any items that have the root as a parent.
+
         This has similar functionality to Python's :func:`os.walk`.
 
         Returns:
-           A generator that yields a 3-tuple (parent_catalog, children, items).
+           Generator[(Catalog, Generator[Catalog], Generator[Item])]: A generator that
+           yields a 3-tuple (parent_catalog, children, items).
         """
         children = self.get_children()
         items = self.get_items()
@@ -506,16 +522,8 @@ class Catalog(STACObject):
                 s += ' {}'.format(item.get_self_href())
             print(s)
 
-    @staticmethod
-    def from_dict(d):
-        """Deserializes a Catalog from a dict.
-
-        Args:
-            d (dict): The dict that represents the Catalog in JSON
-
-        Returns:
-            Catalog: Catalog instance constructed from the dict.
-        """
+    @classmethod
+    def from_dict(cls, d, href=None, root=None):
         id = d['id']
         description = d['description']
         title = d.get('title')
@@ -523,30 +531,10 @@ class Catalog(STACObject):
         cat = Catalog(id=id, description=description, title=title)
 
         for l in d['links']:
-            if not l['rel'] == 'root':
-                cat.add_link(Link.from_dict(l))
-            else:
-                # If a root link was included, we want to inheret
-                # whether it was relative or not.
-                if not is_absolute_href(l['href']):
-                    cat.get_single_link('root').link_type = LinkType.RELATIVE
+            if l['rel'] == 'root':
+                # Remove the link that's generated in Catalog's constructor.
+                cat.remove_links('root')
+
+            cat.add_link(Link.from_dict(l))
 
         return cat
-
-    @staticmethod
-    def from_file(href):
-        """Reads a Catalog from a file.
-
-        Args:
-            href (str): The HREF to read the catalog from.
-
-        Returns:
-            Catalog: Catalog that was read from the given file.
-        """
-
-        if not is_absolute_href(href):
-            href = make_absolute_href(href)
-        d = json.loads(STAC_IO.read_text(href))
-        c = Catalog.from_dict(d)
-        c.set_self_href(href)
-        return c

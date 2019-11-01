@@ -81,11 +81,6 @@
             "type": "application/json"
         },
         {
-            "rel": "collection",
-            "href": "../collection.json",
-            "type": "application/json"
-        },
-        {
             "rel": "root",
             "href": "../../../catalog.json",
             "type": "application/json"

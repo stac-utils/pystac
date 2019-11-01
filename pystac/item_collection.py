@@ -1,7 +1,7 @@
 import json
 
 from pystac import STACError
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.item import Item
 from pystac.link import Link
 from pystac.stac_object import LinkMixin

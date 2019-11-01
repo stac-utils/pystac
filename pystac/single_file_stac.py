@@ -2,7 +2,7 @@ import json
 
 from pystac import STACError
 from pystac.collection import Collection
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
 from pystac.item import Item
 from pystac.item_collection import ItemCollection
 

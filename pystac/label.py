@@ -4,8 +4,8 @@ import json
 from copy import (copy, deepcopy)
 
 from pystac import STACError
-from pystac.io import STAC_IO
-from pystac.item import Item
+from pystac.stac_io import STAC_IO
+from pystac.item import (Item, Asset)
 from pystac.link import Link
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
@@ -168,6 +168,17 @@ class LabelItem(Item):
                     properties=properties)
         self.add_link(link)
 
+    def get_sources(self):
+        """Gets any source items that describe the source imagery used to generate
+        this LabelItem.
+
+        Returns:
+            Generator[Items]: A possibly empty list of source imagery items. Determined by
+            links of this LabelItem that have ``rel=='source'``.
+        """
+        return self.get_stac_objects('source')
+
+
     def add_labels(self, href, title=None, media_type=None, properties=None):
         """Adds a label asset to this LabelItem.
 
@@ -182,10 +193,10 @@ class LabelItem(Item):
         """
 
         self.add_asset("labels",
-                       href=href,
-                       title=title,
-                       media_type=media_type,
-                       properties=properties)
+                       Asset(href=href,
+                             title=title,
+                             media_type=media_type,
+                             properties=properties))
 
     def add_geojson_labels(self, href, title=None, properties=None):
         """Adds a GeoJSON label asset to this LabelItem.
@@ -222,9 +233,28 @@ class LabelItem(Item):
         clone.assets = dict([(k, a.clone()) for (k, a) in self.assets.items()])
         return clone
 
-    @staticmethod
-    def from_dict(d):
-        item = Item.from_dict(d)
+    def _object_links(self):
+        return super()._object_links() + ['source']
+
+    @classmethod
+    def from_dict(cls, d, href=None, root=None):
+        item = Item.from_dict(d, href=href, root=root)
+        return cls.from_item(item)
+
+    @classmethod
+    def from_item(cls, item):
+        """Creates a LabelItem from an Item.
+
+        Args:
+            item (Item): The Item to create an LabelItem from.
+
+        Returns:
+            LabelItem: A new LabelItem from item. If the item
+                item is already an LabelItem, simply returns a clone of item.
+        """
+        if isinstance(item, LabelItem):
+            return item.clone()
+
         props = item.properties
 
         label_properties = props.get('label:properties')
@@ -266,25 +296,6 @@ class LabelItem(Item):
         li.assets = copy(item.assets)
 
         return li
-
-    @staticmethod
-    def from_file(href):
-        """Reads a LabelItem from a file.
-
-        Args:
-            href (str): The HREF to read the label item from.
-
-        Returns:
-            LabelItem: Item that was read from the given file.
-        """
-        if not is_absolute_href(href):
-            href = make_absolute_href(href)
-        d = json.loads(STAC_IO.read_text(href))
-
-        return LabelItem.from_dict(d)
-
-    def _object_links(self):
-        return super()._object_links() + ['source']
 
 
 class LabelClasses:

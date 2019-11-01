@@ -24,6 +24,18 @@ class LabelItemTest(unittest.TestCase):
 
         self.assertEqual(len(label_example_1.label_overviews[0].counts), 2)
 
+    def test_get_sources(self):
+        cat = TestCases.test_case_1()
+
+        items = cat.get_all_items()
+        item_ids = set([i.id for i in items])
+
+        for li in items:
+            if isinstance(li, LabelItem):
+                sources = li.get_sources()
+                self.assertEqual(len(sources), 1)
+                self.assertTrue(sources[0].id in item_ids)
+
     def test_validate_label(self):
         sv = SchemaValidator()
         with open(self.label_example_1_uri) as f:

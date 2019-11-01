@@ -2,7 +2,8 @@ from abc import (ABC, abstractmethod)
 
 from pystac import STACError
 from pystac.link import (Link, LinkType)
-from pystac.io import STAC_IO
+from pystac.stac_io import STAC_IO
+from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
 class LinkMixin:
@@ -157,7 +158,11 @@ class STACObject(LinkMixin, ABC):
         """
         root_link = self.get_root_link()
         if root_link:
-            return root_link.resolve_stac_object().target
+            if not root_link.is_resolved():
+                root_link.resolve_stac_object()
+                # Use set_root, so Catalogs can merge ResolvedObjectCache instances.
+                self.set_root(root_link.target)
+            return root_link.target
         else:
             return None
 
@@ -232,15 +237,17 @@ class STACObject(LinkMixin, ABC):
         Args:
             rel (str): The relation to match each :class:`~pystac.Link`'s
                 ``rel`` property against.
+
+        Returns:
+            Generator[STACObjects]: A possibly empty generator of STACObjects that are
+            connected to this object through links with the given ``rel``.
         """
 
-        result = []
         for i in range(0, len(self.links)):
             link = self.links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
-                result.append(link.target)
-        return result
+                yield link.target
 
     def save_object(self, include_self_link=True):
         """Saves this STAC Object to it's 'self' HREF.
@@ -295,7 +302,7 @@ class STACObject(LinkMixin, ABC):
                     target = root._resolved_objects.get(target)
                 else:
                     copied_target = target.full_copy(root=root, parent=clone)
-                    root._resolved_objects.set(copied_target)
+                    root._resolved_objects.cache(copied_target)
                     target = copied_target
                 if link.rel in ['child', 'item']:
                     target.set_root(root)
@@ -313,6 +320,10 @@ class STACObject(LinkMixin, ABC):
         """
         link_rels = set(self._object_links())
         for link in self.links:
+            if link.rel == 'root':
+                if not link.is_resolved() and not link.target == self.get_self_href():
+                    link.resolve_stac_object()
+                    link.target.fully_resolve()
             if link.rel in link_rels:
                 if not link.is_resolved():
                     link.resolve_stac_object(root=self.get_root())
@@ -369,8 +380,8 @@ class STACObject(LinkMixin, ABC):
         """
         pass
 
-    @staticmethod
-    def from_file(href):
+    @classmethod
+    def from_file(cls, href):
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -380,4 +391,41 @@ class STACObject(LinkMixin, ABC):
             The specific STACObject implementation class that is represented
             by the JSON read from the file located at HREF.
         """
-        return STAC_IO.read_stac_object(href)
+        if not is_absolute_href(href):
+            href = make_absolute_href(href)
+        d = STAC_IO.read_json(href)
+
+        if cls == STACObject:
+            o = STAC_IO.stac_object_from_dict(d, href=href)
+        else:
+            o = cls.from_dict(d, href=href)
+
+        # Set the self HREF, if it's not already set to something else.
+        if o.get_self_href() is None:
+            o.set_self_href(href)
+
+        # If this is a root catalog, set the root to the catalog instance.
+        root_link = o.get_root_link()
+        if not root_link.is_resolved():
+            if root_link.get_absolute_href() == href:
+                o.set_root(o, link_type=root_link.link_type)
+        return o
+
+
+    @classmethod
+    @abstractmethod
+    def from_dict(cls, d, href=None, root=None):
+        """Parses this STACObject from the passed in dictionary.
+
+        Args:
+            d (dict): The dict to parse.
+            href (str): Optional href that is the file location of the object being
+                parsed.
+            root (Catalog or Collection): Optional root of the catalog for this object.
+                If provided, the root's resolved object cache can be used to search for
+                previously resolved instances of the STAC object.
+
+        Returns:
+            STACObject: The STACObject parsed from this dict.
+        """
+        pass
