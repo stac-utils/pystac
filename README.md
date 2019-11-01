@@ -35,7 +35,7 @@ The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
 | ------ | ----  |
-| 0.2.x  | 0.8.x |
+| 0.3.x  | 0.8.x |
 
 ## Documentation
 

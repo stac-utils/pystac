@@ -1,7 +1,7 @@
 Concepts
 ########
 
-This page will give an overview of some important concepts to understand when working with PySTAC. If you want to check code examples, see the jupyter notebook `tutorials in the GitHub repo <https://github.com/azavea/pystac/tree/develop/tutorials>`_.
+This page will give an overview of some important concepts to understand when working with PySTAC. If you want to check code examples, see the Jupyter notebook `tutorials in the GitHub repo <https://github.com/azavea/pystac/tree/develop/tutorials>`_.
 
 Reading STACs
 =============
@@ -16,7 +16,7 @@ work with the STAC in memory.
    catalog = Catalog.from_file('/some/example/catalog.json')
 
    for root, catalogs, items in catalog.walk():
-       # Do interestings things with the STAC data.
+       # Do interesting things with the STAC data.
 
 To see how to hook into PySTAC for reading from alternate URIs such as cloud object storage,
 see :ref:`using stac_io`.
@@ -26,7 +26,7 @@ Writing STACs
 
 While working with STACs in-memory don't require setting file paths, in order to save a STAC,
 you'll need to give each STAC object a ``self`` link that describes the location of where
-it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (descripted in the :ref:`catalog types` section) that matches your use case.
+it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
 
 .. code-block:: python
 
@@ -47,7 +47,7 @@ Catalog, Collection and Items, all based off of the root URI that is passed in:
 
 .. code-block:: python
 
-    catalog.noramlize_hrefs('/some/location')
+    catalog.normalize_hrefs('/some/location')
     catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
 
 If you want to set your HREFs in a non-canonical format, you can set each STAC object href
@@ -85,7 +85,7 @@ manually by using ``set_self_href``:
 Catalog Types
 -------------
 
-The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A breif description is below, but check out the document for the official take on these types:
+The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
 
 Note that the catalog types do not dictate the asset HREF formats, only link formats. Asset HREFs in any catalog type can be relative or absolute; see the section on :ref:`rel vs abs asset` below.
 
@@ -169,9 +169,9 @@ Every stac object has a :func:`~pystac.STACObject.save_object` method, that take
 Using STAC_IO
 =============
 
-The :class:`~pystac.STAC_IO` class is the way PySTAC reads and writes text from file locations. Since PySTAC aims to be dependency-free, there is no default mechanisms to read and write from anything but the local filesystem. However, users of PySTAC may want to read and write from other filesystems, such as HTTP or cloud object storage. STAC_IO allows users to hook into PySTAC and define their own reading and writing primatives to allow for those use cases.
+The :class:`~pystac.STAC_IO` class is the way PySTAC reads and writes text from file locations. Since PySTAC aims to be dependency-free, there is no default mechanisms to read and write from anything but the local file system. However, users of PySTAC may want to read and write from other file systems, such as HTTP or cloud object storage. STAC_IO allows users to hook into PySTAC and define their own reading and writing primitives to allow for those use cases.
 
-To enable reading from other types of filesystems, it is recommended that in the `__init__.py` of the client module, or at the beginning of the script using PySTAC, you overwrite the :func:`STAC_IO.read_text_method <pystac.STAC_IO.read_text_method>` and :func:`STAC_IO.write_text_method <pystac.STAC_IO.write_text_method>` members of STAC_IO with functions that read and write however you need. For example, this code will allow for reading from AWS's S3 cloud object storage using `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`_:
+To enable reading from other types of file systems, it is recommended that in the `__init__.py` of the client module, or at the beginning of the script using PySTAC, you overwrite the :func:`STAC_IO.read_text_method <pystac.STAC_IO.read_text_method>` and :func:`STAC_IO.write_text_method <pystac.STAC_IO.write_text_method>` members of STAC_IO with functions that read and write however you need. For example, this code will allow for reading from AWS's S3 cloud object storage using `boto3 <https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`_:
 
 .. code-block:: python
 
@@ -230,8 +230,8 @@ PySTAC is designed to allow for STACs to be manipulated in-memory. This includes
 Walking over a STAC
 -------------------
 
-You can walk through all subcatalogs and items of a catalog with a method inspired
-by the Pythong Standard Library `os.walk() <https://docs.python.org/3/library/os.html#os.walk>`_ method: :func:`Catalog.walk() <pystac.Catalog.walk>`:
+You can walk through all sub-catalogs and items of a catalog with a method inspired
+by the Python Standard Library `os.walk() <https://docs.python.org/3/library/os.html#os.walk>`_ method: :func:`Catalog.walk() <pystac.Catalog.walk>`:
 
 .. code-block:: python
 
@@ -259,7 +259,7 @@ The :func:`Catalog.map_items <pystac.Catalog.map_items>` method is useful for ma
        return item
 
    def create_label_item(item):
-       # Assumes the GEOJSON labels are in the
+       # Assumes the GeoJSON labels are in the
        # same location as the image
        img_href = item.assets['ortho'].href
        label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
@@ -291,7 +291,7 @@ The :func:`Catalog.map_items <pystac.Catalog.map_items>` method is useful for ma
 Copying STACs in-memory
 -----------------------
 
-The in-memory copying of STACs to create new ones is crucial to correct manipulations and mutations of STAC data. The :func:`STACObject.full_copy <pystac.STACObject.full_copy>` mechanism handles this in a way that ties the elements of the copies STAC together correctly. This includes situations where there might be cycles in the graph of connected objects of the STAC (which otherwise wouuld be `a tree <https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_). For example, if a :class:`~pystac.LabelItem` lists a :attr:`~pystac.LabelItem.source` that is an item also contained in the root catalog; the full copy of the STAC will ensure that the :class:`~pystac.Item` instance representing the source imagery item is the same instance that is linked to by the :class:`~pystac.LabelItem`.
+The in-memory copying of STACs to create new ones is crucial to correct manipulations and mutations of STAC data. The :func:`STACObject.full_copy <pystac.STACObject.full_copy>` mechanism handles this in a way that ties the elements of the copies STAC together correctly. This includes situations where there might be cycles in the graph of connected objects of the STAC (which otherwise would be `a tree <https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_). For example, if a :class:`~pystac.LabelItem` lists a :attr:`~pystac.LabelItem.source` that is an item also contained in the root catalog; the full copy of the STAC will ensure that the :class:`~pystac.Item` instance representing the source imagery item is the same instance that is linked to by the :class:`~pystac.LabelItem`.
 
 Resolving STAC objects
 ======================
@@ -301,13 +301,13 @@ PySTAC tries to only "resolve" STAC Objects - that is, load the metadata contain
 Lazy resolution of STAC objects
 -------------------------------
 
-Links are read only when they need to be. For instance, when you load a catalog using :func:`Catalog.from_file <pystac.Catalog.from_file>`, the catalog and all of its links are read into a :class:`~pystac.Catalog` instance. If you iterate through :attr:`Catalog.links <pystac.Catalog.links>`, you'll see the :attr:`~pystac.Link.target` of the :class:`~pystac.Link` will refer to a string - that is the HREF of the link. However, if you call :func:`Catalog.get_items <pystac.Catalog.get_items>`, for instance, you'll get back the actual :class:`~pystac.Item` instances that are refered to by each item link in the Catalog. That's because at the time you call ``get_items``, PySTAC is "resolving" the links for any link that represents an item in the catalog.
+Links are read only when they need to be. For instance, when you load a catalog using :func:`Catalog.from_file <pystac.Catalog.from_file>`, the catalog and all of its links are read into a :class:`~pystac.Catalog` instance. If you iterate through :attr:`Catalog.links <pystac.Catalog.links>`, you'll see the :attr:`~pystac.Link.target` of the :class:`~pystac.Link` will refer to a string - that is the HREF of the link. However, if you call :func:`Catalog.get_items <pystac.Catalog.get_items>`, for instance, you'll get back the actual :class:`~pystac.Item` instances that are referred to by each item link in the Catalog. That's because at the time you call ``get_items``, PySTAC is "resolving" the links for any link that represents an item in the catalog.
 
 The resolution mechanism is accomplished through :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>`. Though this method is used extensively internally to PySTAC, ideally this is completely transparent to users of PySTAC, and you won't have to worry about how and when links get resolved. However, one important aspect to understand is how object resolution caching happens.
 
 Resolution Caching
 ------------------
 
-The root :class:`~pystac.Catalog` instance of a STAC (the Catalog which is linked to by every associated object's ``root`` link) contains a cache of resolved objects. This cache points to in-memory instances of :class:`~pystac.STACObject` s that have already been resolved through PySTAC crawling links associated with that root catalog. The cache works off of the stac object's ID, which is why **it is necesary for every STAC object in the catalog to have a unique identifier, which is unique across the entire STAC**.
+The root :class:`~pystac.Catalog` instance of a STAC (the Catalog which is linked to by every associated object's ``root`` link) contains a cache of resolved objects. This cache points to in-memory instances of :class:`~pystac.STACObject` s that have already been resolved through PySTAC crawling links associated with that root catalog. The cache works off of the stac object's ID, which is why **it is necessary for every STAC object in the catalog to have a unique identifier, which is unique across the entire STAC**.
 
 When a link is being resolved from a STACObject that has it's root set, that root is passed into the :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` call. That root's :class:`~pystac.resolved_object_cache.ResolvedObjectCache` will be used to ensure that if the link is pointing to an object that has already been resolved, then that link will point to the same, single instance in the cache. This ensures working with STAC objects in memory doesn't create a situation where multiple copies of the same STAC objects are created from different links, manipulated, and written over each other.

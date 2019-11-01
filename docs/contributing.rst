@@ -5,7 +5,7 @@ A list of issues and ongoing work is available on the PySTAC `issues page <https
 
 Development installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Fork PySTAC into your Github account. Then, clone the repo and install it locally with pip as follows:
+Fork PySTAC into your GitHub account. Then, clone the repo and install it locally with pip as follows:
 
 .. code-block:: bash
 
