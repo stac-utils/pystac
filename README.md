@@ -79,7 +79,7 @@ You could also run the `.travis/style_checks` script to check flake8 and yapf.
 
 ### Documentation
 
-To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirementts-dev.txt`), and use the Makefile in the docs folder:
+To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirements-dev.txt`), and use the Makefile in the docs folder:
 
 ```
 > cd docs
