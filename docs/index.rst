@@ -10,7 +10,7 @@ Requirements
 STAC Versions
 =============
 
-* 0.2 -> STAC Version 0.8
+* 0.3 -> STAC Version 0.8
 
 Standard pip install
 ====================

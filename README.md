@@ -28,7 +28,7 @@ From source repository:
 To install a specific versions of STAC, install the matching version of pystac.
 
 ```bash
-> pip install pystac==0.2.0
+> pip install pystac==0.3.0
 ```
 
 The table below shows the corresponding versions between pystac and STAC:
