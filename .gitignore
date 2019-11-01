@@ -19,7 +19,8 @@ docs/_build/
 
 .ipynb_checkpoints/
 
-tutorials/pystac-example*
-tutorials/spacenet-stac/
-tutorials/spacenet-cog-stac/
-tutorials/data/
+docs/tutorials/pystac-example*
+docs/tutorials/spacenet-stac/
+docs/tutorials/spacenet-cog-stac/
+docs/tutorials/data/
+docs/quickstart_stac/

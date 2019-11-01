@@ -1,0 +1,103 @@
+
+{
+    "type": "Feature",
+    "stac_version": "0.8.0",
+    "id": "label-example-1-label-item",
+    "properties": {
+        "datetime": "2019-10-04 18:55:37Z",
+        "label:description": "labels for area-1-1",
+        "label:type": "vector",
+        "label:properties": [
+            "label"
+        ],
+        "label:classes": [
+            {
+                "name": "label",
+                "classes": [
+                    "one",
+                    "two"
+                ]
+            }
+        ],
+        "label:tasks": [
+            "classification"
+        ],
+        "label:methods": [
+            "manual"
+        ],
+        "label:overviews": [
+            {
+                "property_key": "label",
+                "counts": [
+                    {
+                        "name": "one",
+                        "count": 27
+                    },
+                    {
+                        "name": "two",
+                        "count": 17
+                    }
+                ]
+            }
+        ]
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -2.5048828125,
+                    3.8916575492899987
+                ],
+                [
+                    -1.9610595703125,
+                    3.8916575492899987
+                ],
+                [
+                    -1.9610595703125,
+                    4.275202171119132
+                ],
+                [
+                    -2.5048828125,
+                    4.275202171119132
+                ],
+                [
+                    -2.5048828125,
+                    3.8916575492899987
+                ]
+            ]
+        ]
+    },
+    "bbox": [
+        -2.5048828125,
+        3.8916575492899987,
+        -1.9610595703125,
+        3.8916575492899987
+    ],
+    "links": [
+        {
+            "rel": "source",
+            "href": "../area-1-1-imagery/area-1-1-imagery.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../collection.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "labels": {
+            "href": "http://example.com/area-1-1-labels.geojson",
+            "type": "application/geo+json"
+        }
+    },
+    "stac_extensions": [
+        "label"
+    ]
+}

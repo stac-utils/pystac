@@ -5,7 +5,7 @@ A list of issues and ongoing work is available on the PySTAC `issues page <https
 
 Development installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Fork PySTAC into your Github account. Then, clone the repo and install it locally with pip as follows:
+Fork PySTAC into your GitHub account. Then, clone the repo and install it locally with pip as follows:
 
 .. code-block:: bash
 
@@ -30,3 +30,24 @@ or an entire folder using:
 	python -m unittest discover -v -s tests/
 
 More details on using ``unittest`` are `here <https://docs.python.org/3/library/unittest.html>`_.
+
+Code quality checks
+^^^^^^^^^^^^^^^^^^^
+
+PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and `yapf <https://github.com/google/yapf>`_ for code formatting and style checks.
+
+To run the flake8 style checks:
+
+.. code-block:: bash
+
+   > flake8 pystac
+   > flake8 tests
+
+To format code:
+
+.. code-block:: bash
+
+   > yapf -ipr pystac
+   > yapf -ipr tests
+
+You could also run the ``.travis/style_checks`` script to check flake8 and yapf.

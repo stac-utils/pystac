@@ -62,7 +62,7 @@
           },
           {
             "rel": "collection",
-            "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"
+            "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.0/collection-spec/examples/sentinel2.json"
           }
         ],
         "assets": {
@@ -81,7 +81,7 @@
     "links": [
       {
         "rel": "self",
-        "href": "./sample-item-collection.json"
+        "href": "http://stacspec.org/sample-item-collection.json"
       }
     ]
   }

@@ -163,10 +163,6 @@
     },
     "links": [
         {
-            "rel": "self",
-            "href": "item.json"
-        },
-        {
             "rel": "root",
             "href": "../../../catalog.json"
         },

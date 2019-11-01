@@ -35,7 +35,7 @@ The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
 | ------ | ----  |
-| 0.2.x  | 0.8.x |
+| 0.3.x  | 0.8.x |
 
 ## Documentation
 
@@ -49,18 +49,57 @@ To ensure development libraries are installed, install everything in `requiremen
 > pip install -r requirements-dev.txt
 ```
 
+### Unit Tests
+
 Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 
 ```
 > python -m unittest discover tests
 ```
 
-## Running the tutorials
+### Code quality checks
 
-There are tutorials written as jupyter notebooks in the `tutorials` folder. To run them, run a jupyter notebook with the `tutorials` directory as the notebook directory:
+PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://github.com/google/yapf) for code formatting and style checks.
+
+To run the flake8 style checks:
 
 ```
-> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=tutorials
+> flake8 pystac
+> flake8 tests
 ```
+
+To format code:
+
+```
+> yapf -ipr pystac
+> yapf -ipr tests
+```
+
+You could also run the `.travis/style_checks` script to check flake8 and yapf.
+
+### Documentation
+
+To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirementts-dev.txt`), and use the Makefile in the docs folder:
+
+```
+> cd docs
+> make html
+> make livehtml
+```
+
+Use 'make' without arguments to see a list of available commands.
+
+
+
+## Runing the quickstart and tutorials
+
+There is a quickstart and tutorials written as jupyter notebooks in the `docs/tutorials` folder.
+To run the notebooks, run a jupyter notebook with the `docs` directory as the notebook directory:
+
+```
+> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=docs
+```
+
+You can then navigate to the notebooks and execute them.
 
 Requires [Jupyter](https://jupyter.org/) be installed.

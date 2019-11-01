@@ -1,10 +1,11 @@
 import unittest
 from tempfile import TemporaryDirectory
 
-from pystac import STAC_IO, STACObject, CatalogType, LinkType
+from pystac import (STAC_IO, STACObject, CatalogType, LinkType)
 from pystac.utils import make_absolute_href
 
 from tests.utils import (TestCases, SchemaValidator)
+
 
 class STACWritingTest(unittest.TestCase):
     """Tests writing STACs, using JSON Schema validation,
@@ -12,7 +13,6 @@ class STACWritingTest(unittest.TestCase):
     """
     def setUp(self):
         self.schema_validator = SchemaValidator()
-
 
     def validate_catalog(self, catalog):
         self.schema_validator.validate_object(catalog)
@@ -33,46 +33,46 @@ class STACWritingTest(unittest.TestCase):
 
     def validate_link_types(self, root_href, catalog_type):
         def validate_item_link_type(href, link_type, should_include_self):
+            item_dict = STAC_IO.read_json(href)
             item = STACObject.from_file(href)
-            rels = set({})
             for link in item.get_links():
-                rels.add(link.rel)
                 if not link.rel == 'self':
                     self.assertEqual(link.link_type, link_type)
 
+            rels = set([l['rel'] for l in item_dict['links']])
             self.assertEqual('self' in rels, should_include_self)
 
         def validate_catalog_link_type(href, link_type, should_include_self):
+            cat_dict = STAC_IO.read_json(href)
             cat = STACObject.from_file(href)
-            rels = set({})
             for link in cat.get_links():
-                rels.add(link.rel)
                 if not link.rel == 'self':
                     self.assertEqual(link.link_type, link_type)
 
+            rels = set([l['rel'] for l in cat_dict['links']])
             self.assertEqual('self' in rels, should_include_self)
 
             for child_link in cat.get_child_links():
                 child_href = make_absolute_href(child_link.target, href)
-                validate_catalog_link_type(child_href,
-                                           link_type,
-                                           catalog_type==CatalogType.ABSOLUTE_PUBLISHED)
+                validate_catalog_link_type(
+                    child_href, link_type,
+                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
             for item_link in cat.get_item_links():
                 item_href = make_absolute_href(item_link.target, href)
-                validate_item_link_type(item_href,
-                                        link_type,
-                                        catalog_type==CatalogType.ABSOLUTE_PUBLISHED)
+                validate_item_link_type(
+                    item_href, link_type,
+                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
         link_type = LinkType.RELATIVE
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             link_type = LinkType.ABSOLUTE
 
-        root_should_include_href = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED,
-                                                    CatalogType.RELATIVE_PUBLISHED]
+        root_should_include_href = catalog_type in [
+            CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
+        ]
 
-        validate_catalog_link_type(root_href,
-                                   link_type,
+        validate_catalog_link_type(root_href, link_type,
                                    root_should_include_href)
 
     def do_test(self, catalog, catalog_type):

@@ -1,9 +1,8 @@
-import os
 import unittest
-from tempfile import TemporaryDirectory
 
-from pystac import *
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from pystac import SpatialExtent
+from tests.utils import RANDOM_GEOM
+
 
 class CollectionTest(unittest.TestCase):
     def test_spatial_extent_from_coordinates(self):

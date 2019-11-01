@@ -11,6 +11,7 @@ install:
   - pip install -r requirements-dev.txt
 
 script:
+  - .travis/style_checks
   - python -m unittest discover tests/
 
 deploy:
