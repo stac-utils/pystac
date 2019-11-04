@@ -12,9 +12,6 @@ from os.path import (
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'requirements.txt')) as f:
-    install_requires = f.read().split('\n')
-
 with open(os.path.join(here, 'README.md')) as readme_file:
     readme = readme_file.read()
 
@@ -30,7 +27,7 @@ setup(
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
     include_package_data=False,
-    install_requires=install_requires,
+    install_requires=["python-dateutil>=2.7.0"],
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=[
