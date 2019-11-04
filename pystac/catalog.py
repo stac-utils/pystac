@@ -16,7 +16,7 @@ class CatalogType:
     local computer, so all links need to be relative.
 
     See:
-        `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#self-contained-catalogs>`_
+        `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#self-contained-catalogs>`_
     """ # noqa E501
 
     ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
@@ -25,7 +25,7 @@ class CatalogType:
     both in the links objects and in the asset hrefs.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
+        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
     RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
@@ -34,7 +34,7 @@ class CatalogType:
     but includes an absolute self link at the root catalog, to identify its online location.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
+        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
 

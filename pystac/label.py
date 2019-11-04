@@ -85,7 +85,7 @@ class LabelItem(Item):
         collection_id (str or None): The Collection ID that this item belongs to, if any.
 
     See:
-        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/label#item-fields>`_
+        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
     """ # noqa E501
 
     def __init__(self,

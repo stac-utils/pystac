@@ -262,7 +262,7 @@ class STACObject(LinkMixin, ABC):
         Note:
             When to include a self link is described in the `Use of Links section of the
             STAC best practices document
-            <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_
+            <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
         """
         self_href = self.get_self_href()
         if self_href is None:
@@ -342,7 +342,7 @@ class STACObject(LinkMixin, ABC):
             root_href (str): The absolute HREF that all links will be normalized against.
 
         See:
-            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
+            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
         """ # noqa E501
         pass
 

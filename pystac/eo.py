@@ -368,7 +368,7 @@ class Band:
         name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
         common_name (str): The name commonly used to refer to the band to make it easier
             to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
         gsd (float): Ground Sample Distance, the nominal distance between pixel
             centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
@@ -382,7 +382,7 @@ class Band:
         name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
         common_name (str): The name commonly used to refer to the band to make it easier
             to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
         gsd (float): Ground Sample Distance, the nominal distance between pixel
             centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
@@ -418,7 +418,7 @@ class Band:
         """Gets the band range for a common band name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
@@ -450,7 +450,7 @@ class Band:
         """Returns a description of the band for one with a common name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             str or None: If a recognized common name, returns a description including the
