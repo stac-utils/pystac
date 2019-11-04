@@ -110,19 +110,6 @@ class LabelItem(Item):
                             "{}; was {}".format(LabelType.ALL,
                                                 self.label_type))
 
-        if self.label_type == LabelType.VECTOR:
-            if self.label_properties is None:
-                raise STACError(
-                    'label_properties must be set for vector label type')
-
-        if self.label_tasks is not None:
-            for task in self.label_tasks:
-                if task in ['classification', 'detection', 'segmentation']:
-                    if self.label_classes is None:
-                        raise STACError('label_classes must be set '
-                                        'for task "{}"'.format(
-                                            self.label_tasks))
-
     def __repr__(self):
         return '<LabelItem id={}>'.format(self.id)
 
