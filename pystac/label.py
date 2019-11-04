@@ -28,6 +28,7 @@ class LabelItem(Item):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         label_desecription (str): A description of the label, how it was created,
             and what it is recommended for
@@ -51,6 +52,37 @@ class LabelItem(Item):
         href (str or None): Optional HREF for this item, which be set as the item's
             self link's HREF.
         collection (Collection): Optional Collection that this item is a part of.
+
+    Attributes:
+        id (str): Provider identifier. Unique within the STAC.
+        geometry (dict): Defines the full footprint of the asset represented by this item,
+            formatted according to `RFC 7946, section 3.1 (GeoJSON)
+            <https://tools.ietf.org/html/rfc7946>`_.
+        bbox (List[float]):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array is 2*n where n is the
+            number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
+        properties (dict): A dictionary of additional metadata for the item.
+        label_desecription (str): A description of the label, how it was created,
+            and what it is recommended for
+        label_type (str): An ENUM of either vector label type or raster label type (one
+            of :class:`~pystac.LabelType`).
+        label_properties (dict or None): These are the names of the property field(s) in each
+            Feature of the label asset's FeatureCollection that contains the classes
+            (keywords from label:classes if the property defines classes).
+            If labels are rasters, this should be None.
+        label_classes (List[LabelClass]): Optional, but reqiured if ussing categorical data.
+            A list of LabelClasses defining the list of possible class names for each
+            label:properties. (e.g., tree, building, car, hippo)
+        label_tasks (str): Tasks these labels apply to. Usually a subset of 'regression',
+            'classification', 'detection', or 'segmentation', but may be an arbitrary value.
+        label_methods: Methods used for labeling. Usually a subset of 'automated' or 'manual',
+            but may be an arbitrary value.
+        label_overviews (List[LabelOverview]): Optional list of LabelOverview classes
+            that store counts (for classification-type data) or summary statistics (for
+            continuous numerical/regression data).
+        stac_extensions (List[str] or None): Optional list of extensions the Item implements.
+        collection_id (str or None): The Collection ID that this item belongs to, if any.
 
     See:
         `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/label#item-fields>`_

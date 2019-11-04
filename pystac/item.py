@@ -25,6 +25,7 @@ class Item(STACObject):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str]): Optional list of extensions the Item implements.
         href (str or None): Optional HREF for this item, which be set as the item's
@@ -40,6 +41,7 @@ class Item(STACObject):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array is 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
