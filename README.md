@@ -2,7 +2,6 @@
 [![Build Status](https://api.travis-ci.org/azavea/pystac.svg?branch=develop)](https://travis-ci.org/azavea/pystac)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
-[![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
 [![Gitter chat](https://badges.gitter.im/azavea/pystac.png)](https://gitter.im/azavea/pystac)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
