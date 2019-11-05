@@ -123,9 +123,8 @@ class SchemaValidator:
     # Temporarily set to point to a fork if stac-spec with updated
     # schemas for Label and EO
     # Pending this issue being resolved: https://github.com/radiantearth/stac-spec/issues/618
-    SCHEMA_BASE_URI = (
-        'https://raw.githubusercontent.com/lossyrob/stac-spec/'
-        '0.8.1/refactor-extension-schemas')
+    SCHEMA_BASE_URI = ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
+                       '0.8.1/refactor-extension-schemas')
 
     schemas = {
         Catalog: 'catalog-spec/json-schema/catalog.json',

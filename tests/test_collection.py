@@ -2,8 +2,8 @@ import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
-from pystac import (Collection, Item, Extent, SpatialExtent,
-                    TemporalExtent, CatalogType, EOItem, Band)
+from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent,
+                    CatalogType, EOItem, Band)
 from tests.utils import (RANDOM_GEOM, RANDOM_BBOX)
 
 
@@ -22,15 +22,15 @@ class CollectionTest(unittest.TestCase):
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
                      datetime=datetime.utcnow(),
-                     properties={ 'key': 'one' },
+                     properties={'key': 'one'},
                      stac_extensions=['eo'])
 
         item2 = Item(id='test-item-2',
-                    geometry=RANDOM_GEOM,
-                    bbox=RANDOM_BBOX,
-                    datetime=datetime.utcnow(),
-                    properties={ 'key': 'two' },
-                    stac_extensions=['eo'])
+                     geometry=RANDOM_GEOM,
+                     bbox=RANDOM_BBOX,
+                     datetime=datetime.utcnow(),
+                     properties={'key': 'two'},
+                     stac_extensions=['eo'])
 
         wv3_bands = [
             Band(name='Coastal',
@@ -62,12 +62,15 @@ class CollectionTest(unittest.TestCase):
         spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
         temporal_extent = TemporalExtent(intervals=[[item1.datetime, None]])
 
-        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+        collection_extent = Extent(spatial=spatial_extent,
+                                   temporal=temporal_extent)
 
-        common_properties = { 'eo:bands': [b.to_dict() for b in wv3_bands],
-                              'eo:gsd': 0.3,
-                              'eo:platform': 'Maxar',
-                              'eo:instrument': 'WorldView3' }
+        common_properties = {
+            'eo:bands': [b.to_dict() for b in wv3_bands],
+            'eo:gsd': 0.3,
+            'eo:platform': 'Maxar',
+            'eo:instrument': 'WorldView3'
+        }
 
         collection = Collection(id='test',
                                 description='test',
@@ -81,7 +84,8 @@ class CollectionTest(unittest.TestCase):
             collection.normalize_hrefs(tmp_dir)
             collection.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-            read_col = Collection.from_file('{}/collection.json'.format(tmp_dir))
+            read_col = Collection.from_file(
+                '{}/collection.json'.format(tmp_dir))
             items = list(read_col.get_all_items())
 
             self.assertEqual(len(items), 2)

@@ -47,7 +47,7 @@ class CatalogTest(unittest.TestCase):
                     geometry=RANDOM_GEOM,
                     bbox=RANDOM_BBOX,
                     datetime=datetime.utcnow(),
-                    properties={ 'key': 'one' })
+                    properties={'key': 'one'})
         subcat.add_item(item)
 
         items = list(catalog.get_all_items())
@@ -59,7 +59,7 @@ class CatalogTest(unittest.TestCase):
                     geometry=RANDOM_GEOM,
                     bbox=RANDOM_BBOX,
                     datetime=datetime.utcnow(),
-                    properties={ 'key': 'two' })
+                    properties={'key': 'two'})
         subcat.add_item(item)
 
         items = list(catalog.get_all_items())
@@ -71,7 +71,7 @@ class CatalogTest(unittest.TestCase):
                     geometry=RANDOM_GEOM,
                     bbox=RANDOM_BBOX,
                     datetime=datetime.utcnow(),
-                    properties={ 'key': 'three' })
+                    properties={'key': 'three'})
         subcat.add_item(item)
 
         items = list(catalog.get_all_items())
@@ -102,7 +102,6 @@ class CatalogTest(unittest.TestCase):
         children = list(catalog.get_children())
         self.assertEqual(len(children), 1)
         self.assertEqual(children[0].description, 'test3')
-
 
     def test_map_items(self):
         def item_mapper(item):
