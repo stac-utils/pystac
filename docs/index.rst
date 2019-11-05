@@ -26,7 +26,7 @@ PySTAC Features
 * Allows in-memory manipulations of STAC catalogs.
 * Allows users to extend the IO of STAC metadata to provide support e.g. cloud providers.
 * Allows easy iteration over STAC objects. STAC objects are only read in when needed.
-* Allows users to easily write "absolute published", "relative published" and "self-contained" catalogs as `described in the best practices documentation <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_.
+* Allows users to easily write "absolute published", "relative published" and "self-contained" catalogs as `described in the best practices documentation <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_.
 
 Acknowledgments
 ================

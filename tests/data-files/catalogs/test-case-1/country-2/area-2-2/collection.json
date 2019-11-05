@@ -1,6 +1,6 @@
 {
     "id": "area-2-2",
-    "stac_version": "0.8.0",
+    "stac_version": "0.8.1",
     "description": "test collection country-2",
     "links": [
         {

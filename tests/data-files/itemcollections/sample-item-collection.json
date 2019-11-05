@@ -2,7 +2,7 @@
     "type": "FeatureCollection",
     "features": [
       {
-        "stac_version": "0.8.0",
+        "stac_version": "0.8.1",
         "stac_extensions": [],
         "type": "Feature",
         "id": "CS3-20160503_132131_05",
@@ -62,7 +62,7 @@
           },
           {
             "rel": "collection",
-            "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.0/collection-spec/examples/sentinel2.json"
+            "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json"
           }
         ],
         "assets": {

@@ -1,5 +1,5 @@
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 """Library verison"""
 
-STAC_VERSION = '0.8.0'
+STAC_VERSION = '0.8.1'
 """STAC version"""

@@ -1,7 +1,7 @@
 
 {
     "type": "Feature",
-    "stac_version": "0.8.0",
+    "stac_version": "0.8.1",
     "id": "label-example-1-label-item",
     "properties": {
         "datetime": "2019-10-04 18:55:37Z",
