@@ -74,6 +74,22 @@ class ResolvedObjectCache:
         """
         self.ids_to_objects[obj.id] = obj
 
+    def remove(self, obj):
+        """Removes any cached object that matches the given object's id.
+
+        Args:
+            obj (STACObject): The object to remove
+        """
+        self.remove_by_id(obj.id)
+
+    def remove_by_id(self, obj_id):
+        """Removes any cached object that matches the given ID.
+
+        Args:
+            obj_id (str): The object ID to remove
+        """
+        self.ids_to_objects.pop(obj_id, None)
+
     def clone(self):
         """Clone this ResolvedObjectCache
 

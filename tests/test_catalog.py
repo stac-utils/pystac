@@ -39,6 +39,33 @@ class CatalogTest(unittest.TestCase):
 
         self.assertEqual(len(list(zanzibar.get_items())), 2)
 
+    def test_clear_items_removes_from_cache(self):
+        catalog = Catalog(id='test', description='test')
+        subcat = Catalog(id='subcat', description='test')
+        catalog.add_child(subcat)
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={ 'key': 'one' })
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'one')
+
+        subcat.clear_items()
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={ 'key': 'two' })
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'two')
+
     def test_map_items(self):
         def item_mapper(item):
             item.properties['ITEM_MAPPER'] = 'YEP'
@@ -282,6 +309,7 @@ class CatalogTest(unittest.TestCase):
             for root, catalogs, items in cat.walk():
                 for l in root.links:
                     if l.rel != 'self':
+                        # print(l.rel)
                         self.assertTrue(l.link_type == LinkType.RELATIVE)
                         self.assertFalse(is_absolute_href(l.get_href()))
                 for i in items:

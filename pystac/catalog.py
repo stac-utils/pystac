@@ -90,8 +90,9 @@ class Catalog(STACObject):
 
     def set_root(self, root, link_type=LinkType.ABSOLUTE):
         STACObject.set_root(self, root, link_type)
-        root._resolved_objects = ResolvedObjectCache.merge(
-            root._resolved_objects, self._resolved_objects)
+        if root is not None:
+            root._resolved_objects = ResolvedObjectCache.merge(
+                root._resolved_objects, self._resolved_objects)
 
     def add_child(self, child, title=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
@@ -221,6 +222,11 @@ class Catalog(STACObject):
         Return:
             Catalog: Returns ``self``
         """
+        for link in self.get_item_links():
+            if link.is_resolved():
+                item = link.target
+                item.set_parent(None)
+
         self.links = [l for l in self.links if l.rel != 'item']
         return self
 
@@ -445,6 +451,7 @@ class Catalog(STACObject):
 
             item_links = []
             for item_link in catalog.get_item_links():
+                item_link.resolve_stac_object(root=self.get_root())
                 mapped = item_mapper(item_link.target)
                 if mapped is None:
                     raise Exception('item_mapper cannot return None.')

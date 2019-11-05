@@ -181,18 +181,27 @@ class STACObject(LinkMixin, ABC):
         for this object.
 
         Args:
-            root (Catalog or Collection): The root
-                object to set.
+            root (Catalog, Collection or None): The root
+                object to set. Passing in None will clear the root.
             link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
+        # Remove from old root resolution cache
+        root_link = self.get_root_link()
+        if root_link is not None:
+            if root_link.is_resolved():
+                root_link.target._resolved_objects.remove(self)
+
         if not link_type:
             prev = self.get_single_link('root')
             if prev is not None:
                 link_type = prev.link_type
             else:
                 link_type = LinkType.ABSOLUTE
+
         self.remove_links('root')
-        self.add_link(Link.root(root, link_type=link_type))
+        if root is not None:
+            self.add_link(Link.root(root, link_type=link_type))
+            root._resolved_objects.cache(self)
         return self
 
     def get_parent(self):
@@ -216,8 +225,8 @@ class STACObject(LinkMixin, ABC):
         for this object.
 
         Args:
-            parent (Catalog or Collection): The parent
-                object to set.
+            parent (Catalog, Collection or None): The parent
+                object to set. Passing in None will clear the parent.
             link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
         if not link_type:
@@ -226,8 +235,10 @@ class STACObject(LinkMixin, ABC):
                 link_type = prev.link_type
             else:
                 link_type = LinkType.ABSOLUTE
+
         self.remove_links('parent')
-        self.add_link(Link.parent(parent, link_type=link_type))
+        if parent is not None:
+            self.add_link(Link.parent(parent, link_type=link_type))
         return self
 
     def get_stac_objects(self, rel):
