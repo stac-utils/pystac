@@ -90,6 +90,8 @@ To build and develop the documentation locally, make sure sphinx is available (w
 
 Use 'make' without arguments to see a list of available commands.
 
+__Note__: `nbsphinx` requires that a local `pystac` is installed; use `pip install -e .`.
+
 
 
 ## Runing the quickstart and tutorials

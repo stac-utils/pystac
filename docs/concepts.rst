@@ -1,7 +1,7 @@
 Concepts
 ########
 
-This page will give an overview of some important concepts to understand when working with PySTAC. If you want to check code examples, see the Jupyter notebook `tutorials in the GitHub repo <https://github.com/azavea/pystac/tree/develop/tutorials>`_.
+This page will give an overview of some important concepts to understand when working with PySTAC. If you want to check code examples, see the :ref:`tutorials`.
 
 Reading STACs
 =============

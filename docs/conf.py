@@ -14,10 +14,17 @@
 #
 import os
 import sys
+import subprocess
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 from pystac.version import __version__
 
+git_branch = subprocess.check_output(['git',
+                                      'rev-parse',
+                                      '--abbrev-ref',
+                                      'HEAD']) \
+                       .decode("utf-8") \
+                       .strip()
 
 # -- Project information -----------------------------------------------------
 
@@ -45,9 +52,15 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
+    'sphinx.ext.extlinks',
     'sphinxcontrib.fulltoc',
     'nbsphinx'
 ]
+
+extlinks = {
+    'tutorial': ('https://github.com/azavea/pystac/'
+                  'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial')
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
