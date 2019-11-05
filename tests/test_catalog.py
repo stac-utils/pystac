@@ -66,6 +66,44 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0].properties['key'], 'two')
 
+        subcat.remove_item('test-item')
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={ 'key': 'three' })
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'three')
+
+    def test_clear_children_removes_from_cache(self):
+        catalog = Catalog(id='test', description='test')
+        subcat = Catalog(id='subcat', description='test')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test')
+
+        catalog.clear_children()
+        subcat = Catalog(id='subcat', description='test2')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test2')
+
+        catalog.remove_child('subcat')
+        subcat = Catalog(id='subcat', description='test3')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test3')
+
+
     def test_map_items(self):
         def item_mapper(item):
             item.properties['ITEM_MAPPER'] = 'YEP'

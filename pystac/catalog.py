@@ -188,6 +188,27 @@ class Catalog(STACObject):
         self.links = [l for l in self.links if l.rel != 'child']
         return self
 
+    def remove_child(self, child_id):
+        """Removes an child from this catalog.
+
+        Args:
+            child_id (str): The ID of the child to remove.
+        """
+        new_links = []
+        root = self.get_root()
+        for l in self.links:
+            if l.rel != 'child':
+                new_links.append(l)
+            else:
+                l.resolve_stac_object(root=root)
+                if l.target.id != child_id:
+                    new_links.append(l)
+                else:
+                    child = l.target
+                    child.set_parent(None)
+                    child.set_root(None)
+        self.links = new_links
+
     def get_item(self, id, recursive=False):
         """Returns an item with a given ID.
 
@@ -226,9 +247,31 @@ class Catalog(STACObject):
             if link.is_resolved():
                 item = link.target
                 item.set_parent(None)
+                item.set_root(None)
 
         self.links = [l for l in self.links if l.rel != 'item']
         return self
+
+    def remove_item(self, item_id):
+        """Removes an item from this catalog.
+
+        Args:
+            item_id (str): The ID of the item to remove.
+        """
+        new_links = []
+        root = self.get_root()
+        for l in self.links:
+            if l.rel != 'item':
+                new_links.append(l)
+            else:
+                l.resolve_stac_object(root=root)
+                if l.target.id != item_id:
+                    new_links.append(l)
+                else:
+                    item = l.target
+                    item.set_parent(None)
+                    item.set_root(None)
+        self.links = new_links
 
     def get_all_items(self):
         """Get all items from this catalog and all subcatalogs. Will traverse
