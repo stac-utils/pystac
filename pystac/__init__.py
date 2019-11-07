@@ -27,6 +27,7 @@ from pystac.single_file_stac import SingleFileSTAC
 from pystac.eo import *
 from pystac.label import *
 
+from pystac.serialization import (identify_stac_object, STACObjectType)
 
 def _stac_object_from_dict(d, href=None, root=None):
     """Determines how to deserialize a dictionary into a STAC object.
@@ -42,28 +43,24 @@ def _stac_object_from_dict(d, href=None, root=None):
     Note: This is used internally in STAC_IO to deserialize STAC Objects.
     It is in the top level __init__ in order to avoid circular dependencies.
     """
-    extensions = d.get('stac_extensions', [])
-    if 'type' in d:
-        if d['type'] == 'FeatureCollection':
-            # Dealing with an Item Collection
-            if 'collections' in d:
-                return SingleFileSTAC.from_dict(d, href=href, root=root)
-            else:
-                return ItemCollection.from_dict(d, href=href, root=root)
-        else:
-            # Dealing with an Item
-            if 'eo' in extensions or \
-               any([k for k in d['properties'].keys() if k.startswith('eo:')]):
-                return EOItem.from_dict(d, href=href, root=root)
-            elif 'label' in extensions or \
-                 any([k for k in d['properties'].keys() if k.startswith('label:')]):
-                return LabelItem.from_dict(d, href=href, root=root)
-            else:
-                return Item.from_dict(d, href=href, root=root)
-    elif 'extent' in d:
-        return Collection.from_dict(d, href=href, root=root)
-    else:
+    info = identify_stac_object(d)
+
+    # TODO: Transorm older versions to newest version (pystac.serialization.migrate)
+
+    if info.object_type == STACObjectType.CATALOG:
         return Catalog.from_dict(d, href=href, root=root)
+    if info.object_type == STACObjectType.COLLECTION:
+        return Collection.from_dict(d, href=href, root=root)
+    if info.object_type == STACObjectType.ITEMCOLLECTION:
+        if 'single-file-stac' in info.common_extensions:
+            return SingleFileSTAC.from_dict(d, href=href, root=root)
+        return ItemCollection.from_dict(d, href=href, root=root)
+    if info.object_type == STACObjectType.ITEM:
+        if 'eo' in info.common_extensions:
+            return EOItem.from_dict(d, href=href, root=root)
+        if 'label' in info.common_extensions:
+            return LabelItem.from_dict(d, href=href, root=root)
+        return Item.from_dict(d, href=href, root=root)
 
 
 STAC_IO.stac_object_from_dict = _stac_object_from_dict
