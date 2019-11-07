@@ -311,3 +311,29 @@ Resolution Caching
 The root :class:`~pystac.Catalog` instance of a STAC (the Catalog which is linked to by every associated object's ``root`` link) contains a cache of resolved objects. This cache points to in-memory instances of :class:`~pystac.STACObject` s that have already been resolved through PySTAC crawling links associated with that root catalog. The cache works off of the stac object's ID, which is why **it is necessary for every STAC object in the catalog to have a unique identifier, which is unique across the entire STAC**.
 
 When a link is being resolved from a STACObject that has it's root set, that root is passed into the :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` call. That root's :class:`~pystac.resolved_object_cache.ResolvedObjectCache` will be used to ensure that if the link is pointing to an object that has already been resolved, then that link will point to the same, single instance in the cache. This ensures working with STAC objects in memory doesn't create a situation where multiple copies of the same STAC objects are created from different links, manipulated, and written over each other.
+
+Identifing STAC objects from JSON
+=================================
+
+The ``pystac.serialization`` package has some functionality around identifying STAC information from JSON that is used internally, but might also be useful to users working (e.g. on validation).
+The main method for this is :func:`~pystac.serialization.identify_stac_object`, which returns an object that contains the object type, the range of versions this object is valid for (according to PySTAC's best guess), the common extensions implemented by this object, and any custom extensions (represented by URIs to JSON Schemas).
+
+.. code-block:: python
+
+   from pystac.serialization import identify_stac_object
+
+   json_dict = ...
+
+   info = identify_stac_object(json_dict, merge_collection_properties=True)
+
+   # The object type
+   info.object_type
+
+   # The version range
+   info.version_range
+
+   # The common extensions
+   info.common_extensions
+
+   # The custom Extensions
+   info.custom_extensions
