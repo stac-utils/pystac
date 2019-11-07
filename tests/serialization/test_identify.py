@@ -7,16 +7,17 @@ from pystac.serialization import identify_stac_object
 
 from tests.utils import TestCases
 
+
 class IdentifyTest(unittest.TestCase):
     def setUp(self):
         self.examples = []
 
         info_path = TestCases.get_path('data-files/examples/example-info.csv')
-        with open(TestCases.get_path('data-files/examples/example-info.csv')) as f:
+        with open(TestCases.get_path(
+                'data-files/examples/example-info.csv')) as f:
             for row in csv.reader(f):
                 path = os.path.abspath(
-                    os.path.join(os.path.dirname(info_path), row[0])
-                )
+                    os.path.join(os.path.dirname(info_path), row[0]))
                 object_type = row[1]
                 stac_version = row[2]
                 common_extensions = []
@@ -42,7 +43,8 @@ class IdentifyTest(unittest.TestCase):
             actual = identify_stac_object(d)
 
             self.assertEqual(actual.object_type, example['object_type'])
-            self.assertTrue(actual.version_range.contains(example['stac_version']))
+            self.assertTrue(
+                actual.version_range.contains(example['stac_version']))
             self.assertEqual(set(actual.common_extensions),
                              set(example['common_extensions']))
             self.assertEqual(set(actual.custom_extensions),

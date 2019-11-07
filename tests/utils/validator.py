@@ -3,10 +3,8 @@ import json
 import jsonschema
 from jsonschema.validators import RefResolver
 
-from pystac import (Catalog, Item, Asset, LabelItem, LabelCount, LabelOverview,
-                    LabelClasses, Collection, Extent, TemporalExtent,
-                    SpatialExtent, STAC_VERSION, STAC_IO, EOItem, MediaType,
-                    ItemCollection, SingleFileSTAC)
+from pystac import (Catalog, Collection, Item, ItemCollection, LabelItem,
+                    STAC_VERSION, STAC_IO, EOItem, SingleFileSTAC)
 
 
 class SchemaValidator:
@@ -63,25 +61,3 @@ class SchemaValidator:
         except jsonschema.exceptions.ValidationError as e:
             print('Validation error in {}'.format(obj_type))
             raise e
-
-
-def test_to_from_dict(test_class, stac_object_class, d):
-    def _parse_times(a_dict):
-        for k, v in a_dict.items():
-            if isinstance(v, dict):
-                _parse_times(v)
-            elif isinstance(v, (tuple, list, set)):
-                for vv in v:
-                    if isinstance(vv, dict):
-                        _parse_times(vv)
-            else:
-                if k == 'datetime':
-                    if not isinstance(v, datetime):
-                        a_dict[k] = parse(v)
-                        a_dict[k] = a_dict[k].replace(microsecond=0)
-
-    d1 = deepcopy(d)
-    d2 = stac_object_class.from_dict(d).to_dict()
-    _parse_times(d1)
-    _parse_times(d2)
-    test_class.assertDictEqual(d1, d2)

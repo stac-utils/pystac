@@ -1,14 +1,9 @@
 import os
-import json
 from datetime import datetime
-from copy import deepcopy
-import jsonschema
-from jsonschema.validators import RefResolver
 
 from pystac import (Catalog, Item, Asset, LabelItem, LabelCount, LabelOverview,
-                    LabelClasses, Collection, Extent, TemporalExtent,
-                    SpatialExtent, STAC_VERSION, STAC_IO, EOItem, MediaType,
-                    ItemCollection, SingleFileSTAC)
+                    LabelClasses, Extent, TemporalExtent, SpatialExtent,
+                    MediaType)
 
 TEST_LABEL_CATALOG = {
     'country-1': {
@@ -60,7 +55,8 @@ RANDOM_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(
 class TestCases:
     @staticmethod
     def get_path(rel_path):
-        return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', rel_path))
+        return os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '..', rel_path))
 
     @staticmethod
     def test_case_1():

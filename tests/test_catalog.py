@@ -438,8 +438,9 @@ class FullCopyTest(unittest.TestCase):
             target_href = l.target.get_self_href()
         else:
             target_href = l.target
-        self.assertTrue(tag in target_href,
-                        '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
+        self.assertTrue(
+            tag in target_href,
+            '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
 
     def check_item(self, i, tag):
         for l in i.links:

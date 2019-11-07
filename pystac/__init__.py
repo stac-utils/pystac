@@ -29,6 +29,7 @@ from pystac.label import *
 
 from pystac.serialization import (identify_stac_object, STACObjectType)
 
+
 def _stac_object_from_dict(d, href=None, root=None):
     """Determines how to deserialize a dictionary into a STAC object.
 

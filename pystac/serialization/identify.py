@@ -1,11 +1,13 @@
 from pystac.stac_io import STAC_IO
 from pystac.version import STAC_VERSION
 
+
 class STACObjectType:
     CATALOG = 'CATALOG'
     COLLECTION = 'COLLECTION'
     ITEM = 'ITEM'
     ITEMCOLLECTION = 'ITEMCOLLECTION'
+
 
 class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
@@ -19,7 +21,8 @@ class STACJSONDescription:
         custom_extensions (List[str]): List of custom extensions (URIs to JSON Schemas)
             used by this STAC Object.
     """
-    def __init__(self, object_type, version_range, common_extensions, custom_extensions):
+    def __init__(self, object_type, version_range, common_extensions,
+                 custom_extensions):
         self.object_type = object_type
         self.version_range = version_range
         self.common_extensions = common_extensions
@@ -27,10 +30,10 @@ class STACJSONDescription:
 
     def __repr__(self):
         return '<{} {} common_ext={} custom_ext{}>'.format(
-            self.object_type,
-            self.version_range,
+            self.object_type, self.version_range,
             ','.format(self.common_extensions),
             ','.format(self.custom_extensions))
+
 
 class STACVersionRange:
     def __init__(self):
@@ -65,8 +68,7 @@ class STACVersionRange:
         return self.min_version >= self.max_version
 
     def __repr__(self):
-        return '<VERSIONS {}-{}>'.format(self.min_version,
-                                             self.max_version)
+        return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
 
 
 def _merge_collection_into_item(d, collection_cache=None):
@@ -83,7 +85,8 @@ def _merge_collection_into_item(d, collection_cache=None):
     # Next, try the collection link.
     if collection is None:
         links = d['links']
-        collection_link = next((l for l in links if l['rel'] == 'collection'), None)
+        collection_link = next((l for l in links if l['rel'] == 'collection'),
+                               None)
         if collection_link is not None:
             collection_href = collection_link['href']
             collection = STAC_IO.read_json(collection_href)
@@ -94,7 +97,8 @@ def _merge_collection_into_item(d, collection_cache=None):
                 if k not in d['properties']:
                     d['properties'][k] = collection['properties'][k]
 
-        if collection_cache is not None and collection['id'] not in collection_cache:
+        if collection_cache is not None and collection[
+                'id'] not in collection_cache:
             collection_id = collection['id']
             collection_cache[collection_id] = collection
             if collection_href is not None:
@@ -112,8 +116,7 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     # eo
     if object_type == STACObjectType.ITEM:
-        if any(filter(lambda k: k.startswith('eo:'),
-                      d['properties'])):
+        if any(filter(lambda k: k.startswith('eo:'), d['properties'])):
             stac_extensions.append('eo')
             if 'eo:epsg' in d['properties']:
                 if d['properties']['eo:epsg'] is None:
@@ -127,15 +130,13 @@ def _identify_stac_extensions(object_type, d, version_range):
     if 'links' in d:
         found_checksum = False
         for link in d['links']:
-            if any(filter(lambda p: p.startswith('checksum:'),
-                          link)):
+            if any(filter(lambda p: p.startswith('checksum:'), link)):
                 found_checksum = True
                 stac_extensions.append('checksum')
         if not found_checksum:
             if 'assets' in d:
                 for asset in d['assets']:
-                    if any(filter(lambda p: p.startswith('checksum:'),
-                                  link)):
+                    if any(filter(lambda p: p.startswith('checksum:'), link)):
                         found_checksum = True
                         stac_extensions.append('checksum')
         if found_checksum:
@@ -143,8 +144,7 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     # datacube
     if object_type == STACObjectType.ITEM:
-        if any(filter(lambda k: k.startswith('cube:'),
-                      d['properties'])):
+        if any(filter(lambda k: k.startswith('cube:'), d['properties'])):
             stac_extensions.append('cube')
             version_range.set_min('0.6.1')
 
@@ -156,29 +156,28 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     # pointcloud
     if object_type == STACObjectType.ITEM:
-        if any(filter(lambda k: k.startswith('pc:'),
-                      d['properties'])):
+        if any(filter(lambda k: k.startswith('pc:'), d['properties'])):
             stac_extensions.append('pointcloud')
             version_range.set_min('0.6.2')
 
     # sar
     if object_type == STACObjectType.ITEM:
-        if any(filter(lambda k: k.startswith('sar:'),
-                      d['properties'])):
+        if any(filter(lambda k: k.startswith('sar:'), d['properties'])):
             stac_extensions.append('sar')
             version_range.set_min('0.6.2')
-            if max_stac_version is None or '0.6.2' < max_stac_version:
-                for prop in ['sar:absolute_orbit',
-                             'sar:resolution',
-                             'sar:pixel_spacing',
-                             'sar:looks']:
+            if version_range.contains('0.6.2'):
+                for prop in [
+                        'sar:absolute_orbit', 'sar:resolution',
+                        'sar:pixel_spacing', 'sar:looks'
+                ]:
                     if prop in d['properties']:
                         if not isinstance(d['properties'][prop], list):
                             version_range.set_max('0.6.2')
             if version_range.contains('0.7.0'):
-                for prop in ['sar:incidence_angle',
-                             'sar:relative_orbit',
-                             'sar:observation_direction']:
+                for prop in [
+                        'sar:incidence_angle', 'sar:relative_orbit',
+                        'sar:observation_direction'
+                ]:
                     if prop in d['properties']:
                         version_range.set_min('0.7.0')
             if 'sar:off_nadir' in d['properties']:
@@ -187,8 +186,7 @@ def _identify_stac_extensions(object_type, d, version_range):
     # scientific
     if object_type == STACObjectType.ITEM or object_type == STACObjectType.COLLECTION:
         if 'properties' in d:
-            if any(filter(lambda k: k.startswith('sci:'),
-                          d['properties'])):
+            if any(filter(lambda k: k.startswith('sci:'), d['properties'])):
                 stac_extensions.append('scientific')
                 version_range.set_min('0.6.0')
 
@@ -199,6 +197,7 @@ def _identify_stac_extensions(object_type, d, version_range):
             version_range.set_min('0.8.0')
 
     return stac_extensions
+
 
 def _split_extensions(stac_extensions):
     """Split extensions into common_extensions and custom_extensions"""
@@ -214,7 +213,10 @@ def _split_extensions(stac_extensions):
 
     return (common_extensions, custom_extensions)
 
-def identify_stac_object(json_dict, merge_collection_properties=False, collection_cache=None):
+
+def identify_stac_object(json_dict,
+                         merge_collection_properties=False,
+                         collection_cache=None):
     """Determines the STACJSONDescription of the provided JSON dict.
 
     Args:
@@ -260,7 +262,7 @@ def identify_stac_object(json_dict, merge_collection_properties=False, collectio
             version_range.set_max('0.5.2')
         elif object_type == STACObjectType.ITEM:
             version_range.set_max('0.7.0')
-        else: # ItemCollection
+        else:  # ItemCollection
             version_range.set_min('0.8.0')
     else:
         version_range.set_to_single(stac_version)
@@ -275,18 +277,18 @@ def identify_stac_object(json_dict, merge_collection_properties=False, collectio
             if merge_collection_properties and object_type == STACObjectType.ITEM:
                 _merge_collection_into_item(json_dict, collection_cache)
 
-            stac_extensions = _identify_stac_extensions(object_type,
-                                                        json_dict,
-                                                        version_range)
+            stac_extensions = _identify_stac_extensions(
+                object_type, json_dict, version_range)
         else:
             stac_extensions = []
 
     if not version_range.is_single_version():
-        ## Final Checks
+        # Final Checks
 
         # self links became non-required in 0.7.0
         if 'links' in json_dict:
-            if not any(filter(lambda  l: l['rel'] == 'self', json_dict['links'])):
+            if not any(filter(lambda l: l['rel'] == 'self',
+                              json_dict['links'])):
                 version_range.set_min('0.7.0')
 
         # links were a dictionary only in 0.5
@@ -295,7 +297,5 @@ def identify_stac_object(json_dict, merge_collection_properties=False, collectio
 
     common_extensions, custom_extensions = _split_extensions(stac_extensions)
 
-    return STACJSONDescription(object_type,
-                               version_range,
-                               common_extensions,
+    return STACJSONDescription(object_type, version_range, common_extensions,
                                custom_extensions)
