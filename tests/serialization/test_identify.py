@@ -36,16 +36,27 @@ class IdentifyTest(unittest.TestCase):
                 })
 
     def test_identify(self):
+        collection_cache = {}
         for example in self.examples:
             path = example['path']
             d = STAC_IO.read_json(path)
 
-            actual = identify_stac_object(d)
+            actual = identify_stac_object(d,
+                                          merge_collection_properties=True,
+                                          json_href=path,
+                                          collection_cache=collection_cache)
 
-            self.assertEqual(actual.object_type, example['object_type'])
-            self.assertTrue(
-                actual.version_range.contains(example['stac_version']))
+            msg = 'Failed {}:'.format(path)
+
+            self.assertEqual(actual.object_type,
+                             example['object_type'],
+                             msg=msg)
+            version_contained_in_range = actual.version_range.contains(
+                example['stac_version'])
+            self.assertTrue(version_contained_in_range, msg=msg)
             self.assertEqual(set(actual.common_extensions),
-                             set(example['common_extensions']))
+                             set(example['common_extensions']),
+                             msg=msg)
             self.assertEqual(set(actual.custom_extensions),
-                             set(example['custom_extensions']))
+                             set(example['custom_extensions']),
+                             msg=msg)

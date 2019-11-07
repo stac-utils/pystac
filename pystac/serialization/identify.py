@@ -1,5 +1,6 @@
 from pystac.stac_io import STAC_IO
 from pystac.version import STAC_VERSION
+from pystac.utils import make_absolute_href
 
 
 class STACObjectType:
@@ -71,7 +72,7 @@ class STACVersionRange:
         return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
 
 
-def _merge_collection_into_item(d, collection_cache=None):
+def _merge_collection_into_item(d, collection_cache=None, json_href=None):
     """Merges Collection properties into an Item. Assumes d is an Item dict"""
     collection = None
     collection_href = None
@@ -89,6 +90,9 @@ def _merge_collection_into_item(d, collection_cache=None):
                                None)
         if collection_link is not None:
             collection_href = collection_link['href']
+            if json_href is not None:
+                collection_href = make_absolute_href(collection_href,
+                                                     json_href)
             collection = STAC_IO.read_json(collection_href)
 
     if collection is not None:
@@ -216,6 +220,7 @@ def _split_extensions(stac_extensions):
 
 def identify_stac_object(json_dict,
                          merge_collection_properties=False,
+                         json_href=None,
                          collection_cache=None):
     """Determines the STACJSONDescription of the provided JSON dict.
 
@@ -224,6 +229,10 @@ def identify_stac_object(json_dict,
         merge_collection_properties (bool): If True, follow the collection links
             in Items if required to discover extensions and version (pre-0.8 STAC).
             Defaults to False.
+        json_href (str): The path that this JSON came from. This is useful for
+            for resolving relative paths to Collections in the case that
+            ``merge_collection_properties`` is True and the collection link
+            is relative.
         collection_cache (dict): If supplied, collection read for item links
             will check this cache for either the collection's ID (if available)
             or the HREF of the collection link. This is recommended to reduce
@@ -275,7 +284,8 @@ def identify_stac_object(json_dict,
            version_range.min_version < '0.8.0' or \
            object_type == STACObjectType.ITEMCOLLECTION:
             if merge_collection_properties and object_type == STACObjectType.ITEM:
-                _merge_collection_into_item(json_dict, collection_cache)
+                _merge_collection_into_item(json_dict, collection_cache,
+                                            json_href)
 
             stac_extensions = _identify_stac_extensions(
                 object_type, json_dict, version_range)
