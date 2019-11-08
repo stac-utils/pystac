@@ -312,11 +312,21 @@ The root :class:`~pystac.Catalog` instance of a STAC (the Catalog which is linke
 
 When a link is being resolved from a STACObject that has it's root set, that root is passed into the :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` call. That root's :class:`~pystac.resolved_object_cache.ResolvedObjectCache` will be used to ensure that if the link is pointing to an object that has already been resolved, then that link will point to the same, single instance in the cache. This ensures working with STAC objects in memory doesn't create a situation where multiple copies of the same STAC objects are created from different links, manipulated, and written over each other.
 
-Identifing STAC objects from JSON
-=================================
+Working with STAC JSON
+======================
 
-The ``pystac.serialization`` package has some functionality around identifying STAC information from JSON that is used internally, but might also be useful to users working (e.g. on validation).
-The main method for this is :func:`~pystac.serialization.identify_stac_object`, which returns an object that contains the object type, the range of versions this object is valid for (according to PySTAC's best guess), the common extensions implemented by this object, and any custom extensions (represented by URIs to JSON Schemas).
+The ``pystac.serialization`` package has some functionality around working directly with STAC
+JSON objects, without utilizing PySTAC object types. This is used internally by PySTAC, but might also be useful to users working directly with JSON (e.g. on validation).
+
+
+Identifing STAC objects from JSON
+---------------------------------
+
+Users can identify STAC information, including the object type, version and extensions,
+from JSON. The main method for this is :func:`~pystac.serialization.identify_stac_object`,
+which returns an object that contains the object type, the range of versions this object is
+valid for (according to PySTAC's best guess), the common extensions implemented by this object,
+and any custom extensions (represented by URIs to JSON Schemas).
 
 .. code-block:: python
 
@@ -337,3 +347,11 @@ The main method for this is :func:`~pystac.serialization.identify_stac_object`, 
 
    # The custom Extensions
    info.custom_extensions
+
+Merging common properties
+-------------------------
+
+The :func:`~pystac.serialization.merge_common_properties` will take a JSON dict that represents
+an item, and if it is associated with a collection, merge in the collection's properties.
+You can pass in a dict that contains previously read collections that caches collections by the HREF of the collection link and/or the collection ID, which can help avoid multiple reads of
+collection links.

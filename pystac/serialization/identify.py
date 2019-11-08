@@ -1,6 +1,5 @@
-from pystac.stac_io import STAC_IO
 from pystac.version import STAC_VERSION
-from pystac.utils import make_absolute_href
+from pystac.serialization.common_properties import merge_common_properties
 
 
 class STACObjectType:
@@ -70,43 +69,6 @@ class STACVersionRange:
 
     def __repr__(self):
         return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
-
-
-def _merge_collection_into_item(d, collection_cache=None, json_href=None):
-    """Merges Collection properties into an Item. Assumes d is an Item dict"""
-    collection = None
-    collection_href = None
-
-    # Try the cache if we have a collection ID.
-    if 'collection' in d:
-        collection_id = d['collection']
-        if collection_cache is not None:
-            collection = collection_cache.get(collection_id)
-
-    # Next, try the collection link.
-    if collection is None:
-        links = d['links']
-        collection_link = next((l for l in links if l['rel'] == 'collection'),
-                               None)
-        if collection_link is not None:
-            collection_href = collection_link['href']
-            if json_href is not None:
-                collection_href = make_absolute_href(collection_href,
-                                                     json_href)
-            collection = STAC_IO.read_json(collection_href)
-
-    if collection is not None:
-        if 'properties' in collection:
-            for k in collection['properties']:
-                if k not in d['properties']:
-                    d['properties'][k] = collection['properties'][k]
-
-        if collection_cache is not None and collection[
-                'id'] not in collection_cache:
-            collection_id = collection['id']
-            collection_cache[collection_id] = collection
-            if collection_href is not None:
-                collection_cache[collection_href] = collection
 
 
 def _identify_stac_extensions(object_type, d, version_range):
@@ -218,6 +180,30 @@ def _split_extensions(stac_extensions):
     return (common_extensions, custom_extensions)
 
 
+def identify_stac_object_type(json_dict):
+    """Determines the STACObjectType of the provided JSON dict.
+
+    Args:
+        json_dict (dict): The dict of STAC JSON to identify.
+
+    Returns:
+        STACObjectType: The object type represented by the JSON.
+    """
+    object_type = None
+
+    if 'type' in json_dict:
+        if json_dict['type'] == 'FeatureCollection':
+            object_type = STACObjectType.ITEMCOLLECTION
+        else:
+            object_type = STACObjectType.ITEM
+    elif 'extent' in json_dict:
+        object_type = STACObjectType.COLLECTION
+    else:
+        object_type = STACObjectType.CATALOG
+
+    return object_type
+
+
 def identify_stac_object(json_dict,
                          merge_collection_properties=False,
                          json_href=None,
@@ -248,18 +234,7 @@ def identify_stac_object(json_dict,
         'eo' extension properties but the Item does not contian any properties with
         the 'eo:' prefix.
     """
-
-    object_type = None
-
-    if 'type' in json_dict:
-        if json_dict['type'] == 'FeatureCollection':
-            object_type = STACObjectType.ITEMCOLLECTION
-        else:
-            object_type = STACObjectType.ITEM
-    elif 'extent' in json_dict:
-        object_type = STACObjectType.COLLECTION
-    else:
-        object_type = STACObjectType.CATALOG
+    object_type = identify_stac_object_type(json_dict)
 
     version_range = STACVersionRange()
 
@@ -284,8 +259,7 @@ def identify_stac_object(json_dict,
            version_range.min_version < '0.8.0' or \
            object_type == STACObjectType.ITEMCOLLECTION:
             if merge_collection_properties and object_type == STACObjectType.ITEM:
-                _merge_collection_into_item(json_dict, collection_cache,
-                                            json_href)
+                merge_common_properties(json_dict, collection_cache, json_href)
 
             stac_extensions = _identify_stac_extensions(
                 object_type, json_dict, version_range)
