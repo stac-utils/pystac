@@ -229,6 +229,51 @@ SingleFileSTAC
    :members:
    :undoc-members:
 
+Serialization
+-------------
+
+PySTAC includes a ``pystac.serialization`` package for serialization concerns that
+are used internally, but may also be useful to external tools.
+
+merge_common_properties
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: merge_common_properties
+
+indentify_stac_object
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: identify_stac_object
+
+indentify_stac_object_type
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: identify_stac_object_type
+
+
+STACJSONDescription
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACJSONDescription
+   :members:
+   :undoc-members:
+
+STACVersionRange
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACVersionRange
+   :members:
+   :undoc-members:
+
+STACObjectType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACObjectType
+   :members:
+   :undoc-members:
 
 PySTAC Internal Classes
 -----------------------
