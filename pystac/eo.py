@@ -356,9 +356,9 @@ class EOAsset(Asset):
             of asset.
         """
 
-        if not self.item:
+        if not self.owner:
             raise STACError('Asset is currently not associated with an item.')
-        return [self.item.bands[i] for i in self.bands]
+        return [self.owner.bands[i] for i in self.bands]
 
 
 class Band:
