@@ -154,7 +154,7 @@ class EOAssetTest(unittest.TestCase):
         eoi = EOItem.from_file(self.EO_ITEM_URI)
         eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
         eoi.add_asset('test-asset', eoa)
-        self.assertEqual(eoa.item, eoi)
+        self.assertEqual(eoa.owner, eoi)
         bd = {
             "name": "B1",
             "common_name": "coastal",
