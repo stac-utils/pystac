@@ -67,7 +67,7 @@ class EOItemTest(unittest.TestCase):
         a = Asset('/asset_dir/asset.json')
         eoa = EOAsset('/asset_dir/eo_asset.json', bands=[0, 1])
         for asset in (a, eoa):
-            self.assertIsNone(asset.item)
+            self.assertIsNone(asset.owner)
         eoi_c.add_asset('new_asset', a)
         eoi_c.add_asset('new_eo_asset', eoa)
         self.assertEqual(len(eoi_c.assets.items()),
@@ -75,7 +75,7 @@ class EOItemTest(unittest.TestCase):
         self.assertEqual(a, eoi_c.assets['new_asset'])
         self.assertEqual(eoa, eoi_c.assets['new_eo_asset'])
         for asset in (a, eoa):
-            self.assertEqual(asset.item, eoi_c)
+            self.assertEqual(asset.owner, eoi_c)
 
     def test_add_eo_fields_to_dict(self):
         d = {}
