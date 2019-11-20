@@ -321,7 +321,7 @@ class Asset:
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
-        item (Item or None): The Item this asset belongs to.
+        owner (Item or None): The Item this asset belongs to.
     """
     def __init__(self, href, title=None, media_type=None, properties=None):
         self.href = href
@@ -330,7 +330,7 @@ class Asset:
         self.properties = properties
 
         # The Item which owns this Asset.
-        self.item = None
+        self.owner = None
 
     def set_owner(self, item):
         """Sets the owning item of this Asset.
@@ -340,7 +340,7 @@ class Asset:
         Args:
             item (Item): The Item that owns this asset.
         """
-        self.item = item
+        self.owner = item
 
     def get_absolute_href(self):
         """Gets the absolute href for this asset, if possible.
@@ -354,7 +354,7 @@ class Asset:
             cannot be determined.
         """
         if not is_absolute_href(self.href):
-            if self.item is not None:
+            if self.owner is not None:
                 return make_absolute_href(self.href,
                                           self.owner.get_self_href())
 
