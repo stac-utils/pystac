@@ -4,7 +4,7 @@
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacgeo.org) in Python 3.
+PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacspec.org) in Python 3.
 
 ## Installation
 

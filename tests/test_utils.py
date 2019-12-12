@@ -37,14 +37,14 @@ class UtilsTest(unittest.TestCase):
             ('./item.json', '/a/b/c/catalog.json', '/a/b/c/item.json'),
             ('./z/item.json', '/a/b/c/catalog.json', '/a/b/c/z/item.json'),
             ('../item.json', '/a/b/c/catalog.json', '/a/b/item.json'),
-            ('item.json', 'https://stacgeo.org/a/b/c/catalog.json',
-             'https://stacgeo.org/a/b/c/item.json'),
-            ('./item.json', 'https://stacgeo.org/a/b/c/catalog.json',
-             'https://stacgeo.org/a/b/c/item.json'),
-            ('./z/item.json', 'https://stacgeo.org/a/b/c/catalog.json',
-             'https://stacgeo.org/a/b/c/z/item.json'),
-            ('../item.json', 'https://stacgeo.org/a/b/c/catalog.json',
-             'https://stacgeo.org/a/b/item.json')
+            ('item.json', 'https://stacspec.org/a/b/c/catalog.json',
+             'https://stacspec.org/a/b/c/item.json'),
+            ('./item.json', 'https://stacspec.org/a/b/c/catalog.json',
+             'https://stacspec.org/a/b/c/item.json'),
+            ('./z/item.json', 'https://stacspec.org/a/b/c/catalog.json',
+             'https://stacspec.org/a/b/c/z/item.json'),
+            ('../item.json', 'https://stacspec.org/a/b/c/catalog.json',
+             'https://stacspec.org/a/b/item.json')
         ]
 
         for source_href, start_href, expected in test_cases:
@@ -55,7 +55,7 @@ class UtilsTest(unittest.TestCase):
         # Test cases of (href, expected)
         test_cases = [('item.json', False), ('./item.json', False),
                       ('../item.json', False), ('/item.json', True),
-                      ('http://stacgeo.org/item.json', True)]
+                      ('http://stacspec.org/item.json', True)]
 
         for href, expected in test_cases:
             actual = is_absolute_href(href)
