@@ -36,3 +36,15 @@ class ItemTest(unittest.TestCase):
         expected_href = 'http://cool-sat.com/catalog/CS3-20160503_132130_04/data.geojson'
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
+
+    def test_datetime_ISO8601_format(self):
+        m = TestCases.get_path(
+            'data-files/itemcollections/sample-item-collection.json')
+        with open(m) as f:
+            item_dict = json.load(f)['features'][0]
+
+        item = Item.from_dict(item_dict)
+
+        formatted_time = item.to_dict()['properties']['datetime']
+
+        self.assertEqual('2016-05-03T13:22:30Z', formatted_time)
