@@ -129,3 +129,15 @@ def is_absolute_href(href):
     """
     parsed = _urlparse(href)
     return parsed.scheme != '' or _pathlib.isabs(parsed.path)
+
+
+def datetime_to_str(dt):
+    """Convert a python datetime to an ISO8601 stirng
+
+    Args:
+        dt (datetime): The datetime to convert.
+
+    Returns:
+        str: The ISO8601 formatted string representing the datetime.
+    """
+    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')

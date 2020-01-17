@@ -8,7 +8,7 @@ from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href,
-                          make_relative_href)
+                          make_relative_href, datetime_to_str)
 from pystac.collection import Collection
 
 
@@ -173,8 +173,7 @@ class Item(STACObject):
         assets = dict(
             map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = '{}Z'.format(
-            self.datetime.replace(microsecond=0, tzinfo=None))
+        self.properties['datetime'] = datetime_to_str(self.datetime)
 
         d = {
             'type': 'Feature',

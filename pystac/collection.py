@@ -5,6 +5,7 @@ from copy import (copy, deepcopy)
 from pystac import STACError
 from pystac.catalog import Catalog
 from pystac.link import Link
+from pystac.utils import datetime_to_str
 
 
 class Collection(Catalog):
@@ -335,12 +336,10 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = '{}Z'.format(i[0].replace(microsecond=0,
-                                                  tzinfo=None).isoformat())
+                start = datetime_to_str(i[0])
 
             if i[1]:
-                end = '{}Z'.format(i[1].replace(microsecond=0,
-                                                tzinfo=None).isoformat())
+                end = datetime_to_str(i[1])
 
             encoded_intervals.append([start, end])
 
