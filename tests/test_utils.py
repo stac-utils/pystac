@@ -1,6 +1,7 @@
 import unittest
 import os
 import ntpath
+from datetime import datetime, timezone, timedelta
 
 from pystac import utils
 
@@ -144,3 +145,19 @@ class UtilsTest(unittest.TestCase):
                 self.assertEqual(actual, expected)
         finally:
             utils._pathlib = os.path
+
+    def test_datetime_to_str(self):
+        cases = (
+            ('timezone naive, assume utc', datetime(2000, 1, 1),
+             '2000-01-01T00:00:00+00:00'),
+            ('timezone aware, utc', datetime(2000, 1, 1, tzinfo=timezone.utc),
+             '2000-01-01T00:00:00+00:00'),
+            ('timezone aware, utc -7',
+             datetime(2000, 1, 1, tzinfo=timezone(timedelta(hours=-7))),
+             '2000-01-01T00:00:00-07:00'),
+        )
+
+        for title, dt, expected in cases:
+            with self.subTest(title=title):
+                got = utils.datetime_to_str(dt)
+                self.assertEqual(expected, got)

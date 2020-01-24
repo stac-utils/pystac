@@ -1,6 +1,7 @@
 import os
 import posixpath
 from urllib.parse import (urlparse, ParseResult as URLParseResult)
+from datetime import timezone
 
 # Allow for modifying the path library for testability
 # (i.e. testing Windows path manipulation on non-Windows systems)
@@ -140,4 +141,6 @@ def datetime_to_str(dt):
     Returns:
         str: The ISO8601 formatted string representing the datetime.
     """
-    return dt.strftime('%Y-%m-%dT%H:%M:%SZ')
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.isoformat()
