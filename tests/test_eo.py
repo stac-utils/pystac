@@ -47,6 +47,12 @@ class EOItemTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             eoi.properties['eo:bands']
 
+    def test_read_eo_item_owns_asset(self):
+        item = EOItem.from_file(self.URI_1)
+        assert len(item.assets) > 0
+        for asset_key in item.assets:
+            self.assertEqual(item.assets[asset_key].owner, item)
+
     def test_clone(self):
         eoi_clone = self.eoi.clone()
         compare_eo_items(self, self.eoi, eoi_clone)
