@@ -133,7 +133,7 @@ def is_absolute_href(href):
 
 
 def datetime_to_str(dt):
-    """Convert a python datetime to an ISO8601 stirng
+    """Convert a python datetime to an ISO8601 string
 
     Args:
         dt (datetime): The datetime to convert.
@@ -143,4 +143,10 @@ def datetime_to_str(dt):
     """
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
-    return dt.isoformat()
+
+    timestamp = dt.isoformat()
+    zulu = '+00:00'
+    if timestamp.endswith(zulu):
+        timestamp = '{}Z'.format(timestamp[:-len(zulu)])
+
+    return timestamp

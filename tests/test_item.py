@@ -47,4 +47,4 @@ class ItemTest(unittest.TestCase):
 
         formatted_time = item.to_dict()['properties']['datetime']
 
-        self.assertEqual('2016-05-03T13:22:30.040000+00:00', formatted_time)
+        self.assertEqual('2016-05-03T13:22:30.040000Z', formatted_time)

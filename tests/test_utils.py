@@ -149,9 +149,9 @@ class UtilsTest(unittest.TestCase):
     def test_datetime_to_str(self):
         cases = (
             ('timezone naive, assume utc', datetime(2000, 1, 1),
-             '2000-01-01T00:00:00+00:00'),
+             '2000-01-01T00:00:00Z'),
             ('timezone aware, utc', datetime(2000, 1, 1, tzinfo=timezone.utc),
-             '2000-01-01T00:00:00+00:00'),
+             '2000-01-01T00:00:00Z'),
             ('timezone aware, utc -7',
              datetime(2000, 1, 1, tzinfo=timezone(timedelta(hours=-7))),
              '2000-01-01T00:00:00-07:00'),
