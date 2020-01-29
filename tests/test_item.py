@@ -48,3 +48,10 @@ class ItemTest(unittest.TestCase):
         formatted_time = item.to_dict()['properties']['datetime']
 
         self.assertEqual('2016-05-03T13:22:30.040000Z', formatted_time)
+
+    def test_read_eo_item_owns_asset(self):
+        item = next(x for x in TestCases.test_case_1().get_all_items()
+                    if isinstance(x, Item))
+        assert len(item.assets) > 0
+        for asset_key in item.assets:
+            self.assertEqual(item.assets[asset_key].owner, item)

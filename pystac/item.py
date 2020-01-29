@@ -262,7 +262,9 @@ class Item(STACObject):
             item.add_link(Link.from_dict(l))
 
         for k, v in d['assets'].items():
-            item.assets[k] = Asset.from_dict(v)
+            asset = Asset.from_dict(v)
+            asset.set_owner(item)
+            item.assets[k] = asset
 
         # Find the collection, merge properties if there are
         # common properties to merge.
