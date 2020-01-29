@@ -15,6 +15,7 @@ class EOItem(Item):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         gsd (float): Ground Sample Distance at the sensor.
         platform (str): Unique name of the specific platform to which the instrument is attached.
@@ -49,6 +50,7 @@ class EOItem(Item):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array is 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
@@ -260,7 +262,7 @@ class EOAsset(Asset):
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
-        item (Item or None): The Item this asset belongs to.
+        owner (Item or None): The Item this asset belongs to.
     """
     def __init__(self,
                  href,
@@ -354,9 +356,9 @@ class EOAsset(Asset):
             of asset.
         """
 
-        if not self.item:
+        if not self.owner:
             raise STACError('Asset is currently not associated with an item.')
-        return [self.item.bands[i] for i in self.bands]
+        return [self.owner.bands[i] for i in self.bands]
 
 
 class Band:
@@ -366,7 +368,7 @@ class Band:
         name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
         common_name (str): The name commonly used to refer to the band to make it easier
             to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
         gsd (float): Ground Sample Distance, the nominal distance between pixel
             centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
@@ -380,7 +382,7 @@ class Band:
         name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
         common_name (str): The name commonly used to refer to the band to make it easier
             to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
         gsd (float): Ground Sample Distance, the nominal distance between pixel
             centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
@@ -416,7 +418,7 @@ class Band:
         """Gets the band range for a common band name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
@@ -448,7 +450,7 @@ class Band:
         """Returns a description of the band for one with a common name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo#common-band-names>`_.
+            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             str or None: If a recognized common name, returns a description including the

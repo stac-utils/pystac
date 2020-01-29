@@ -2,8 +2,8 @@ class MediaType:
     """A list of common media types that can be used in STAC Asset and Link metadata.
     """
     TIFF = 'image/tiff'
-    GEOTIFF = 'image/vnd.stac.geotiff'
-    COG = 'image/vnd.stac.geotiff; cloud-optimized=true'
+    GEOTIFF = 'image/tiff; application=geotiff'
+    COG = 'image/tiff; application=geotiff; profile=cloud-optimized'
     JPEG2000 = 'image/jp2'
     PNG = 'image/png'
     JPEG = 'image/jpeg'

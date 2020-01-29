@@ -181,18 +181,27 @@ class STACObject(LinkMixin, ABC):
         for this object.
 
         Args:
-            root (Catalog or Collection): The root
-                object to set.
+            root (Catalog, Collection or None): The root
+                object to set. Passing in None will clear the root.
             link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
+        # Remove from old root resolution cache
+        root_link = self.get_root_link()
+        if root_link is not None:
+            if root_link.is_resolved():
+                root_link.target._resolved_objects.remove(self)
+
         if not link_type:
             prev = self.get_single_link('root')
             if prev is not None:
                 link_type = prev.link_type
             else:
                 link_type = LinkType.ABSOLUTE
+
         self.remove_links('root')
-        self.add_link(Link.root(root, link_type=link_type))
+        if root is not None:
+            self.add_link(Link.root(root, link_type=link_type))
+            root._resolved_objects.cache(self)
         return self
 
     def get_parent(self):
@@ -216,8 +225,8 @@ class STACObject(LinkMixin, ABC):
         for this object.
 
         Args:
-            parent (Catalog or Collection): The parent
-                object to set.
+            parent (Catalog, Collection or None): The parent
+                object to set. Passing in None will clear the parent.
             link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
         if not link_type:
@@ -226,8 +235,10 @@ class STACObject(LinkMixin, ABC):
                 link_type = prev.link_type
             else:
                 link_type = LinkType.ABSOLUTE
+
         self.remove_links('parent')
-        self.add_link(Link.parent(parent, link_type=link_type))
+        if parent is not None:
+            self.add_link(Link.parent(parent, link_type=link_type))
         return self
 
     def get_stac_objects(self, rel):
@@ -262,7 +273,7 @@ class STACObject(LinkMixin, ABC):
         Note:
             When to include a self link is described in the `Use of Links section of the
             STAC best practices document
-            <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#use-of-links>`_
+            <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
         """
         self_href = self.get_self_href()
         if self_href is None:
@@ -321,10 +332,12 @@ class STACObject(LinkMixin, ABC):
         link_rels = set(self._object_links())
         for link in self.links:
             if link.rel == 'root':
-                if not link.is_resolved(
-                ) and not link.target == self.get_self_href():
-                    link.resolve_stac_object()
-                    link.target.fully_resolve()
+                if not link.is_resolved():
+                    if link.get_absolute_href() != self.get_self_href():
+                        link.target = self
+                    else:
+                        link.resolve_stac_object()
+                        link.target.fully_resolve()
             if link.rel in link_rels:
                 if not link.is_resolved():
                     link.resolve_stac_object(root=self.get_root())
@@ -342,7 +355,7 @@ class STACObject(LinkMixin, ABC):
             root_href (str): The absolute HREF that all links will be normalized against.
 
         See:
-            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
+            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
         """ # noqa E501
         pass
 

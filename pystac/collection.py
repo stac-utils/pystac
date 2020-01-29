@@ -5,6 +5,7 @@ from copy import (copy, deepcopy)
 from pystac import STACError
 from pystac.catalog import Catalog
 from pystac.link import Link
+from pystac.utils import datetime_to_str
 
 
 class Collection(Catalog):
@@ -117,7 +118,16 @@ class Collection(Catalog):
 
         clone._resolved_objects.cache(clone)
 
-        clone.add_links([l.clone() for l in self.links])
+        for l in self.links:
+            if l.rel == 'root':
+                # Collection __init__ sets correct root to clone; don't reset
+                # if the root link points to self
+                root_is_self = l.is_resolved() and l.target is self
+                if not root_is_self:
+                    clone.set_root(None)
+                    clone.add_link(l.clone())
+            else:
+                clone.add_link(l.clone())
 
         return clone
 
@@ -335,12 +345,10 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = '{}Z'.format(i[0].replace(microsecond=0,
-                                                  tzinfo=None).isoformat())
+                start = datetime_to_str(i[0])
 
             if i[1]:
-                end = '{}Z'.format(i[1].replace(microsecond=0,
-                                                tzinfo=None).isoformat())
+                end = datetime_to_str(i[1])
 
             encoded_intervals.append([start, end])
 

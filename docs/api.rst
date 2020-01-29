@@ -2,7 +2,7 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0>`_ they relate to, if related to a specific spec item.
+and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1>`_ they relate to, if related to a specific spec item.
 
 Links
 -----
@@ -53,7 +53,7 @@ STACError
 Catalog Spec
 ------------
 
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/catalog-spec>`_.
+These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/catalog-spec>`_.
 
 Catalog
 ~~~~~~~
@@ -75,7 +75,7 @@ CatalogType
 Collection Spec
 ---------------
 
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/collection-spec>`_.
+These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/collection-spec>`_.
 
 Collection
 ~~~~~~~~~~
@@ -116,7 +116,7 @@ Provider
 Item Spec
 ---------
 
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/item-spec>`_.
+These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/item-spec>`_.
 
 Item
 ~~~~
@@ -143,7 +143,7 @@ ItemCollection
 EO Extension
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/eo>`_.
+These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo>`_.
 
 EOItem
 ~~~~~~
@@ -172,7 +172,7 @@ Band
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/label>`_.
+These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label>`_.
 
 LabelItem
 ~~~~~~~~~
@@ -220,7 +220,7 @@ LabelStatistics
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/single-file-stac>`_.
+These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/single-file-stac>`_.
 
 SingleFileSTAC
 ~~~~~~~~~~~~~~
@@ -229,6 +229,51 @@ SingleFileSTAC
    :members:
    :undoc-members:
 
+Serialization
+-------------
+
+PySTAC includes a ``pystac.serialization`` package for serialization concerns that
+are used internally, but may also be useful to external tools.
+
+merge_common_properties
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: merge_common_properties
+
+indentify_stac_object
+~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: identify_stac_object
+
+indentify_stac_object_type
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: identify_stac_object_type
+
+
+STACJSONDescription
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACJSONDescription
+   :members:
+   :undoc-members:
+
+STACVersionRange
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACVersionRange
+   :members:
+   :undoc-members:
+
+STACObjectType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.serialization.STACObjectType
+   :members:
+   :undoc-members:
 
 PySTAC Internal Classes
 -----------------------

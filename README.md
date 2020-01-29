@@ -2,9 +2,10 @@
 [![Build Status](https://api.travis-ci.org/azavea/pystac.svg?branch=develop)](https://travis-ci.org/azavea/pystac)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
+[![Gitter chat](https://badges.gitter.im/azavea/pystac.svg)](https://gitter.im/azavea/pystac)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacgeo.org) in Python 3.
+PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacspec.org) in Python 3.
 
 ## Installation
 
@@ -28,7 +29,7 @@ From source repository:
 To install a specific versions of STAC, install the matching version of pystac.
 
 ```bash
-> pip install pystac==0.3.0
+> pip install pystac==0.3.*
 ```
 
 The table below shows the corresponding versions between pystac and STAC:
@@ -88,6 +89,8 @@ To build and develop the documentation locally, make sure sphinx is available (w
 ```
 
 Use 'make' without arguments to see a list of available commands.
+
+__Note__: `nbsphinx` requires that a local `pystac` is installed; use `pip install -e .`.
 
 
 

@@ -28,6 +28,7 @@ class LabelItem(Item):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         label_desecription (str): A description of the label, how it was created,
             and what it is recommended for
@@ -52,8 +53,39 @@ class LabelItem(Item):
             self link's HREF.
         collection (Collection): Optional Collection that this item is a part of.
 
+    Attributes:
+        id (str): Provider identifier. Unique within the STAC.
+        geometry (dict): Defines the full footprint of the asset represented by this item,
+            formatted according to `RFC 7946, section 3.1 (GeoJSON)
+            <https://tools.ietf.org/html/rfc7946>`_.
+        bbox (List[float]):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array is 2*n where n is the
+            number of dimensions.
+        datetime (Datetime): Datetime associated with this item.
+        properties (dict): A dictionary of additional metadata for the item.
+        label_desecription (str): A description of the label, how it was created,
+            and what it is recommended for
+        label_type (str): An ENUM of either vector label type or raster label type (one
+            of :class:`~pystac.LabelType`).
+        label_properties (dict or None): These are the names of the property field(s) in each
+            Feature of the label asset's FeatureCollection that contains the classes
+            (keywords from label:classes if the property defines classes).
+            If labels are rasters, this should be None.
+        label_classes (List[LabelClass]): Optional, but reqiured if ussing categorical data.
+            A list of LabelClasses defining the list of possible class names for each
+            label:properties. (e.g., tree, building, car, hippo)
+        label_tasks (str): Tasks these labels apply to. Usually a subset of 'regression',
+            'classification', 'detection', or 'segmentation', but may be an arbitrary value.
+        label_methods: Methods used for labeling. Usually a subset of 'automated' or 'manual',
+            but may be an arbitrary value.
+        label_overviews (List[LabelOverview]): Optional list of LabelOverview classes
+            that store counts (for classification-type data) or summary statistics (for
+            continuous numerical/regression data).
+        stac_extensions (List[str] or None): Optional list of extensions the Item implements.
+        collection_id (str or None): The Collection ID that this item belongs to, if any.
+
     See:
-        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.0/extensions/label#item-fields>`_
+        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
     """ # noqa E501
 
     def __init__(self,
@@ -109,19 +141,6 @@ class LabelItem(Item):
             raise STACError("label_type must be one of "
                             "{}; was {}".format(LabelType.ALL,
                                                 self.label_type))
-
-        if self.label_type == LabelType.VECTOR:
-            if self.label_properties is None:
-                raise STACError(
-                    'label_properties must be set for vector label type')
-
-        if self.label_tasks is not None:
-            for task in self.label_tasks:
-                if task in ['classification', 'detection', 'segmentation']:
-                    if self.label_classes is None:
-                        raise STACError('label_classes must be set '
-                                        'for task "{}"'.format(
-                                            self.label_tasks))
 
     def __repr__(self):
         return '<LabelItem id={}>'.format(self.id)
@@ -255,6 +274,10 @@ class LabelItem(Item):
         props = item.properties
 
         label_properties = props.get('label:properties')
+        if label_properties is None:
+            # Allow for pre-0.8.1 non-pluralized form
+            label_properties = props.get('label:property')
+
         label_classes = props.get('label:classes')
         if label_classes is not None:
             label_classes = [
@@ -263,8 +286,17 @@ class LabelItem(Item):
         label_description = props['label:description']
         label_type = props['label:type']
         label_tasks = props.get('label:tasks')
+        if label_tasks is None:
+            # Allow for pre-0.8.1 non-pluralized form
+            label_tasks = props.get('label:task')
         label_methods = props.get('label:methods')
+        if label_methods is None:
+            # Allow for pre-0.8.1 non-pluralized form
+            label_methods = props.get('label:method')
         label_overviews = props.get('label:overviews')
+        if label_overviews is None:
+            # Allow for pre-0.8.1 non-pluralized form
+            label_overviews = props.get('label:overview')
         if label_overviews is not None:
             if type(label_overviews) is list:
                 label_overviews = [
@@ -290,7 +322,10 @@ class LabelItem(Item):
 
         for link in item.links:
             li.add_link(link)
+
         li.assets = copy(item.assets)
+        for asset in li.assets.values():
+            asset.set_owner(li)
 
         return li
 

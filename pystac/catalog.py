@@ -16,7 +16,7 @@ class CatalogType:
     local computer, so all links need to be relative.
 
     See:
-        `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0/best-practices.md#self-contained-catalogs>`_
+        `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#self-contained-catalogs>`_
     """ # noqa E501
 
     ABSOLUTE_PUBLISHED = 'ABSOLUTE_PUBLISHED'
@@ -25,7 +25,7 @@ class CatalogType:
     both in the links objects and in the asset hrefs.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
+        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
     RELATIVE_PUBLISHED = 'RELATIVE_PUBLISHED'
@@ -34,7 +34,7 @@ class CatalogType:
     but includes an absolute self link at the root catalog, to identify its online location.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.0-rc1/best-practices.md#published-catalogs>`_
+        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
 
@@ -90,8 +90,9 @@ class Catalog(STACObject):
 
     def set_root(self, root, link_type=LinkType.ABSOLUTE):
         STACObject.set_root(self, root, link_type)
-        root._resolved_objects = ResolvedObjectCache.merge(
-            root._resolved_objects, self._resolved_objects)
+        if root is not None:
+            root._resolved_objects = ResolvedObjectCache.merge(
+                root._resolved_objects, self._resolved_objects)
 
     def add_child(self, child, title=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
@@ -187,6 +188,27 @@ class Catalog(STACObject):
         self.links = [l for l in self.links if l.rel != 'child']
         return self
 
+    def remove_child(self, child_id):
+        """Removes an child from this catalog.
+
+        Args:
+            child_id (str): The ID of the child to remove.
+        """
+        new_links = []
+        root = self.get_root()
+        for l in self.links:
+            if l.rel != 'child':
+                new_links.append(l)
+            else:
+                l.resolve_stac_object(root=root)
+                if l.target.id != child_id:
+                    new_links.append(l)
+                else:
+                    child = l.target
+                    child.set_parent(None)
+                    child.set_root(None)
+        self.links = new_links
+
     def get_item(self, id, recursive=False):
         """Returns an item with a given ID.
 
@@ -221,8 +243,35 @@ class Catalog(STACObject):
         Return:
             Catalog: Returns ``self``
         """
+        for link in self.get_item_links():
+            if link.is_resolved():
+                item = link.target
+                item.set_parent(None)
+                item.set_root(None)
+
         self.links = [l for l in self.links if l.rel != 'item']
         return self
+
+    def remove_item(self, item_id):
+        """Removes an item from this catalog.
+
+        Args:
+            item_id (str): The ID of the item to remove.
+        """
+        new_links = []
+        root = self.get_root()
+        for l in self.links:
+            if l.rel != 'item':
+                new_links.append(l)
+            else:
+                l.resolve_stac_object(root=root)
+                if l.target.id != item_id:
+                    new_links.append(l)
+                else:
+                    item = l.target
+                    item.set_parent(None)
+                    item.set_root(None)
+        self.links = new_links
 
     def get_all_items(self):
         """Get all items from this catalog and all subcatalogs. Will traverse
@@ -268,7 +317,16 @@ class Catalog(STACObject):
                         title=self.title)
         clone._resolved_objects.cache(clone)
 
-        clone.add_links([l.clone() for l in self.links])
+        for l in self.links:
+            if l.rel == 'root':
+                # Catalog __init__ sets correct root to clone; don't reset
+                # if the root link points to self
+                root_is_self = l.is_resolved() and l.target is self
+                if not root_is_self:
+                    clone.set_root(None)
+                    clone.add_link(l.clone())
+            else:
+                clone.add_link(l.clone())
 
         return clone
 
@@ -445,6 +503,7 @@ class Catalog(STACObject):
 
             item_links = []
             for item_link in catalog.get_item_links():
+                item_link.resolve_stac_object(root=self.get_root())
                 mapped = item_mapper(item_link.target)
                 if mapped is None:
                     raise Exception('item_mapper cannot return None.')

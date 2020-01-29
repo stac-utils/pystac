@@ -14,10 +14,17 @@
 #
 import os
 import sys
+import subprocess
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 from pystac.version import __version__
 
+git_branch = subprocess.check_output(['git',
+                                      'rev-parse',
+                                      '--abbrev-ref',
+                                      'HEAD']) \
+                       .decode("utf-8") \
+                       .strip()
 
 # -- Project information -----------------------------------------------------
 
@@ -45,9 +52,15 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
+    'sphinx.ext.extlinks',
     'sphinxcontrib.fulltoc',
     'nbsphinx'
 ]
+
+extlinks = {
+    'tutorial': ('https://github.com/azavea/pystac/'
+                  'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial')
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -88,7 +101,14 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {}
+html_theme_options = {
+    "show_powered_by": False,
+    "github_user": "azavea",
+    "github_repo": "pystac",
+    "github_banner": True,
+    "show_related": False,
+    "note_bg": "#FFF59C",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

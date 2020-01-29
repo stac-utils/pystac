@@ -1,6 +1,6 @@
 {
     "id": "country-1",
-    "stac_version": "0.8.0",
+    "stac_version": "0.8.1",
     "description": "test catalog country-1",
     "links": [
         {

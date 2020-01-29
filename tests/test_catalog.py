@@ -2,6 +2,7 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
+from collections import defaultdict
 
 from pystac import (Catalog, CatalogType, STAC_VERSION, LinkType, Item, Asset,
                     LabelItem, LabelClasses, MediaType)
@@ -38,6 +39,113 @@ class CatalogTest(unittest.TestCase):
         zanzibar = cat.get_child('zanzibar-collection')
 
         self.assertEqual(len(list(zanzibar.get_items())), 2)
+
+    def test_clear_items_removes_from_cache(self):
+        catalog = Catalog(id='test', description='test')
+        subcat = Catalog(id='subcat', description='test')
+        catalog.add_child(subcat)
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={'key': 'one'})
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'one')
+
+        subcat.clear_items()
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={'key': 'two'})
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'two')
+
+        subcat.remove_item('test-item')
+        item = Item(id='test-item',
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties={'key': 'three'})
+        subcat.add_item(item)
+
+        items = list(catalog.get_all_items())
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].properties['key'], 'three')
+
+    def test_clear_children_removes_from_cache(self):
+        catalog = Catalog(id='test', description='test')
+        subcat = Catalog(id='subcat', description='test')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test')
+
+        catalog.clear_children()
+        subcat = Catalog(id='subcat', description='test2')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test2')
+
+        catalog.remove_child('subcat')
+        subcat = Catalog(id='subcat', description='test3')
+        catalog.add_child(subcat)
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 1)
+        self.assertEqual(children[0].description, 'test3')
+
+    def test_clone_generates_correct_links(self):
+        catalogs = [
+            TestCases.test_case_1(),
+            TestCases.test_case_2(),
+            TestCases.test_case_3()
+        ]
+
+        for catalog in catalogs:
+            expected_link_types_to_counts = {}
+            actual_link_types_to_counts = {}
+
+            for root, _, items in catalog.walk():
+                expected_link_types_to_counts[root.id] = defaultdict(int)
+                actual_link_types_to_counts[root.id] = defaultdict(int)
+
+                for link in root.get_links():
+                    expected_link_types_to_counts[root.id][link.rel] += 1
+
+                for link in root.clone().get_links():
+                    actual_link_types_to_counts[root.id][link.rel] += 1
+
+                for item in items:
+                    expected_link_types_to_counts[item.id] = defaultdict(int)
+                    actual_link_types_to_counts[item.id] = defaultdict(int)
+                    for link in item.get_links():
+                        expected_link_types_to_counts[item.id][link.rel] += 1
+                    for link in item.get_links():
+                        actual_link_types_to_counts[item.id][link.rel] += 1
+
+            self.assertEqual(set(expected_link_types_to_counts.keys()),
+                             set(actual_link_types_to_counts.keys()))
+            for obj_id in actual_link_types_to_counts:
+                expected_counts = expected_link_types_to_counts[obj_id]
+                actual_counts = actual_link_types_to_counts[obj_id]
+                self.assertEqual(set(expected_counts.keys()),
+                                 set(actual_counts.keys()))
+                for rel in expected_counts:
+                    self.assertEqual(
+                        actual_counts[rel], expected_counts[rel],
+                        'Clone of {} has {} {} links, original has {}'.format(
+                            obj_id, actual_counts[rel], rel,
+                            expected_counts[rel]))
 
     def test_map_items(self):
         def item_mapper(item):
@@ -282,6 +390,7 @@ class CatalogTest(unittest.TestCase):
             for root, catalogs, items in cat.walk():
                 for l in root.links:
                     if l.rel != 'self':
+                        # print(l.rel)
                         self.assertTrue(l.link_type == LinkType.RELATIVE)
                         self.assertFalse(is_absolute_href(l.get_href()))
                 for i in items:
@@ -373,8 +482,9 @@ class FullCopyTest(unittest.TestCase):
             target_href = l.target.get_self_href()
         else:
             target_href = l.target
-        self.assertTrue(tag in target_href,
-                        '{} does not contain "{}"'.format(target_href, tag))
+        self.assertTrue(
+            tag in target_href,
+            '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
 
     def check_item(self, i, tag):
         for l in i.links:

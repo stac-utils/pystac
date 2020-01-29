@@ -47,6 +47,12 @@ class EOItemTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             eoi.properties['eo:bands']
 
+    def test_read_eo_item_owns_asset(self):
+        item = EOItem.from_file(self.URI_1)
+        assert len(item.assets) > 0
+        for asset_key in item.assets:
+            self.assertEqual(item.assets[asset_key].owner, item)
+
     def test_clone(self):
         eoi_clone = self.eoi.clone()
         compare_eo_items(self, self.eoi, eoi_clone)
@@ -67,7 +73,7 @@ class EOItemTest(unittest.TestCase):
         a = Asset('/asset_dir/asset.json')
         eoa = EOAsset('/asset_dir/eo_asset.json', bands=[0, 1])
         for asset in (a, eoa):
-            self.assertIsNone(asset.item)
+            self.assertIsNone(asset.owner)
         eoi_c.add_asset('new_asset', a)
         eoi_c.add_asset('new_eo_asset', eoa)
         self.assertEqual(len(eoi_c.assets.items()),
@@ -75,7 +81,7 @@ class EOItemTest(unittest.TestCase):
         self.assertEqual(a, eoi_c.assets['new_asset'])
         self.assertEqual(eoa, eoi_c.assets['new_eo_asset'])
         for asset in (a, eoa):
-            self.assertEqual(asset.item, eoi_c)
+            self.assertEqual(asset.owner, eoi_c)
 
     def test_add_eo_fields_to_dict(self):
         d = {}
@@ -154,7 +160,7 @@ class EOAssetTest(unittest.TestCase):
         eoi = EOItem.from_file(self.EO_ITEM_URI)
         eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
         eoi.add_asset('test-asset', eoa)
-        self.assertEqual(eoa.item, eoi)
+        self.assertEqual(eoa.owner, eoi)
         bd = {
             "name": "B1",
             "common_name": "coastal",
