@@ -8,7 +8,7 @@ from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href,
-                          make_relative_href)
+                          make_relative_href, datetime_to_str)
 from pystac.collection import Collection
 
 
@@ -173,8 +173,7 @@ class Item(STACObject):
         assets = dict(
             map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = '{}Z'.format(
-            self.datetime.replace(microsecond=0, tzinfo=None))
+        self.properties['datetime'] = datetime_to_str(self.datetime)
 
         d = {
             'type': 'Feature',
@@ -263,7 +262,9 @@ class Item(STACObject):
             item.add_link(Link.from_dict(l))
 
         for k, v in d['assets'].items():
-            item.assets[k] = Asset.from_dict(v)
+            asset = Asset.from_dict(v)
+            asset.set_owner(item)
+            item.assets[k] = asset
 
         # Find the collection, merge properties if there are
         # common properties to merge.
@@ -321,7 +322,7 @@ class Asset:
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
-        item (Item or None): The Item this asset belongs to.
+        owner (Item or None): The Item this asset belongs to.
     """
     def __init__(self, href, title=None, media_type=None, properties=None):
         self.href = href
@@ -330,7 +331,7 @@ class Asset:
         self.properties = properties
 
         # The Item which owns this Asset.
-        self.item = None
+        self.owner = None
 
     def set_owner(self, item):
         """Sets the owning item of this Asset.
@@ -340,7 +341,7 @@ class Asset:
         Args:
             item (Item): The Item that owns this asset.
         """
-        self.item = item
+        self.owner = item
 
     def get_absolute_href(self):
         """Gets the absolute href for this asset, if possible.
@@ -354,7 +355,7 @@ class Asset:
             cannot be determined.
         """
         if not is_absolute_href(self.href):
-            if self.item is not None:
+            if self.owner is not None:
                 return make_absolute_href(self.href,
                                           self.owner.get_self_href())
 

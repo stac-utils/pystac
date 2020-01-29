@@ -1,5 +1,42 @@
 import os
-from urllib.parse import urlparse
+import posixpath
+from urllib.parse import (urlparse, ParseResult as URLParseResult)
+from datetime import timezone
+
+# Allow for modifying the path library for testability
+# (i.e. testing Windows path manipulation on non-Windows systems)
+_pathlib = os.path
+
+
+def _urlparse(href):
+    """Version of URL parse that takes into account windows paths.
+
+    A windows absolute path will be parsed with a scheme from urllib.parse.urlparse.
+    This method will take this into account.
+    """
+    parsed = urlparse(href)
+    if parsed.scheme != '' and href.lower().startswith('{}:\\'.format(
+            parsed.scheme)):
+        return URLParseResult(scheme='',
+                              netloc='',
+                              path='{}:{}'.format(parsed.scheme, parsed.path),
+                              params=parsed.params,
+                              query=parsed.query,
+                              fragment=parsed.fragment)
+    else:
+        return parsed
+
+
+def _join(is_path, *args):
+    """Version of os.path.join that takes into account whether or not we are working
+    with a URL.
+
+    A windows system shouldn't use os.path.join if we're working with a URL.
+    """
+    if is_path:
+        return _pathlib.join(*args)
+    else:
+        return posixpath.join(*args)
 
 
 def make_relative_href(source_href, start_href, start_is_dir=False):
@@ -16,19 +53,24 @@ def make_relative_href(source_href, start_href, start_is_dir=False):
         str: The relative HREF. If the source_href and start_href do not share a common
         parent, then source_href will be returned unchanged.
     """
-    parsed_source = urlparse(source_href)
-    parsed_start = urlparse(start_href)
+
+    parsed_source = _urlparse(source_href)
+    parsed_start = _urlparse(start_href)
     if not (parsed_source.scheme == parsed_start.scheme
             and parsed_source.netloc == parsed_start.netloc):
         return source_href
 
+    is_path = parsed_start.scheme == ''
+
     if start_is_dir:
         start_dir = parsed_start.path
     else:
-        start_dir = os.path.dirname(parsed_start.path)
-    relpath = os.path.relpath(parsed_source.path, start_dir)
+        start_dir = _pathlib.dirname(parsed_start.path)
+    relpath = _pathlib.relpath(parsed_source.path, start_dir)
+    if not is_path:
+        relpath = relpath.replace('\\', '/')
     if not relpath.startswith('.'):
-        relpath = './{}'.format(relpath)
+        relpath = _join(is_path, '.', relpath)
 
     return relpath
 
@@ -52,17 +94,21 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
         start_href = os.getcwd()
         start_is_dir = True
 
-    parsed_source = urlparse(source_href)
+    parsed_source = _urlparse(source_href)
     if parsed_source.scheme == '':
-        if not os.path.isabs(parsed_source.path):
-            parsed_start = urlparse(start_href)
+        if not _pathlib.isabs(parsed_source.path):
+            parsed_start = _urlparse(start_href)
+            is_path = parsed_start.scheme == ''
             if start_is_dir:
                 start_dir = parsed_start.path
             else:
-                start_dir = os.path.dirname(parsed_start.path)
-            abs_path = os.path.abspath(
-                os.path.join(start_dir, parsed_source.path))
+                start_dir = _pathlib.dirname(parsed_start.path)
+            abs_path = _pathlib.abspath(
+                _join(is_path, start_dir, parsed_source.path))
             if parsed_start.scheme != '':
+                if not is_path:
+                    abs_path = abs_path.replace('\\', '/')
+
                 return '{}://{}{}'.format(parsed_start.scheme,
                                           parsed_start.netloc, abs_path)
             else:
@@ -82,5 +128,25 @@ def is_absolute_href(href):
     Returns:
         bool: True if the given HREF is absolute, False if it is relative.
     """
-    parsed = urlparse(href)
-    return parsed.scheme != '' or os.path.isabs(parsed.path)
+    parsed = _urlparse(href)
+    return parsed.scheme != '' or _pathlib.isabs(parsed.path)
+
+
+def datetime_to_str(dt):
+    """Convert a python datetime to an ISO8601 string
+
+    Args:
+        dt (datetime): The datetime to convert.
+
+    Returns:
+        str: The ISO8601 formatted string representing the datetime.
+    """
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+
+    timestamp = dt.isoformat()
+    zulu = '+00:00'
+    if timestamp.endswith(zulu):
+        timestamp = '{}Z'.format(timestamp[:-len(zulu)])
+
+    return timestamp

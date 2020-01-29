@@ -262,7 +262,7 @@ class EOAsset(Asset):
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
-        item (Item or None): The Item this asset belongs to.
+        owner (Item or None): The Item this asset belongs to.
     """
     def __init__(self,
                  href,
@@ -356,9 +356,9 @@ class EOAsset(Asset):
             of asset.
         """
 
-        if not self.item:
+        if not self.owner:
             raise STACError('Asset is currently not associated with an item.')
-        return [self.item.bands[i] for i in self.bands]
+        return [self.owner.bands[i] for i in self.bands]
 
 
 class Band:

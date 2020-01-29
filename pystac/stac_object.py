@@ -332,10 +332,12 @@ class STACObject(LinkMixin, ABC):
         link_rels = set(self._object_links())
         for link in self.links:
             if link.rel == 'root':
-                if not link.is_resolved(
-                ) and not link.target == self.get_self_href():
-                    link.resolve_stac_object()
-                    link.target.fully_resolve()
+                if not link.is_resolved():
+                    if link.get_absolute_href() != self.get_self_href():
+                        link.target = self
+                    else:
+                        link.resolve_stac_object()
+                        link.target.fully_resolve()
             if link.rel in link_rels:
                 if not link.is_resolved():
                     link.resolve_stac_object(root=self.get_root())

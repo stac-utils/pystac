@@ -322,7 +322,10 @@ class LabelItem(Item):
 
         for link in item.links:
             li.add_link(link)
+
         li.assets = copy(item.assets)
+        for asset in li.assets.values():
+            asset.set_owner(li)
 
         return li
 

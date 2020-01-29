@@ -2,6 +2,7 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
+from collections import defaultdict
 
 from pystac import (Catalog, CatalogType, STAC_VERSION, LinkType, Item, Asset,
                     LabelItem, LabelClasses, MediaType)
@@ -102,6 +103,49 @@ class CatalogTest(unittest.TestCase):
         children = list(catalog.get_children())
         self.assertEqual(len(children), 1)
         self.assertEqual(children[0].description, 'test3')
+
+    def test_clone_generates_correct_links(self):
+        catalogs = [
+            TestCases.test_case_1(),
+            TestCases.test_case_2(),
+            TestCases.test_case_3()
+        ]
+
+        for catalog in catalogs:
+            expected_link_types_to_counts = {}
+            actual_link_types_to_counts = {}
+
+            for root, _, items in catalog.walk():
+                expected_link_types_to_counts[root.id] = defaultdict(int)
+                actual_link_types_to_counts[root.id] = defaultdict(int)
+
+                for link in root.get_links():
+                    expected_link_types_to_counts[root.id][link.rel] += 1
+
+                for link in root.clone().get_links():
+                    actual_link_types_to_counts[root.id][link.rel] += 1
+
+                for item in items:
+                    expected_link_types_to_counts[item.id] = defaultdict(int)
+                    actual_link_types_to_counts[item.id] = defaultdict(int)
+                    for link in item.get_links():
+                        expected_link_types_to_counts[item.id][link.rel] += 1
+                    for link in item.get_links():
+                        actual_link_types_to_counts[item.id][link.rel] += 1
+
+            self.assertEqual(set(expected_link_types_to_counts.keys()),
+                             set(actual_link_types_to_counts.keys()))
+            for obj_id in actual_link_types_to_counts:
+                expected_counts = expected_link_types_to_counts[obj_id]
+                actual_counts = actual_link_types_to_counts[obj_id]
+                self.assertEqual(set(expected_counts.keys()),
+                                 set(actual_counts.keys()))
+                for rel in expected_counts:
+                    self.assertEqual(
+                        actual_counts[rel], expected_counts[rel],
+                        'Clone of {} has {} {} links, original has {}'.format(
+                            obj_id, actual_counts[rel], rel,
+                            expected_counts[rel]))
 
     def test_map_items(self):
         def item_mapper(item):
@@ -438,8 +482,9 @@ class FullCopyTest(unittest.TestCase):
             target_href = l.target.get_self_href()
         else:
             target_href = l.target
-        self.assertTrue(tag in target_href,
-                        '{} does not contain "{}"'.format(target_href, tag))
+        self.assertTrue(
+            tag in target_href,
+            '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
 
     def check_item(self, i, tag):
         for l in i.links:

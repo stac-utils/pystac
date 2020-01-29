@@ -70,4 +70,11 @@ class LabelItemTest(unittest.TestCase):
             sv = SchemaValidator()
             sv.validate_object(label_item_read)
 
+    def test_read_label_item_owns_asset(self):
+        item = next(x for x in TestCases.test_case_2().get_all_items()
+                    if isinstance(x, LabelItem))
+        assert len(item.assets) > 0
+        for asset_key in item.assets:
+            self.assertEqual(item.assets[asset_key].owner, item)
+
     # TODO: Test raster labels in LabelItems.
