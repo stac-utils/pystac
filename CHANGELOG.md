@@ -10,8 +10,13 @@
 
 ## [v0.3.2] - 2020-01-28
 
+### Added
+
+- Add functionality for identifying STAC JSON information [#50](https://github.com/azavea/pystac/pull/50)
+
 ### Fixed
 
+- Documentation improvements [#44](https://github.com/azavea/pystac/pull/44)
 - Updated MediaTypes to reflect correct GeoTIFF and COG names [#66](https://github.com/azavea/pystac/pull/66)
 - Fix utils to work with windows paths. [#68](https://github.com/azavea/pystac/pull/68)
 - Modified output datetime strings to ISO8601. [#69](https://github.com/azavea/pystac/pull/69)
