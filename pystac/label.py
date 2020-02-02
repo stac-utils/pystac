@@ -276,7 +276,7 @@ class LabelItem(Item):
 
         label_properties = props.get('label:properties')
         if label_properties is None:
-            # Allow for pre-0.8.1 non-pluralized form
+            # Allow for 0.8.0-rc1 non-pluralized form
             label_properties = props.get('label:property')
 
         label_classes = props.get('label:classes')
@@ -288,15 +288,15 @@ class LabelItem(Item):
         label_type = props['label:type']
         label_tasks = props.get('label:tasks')
         if label_tasks is None:
-            # Allow for pre-0.8.1 non-pluralized form
+            # Allow for 0.8.0-rc1 non-pluralized form
             label_tasks = props.get('label:task')
         label_methods = props.get('label:methods')
         if label_methods is None:
-            # Allow for pre-0.8.1 non-pluralized form
+            # Allow for 0.8.0-rc1 non-pluralized form
             label_methods = props.get('label:method')
         label_overviews = props.get('label:overviews')
         if label_overviews is None:
-            # Allow for pre-0.8.1 non-pluralized form
+            # Allow for 0.8.0-rc1 non-pluralized form
             label_overviews = props.get('label:overview')
         if label_overviews is not None:
             if type(label_overviews) is list:

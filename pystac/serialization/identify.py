@@ -68,6 +68,9 @@ class STACVersionRange:
     def is_single_version(self):
         return self.min_version >= self.max_version
 
+    def is_earlier_than(self, v):
+        return self.max_version < v
+
     def __repr__(self):
         return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
 
@@ -79,19 +82,14 @@ def _identify_stac_extensions(object_type, d, version_range):
     Returns a list of stac_extensions. May mutate the version_range to update
     min or max version.
     """
-    stac_extensions = []
+    stac_extensions = set([])
 
-    # eo
-    if object_type == STACObjectType.ITEM:
-        if any(filter(lambda k: k.startswith('eo:'), d['properties'])):
-            stac_extensions.append('eo')
-            if 'eo:epsg' in d['properties']:
-                if d['properties']['eo:epsg'] is None:
-                    version_range.set_min('0.6.1')
-            if 'eo:constellation' in d['properties']:
-                version_range.set_min('0.6.0')
-        if 'eo:bands' in d:
-            version_range.set_max('0.5.2')
+    # assets (collection assets)
+
+    if object_type == STACObjectType.ITEMCOLLECTION:
+        if 'assets' in d:
+            stac_extensions.add(Extension.ASSETS)
+            version_range.set_min('0.8.0')
 
     # checksum
     if 'links' in d:
@@ -120,6 +118,21 @@ def _identify_stac_extensions(object_type, d, version_range):
         if 'dtr:start_datetime' in d['properties']:
             stac_extensions.add(Extension.DATETIME_RANGE)
             version_range.set_min('0.6.0')
+
+    # eo
+    if object_type == STACObjectType.ITEM:
+        if any(filter(lambda k: k.startswith('eo:'), d['properties'])):
+            stac_extensions.add(Extension.EO)
+            if 'eo:epsg' in d['properties']:
+                if d['properties']['eo:epsg'] is None:
+                    version_range.set_min('0.6.1')
+            if 'eo:crs' in d['properties']:
+                version_range.set_max('0.4.1')
+            if 'eo:constellation' in d['properties']:
+                version_range.set_min('0.6.0')
+        if 'eo:bands' in d:
+            stac_extensions.add(Extension.EO)
+            version_range.set_max('0.5.2')
 
     # pointcloud
     if object_type == STACObjectType.ITEM:
@@ -163,7 +176,7 @@ def _identify_stac_extensions(object_type, d, version_range):
             stac_extensions.add(Extension.SINGLE_FILE_STAC)
             version_range.set_min('0.8.0')
 
-    return stac_extensions
+    return list(stac_extensions)
 
 
 def _split_extensions(stac_extensions):
@@ -205,32 +218,20 @@ def identify_stac_object_type(json_dict):
     return object_type
 
 
-def identify_stac_object(json_dict,
-                         merge_collection_properties=False,
-                         json_href=None,
-                         collection_cache=None):
+def identify_stac_object(json_dict):
     """Determines the STACJSONDescription of the provided JSON dict.
 
     Args:
         json_dict (dict): The dict of STAC JSON to identify.
-        merge_collection_properties (bool): If True, follow the collection links
-            in Items if required to discover extensions and version (pre-0.8 STAC).
-            Defaults to False.
-        json_href (str): The path that this JSON came from. This is useful for
-            for resolving relative paths to Collections in the case that
-            ``merge_collection_properties`` is True and the collection link
-            is relative.
-        collection_cache (dict): If supplied, collection read for item links
-            will check this cache for either the collection's ID (if available)
-            or the HREF of the collection link. This is recommended to reduce
-            unnecessary re-reading of collections.
 
     Returns:
         STACJSONDescription: The description of the STAC object serialized in the
         given dict.
 
     Note:
-        If ``merge_collection_properties`` is False, there are cases where the
+        Items are expected to have their collection common properties merged into
+        the dict. You can use :func:`~pystac.serialization.merge_common_properties`
+        to accomplish that. Otherwise, there are cases where the
         common_extensions returned could be incorrect - e.g. if a collection lists
         'eo' extension properties but the Item does not contian any properties with
         the 'eo:' prefix.
@@ -252,16 +253,15 @@ def identify_stac_object(json_dict,
     else:
         version_range.set_to_single(stac_version)
 
+    if stac_extensions is not None:
+        version_range.set_min('0.8.0')
+
     if stac_extensions is None:
         # If this is post-0.8, we can assume there are no extensions
         # if the stac_extensions property doesn't exist for everything
         # but ItemCollection.
-        if version_range.min_version is None or \
-           version_range.min_version < '0.8.0' or \
+        if version_range.is_earlier_than('0.8.0') or \
            object_type == STACObjectType.ITEMCOLLECTION:
-            if merge_collection_properties and object_type == STACObjectType.ITEM:
-                merge_common_properties(json_dict, collection_cache, json_href)
-
             stac_extensions = _identify_stac_extensions(
                 object_type, json_dict, version_range)
         else:
@@ -270,15 +270,18 @@ def identify_stac_object(json_dict,
     if not version_range.is_single_version():
         # Final Checks
 
-        # self links became non-required in 0.7.0
         if 'links' in json_dict:
-            if not any(filter(lambda l: l['rel'] == 'self',
+            # links were a dictionary only in 0.5
+            if 'links' in json_dict and isinstance(json_dict['links'], dict):
+                version_range.set_to_single('0.5.2')
+
+            # self links became non-required in 0.7.0
+            if not version_range.is_earlier_than('0.7.0') and \
+               not any(filter(lambda l: l['rel'] == 'self',
                               json_dict['links'])):
                 version_range.set_min('0.7.0')
 
-        # links were a dictionary only in 0.5
-        if 'links' in json_dict and isinstance(json_dict['links'], dict):
-            version_range.set_to_single('0.5.2')
+
 
     common_extensions, custom_extensions = _split_extensions(stac_extensions)
 

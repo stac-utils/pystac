@@ -34,6 +34,8 @@
 "0.8.1/item-spec/examples/sample-full.json","ITEM","0.8.1","eo","https://example.com/cs-extension/1.0/schema.json"
 "0.8.1/item-spec/examples/sample.json","ITEM","0.8.1","",""
 "0.8.1/item-spec/examples/sentinel2-sample.json","ITEM","0.8.1","eo",""
+"0.5.2/extensions/examples/landsat8-merged.json","ITEM","0.5.2","eo",""
+"0.4.1/extensions/examples/landsat8-merged.json","ITEM","0.4.1","eo",""
 "landsat-0.6.0/catalog.json","CATALOG","0.6.0","",""
 "landsat-0.6.0/010/catalog.json","COLLECTION","0.6.0","",""
 "landsat-0.6.0/010/117/catalog.json","CATALOG","0.6.0","",""

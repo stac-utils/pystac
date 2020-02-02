@@ -1,3 +1,6 @@
+from urllib.error import HTTPError
+
+from pystac import Collection
 from pystac.utils import make_absolute_href
 from pystac.stac_io import STAC_IO
 
@@ -29,6 +32,11 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
     # Next, try the collection link.
     if collection is None:
         links = item_dict['links']
+
+        # Account for 0.5 links, which were dicts
+        if isinstance(links, dict):
+            links = list(links.values())
+
         collection_link = next((l for l in links if l['rel'] == 'collection'),
                                None)
         if collection_link is not None:
@@ -43,15 +51,23 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
                 collection = STAC_IO.read_json(collection_href)
 
     if collection is not None:
-        if 'properties' in collection:
-            for k in collection['properties']:
+        collection_id = None
+        collection_props = None
+        if isinstance(collection, Collection):
+            collection_id = collection.id
+            collection_props = collection.properties
+        else:
+            collection_id = collection['id']
+            if 'properties' in collection:
+                collection_props = collection['properties']
+
+        if collection_props is not None:
+            for k in collection_props:
                 if k not in item_dict['properties']:
                     properties_merged = True
-                    item_dict['properties'][k] = collection['properties'][k]
+                    item_dict['properties'][k] = collection_props[k]
 
-        if collection_cache is not None and collection[
-                'id'] not in collection_cache:
-            collection_id = collection['id']
+        if collection_cache is not None and collection_id not in collection_cache:
             collection_cache[collection_id] = collection
             if collection_href is not None:
                 collection_cache[collection_href] = collection
