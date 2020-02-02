@@ -205,18 +205,6 @@ class EOItem(Item):
             asset = EOAsset.from_asset(asset)
         return super().add_asset(key, asset)
 
-    # @staticmethod
-    # def from_file(href):
-    #     """Reads an EOItem from a file.
-
-    #     Args:
-    #         href (str): The HREF to read the item from.
-
-    #     Returns:
-    #         EOItem: EOItem that was read from the given file.
-    #     """
-    #     return EOItem.from_item(Item.from_file(href))
-
     def clone(self):
         c = super(EOItem, self).clone()
         self._add_eo_fields_to_dict(c.properties)
