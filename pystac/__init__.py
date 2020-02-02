@@ -15,6 +15,7 @@ class STACError(Exception):
 
 from pystac.version import (__version__, STAC_VERSION)
 from pystac.stac_io import STAC_IO
+from pystac.extension import Extension
 from pystac.stac_object import STACObject
 from pystac.media_type import MediaType
 from pystac.link import (Link, LinkType)

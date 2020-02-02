@@ -1,7 +1,8 @@
 from copy import deepcopy
 
-from pystac.item import (Item, Asset)
 from pystac import STACError
+from pystac.extension import Extension
+from pystac.item import (Item, Asset)
 
 
 class EOItem(Item):
@@ -111,8 +112,8 @@ class EOItem(Item):
                  collection=None):
         if stac_extensions is None:
             stac_extensions = []
-        if 'eo' not in stac_extensions:
-            stac_extensions.append('eo')
+        if Extension.EO not in stac_extensions:
+            stac_extensions.append(Extension.EO)
         super().__init__(id, geometry, bbox, datetime, properties,
                          stac_extensions, href, collection)
         self.gsd = gsd

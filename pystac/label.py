@@ -3,6 +3,7 @@
 from copy import (copy, deepcopy)
 
 from pystac import STACError
+from pystac.extension import Extension
 from pystac.item import (Item, Asset)
 from pystac.link import Link
 
@@ -106,8 +107,8 @@ class LabelItem(Item):
                  collection=None):
         if stac_extensions is None:
             stac_extensions = []
-        if 'label' not in stac_extensions:
-            stac_extensions.append('label')
+        if Extension.LABEL not in stac_extensions:
+            stac_extensions.append(Extension.LABEL)
         super(LabelItem, self).__init__(id=id,
                                         geometry=geometry,
                                         bbox=bbox,
