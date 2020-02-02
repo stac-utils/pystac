@@ -82,8 +82,8 @@ class EOItem(Item):
 
     """
     _EO_FIELDS = [
-        'gsd', 'platform', 'instrument', 'bands', 'constellation', 'epsg',
-        'cloud_cover', 'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation'
+        'gsd', 'platform', 'instrument', 'bands', 'constellation', 'epsg', 'cloud_cover',
+        'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation'
     ]
 
     @staticmethod
@@ -114,8 +114,8 @@ class EOItem(Item):
             stac_extensions = []
         if Extension.EO not in stac_extensions:
             stac_extensions.append(Extension.EO)
-        super().__init__(id, geometry, bbox, datetime, properties,
-                         stac_extensions, href, collection)
+        super().__init__(id, geometry, bbox, datetime, properties, stac_extensions, href,
+                         collection)
         self.gsd = gsd
         self.platform = platform
         self.instrument = instrument
@@ -155,14 +155,11 @@ class EOItem(Item):
             eo_key = EOItem._eo_key(eof)
             if eo_key in item.properties.keys():
                 if eof == 'bands':
-                    eo_params[eof] = [
-                        Band.from_dict(b) for b in item.properties.pop(eo_key)
-                    ]
+                    eo_params[eof] = [Band.from_dict(b) for b in item.properties.pop(eo_key)]
                 else:
                     eo_params[eof] = item.properties.pop(eo_key)
             elif eof in ('gsd', 'platform', 'instrument', 'bands'):
-                raise STACError(
-                    "Missing required field '{}' in properties".format(eo_key))
+                raise STACError("Missing required field '{}' in properties".format(eo_key))
 
         if not any(item.properties):
             item.properties = None
@@ -253,12 +250,7 @@ class EOAsset(Asset):
             object JSON.
         owner (Item or None): The Item this asset belongs to.
     """
-    def __init__(self,
-                 href,
-                 bands,
-                 title=None,
-                 media_type=None,
-                 properties=None):
+    def __init__(self, href, bands, title=None, media_type=None, properties=None):
         super().__init__(href, title, media_type, properties)
         self.bands = bands
 
@@ -447,8 +439,7 @@ class Band:
         """ # noqa E501
         r = Band.band_range(common_name)
         if r is not None:
-            r = "Common name: {}, Range: {} to {}".format(
-                common_name, r[0], r[1])
+            r = "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
         return r
 
     @staticmethod

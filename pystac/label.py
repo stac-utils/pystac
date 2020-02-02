@@ -140,8 +140,7 @@ class LabelItem(Item):
         # Some light validation
         if self.label_type not in LabelType.ALL:
             raise STACError("label_type must be one of "
-                            "{}; was {}".format(LabelType.ALL,
-                                                self.label_type))
+                            "{}; was {}".format(LabelType.ALL, self.label_type))
 
     def __repr__(self):
         return '<LabelItem id={}>'.format(self.id)
@@ -152,17 +151,13 @@ class LabelItem(Item):
         d['properties']['label:type'] = self.label_type
         d['properties']['label:properties'] = self.label_properties
         if self.label_classes:
-            d['properties']['label:classes'] = [
-                classes.to_dict() for classes in self.label_classes
-            ]
+            d['properties']['label:classes'] = [classes.to_dict() for classes in self.label_classes]
         if self.label_tasks is not None:
             d['properties']['label:tasks'] = self.label_tasks
         if self.label_methods is not None:
             d['properties']['label:methods'] = self.label_methods
         if self.label_overviews is not None:
-            d['properties']['label:overviews'] = [
-                ov.to_dict() for ov in self.label_overviews
-            ]
+            d['properties']['label:overviews'] = [ov.to_dict() for ov in self.label_overviews]
 
         return deepcopy(d)
 
@@ -208,12 +203,8 @@ class LabelItem(Item):
                 object JSON.
         """
 
-        self.add_asset(
-            "labels",
-            Asset(href=href,
-                  title=title,
-                  media_type=media_type,
-                  properties=properties))
+        self.add_asset("labels",
+                       Asset(href=href, title=title, media_type=media_type, properties=properties))
 
     def add_geojson_labels(self, href, title=None, properties=None):
         """Adds a GeoJSON label asset to this LabelItem.
@@ -225,10 +216,7 @@ class LabelItem(Item):
                 extensions as a way to serialize and deserialize properties on asset
                 object JSON.
         """
-        self.add_labels(href,
-                        title=title,
-                        properties=properties,
-                        media_type='application/geo+json')
+        self.add_labels(href, title=title, properties=properties, media_type='application/geo+json')
 
     def clone(self):
         clone = LabelItem(id=self.id,
@@ -281,9 +269,7 @@ class LabelItem(Item):
 
         label_classes = props.get('label:classes')
         if label_classes is not None:
-            label_classes = [
-                LabelClasses.from_dict(classes) for classes in label_classes
-            ]
+            label_classes = [LabelClasses.from_dict(classes) for classes in label_classes]
         label_description = props['label:description']
         label_type = props['label:type']
         label_tasks = props.get('label:tasks')
@@ -300,9 +286,7 @@ class LabelItem(Item):
             label_overviews = props.get('label:overview')
         if label_overviews is not None:
             if type(label_overviews) is list:
-                label_overviews = [
-                    LabelOverview.from_dict(ov) for ov in label_overviews
-                ]
+                label_overviews = [LabelOverview.from_dict(ov) for ov in label_overviews]
             else:
                 # Read STAC with mistaken single overview object (should be list)
                 label_overviews = LabelOverview.from_dict(label_overviews)
@@ -419,9 +403,7 @@ class LabelOverview:
 
                 add_counts(self.counts)
                 add_counts(other.counts)
-                new_counts = [
-                    LabelCount(k, v) for k, v in count_by_prop.items()
-                ]
+                new_counts = [LabelCount(k, v) for k, v in count_by_prop.items()]
         return LabelOverview(self.property_key, counts=new_counts)
 
     def to_dict(self):
@@ -453,9 +435,7 @@ class LabelOverview:
         if statistics is not None:
             statistics = [LabelStatistics.from_dict(s) for s in statistics]
 
-        return LabelOverview(d['property_key'],
-                             counts=counts,
-                             statistics=statistics)
+        return LabelOverview(d['property_key'], counts=counts, statistics=statistics)
 
 
 class LabelCount:

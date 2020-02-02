@@ -65,8 +65,7 @@ class Collection(Catalog):
                  providers=None,
                  properties=None,
                  summaries=None):
-        super(Collection, self).__init__(id, description, title,
-                                         stac_extensions, href)
+        super(Collection, self).__init__(id, description, title, stac_extensions, href)
         self.extent = extent
         self.license = license
 
@@ -190,10 +189,7 @@ class Extent:
         Returns:
             dict: A serializion of the Extent that can be written out as JSON.
         """
-        d = {
-            'spatial': self.spatial.to_dict(),
-            'temporal': self.temporal.to_dict()
-        }
+        d = {'spatial': self.spatial.to_dict(), 'temporal': self.temporal.to_dict()}
 
         return deepcopy(d)
 
@@ -288,8 +284,7 @@ class SpatialExtent:
         def process_coords(l, xmin=None, ymin=None, xmax=None, ymax=None):
             for coord in l:
                 if type(coord[0]) is list:
-                    xmin, ymin, xmax, ymax = process_coords(
-                        coord, xmin, ymin, xmax, ymax)
+                    xmin, ymin, xmax, ymax = process_coords(coord, xmin, ymin, xmax, ymax)
                 else:
                     x, y = coord
                     if xmin is None or x < xmin:
@@ -391,8 +386,7 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The resulting TemporalExtent.
         """
-        return TemporalExtent(
-            intervals=[[datetime.utcnow().replace(microsecond=0), None]])
+        return TemporalExtent(intervals=[[datetime.utcnow().replace(microsecond=0), None]])
 
 
 class Provider:

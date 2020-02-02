@@ -1,5 +1,3 @@
-from urllib.error import HTTPError
-
 from pystac import Collection
 from pystac.utils import make_absolute_href
 from pystac.stac_io import STAC_IO
@@ -37,13 +35,11 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         if isinstance(links, dict):
             links = list(links.values())
 
-        collection_link = next((l for l in links if l['rel'] == 'collection'),
-                               None)
+        collection_link = next((l for l in links if l['rel'] == 'collection'), None)
         if collection_link is not None:
             collection_href = collection_link['href']
             if json_href is not None:
-                collection_href = make_absolute_href(collection_href,
-                                                     json_href)
+                collection_href = make_absolute_href(collection_href, json_href)
             if collection_cache is not None:
                 collection = collection_cache.get(collection_href)
 

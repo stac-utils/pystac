@@ -2,13 +2,12 @@
 from pystac import (Catalog, Collection, SingleFileSTAC, ItemCollection, Item, LabelItem, EOItem,
                     Extension)
 
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription,
-                                           STACVersionRange,
-                                           identify_stac_object,
-                                           identify_stac_object_type)
+from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange,
+                                           identify_stac_object, identify_stac_object_type)
 
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
+
 
 def stac_object_from_dict(d, href=None, root=None):
     """Determines how to deserialize a dictionary into a STAC object.

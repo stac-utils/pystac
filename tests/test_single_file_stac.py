@@ -66,8 +66,7 @@ class SearchTest(unittest.TestCase):
         s_empty = Search()
         self.assertIsInstance(s_empty.to_dict(), dict)
 
-        m = TestCases.get_path(
-            'data-files/itemcollections/example-search.json')
+        m = TestCases.get_path('data-files/itemcollections/example-search.json')
         s_from_ic = SingleFileSTAC.from_file(m).search
         with open(m) as f:
             sd = json.load(f)['search']

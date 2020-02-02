@@ -7,11 +7,13 @@ from pystac.serialization.identify import STACObjectType
 
 # STAC Object Types
 
+
 def _migrate_links(d, version):
     if version < '0.6':
         if 'links' in d:
             if isinstance(d['links'], dict):
                 d['links'] = list(d['links'].values())
+
 
 def _migrate_catalog(d, version, info):
     _migrate_links(d, version)
@@ -19,8 +21,10 @@ def _migrate_catalog(d, version, info):
     if version < '0.8':
         d['stac_extensions'] = info.common_extensions + info.custom_extensions
 
+
 def _migrate_collection(d, version, info):
     _migrate_catalog(d, version, info)
+
 
 def _migrate_item(d, version, info):
     _migrate_links(d, version)
@@ -28,22 +32,29 @@ def _migrate_item(d, version, info):
     if version < '0.8':
         d['stac_extensions'] = info.common_extensions + info.custom_extensions
 
+
 def _migrate_itemcollection(d, version, info):
     return d
 
+
 # Extensions
+
 
 def _migrate_assets(d, version, info):
     pass
 
+
 def _migrate_checksum(d, version, info):
     pass
+
 
 def _migrate_datacube(d, version, info):
     pass
 
+
 def _migrate_datetime_range(d, version, info):
     pass
+
 
 def _migrate_eo(d, version, info):
     if version < '0.5':
@@ -76,29 +87,35 @@ def _migrate_eo(d, version, info):
                     asset_band_indices.append(keys_to_indices[bk])
                 asset['eo:bands'] = sorted(asset_band_indices)
 
+
 def _migrate_label(d, version, info):
     pass
+
 
 def _migrate_pointcloud(d, version, info):
     pass
 
+
 def _migrate_sar(d, version, info):
     pass
+
 
 def _migrate_scientific(d, version, info):
     pass
 
+
 def _migrate_single_file_stac(d, version, info):
     pass
 
-_object_migrations =  {
+
+_object_migrations = {
     STACObjectType.CATALOG: _migrate_catalog,
     STACObjectType.COLLECTION: _migrate_collection,
     STACObjectType.ITEM: _migrate_item,
     STACObjectType.ITEMCOLLECTION: _migrate_itemcollection
 }
 
-_extension_migrations =  {
+_extension_migrations = {
     Extension.ASSETS: _migrate_assets,
     Extension.CHECKSUM: _migrate_checksum,
     Extension.DATACUBE: _migrate_datacube,
@@ -110,6 +127,7 @@ _extension_migrations =  {
     Extension.SCIENTIFIC: _migrate_scientific,
     Extension.SINGLE_FILE_STAC: _migrate_single_file_stac,
 }
+
 
 def migrate_to_latest(json_dict, info):
     """Migrates the STAC JSON to the latest version
@@ -127,7 +145,7 @@ def migrate_to_latest(json_dict, info):
     result = deepcopy(json_dict)
     version = info.version_range.latest_valid_version()
 
-    if version  != STAC_VERSION:
+    if version != STAC_VERSION:
         _object_migrations[info.object_type](result, version, info)
 
         for ext in info.common_extensions:

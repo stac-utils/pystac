@@ -1,6 +1,5 @@
 from pystac.version import STAC_VERSION
 from pystac.extension import Extension
-from pystac.serialization.common_properties import merge_common_properties
 
 
 class STACObjectType:
@@ -22,18 +21,16 @@ class STACJSONDescription:
         custom_extensions (List[str]): List of custom extensions (URIs to JSON Schemas)
             used by this STAC Object.
     """
-    def __init__(self, object_type, version_range, common_extensions,
-                 custom_extensions):
+    def __init__(self, object_type, version_range, common_extensions, custom_extensions):
         self.object_type = object_type
         self.version_range = version_range
         self.common_extensions = common_extensions
         self.custom_extensions = custom_extensions
 
     def __repr__(self):
-        return '<{} {} common_ext={} custom_ext{}>'.format(
-            self.object_type, self.version_range,
-            ','.format(self.common_extensions),
-            ','.format(self.custom_extensions))
+        return '<{} {} common_ext={} custom_ext{}>'.format(self.object_type, self.version_range,
+                                                           ','.format(self.common_extensions),
+                                                           ','.format(self.custom_extensions))
 
 
 class STACVersionRange:
@@ -147,16 +144,14 @@ def _identify_stac_extensions(object_type, d, version_range):
             version_range.set_min('0.6.2')
             if version_range.contains('0.6.2'):
                 for prop in [
-                        'sar:absolute_orbit', 'sar:resolution',
-                        'sar:pixel_spacing', 'sar:looks'
+                        'sar:absolute_orbit', 'sar:resolution', 'sar:pixel_spacing', 'sar:looks'
                 ]:
                     if prop in d['properties']:
                         if not isinstance(d['properties'][prop], list):
                             version_range.set_max('0.6.2')
             if version_range.contains('0.7.0'):
                 for prop in [
-                        'sar:incidence_angle', 'sar:relative_orbit',
-                        'sar:observation_direction'
+                        'sar:incidence_angle', 'sar:relative_orbit', 'sar:observation_direction'
                 ]:
                     if prop in d['properties']:
                         version_range.set_min('0.7.0')
@@ -262,8 +257,7 @@ def identify_stac_object(json_dict):
         # but ItemCollection.
         if version_range.is_earlier_than('0.8.0') or \
            object_type == STACObjectType.ITEMCOLLECTION:
-            stac_extensions = _identify_stac_extensions(
-                object_type, json_dict, version_range)
+            stac_extensions = _identify_stac_extensions(object_type, json_dict, version_range)
         else:
             stac_extensions = []
 
@@ -281,9 +275,6 @@ def identify_stac_object(json_dict):
                               json_dict['links'])):
                 version_range.set_min('0.7.0')
 
-
-
     common_extensions, custom_extensions = _split_extensions(stac_extensions)
 
-    return STACJSONDescription(object_type, version_range, common_extensions,
-                               custom_extensions)
+    return STACJSONDescription(object_type, version_range, common_extensions, custom_extensions)

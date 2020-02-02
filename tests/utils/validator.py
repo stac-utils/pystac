@@ -3,8 +3,8 @@ import json
 import jsonschema
 from jsonschema.validators import RefResolver
 
-from pystac import (Catalog, Collection, Item, ItemCollection, LabelItem,
-                    STAC_VERSION, STAC_IO, EOItem, SingleFileSTAC)
+from pystac import (Catalog, Collection, Item, ItemCollection, LabelItem, STAC_VERSION, STAC_IO,
+                    EOItem, SingleFileSTAC)
 
 
 class SchemaValidator:
@@ -24,8 +24,7 @@ class SchemaValidator:
         ItemCollection: 'item-spec/json-schema/itemcollection.json',
         LabelItem: 'extensions/label/json-schema/label-item.json',
         EOItem: 'extensions/eo/json-schema/eo-item.json',
-        SingleFileSTAC:
-        'extensions/single-file-stac/json-schema/single-file.json'
+        SingleFileSTAC: 'extensions/single-file-stac/json-schema/single-file.json'
     }
 
     for c in schemas:
@@ -55,9 +54,7 @@ class SchemaValidator:
         schema, resolver = self.get_schema(obj_type)
 
         try:
-            return jsonschema.validate(instance=d,
-                                       schema=schema,
-                                       resolver=resolver)
+            return jsonschema.validate(instance=d, schema=schema, resolver=resolver)
         except jsonschema.exceptions.ValidationError as e:
             print('Validation error in {}'.format(obj_type))
             raise e
