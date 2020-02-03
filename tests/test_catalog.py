@@ -102,7 +102,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(children[0].description, 'test3')
 
     def test_clone_generates_correct_links(self):
-        catalogs = [TestCases.test_case_1(), TestCases.test_case_2(), TestCases.test_case_3()]
+        catalogs = TestCases.all_test_catalogs()
 
         for catalog in catalogs:
             expected_link_types_to_counts = {}
@@ -387,7 +387,7 @@ class CatalogTest(unittest.TestCase):
                         self.assertTrue(l.link_type == LinkType.ABSOLUTE)
                         self.assertTrue(is_absolute_href(l.get_href()))
 
-        test_cases = [TestCases.test_case_1(), TestCases.test_case_2(), TestCases.test_case_3()]
+        test_cases = TestCases.all_test_catalogs()
 
         for catalog in test_cases:
             with TemporaryDirectory() as tmp_dir:

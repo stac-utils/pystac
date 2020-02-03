@@ -81,6 +81,10 @@ class TestCases:
         return examples
 
     @staticmethod
+    def all_test_catalogs():
+        return [TestCases.test_case_1(), TestCases.test_case_2(), TestCases.test_case_3()]
+
+    @staticmethod
     def test_case_1():
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
 
