@@ -7,10 +7,10 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
     """Merges Collection properties into an Item.
 
     Args:
-        item_dict: JSON dict of the Item which properties should be merged
+        item_dict (dict): JSON dict of the Item which properties should be merged
             into.
-        collection_cache: Optional cache of Collection JSON that has previously
-            read. Keyed to either the Collection ID or an HREF.
+        collection_cache (CollectionCache): Optional CollectionCache
+            that will be used to read and write cached collections.
         json_href: The HREF of the file that this JSON comes from. Used
             to resolve relative paths.
 
@@ -25,7 +25,7 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
     if 'collection' in item_dict:
         collection_id = item_dict['collection']
         if collection_cache is not None:
-            collection = collection_cache.get(collection_id)
+            collection = collection_cache.get_by_id(collection_id)
 
     # Next, try the collection link.
     if collection is None:
@@ -41,7 +41,7 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
             if json_href is not None:
                 collection_href = make_absolute_href(collection_href, json_href)
             if collection_cache is not None:
-                collection = collection_cache.get(collection_href)
+                collection = collection_cache.get_by_href(collection_href)
 
             if collection is None:
                 collection = STAC_IO.read_json(collection_href)
@@ -63,9 +63,7 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
                     properties_merged = True
                     item_dict['properties'][k] = collection_props[k]
 
-        if collection_cache is not None and collection_id not in collection_cache:
-            collection_cache[collection_id] = collection
-            if collection_href is not None:
-                collection_cache[collection_href] = collection
+        if collection_cache is not None and not collection_cache.contains_id(collection_id):
+            collection_cache.cache(collection, href=collection_href)
 
     return properties_merged

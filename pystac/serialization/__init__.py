@@ -26,7 +26,8 @@ def stac_object_from_dict(d, href=None, root=None):
     if identify_stac_object_type(d) == STACObjectType.ITEM:
         collection_cache = None
         if root is not None:
-            collection_cache = root._resolved_objects.ids_to_objects
+            collection_cache = root._resolved_objects.as_collection_cache()
+
         merge_common_properties(d, json_href=href, collection_cache=collection_cache)
 
     info = identify_stac_object(d)
