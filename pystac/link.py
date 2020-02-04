@@ -1,6 +1,4 @@
-import os
 from copy import (copy, deepcopy)
-from urllib.parse import urlparse
 
 from pystac import STACError
 from pystac.stac_io import STAC_IO
@@ -145,22 +143,22 @@ class Link:
                 previously resolved instances of the STAC object.
         """
         if isinstance(self.target, str):
-            # If it's a relative link, base it off the parent.
-            target_path = self.target
-            parsed = urlparse(self.target)
-            if parsed.scheme == '':
-                if not os.path.isabs(parsed.path):
-                    if self.owner is None:
-                        raise STACError('Relative path {} encountered '
-                                        'without owner.'.format(target_path))
-                    owner_href = self.owner.get_self_href()
-                    if owner_href is None:
-                        raise STACError('Relative path {} encountered '
-                                        'without owner "self" link set.'.format(target_path))
-                    target_path = make_absolute_href(self.target, owner_href)
+            target_href = self.target
 
-            obj = STAC_IO.read_stac_object(target_path, root=root)
-            obj.set_self_href(target_path)
+            # If it's a relative link, base it off the parent.
+            if not is_absolute_href(target_href):
+                if self.owner is None:
+                    raise STACError('Relative path {} encountered '
+                                    'without owner or start_href.'.format(target_href))
+                start_href = self.owner.get_self_href()
+                if start_href is None:
+                    raise STACError('Relative path {} encountered '
+                                    'without owner "self" link set.'.format(target_href))
+
+                target_href = make_absolute_href(target_href, start_href)
+
+            obj = STAC_IO.read_stac_object(target_href, root=root)
+            obj.set_self_href(target_href)
         else:
             obj = self.target
 
