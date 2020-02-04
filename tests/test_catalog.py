@@ -4,10 +4,10 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
-from pystac import (Catalog, CatalogType, STAC_VERSION, LinkType, Item, Asset, LabelItem,
-                    LabelClasses, MediaType)
+from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset,
+                    LabelItem, LabelClasses, MediaType)
 from pystac.utils import is_absolute_href
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
 
 class CatalogTest(unittest.TestCase):
@@ -443,6 +443,29 @@ class CatalogTest(unittest.TestCase):
                 for item in items:
                     end = '{}-{}/{}.json'.format(item.datetime.year, item.datetime.month, item.id)
                     self.assertTrue(item.get_self_href().endswith(end))
+
+    def test_collections_cache_correctly(self):
+        catalogs = TestCases.all_test_catalogs()
+        for cat in catalogs:
+            with MockStacIO() as mock_io:
+                expected_collection_reads = set([])
+                for root, children, items in cat.walk():
+                    if isinstance(root, Collection):
+                        expected_collection_reads.add(root.get_self_href())
+
+                    # Iterate over items to make sure they are read
+                    self.assertNotEqual(list(items), None)
+
+                call_uris = [
+                    call[0][0] for call in mock_io.read_text_method.call_args_list
+                    if call[0][0] in expected_collection_reads
+                ]
+
+                for collection_uri in expected_collection_reads:
+                    calls = len([x for x in call_uris if x == collection_uri])
+                    self.assertEqual(
+                        calls, 1,
+                        '{} was read {} times instead of once!'.format(collection_uri, calls))
 
 
 class FullCopyTest(unittest.TestCase):
