@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType, EOItem,
                     Band)
-from tests.utils import (RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
 class CollectionTest(unittest.TestCase):
@@ -73,3 +73,10 @@ class CollectionTest(unittest.TestCase):
             self.assertEqual(len(items), 2)
             self.assertIsInstance(items[0], EOItem)
             self.assertIsInstance(items[1], EOItem)
+
+    def test_read_eo_items_are_heritable(self):
+        cat = TestCases.test_case_5()
+        item = next(cat.get_all_items())
+
+        self.assertIsInstance(item, EOItem)
+        self.assertEqual(item.gsd, 20.0)
