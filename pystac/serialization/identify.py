@@ -137,7 +137,7 @@ def _identify_stac_extensions(object_type, d, version_range):
                         'sar:pixel_spacing', 'sar:looks'
                 ]:
                     if prop in d['properties']:
-                        if not isinstance(d['properties'][prop], list):
+                        if isinstance(d['properties'][prop], list):
                             version_range.set_max('0.6.2')
             if version_range.contains('0.7.0'):
                 for prop in [
