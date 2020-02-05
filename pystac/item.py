@@ -1,6 +1,5 @@
 import os
 from copy import copy, deepcopy
-from collections import ChainMap
 
 import dateutil.parser
 
@@ -256,34 +255,6 @@ class Item(STACObject):
             asset = Asset.from_dict(v)
             asset.set_owner(item)
             item.assets[k] = asset
-
-        # Find the collection, merge properties if there are
-        # common properties to merge.
-        collection_to_merge = None
-        if collection_id is not None and root is not None:
-            collection_to_merge = root._resolved_objects.get_by_id(collection_id)
-        else:
-            collection_link = item.get_single_link('collection')
-            if collection_link is not None:
-                # If there's a relative collection link, and we have an href passed
-                # in, we can resolve the collection from the link. If not,
-                # we'll skip merging in collection properties.
-                if collection_link.link_type == LinkType.RELATIVE and \
-                   not collection_link.is_resolved():
-                    if href is not None:
-                        collection_link = collection_link.clone()
-                        collection_link.target = make_absolute_href(collection_link.target, href)
-                    else:
-                        collection_link = None
-
-                if collection_link is not None:
-                    collection_to_merge = collection_link.resolve_stac_object(root=root).target
-                    if item.collection_id is None:
-                        item.collection_id = collection_to_merge.id
-
-        if collection_to_merge is not None:
-            if collection_to_merge.properties is not None:
-                item.properties = dict(ChainMap(item.properties, collection_to_merge.properties))
 
         return item
 

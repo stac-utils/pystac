@@ -10,25 +10,31 @@ from pystac import (Catalog, Collection, Item, ItemCollection, LabelItem, STAC_V
 class SchemaValidator:
     REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
     TAG = 'v{}'.format(STAC_VERSION)
-    # SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
-    # Temporarily set to point to a fork if stac-spec with updated
-    # schemas for Label and EO
-    # Pending this issue being resolved: https://github.com/radiantearth/stac-spec/issues/618
-    SCHEMA_BASE_URI = ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
-                       '0.8.1/refactor-extension-schemas')
+    SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     schemas = {
-        Catalog: 'catalog-spec/json-schema/catalog.json',
-        Collection: 'collection-spec/json-schema/collection.json',
-        Item: 'item-spec/json-schema/item.json',
-        ItemCollection: 'item-spec/json-schema/itemcollection.json',
-        LabelItem: 'extensions/label/json-schema/label-item.json',
-        EOItem: 'extensions/eo/json-schema/eo-item.json',
-        SingleFileSTAC: 'extensions/single-file-stac/json-schema/single-file.json'
+        Catalog:
+        'catalog-spec/json-schema/catalog.json',
+        Collection:
+        'collection-spec/json-schema/collection.json',
+        Item:
+        'item-spec/json-schema/item.json',
+        ItemCollection:
+        'item-spec/json-schema/itemcollection.json',
+        LabelItem:
+        'extensions/label/schema.json',
+        EOItem:
+        'extensions/eo/json-schema/schema.json',
+
+        # TODO: Move off of custom schema once schema in spec is fixed.
+        SingleFileSTAC: ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
+                         '0.8.1/refactor-extension-schemas/extensions/'
+                         'single-file-stac/json-schema/single-file.json')
     }
 
     for c in schemas:
-        schemas[c] = '{}/{}'.format(SCHEMA_BASE_URI, schemas[c])
+        if not schemas[c].startswith('https'):
+            schemas[c] = '{}/{}'.format(SCHEMA_BASE_URI, schemas[c])
 
     def __init__(self):
         self.schema_cache = {}

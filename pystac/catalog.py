@@ -5,7 +5,7 @@ import pystac
 from pystac import (STAC_VERSION, STACError)
 from pystac.stac_object import STACObject
 from pystac.link import (Link, LinkType)
-from pystac.resolved_object_cache import ResolvedObjectCache
+from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
 

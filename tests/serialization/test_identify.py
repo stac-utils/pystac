@@ -2,6 +2,7 @@ import unittest
 from urllib.error import HTTPError
 
 from pystac import STAC_IO
+from pystac.cache import CollectionCache
 from pystac.serialization import (identify_stac_object, identify_stac_object_type,
                                   merge_common_properties, STACObjectType)
 
@@ -13,7 +14,7 @@ class IdentifyTest(unittest.TestCase):
         self.examples = TestCases.get_examples_info()
 
     def test_identify(self):
-        collection_cache = {}
+        collection_cache = CollectionCache()
         for example in self.examples:
             path = example['path']
             d = STAC_IO.read_json(path)

@@ -88,42 +88,12 @@ class STACWritingTest(unittest.TestCase):
                 for item in items:
                     self.validate_file(item.get_self_href(), type(item))
 
-    def test_testcase1_absolute_published(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase1_relative_published(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase1_self_contained(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
-
-    def test_testcase2_absolute_published(self):
-        catalog = TestCases.test_case_2()
-
-        catalog = catalog.full_copy()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase2_relative_published(self):
-        catalog = TestCases.test_case_2()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase2_self_contained(self):
-        catalog = TestCases.test_case_2()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
-
-    def test_testcase3_absolute_published(self):
-        catalog = TestCases.test_case_3()
-
-        catalog = catalog.full_copy()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase3_relative_published(self):
-        catalog = TestCases.test_case_3()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase3_self_contained(self):
-        catalog = TestCases.test_case_3()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
+    def test_testcases(self):
+        for catalog in TestCases.all_test_catalogs():
+            catalog = catalog.full_copy()
+            for catalog_type in [
+                    CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
+                    CatalogType.SELF_CONTAINED
+            ]:
+                with self.subTest(title='Catalog {} [{}]'.format(catalog.id, catalog_type)):
+                    self.do_test(catalog, catalog_type)

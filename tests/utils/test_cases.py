@@ -81,6 +81,16 @@ class TestCases:
         return examples
 
     @staticmethod
+    def all_test_catalogs():
+        return [
+            TestCases.test_case_1(),
+            TestCases.test_case_2(),
+            TestCases.test_case_3(),
+            TestCases.test_case_4(),
+            TestCases.test_case_5()
+        ]
+
+    @staticmethod
     def test_case_1():
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
 
@@ -120,3 +130,16 @@ class TestCases:
         root_cat.add_item(label_item)
 
         return root_cat
+
+    @staticmethod
+    def test_case_4():
+        """Test case that is based on a local copy of the Tier 1 dataset from
+        DrivenData's OpenCities AI Challenge.
+        See: https://www.drivendata.org/competitions/60/building-segmentation-disaster-resilience
+        """
+        return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-4/catalog.json'))
+
+    @staticmethod
+    def test_case_5():
+        """Based on a subset of https://cbers.stac.cloud/"""
+        return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-5/catalog.json'))

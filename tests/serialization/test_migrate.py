@@ -1,6 +1,7 @@
 import unittest
 
 from pystac import (STAC_IO, STAC_VERSION, STACObject)
+from pystac.cache import CollectionCache
 from pystac.serialization import (identify_stac_object, identify_stac_object_type,
                                   merge_common_properties, migrate_to_latest, STACObjectType)
 
@@ -14,7 +15,7 @@ class MigrateTest(unittest.TestCase):
         ]
 
     def test_migrate(self):
-        collection_cache = {}
+        collection_cache = CollectionCache()
         for example in self.examples:
             path = example['path']
             d = STAC_IO.read_json(path)
