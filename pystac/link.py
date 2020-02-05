@@ -4,8 +4,7 @@ from urllib.parse import urlparse
 
 from pystac import STACError
 from pystac.stac_io import STAC_IO
-from pystac.utils import (make_absolute_href, make_relative_href,
-                          is_absolute_href)
+from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 
 class LinkType:
@@ -156,10 +155,8 @@ class Link:
                                         'without owner.'.format(target_path))
                     owner_href = self.owner.get_self_href()
                     if owner_href is None:
-                        raise STACError(
-                            'Relative path {} encountered '
-                            'without owner "self" link set.'.format(
-                                target_path))
+                        raise STACError('Relative path {} encountered '
+                                        'without owner "self" link set.'.format(target_path))
                     target_path = make_absolute_href(self.target, owner_href)
 
             obj = STAC_IO.read_stac_object(target_path, root=root)
@@ -260,49 +257,29 @@ class Link:
     @staticmethod
     def root(c, link_type=LinkType.ABSOLUTE):
         """Creates a link to a root Catalog or Collection."""
-        return Link('root',
-                    c,
-                    media_type='application/json',
-                    link_type=link_type)
+        return Link('root', c, media_type='application/json', link_type=link_type)
 
     @staticmethod
     def parent(c, link_type=LinkType.ABSOLUTE):
         """Creates a link to a parent Catalog or Collection."""
-        return Link('parent',
-                    c,
-                    media_type='application/json',
-                    link_type=link_type)
+        return Link('parent', c, media_type='application/json', link_type=link_type)
 
     @staticmethod
     def collection(c, link_type=LinkType.ABSOLUTE):
         """Creates a link to an item's Collection."""
-        return Link('collection',
-                    c,
-                    media_type='application/json',
-                    link_type=link_type)
+        return Link('collection', c, media_type='application/json', link_type=link_type)
 
     @staticmethod
     def self_href(href):
         """Creates a self link to a file's location."""
-        return Link('self',
-                    href,
-                    media_type='application/json',
-                    link_type=LinkType.ABSOLUTE)
+        return Link('self', href, media_type='application/json', link_type=LinkType.ABSOLUTE)
 
     @staticmethod
     def child(c, title=None, link_type=LinkType.ABSOLUTE):
         """Creates a link to a child Catalog or Collection."""
-        return Link('child',
-                    c,
-                    title=title,
-                    media_type='application/json',
-                    link_type=link_type)
+        return Link('child', c, title=title, media_type='application/json', link_type=link_type)
 
     @staticmethod
     def item(item, title=None, link_type=LinkType.ABSOLUTE):
         """Creates a link to an Item."""
-        return Link('item',
-                    item,
-                    title=title,
-                    media_type='application/json',
-                    link_type=link_type)
+        return Link('item', item, title=title, media_type='application/json', link_type=link_type)

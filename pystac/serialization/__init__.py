@@ -1,8 +1,55 @@
 # flake8: noqa
+from pystac import (Catalog, Collection, SingleFileSTAC, ItemCollection, Item, LabelItem, EOItem,
+                    Extension)
 
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription,
-                                           STACVersionRange,
-                                           identify_stac_object,
-                                           identify_stac_object_type)
+from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange,
+                                           identify_stac_object, identify_stac_object_type)
 
 from pystac.serialization.common_properties import merge_common_properties
+from pystac.serialization.migrate import migrate_to_latest
+
+
+def stac_object_from_dict(d, href=None, root=None):
+    """Determines how to deserialize a dictionary into a STAC object.
+
+    Args:
+        d (dict): The dict to parse.
+        href (str): Optional href that is the file location of the object being
+            parsed.
+        root (Catalog or Collection): Optional root of the catalog for this object.
+            If provided, the root's resolved object cache can be used to search for
+            previously resolved instances of the STAC object.
+
+    Note: This is used internally in STAC_IO to deserialize STAC Objects.
+    It is in the top level __init__ in order to avoid circular dependencies.
+    """
+    if identify_stac_object_type(d) == STACObjectType.ITEM:
+        collection_cache = None
+        if root is not None:
+            collection_cache = root._resolved_objects.ids_to_objects
+        merge_common_properties(d, json_href=href, collection_cache=collection_cache)
+
+    info = identify_stac_object(d)
+
+    d = migrate_to_latest(d, info)
+
+    if info.object_type == STACObjectType.CATALOG:
+        return Catalog.from_dict(d, href=href, root=root)
+
+    if info.object_type == STACObjectType.COLLECTION:
+        return Collection.from_dict(d, href=href, root=root)
+
+    if info.object_type == STACObjectType.ITEMCOLLECTION:
+        if Extension.SINGLE_FILE_STAC in info.common_extensions:
+            return SingleFileSTAC.from_dict(d, href=href, root=root)
+
+        return ItemCollection.from_dict(d, href=href, root=root)
+
+    if info.object_type == STACObjectType.ITEM:
+        if Extension.EO in info.common_extensions:
+            return EOItem.from_dict(d, href=href, root=root)
+
+        if Extension.LABEL in info.common_extensions:
+            return LabelItem.from_dict(d, href=href, root=root)
+
+        return Item.from_dict(d, href=href, root=root)

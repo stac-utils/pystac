@@ -119,6 +119,4 @@ class ResolvedObjectCache:
             ResolvedObjectCache: The resulting merged cache.
         """
         return ResolvedObjectCache(
-            dict(
-                ChainMap(copy(first.ids_to_objects),
-                         copy(second.ids_to_objects))))
+            dict(ChainMap(copy(first.ids_to_objects), copy(second.ids_to_objects))))

@@ -1,58 +1,34 @@
-import os
 import unittest
-import csv
+from urllib.error import HTTPError
 
 from pystac import STAC_IO
-from pystac.serialization import identify_stac_object
+from pystac.serialization import (identify_stac_object, identify_stac_object_type,
+                                  merge_common_properties, STACObjectType)
 
 from tests.utils import TestCases
 
 
 class IdentifyTest(unittest.TestCase):
     def setUp(self):
-        self.examples = []
-
-        info_path = TestCases.get_path('data-files/examples/example-info.csv')
-        with open(TestCases.get_path(
-                'data-files/examples/example-info.csv')) as f:
-            for row in csv.reader(f):
-                path = os.path.abspath(
-                    os.path.join(os.path.dirname(info_path), row[0]))
-                object_type = row[1]
-                stac_version = row[2]
-                common_extensions = []
-                if row[3]:
-                    common_extensions = row[3].split('|')
-                custom_extensions = []
-                if row[4]:
-                    custom_extensions = row[4].split('|')
-
-                self.examples.append({
-                    'path': path,
-                    'object_type': object_type,
-                    'stac_version': stac_version,
-                    'common_extensions': common_extensions,
-                    'custom_extensions': custom_extensions
-                })
+        self.examples = TestCases.get_examples_info()
 
     def test_identify(self):
         collection_cache = {}
         for example in self.examples:
             path = example['path']
             d = STAC_IO.read_json(path)
+            if identify_stac_object_type(d) == STACObjectType.ITEM:
+                try:
+                    merge_common_properties(d, json_href=path, collection_cache=collection_cache)
+                except HTTPError:
+                    pass
 
-            actual = identify_stac_object(d,
-                                          merge_collection_properties=True,
-                                          json_href=path,
-                                          collection_cache=collection_cache)
+            actual = identify_stac_object(d)
 
             msg = 'Failed {}:'.format(path)
 
-            self.assertEqual(actual.object_type,
-                             example['object_type'],
-                             msg=msg)
-            version_contained_in_range = actual.version_range.contains(
-                example['stac_version'])
+            self.assertEqual(actual.object_type, example['object_type'], msg=msg)
+            version_contained_in_range = actual.version_range.contains(example['stac_version'])
             self.assertTrue(version_contained_in_range, msg=msg)
             self.assertEqual(set(actual.common_extensions),
                              set(example['common_extensions']),
