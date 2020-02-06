@@ -17,8 +17,7 @@ class ItemCollectionTest(unittest.TestCase):
         with open(self.IC_MINIMAL_URI) as f:
             self.IC_MINIMAL_DICT = json.load(f)
 
-        self.IC_URI = TestCases.get_path(
-            'data-files/itemcollections/sample-item-collection.json')
+        self.IC_URI = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
         with open(self.IC_URI) as f:
             self.IC_DICT = json.load(f)
 
@@ -32,10 +31,7 @@ class ItemCollectionTest(unittest.TestCase):
             self.assertEqual(ic.get_self_href(), path)
             self.assertEqual(len(ic.links), 1)
 
-            ic.links = [
-                Link(l.rel, join(tmp_dir, basename(l.target)))
-                for l in ic.links
-            ]
+            ic.links = [Link(l.rel, join(tmp_dir, basename(l.target))) for l in ic.links]
             ic.save()
             self.assertTrue(isfile(path))
             with open(path) as f:
@@ -49,10 +45,8 @@ class ItemCollectionTest(unittest.TestCase):
         ic_json = deepcopy(self.IC_DICT)
 
         self.assertEqual(ic_json.keys(), ic.to_dict().keys())
-        self.assertEqual(ic_json['links'],
-                         ic.to_dict(include_self_link=True)['links'])
-        self.assertNotEqual(ic_json['links'],
-                            ic.to_dict(include_self_link=False)['links'])
+        self.assertEqual(ic_json['links'], ic.to_dict(include_self_link=True)['links'])
+        self.assertNotEqual(ic_json['links'], ic.to_dict(include_self_link=False)['links'])
 
         for item in ic.get_items():
             self.assertIsInstance(item, Item)
@@ -61,8 +55,7 @@ class ItemCollectionTest(unittest.TestCase):
             self.assertIsInstance(link, Link)
 
         href = ic.get_self_href()
-        self.assertEqual(href,
-                         'http://stacspec.org/sample-item-collection.json')
+        self.assertEqual(href, 'http://stacspec.org/sample-item-collection.json')
 
         ic_empty = ItemCollection([])
         self.assertIsInstance(ic_empty, ItemCollection)

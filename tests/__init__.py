@@ -1,6 +1,7 @@
 import ssl
 from urllib.request import urlopen
 from urllib.parse import urlparse
+from urllib.error import HTTPError
 
 from pystac.stac_io import STAC_IO
 
@@ -15,6 +16,14 @@ def unsafe_read_https_method(uri):
         with urlopen(uri, context=context) as f:
             return f.read().decode('utf-8')
     elif parsed.scheme == 'http':
+        # Avoid reading cool-sat.com
+        if parsed.netloc == 'cool-sat.com':
+            raise HTTPError(url=uri,
+                            msg='cool-sat.com does not exist',
+                            hdrs=None,
+                            code=404,
+                            fp=None)
+
         with urlopen(uri) as f:
             return f.read().decode('utf-8')
     else:

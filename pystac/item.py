@@ -1,14 +1,12 @@
 import os
 from copy import copy, deepcopy
-from collections import ChainMap
 
 import dateutil.parser
 
 from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
-from pystac.utils import (is_absolute_href, make_absolute_href,
-                          make_relative_href, datetime_to_str)
+from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str)
 from pystac.collection import Collection
 
 
@@ -111,8 +109,7 @@ class Item(STACObject):
         """
         self_href = self.get_self_href()
         if self_href is None:
-            raise STACError(
-                'Cannot make asset HREFs relative if no self_href is set.')
+            raise STACError('Cannot make asset HREFs relative if no self_href is set.')
         for asset in self.assets.values():
             asset.href = make_relative_href(asset.href, self_href)
         return self
@@ -133,9 +130,8 @@ class Item(STACObject):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError(
-                            'Cannot make relative asset HREFs absolute '
-                            'if no self_href is set.')
+                        raise STACError('Cannot make relative asset HREFs absolute '
+                                        'if no self_href is set.')
                 asset.href = make_absolute_href(asset.href, self_href)
 
         return self
@@ -170,8 +166,7 @@ class Item(STACObject):
         if not include_self_link:
             links = filter(lambda x: x.rel != 'self', links)
 
-        assets = dict(
-            map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
+        assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
         self.properties['datetime'] = datetime_to_str(self.datetime)
 
@@ -213,9 +208,7 @@ class Item(STACObject):
 
     def normalize_hrefs(self, root_href):
         if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href,
-                                           os.getcwd(),
-                                           start_is_dir=True)
+            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         old_self_href = self.get_self_href()
         new_self_href = os.path.join(root_href, '{}.json'.format(self.id))
@@ -228,8 +221,7 @@ class Item(STACObject):
             if not is_absolute_href(asset_href):
                 if old_self_href is not None:
                     abs_href = make_absolute_href(asset_href, old_self_href)
-                    new_relative_href = make_relative_href(
-                        abs_href, new_self_href)
+                    new_relative_href = make_relative_href(abs_href, new_self_href)
                     asset.href = new_relative_href
 
     @classmethod
@@ -245,9 +237,7 @@ class Item(STACObject):
 
         datetime = properties.get('datetime')
         if datetime is None:
-            raise STACError(
-                'Item dict is missing a "datetime" property in the "properties" field'
-            )
+            raise STACError('Item dict is missing a "datetime" property in the "properties" field')
         datetime = dateutil.parser.parse(datetime)
 
         item = Item(id=id,
@@ -265,38 +255,6 @@ class Item(STACObject):
             asset = Asset.from_dict(v)
             asset.set_owner(item)
             item.assets[k] = asset
-
-        # Find the collection, merge properties if there are
-        # common properties to merge.
-        collection_to_merge = None
-        if collection_id is not None and root is not None:
-            collection_to_merge = root._resolved_objects.get_by_id(
-                collection_id)
-        else:
-            collection_link = item.get_single_link('collection')
-            if collection_link is not None:
-                # If there's a relative collection link, and we have an href passed
-                # in, we can resolve the collection from the link. If not,
-                # we'll skip merging in collection properties.
-                if collection_link.link_type == LinkType.RELATIVE and \
-                   not collection_link.is_resolved():
-                    if href is not None:
-                        collection_link = collection_link.clone()
-                        collection_link.target = make_absolute_href(
-                            collection_link.target, href)
-                    else:
-                        collection_link = None
-
-                if collection_link is not None:
-                    collection_to_merge = collection_link.resolve_stac_object(
-                        root=root).target
-                    if item.collection_id is None:
-                        item.collection_id = collection_to_merge.id
-
-        if collection_to_merge is not None:
-            if collection_to_merge.properties is not None:
-                item.properties = dict(
-                    ChainMap(item.properties, collection_to_merge.properties))
 
         return item
 
@@ -356,8 +314,7 @@ class Asset:
         """
         if not is_absolute_href(self.href):
             if self.owner is not None:
-                return make_absolute_href(self.href,
-                                          self.owner.get_self_href())
+                return make_absolute_href(self.href, self.owner.get_self_href())
 
         return self.href
 
@@ -411,7 +368,4 @@ class Asset:
         if any(d):
             properties = d
 
-        return Asset(href=href,
-                     media_type=media_type,
-                     title=title,
-                     properties=properties)
+        return Asset(href=href, media_type=media_type, title=title, properties=properties)
