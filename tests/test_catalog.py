@@ -102,32 +102,22 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(children[0].description, 'test3')
 
     def test_walk_iterates_correctly(self):
-        catalogs = [
-            TestCases.test_case_1(),
-            TestCases.test_case_2(),
-            TestCases.test_case_3()
-        ]
-
         def test_catalog(cat):
             expected_catalog_iterations = 1
             actual_catalog_iterations = 0
             with self.subTest(title='Testing catalog {}'.format(cat.id)):
                 for root, children, items in cat.walk():
                     actual_catalog_iterations += 1
-                    expected_catalog_iterations += len(
-                        list(root.get_children()))
+                    expected_catalog_iterations += len(list(root.get_children()))
 
                     self.assertEqual(set([c.id for c in root.get_children()]),
-                                     set([c.id for c in children]),
-                                     'Children unequal')
+                                     set([c.id for c in children]), 'Children unequal')
                     self.assertEqual(set([c.id for c in root.get_items()]),
-                                     set([c.id for c in items]),
-                                     'Items unequal')
+                                     set([c.id for c in items]), 'Items unequal')
 
-                self.assertEqual(actual_catalog_iterations,
-                                 expected_catalog_iterations)
+                self.assertEqual(actual_catalog_iterations, expected_catalog_iterations)
 
-        for cat in catalogs:
+        for cat in TestCases.all_test_catalogs():
             test_catalog(cat)
 
     def test_clone_generates_correct_links(self):
