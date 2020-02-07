@@ -151,10 +151,15 @@ def _identify_stac_extensions(object_type, d, version_range):
                             version_range.set_max('0.6.2')
             if version_range.contains('0.7.0'):
                 for prop in [
-                        'sar:incidence_angle', 'sar:relative_orbit', 'sar:observation_direction'
+                        'sar:incidence_angle', 'sar:relative_orbit', 'sar:observation_direction',
+                        'sar:resolution_range', 'sar:resolution_azimuth', 'sar:pixel_spacing_range',
+                        'sar:pixel_spacing_azimuth', 'sar:looks_range', 'sar:looks_azimuth',
+                        'sar:looks_equivalent_number'
                 ]:
                     if prop in d['properties']:
                         version_range.set_min('0.7.0')
+                if 'sar:absolute_orbit' in d['properties'] and not isinstance(d['properties']['sar:absolute_orbit'], list):
+                    version_range.set_min('0.7.0')
             if 'sar:off_nadir' in d['properties']:
                 version_range.set_max('0.6.2')
 
