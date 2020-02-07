@@ -5,7 +5,7 @@ import pystac
 from pystac import (STAC_VERSION, STACError)
 from pystac.stac_object import STACObject
 from pystac.link import (Link, LinkType)
-from pystac.resolved_object_cache import ResolvedObjectCache
+from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
@@ -66,12 +66,7 @@ class Catalog(STACObject):
 
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a cononical format."""
-    def __init__(self,
-                 id,
-                 description,
-                 title=None,
-                 stac_extensions=None,
-                 href=None):
+    def __init__(self, id, description, title=None, stac_extensions=None, href=None):
         self.id = id
         self.description = description
         self.title = title
@@ -91,8 +86,8 @@ class Catalog(STACObject):
     def set_root(self, root, link_type=LinkType.ABSOLUTE):
         STACObject.set_root(self, root, link_type)
         if root is not None:
-            root._resolved_objects = ResolvedObjectCache.merge(
-                root._resolved_objects, self._resolved_objects)
+            root._resolved_objects = ResolvedObjectCache.merge(root._resolved_objects,
+                                                               self._resolved_objects)
 
     def add_child(self, child, title=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
@@ -124,8 +119,7 @@ class Catalog(STACObject):
 
         # Prevent typo confusion
         if isinstance(item, pystac.Catalog):
-            raise STACError(
-                'Cannot add catalog as item. Use add_child instead.')
+            raise STACError('Cannot add catalog as item. Use add_child instead.')
 
         item.set_root(self.get_root())
         item.set_parent(self)
@@ -312,9 +306,7 @@ class Catalog(STACObject):
         return deepcopy(d)
 
     def clone(self):
-        clone = Catalog(id=self.id,
-                        description=self.description,
-                        title=self.title)
+        clone = Catalog(id=self.id, description=self.description, title=self.title)
         clone._resolved_objects.cache(clone)
 
         for l in self.links:
@@ -387,9 +379,7 @@ class Catalog(STACObject):
     def normalize_hrefs(self, root_href):
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href,
-                                           os.getcwd(),
-                                           start_is_dir=True)
+            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         # Fully resolve the STAC to avoid linking issues.
         # This particularly can happen with unresolved links that have
@@ -441,9 +431,7 @@ class Catalog(STACObject):
         else:
             child_catalog_type = catalog_type
 
-        items_include_self_link = catalog_type in [
-            CatalogType.ABSOLUTE_PUBLISHED
-        ]
+        items_include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
 
         for child_link in self.get_child_links():
             if child_link.is_resolved():
@@ -451,8 +439,7 @@ class Catalog(STACObject):
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
-                item_link.target.save_object(
-                    include_self_link=items_include_self_link)
+                item_link.target.save_object(include_self_link=items_include_self_link)
 
         self.save_object(include_self_link=include_self_link)
 
@@ -475,7 +462,7 @@ class Catalog(STACObject):
         items = self.get_items()
 
         yield (self, children, items)
-        for child in children:
+        for child in self.get_children():
             yield from child.walk()
 
     def _object_links(self):
@@ -552,8 +539,7 @@ class Catalog(STACObject):
 
         def item_mapper(item):
             new_assets = [
-                x for result in map(apply_asset_mapper, item.assets.items())
-                for x in result
+                x for result in map(apply_asset_mapper, item.assets.items()) for x in result
             ]
             item.assets = dict(new_assets)
             return item

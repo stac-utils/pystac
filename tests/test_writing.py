@@ -54,15 +54,13 @@ class STACWritingTest(unittest.TestCase):
 
             for child_link in cat.get_child_links():
                 child_href = make_absolute_href(child_link.target, href)
-                validate_catalog_link_type(
-                    child_href, link_type,
-                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
+                validate_catalog_link_type(child_href, link_type,
+                                           catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
             for item_link in cat.get_item_links():
                 item_href = make_absolute_href(item_link.target, href)
-                validate_item_link_type(
-                    item_href, link_type,
-                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
+                validate_item_link_type(item_href, link_type,
+                                        catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
         link_type = LinkType.RELATIVE
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
@@ -72,8 +70,7 @@ class STACWritingTest(unittest.TestCase):
             CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
         ]
 
-        validate_catalog_link_type(root_href, link_type,
-                                   root_should_include_href)
+        validate_catalog_link_type(root_href, link_type, root_should_include_href)
 
     def do_test(self, catalog, catalog_type):
         with TemporaryDirectory() as tmp_dir:
@@ -91,42 +88,12 @@ class STACWritingTest(unittest.TestCase):
                 for item in items:
                     self.validate_file(item.get_self_href(), type(item))
 
-    def test_testcase1_absolute_published(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase1_relative_published(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase1_self_contained(self):
-        catalog = TestCases.test_case_1()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
-
-    def test_testcase2_absolute_published(self):
-        catalog = TestCases.test_case_2()
-
-        catalog = catalog.full_copy()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase2_relative_published(self):
-        catalog = TestCases.test_case_2()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase2_self_contained(self):
-        catalog = TestCases.test_case_2()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
-
-    def test_testcase3_absolute_published(self):
-        catalog = TestCases.test_case_3()
-
-        catalog = catalog.full_copy()
-        self.do_test(catalog, CatalogType.ABSOLUTE_PUBLISHED)
-
-    def test_testcase3_relative_published(self):
-        catalog = TestCases.test_case_3()
-        self.do_test(catalog, CatalogType.RELATIVE_PUBLISHED)
-
-    def test_testcase3_self_contained(self):
-        catalog = TestCases.test_case_3()
-        self.do_test(catalog, CatalogType.SELF_CONTAINED)
+    def test_testcases(self):
+        for catalog in TestCases.all_test_catalogs():
+            catalog = catalog.full_copy()
+            for catalog_type in [
+                    CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
+                    CatalogType.SELF_CONTAINED
+            ]:
+                with self.subTest(title='Catalog {} [{}]'.format(catalog.id, catalog_type)):
+                    self.do_test(catalog, catalog_type)

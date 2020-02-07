@@ -13,10 +13,8 @@ from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 class EOItemTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.URI_1 = TestCases.get_path(
-            'data-files/eo/eo-landsat-example.json')
-        self.URI_2 = TestCases.get_path(
-            'data-files/eo/eo-landsat-example-INVALID.json')
+        self.URI_1 = TestCases.get_path('data-files/eo/eo-landsat-example.json')
+        self.URI_2 = TestCases.get_path('data-files/eo/eo-landsat-example-INVALID.json')
         self.eoi = EOItem.from_file(self.URI_1)
         with open(self.URI_1) as f:
             self.eo_dict = json.load(f)
@@ -76,8 +74,7 @@ class EOItemTest(unittest.TestCase):
             self.assertIsNone(asset.owner)
         eoi_c.add_asset('new_asset', a)
         eoi_c.add_asset('new_eo_asset', eoa)
-        self.assertEqual(len(eoi_c.assets.items()),
-                         len(self.eoi.assets.items()) + 2)
+        self.assertEqual(len(eoi_c.assets.items()), len(self.eoi.assets.items()) + 2)
         self.assertEqual(a, eoi_c.assets['new_asset'])
         self.assertEqual(eoa, eoi_c.assets['new_eo_asset'])
         for asset in (a, eoa):
@@ -88,8 +85,7 @@ class EOItemTest(unittest.TestCase):
         self.eoi._add_eo_fields_to_dict(d)
         comp_d = {
             k: v
-            for k, v in deepcopy(self.eo_dict['properties']).items()
-            if k.startswith('eo:')
+            for k, v in deepcopy(self.eo_dict['properties']).items() if k.startswith('eo:')
         }
         self.assertDictEqual(d, comp_d)
 
@@ -108,12 +104,10 @@ class EOItemTest(unittest.TestCase):
             catalog = TestCases.test_case_1()
             eo_item = EOItem.from_dict(self.eo_dict)
             catalog.add_item(eo_item)
-            catalog.normalize_and_save(
-                cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+            catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
-            eo_item_read = cat_read.get_item(
-                "LC08_L1TP_107018_20181001_20181001_01_RT")
+            eo_item_read = cat_read.get_item("LC08_L1TP_107018_20181001_20181001_01_RT")
             sv = SchemaValidator()
             sv.validate_object(eo_item_read)
             sv.validate_dict(eo_item_read.to_dict(), EOItem)
@@ -121,16 +115,14 @@ class EOItemTest(unittest.TestCase):
 
 class EOAssetTest(unittest.TestCase):
     def setUp(self):
-        self.EO_ITEM_URI = TestCases.get_path(
-            'data-files/eo/eo-landsat-example.json')
+        self.EO_ITEM_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
         self.EO_ASSET_URI = TestCases.get_path('data-files/eo/eo-asset.json')
         self.ASSET_URI = TestCases.get_path('data-files/eo/asset.json')
         with open(self.EO_ASSET_URI) as f:
             self.EO_ASSET_DICT = json.load(f)
         with open(self.ASSET_URI) as f:
             self.ASSET_DICT = json.load(f)
-        self.EO_ASSET_2_URI = TestCases.get_path(
-            'data-files/eo/eo-asset-2.json')
+        self.EO_ASSET_2_URI = TestCases.get_path('data-files/eo/eo-asset-2.json')
         with open(self.EO_ASSET_2_URI) as f:
             self.EO_ASSET_2_DICT = json.load(f)
 
@@ -175,8 +167,7 @@ class EOAssetTest(unittest.TestCase):
 
 class BandTest(unittest.TestCase):
     def setUp(self):
-        self.EO_ITEM_URI = TestCases.get_path(
-            'data-files/eo/eo-landsat-example.json')
+        self.EO_ITEM_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
         with open(self.EO_ITEM_URI) as f:
             self.EO_BANDS_LIST = json.load(f)['properties']['eo:bands']
 
@@ -213,8 +204,7 @@ def compare_eo_items(test_class, eoi_1, eoi_2):
     for eoi in (eoi_1, eoi_2):
         eoi.links.sort(key=lambda x: x.target)
     for i in range(len(eoi_1.links)):
-        test_class.assertDictEqual(eoi_1.links[i].to_dict(),
-                                   eoi_2.links[i].to_dict())
+        test_class.assertDictEqual(eoi_1.links[i].to_dict(), eoi_2.links[i].to_dict())
 
     for d in ('geometry', 'properties'):
         test_class.assertDictEqual(getattr(eoi_1, d), getattr(eoi_2, d))
@@ -224,8 +214,7 @@ def compare_eo_items(test_class, eoi_1, eoi_2):
         if isinstance(eoi_1.assets[key], EOAsset):
             compare_eo_assets(test_class, eoi_1.assets[key], eoi_2.assets[key])
         else:
-            test_class.assertDictEqual(eoi_1.assets[key].to_dict(),
-                                       eoi_2.assets[key].to_dict())
+            test_class.assertDictEqual(eoi_1.assets[key].to_dict(), eoi_2.assets[key].to_dict())
 
     for eof in EOItem._EO_FIELDS:
         if eof == 'bands':
