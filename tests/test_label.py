@@ -10,8 +10,7 @@ from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 class LabelItemTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.label_example_1_uri = TestCases.get_path(
-            'data-files/label/label-example-1.json')
+        self.label_example_1_uri = TestCases.get_path('data-files/label/label-example-1.json')
 
     def test_to_from_dict(self):
         with open(self.label_example_1_uri) as f:
@@ -62,8 +61,7 @@ class LabelItemTest(unittest.TestCase):
             catalog = TestCases.test_case_1()
             label_item = LabelItem.from_dict(label_example_1_dict)
             catalog.add_item(label_item)
-            catalog.normalize_and_save(cat_dir,
-                                       catalog_type=CatalogType.SELF_CONTAINED)
+            catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
             label_item_read = cat_read.get_item("label-example-1-label-item")
@@ -71,8 +69,7 @@ class LabelItemTest(unittest.TestCase):
             sv.validate_object(label_item_read)
 
     def test_read_label_item_owns_asset(self):
-        item = next(x for x in TestCases.test_case_2().get_all_items()
-                    if isinstance(x, LabelItem))
+        item = next(x for x in TestCases.test_case_2().get_all_items() if isinstance(x, LabelItem))
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)

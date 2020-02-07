@@ -4,10 +4,10 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
-from pystac import (Catalog, CatalogType, STAC_VERSION, LinkType, Item, Asset,
+from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset,
                     LabelItem, LabelClasses, MediaType)
 from pystac.utils import is_absolute_href
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
 
 class CatalogTest(unittest.TestCase):
@@ -16,8 +16,7 @@ class CatalogTest(unittest.TestCase):
             cat_dir = os.path.join(tmp_dir, 'catalog')
             catalog = TestCases.test_case_1()
 
-            catalog.normalize_and_save(
-                cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+            catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             read_catalog = Catalog.from_file('{}/catalog.json'.format(cat_dir))
 
@@ -29,11 +28,9 @@ class CatalogTest(unittest.TestCase):
             self.assertEqual(len(list(items)), 8)
 
     def test_read_remote(self):
-        catalog_url = (
-            'https://raw.githubusercontent.com/radiantearth/stac-spec/'
-            'v{}'
-            '/extensions/label/examples/multidataset/catalog.json'.format(
-                STAC_VERSION))
+        catalog_url = ('https://raw.githubusercontent.com/radiantearth/stac-spec/'
+                       'v{}'
+                       '/extensions/label/examples/multidataset/catalog.json'.format(STAC_VERSION))
         cat = Catalog.from_file(catalog_url)
 
         zanzibar = cat.get_child('zanzibar-collection')
@@ -104,12 +101,27 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(children), 1)
         self.assertEqual(children[0].description, 'test3')
 
+    def test_walk_iterates_correctly(self):
+        def test_catalog(cat):
+            expected_catalog_iterations = 1
+            actual_catalog_iterations = 0
+            with self.subTest(title='Testing catalog {}'.format(cat.id)):
+                for root, children, items in cat.walk():
+                    actual_catalog_iterations += 1
+                    expected_catalog_iterations += len(list(root.get_children()))
+
+                    self.assertEqual(set([c.id for c in root.get_children()]),
+                                     set([c.id for c in children]), 'Children unequal')
+                    self.assertEqual(set([c.id for c in root.get_items()]),
+                                     set([c.id for c in items]), 'Items unequal')
+
+                self.assertEqual(actual_catalog_iterations, expected_catalog_iterations)
+
+        for cat in TestCases.all_test_catalogs():
+            test_catalog(cat)
+
     def test_clone_generates_correct_links(self):
-        catalogs = [
-            TestCases.test_case_1(),
-            TestCases.test_case_2(),
-            TestCases.test_case_3()
-        ]
+        catalogs = TestCases.all_test_catalogs()
 
         for catalog in catalogs:
             expected_link_types_to_counts = {}
@@ -138,14 +150,12 @@ class CatalogTest(unittest.TestCase):
             for obj_id in actual_link_types_to_counts:
                 expected_counts = expected_link_types_to_counts[obj_id]
                 actual_counts = actual_link_types_to_counts[obj_id]
-                self.assertEqual(set(expected_counts.keys()),
-                                 set(actual_counts.keys()))
+                self.assertEqual(set(expected_counts.keys()), set(actual_counts.keys()))
                 for rel in expected_counts:
                     self.assertEqual(
                         actual_counts[rel], expected_counts[rel],
                         'Clone of {} has {} {} links, original has {}'.format(
-                            obj_id, actual_counts[rel], rel,
-                            expected_counts[rel]))
+                            obj_id, actual_counts[rel], rel, expected_counts[rel]))
 
     def test_map_items(self):
         def item_mapper(item):
@@ -160,8 +170,7 @@ class CatalogTest(unittest.TestCase):
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
-            result_cat = Catalog.from_file(
-                os.path.join(tmp_dir, 'cat', 'catalog.json'))
+            result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
             for item in result_cat.get_all_items():
                 self.assertTrue('ITEM_MAPPER' in item.properties)
@@ -186,12 +195,10 @@ class CatalogTest(unittest.TestCase):
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
-            result_cat = Catalog.from_file(
-                os.path.join(tmp_dir, 'cat', 'catalog.json'))
+            result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
             result_items = result_cat.get_all_items()
 
-            self.assertEqual(
-                len(list(catalog_items)) * 2, len(list(result_items)))
+            self.assertEqual(len(list(catalog_items)) * 2, len(list(result_items)))
 
             ones, twos = 0, 0
             for item in result_items:
@@ -218,8 +225,7 @@ class CatalogTest(unittest.TestCase):
                      properties={})
         item1.add_asset('ortho', Asset(href='/some/ortho.tif'))
         catalog.add_item(item1)
-        kitten = Catalog(id='test-kitten',
-                         description='A cuter version of catalog')
+        kitten = Catalog(id='test-kitten', description='A cuter version of catalog')
         catalog.add_child(kitten)
         item2 = Item(id='item2',
                      geometry=RANDOM_GEOM,
@@ -238,19 +244,17 @@ class CatalogTest(unittest.TestCase):
             # same location as the image
             img_href = item.assets['ortho'].href
             label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
-            label_item = LabelItem(id='Labels',
-                                   geometry=item.geometry,
-                                   bbox=item.bbox,
-                                   datetime=datetime.utcnow(),
-                                   properties={},
-                                   label_description='labels',
-                                   label_type='vector',
-                                   label_properties='label',
-                                   label_classes=[
-                                       LabelClasses(classes=['one', 'two'],
-                                                    name='label')
-                                   ],
-                                   label_tasks=['classification'])
+            label_item = LabelItem(
+                id='Labels',
+                geometry=item.geometry,
+                bbox=item.bbox,
+                datetime=datetime.utcnow(),
+                properties={},
+                label_description='labels',
+                label_type='vector',
+                label_properties='label',
+                label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+                label_tasks=['classification'])
             label_item.add_source(item, assets=['ortho'])
             label_item.add_geojson_labels(label_href)
 
@@ -280,8 +284,7 @@ class CatalogTest(unittest.TestCase):
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
-            result_cat = Catalog.from_file(
-                os.path.join(tmp_dir, 'cat', 'catalog.json'))
+            result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
             found = False
             for item in result_cat.get_all_items():
@@ -312,8 +315,7 @@ class CatalogTest(unittest.TestCase):
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
-            result_cat = Catalog.from_file(
-                os.path.join(tmp_dir, 'cat', 'catalog.json'))
+            result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
             found = False
             not_found = False
@@ -339,10 +341,7 @@ class CatalogTest(unittest.TestCase):
                 mod1.title = 'NEW TITLE 1'
                 mod2 = asset.clone()
                 mod2.title = 'NEW TITLE 2'
-                return {
-                    '{}-mod-1'.format(key): mod1,
-                    '{}-mod-2'.format(key): mod2
-                }
+                return {'{}-mod-1'.format(key): mod1, '{}-mod-2'.format(key): mod2}
             else:
                 return asset
 
@@ -354,8 +353,7 @@ class CatalogTest(unittest.TestCase):
             new_cat.normalize_hrefs(os.path.join(tmp_dir, 'cat'))
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
-            result_cat = Catalog.from_file(
-                os.path.join(tmp_dir, 'cat', 'catalog.json'))
+            result_cat = Catalog.from_file(os.path.join(tmp_dir, 'cat', 'catalog.json'))
 
             found1 = False
             found2 = False
@@ -379,8 +377,7 @@ class CatalogTest(unittest.TestCase):
     def test_make_all_asset_hrefs_absolute(self):
         cat = TestCases.test_case_2()
         cat.make_all_asset_hrefs_absolute()
-        item = cat.get_item('cf73ec1a-d790-4b59-b077-e101738571ed',
-                            recursive=True)
+        item = cat.get_item('cf73ec1a-d790-4b59-b077-e101738571ed', recursive=True)
 
         href = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed'].href
         self.assertTrue(is_absolute_href(href))
@@ -409,11 +406,7 @@ class CatalogTest(unittest.TestCase):
                         self.assertTrue(l.link_type == LinkType.ABSOLUTE)
                         self.assertTrue(is_absolute_href(l.get_href()))
 
-        test_cases = [
-            TestCases.test_case_1(),
-            TestCases.test_case_2(),
-            TestCases.test_case_3()
-        ]
+        test_cases = TestCases.all_test_catalogs()
 
         for catalog in test_cases:
             with TemporaryDirectory() as tmp_dir:
@@ -450,30 +443,48 @@ class CatalogTest(unittest.TestCase):
 
                 # Set each item's HREF based on it's datetime
                 for item in items:
-                    item_href = '{}/{}-{}/{}.json'.format(
-                        root_dir, item.datetime.year, item.datetime.month,
-                        item.id)
+                    item_href = '{}/{}-{}/{}.json'.format(root_dir, item.datetime.year,
+                                                          item.datetime.month, item.id)
                     item.set_self_href(item_href)
 
             catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-            read_catalog = Catalog.from_file(
-                os.path.join(tmp_dir, 'catalog.json'))
+            read_catalog = Catalog.from_file(os.path.join(tmp_dir, 'catalog.json'))
 
             for root, _, items in read_catalog.walk():
                 parent = root.get_parent()
                 if parent is None:
-                    self.assertEqual(root.get_self_href(),
-                                     os.path.join(tmp_dir, 'catalog.json'))
+                    self.assertEqual(root.get_self_href(), os.path.join(tmp_dir, 'catalog.json'))
                 else:
                     d = os.path.dirname(parent.get_self_href())
-                    self.assertEqual(
-                        root.get_self_href(),
-                        os.path.join(d, root.id, root.DEFAULT_FILE_NAME))
+                    self.assertEqual(root.get_self_href(),
+                                     os.path.join(d, root.id, root.DEFAULT_FILE_NAME))
                 for item in items:
-                    end = '{}-{}/{}.json'.format(item.datetime.year,
-                                                 item.datetime.month, item.id)
+                    end = '{}-{}/{}.json'.format(item.datetime.year, item.datetime.month, item.id)
                     self.assertTrue(item.get_self_href().endswith(end))
+
+    def test_collections_cache_correctly(self):
+        catalogs = TestCases.all_test_catalogs()
+        for cat in catalogs:
+            with MockStacIO() as mock_io:
+                expected_collection_reads = set([])
+                for root, children, items in cat.walk():
+                    if isinstance(root, Collection):
+                        expected_collection_reads.add(root.get_self_href())
+
+                    # Iterate over items to make sure they are read
+                    self.assertNotEqual(list(items), None)
+
+                call_uris = [
+                    call[0][0] for call in mock_io.read_text_method.call_args_list
+                    if call[0][0] in expected_collection_reads
+                ]
+
+                for collection_uri in expected_collection_reads:
+                    calls = len([x for x in call_uris if x == collection_uri])
+                    self.assertEqual(
+                        calls, 1,
+                        '{} was read {} times instead of once!'.format(collection_uri, calls))
 
 
 class FullCopyTest(unittest.TestCase):
@@ -482,9 +493,8 @@ class FullCopyTest(unittest.TestCase):
             target_href = l.target.get_self_href()
         else:
             target_href = l.target
-        self.assertTrue(
-            tag in target_href,
-            '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
+        self.assertTrue(tag in target_href,
+                        '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
 
     def check_item(self, i, tag):
         for l in i.links:
@@ -514,11 +524,9 @@ class FullCopyTest(unittest.TestCase):
 
             cat.add_item(item)
 
-            cat.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-1-source'))
+            cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-1-source'))
             cat2 = cat.full_copy()
-            cat2.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-1-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-1-dest'))
 
             self.check_catalog(cat, 'source')
             self.check_catalog(cat2, 'dest')
@@ -533,33 +541,27 @@ class FullCopyTest(unittest.TestCase):
                               properties={})
             for key in ['ortho', 'dsm']:
                 image_item.add_asset(
-                    key,
-                    Asset(href='some/{}.tif'.format(key),
-                          media_type=MediaType.GEOTIFF))
+                    key, Asset(href='some/{}.tif'.format(key), media_type=MediaType.GEOTIFF))
 
-            label_item = LabelItem(id='Labels',
-                                   geometry=RANDOM_GEOM,
-                                   bbox=RANDOM_BBOX,
-                                   datetime=datetime.utcnow(),
-                                   properties={},
-                                   label_description='labels',
-                                   label_type='vector',
-                                   label_properties='label',
-                                   label_classes=[
-                                       LabelClasses(classes=['one', 'two'],
-                                                    name='label')
-                                   ],
-                                   label_tasks=['classification'])
+            label_item = LabelItem(
+                id='Labels',
+                geometry=RANDOM_GEOM,
+                bbox=RANDOM_BBOX,
+                datetime=datetime.utcnow(),
+                properties={},
+                label_description='labels',
+                label_type='vector',
+                label_properties='label',
+                label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+                label_tasks=['classification'])
             label_item.add_source(image_item, assets=['ortho'])
 
             cat.add_items([image_item, label_item])
 
-            cat.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-2-source'))
+            cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-source'))
             cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = cat.full_copy()
-            cat2.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-2-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-2-dest'))
             cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(cat, 'source')
@@ -568,12 +570,10 @@ class FullCopyTest(unittest.TestCase):
     def test_full_copy_3(self):
         with TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.test_case_1()
-            root_cat.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-3-source'))
+            root_cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-source'))
             root_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = root_cat.full_copy()
-            cat2.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-3-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-3-dest'))
             cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(root_cat, 'source')
@@ -582,21 +582,17 @@ class FullCopyTest(unittest.TestCase):
     def test_full_copy_4(self):
         with TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.test_case_2()
-            root_cat.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-4-source'))
+            root_cat.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-4-source'))
             root_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat2 = root_cat.full_copy()
-            cat2.normalize_hrefs(
-                os.path.join(tmp_dir, 'catalog-full-copy-4-dest'))
+            cat2.normalize_hrefs(os.path.join(tmp_dir, 'catalog-full-copy-4-dest'))
             cat2.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             self.check_catalog(root_cat, 'source')
             self.check_catalog(cat2, 'dest')
 
             # Check that the relative asset link was saved correctly in the copy.
-            item = cat2.get_item('cf73ec1a-d790-4b59-b077-e101738571ed',
-                                 recursive=True)
+            item = cat2.get_item('cf73ec1a-d790-4b59-b077-e101738571ed', recursive=True)
 
-            href = item.assets[
-                'cf73ec1a-d790-4b59-b077-e101738571ed'].get_absolute_href()
+            href = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed'].get_absolute_href()
             self.assertTrue(os.path.exists(href))

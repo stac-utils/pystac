@@ -8,6 +8,18 @@
 
 ### Fixed
 
+## [v0.3.3] - 2020-02-05
+
+### Added
+
+- Allow for backwards compatibilty for reading STAC [#77](https://github.com/azavea/pystac/pull/70)
+
+### Fixed
+
+- Fix issue with multiple collection reads per item [#79](https://github.com/azavea/pystac/pull/79)
+- Fix issue with iteration of children in `catalog.walk` [#78](https://github.com/azavea/pystac/pull/78)
+- Allow v0.7.0 sar items to fit in version range [#80](https://github.com/azavea/pystac/pull/80)
+
 ## [v0.3.2] - 2020-01-28
 
 ### Added

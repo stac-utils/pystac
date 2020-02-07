@@ -94,11 +94,9 @@ class SingleFileSTAC(ItemCollection):
         for item in features:
             if item.collection_id is not None:
                 if item.collection_id not in collection_dict:
-                    raise STACError(
-                        'Collection with id {} is referenced '
-                        'by item {}, but is not in the collections '
-                        'of this SingleFileSTAC'.format(
-                            item.collection_id, item.id))
+                    raise STACError('Collection with id {} is referenced '
+                                    'by item {}, but is not in the collections '
+                                    'of this SingleFileSTAC'.format(item.collection_id, item.id))
                 item.set_collection(collection_dict[item.collection_id])
 
         search_obj = None

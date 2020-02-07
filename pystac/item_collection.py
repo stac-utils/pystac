@@ -118,11 +118,9 @@ class ItemCollection(LinkMixin):
         if href is None:
             href = self.get_self_href()
             if href is None:
-                raise STACError(
-                    'Must either supply an href or set a self href on '
-                    'this ItemCollection.')
+                raise STACError('Must either supply an href or set a self href on '
+                                'this ItemCollection.')
         else:
             self.set_self_href(href)
 
-        STAC_IO.save_json(href,
-                          self.to_dict(include_self_link=include_self_link))
+        STAC_IO.save_json(href, self.to_dict(include_self_link=include_self_link))

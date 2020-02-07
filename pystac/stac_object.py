@@ -279,8 +279,7 @@ class STACObject(LinkMixin, ABC):
         if self_href is None:
             raise STACError('Self HREF must be set before saving.')
 
-        STAC_IO.save_json(self.get_self_href(),
-                          self.to_dict(include_self_link=include_self_link))
+        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self, root=None, parent=None):
         """Create a full copy of this STAC object and any stac objects linked to by

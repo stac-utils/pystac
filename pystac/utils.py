@@ -15,8 +15,7 @@ def _urlparse(href):
     This method will take this into account.
     """
     parsed = urlparse(href)
-    if parsed.scheme != '' and href.lower().startswith('{}:\\'.format(
-            parsed.scheme)):
+    if parsed.scheme != '' and href.lower().startswith('{}:\\'.format(parsed.scheme)):
         return URLParseResult(scheme='',
                               netloc='',
                               path='{}:{}'.format(parsed.scheme, parsed.path),
@@ -103,14 +102,12 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
                 start_dir = parsed_start.path
             else:
                 start_dir = _pathlib.dirname(parsed_start.path)
-            abs_path = _pathlib.abspath(
-                _join(is_path, start_dir, parsed_source.path))
+            abs_path = _pathlib.abspath(_join(is_path, start_dir, parsed_source.path))
             if parsed_start.scheme != '':
                 if not is_path:
                     abs_path = abs_path.replace('\\', '/')
 
-                return '{}://{}{}'.format(parsed_start.scheme,
-                                          parsed_start.netloc, abs_path)
+                return '{}://{}{}'.format(parsed_start.scheme, parsed_start.netloc, abs_path)
             else:
                 return abs_path
         else:
