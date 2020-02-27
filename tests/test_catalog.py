@@ -28,9 +28,10 @@ class CatalogTest(unittest.TestCase):
             self.assertEqual(len(list(items)), 8)
 
     def test_read_remote(self):
-        catalog_url = ('https://raw.githubusercontent.com/radiantearth/stac-spec/'
-                       'v{}'
-                       '/extensions/label/examples/multidataset/catalog.json'.format(STAC_VERSION))
+        # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
+        catalog_url = (
+            'https://raw.githubusercontent.com/lossyrob/stac-spec/0.9.0/pystac-upgrade-fixes'
+            '/extensions/label/examples/multidataset/catalog.json'.format(STAC_VERSION))
         cat = Catalog.from_file(catalog_url)
 
         zanzibar = cat.get_child('zanzibar-collection')
