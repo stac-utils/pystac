@@ -1,8 +1,8 @@
 class Extension:
     """Enumerates the IDs of common extensions."""
-    ASSETS = 'assets'
+    ASSETS = 'asset'
     CHECKSUM = 'checksum'
-    DATACUBE = 'cube'
+    DATACUBE = 'datacube'
     DATETIME_RANGE = 'datetime-range'
     EO = 'eo'
     LABEL = 'label'
