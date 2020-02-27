@@ -42,9 +42,9 @@ def stac_object_from_dict(d, href=None, root=None):
 
     if info.object_type == STACObjectType.ITEMCOLLECTION:
         if Extension.SINGLE_FILE_STAC in info.common_extensions:
-            return SingleFileSTAC.from_dict(d, href=href, root=root)
+            return SingleFileSTAC.from_dict(d)
 
-        return ItemCollection.from_dict(d, href=href, root=root)
+        return ItemCollection.from_dict(d)
 
     if info.object_type == STACObjectType.ITEM:
         if Extension.EO in info.common_extensions:
