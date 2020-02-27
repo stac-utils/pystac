@@ -4,7 +4,7 @@
         {
             "type": "Feature",
             "id": "LC80370332018039LGN00",
-            "stac_version": "0.8.1",
+            "stac_version": "0.9.0",
             "collection": "landsat-8-l1",
             "bbox": [
                 -112.21054,
@@ -172,7 +172,7 @@
         {
             "type": "Feature",
             "id": "LC80340332018034LGN00",
-            "stac_version": "0.8.1",
+            "stac_version": "0.9.0",
             "collection": "landsat-8-l1",
             "bbox": [
                 -107.6044,
@@ -349,7 +349,7 @@
                 "usgs"
             ],
             "version": "0.1.0",
-            "stac_version": "0.8.1",
+            "stac_version": "0.9.0",
             "extent": {
                 "spatial": {
                     "bbox": [
