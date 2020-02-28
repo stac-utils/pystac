@@ -34,6 +34,8 @@ def _migrate_item(d, version, info):
 
 
 def _migrate_itemcollection(d, version, info):
+    if version < '0.9.0':
+        d['stac_extensions'] = info.common_extensions + info.custom_extensions
     return d
 
 

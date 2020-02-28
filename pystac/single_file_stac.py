@@ -15,6 +15,7 @@ class SingleFileSTAC(ItemCollection):
     Args:
         features (List[Item]): Optional initial list of items contained by
             this SingleFileSTAC.
+        stac_extensions (List[str]): Optional list of extensions implemented.
         collections (List[Collection]): Optional initial list of collections contained
             by this SingleFileSTAC.
         search (Search): Optional search information associated with this SingleFileSTAC.
@@ -27,8 +28,8 @@ class SingleFileSTAC(ItemCollection):
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this ItemCollection.
     """
-    def __init__(self, features=None, collections=None, search=None):
-        super().__init__(features)
+    def __init__(self, features=None, stac_extensions=None, collections=None, search=None):
+        super().__init__(features, stac_extensions=stac_extensions)
         if collections is None:
             self.collections = []
         else:
@@ -88,6 +89,7 @@ class SingleFileSTAC(ItemCollection):
         """
         features = [Item.from_dict(feature) for feature in d['features']]
         collections = [Collection.from_dict(c) for c in d['collections']]
+        stac_extensions = d.get('stac_extensions')
 
         # Tie together items to their collections
         collection_dict = dict([(c.id, c) for c in collections])
@@ -103,7 +105,7 @@ class SingleFileSTAC(ItemCollection):
         if 'search' in d.keys():
             sd = d['search']
             search_obj = Search(sd.get('endpoint'), sd.get('parameters'))
-        return SingleFileSTAC(features, collections, search_obj)
+        return SingleFileSTAC(features, stac_extensions, collections, search_obj)
 
     def to_dict(self, include_self_link=False):
         """Generate a dictionary representing the JSON of this SingleFileSTAC.

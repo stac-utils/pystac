@@ -17,6 +17,7 @@ class MigrateTest(unittest.TestCase):
         for example in self.examples:
             with self.subTest(example['path']):
                 path = example['path']
+
                 d = STAC_IO.read_json(path)
                 if identify_stac_object_type(d) == STACObjectType.ITEM:
                     merge_common_properties(d, json_href=path, collection_cache=collection_cache)

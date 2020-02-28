@@ -68,6 +68,9 @@ class STACVersionRange:
     def is_earlier_than(self, v):
         return self.max_version < v
 
+    def is_later_than(self, v):
+        return v < self.min_version
+
     def __repr__(self):
         return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
 
@@ -176,6 +179,8 @@ def _identify_stac_extensions(object_type, d, version_range):
         if 'collections' in d:
             stac_extensions.add(Extension.SINGLE_FILE_STAC)
             version_range.set_min('0.8.0')
+            if 'stac_extensions' not in d:
+                version_range.set_max('0.8.1')
 
     return list(stac_extensions)
 
@@ -260,9 +265,11 @@ def identify_stac_object(json_dict):
     if stac_extensions is None:
         # If this is post-0.8, we can assume there are no extensions
         # if the stac_extensions property doesn't exist for everything
-        # but ItemCollection.
+        # but ItemCollection (except after 0.9.0, when ItemCollection also got
+        # the stac_extensions property).
         if version_range.is_earlier_than('0.8.0') or \
-           object_type == STACObjectType.ITEMCOLLECTION:
+           (object_type == STACObjectType.ITEMCOLLECTION and not version_range.is_later_than(
+               '0.8.1')):
             stac_extensions = _identify_stac_extensions(object_type, json_dict, version_range)
         else:
             stac_extensions = []

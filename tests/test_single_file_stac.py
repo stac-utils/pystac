@@ -30,7 +30,9 @@ class SingleFileSTACTest(unittest.TestCase):
                     self.assertIsInstance(collection, Collection)
                 self.assertIsInstance(sf.to_dict(), dict)
 
-                dk = ['type', 'features', 'collections', 'links']
+                dk = ['type', 'features', 'collections', 'links', 'stac_version']
+                if sf.stac_extensions:
+                    dk.append('stac_extensions')
                 if sf.search:
                     self.assertIsInstance(sf.search, Search)
                     dk.append('search')
