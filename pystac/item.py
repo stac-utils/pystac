@@ -266,6 +266,9 @@ class Asset:
     Args:
         href (str): Link to the asset object. Relative and absolute links are both allowed.
         title (str): Optional displayed title for clients and users.
+        description (str): A description of the Asset providing additional details, such as
+            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
+            text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         properties (dict): Optional, additional properties for this asset. This is used by
@@ -275,6 +278,9 @@ class Asset:
     Attributes:
         href (str): Link to the asset object. Relative and absolute links are both allowed.
         title (str): Optional displayed title for clients and users.
+        description (str): A description of the Asset providing additional details, such as
+            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
+            text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         properties (dict): Optional, additional properties for this asset. This is used by
@@ -282,9 +288,10 @@ class Asset:
             object JSON.
         owner (Item or None): The Item this asset belongs to.
     """
-    def __init__(self, href, title=None, media_type=None, properties=None):
+    def __init__(self, href, title=None, description=None, media_type=None, properties=None):
         self.href = href
         self.title = title
+        self.description = description
         self.media_type = media_type
         self.properties = properties
 
@@ -333,6 +340,9 @@ class Asset:
         if self.title is not None:
             d['title'] = self.title
 
+        if self.description is not None:
+            d['description'] = self.description
+
         if self.properties is not None:
             for k, v in self.properties.items():
                 d[k] = v
@@ -347,6 +357,7 @@ class Asset:
         """
         return Asset(href=self.href,
                      title=self.title,
+                     description=self.description,
                      media_type=self.media_type,
                      properties=self.properties)
 
@@ -364,8 +375,13 @@ class Asset:
         href = d.pop('href')
         media_type = d.pop('type', None)
         title = d.pop('title', None)
+        description = d.pop('description', None)
         properties = None
         if any(d):
             properties = d
 
-        return Asset(href=href, media_type=media_type, title=title, properties=properties)
+        return Asset(href=href,
+                     media_type=media_type,
+                     title=title,
+                     description=description,
+                     properties=properties)
