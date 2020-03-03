@@ -19,11 +19,8 @@ class EOItem(Item):
         datetime (Datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         gsd (float): Ground Sample Distance at the sensor.
-        platform (str): Unique name of the specific platform to which the instrument is attached.
-        instrument (str): Name of instrument or sensor used (e.g., MODIS, ASTER, OLI, Canon F-1).
         bands (List[Band]): This is a list of :class:`~pystac.Band` objects that represent
             the available bands.
-        constellation (str): Optional name of the constellation to which the platform belongs.
         epsg (int): Optional `EPSG code <http://www.epsg-registry.org/>`_.
         cloud_cover (float): Optional estimate of cloud cover as a percentage (0-100) of the
             entire scene. If not available the field should not be provided.
@@ -56,11 +53,8 @@ class EOItem(Item):
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
         gsd (float): Ground Sample Distance at the sensor.
-        platform (str): Unique name of the specific platform to which the instrument is attached.
-        instrument (str): Name of instrument or sensor used (e.g., MODIS, ASTER, OLI, Canon F-1).
         bands (List[Band]): This is a list of :class:`~pystac.Band` objects that represent
             the available bands.
-        constellation (str or None): Name of the constellation to which the platform belongs.
         epsg (int or None): `EPSG code <http://www.epsg-registry.org/>`_.
         cloud_cover (float or None): Estimate of cloud cover as a percentage (0-100) of the
             entire scene. If not available the field should not be provided.
@@ -82,7 +76,7 @@ class EOItem(Item):
 
     """
     _EO_FIELDS = [
-        'gsd', 'platform', 'instrument', 'bands', 'constellation', 'epsg', 'cloud_cover',
+        'gsd', 'bands', 'epsg', 'cloud_cover',
         'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation'
     ]
 
@@ -97,10 +91,7 @@ class EOItem(Item):
                  datetime,
                  properties,
                  gsd,
-                 platform,
-                 instrument,
                  bands,
-                 constellation=None,
                  epsg=None,
                  cloud_cover=None,
                  off_nadir=None,
@@ -117,10 +108,7 @@ class EOItem(Item):
         super().__init__(id, geometry, bbox, datetime, properties, stac_extensions, href,
                          collection)
         self.gsd = gsd
-        self.platform = platform
-        self.instrument = instrument
         self.bands = bands
-        self.constellation = constellation
         self.epsg = epsg
         self.cloud_cover = cloud_cover
         self.off_nadir = off_nadir
@@ -158,7 +146,7 @@ class EOItem(Item):
                     eo_params[eof] = [Band.from_dict(b) for b in item.properties.pop(eo_key)]
                 else:
                     eo_params[eof] = item.properties.pop(eo_key)
-            elif eof in ('gsd', 'platform', 'instrument', 'bands'):
+            elif eof in ('gsd', 'bands'):
                 raise STACError("Missing required field '{}' in properties".format(eo_key))
 
         if not any(item.properties):
@@ -235,6 +223,9 @@ class EOAsset(Asset):
         href (str): Link to the asset object. Relative and absolute links are both allowed.
         bands (List[int]): Lists the band names available in the asset.
         title (str): Optional displayed title for clients and users.
+        description (str): A description of the Asset providing additional details, such as
+            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
+            text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         properties (dict): Optional, additional properties for this asset.
@@ -243,6 +234,9 @@ class EOAsset(Asset):
         href (str): Link to the asset object. Relative and absolute links are both allowed.
         bands (List[int]): Lists the band names available in the asset.
         title (str): Optional displayed title for clients and users.
+        description (str): A description of the Asset providing additional details, such as
+            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
+            text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         properties (dict): Optional, additional properties for this asset. This is used by
@@ -250,8 +244,8 @@ class EOAsset(Asset):
             object JSON.
         owner (Item or None): The Item this asset belongs to.
     """
-    def __init__(self, href, bands, title=None, media_type=None, properties=None):
-        super().__init__(href, title, media_type, properties)
+    def __init__(self, href, bands, title=None, description=None, media_type=None, properties=None):
+        super().__init__(href, title, description, media_type, properties)
         self.bands = bands
 
     @staticmethod
@@ -301,7 +295,7 @@ class EOAsset(Asset):
         properties = None
         if any(a.properties):
             properties = a.properties
-        return cls(a.href, bands, a.title, a.media_type, properties)
+        return cls(a.href, bands, a.title, a.description, a.media_type, properties)
 
     def to_dict(self):
         """Generate a dictionary representing the JSON of this EOAsset.
@@ -317,6 +311,7 @@ class EOAsset(Asset):
     def clone(self):
         return EOAsset(href=self.href,
                        title=self.title,
+                       description=self.description,
                        media_type=self.media_type,
                        bands=self.bands,
                        properties=self.properties)
