@@ -24,17 +24,6 @@ class EOItem(Item):
         epsg (int): Optional `EPSG code <http://www.epsg-registry.org/>`_.
         cloud_cover (float): Optional estimate of cloud cover as a percentage (0-100) of the
             entire scene. If not available the field should not be provided.
-        off_nadir (float): Optional viewing angle. The angle from the sensor between
-            nadir (straight down) and the scene center. Measured in degrees (0-90).
-        azimuth (float): Optional viewing azimuth angle. The angle measured from the
-            sub-satellite point (point on the ground below the platform) between the
-            scene center and true north. Measured clockwise from north in degrees (0-360).
-        sun_azimuth (float): Optional sun azimuth angle. From the scene center point on
-            the ground, this is the angle between truth north and the sun. Measured clockwise
-            in degrees (0-360).
-        sun_elevation (float): Optional sun elevation angle. The angle from the tangent of
-            the scene center point to the sun. Measured from the horizon in degrees (0-90).
-        stac_extensions (List[str]): Optional list of extensions the Item implements.
         href (str or None): Optional HREF for this item, which be set as the item's
             self link's HREF.
         collection (Collection or str): The Collection or Collection ID that this item
@@ -58,16 +47,6 @@ class EOItem(Item):
         epsg (int or None): `EPSG code <http://www.epsg-registry.org/>`_.
         cloud_cover (float or None): Estimate of cloud cover as a percentage (0-100) of the
             entire scene. If not available the field should not be provided.
-        off_nadir (float or None): Viewing angle. The angle from the sensor between
-            nadir (straight down) and the scene center. Measured in degrees (0-90).
-        azimuth (float or None): Viewing azimuth angle. The angle measured from the
-            sub-satellite point (point on the ground below the platform) between the
-            scene center and true north. Measured clockwise from north in degrees (0-360).
-        sun_azimuth (float or None): Sun azimuth angle. From the scene center point on
-            the ground, this is the angle between truth north and the sun. Measured clockwise
-            in degrees (0-360).
-        sun_elevation (float or None): Sun elevation angle. The angle from the tangent of
-            the scene center point to the sun. Measured from the horizon in degrees (0-90).
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
         assets (Dict[str, Asset]): Dictionary of asset objects that can be downloaded,
@@ -76,8 +55,7 @@ class EOItem(Item):
 
     """
     _EO_FIELDS = [
-        'gsd', 'bands', 'epsg', 'cloud_cover',
-        'off_nadir', 'azimuth', 'sun_azimuth', 'sun_elevation'
+        'gsd', 'bands', 'epsg', 'cloud_cover'
     ]
 
     @staticmethod
@@ -94,10 +72,6 @@ class EOItem(Item):
                  bands,
                  epsg=None,
                  cloud_cover=None,
-                 off_nadir=None,
-                 azimuth=None,
-                 sun_azimuth=None,
-                 sun_elevation=None,
                  stac_extensions=None,
                  href=None,
                  collection=None):
@@ -111,10 +85,6 @@ class EOItem(Item):
         self.bands = bands
         self.epsg = epsg
         self.cloud_cover = cloud_cover
-        self.off_nadir = off_nadir
-        self.azimuth = azimuth
-        self.sun_azimuth = sun_azimuth
-        self.sun_elevation = sun_elevation
 
     def __repr__(self):
         return '<EOItem id={}>'.format(self.id)
