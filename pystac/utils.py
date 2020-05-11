@@ -90,7 +90,7 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
         then it will be returned unchanged. If the source_href it None, it will
         return None.
     """
-    if source_href == None:
+    if source_href is None:
         return None
 
     if start_href is None:
