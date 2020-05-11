@@ -87,8 +87,12 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
 
     Returns:
         str: The absolute HREF. If the source_href is already an absolute href,
-        then it will be returned unchanged.
+        then it will be returned unchanged. If the source_href it None, it will
+        return None.
     """
+    if source_href == None:
+        return None
+
     if start_href is None:
         start_href = os.getcwd()
         start_is_dir = True
