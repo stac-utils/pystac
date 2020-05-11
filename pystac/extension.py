@@ -10,3 +10,4 @@ class Extension:
     SAR = 'sar'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
+    VERSIONING = 'versioning'

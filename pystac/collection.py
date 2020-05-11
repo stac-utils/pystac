@@ -28,7 +28,6 @@ class Collection(Catalog):
             <https://spdx.org/spdx-specification-21-web-version#h.jxpfx0ykyb60>`_. Defaults
             to 'proprietary'.
         keywords (List[str]): Optional list of keywords describing the collection.
-        version (str): Optional version of the Collection.
         providers (List[Provider]): Optional list of providers of this Collection.
         properties (dict): Optional dict of common fields across referenced items.
         summaries (dict): An optional map of property summaries,
@@ -42,7 +41,6 @@ class Collection(Catalog):
         title (str or None): Optional short descriptive one-line title for the collection.
         stac_extensions (List[str]): Optional list of extensions the Collection implements.
         keywords (List[str] or None): Optional list of keywords describing the collection.
-        version (str or None): Optional version of the Collection.
         providers (List[Provider] or None): Optional list of providers of this Collection.
         properties (dict or None): Optional dict of common fields across referenced items.
         summaries (dict or None): An optional map of property summaries,
@@ -61,7 +59,6 @@ class Collection(Catalog):
                  href=None,
                  license='proprietary',
                  keywords=None,
-                 version=None,
                  providers=None,
                  properties=None,
                  summaries=None):
@@ -71,7 +68,6 @@ class Collection(Catalog):
 
         self.stac_extensions = stac_extensions
         self.keywords = keywords
-        self.version = version
         self.providers = providers
         self.properties = properties
         self.summaries = summaries
@@ -91,8 +87,6 @@ class Collection(Catalog):
             d['stac_extensions'] = self.stac_extensions
         if self.keywords is not None:
             d['keywords'] = self.keywords
-        if self.version is not None:
-            d['version'] = self.version
         if self.providers is not None:
             d['providers'] = list(map(lambda x: x.to_dict(), self.providers))
         if self.properties is not None:
@@ -110,7 +104,6 @@ class Collection(Catalog):
                            license=self.license,
                            stac_extensions=self.stac_extensions,
                            keywords=self.keywords,
-                           version=self.version,
                            providers=self.providers,
                            properties=self.properties,
                            summaries=self.summaries)
@@ -139,7 +132,6 @@ class Collection(Catalog):
         title = d.get('title')
         stac_extensions = d.get('stac_extensions')
         keywords = d.get('keywords')
-        version = d.get('version')
         providers = d.get('providers')
         if providers is not None:
             providers = list(map(lambda x: Provider.from_dict(x), providers))
@@ -153,7 +145,6 @@ class Collection(Catalog):
                                 license=license,
                                 stac_extensions=stac_extensions,
                                 keywords=keywords,
-                                version=version,
                                 providers=providers,
                                 properties=properties,
                                 summaries=summaries)
