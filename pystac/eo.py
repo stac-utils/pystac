@@ -374,14 +374,14 @@ class Band:
             as measured at half the maximum transmission, in micrometers (μm).
     """
     def __init__(
-            self,
-            name=None,
-            common_name=None,
-            description=None,
-            gsd=None,
-            accuracy=None,
-            center_wavelength=None,
-            full_width_half_max=None,
+        self,
+        name=None,
+        common_name=None,
+        description=None,
+        gsd=None,
+        accuracy=None,
+        center_wavelength=None,
+        full_width_half_max=None,
     ):
         self.name = name
         self.common_name = common_name
