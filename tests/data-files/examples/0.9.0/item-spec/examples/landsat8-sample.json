@@ -44,6 +44,7 @@
         "datetime": "2014-06-02T09:22:02Z",
         "collection": "L1T",
         "eo:gsd": 30.0,
+        "eo:bands": [],
         "eo:cloud_cover": 10,
         "view:off_nadir": 0.0,
         "view:azimuth": 0.0,

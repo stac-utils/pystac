@@ -43,14 +43,9 @@
         "collection": "landsat-8-l1",
         "datetime": "2018-10-01T01:08:32.033Z",
         "eo:cloud_cover": 78,
-        "eo:sun_azimuth": 168.8989761,
-        "eo:sun_elevation": 26.32596431,
         "landsat:path": 107,
         "landsat:row": 18,
         "eo:gsd": 30,
-        "eo:platform": "landsat-8",
-        "eo:instrument": "oli_tirs",
-        "eo:off_nadir": 0,
         "eo:bands": [
             {
                 "name": "B1",
