@@ -147,3 +147,36 @@ def datetime_to_str(dt):
         timestamp = '{}Z'.format(timestamp[:-len(zulu)])
 
     return timestamp
+
+def geometry_to_bbox(geometry):
+    """Extract the bounding box from a geojson geometry
+
+    Args:
+        geometry (dict): GeoJSON geometry dict
+
+    Returns:
+        list: Bounding box of geojson geometry, formatted according to:
+        https://tools.ietf.org/html/rfc7946#section-5
+    """
+    coords = geometry['coordinates']
+    
+    lats = []
+    lons = []
+
+    def extract_coords(coords):    
+        for x in coords:
+            if isinstance(x[0], list):
+                extract_coords(x)
+            else:
+                lat, lon = x
+                lats.append(lat)
+                lons.append(lon)
+
+    extract_coords(coords)
+
+    lons.sort()
+    lats.sort()
+
+    bbox = [lats[0], lons[0], lats[-1], lons[-1]]
+    
+    return bbox
