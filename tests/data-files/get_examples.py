@@ -3,7 +3,6 @@ Script to download the examples from the stac-spec repository.
 This is used when new version come out to look for updated examples
 """
 import os
-import shutil
 import argparse
 import json
 from tempfile import TemporaryDirectory
@@ -12,7 +11,7 @@ from urllib.error import HTTPError
 
 from pystac import (STAC_VERSION, STAC_IO)
 from pystac.serialization import identify_stac_object, STACObjectType
-import tests # Sets up STAC_IO
+
 
 def remove_bad_collection(js):
     links = js.get('links')
@@ -32,10 +31,13 @@ def remove_bad_collection(js):
         js['links'] = filtered_links
     return js
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('previous_version', metavar='PREVIOUS_VERSION',
-                        help='The previous STAC_VERSION that examples have already been pulled from.')
+    parser.add_argument(
+        'previous_version',
+        metavar='PREVIOUS_VERSION',
+        help='The previous STAC_VERSION that examples have already been pulled from.')
 
     args = parser.parse_args()
 
@@ -45,15 +47,11 @@ if __name__ == '__main__':
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'examples'))
 
     with TemporaryDirectory() as tmp_dir:
-        call(['git', 'clone',
-              '--depth', '1',
-              '--branch', stac_spec_tag,
-              stac_repo,
-              tmp_dir])
+        call(['git', 'clone', '--depth', '1', '--branch', stac_spec_tag, stac_repo, tmp_dir])
 
         example_dirs = []
         for root, _, _ in os.walk(tmp_dir):
-                example_dirs.append(os.path.join(root))
+            example_dirs.append(os.path.join(root))
 
         example_csv_lines = []
 
@@ -71,9 +69,9 @@ if __name__ == '__main__':
                             example_version = js.get('stac_version')
                         if example_version is not None and \
                            example_version > args.previous_version:
-                            relpath = '{}/{}'.format(STAC_VERSION, path.replace('{}/'.format(tmp_dir), ''))
-                            target_path = os.path.join(examples_dir,
-                                                       relpath)
+                            relpath = '{}/{}'.format(STAC_VERSION,
+                                                     path.replace('{}/'.format(tmp_dir), ''))
+                            target_path = os.path.join(examples_dir, relpath)
 
                             print('Creating example at {}'.format(target_path))
 
@@ -92,15 +90,14 @@ if __name__ == '__main__':
                                 f.write(json.dumps(js, indent=4))
 
                             # Add info to the new example-info.csv lines
-                            example_csv_lines.append([relpath,
-                                                      info.object_type,
-                                                      example_version,
-                                                      '|'.join(info.common_extensions),
-                                                      '|'.join(info.custom_extensions)])
+                            example_csv_lines.append([
+                                relpath, info.object_type, example_version,
+                                '|'.join(info.common_extensions), '|'.join(info.custom_extensions)
+                            ])
 
         # Write the new example-info.csv lines into a temp file for inspection
         with open(os.path.join(examples_dir, 'examples-info-NEW.csv'), 'w') as f:
-            txt = '\n'.join(map(lambda line: '"{}"'.format(line),
-                                map(lambda row: '","'.join(row),
-                                    example_csv_lines)))
+            txt = '\n'.join(
+                map(lambda line: '"{}"'.format(line),
+                    map(lambda row: '","'.join(row), example_csv_lines)))
             f.write(txt)
