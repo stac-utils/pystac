@@ -54,9 +54,7 @@ class EOItem(Item):
         collection_id (str or None): The Collection ID that this item belongs to, if any.
 
     """
-    _EO_FIELDS = [
-        'gsd', 'bands', 'epsg', 'cloud_cover'
-    ]
+    _EO_FIELDS = ['gsd', 'bands', 'epsg', 'cloud_cover']
 
     @staticmethod
     def _eo_key(key):
