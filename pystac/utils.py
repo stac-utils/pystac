@@ -148,6 +148,7 @@ def datetime_to_str(dt):
 
     return timestamp
 
+
 def geometry_to_bbox(geometry):
     """Extract the bounding box from a geojson geometry
 
@@ -159,11 +160,11 @@ def geometry_to_bbox(geometry):
         https://tools.ietf.org/html/rfc7946#section-5
     """
     coords = geometry['coordinates']
-    
+
     lats = []
     lons = []
 
-    def extract_coords(coords):    
+    def extract_coords(coords):
         for x in coords:
             if isinstance(x[0], list):
                 extract_coords(x)
@@ -178,5 +179,5 @@ def geometry_to_bbox(geometry):
     lats.sort()
 
     bbox = [lats[0], lons[0], lats[-1], lons[-1]]
-    
+
     return bbox
