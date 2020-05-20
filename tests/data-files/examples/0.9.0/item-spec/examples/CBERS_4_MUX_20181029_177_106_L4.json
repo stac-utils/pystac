@@ -44,6 +44,33 @@
         -4.731829
     ],
     "properties": {
+        "eo:gsd": 20,
+        "eo:bands": [
+            {
+                "name":"B5",
+                "common_name": "blue",
+                "center_wavelength": 0.485,
+                "full_width_half_max": 0.07
+            },
+            {
+                "name":"B6",
+                "common_name": "green",
+                "center_wavelength": 0.555,
+                "full_width_half_max": 0.07
+            },
+            {
+                "name":"B7",
+                "common_name": "red",
+                "center_wavelength": 0.66,
+                "full_width_half_max": 0.06
+            },
+            {
+                "name":"B8",
+                "common_name": "NIR",
+                "center_wavelength": 0.83,
+                "full_width_half_max": 0.12
+            }
+        ],
         "datetime": "2018-10-29T14:24:54Z",
         "view:sun_azimuth": 111.113,
         "view:sun_elevation": 65.8018,
@@ -78,34 +105,6 @@
             "type": "text/xml",
             "roles": [
                 "metadata"
-            ]
-        },
-        "B5": {
-            "href": "s3://cbers-pds/CBERS4/MUX/177/106/CBERS_4_MUX_20181029_177_106_L4/CBERS_4_MUX_20181029_177_106_L4_BAND5.tif",
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "eo:bands": [
-                0
-            ]
-        },
-        "B6": {
-            "href": "s3://cbers-pds/CBERS4/MUX/177/106/CBERS_4_MUX_20181029_177_106_L4/CBERS_4_MUX_20181029_177_106_L4_BAND6.tif",
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "eo:bands": [
-                1
-            ]
-        },
-        "B7": {
-            "href": "s3://cbers-pds/CBERS4/MUX/177/106/CBERS_4_MUX_20181029_177_106_L4/CBERS_4_MUX_20181029_177_106_L4_BAND7.tif",
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "eo:bands": [
-                2
-            ]
-        },
-        "B8": {
-            "href": "s3://cbers-pds/CBERS4/MUX/177/106/CBERS_4_MUX_20181029_177_106_L4/CBERS_4_MUX_20181029_177_106_L4_BAND8.tif",
-            "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-            "eo:bands": [
-                3
             ]
         }
     }

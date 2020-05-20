@@ -8,6 +8,11 @@
     ],
     "id": "103001004B316600_P002_MUL",
     "type": "Feature",
+    "bbox": [
+        -105.161151214, 
+        39.0436821016, 
+        -104.947574355, 
+        39.1750024943],
     "geometry": {
         "type": "Polygon",
         "coordinates": [
@@ -81,6 +86,7 @@
         "platform": "worldview02",
         "view:sun_elevation": 33.4,
         "eo:gsd": 2.047,
+        "eo:bands": [],
         "proj:epsg": null,
         "dg:catalog_id": "103001004B316600",
         "dg:soli": "056823192",
@@ -91,10 +97,8 @@
         "datetime": "2015-11-09T18:04:46.000Z"
     },
     "collection": "dg_worldview02",
-    "links": [
-        {
-            "rel": "self",
-            "href": "https://s3.amazonaws.com/digitalglobe-catalog-spec/collections/dg_worldview02_lv1b/103001004B316600_P002_MUL"
-        }
-    ]
+    "links": [{
+        "rel": "self",
+        "href": "https://s3.amazonaws.com/digitalglobe-catalog-spec/collections/dg_worldview02_lv1b/103001004B316600_P002_MUL"
+    }]
 }
