@@ -196,6 +196,8 @@ class EOAsset(Asset):
             text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
+        roles ([str]): Optional, Semantic roles (i.e. thumbnail, overview, data, metadata)
+            of the asset.
         properties (dict): Optional, additional properties for this asset.
 
     Attributes:
@@ -207,13 +209,22 @@ class EOAsset(Asset):
             text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
+        roles ([str]): Optional, Semantic roles (i.e. thumbnail, overview, data, metadata)
+            of the asset.
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
         owner (Item or None): The Item this asset belongs to.
     """
-    def __init__(self, href, bands, title=None, description=None, media_type=None, properties=None):
-        super().__init__(href, title, description, media_type, properties)
+    def __init__(self,
+                 href,
+                 bands,
+                 title=None,
+                 description=None,
+                 media_type=None,
+                 roles=None,
+                 properties=None):
+        super().__init__(href, title, description, media_type, roles, properties)
         self.bands = bands
 
     @staticmethod
@@ -263,7 +274,14 @@ class EOAsset(Asset):
         properties = None
         if any(a.properties):
             properties = a.properties
-        return cls(a.href, bands, a.title, a.description, a.media_type, properties)
+
+        return cls(href=a.href,
+                   bands=bands,
+                   title=a.title,
+                   description=a.description,
+                   media_type=a.media_type,
+                   roles=a.roles,
+                   properties=properties)
 
     def to_dict(self):
         """Generate a dictionary representing the JSON of this EOAsset.
@@ -282,6 +300,7 @@ class EOAsset(Asset):
                        description=self.description,
                        media_type=self.media_type,
                        bands=self.bands,
+                       roles=self.roles,
                        properties=self.properties)
 
     def __repr__(self):
@@ -314,10 +333,6 @@ class Band:
             to search for bands across instruments. See the `list of accepted common names
             <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
-        gsd (float): Ground Sample Distance, the nominal distance between pixel
-            centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
-        accuracy (float): The expected error between the measured location and the
-            true location of a pixel, in meters on the ground.
         center_wavelength (float): The center wavelength of the band, in micrometers (μm).
         full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
             as measured at half the maximum transmission, in micrometers (μm).
@@ -328,10 +343,6 @@ class Band:
             to search for bands across instruments. See the `list of accepted common names
             <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
         description (str): Description to fully explain the band.
-        gsd (float): Ground Sample Distance, the nominal distance between pixel
-            centers available, in meters. Defaults to the EOItems' eo:gsd if not provided.
-        accuracy (float): The expected error between the measured location and the
-            true location of a pixel, in meters on the ground.
         center_wavelength (float): The center wavelength of the band, in micrometers (μm).
         full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
             as measured at half the maximum transmission, in micrometers (μm).
@@ -340,15 +351,11 @@ class Band:
                  name=None,
                  common_name=None,
                  description=None,
-                 gsd=None,
-                 accuracy=None,
                  center_wavelength=None,
                  full_width_half_max=None):
         self.name = name
         self.common_name = common_name
         self.description = description
-        self.gsd = gsd
-        self.accuracy = accuracy
         self.center_wavelength = center_wavelength
         self.full_width_half_max = full_width_half_max
 
@@ -412,17 +419,13 @@ class Band:
         """
         name = d.get('name')
         common_name = d.get('common_name')
-        gsd = d.get('gsd')
         center_wavelength = d.get('center_wavelength')
         full_width_half_max = d.get('full_width_half_max')
         description = d.get('description')
-        accuracy = d.get('accuracy')
 
         return Band(name=name,
                     common_name=common_name,
                     description=description,
-                    gsd=gsd,
-                    accuracy=accuracy,
                     center_wavelength=center_wavelength,
                     full_width_half_max=full_width_half_max)
 
@@ -437,14 +440,10 @@ class Band:
             d['name'] = self.name
         if self.common_name:
             d['common_name'] = self.common_name
-        if self.gsd:
-            d['gsd'] = self.gsd
         if self.center_wavelength:
             d['center_wavelength'] = self.center_wavelength
         if self.full_width_half_max:
             d['full_width_half_max'] = self.full_width_half_max
         if self.description:
             d['description'] = self.description
-        if self.accuracy:
-            d['accuracy'] = self.accuracy
         return deepcopy(d)
