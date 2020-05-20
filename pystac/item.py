@@ -429,7 +429,7 @@ class CommonMetadata:
         constellation (str): Name of the constellation to which the platform belongs
         mission (str): Name of the mission in which data are collected
         created (datetime): Creation date and time of the metadata file
-        updated (datetime): Date and time that the metadata file was most recently 
+        updated (datetime): Date and time that the metadata file was most recently
             updated
     """
     def __init__(self, item):
