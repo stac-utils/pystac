@@ -8,6 +8,7 @@ from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str)
 from pystac.collection import Collection, TemporalExtent, Provider
+from datetime import datetime
 
 
 class Item(STACObject):
@@ -260,7 +261,15 @@ class Item(STACObject):
 
     @property
     def common_metadata(self):
-        return CommonMetadata(self)
+        return CommonMetadata(self.properties)
+
+    def set_common_metadata(self, common_metadata, override=False):
+        for k, v in common_metadata.to_dict().items():
+            if k in self.properties:
+                if override:
+                    self.properties[k] = v
+            else:
+                self.properties[k] = v
 
 
 class Asset:
@@ -412,7 +421,8 @@ class CommonMetadata:
     this item and are optional
 
     Args:
-        item (Item): The item which this metadata describes
+        properties (dict): Dictionary of attributes to search for common
+            common metadata fields in
 
     Attributes:
         title (str): Human readable title describing the item
@@ -431,9 +441,7 @@ class CommonMetadata:
         updated (datetime): Date and time that the metadata file was most recently
             updated
     """
-    def __init__(self, item):
-        self.item = item
-        properties = item.properties
+    def __init__(self, properties):
         if properties is None:
             properties = {}
 
@@ -480,3 +488,25 @@ class CommonMetadata:
             times for this item
         """
         return TemporalExtent([[self.start_datetime, self.end_datetime]])
+
+    @staticmethod
+    def from_dict(d):
+        return CommonMetadata(d)
+
+    def to_dict(self):
+        d = {}
+        attributes = [
+            'title', 'description', 'start_datetime', 'end_datetime', 'license', 'providers',
+            'platform', 'instruments', 'constellation', 'mission', 'created', 'updated'
+        ]
+        for a in attributes:
+            x = self.__getattribute__(a)
+            if x is not None:
+                if a == 'providers':
+                    d[a] = [y.to_dict() for y in x]
+                elif isinstance(x, datetime):
+                    d[a] = x.strftime('%Y-%m-%dT%H:%M:%S.') + x.strftime('%f')[0:3] + 'Z'
+                else:
+                    d[a] = x
+
+        return d

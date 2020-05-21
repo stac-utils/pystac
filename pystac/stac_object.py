@@ -419,9 +419,12 @@ class STACObject(LinkMixin, ABC):
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
-        if not root_link.is_resolved():
-            if root_link.get_absolute_href() == href:
-                o.set_root(o, link_type=root_link.link_type)
+
+        if root_link is not None:
+            if not root_link.is_resolved():
+                if root_link.get_absolute_href() == href:
+                    o.set_root(o, link_type=root_link.link_type)
+
         return o
 
     @classmethod
