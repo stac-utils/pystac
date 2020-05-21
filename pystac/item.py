@@ -7,8 +7,7 @@ from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str)
-from pystac.collection import Collection, TemporalExtent
-from pystac.provider import Provider
+from pystac.collection import Collection, TemporalExtent, Provider
 
 
 class Item(STACObject):
