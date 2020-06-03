@@ -5,6 +5,7 @@ from pystac import Asset, Item, TemporalExtent, Provider
 from pystac.item import CommonMetadata
 from tests.utils import (TestCases, test_to_from_dict)
 from datetime import datetime
+from dateutil import parser
 
 
 class ItemTest(unittest.TestCase):
@@ -98,7 +99,10 @@ class CommonMetadataTest(unittest.TestCase):
 
         self.assertIsNone(common_metadata.providers)
 
-        common_metadata_dict = common_metadata.to_dict()
+        common_metadata_dict = common_metadata.properties
+        common_metadata_dict['start_datetime'] = parser.parse(
+            common_metadata_dict['start_datetime'])
+
         common_metadata_2 = CommonMetadata.from_dict(common_metadata_dict)
         self.assertEqual(common_metadata.start_datetime, common_metadata_2.start_datetime)
 
@@ -127,3 +131,39 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(item_2_copy.properties['platform'], self.EXAMPLE_CM_DICT['platform'])
         for i, provider in enumerate(item_2_copy.properties['providers']):
             self.assertDictEqual(provider, self.EXAMPLE_CM_DICT['providers'][i])
+
+    def test_common_metadata_getter_setters(self):
+        item_2 = self.ITEM_2.clone()
+        self.assertIsInstance(item_2.common_metadata.updated, datetime)
+        self.assertIsInstance(item_2.properties['updated'], str)
+
+        self.assertIsInstance(item_2.common_metadata.providers[0], Provider)
+        self.assertIsInstance(item_2.properties['providers'][0], dict)
+
+        sample_license = 'sample license'
+        item_2.common_metadata.license = sample_license
+        self.assertEqual(item_2.properties['license'], sample_license)
+
+        sample_start = '2020-05-21T16:42:24.896Z'
+        sample_end = '2020-05-22T16:42:24.896Z'
+
+        item_2_copy = item_2.clone()
+        sample_temp_ext = TemporalExtent([[parser.parse(sample_start), parser.parse(sample_end)]])
+
+        item_2.common_metadata.start_datetime = sample_start
+        item_2.common_metadata.end_datetime = sample_end
+        self.assertIsInstance(item_2.common_metadata.start_datetime, datetime)
+        self.assertEqual(item_2.properties['start_datetime'], sample_start)
+        item_2_temp_extent = item_2.common_metadata.time_range
+        self.assertIsInstance(item_2_temp_extent, TemporalExtent)
+        self.assertDictEqual(item_2_temp_extent.to_dict(), sample_temp_ext.to_dict())
+
+        # ensure that the copied version does not have a start time defined
+        self.assertIsNone(item_2_copy.properties.get('start_datetime'))
+        self.assertIsNone(item_2_copy.common_metadata.start_datetime)
+        item_2_copy.common_metadata.time_range = sample_temp_ext
+        self.assertIsInstance(item_2_copy.common_metadata.start_datetime, datetime)
+        self.assertEqual(item_2_copy.properties['end_datetime'], sample_end)
+
+        with self.assertRaises(Exception):
+            item_2_copy.common_metadata.time_range = ''
