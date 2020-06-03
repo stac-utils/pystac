@@ -264,7 +264,15 @@ class Item(STACObject):
         return CommonMetadata(self.properties)
 
     def set_common_metadata(self, common_metadata, override=False):
-        for k, v in common_metadata.to_dict().items():
+        """Update common metadata properties within an item from a CommonMetadata
+        object
+
+        Args:
+            common_metadata (CommonMetadat): The CommonMetadata object which
+                will define fields in the item's properties
+            override (bool, optional): Whether or not to override . Defaults to False.
+        """
+        for k, v in common_metadata.properties.items():
             if k in self.properties:
                 if override:
                     self.properties[k] = v
@@ -425,8 +433,9 @@ class CommonMetadata:
             common metadata fields in
 
     Attributes:
+        properties (dict): Dict of all common metadata attributes
         title (str): Human readable title describing the item
-        description (str): Detailed, description of the item
+        description (str): Detailed description of the item
         start_datetime (datetime): Start date and time for the item
         end_datetime (datetime): End date and time for the item
         license (str): Item's license(s), either SPDX identifier of 'various'
@@ -442,46 +451,195 @@ class CommonMetadata:
             updated
     """
     def __init__(self, properties):
-        if properties is None:
-            properties = {}
+        self.properties = properties
 
-        # Basics
-        self.title = properties.get('title')
-        self.description = properties.get('description')
+    # Basics
+    @property
+    def title(self):
+        """Get or set the item's title
 
-        # Date and Time Range
-        self.start_datetime = properties.get('start_datetime')
-        if self.start_datetime:
-            self.start_datetime = dateutil.parser.parse(self.start_datetime)
-        self.end_datetime = properties.get('end_datetime')
-        if self.end_datetime:
-            self.end_datetime = dateutil.parser.parse(self.end_datetime)
+        Returns:
+            str: Human readable title describing the item
+        """
+        return self.properties.get('title')
 
-        # License
-        self.license = properties.get('license')
+    @title.setter
+    def title(self, v):
+        self.properties['title'] = v
 
-        # Providers
-        self.providers = properties.get('providers')
-        if self.providers is not None:
-            self.providers = [Provider.from_dict(d) for d in self.providers]
+    @property
+    def description(self):
+        """Get or set the item's description
 
-        # Instrument
-        self.platform = properties.get('platform')
-        self.instruments = properties.get('instruments')
-        self.constellation = properties.get('constellation')
-        self.mission = properties.get('mission')
+        Returns:
+            str: Detailed description of the item
+        """
+        return self.properties.get('description')
 
-        # Metadata
-        self.created = properties.get('created')
-        if self.created is not None:
-            self.created = dateutil.parser.parse(self.created)
-        self.updated = properties.get('updated')
-        if self.updated is not None:
-            self.updated = dateutil.parser.parse(self.updated)
+    @description.setter
+    def description(self, v):
+        self.properties['description'] = v
+
+    # Date and Time Range
+    @property
+    def start_datetime(self):
+        """Get or set the item's start_datetime. All datetime attributes have
+        setters that can take either a string or a datetime, but always stores
+        the attribute as a string
+
+        Returns:
+            datetime: Start date and time for the item
+        """
+        return self.get_datetime('start_datetime')
+
+    @start_datetime.setter
+    def start_datetime(self, v):
+        self.set_datetime(v, 'start_datetime')
+
+    @property
+    def end_datetime(self):
+        """Get or set the item's end_datetime. All datetime attributes have
+        setters that can take either a string or a datetime, but always stores
+        the attribute as a string
+
+        Returns:
+            datetime: End date and time for the item
+        """
+        return self.get_datetime('end_datetime')
+
+    @end_datetime.setter
+    def end_datetime(self, v):
+        self.set_datetime(v, 'end_datetime')
+
+    # License
+    @property
+    def license(self):
+        """Get or set the current license
+
+        Returns:
+            str: Item's license(s), either SPDX identifier of 'various'
+        """
+        return self.properties.get('license')
+
+    @license.setter
+    def license(self, v):
+        self.properties['license'] = v
+
+    # Providers
+    @property
+    def providers(self):
+        """Get or set a list of the item's providers. The setter can take either
+        a Provider object or a dict but always stores each provider as a dict
+
+        Returns:
+            [Provider]: List of organizations that captured or processed the data,
+            encoded as Provider objects
+        """
+        providers = self.properties.get('providers')
+        if providers is not None:
+            providers = [Provider.from_dict(d) for d in providers]
+
+        return providers
+
+    @providers.setter
+    def providers(self, v):
+        if v is None:
+            self.properties['providers'] = v
+        else:
+            self.properties['providers'] = [
+                p.to_dict() if isinstance(p, Provider) else p for p in v
+            ]
+
+    # Instrument
+    @property
+    def platform(self):
+        """Get or set the item's platform attribute
+
+        Returns:
+            str: Unique name of the specific platform to which the instrument
+            is attached
+        """
+        return self.properties.get('platform')
+
+    @platform.setter
+    def platform(self, v):
+        self.properties['platform'] = v
+
+    @property
+    def instruments(self):
+        """Get or set the names of the instruments used
+
+        Returns:
+            [str]: Name(s) of instrument(s) used
+        """
+        return self.properties.get('instruments')
+
+    @instruments.setter
+    def instruments(self, v):
+        self.properties['instruments'] = v
+
+    @property
+    def constellation(self):
+        """Get or set the name of the constellation associate with an item
+
+        Returns:
+            str: Name of the constellation to which the platform belongs
+        """
+        return self.properties.get('constellation')
+
+    @constellation.setter
+    def constellation(self, v):
+        self.properties['constellation'] = v
+
+    @property
+    def mission(self):
+        """Get or set the name of the mission associated with an item
+
+        Returns:
+            str: Name of the mission in which data are collected
+        """
+        return self.properties.get('mission')
+
+    @mission.setter
+    def mission(self, v):
+        self.properties['mission'] = v
+
+    # Metadata
+    @property
+    def created(self):
+        """Get or set the metadata file's creation date. All datetime attributes have
+        setters that can take either a string or a datetime, but always stores
+        the attribute as a string
+
+        Returns:
+            datetime: Creation date and time of the metadata file
+        """
+        return self.get_datetime('created')
+
+    @created.setter
+    def created(self, v):
+        self.set_datetime(v, 'created')
+
+    @property
+    def updated(self):
+        """Get or set the metadata file's creation date. All datetime attributes have
+        setters that can take either a string or a datetime, but always stores
+        the attribute as a string
+
+        Returns:
+            datetime: Date and time that the metadata file was most recently
+                updated
+        """
+        return self.get_datetime('updated')
+
+    @updated.setter
+    def updated(self, v):
+        self.set_datetime(v, 'updated')
 
     @property
     def time_range(self):
-        """Get the start and end times for the item
+        """Get the start and end times for the item as a PySTAC temporal extent. Sets
+        the start_time and end_time attributes within properties
 
         Returns:
             TemporalExtent: PySTAC Temporal Extent object with the start and end
@@ -489,24 +647,35 @@ class CommonMetadata:
         """
         return TemporalExtent([[self.start_datetime, self.end_datetime]])
 
+    @time_range.setter
+    def time_range(self, v):
+        """Set the start_time and end_time attributes from a PySTAC TemporalExtent
+
+        Args:
+            v (TemporalExtent): The temporal extent of the item
+        """
+        if not isinstance(v, TemporalExtent):
+            raise Exception(
+                'Item CommonMetadata time range must be sent with a TemporalExtent, got {}'.format(
+                    type(v)))
+
+        start_datetime, end_datetime = v.intervals[0]
+        self.set_datetime(start_datetime, 'start_datetime')
+        self.set_datetime(end_datetime, 'end_datetime')
+
     @staticmethod
     def from_dict(d):
         return CommonMetadata(d)
 
-    def to_dict(self):
-        d = {}
-        attributes = [
-            'title', 'description', 'start_datetime', 'end_datetime', 'license', 'providers',
-            'platform', 'instruments', 'constellation', 'mission', 'created', 'updated'
-        ]
-        for a in attributes:
-            x = self.__getattribute__(a)
-            if x is not None:
-                if a == 'providers':
-                    d[a] = [y.to_dict() for y in x]
-                elif isinstance(x, datetime):
-                    d[a] = x.strftime('%Y-%m-%dT%H:%M:%S.') + x.strftime('%f')[0:3] + 'Z'
-                else:
-                    d[a] = x
+    def get_datetime(self, key):
+        datetime_var = copy(self.properties.get(key))
+        if not isinstance(datetime_var, datetime) and datetime_var:
+            datetime_var = dateutil.parser.parse(datetime_var)
 
-        return d
+        return datetime_var
+
+    def set_datetime(self, v, key):
+        if isinstance(v, datetime):
+            self.properties[key] = v.strftime('%Y-%m-%dT%H:%M:%S.') + v.strftime('%f')[0:3] + 'Z'
+        else:
+            self.properties[key] = v
