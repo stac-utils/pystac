@@ -6,9 +6,9 @@ import dateutil.parser
 from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
-from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str)
-from pystac.collection import Collection, TemporalExtent, Provider
-from datetime import datetime
+from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
+                          str_to_datetime)
+from pystac.collection import Collection, Provider
 
 
 class Item(STACObject):
@@ -24,7 +24,7 @@ class Item(STACObject):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions.
-        datetime (Datetime): Datetime associated with this item.
+        datetime (datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str]): Optional list of extensions the Item implements.
         href (str or None): Optional HREF for this item, which be set as the item's
@@ -40,7 +40,7 @@ class Item(STACObject):
         bbox (List[float]):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array is 2*n where n is the
             number of dimensions.
-        datetime (Datetime): Datetime associated with this item.
+        datetime (datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
@@ -261,6 +261,11 @@ class Item(STACObject):
 
     @property
     def common_metadata(self):
+        """Access the item's common metadat fields as a CommonMetadata object
+
+        Returns:
+            CommonMetada: contains all common metadata fields in the items properties
+        """
         return CommonMetadata(self.properties)
 
     def set_common_metadata(self, common_metadata, override=False):
@@ -431,24 +436,6 @@ class CommonMetadata:
     Args:
         properties (dict): Dictionary of attributes to search for common
             common metadata fields in
-
-    Attributes:
-        properties (dict): Dict of all common metadata attributes
-        title (str): Human readable title describing the item
-        description (str): Detailed description of the item
-        start_datetime (datetime): Start date and time for the item
-        end_datetime (datetime): End date and time for the item
-        license (str): Item's license(s), either SPDX identifier of 'various'
-        providers ([Provider]): List of organizations that captured or processed
-            the data, encoded as Provider objects
-        platform (str): Unique name of the specific platform to which the instrument
-            is attached
-        instruments ([str]): Name(s) of instrument(s) used
-        constellation (str): Name of the constellation to which the platform belongs
-        mission (str): Name of the mission in which data are collected
-        created (datetime): Creation date and time of the metadata file
-        updated (datetime): Date and time that the metadata file was most recently
-            updated
     """
     def __init__(self, properties):
         self.properties = properties
@@ -490,11 +477,15 @@ class CommonMetadata:
         Returns:
             datetime: Start date and time for the item
         """
-        return self.get_datetime('start_datetime')
+        start_datetime = self.properties.get('start_datetime')
+        if start_datetime:
+            start_datetime = str_to_datetime(start_datetime)
+
+        return start_datetime
 
     @start_datetime.setter
     def start_datetime(self, v):
-        self.set_datetime(v, 'start_datetime')
+        self.properties['start_datetime'] = v
 
     @property
     def end_datetime(self):
@@ -505,11 +496,15 @@ class CommonMetadata:
         Returns:
             datetime: End date and time for the item
         """
-        return self.get_datetime('end_datetime')
+        end_datetime = self.properties.get('end_datetime')
+        if end_datetime:
+            end_datetime = str_to_datetime(end_datetime)
+
+        return end_datetime
 
     @end_datetime.setter
     def end_datetime(self, v):
-        self.set_datetime(v, 'end_datetime')
+        self.properties['end_datetime'] = v
 
     # License
     @property
@@ -543,12 +538,7 @@ class CommonMetadata:
 
     @providers.setter
     def providers(self, v):
-        if v is None:
-            self.properties['providers'] = v
-        else:
-            self.properties['providers'] = [
-                p.to_dict() if isinstance(p, Provider) else p for p in v
-            ]
+        self.properties['providers'] = v
 
     # Instrument
     @property
@@ -614,11 +604,15 @@ class CommonMetadata:
         Returns:
             datetime: Creation date and time of the metadata file
         """
-        return self.get_datetime('created')
+        created = self.properties.get('created')
+        if created:
+            created = str_to_datetime(created)
+
+        return created
 
     @created.setter
     def created(self, v):
-        self.set_datetime(v, 'created')
+        self.properties['created'] = v
 
     @property
     def updated(self):
@@ -630,52 +624,12 @@ class CommonMetadata:
             datetime: Date and time that the metadata file was most recently
                 updated
         """
-        return self.get_datetime('updated')
+        updated = self.properties.get('updated')
+        if updated:
+            updated = str_to_datetime(updated)
+
+        return updated
 
     @updated.setter
     def updated(self, v):
-        self.set_datetime(v, 'updated')
-
-    @property
-    def time_range(self):
-        """Get the start and end times for the item as a PySTAC temporal extent. Sets
-        the start_time and end_time attributes within properties
-
-        Returns:
-            TemporalExtent: PySTAC Temporal Extent object with the start and end
-            times for this item
-        """
-        return TemporalExtent([[self.start_datetime, self.end_datetime]])
-
-    @time_range.setter
-    def time_range(self, v):
-        """Set the start_time and end_time attributes from a PySTAC TemporalExtent
-
-        Args:
-            v (TemporalExtent): The temporal extent of the item
-        """
-        if not isinstance(v, TemporalExtent):
-            raise Exception(
-                'Item CommonMetadata time range must be sent with a TemporalExtent, got {}'.format(
-                    type(v)))
-
-        start_datetime, end_datetime = v.intervals[0]
-        self.set_datetime(start_datetime, 'start_datetime')
-        self.set_datetime(end_datetime, 'end_datetime')
-
-    @staticmethod
-    def from_dict(d):
-        return CommonMetadata(d)
-
-    def get_datetime(self, key):
-        datetime_var = copy(self.properties.get(key))
-        if not isinstance(datetime_var, datetime) and datetime_var:
-            datetime_var = dateutil.parser.parse(datetime_var)
-
-        return datetime_var
-
-    def set_datetime(self, v, key):
-        if isinstance(v, datetime):
-            self.properties[key] = v.strftime('%Y-%m-%dT%H:%M:%S.') + v.strftime('%f')[0:3] + 'Z'
-        else:
-            self.properties[key] = v
+        self.properties['end_datetime'] = v
