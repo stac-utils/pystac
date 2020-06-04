@@ -589,11 +589,16 @@ class Catalog(STACObject):
 
         cat = Catalog(id=id, description=description, title=title)
 
+        has_self_link = False
         for l in d['links']:
+            has_self_link |= l['rel'] == 'self'
             if l['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 cat.remove_links('root')
 
             cat.add_link(Link.from_dict(l))
+
+        if not has_self_link and href is not None:
+            cat.add_link(Link.self_href(href))
 
         return cat
