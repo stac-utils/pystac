@@ -133,6 +133,13 @@ Asset
    :members:
    :undoc-members:
 
+CommonMetadata
+~~~~~
+
+.. autoclass:: pystac.CommonMetadata
+   :members:
+   :undoc-members:
+
 ItemCollection
 ~~~~~~~~~~~~~~
 
