@@ -21,7 +21,7 @@ from pystac.media_type import MediaType
 from pystac.link import (Link, LinkType)
 from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
-from pystac.item import (Item, Asset)
+from pystac.item import (Item, Asset, CommonMetadata)
 from pystac.item_collection import ItemCollection
 from pystac.single_file_stac import SingleFileSTAC
 from pystac.eo import *

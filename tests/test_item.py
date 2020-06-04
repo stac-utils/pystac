@@ -1,11 +1,10 @@
 import unittest
 import json
 
-from pystac import Asset, Item, TemporalExtent, Provider
+from pystac import Asset, Item, Provider
 from pystac.item import CommonMetadata
 from tests.utils import (TestCases, test_to_from_dict)
 from datetime import datetime
-from dateutil import parser
 
 
 class ItemTest(unittest.TestCase):
@@ -82,29 +81,13 @@ class CommonMetadataTest(unittest.TestCase):
         # method doesn't mutate self.item_1
         before = self.ITEM_1.clone().to_dict()
         start_datetime_str = self.ITEM_1.properties['start_datetime']
-        end_datetime_str = self.ITEM_1.properties['end_datetime']
         self.assertIsInstance(start_datetime_str, str)
 
         common_metadata = self.ITEM_1.common_metadata
         self.assertIsInstance(common_metadata, CommonMetadata)
         self.assertIsInstance(common_metadata.start_datetime, datetime)
-
-        temp_ext = common_metadata.time_range
-        self.assertIsInstance(temp_ext, TemporalExtent)
-
-        test_dict = {'interval': [[start_datetime_str, end_datetime_str]]}
-        self.assertDictEqual(temp_ext.to_dict(), test_dict)
-
         self.assertDictEqual(before, self.ITEM_1.to_dict())
-
         self.assertIsNone(common_metadata.providers)
-
-        common_metadata_dict = common_metadata.properties
-        common_metadata_dict['start_datetime'] = parser.parse(
-            common_metadata_dict['start_datetime'])
-
-        common_metadata_2 = CommonMetadata.from_dict(common_metadata_dict)
-        self.assertEqual(common_metadata.start_datetime, common_metadata_2.start_datetime)
 
     def test_set_common_metadata(self):
         common_metadata = self.ITEM_2.common_metadata
@@ -113,16 +96,17 @@ class CommonMetadataTest(unittest.TestCase):
             self.assertIsInstance(provider, Provider)
         self.assertEqual(common_metadata.platform, 'coolsat2')
 
-        example_cm = CommonMetadata.from_dict(self.EXAMPLE_CM_DICT)
+        example_cm = CommonMetadata(self.EXAMPLE_CM_DICT)
         self.assertIsInstance(example_cm.start_datetime, datetime)
         self.assertIsInstance(example_cm.providers[0], Provider)
 
         item_2_copy = self.ITEM_2.clone()
+
         item_2_copy.set_common_metadata(example_cm)
         self.assertNotEqual(self.EXAMPLE_CM_DICT['platform'], item_2_copy.properties['platform'])
         self.assertEqual(item_2_copy.properties['platform'], self.ITEM_2.properties['platform'])
-
         item_2_copy.set_common_metadata(example_cm, override=True)
+
         self.assertEqual(self.EXAMPLE_CM_DICT['platform'], item_2_copy.properties['platform'])
         self.assertNotEqual(item_2_copy.properties['platform'], self.ITEM_2.properties['platform'])
         self.assertIsInstance(item_2_copy.properties['start_datetime'], str)
@@ -147,23 +131,7 @@ class CommonMetadataTest(unittest.TestCase):
         sample_start = '2020-05-21T16:42:24.896Z'
         sample_end = '2020-05-22T16:42:24.896Z'
 
-        item_2_copy = item_2.clone()
-        sample_temp_ext = TemporalExtent([[parser.parse(sample_start), parser.parse(sample_end)]])
-
         item_2.common_metadata.start_datetime = sample_start
         item_2.common_metadata.end_datetime = sample_end
         self.assertIsInstance(item_2.common_metadata.start_datetime, datetime)
         self.assertEqual(item_2.properties['start_datetime'], sample_start)
-        item_2_temp_extent = item_2.common_metadata.time_range
-        self.assertIsInstance(item_2_temp_extent, TemporalExtent)
-        self.assertDictEqual(item_2_temp_extent.to_dict(), sample_temp_ext.to_dict())
-
-        # ensure that the copied version does not have a start time defined
-        self.assertIsNone(item_2_copy.properties.get('start_datetime'))
-        self.assertIsNone(item_2_copy.common_metadata.start_datetime)
-        item_2_copy.common_metadata.time_range = sample_temp_ext
-        self.assertIsInstance(item_2_copy.common_metadata.start_datetime, datetime)
-        self.assertEqual(item_2_copy.properties['end_datetime'], sample_end)
-
-        with self.assertRaises(Exception):
-            item_2_copy.common_metadata.time_range = ''
