@@ -486,6 +486,27 @@ class CatalogTest(unittest.TestCase):
                         calls, 1,
                         '{} was read {} times instead of once!'.format(collection_uri, calls))
 
+    def test_reading_iterating_and_writing_works_as_expected(self):
+        """ Test case to cover issue #88 """
+        stac_uri = 'tests/data-files/catalogs/test-case-6/catalog.json'
+        cat = Catalog.from_file(stac_uri)
+
+        # Iterate over the items. This was causing failure in
+        # in the later iterations as per issue #88
+        for item in cat.get_all_items():
+            pass
+
+        new_stac_uri = 'tmp-data/test-case-6'
+        cat.normalize_hrefs(new_stac_uri)
+        cat.save(catalog_type=CatalogType.SELF_CONTAINED)
+
+        # Open the local copy and iterate over it.
+        cat2 = Catalog.from_file(os.path.join(new_stac_uri, 'catalog.json'))
+
+        for item in cat2.get_all_items():
+            # Iterate again over the items. This would fail in #88
+            pass
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, l, tag):
