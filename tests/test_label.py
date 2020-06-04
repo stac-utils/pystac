@@ -59,12 +59,10 @@ class LabelItemTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, 'catalog')
             catalog = TestCases.test_case_1()
-            label_item = LabelItem.from_dict(label_example_1_dict)
-            catalog.add_item(label_item)
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
-            label_item_read = cat_read.get_item("label-example-1-label-item")
+            label_item_read = cat_read.get_item("area-2-2-labels", recursive=True)
             sv = SchemaValidator()
             sv.validate_object(label_item_read)
 
