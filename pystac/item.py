@@ -224,6 +224,13 @@ class Item(STACObject):
                     new_relative_href = make_relative_href(abs_href, new_self_href)
                     asset.href = new_relative_href
 
+    def fully_resolve(self):
+        link_rels = set(self._object_links())
+        for link in self.links:
+            if link.rel in link_rels:
+                if not link.is_resolved():
+                    link.resolve_stac_object(root=self.get_root())
+
     @classmethod
     def from_dict(cls, d, href=None, root=None):
         id = d['id']
