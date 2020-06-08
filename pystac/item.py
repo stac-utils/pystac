@@ -268,22 +268,6 @@ class Item(STACObject):
         """
         return CommonMetadata(self.properties)
 
-    def set_common_metadata(self, common_metadata, override=False):
-        """Update common metadata properties within an item from a CommonMetadata
-        object
-
-        Args:
-            common_metadata (CommonMetadat): The CommonMetadata object which
-                will define fields in the item's properties
-            override (bool, optional): Whether or not to override . Defaults to False.
-        """
-        for k, v in common_metadata.properties.items():
-            if k in self.properties:
-                if override:
-                    self.properties[k] = v
-            else:
-                self.properties[k] = v
-
 
 class Asset:
     """An object that contains a link to data associated with the Item that can be
@@ -632,4 +616,4 @@ class CommonMetadata:
 
     @updated.setter
     def updated(self, v):
-        self.properties['end_datetime'] = v
+        self.properties['updated'] = v
