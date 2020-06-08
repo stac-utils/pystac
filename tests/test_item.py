@@ -3,6 +3,7 @@ import json
 
 from pystac import Asset, Item, Provider
 from pystac.item import CommonMetadata
+from pystac.utils import str_to_datetime
 from tests.utils import (TestCases, test_to_from_dict)
 from datetime import datetime
 
@@ -89,49 +90,167 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertDictEqual(before, self.ITEM_1.to_dict())
         self.assertIsNone(common_metadata.providers)
 
-    def test_set_common_metadata(self):
-        common_metadata = self.ITEM_2.common_metadata
+    def test_common_metadata_start_datetime(self):
+        x = self.ITEM_1.clone()
+        start_datetime_str = "2018-01-01T13:21:30Z"
+        start_datetime_dt = str_to_datetime(start_datetime_str)
+        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        for provider in common_metadata.providers:
-            self.assertIsInstance(provider, Provider)
-        self.assertEqual(common_metadata.platform, 'coolsat2')
+        self.assertEqual(x.common_metadata.start_datetime, start_datetime_dt)
+        self.assertEqual(x.properties['start_datetime'], start_datetime_str)
 
-        example_cm = CommonMetadata(self.EXAMPLE_CM_DICT)
-        self.assertIsInstance(example_cm.start_datetime, datetime)
-        self.assertIsInstance(example_cm.providers[0], Provider)
+        x.common_metadata.start_datetime = example_datetime_str
 
-        item_2_copy = self.ITEM_2.clone()
+        self.assertEqual(x.common_metadata.start_datetime, example_datetime_dt)
+        self.assertEqual(x.properties['start_datetime'], example_datetime_str)
 
-        item_2_copy.set_common_metadata(example_cm)
-        self.assertNotEqual(self.EXAMPLE_CM_DICT['platform'], item_2_copy.properties['platform'])
-        self.assertEqual(item_2_copy.properties['platform'], self.ITEM_2.properties['platform'])
-        item_2_copy.set_common_metadata(example_cm, override=True)
+    def test_common_metadata_end_datetime(self):
+        x = self.ITEM_1.clone()
+        end_datetime_str = "2018-01-01T13:31:30Z"
+        end_datetime_dt = str_to_datetime(end_datetime_str)
+        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        self.assertEqual(self.EXAMPLE_CM_DICT['platform'], item_2_copy.properties['platform'])
-        self.assertNotEqual(item_2_copy.properties['platform'], self.ITEM_2.properties['platform'])
-        self.assertIsInstance(item_2_copy.properties['start_datetime'], str)
-        self.assertEqual(item_2_copy.properties['start_datetime'],
-                         self.EXAMPLE_CM_DICT['start_datetime'])
-        self.assertEqual(item_2_copy.properties['platform'], self.EXAMPLE_CM_DICT['platform'])
-        for i, provider in enumerate(item_2_copy.properties['providers']):
-            self.assertDictEqual(provider, self.EXAMPLE_CM_DICT['providers'][i])
+        self.assertEqual(x.common_metadata.end_datetime, end_datetime_dt)
+        self.assertEqual(x.properties['end_datetime'], end_datetime_str)
 
-    def test_common_metadata_getter_setters(self):
-        item_2 = self.ITEM_2.clone()
-        self.assertIsInstance(item_2.common_metadata.updated, datetime)
-        self.assertIsInstance(item_2.properties['updated'], str)
+        x.common_metadata.end_datetime = example_datetime_str
 
-        self.assertIsInstance(item_2.common_metadata.providers[0], Provider)
-        self.assertIsInstance(item_2.properties['providers'][0], dict)
+        self.assertEqual(x.common_metadata.end_datetime, example_datetime_dt)
+        self.assertEqual(x.properties['end_datetime'], example_datetime_str)
 
-        sample_license = 'sample license'
-        item_2.common_metadata.license = sample_license
-        self.assertEqual(item_2.properties['license'], sample_license)
+    def test_common_metadata_created(self):
+        x = self.ITEM_2.clone()
+        created_str = "2016-05-04T00:00:01Z"
+        created_dt = str_to_datetime(created_str)
+        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        sample_start = '2020-05-21T16:42:24.896Z'
-        sample_end = '2020-05-22T16:42:24.896Z'
+        self.assertEqual(x.common_metadata.created, created_dt)
+        self.assertEqual(x.properties['created'], created_str)
 
-        item_2.common_metadata.start_datetime = sample_start
-        item_2.common_metadata.end_datetime = sample_end
-        self.assertIsInstance(item_2.common_metadata.start_datetime, datetime)
-        self.assertEqual(item_2.properties['start_datetime'], sample_start)
+        x.common_metadata.created = example_datetime_str
+
+        self.assertEqual(x.common_metadata.created, example_datetime_dt)
+        self.assertEqual(x.properties['created'], example_datetime_str)
+
+    def test_common_metadata_updated(self):
+        x = self.ITEM_2.clone()
+        updated_str = "2017-01-01T00:30:55Z"
+        updated_dt = str_to_datetime(updated_str)
+        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_dt = str_to_datetime(example_datetime_str)
+
+        self.assertEqual(x.common_metadata.updated, updated_dt)
+        self.assertEqual(x.properties['updated'], updated_str)
+
+        x.common_metadata.updated = example_datetime_str
+
+        self.assertEqual(x.common_metadata.updated, example_datetime_dt)
+        self.assertEqual(x.properties['updated'], example_datetime_str)
+
+    def test_common_metadata_providers(self):
+        x = self.ITEM_2.clone()
+
+        providers_dict_list = [{
+            "name": "CoolSat",
+            "roles": ["producer", "licensor"],
+            "url": "https://cool-sat.com/"
+        }]
+        providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
+
+        example_providers_dict_list = [{
+            "name": "ExampleProvider_1",
+            "roles": ["example_role_1", "example_role_2"],
+            "url": "https://exampleprovider1.com/"
+        }, {
+            "name": "ExampleProvider_2",
+            "roles": ["example_role_1", "example_role_2"],
+            "url": "https://exampleprovider2.com/"
+        }]
+        example_providers_object_list = [Provider.from_dict(d) for d in example_providers_dict_list]
+
+        for i in range(len(x.common_metadata.providers)):
+            p1 = x.common_metadata.providers[i]
+            p2 = providers_object_list[i]
+            self.assertIsInstance(p1, Provider)
+            self.assertIsInstance(p2, Provider)
+            self.assertDictEqual(p1.to_dict(), p2.to_dict())
+
+            pd1 = x.properties['providers'][i]
+            pd2 = providers_dict_list[i]
+            self.assertIsInstance(pd1, dict)
+            self.assertIsInstance(pd2, dict)
+            self.assertDictEqual(pd1, pd2)
+
+        x.common_metadata.providers = example_providers_dict_list
+
+        for i in range(len(x.common_metadata.providers)):
+            p1 = x.common_metadata.providers[i]
+            p2 = example_providers_object_list[i]
+            self.assertIsInstance(p1, Provider)
+            self.assertIsInstance(p2, Provider)
+            self.assertDictEqual(p1.to_dict(), p2.to_dict())
+
+            pd1 = x.properties['providers'][i]
+            pd2 = example_providers_dict_list[i]
+            self.assertIsInstance(pd1, dict)
+            self.assertIsInstance(pd2, dict)
+            self.assertDictEqual(pd1, pd2)
+
+    def test_common_metadata_basics(self):
+        x = self.ITEM_2.clone()
+
+        # Title
+        title = "A CS3 item"
+        example_title = "example title"
+        self.assertEqual(x.common_metadata.title, title)
+        x.common_metadata.title = example_title
+        self.assertEqual(x.common_metadata.title, example_title)
+        self.assertEqual(x.properties['title'], example_title)
+
+        # Description
+        example_description = "example description"
+        self.assertIsNone(x.common_metadata.description)
+        x.common_metadata.description = example_description
+        self.assertEqual(x.common_metadata.description, example_description)
+        self.assertEqual(x.properties['description'], example_description)
+
+        # License
+        license = "PDDL-1.0"
+        example_license = "example license"
+        self.assertEqual(x.common_metadata.license, license)
+        x.common_metadata.license = example_license
+        self.assertEqual(x.common_metadata.license, example_license)
+        self.assertEqual(x.properties['license'], example_license)
+
+        # Platform
+        platform = "coolsat2"
+        example_platform = "example_platform"
+        self.assertEqual(x.common_metadata.platform, platform)
+        x.common_metadata.platform = example_platform
+        self.assertEqual(x.common_metadata.platform, example_platform)
+        self.assertEqual(x.properties['platform'], example_platform)
+
+        # Instruments
+        instruments = ["cool_sensor_v1"]
+        example_instruments = ["example instrument 1", "example instrument 2"]
+        self.assertListEqual(x.common_metadata.instruments, instruments)
+        x.common_metadata.instruments = example_instruments
+        self.assertListEqual(x.common_metadata.instruments, example_instruments)
+        self.assertListEqual(x.properties['instruments'], example_instruments)
+
+        # Constellation
+        example_constellation = "example constellation"
+        self.assertIsNone(x.common_metadata.constellation)
+        x.common_metadata.constellation = example_constellation
+        self.assertEqual(x.common_metadata.constellation, example_constellation)
+        self.assertEqual(x.properties['constellation'], example_constellation)
+
+        # Mission
+        example_mission = "example mission"
+        self.assertIsNone(x.common_metadata.mission)
+        x.common_metadata.mission = example_mission
+        self.assertEqual(x.common_metadata.mission, example_mission)
+        self.assertEqual(x.properties['mission'], example_mission)
