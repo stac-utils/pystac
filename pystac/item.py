@@ -7,7 +7,8 @@ from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str)
-from pystac.collection import Collection
+from pystac.collection import Collection, TemporalExtent, Provider
+from datetime import datetime
 
 
 class Item(STACObject):
@@ -258,6 +259,18 @@ class Item(STACObject):
 
         return item
 
+    @property
+    def common_metadata(self):
+        return CommonMetadata(self.properties)
+
+    def set_common_metadata(self, common_metadata, override=False):
+        for k, v in common_metadata.to_dict().items():
+            if k in self.properties:
+                if override:
+                    self.properties[k] = v
+            else:
+                self.properties[k] = v
+
 
 class Asset:
     """An object that contains a link to data associated with the Item that can be
@@ -271,6 +284,8 @@ class Asset:
             text representation.
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
+        roles ([str]): Optional, Semantic roles (i.e. thumbnail, overview, data, metadata)
+            of the asset.
         properties (dict): Optional, additional properties for this asset. This is used by
             extensions as a way to serialize and deserialize properties on asset
             object JSON.
@@ -288,11 +303,18 @@ class Asset:
             object JSON.
         owner (Item or None): The Item this asset belongs to.
     """
-    def __init__(self, href, title=None, description=None, media_type=None, properties=None):
+    def __init__(self,
+                 href,
+                 title=None,
+                 description=None,
+                 media_type=None,
+                 roles=None,
+                 properties=None):
         self.href = href
         self.title = title
         self.description = description
         self.media_type = media_type
+        self.roles = roles
         self.properties = properties
 
         # The Item which owns this Asset.
@@ -347,6 +369,9 @@ class Asset:
             for k, v in self.properties.items():
                 d[k] = v
 
+        if self.roles is not None:
+            d['roles'] = self.roles
+
         return deepcopy(d)
 
     def clone(self):
@@ -359,6 +384,7 @@ class Asset:
                      title=self.title,
                      description=self.description,
                      media_type=self.media_type,
+                     roles=self.roles,
                      properties=self.properties)
 
     def __repr__(self):
@@ -376,6 +402,7 @@ class Asset:
         media_type = d.pop('type', None)
         title = d.pop('title', None)
         description = d.pop('description', None)
+        roles = d.pop('roles', None)
         properties = None
         if any(d):
             properties = d
@@ -384,4 +411,102 @@ class Asset:
                      media_type=media_type,
                      title=title,
                      description=description,
+                     roles=roles,
                      properties=properties)
+
+
+class CommonMetadata:
+    """Object containing fields that are not included in core item schema but
+    are still commonly used. All attributes are defined within the properties of
+    this item and are optional
+
+    Args:
+        properties (dict): Dictionary of attributes to search for common
+            common metadata fields in
+
+    Attributes:
+        title (str): Human readable title describing the item
+        description (str): Detailed, description of the item
+        start_datetime (datetime): Start date and time for the item
+        end_datetime (datetime): End date and time for the item
+        license (str): Item's license(s), either SPDX identifier of 'various'
+        providers ([Provider]): List of organizations that captured or processed
+            the data, encoded as Provider objects
+        platform (str): Unique name of the specific platform to which the instrument
+            is attached
+        instruments ([str]): Name(s) of instrument(s) used
+        constellation (str): Name of the constellation to which the platform belongs
+        mission (str): Name of the mission in which data are collected
+        created (datetime): Creation date and time of the metadata file
+        updated (datetime): Date and time that the metadata file was most recently
+            updated
+    """
+    def __init__(self, properties):
+        if properties is None:
+            properties = {}
+
+        # Basics
+        self.title = properties.get('title')
+        self.description = properties.get('description')
+
+        # Date and Time Range
+        self.start_datetime = properties.get('start_datetime')
+        if self.start_datetime:
+            self.start_datetime = dateutil.parser.parse(self.start_datetime)
+        self.end_datetime = properties.get('end_datetime')
+        if self.end_datetime:
+            self.end_datetime = dateutil.parser.parse(self.end_datetime)
+
+        # License
+        self.license = properties.get('license')
+
+        # Providers
+        self.providers = properties.get('providers')
+        if self.providers is not None:
+            self.providers = [Provider.from_dict(d) for d in self.providers]
+
+        # Instrument
+        self.platform = properties.get('platform')
+        self.instruments = properties.get('instruments')
+        self.constellation = properties.get('constellation')
+        self.mission = properties.get('mission')
+
+        # Metadata
+        self.created = properties.get('created')
+        if self.created is not None:
+            self.created = dateutil.parser.parse(self.created)
+        self.updated = properties.get('updated')
+        if self.updated is not None:
+            self.updated = dateutil.parser.parse(self.updated)
+
+    @property
+    def time_range(self):
+        """Get the start and end times for the item
+
+        Returns:
+            TemporalExtent: PySTAC Temporal Extent object with the start and end
+            times for this item
+        """
+        return TemporalExtent([[self.start_datetime, self.end_datetime]])
+
+    @staticmethod
+    def from_dict(d):
+        return CommonMetadata(d)
+
+    def to_dict(self):
+        d = {}
+        attributes = [
+            'title', 'description', 'start_datetime', 'end_datetime', 'license', 'providers',
+            'platform', 'instruments', 'constellation', 'mission', 'created', 'updated'
+        ]
+        for a in attributes:
+            x = self.__getattribute__(a)
+            if x is not None:
+                if a == 'providers':
+                    d[a] = [y.to_dict() for y in x]
+                elif isinstance(x, datetime):
+                    d[a] = x.strftime('%Y-%m-%dT%H:%M:%S.') + x.strftime('%f')[0:3] + 'Z'
+                else:
+                    d[a] = x
+
+        return d
