@@ -54,6 +54,15 @@ class ItemTest(unittest.TestCase):
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
 
+    def test_self_contained_item(self):
+        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
+        with open(m) as f:
+            item_dict = json.load(f)['features'][0]
+        item_dict['links'] = [l for l in item_dict['links'] if l['rel'] == 'self']
+        item = Item.from_dict(item_dict)
+        self.assertIsInstance(item, Item)
+        self.assertEqual(len(item.links), 1)
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
