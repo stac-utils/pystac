@@ -1,8 +1,9 @@
 {
     "stac_version": "0.9.0",
     "stac_extensions": [
-        "eo",
-        "proj"
+      "eo",
+      "proj",
+      "commons"
     ],
     "id": "LC81530252014153LGN00",
     "type": "Feature",

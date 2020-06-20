@@ -23,14 +23,14 @@ class CollectionTest(unittest.TestCase):
                      bbox=RANDOM_BBOX,
                      datetime=datetime.utcnow(),
                      properties={'key': 'one'},
-                     stac_extensions=['eo'])
+                     stac_extensions=['eo', 'commons'])
 
         item2 = Item(id='test-item-2',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
                      datetime=datetime.utcnow(),
                      properties={'key': 'two'},
-                     stac_extensions=['eo'])
+                     stac_extensions=['eo', 'commons'])
 
         wv3_bands = [
             Band(name='Coastal', description='Coastal: 400 - 450 nm', common_name='coastal'),
@@ -59,6 +59,7 @@ class CollectionTest(unittest.TestCase):
                                 description='test',
                                 extent=collection_extent,
                                 properties=common_properties,
+                                stac_extensions=['commons'],
                                 license='CC-BY-SA-4.0')
 
         collection.add_items([item1, item2])
