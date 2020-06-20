@@ -24,10 +24,6 @@
     {
       "rel": "self",
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"
-    },
-    {
-      "rel": "collection",
-      "href": "http://cool-sat.com/catalog.json"
     }
   ],
   "assets": {

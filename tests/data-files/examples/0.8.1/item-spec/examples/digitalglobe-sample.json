@@ -134,10 +134,6 @@
     {
       "rel": "self",
       "href": "https://s3.amazonaws.com/digitalglobe-catalog-spec/collections/dg_worldview02_lv1b/103001004B316600_P002_MUL"
-    },
-    {
-      "rel": "collection",
-      "href": "https://s3.amazonaws.com/digitalglobe-catalog-spec/collections/dg_worldview02_lv1b.json"
     }
   ]
 }

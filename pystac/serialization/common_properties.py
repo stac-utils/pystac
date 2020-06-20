@@ -18,7 +18,9 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         bool: True if Collection properties have been merged, otherwise False.
     """
     properties_merged = False
+
     collection = None
+    collection_id = None
     collection_href = None
 
     # Try the cache if we have a collection ID.

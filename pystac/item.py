@@ -224,6 +224,13 @@ class Item(STACObject):
                     new_relative_href = make_relative_href(abs_href, new_self_href)
                     asset.href = new_relative_href
 
+    def fully_resolve(self):
+        link_rels = set(self._object_links())
+        for link in self.links:
+            if link.rel in link_rels:
+                if not link.is_resolved():
+                    link.resolve_stac_object(root=self.get_root())
+
     @classmethod
     def from_dict(cls, d, href=None, root=None):
         id = d['id']
@@ -248,8 +255,13 @@ class Item(STACObject):
                     stac_extensions=stac_extensions,
                     collection=collection_id)
 
+        has_self_link = False
         for l in d['links']:
+            has_self_link |= l['rel'] == 'self'
             item.add_link(Link.from_dict(l))
+
+        if not has_self_link and href is not None:
+            item.add_link(Link.self_href(href))
 
         for k, v in d['assets'].items():
             asset = Asset.from_dict(v)
