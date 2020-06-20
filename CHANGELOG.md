@@ -8,6 +8,19 @@
 
 ### Fixed
 
+## [v0.3.4] - 2020-06-20
+
+### Changed
+
+- Further narrow version for SAR extension [#85](https://github.com/azavea/pystac/pull/85)
+
+### Fixed
+
+- Fixed issue with reading ItemCollections directly. [#86](https://github.com/azavea/pystac/pull/86)
+- Fix bug in `make_absolute_href` [#94](https://github.com/azavea/pystac/pull/94)
+- Fixed issues with `fully_resolve` [#98](https://github.com/azavea/pystac/pull/98)
+- Fixed a bug when root link was not set [#100](https://github.com/azavea/pystac/pull/100)
+
 ## [v0.3.3] - 2020-02-05
 
 ### Added
