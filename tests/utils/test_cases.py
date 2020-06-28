@@ -2,8 +2,9 @@ import os
 from datetime import datetime
 import csv
 
-from pystac import (Catalog, Item, Asset, LabelItem, LabelCount, LabelOverview, LabelClasses,
+from pystac import (Catalog, Item, Asset,
                     Extent, TemporalExtent, SpatialExtent, MediaType)
+from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
 TEST_LABEL_CATALOG = {
     'country-1': {
@@ -112,19 +113,21 @@ class TestCases:
 
         overviews = [LabelOverview('label', counts=[LabelCount('one', 1), LabelCount('two', 2)])]
 
-        label_item = LabelItem(id='label-items',
+        label_item = Item(id='label-items',
                                geometry=RANDOM_GEOM,
                                bbox=RANDOM_BBOX,
                                datetime=datetime.utcnow(),
-                               properties={},
-                               label_description='ML Labels',
-                               label_type='vector',
-                               label_properties=['label'],
-                               label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
-                               label_tasks=['classification'],
-                               label_methods=['manual'],
-                               label_overviews=overviews)
-        label_item.add_source(image_item, assets=['ortho'])
+                               properties={})
+
+        label_item.ext.label.apply(
+            label_description='ML Labels',
+            label_type='vector',
+            label_properties=['label'],
+            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+            label_tasks=['classification'],
+            label_methods=['manual'],
+            label_overviews=overviews)
+        label_item.ext.label.add_source(image_item, assets=['ortho'])
 
         root_cat.add_item(image_item)
         root_cat.add_item(label_item)

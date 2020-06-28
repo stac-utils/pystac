@@ -1,9 +1,25 @@
 from abc import (ABC, abstractmethod)
 
+import pystac
 from pystac import STACError
 from pystac.link import (Link, LinkType)
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
+
+
+class ExtensionIndex:
+    def __init__(self, stac_object):
+        self.stac_object = stac_object
+
+    def __getitem__(self, extension_id):
+        return pystac.STAC_EXTENSIONS.extend_object(self.stac_object, extension_id)
+
+    def __getattr__(self, extension_id):
+        return self[extension_id]
+
+    def implements(self, extension_id):
+        return (not self.stac_object.stac_extensions is None and
+                extension_id in self.stac_object.stac_extensions)
 
 
 class LinkMixin:
@@ -320,6 +336,12 @@ class STACObject(LinkMixin, ABC):
                 link.target = target
 
         return clone
+
+    @property
+    def ext(self):
+        """TODO
+        """
+        return ExtensionIndex(self)
 
     @abstractmethod
     def fully_resolve(self):

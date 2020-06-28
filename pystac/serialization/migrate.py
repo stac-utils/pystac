@@ -2,7 +2,7 @@ import re
 from copy import deepcopy
 
 from pystac import STAC_VERSION
-from pystac.extension import Extension
+from pystac.extensions import Extensions
 from pystac.serialization.identify import STACObjectType
 
 # STAC Object Types
@@ -91,8 +91,25 @@ def _migrate_eo(d, version, info):
 
 
 def _migrate_label(d, version, info):
-    pass
+    if info.object_type == STACObjectType.ITEM and version < '1.0.0':
+        props = d['properties']
+        # Migrate 0.8.0-rc1 non-pluralized forms
+        # As it's a common mistake, convert for any pre-1.0.0 version.
+        if 'label:property' in props and 'label:properties' not in props:
+            props['label:properties'] = props['label:property']
+            del props['label:property']
 
+        if 'label:task' in props and 'label:tasks' not in props:
+            props['label:tasks'] = props['label:task']
+            del props['label:task']
+
+        if 'label:overview' in props and 'label:overviews' not in props:
+            props['label:overviews'] = props['label:overview']
+            del props['label:overview']
+
+        if 'label:method' in props and 'label:methods' not in props:
+            props['label:methods'] = props['label:method']
+            del props['label:method']
 
 def _migrate_pointcloud(d, version, info):
     pass
@@ -118,16 +135,16 @@ _object_migrations = {
 }
 
 _extension_migrations = {
-    Extension.ASSETS: _migrate_assets,
-    Extension.CHECKSUM: _migrate_checksum,
-    Extension.DATACUBE: _migrate_datacube,
-    Extension.DATETIME_RANGE: _migrate_datetime_range,
-    Extension.EO: _migrate_eo,
-    Extension.LABEL: _migrate_label,
-    Extension.POINTCLOUD: _migrate_pointcloud,
-    Extension.SAR: _migrate_sar,
-    Extension.SCIENTIFIC: _migrate_scientific,
-    Extension.SINGLE_FILE_STAC: _migrate_single_file_stac,
+    Extensions.ASSETS: _migrate_assets,
+    Extensions.CHECKSUM: _migrate_checksum,
+    Extensions.DATACUBE: _migrate_datacube,
+    Extensions.DATETIME_RANGE: _migrate_datetime_range,
+    Extensions.EO: _migrate_eo,
+    Extensions.LABEL: _migrate_label,
+    Extensions.POINTCLOUD: _migrate_pointcloud,
+    Extensions.SAR: _migrate_sar,
+    Extensions.SCIENTIFIC: _migrate_scientific,
+    Extensions.SINGLE_FILE_STAC: _migrate_single_file_stac,
 }
 
 

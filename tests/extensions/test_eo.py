@@ -5,8 +5,8 @@ from jsonschema import ValidationError
 from tempfile import TemporaryDirectory
 from copy import deepcopy
 
-from pystac import (Catalog, CatalogType, Item, Asset, STACError)
-from pystac.eo import (Band, EOAsset, EOItem)
+from pystac import (Catalog, CatalogType, Item, Asset, STACError, STACObjectType)
+from pystac.extensions.eo import Band
 from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
@@ -15,16 +15,16 @@ class EOItemTest(unittest.TestCase):
         self.maxDiff = None
         self.URI_1 = TestCases.get_path('data-files/eo/eo-landsat-example.json')
         self.URI_2 = TestCases.get_path('data-files/eo/eo-landsat-example-INVALID.json')
-        self.eoi = EOItem.from_file(self.URI_1)
+        self.eoi = Item.from_file(self.URI_1)
         with open(self.URI_1) as f:
             self.eo_dict = json.load(f)
 
     def test_to_from_dict(self):
-        test_to_from_dict(self, EOItem, self.eo_dict)
+        test_to_from_dict(self, Item, self.eo_dict)
 
     def test_from_file(self):
         self.assertEqual(len(self.eoi.bands), 11)
-        for b in self.eoi.bands:
+        for b in self.eoi.ext.eo.bands:
             self.assertIsInstance(b, Band)
         self.assertEqual(len(self.eoi.links), 3)
 
@@ -33,20 +33,18 @@ class EOItemTest(unittest.TestCase):
         self.assertEqual(self.eoi.get_self_href(), href)
 
         with self.assertRaises(STACError):
-            EOItem.from_file(self.URI_2)
+            Item.from_file(self.URI_2)
 
     def test_from_item(self):
         i = Item.from_file(self.URI_1)
         with self.assertRaises(AttributeError):
             getattr(i, 'bands')
         self.assertTrue('eo:bands' in i.properties.keys())
-        eoi = EOItem.from_item(i)
-        self.assertIsNotNone(getattr(eoi, 'bands'))
-        with self.assertRaises(KeyError):
-            eoi.properties['eo:bands']
+        eo_ext = i.ext.eo
+        self.assertIsNotNone(getattr(eo_ext, 'bands'))
 
     def test_read_eo_item_owns_asset(self):
-        item = EOItem.from_file(self.URI_1)
+        item = Item.from_file(self.URI_1)
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
@@ -55,49 +53,16 @@ class EOItemTest(unittest.TestCase):
         eoi_clone = self.eoi.clone()
         compare_eo_items(self, self.eoi, eoi_clone)
 
-    def test_get_assets(self):
-        a = self.eoi.get_assets()
-        for _, asset in a.items():
-            self.assertIsInstance(asset, Asset)
-        eoa = self.eoi.get_eo_assets()
-        for _, eo_asset in eoa.items():
-            self.assertIsInstance(eo_asset, EOAsset)
-        self.assertNotEqual(len(a.items()), len(eoa.items()))
-        for k in eoa.keys():
-            self.assertIn(k, a.keys())
-
-    def test_add_asset(self):
-        eoi_c = deepcopy(self.eoi)
-        a = Asset('/asset_dir/asset.json')
-        eoa = EOAsset('/asset_dir/eo_asset.json', bands=[0, 1])
-        for asset in (a, eoa):
-            self.assertIsNone(asset.owner)
-        eoi_c.add_asset('new_asset', a)
-        eoi_c.add_asset('new_eo_asset', eoa)
-        self.assertEqual(len(eoi_c.assets.items()), len(self.eoi.assets.items()) + 2)
-        self.assertEqual(a, eoi_c.assets['new_asset'])
-        self.assertEqual(eoa, eoi_c.assets['new_eo_asset'])
-        for asset in (a, eoa):
-            self.assertEqual(asset.owner, eoi_c)
-
-    def test_add_eo_fields_to_dict(self):
-        d = {}
-        self.eoi._add_eo_fields_to_dict(d)
-        comp_d = {
-            k: v
-            for k, v in deepcopy(self.eo_dict['properties']).items() if k.startswith('eo:')
-        }
-        self.assertDictEqual(d, comp_d)
 
     def test_validate_eo(self):
         sv = SchemaValidator()
-        self.assertIsNone(sv.validate_dict(self.eo_dict, EOItem))
+        sv.validate_dict(self.eo_dict, , STACObjectType.ITEM)
 
         with open(self.URI_2) as f:
             eo_dict_2 = json.load(f)
         with self.assertRaises(ValidationError):
             print('[Validation error expected] - ', end='')
-            sv.validate_dict(eo_dict_2, EOItem)
+            sv.validate_dict(eo_dict_2, STACObjectType.ITEM)
 
         with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, 'catalog')

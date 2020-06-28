@@ -4,8 +4,8 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
-from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset,
-                    LabelItem, LabelClasses, MediaType)
+from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset, MediaType)
+from pystac.extensions.label import LabelClasses
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
@@ -245,19 +245,20 @@ class CatalogTest(unittest.TestCase):
             # same location as the image
             img_href = item.assets['ortho'].href
             label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
-            label_item = LabelItem(
+            label_item = Item(
                 id='Labels',
                 geometry=item.geometry,
                 bbox=item.bbox,
                 datetime=datetime.utcnow(),
-                properties={},
-                label_description='labels',
-                label_type='vector',
-                label_properties='label',
-                label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
-                label_tasks=['classification'])
-            label_item.add_source(item, assets=['ortho'])
-            label_item.add_geojson_labels(label_href)
+                properties={})
+            label_ext = label_item.ext.label
+            label_ext.apply(label_description='labels',
+                            label_type='vector',
+                            label_properties=['label'],
+                            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+                            label_tasks=['classification'])
+            label_ext.add_source(item, assets=['ortho'])
+            label_ext.add_geojson_labels(label_href)
 
             return [item, label_item]
 
@@ -565,18 +566,19 @@ class FullCopyTest(unittest.TestCase):
                 image_item.add_asset(
                     key, Asset(href='some/{}.tif'.format(key), media_type=MediaType.GEOTIFF))
 
-            label_item = LabelItem(
+            label_item = Item(
                 id='Labels',
                 geometry=RANDOM_GEOM,
                 bbox=RANDOM_BBOX,
                 datetime=datetime.utcnow(),
-                properties={},
-                label_description='labels',
-                label_type='vector',
-                label_properties='label',
-                label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
-                label_tasks=['classification'])
-            label_item.add_source(image_item, assets=['ortho'])
+                properties={})
+            label_ext = label_item.ext.label
+            label_ext.apply(label_description='labels',
+                            label_type='vector',
+                            label_properties=['label'],
+                            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+                            label_tasks=['classification'])
+            label_ext.add_source(image_item, assets=['ortho'])
 
             cat.add_items([image_item, label_item])
 

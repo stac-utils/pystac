@@ -2,8 +2,8 @@ import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
-from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType, EOItem,
-                    Band)
+from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
+from pystac.extensions.eo import Band
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
@@ -72,12 +72,12 @@ class CollectionTest(unittest.TestCase):
             items = list(read_col.get_all_items())
 
             self.assertEqual(len(items), 2)
-            self.assertIsInstance(items[0], EOItem)
-            self.assertIsInstance(items[1], EOItem)
+            self.assertTrue(items[0].ext.implements('eo'))
+            self.assertTrue(items[1].ext.implements('eo'))
 
     def test_read_eo_items_are_heritable(self):
         cat = TestCases.test_case_5()
         item = next(cat.get_all_items())
 
-        self.assertIsInstance(item, EOItem)
-        self.assertEqual(item.gsd, 20.0)
+        self.assertTrue(item.ext.implements('eo'))
+        self.assertEqual(item.ext.eo.gsd, 20.0)

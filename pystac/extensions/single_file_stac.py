@@ -27,6 +27,7 @@ class SingleFileSTAC(ItemCollection):
         search (Search): Optional search information associated with this SingleFileSTAC.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this ItemCollection.
+
     """
     def __init__(self, features=None, stac_extensions=None, collections=None, search=None):
         super().__init__(features, stac_extensions=stac_extensions)
