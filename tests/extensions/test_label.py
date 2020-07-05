@@ -7,7 +7,7 @@ from pystac import (Catalog, Item, CatalogType, STAC_IO)
 from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
-class LabelItemTest(unittest.TestCase):
+class LabelTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.label_example_1_uri = TestCases.get_path('data-files/label/label-example-1.json')

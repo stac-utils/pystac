@@ -9,6 +9,9 @@
 - Extension classes for label, eo and single-file-stac were moved to the `pystac.extensions` package.
 - the eo and label extensions changed from being a subclass of Item to wrapping items. __Note__: This is a major change in the API for dealing with extensions. See the note below for more information.
 - Renamed the class that enumerates extension names from `Extension` to `Extensions`
+- Asset properties always return a dict instead of being None for Assets that have non-core properties.
+- The `Band` constructor in the EO extension changed to taking a dict. To create a band from property values,
+use `Band.create`
 
 ### Fixed
 

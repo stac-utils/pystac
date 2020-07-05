@@ -33,14 +33,14 @@ class CollectionTest(unittest.TestCase):
                      stac_extensions=['eo', 'commons'])
 
         wv3_bands = [
-            Band(name='Coastal', description='Coastal: 400 - 450 nm', common_name='coastal'),
-            Band(name='Blue', description='Blue: 450 - 510 nm', common_name='blue'),
-            Band(name='Green', description='Green: 510 - 580 nm', common_name='green'),
-            Band(name='Yellow', description='Yellow: 585 - 625 nm', common_name='yellow'),
-            Band(name='Red', description='Red: 630 - 690 nm', common_name='red'),
-            Band(name='Red Edge', description='Red Edge: 705 - 745 nm', common_name='rededge'),
-            Band(name='Near-IR1', description='Near-IR1: 770 - 895 nm', common_name='nir08'),
-            Band(name='Near-IR2', description='Near-IR2: 860 - 1040 nm', common_name='nir09')
+            Band.create(name='Coastal', description='Coastal: 400 - 450 nm', common_name='coastal'),
+            Band.create(name='Blue', description='Blue: 450 - 510 nm', common_name='blue'),
+            Band.create(name='Green', description='Green: 510 - 580 nm', common_name='green'),
+            Band.create(name='Yellow', description='Yellow: 585 - 625 nm', common_name='yellow'),
+            Band.create(name='Red', description='Red: 630 - 690 nm', common_name='red'),
+            Band.create(name='Red Edge', description='Red Edge: 705 - 745 nm', common_name='rededge'),
+            Band.create(name='Near-IR1', description='Near-IR1: 770 - 895 nm', common_name='nir08'),
+            Band.create(name='Near-IR2', description='Near-IR2: 860 - 1040 nm', common_name='nir09')
         ]
 
         spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])

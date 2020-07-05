@@ -36,3 +36,17 @@ STAC_EXTENSIONS = extensions.base.EnabledSTACExtensions([
     extensions.eo.EO_EXTENSION_DEFINITION,
     extensions.label.LABEL_EXTENSION_DEFINITION
 ])
+
+def read_file(uri):
+    """Reads a STAC object from a file.
+
+    Convenience method for STACObject.from_file
+
+    Args:
+        href (str): The HREF to read the object from.
+
+    Returns:
+        The specific STACObject implementation class that is represented
+        by the JSON read from the file located at HREF.
+    """
+    return STACObject.from_file(uri)

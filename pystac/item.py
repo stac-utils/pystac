@@ -327,7 +327,11 @@ class Asset:
         self.description = description
         self.media_type = media_type
         self.roles = roles
-        self.properties = properties
+
+        if properties is not None:
+            self.properties = properties
+        else:
+            self.properties = {}
 
         # The Item which owns this Asset.
         self.owner = None
@@ -377,7 +381,7 @@ class Asset:
         if self.description is not None:
             d['description'] = self.description
 
-        if self.properties is not None:
+        if self.properties is not None and len(self.properties) > 0:
             for k, v in self.properties.items():
                 d[k] = v
 

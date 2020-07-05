@@ -1,17 +1,18 @@
 import json
 import os
 import unittest
-from jsonschema import ValidationError
 from tempfile import TemporaryDirectory
 from copy import deepcopy
 
+import pystac
 from pystac import (Catalog, CatalogType, Item, Asset, STACError, STACObjectType)
 from pystac.extensions.eo import Band
-from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
+from tests.utils import (SchemaValidator, STACValidationError, TestCases, test_to_from_dict)
 
 
-class EOItemTest(unittest.TestCase):
+class EOTest(unittest.TestCase):
     def setUp(self):
+        self.validator = SchemaValidator()
         self.maxDiff = None
         self.URI_1 = TestCases.get_path('data-files/eo/eo-landsat-example.json')
         self.URI_2 = TestCases.get_path('data-files/eo/eo-landsat-example-INVALID.json')
@@ -23,7 +24,7 @@ class EOItemTest(unittest.TestCase):
         test_to_from_dict(self, Item, self.eo_dict)
 
     def test_from_file(self):
-        self.assertEqual(len(self.eoi.bands), 11)
+        self.assertEqual(len(self.eoi.ext.eo.bands), 11)
         for b in self.eoi.ext.eo.bands:
             self.assertIsInstance(b, Band)
         self.assertEqual(len(self.eoi.links), 3)
@@ -31,9 +32,6 @@ class EOItemTest(unittest.TestCase):
         href = ('https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/'
                 'stac/search?id=LC08_L1TP_107018_20181001_20181001_01_RT')
         self.assertEqual(self.eoi.get_self_href(), href)
-
-        with self.assertRaises(STACError):
-            Item.from_file(self.URI_2)
 
     def test_from_item(self):
         i = Item.from_file(self.URI_1)
@@ -49,161 +47,110 @@ class EOItemTest(unittest.TestCase):
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
 
-    def test_clone(self):
-        eoi_clone = self.eoi.clone()
-        compare_eo_items(self, self.eoi, eoi_clone)
-
-
     def test_validate_eo(self):
-        sv = SchemaValidator()
-        sv.validate_dict(self.eo_dict, , STACObjectType.ITEM)
+        self.validator.validate_dict(self.eo_dict, STACObjectType.ITEM)
 
         with open(self.URI_2) as f:
             eo_dict_2 = json.load(f)
-        with self.assertRaises(ValidationError):
-            print('[Validation error expected] - ', end='')
-            sv.validate_dict(eo_dict_2, STACObjectType.ITEM)
+
+        try:
+            self.validator.validate_dict(eo_dict_2, STACObjectType.ITEM)
+        except STACValidationError as e:
+            self.assertTrue('extension eo' in str(e))
 
         with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, 'catalog')
             catalog = TestCases.test_case_1()
-            eo_item = EOItem.from_dict(self.eo_dict)
+            eo_item = Item.from_dict(self.eo_dict)
             catalog.add_item(eo_item)
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
             eo_item_read = cat_read.get_item("LC08_L1TP_107018_20181001_20181001_01_RT")
-            sv = SchemaValidator()
-            sv.validate_object(eo_item_read)
-            sv.validate_dict(eo_item_read.to_dict(), EOItem)
+            self.assertTrue(eo_item_read.ext.implements('eo'))
+            self.validator.validate_object(eo_item_read)
 
+    def test_gsd(self):
+        eo_item = pystac.read_file(TestCases.get_path('data-files/eo/eo-landsat-example.json'))
 
-class EOAssetTest(unittest.TestCase):
-    def setUp(self):
-        self.EO_ITEM_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
-        self.EO_ASSET_URI = TestCases.get_path('data-files/eo/eo-asset.json')
-        self.ASSET_URI = TestCases.get_path('data-files/eo/asset.json')
-        with open(self.EO_ASSET_URI) as f:
-            self.EO_ASSET_DICT = json.load(f)
-        with open(self.ASSET_URI) as f:
-            self.ASSET_DICT = json.load(f)
-        self.EO_ASSET_2_URI = TestCases.get_path('data-files/eo/eo-asset-2.json')
-        with open(self.EO_ASSET_2_URI) as f:
-            self.EO_ASSET_2_DICT = json.load(f)
+        # Get
+        self.assertIn("eo:gsd", eo_item.properties)
+        eo_gsd = eo_item.ext.eo.gsd
+        self.assertEqual(eo_gsd, eo_item.properties['eo:gsd'])
 
-    def test_to_from_dict(self):
-        test_to_from_dict(self, EOAsset, self.EO_ASSET_DICT)
-        test_to_from_dict(self, EOAsset, self.EO_ASSET_2_DICT)
+        # Set
+        eo_item.ext.eo.gsd = eo_gsd + 100
+        self.assertEqual(eo_gsd + 100, eo_item.properties['eo:gsd'])
+        self.validator.validate_object(eo_item)
 
-    def test_from_asset(self):
-        a1 = Asset.from_dict(self.ASSET_DICT)
-        with self.assertRaises(STACError):
-            EOAsset.from_asset(a1)
+    def test_bands(self):
+        eo_item = pystac.read_file(TestCases.get_path('data-files/eo/eo-landsat-example.json'))
 
-        a2 = Asset.from_dict(self.EO_ASSET_DICT)
-        eoa = EOAsset.from_asset(a2)
-        self.assertIsNone(eoa.properties)
-        self.assertListEqual(eoa.bands, [0])
+        # Get
+        self.assertIn("eo:bands", eo_item.properties)
+        bands = eo_item.ext.eo.bands
+        self.assertEqual(list(map(lambda x: x.name, bands)), ['B1', 'B2', 'B3',
+                                                              'B4', 'B5', 'B6',
+                                                              'B7', 'B8', 'B9',
+                                                              'B10', 'B11'])
+        for band in bands:
+            self.assertIsInstance(band.common_name, str)
+            self.assertIn(type(band.center_wavelength), [float, int])
+            self.assertIn(type(band.full_width_half_max), [float, int])
+            self.assertIs(None, band.description)
 
-    def test_clone(self):
-        eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
-        eoa_clone = eoa.clone()
-        compare_eo_assets(self, eoa, eoa_clone)
+        # Ensure modifying the bands make changes on the item.
+        bands_dict = {band.name: band for band in bands}
+        bands_dict['B1'].description = "Band 1"
 
-        eoa2 = EOAsset.from_dict(self.EO_ASSET_2_DICT)
-        self.assertDictEqual(eoa2.properties, {"extra property": "extra"})
+        self.assertTrue([
+            x for x in eo_item.properties['eo:bands']
+            if x['name'] == 'B1'
+        ][0]['description'] == "Band 1")
 
-    def test_get_bands(self):
-        eoi = EOItem.from_file(self.EO_ITEM_URI)
-        eoa = EOAsset.from_dict(self.EO_ASSET_DICT)
-        eoi.add_asset('test-asset', eoa)
-        self.assertEqual(eoa.owner, eoi)
-        bd = {
-            "name": "B1",
-            "common_name": "coastal",
-            "gsd": 30,
-            "center_wavelength": 0.44,
-            "full_width_half_max": 0.02
-        }
-        b1 = Band.from_dict(bd)
-        eoa_bands = eoa.get_bands()
-        compare_bands(self, b1, eoa_bands[0])
+        # Set
+        new_bands = [
+            Band.create(name="red", description=Band.band_description("red")),
+            Band.create(name="green", description=Band.band_description("green")),
+            Band.create(name="blue", description=Band.band_description("blue")),
+        ]
 
+        eo_item.ext.eo.bands = new_bands
+        self.assertEqual('Common name: red, Range: 0.6 to 0.7',
+                         eo_item.properties['eo:bands'][0]['description'])
+        self.validator.validate_object(eo_item)
 
-class BandTest(unittest.TestCase):
-    def setUp(self):
-        self.EO_ITEM_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
-        with open(self.EO_ITEM_URI) as f:
-            self.EO_BANDS_LIST = json.load(f)['properties']['eo:bands']
+    def test_get_asset_bands(self):
+        eo_item = pystac.read_file(TestCases.get_path('data-files/eo/eo-landsat-example.json'))
 
-    def test_constructor(self):
-        self.assertIsInstance(Band(), Band)
+        b1_asset = eo_item.assets['B1']
+        asset_bands = eo_item.ext.eo.get_asset_bands(b1_asset)
+        self.assertIsNot(None, asset_bands)
+        self.assertEqual(len(asset_bands), 1)
+        self.assertEqual(asset_bands[0].name, 'B1')
 
-    def test_to_from_dict(self):
-        for b in self.EO_BANDS_LIST:
-            test_to_from_dict(self, Band, b)
+        index_asset = eo_item.assets['index']
+        asset_bands = eo_item.ext.eo.get_asset_bands(index_asset)
+        self.assertIs(None, asset_bands)
 
+    def test_set_asset_bands(self):
+        eo_item = pystac.read_file(TestCases.get_path('data-files/eo/eo-landsat-example.json'))
 
-class EOUtilsTest(unittest.TestCase):
-    def test_band_description(self):
-        desc = 'Common name: nir, Range: 0.75 to 1.0'
-        self.assertEqual(Band.band_description('nir'), desc)
-        self.assertIsNone(Band.band_description('uncommon name'))
+        b1_asset = eo_item.assets['B1']
+        eo_item.ext.eo.set_asset_bands(b1_asset, ['B2'])
 
-    def test_band_range(self):
-        self.assertEqual(Band.band_range('pan'), (0.50, 0.70))
-        self.assertIsNone(Band.band_range('uncommon name'))
+        eo_item_mod = Item.from_dict(eo_item.to_dict())
+        b1_asset_mod = eo_item_mod.assets['B1']
+        asset_bands = eo_item_mod.ext.eo.get_asset_bands(b1_asset_mod)
+        self.assertIsNot(None, asset_bands)
+        self.assertEqual(len(asset_bands), 1)
+        self.assertEqual(asset_bands[0].name, 'B2')
 
-    def test_eo_key(self):
-        self.assertEqual(EOItem._eo_key(''), 'eo:')
-        self.assertEqual(EOItem._eo_key('dsg'), 'eo:dsg')
+        self.validator.validate_object(eo_item)
 
+        # Check setting with invalid keys
 
-def compare_eo_items(test_class, eoi_1, eoi_2):
-    for eoi in (eoi_1, eoi_2):
-        test_class.assertIsInstance(eoi, EOItem)
-    test_class.assertEqual(dir(eoi_1), dir(eoi_2))
-    test_class.assertEqual(eoi_1.id, eoi_2.id)
-    test_class.assertListEqual(eoi_1.bbox, eoi_2.bbox)
-    test_class.assertListEqual(eoi_1.stac_extensions, eoi_2.stac_extensions)
-    for eoi in (eoi_1, eoi_2):
-        eoi.links.sort(key=lambda x: x.target)
-    for i in range(len(eoi_1.links)):
-        test_class.assertDictEqual(eoi_1.links[i].to_dict(), eoi_2.links[i].to_dict())
+        index_asset = eo_item.assets['index']
 
-    for d in ('geometry', 'properties'):
-        test_class.assertDictEqual(getattr(eoi_1, d), getattr(eoi_2, d))
-
-    test_class.assertEqual(len(eoi_1.assets.keys()), len(eoi_2.assets.keys()))
-    for key in eoi_1.assets.keys():
-        if isinstance(eoi_1.assets[key], EOAsset):
-            compare_eo_assets(test_class, eoi_1.assets[key], eoi_2.assets[key])
-        else:
-            test_class.assertDictEqual(eoi_1.assets[key].to_dict(), eoi_2.assets[key].to_dict())
-
-    for eof in EOItem._EO_FIELDS:
-        if eof == 'bands':
-            test_class.assertEqual(len(eoi_1.bands), len(eoi_2.bands))
-            for eoi in (eoi_1, eoi_2):
-                eoi.bands.sort(key=lambda x: x.name)
-            for i in range(len(eoi_1.bands)):
-                compare_bands(test_class, eoi_1.bands[i], eoi_2.bands[i])
-        else:
-            test_class.assertEqual(getattr(eoi_1, eof), getattr(eoi_2, eof))
-
-
-def compare_eo_assets(test_class, eoa_1, eoa_2):
-    for eoa in (eoa_1, eoa_2):
-        test_class.assertIsInstance(eoa, EOAsset)
-    test_class.assertEqual(eoa_1.href, eoa_2.href)
-    test_class.assertListEqual(eoa_1.bands, eoa_2.bands)
-    test_class.assertEqual(eoa_1.title, eoa_2.title)
-    test_class.assertEqual(eoa_1.media_type, eoa_2.media_type)
-    if eoa_1.properties:
-        test_class.assertDictEqual(eoa_1.properties, eoa_2.properties)
-    else:
-        test_class.assertIsNone(eoa_2.properties)
-
-
-def compare_bands(test_class, b1, b2):
-    test_class.assertDictEqual(b1.to_dict(), b2.to_dict())
+        with self.assertRaises(KeyError):
+            eo_item.ext.eo.set_asset_bands(b1_asset, ['BAD_KEY', 'BAD_KEY_2'])

@@ -6,7 +6,8 @@ from pystac.extensions.base import (ItemExtension, ExtensionDefinition, Extended
 
 
 class EOItemExt(ItemExtension):
-    """EOItem represents a snapshot of the earth for a single date and time.
+    """EOItemExt is the extension of the Item in the eo extension which
+    represents a snapshot of the earth for a single date and time.
 
     Args:
         item (Item): The item to be extended.
@@ -14,16 +15,10 @@ class EOItemExt(ItemExtension):
     Attributes:
         item (Item): The Item that is being extended.
     """
-    _EO_FIELDS = ['gsd', 'bands', 'epsg', 'cloud_cover']
-
-    @staticmethod
-    def _eo_key(key):
-        return 'eo:{}'.format(key)
-
     def __init__(self, item):
         if item.stac_extensions is None:
             item.stac_extensions = [Extensions.EO]
-        elif Extensions.LABEL not in item.stac_extensions:
+        elif Extensions.EO not in item.stac_extensions:
             item.stac_extensions.append(Extensions.EO)
 
         self.item = item
@@ -59,7 +54,7 @@ class EOItemExt(ItemExtension):
         bands = self.item.properties.get('eo:bands')
         if bands is None:
             raise STACError("Missing required field 'eo:bands' in item properties")
-        return  [Band.from_dict(b) for b in bands]
+        return  [Band(b) for b in bands]
 
     @bands.setter
     def bands(self, v):
@@ -82,51 +77,46 @@ class EOItemExt(ItemExtension):
     def __repr__(self):
         return '<EOItemExt Item id={}>'.format(self.id)
 
-    def get_bands(self, asset_key):
-        """Gets the bands for the item's asset if the exist.
+    def get_asset_bands(self, asset):
+        """Gets the bands for the given asset.
 
-        If the asset_key doesn't exist returns None.
+        Args:
+            asset [Asset]: The asset from the associated item to get the bands of.
 
         Returns:
-            [List[Band] or None]: A list of Band objects associated with asset, or None
+            [List[Band] or None]: A list of Band objects associated with the asset, or None
             if the asset doesn't exist or does not contain band information.
         """
-        asset = self.item.assets.get(asset_key)
-        if asset is None:
-            return None
         if 'eo:bands' not in asset.properties:
             return None
 
         result = []
-        band_length = len(self.item.bands)
+        band_length = len(self.bands)
         for band_idx in asset.properties['eo:bands']:
             if band_idx >= band_length:
                 raise STACError("Item {} contains assets with band indexes out of range! "
                                 "Band index {} is greater than the number of bands "
                                 "for the item ({})".format(self.item.id, band_idx, band_length))
-            result.append(self.item.bands[band_idx])
+            result.append(self.bands[band_idx])
 
         return result
 
-    def set_bands(self, asset_key, band_names):
+    def set_asset_bands(self, asset, band_names):
         """Sets the band information for an asset of this item.
 
         Args:
+            asset [Asset]: The asset from the associated item to set the bands for.
             band_names (List[str]): List of band names to assign to the asset.
                 These names must reference names in the item's bands property.
         """
-        asset = self.item.assets.get(asset_key)
-        if asset is None:
-            raise KeyError("Asset with key {} does not exist in Item '{}'".format(
-                asset_key, self.item.id))
         band_idxs = [
-            i for i, b in enumerate(self.item.bands)
+            i for i, b in enumerate(self.bands)
             if b.name in band_names
         ]
 
         if len(set(band_idxs)) != len(set(band_names)):
             missing_band_names = set(band_names) - set([
-                self.item.bands[i] for i in band_idxs
+                self.bands[i] for i in band_idxs
             ])
 
             raise KeyError("Bands not found in item's bands: {}".format(
@@ -145,42 +135,158 @@ class EOItemExt(ItemExtension):
 
 
 class Band:
-    """Represents Band information attached to an EOItem.
+    """Represents Band information attached to an Item that implements the eo extension.
 
-    Args:
-        name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-        common_name (str): The name commonly used to refer to the band to make it easier
-            to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-        description (str): Description to fully explain the band.
-        center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-        full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
-            as measured at half the maximum transmission, in micrometers (μm).
-
-    Attributes:
-        name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-        common_name (str): The name commonly used to refer to the band to make it easier
-            to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-        description (str): Description to fully explain the band.
-        center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-        full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
-            as measured at half the maximum transmission, in micrometers (μm).
+    Wraps the band information in the "eo:bands" property of the Item. Any changes to
+    the instance of Band will result in mutation of the underlying Item properties.
     """
-    def __init__(self,
-                 name=None,
-                 common_name=None,
-                 description=None,
-                 center_wavelength=None,
-                 full_width_half_max=None):
+    def __init__(self, properties):
+        self.properties = properties
+
+    def apply(self,
+              name,
+              common_name=None,
+              description=None,
+              center_wavelength=None,
+              full_width_half_max=None):
+        """
+        Sets the properties for this Band.
+
+        Args:
+            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name (str): The name commonly used to refer to the band to make it easier
+                to search for bands across instruments. See the `list of accepted common names
+                <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            description (str): Description to fully explain the band.
+            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
+            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+                as measured at half the maximum transmission, in micrometers (μm).
+        """
         self.name = name
         self.common_name = common_name
         self.description = description
         self.center_wavelength = center_wavelength
         self.full_width_half_max = full_width_half_max
 
+    @classmethod
+    def create(cls,
+               name,
+               common_name=None,
+               description=None,
+               center_wavelength=None,
+               full_width_half_max=None):
+        """
+        Creates a new band.
+
+        Args:
+            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name (str): The name commonly used to refer to the band to make it easier
+                to search for bands across instruments. See the `list of accepted common names
+                <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            description (str): Description to fully explain the band.
+            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
+            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+                as measured at half the maximum transmission, in micrometers (μm).
+        """
+        b = Band({})
+        b.apply(name=name,
+                common_name=common_name,
+                description=description,
+                center_wavelength=center_wavelength,
+                full_width_half_max=full_width_half_max)
+        return b
+
+    @property
+    def name(self):
+        """Get or sets the name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+
+        Returns:
+            [str]
+        """
+        return self.properties.get('name')
+
+    @name.setter
+    def name(self, v):
+        self.properties['name'] = v
+
+    @property
+    def common_name(self):
+        """Get or sets the name commonly used to refer to the band to make it easier
+            to search for bands across instruments. See the `list of accepted common names
+            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+
+        Returns:
+            [str]
+        """
+        return self.properties.get('common_name')
+
+    @common_name.setter
+    def common_name(self, v):
+        if v is not None:
+            self.properties['common_name'] = v
+        else:
+            self.properties.pop('common_name', None)
+
+    @property
+    def description(self):
+        """Get or sets the description to fully explain the band. CommonMark 0.29 syntax MAY be
+        used for rich text representation.
+
+        Returns:
+            [str]
+        """
+        return self.properties.get('description')
+
+    @description.setter
+    def description(self, v):
+        if v is not None:
+            self.properties['description'] = v
+        else:
+            self.properties.pop('description', None)
+
+    @property
+    def center_wavelength(self):
+        """Get or sets the center wavelength of the band, in micrometers (μm).
+
+        Returns:
+            [float]
+        """
+        return self.properties.get('center_wavelength')
+
+    @center_wavelength.setter
+    def center_wavelength(self, v):
+        if v is not None:
+            self.properties['center_wavelength'] = v
+        else:
+            self.properties.pop('center_wavelength', None)
+
+    @property
+    def full_width_half_max(self):
+        """Get or sets the full width at half maximum (FWHM). The width of the band,
+            as measured at half the maximum transmission, in micrometers (μm).
+
+        Returns:
+            [float]
+        """
+        return self.properties.get('full_width_half_max')
+
+    @full_width_half_max.setter
+    def full_width_half_max(self, v):
+        if v is not None:
+            self.properties['full_width_half_max'] = v
+        else:
+            self.properties.pop('full_width_half_max', None)
+
     def __repr__(self):
         return '<Band name={}>'.format(self.name)
+
+    def to_dict(self):
+        """Returns the dictionary representing the JSON of this Band.
+
+        Returns:
+            dict: The wrapped dict of the Band that can be written out as JSON.
+        """
+        return self.properties
 
     @staticmethod
     def band_range(common_name):
@@ -230,43 +336,6 @@ class Band:
             r = "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
         return r
 
-    @staticmethod
-    def from_dict(d):
-        """Constructs a Band from a dict.
-
-        Returns:
-            Band: The Band deserialized from the JSON dict.
-        """
-        name = d.get('name')
-        common_name = d.get('common_name')
-        center_wavelength = d.get('center_wavelength')
-        full_width_half_max = d.get('full_width_half_max')
-        description = d.get('description')
-
-        return Band(name=name,
-                    common_name=common_name,
-                    description=description,
-                    center_wavelength=center_wavelength,
-                    full_width_half_max=full_width_half_max)
-
-    def to_dict(self):
-        """Generate a dictionary representing the JSON of this Band.
-
-        Returns:
-            dict: A serializion of the Band that can be written out as JSON.
-        """
-        d = {}
-        if self.name:
-            d['name'] = self.name
-        if self.common_name:
-            d['common_name'] = self.common_name
-        if self.center_wavelength:
-            d['center_wavelength'] = self.center_wavelength
-        if self.full_width_half_max:
-            d['full_width_half_max'] = self.full_width_half_max
-        if self.description:
-            d['description'] = self.description
-        return deepcopy(d)
 
 EO_EXTENSION_DEFINITION = ExtensionDefinition("eo", [
     ExtendedObject(Item, EOItemExt)

@@ -69,5 +69,4 @@ class ItemCollectionTest(unittest.TestCase):
         ic_val_dict = ic_2.to_dict()
         ic_val_dict['features'] = 'not an array'
         with self.assertRaises(STACValidationError):
-            print('[Validation error expected] - ', end='')
             sv.validate_dict(ic_val_dict, STACObjectType.ITEMCOLLECTION)

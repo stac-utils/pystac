@@ -52,7 +52,7 @@ class LabelItemExt(ItemExtension):
         """Applies label extension properties to the extended Item.
 
         Args:
-            label_desecription (str): A description of the label, how it was created,
+            label_description (str): A description of the label, how it was created,
                 and what it is recommended for
             label_type (str): An ENUM of either vector label type or raster label type. Use
                 one of :class:`~pystac.LabelType`.

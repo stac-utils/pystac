@@ -57,7 +57,6 @@ class SingleFileSTACTest(unittest.TestCase):
 
         val_dict['search']['endpoint'] = 1
         with self.assertRaises(STACValidationError):
-            print('[Validation error expected] - ', end='')
             sv.validate_dict(val_dict, STACObjectType.ITEMCOLLECTION)
 
 
