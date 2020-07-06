@@ -137,8 +137,7 @@ class EOItemExt(ItemExtension):
 class Band:
     """Represents Band information attached to an Item that implements the eo extension.
 
-    Wraps the band information in the "eo:bands" property of the Item. Any changes to
-    the instance of Band will result in mutation of the underlying Item properties.
+    Use Band.create to create a new Band.
     """
     def __init__(self, properties):
         self.properties = properties
@@ -188,7 +187,7 @@ class Band:
             full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
         """
-        b = Band({})
+        b = cls({})
         b.apply(name=name,
                 common_name=common_name,
                 description=description,

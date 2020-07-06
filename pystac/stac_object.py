@@ -276,12 +276,14 @@ class STACObject(LinkMixin, ABC):
                 link.resolve_stac_object(root=self.get_root())
                 yield link.target
 
-    def save_object(self, include_self_link=True):
+    def save_object(self, include_self_link=True, dest_href=None):
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
           include_self_link (bool): If this is true, include the 'self' link with this object.
               Otherwise, leave out the self link.
+          dest_href (str): Optional HREF to save the file to. If None, the object will be saved
+              to the object's self href.
 
         Raises:
             :class:`~pystac.STACError`: If no self href is set, this error will be raised.
@@ -291,11 +293,13 @@ class STACObject(LinkMixin, ABC):
             STAC best practices document
             <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
         """
-        self_href = self.get_self_href()
-        if self_href is None:
-            raise STACError('Self HREF must be set before saving.')
+        if dest_href is None:
+            self_href = self.get_self_href()
+            if self_href is None:
+                raise STACError('Self HREF must be set before saving without an explicit dest_href.')
+            dest_href = self_href
 
-        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link=include_self_link))
+        STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self, root=None, parent=None):
         """Create a full copy of this STAC object and any stac objects linked to by

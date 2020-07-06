@@ -56,7 +56,7 @@ class LabelItemExt(ItemExtension):
                 and what it is recommended for
             label_type (str): An ENUM of either vector label type or raster label type. Use
                 one of :class:`~pystac.LabelType`.
-            label_properties (dict or None): These are the names of the property field(s) in each
+            label_properties (list or None): These are the names of the property field(s) in each
                 Feature of the label asset's FeatureCollection that contains the classes
                 (keywords from label:classes if the property defines classes).
                 If labels are rasters, this should be None.
@@ -78,10 +78,6 @@ class LabelItemExt(ItemExtension):
         self.label_tasks = label_tasks
         self.label_methods = label_methods
         self.label_overviews = label_overviews
-
-        if self.label_methods is not None:
-            if not type(self.label_methods) is list:
-                self.label_methods = [self.label_methods]
 
     @property
     def label_description(self):
@@ -148,17 +144,16 @@ class LabelItemExt(ItemExtension):
         Returns:
             [List[LabelClasses] or None]
         """
-        classes = self.item.properties.get('label:classes')
-        if classes is not None:
-            return [LabelClasses.from_dict(classes) for classes in label_classes]
+        label_classes = self.item.properties.get('label:classes')
+        if label_classes is not None:
+            return [LabelClasses(classes) for classes in label_classes]
         else:
             return None
 
     @label_classes.setter
     def label_classes(self, v):
         if v is None:
-            if 'label:classes' in self.item.properties:
-                del self.item.properties['label:classes']
+            self.item.properties.pop('label:classes', None)
         else:
             if not type(v) is list:
                 raise STACError("label_classes must be a list! Invalid input: {}".format(v))
@@ -179,8 +174,7 @@ class LabelItemExt(ItemExtension):
     @label_tasks.setter
     def label_tasks(self, v):
         if v is None:
-            if 'label:tasks' in self.item.properties:
-                del self.item.properties['label:tasks']
+            self.item.properties.pop('label:tasks', None)
         else:
             if not type(v) is list:
                 raise STACError("label_tasks must be a list! Invalid input: {}".format(v))
@@ -200,8 +194,7 @@ class LabelItemExt(ItemExtension):
     @label_methods.setter
     def label_methods(self, v):
         if v is None:
-            if 'label:methods' in self.item.properties:
-                del self.item.properties['label:methods']
+            self.item.properties.pop('label:methods')
         else:
             if not type(v) is list:
                 raise STACError("label_methods must be a list! Invalid input: {}".format(v))
@@ -219,15 +212,14 @@ class LabelItemExt(ItemExtension):
         """
         overviews = self.item.properties.get('label:overviews')
         if overviews is not None:
-            return [LabelOverview.from_dict(overview) for overview in overviews]
+            return [LabelOverview(overview) for overview in overviews]
         else:
             return None
 
     @label_overviews.setter
     def label_overviews(self, v):
         if v is None:
-            if 'label:overviews' in self.item.properties:
-                del self.item.properties['label:overviews']
+            self.item.properties.pop('label:overviews')
         else:
             if not type(v) is list:
                 raise STACError("label_overviews must be a list! Invalid input: {}".format(v))
@@ -305,65 +297,185 @@ class LabelItemExt(ItemExtension):
 
 
 class LabelClasses:
-    """Defines the list of possible class names (e.g.,
-       tree, building, car, hippo)
+    """Defines the list of possible class names (e.g., tree, building, car, hippo)
 
-    Args:
-        classes (List[str]): The different possible class values
-        name (str): The property key within the asset's each Feature corresponding to
-            class labels. If labels are raster-formatted, do not supply; required otherwise.
-
-    Attributes:
-        classes (List[str]): The different possible class values
-        name (str or None): The property key within the asset's each Feature corresponding to
-            class labels. If labels are raster-formatted, this is None.
+    Use LabelClasses.create to create a new instance of LabelClasses from property values.
     """
-    def __init__(self, classes, name=None):
-        self.name = name
+    def __init__(self, properties):
+        self.properties = properties
+
+    def apply(self, classes, name=None):
+        """Sets the properties for this LabelClasses.
+
+        Args:
+            classes (List[str] or List[int] or List[float]): The different possible class values.
+            name (str): The property key within the asset's each Feature corresponding to
+                class labels. If labels are raster-formatted, do not supply; required otherwise.
+        """
         self.classes = classes
+        self.name = name
+
+    @classmethod
+    def create(cls, classes, name=None):
+        """Creates a new LabelClasses.
+
+        Args:
+            classes (List[str] or List[int] or List[float]): The different possible class values.
+            name (str): The property key within the asset's each Feature corresponding to
+                class labels. If labels are raster-formatted, do not supply; required otherwise.
+
+        Returns:
+            [LabelClasses]
+        """
+        c = cls({})
+        c.apply(classes, name)
+        return c
+
+    @property
+    def classes(self):
+        """Get or sets the class values.
+
+        Returns:
+            [List[str] or List[int] or List[float]]
+        """
+        return self.properties.get('classes')
+
+    @classes.setter
+    def classes(self, v):
+        if not type(v) is list:
+            raise STACError("classes must be a list! Invalid input: {}".format(v))
+
+        self.properties['classes'] = v
+
+    @property
+    def name(self):
+        """Get or sets the property key within the asset's each Feature corresponding to
+        class labels. If labels are raster-formatted, do not supply; required otherwise.
+
+        Returns:
+            [str]
+        """
+        return self.properties.get('name')
+
+    @name.setter
+    def name(self, v):
+        if v is not None:
+            self.properties['name'] = v
+        else:
+            self.properties.pop('name', None)
+
+    def __repr__(self):
+        return '<LabelClasses classes={}>'.format(','.join(self.classes))
 
     def to_dict(self):
-        """Generate a dictionary representing the JSON of this LabelClasses.
+        """Returns the dictionary representing the JSON of this LabelClasses.
 
         Returns:
-            dict: A serializion of the LabelClasses that can be written out as JSON.
+            dict: The wrapped dict of the LabelClasses that can be written out as JSON.
         """
-        return {'name': self.name, 'classes': self.classes}
-
-    @staticmethod
-    def from_dict(d):
-        """Constructs a LabelClasses from a dict.
-
-        Returns:
-            LabelClasses: The LabelClasses deserialized from the JSON dict.
-        """
-        return LabelClasses(name=d.get('name'), classes=d['classes'])
+        return self.properties
 
 
 class LabelOverview:
     """Stores counts (for classification-type data) or summary statistics (for
     continuous numerical/regression data).
 
-    Either ``counts`` or ``statistics``, or both, can be placed in an overview;
-    at least one is required.
-
-    Args:
-        property_key (str): The property key within the asset corresponding to class labels.
-        counts (List[LabelCounts]): Optional list of LabelCounts.
-        statistics (List[Statistics]): Optional list of Statistics.
-
-    Attributes
-        property_key (str): The property key within the asset corresponding to class labels.
-        counts (List[LabelCounts] or None): Optional list of LabelCounts.
-        statistics (List[Statistics] or None): Optional list of Statistics.
+    Use LabelOverview.create to create a new LabelOverview.
     """
-    def __init__(self, property_key, counts=None, statistics=None):
+    def __init__(self, properties):
+        self.properties = properties
+
+    def apply(self, property_key, counts=None, statistics=None):
+        """Sets the properties for this LabelOverview.
+
+        Either ``counts`` or ``statistics``, or both, can be placed in an overview;
+        at least one is required.
+
+        Args:
+            property_key (str): The property key within the asset corresponding to class labels.
+            counts (List[LabelCounts]): Optional list of LabelCounts containing counts for categorical data.
+            statistics (List[Statistics]): Optional list of Statistics containing statistics for regression/continuous numeric value data.
+        """
         self.property_key = property_key
         self.counts = counts
         self.statistics = statistics
 
+    @classmethod
+    def create(cls, property_key, counts=None, statistics=None):
+        """Creates a new LabelOverview.
+
+        Either ``counts`` or ``statistics``, or both, can be placed in an overview;
+        at least one is required.
+
+        Args:
+            property_key (str): The property key within the asset corresponding to class labels.
+            counts (List[LabelCounts]): Optional list of LabelCounts containing counts for categorical data.
+            statistics (List[Statistics]): Optional list of Statistics containing statistics for regression/continuous numeric value data.
+        """
+        x = LabelOverview({})
+        x.apply(property_key, counts, statistics)
+        return x
+
+    @property
+    def property_key(self):
+        """Get or sets the property key within the asset corresponding to class labels.
+
+        Returns:
+            [str]
+        """
+        return self.properties.get('property_key')
+
+    @property_key.setter
+    def property_key(self, v):
+        self.properties['property_key'] = v
+
+    @property
+    def counts(self):
+        """Get or sets the list of LabelCounts containing counts for categorical data.
+
+        Returns:
+            [List[LabelCount]]
+        """
+        counts = self.properties.get('counts')
+        if counts is not None:
+            counts = [LabelCount(c) for c in counts]
+        return counts
+
+    @counts.setter
+    def counts(self, v):
+        if v is None:
+            self.properties.pop('counts', None)
+        else:
+            if not type(v) is list:
+                raise STACError("counts must be a list! Invalid input: {}".format(v))
+
+            self.properties['counts'] = [c.to_dict() for c in v]
+
+    @property
+    def statistics(self):
+        """Get or sets the list of Statistics containing statistics for regression/continuous numeric value data.
+
+        Returns:
+            [List[Statistics]]
+        """
+        statistics = self.properties.get('statistics')
+        if statistics is not None:
+            statistics = [LabelStatistics(s) for s in statistics]
+
+        return statistics
+
+    @statistics.setter
+    def statistics(self, v):
+        if v is None:
+            self.properties.pop('statistics', None)
+        else:
+            if not type(v) is list:
+                raise STACError("statistics must be a list! Invalid input: {}".format(v))
+
+            self.properties['statistics'] = [s.to_dict() for s in v]
+
     def merge_counts(self, other):
-        """Merges the counts associated with this overview with another overview.
+        """Merges the counts associated with this overview with another overview. Creates a new LabelOverview.
 
         Args:
             other (LabelOverview): The other LabelOverview to merge.
@@ -393,104 +505,146 @@ class LabelOverview:
                 add_counts(self.counts)
                 add_counts(other.counts)
                 new_counts = [LabelCount(k, v) for k, v in count_by_prop.items()]
-        return LabelOverview(self.property_key, counts=new_counts)
+        return LabelOverview.create(self.property_key, counts=new_counts)
 
     def to_dict(self):
-        """Generate a dictionary representing the JSON of this LabelOverview.
+        """Returns the dictionary representing the JSON of this LabelOverview.
 
         Returns:
-            dict: A serializion of the LabelOverview that can be written out as JSON.
+            dict: The wrapped dict of the LabelOverview that can be written out as JSON.
         """
-        d = {'property_key': self.property_key}
-        if self.counts:
-            d['counts'] = [c.to_dict() for c in self.counts]
-        if self.statistics:
-            d['statistics'] = [s.to_dict() for s in self.statistics]
-
-        return d
-
-    @staticmethod
-    def from_dict(d):
-        """Constructs a LabelOverview from a dict.
-
-        Returns:
-            LabelOverview: The LabelOverview deserialized from the JSON dict.
-        """
-        counts = d.get('counts')
-        if counts is not None:
-            counts = [LabelCount.from_dict(c) for c in counts]
-
-        statistics = d.get('statistics')
-        if statistics is not None:
-            statistics = [LabelStatistics.from_dict(s) for s in statistics]
-
-        return LabelOverview(d['property_key'], counts=counts, statistics=statistics)
+        return self.properties
 
 
 class LabelCount:
-    def __init__(self, name, count):
-        """Contains counts for categorical data.
+    """Contains counts for categorical data.
+
+    Use LabelCount.create to create a new LabelCount
+    """
+    def __init__(self, properties):
+        self.properties = properties
+
+    def apply(self, name, count):
+        """Sets the properties for this LabelCount.
 
         Args:
-            name (str): The different possible classes within the property.
-            count (int): The number of occurrences of the class.
-
-        Attributes:
-            name (str): The different possible classes within the property.
+            name (str): One of the different possible classes within the property.
             count (int): The number of occurrences of the class.
         """
         self.name = name
         self.count = count
 
-    def to_dict(self):
-        """Generate a dictionary representing the JSON of this LabelCount.
+    @classmethod
+    def create(cls, name, count):
+        """Creates a LabelCount.
+
+        Args:
+            name (str): One of the different possible classes within the property.
+            count (int): The number of occurrences of the class.
+        """
+        x = cls({})
+        x.apply(name, count)
+        return x
+
+    @property
+    def name(self):
+        """Get or sets the class that this count represents.
 
         Returns:
-            dict: A serializion of the LabelCount that can be written out as JSON.
+            [str]
+        """
+        return self.properties.get('name')
+
+    @name.setter
+    def name(self, v):
+        self.properties['name'] = v
+
+    @property
+    def count(self):
+        """Get or sets the number of occurences of the class.
+
+        Returns:
+            [int]
+        """
+        return self.properties.get('count')
+
+    @count.setter
+    def count(self, v):
+        self.properties['count'] = v
+
+    def to_dict(self):
+        """Returns the dictionary representing the JSON of this LabelCount.
+
+        Returns:
+            dict: The wrapped dict of the LabelCount that can be written out as JSON.
         """
         return {'name': self.name, 'count': self.count}
 
-    @staticmethod
-    def from_dict(d):
-        """Constructs a LabelCount from a dict.
-
-        Returns:
-            LabelCount: The LabelCount deserialized from the JSON dict.
-        """
-        return LabelCount(d['name'], d['count'])
-
 
 class LabelStatistics:
-    def __init__(self, name, value):
-        """Contains statistics for regression/continuous numeric value data.
+    """Contains statistics for regression/continuous numeric value data.
+
+    Use LabelStatistics.create to create a new instance.
+    """
+    def __init__(self, properties):
+        self.properties = properties
+
+    def apply(self, name, value):
+        """Sets the property values for this instance.
 
         Args:
-            name (str): The name of the statistic being reported.
-            value (float): The value of the statistic
-
-        Attributes:
             name (str): The name of the statistic being reported.
             value (float): The value of the statistic
         """
         self.name = name
         self.value = value
 
-    def to_dict(self):
-        """Generate a dictionary representing the JSON of this LabelStatistics.
+    @classmethod
+    def create(cls, name, value):
+        """Sets the property values for this instance.
+
+        Args:
+            name (str): The name of the statistic being reported.
+            value (float): The value of the statistic
+        """
+        x = cls({})
+        x.apply(name, value)
+        return x
+
+    @property
+    def name(self):
+        """Get or sets the name of the statistic being reported.
 
         Returns:
-            dict: A serializion of the LabelStatistics that can be written out as JSON.
+            [str]
+        """
+        return self.properties.get('name')
+
+    @name.setter
+    def name(self, v):
+        self.properties['name'] = v
+
+    @property
+    def value(self):
+        """Get or sets the value of the statistic
+
+        Returns:
+            [int or float]
+        """
+        return self.properties.get('value')
+
+    @value.setter
+    def value(self, v):
+        self.properties['value'] = v
+
+
+    def to_dict(self):
+        """Returns the dictionary representing the JSON of this LabelStatistics.
+
+        Returns:
+            dict: The wrapped dict of the LabelStatistics that can be written out as JSON.
         """
         return {'name': self.name, 'value': self.value}
-
-    @staticmethod
-    def from_dict(d):
-        """Constructs a LabelStatistics from a dict.
-
-        Returns:
-            LabelStatistics: The LabelStatistics deserialized from the JSON dict.
-        """
-        return LabelStatistics(d['name'], d['value'])
 
 LABEL_EXTENSION_DEFINITION = ExtensionDefinition("label", [
     ExtendedObject(Item, LabelItemExt)
