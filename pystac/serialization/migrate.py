@@ -111,6 +111,7 @@ def _migrate_label(d, version, info):
             props['label:methods'] = props['label:method']
             del props['label:method']
 
+
 def _migrate_pointcloud(d, version, info):
     pass
 

@@ -6,6 +6,7 @@ from jsonschema.validators import RefResolver
 from pystac import (STAC_VERSION, STAC_IO, Catalog, Collection, Item, ItemCollection, Extensions)
 from pystac.serialization import STACObjectType
 
+
 class STACValidationError(Exception):
     pass
 
@@ -16,14 +17,10 @@ class SchemaValidator:
     SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     core_schemas = {
-        STACObjectType.CATALOG:
-        'catalog-spec/json-schema/catalog.json',
-        STACObjectType.COLLECTION:
-        'collection-spec/json-schema/collection.json',
-        STACObjectType.ITEM:
-        'item-spec/json-schema/item.json',
-        STACObjectType.ITEMCOLLECTION:
-        'item-spec/json-schema/itemcollection.json'
+        STACObjectType.CATALOG: 'catalog-spec/json-schema/catalog.json',
+        STACObjectType.COLLECTION: 'collection-spec/json-schema/collection.json',
+        STACObjectType.ITEM: 'item-spec/json-schema/item.json',
+        STACObjectType.ITEMCOLLECTION: 'item-spec/json-schema/itemcollection.json'
     }
 
     extension_schemas = {
@@ -70,7 +67,8 @@ class SchemaValidator:
 
             for ext in SchemaValidator.extension_schemas:
                 for stac_object_type in SchemaValidator.extension_schemas[ext]:
-                    uri = SchemaValidator._abs_schema(SchemaValidator.extension_schemas[ext][stac_object_type])
+                    uri = SchemaValidator._abs_schema(
+                        SchemaValidator.extension_schemas[ext][stac_object_type])
                     SchemaValidator.extension_schemas[ext][stac_object_type] = uri
                     SchemaValidator._schema_cache[uri] = json.loads(STAC_IO.read_text(uri))
 
@@ -142,11 +140,13 @@ class SchemaValidator:
         except jsonschema.exceptions.ValidationError as e:
             if print_on_error:
                 print(json.dumps(d, indent=2))
-            raise STACValidationError('Validation failed for STAC {}'.format(stac_object_type)) from e
+            raise STACValidationError(
+                'Validation failed for STAC {}'.format(stac_object_type)) from e
 
         if 'stac_extensions' in d:
             for extension_id in d['stac_extensions']:
-                ext_schema_result = SchemaValidator.get_extension_schema(stac_object_type, extension_id)
+                ext_schema_result = SchemaValidator.get_extension_schema(
+                    stac_object_type, extension_id)
                 if ext_schema_result is not None:
                     ext_schema, ext_resolver = ext_schema_result
                     try:
@@ -154,4 +154,6 @@ class SchemaValidator:
                     except jsonschema.exceptions.ValidationError as e:
                         if print_on_error:
                             print(json.dumps(d, indent=2))
-                        raise STACValidationError('Validation failed for STAC {} extension {}'.format(stac_object_type, extension_id)) from e
+                        raise STACValidationError(
+                            'Validation failed for STAC {} extension {}'.format(
+                                stac_object_type, extension_id)) from e

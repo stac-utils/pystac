@@ -32,10 +32,9 @@ from pystac import extensions
 import pystac.extensions.eo
 import pystac.extensions.label
 
-STAC_EXTENSIONS = extensions.base.EnabledSTACExtensions([
-    extensions.eo.EO_EXTENSION_DEFINITION,
-    extensions.label.LABEL_EXTENSION_DEFINITION
-])
+STAC_EXTENSIONS = extensions.base.EnabledSTACExtensions(
+    [extensions.eo.EO_EXTENSION_DEFINITION, extensions.label.LABEL_EXTENSION_DEFINITION])
+
 
 def read_file(href):
     """Reads a STAC object from a file.
@@ -52,6 +51,7 @@ def read_file(href):
     """
     return STACObject.from_file(href)
 
+
 def write_file(obj, include_self_link=True, dest_href=None):
     """Writes a STACObject to a file.
 
@@ -65,5 +65,4 @@ def write_file(obj, include_self_link=True, dest_href=None):
         dest_href (str): Optional HREF to save the file to. If None, the object will be saved
             to the object's self href.
     """
-    obj.save_object(include_self_link=include_self_link,
-                    dest_href=dest_href)
+    obj.save_object(include_self_link=include_self_link, dest_href=dest_href)

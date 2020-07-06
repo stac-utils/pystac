@@ -206,9 +206,7 @@ class Item(STACObject):
         return clone
 
     def _object_links(self):
-        return ['collection'] + (
-            pystac.STAC_EXTENSIONS.get_extended_object_links(self)
-        )
+        return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
 
     def normalize_hrefs(self, root_href):
         if not is_absolute_href(root_href):

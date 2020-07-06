@@ -1,3 +1,6 @@
+# flake8: noqa
+
+
 class Extensions:
     """Enumerates the IDs of common extensions."""
     ASSETS = 'asset'
@@ -10,5 +13,6 @@ class Extensions:
     SAR = 'sar'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
+
 
 from pystac.extensions.base import ExtensionError

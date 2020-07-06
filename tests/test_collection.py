@@ -38,7 +38,9 @@ class CollectionTest(unittest.TestCase):
             Band.create(name='Green', description='Green: 510 - 580 nm', common_name='green'),
             Band.create(name='Yellow', description='Yellow: 585 - 625 nm', common_name='yellow'),
             Band.create(name='Red', description='Red: 630 - 690 nm', common_name='red'),
-            Band.create(name='Red Edge', description='Red Edge: 705 - 745 nm', common_name='rededge'),
+            Band.create(name='Red Edge',
+                        description='Red Edge: 705 - 745 nm',
+                        common_name='rededge'),
             Band.create(name='Near-IR1', description='Near-IR1: 770 - 895 nm', common_name='nir08'),
             Band.create(name='Near-IR2', description='Near-IR2: 860 - 1040 nm', common_name='nir09')
         ]

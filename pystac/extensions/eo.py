@@ -1,7 +1,5 @@
-from copy import deepcopy
-
 from pystac import (STACError, Extensions)
-from pystac.item import (Item, Asset)
+from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
 
@@ -23,9 +21,16 @@ class EOItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(gsd,
-              bands,
-              cloud_cover=None):
+    def apply(self, gsd, bands, cloud_cover=None):
+        """Applies label extension properties to the extended Item.
+
+        Args:
+            gsd (float): The Ground Sample Distance of the sensor
+            bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
+                the available bands.
+            cloud_cover (float or None): The estimate of cloud cover as a percentage (0-100) of the
+                entire scene. If not available the field should not be provided.
+        """
         self.gsd = gsd
         self.bands = bands
         self.cloud_cover = cloud_cover
@@ -54,7 +59,7 @@ class EOItemExt(ItemExtension):
         bands = self.item.properties.get('eo:bands')
         if bands is None:
             raise STACError("Missing required field 'eo:bands' in item properties")
-        return  [Band(b) for b in bands]
+        return [Band(b) for b in bands]
 
     @bands.setter
     def bands(self, v):
@@ -109,19 +114,13 @@ class EOItemExt(ItemExtension):
             band_names (List[str]): List of band names to assign to the asset.
                 These names must reference names in the item's bands property.
         """
-        band_idxs = [
-            i for i, b in enumerate(self.bands)
-            if b.name in band_names
-        ]
+        band_idxs = [i for i, b in enumerate(self.bands) if b.name in band_names]
 
         if len(set(band_idxs)) != len(set(band_names)):
-            missing_band_names = set(band_names) - set([
-                self.bands[i] for i in band_idxs
-            ])
+            missing_band_names = set(band_names) - set([self.bands[i] for i in band_idxs])
 
-            raise KeyError("Bands not found in item's bands: {}".format(
-                ','.join(map(lambda x: "'{}'".format(x), missing_band_names))
-            ))
+            raise KeyError("Bands not found in item's bands: {}".format(','.join(
+                map(lambda x: "'{}'".format(x), missing_band_names))))
 
         asset.properties['eo:bands'] = band_idxs
 
@@ -336,6 +335,4 @@ class Band:
         return r
 
 
-EO_EXTENSION_DEFINITION = ExtensionDefinition("eo", [
-    ExtendedObject(Item, EOItemExt)
-])
+EO_EXTENSION_DEFINITION = ExtensionDefinition("eo", [ExtendedObject(Item, EOItemExt)])

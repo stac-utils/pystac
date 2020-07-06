@@ -1,7 +1,5 @@
 """STAC Model classes for Label extension.
 """
-from copy import (copy, deepcopy)
-
 from pystac import STACError
 from pystac.extensions import Extensions
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
@@ -107,8 +105,7 @@ class LabelItemExt(ItemExtension):
     def label_type(self, v):
         if v not in LabelType.ALL:
             raise STACError("label_type must be one of "
-                            "{}. Invalid input: {}".format(
-                                LabelType.ALL, v))
+                            "{}. Invalid input: {}".format(LabelType.ALL, v))
 
         self.item.properties['label:type'] = v
 
@@ -272,8 +269,8 @@ class LabelItemExt(ItemExtension):
                 object JSON.
         """
 
-        self.item.add_asset("labels",
-                            Asset(href=href, title=title, media_type=media_type, properties=properties))
+        self.item.add_asset(
+            "labels", Asset(href=href, title=title, media_type=media_type, properties=properties))
 
     def add_geojson_labels(self, href, title=None, properties=None):
         """Adds a GeoJSON label asset to this LabelItem.
@@ -393,8 +390,10 @@ class LabelOverview:
 
         Args:
             property_key (str): The property key within the asset corresponding to class labels.
-            counts (List[LabelCounts]): Optional list of LabelCounts containing counts for categorical data.
-            statistics (List[Statistics]): Optional list of Statistics containing statistics for regression/continuous numeric value data.
+            counts (List[LabelCounts]): Optional list of LabelCounts containing counts
+                for categorical data.
+            statistics (List[Statistics]): Optional list of Statistics containing statistics for
+                regression/continuous numeric value data.
         """
         self.property_key = property_key
         self.counts = counts
@@ -409,8 +408,10 @@ class LabelOverview:
 
         Args:
             property_key (str): The property key within the asset corresponding to class labels.
-            counts (List[LabelCounts]): Optional list of LabelCounts containing counts for categorical data.
-            statistics (List[Statistics]): Optional list of Statistics containing statistics for regression/continuous numeric value data.
+            counts (List[LabelCounts]): Optional list of LabelCounts containing counts for
+                categorical data.
+            statistics (List[Statistics]): Optional list of Statistics containing statistics for
+                regression/continuous numeric value data.
         """
         x = LabelOverview({})
         x.apply(property_key, counts, statistics)
@@ -453,7 +454,8 @@ class LabelOverview:
 
     @property
     def statistics(self):
-        """Get or sets the list of Statistics containing statistics for regression/continuous numeric value data.
+        """Get or sets the list of Statistics containing statistics for
+        regression/continuous numeric value data.
 
         Returns:
             [List[Statistics]]
@@ -475,7 +477,8 @@ class LabelOverview:
             self.properties['statistics'] = [s.to_dict() for s in v]
 
     def merge_counts(self, other):
-        """Merges the counts associated with this overview with another overview. Creates a new LabelOverview.
+        """Merges the counts associated with this overview with another overview.
+        Creates a new LabelOverview.
 
         Args:
             other (LabelOverview): The other LabelOverview to merge.
@@ -637,7 +640,6 @@ class LabelStatistics:
     def value(self, v):
         self.properties['value'] = v
 
-
     def to_dict(self):
         """Returns the dictionary representing the JSON of this LabelStatistics.
 
@@ -646,6 +648,5 @@ class LabelStatistics:
         """
         return {'name': self.name, 'value': self.value}
 
-LABEL_EXTENSION_DEFINITION = ExtensionDefinition("label", [
-    ExtendedObject(Item, LabelItemExt)
-])
+
+LABEL_EXTENSION_DEFINITION = ExtensionDefinition("label", [ExtendedObject(Item, LabelItemExt)])

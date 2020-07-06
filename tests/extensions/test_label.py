@@ -129,8 +129,7 @@ class LabelTest(unittest.TestCase):
 
         label_item.ext.label.label_classes = new_classes
         self.assertEqual([
-            class_name
-            for lc in label_item.properties["label:classes"]
+            class_name for lc in label_item.properties["label:classes"]
             for class_name in lc["classes"]
         ], ["five", "six", "seven", "eight"])
 
@@ -178,35 +177,31 @@ class LabelTest(unittest.TestCase):
         label_statistics = label_overviews[1].statistics
         self.assertEqual(label_statistics[0].name, "mean")
         label_item.ext.label.label_overviews[1].statistics[0].name = "avg"
-        self.assertEqual(label_item.properties['label:overviews'][1]['statistics'][0]['name'], "avg")
+        self.assertEqual(label_item.properties['label:overviews'][1]['statistics'][0]['name'],
+                         "avg")
 
         # Set
         new_overviews = [
-            label.LabelOverview.create(
-                property_key="label2",
-                counts=[
-                    label.LabelCount.create(name="one", count=1),
-                    label.LabelCount.create(name="two", count=1),
-                ]),
-            label.LabelOverview.create(
-                property_key="label-reg",
-                statistics=[
-                    label.LabelStatistics.create(name="min", value=0.1),
-                    label.LabelStatistics.create(name="max", value=1.0),
-                ]
-            )
+            label.LabelOverview.create(property_key="label2",
+                                       counts=[
+                                           label.LabelCount.create(name="one", count=1),
+                                           label.LabelCount.create(name="two", count=1),
+                                       ]),
+            label.LabelOverview.create(property_key="label-reg",
+                                       statistics=[
+                                           label.LabelStatistics.create(name="min", value=0.1),
+                                           label.LabelStatistics.create(name="max", value=1.0),
+                                       ])
         ]
 
         label_item.ext.label.label_overviews = new_overviews
-        self.assertEqual([
-            (count['name'], count['count'])
-            for count in label_item.properties["label:overviews"][0]['counts']
-        ], [("one", 1), ("two", 1)])
+        self.assertEqual([(count['name'], count['count'])
+                          for count in label_item.properties["label:overviews"][0]['counts']],
+                         [("one", 1), ("two", 1)])
 
-        self.assertEqual([
-            (count['name'], count['value'])
-            for count in label_item.properties["label:overviews"][1]['statistics']
-        ], [("min", 0.1), ("max", 1.0)])
+        self.assertEqual([(count['name'], count['value'])
+                          for count in label_item.properties["label:overviews"][1]['statistics']],
+                         [("min", 0.1), ("max", 1.0)])
 
         self.validator.validate_object(label_item)
 

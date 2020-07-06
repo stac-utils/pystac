@@ -18,8 +18,8 @@ class ExtensionIndex:
         return self[extension_id]
 
     def implements(self, extension_id):
-        return (not self.stac_object.stac_extensions is None and
-                extension_id in self.stac_object.stac_extensions)
+        return (self.stac_object.stac_extensions is not None
+                and extension_id in self.stac_object.stac_extensions)
 
 
 class LinkMixin:
@@ -296,7 +296,8 @@ class STACObject(LinkMixin, ABC):
         if dest_href is None:
             self_href = self.get_self_href()
             if self_href is None:
-                raise STACError('Self HREF must be set before saving without an explicit dest_href.')
+                raise STACError(
+                    'Self HREF must be set before saving without an explicit dest_href.')
             dest_href = self_href
 
         STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))

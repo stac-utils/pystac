@@ -2,10 +2,9 @@ import json
 import os
 import unittest
 from tempfile import TemporaryDirectory
-from copy import deepcopy
 
 import pystac
-from pystac import (Catalog, CatalogType, Item, Asset, STACError, STACObjectType)
+from pystac import (Catalog, CatalogType, Item, STACObjectType)
 from pystac.extensions.eo import Band
 from tests.utils import (SchemaValidator, STACValidationError, TestCases, test_to_from_dict)
 
@@ -89,10 +88,8 @@ class EOTest(unittest.TestCase):
         # Get
         self.assertIn("eo:bands", eo_item.properties)
         bands = eo_item.ext.eo.bands
-        self.assertEqual(list(map(lambda x: x.name, bands)), ['B1', 'B2', 'B3',
-                                                              'B4', 'B5', 'B6',
-                                                              'B7', 'B8', 'B9',
-                                                              'B10', 'B11'])
+        self.assertEqual(list(map(lambda x: x.name, bands)),
+                         ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9', 'B10', 'B11'])
         for band in bands:
             self.assertIsInstance(band.common_name, str)
             self.assertIn(type(band.center_wavelength), [float, int])
@@ -103,10 +100,8 @@ class EOTest(unittest.TestCase):
         bands_dict = {band.name: band for band in bands}
         bands_dict['B1'].description = "Band 1"
 
-        self.assertTrue([
-            x for x in eo_item.properties['eo:bands']
-            if x['name'] == 'B1'
-        ][0]['description'] == "Band 1")
+        self.assertTrue([x for x in eo_item.properties['eo:bands']
+                         if x['name'] == 'B1'][0]['description'] == "Band 1")
 
         # Set
         new_bands = [
@@ -149,8 +144,6 @@ class EOTest(unittest.TestCase):
         self.validator.validate_object(eo_item)
 
         # Check setting with invalid keys
-
-        index_asset = eo_item.assets['index']
 
         with self.assertRaises(KeyError):
             eo_item.ext.eo.set_asset_bands(b1_asset, ['BAD_KEY', 'BAD_KEY_2'])
