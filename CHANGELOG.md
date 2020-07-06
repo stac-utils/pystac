@@ -4,6 +4,9 @@
 
 ### Added
 
+- `pystac.read_file` as a convenience function for reading in a STACObject from a file at a URI which delegates to `STACObject.from_file`.
+- `pystac.read_file` as a convenience function for reading in a STACObject from a file at a URI.
+
 ### Changed
 
 - Extension classes for label, eo and single-file-stac were moved to the `pystac.extensions` package.

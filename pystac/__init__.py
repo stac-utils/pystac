@@ -37,10 +37,11 @@ STAC_EXTENSIONS = extensions.base.EnabledSTACExtensions([
     extensions.label.LABEL_EXTENSION_DEFINITION
 ])
 
-def read_file(uri):
+def read_file(href):
     """Reads a STAC object from a file.
 
-    Convenience method for STACObject.from_file
+    Convenience method for :func:`STACObject.from_file
+            <pystac.STACObject.from_file>`
 
     Args:
         href (str): The HREF to read the object from.
@@ -49,4 +50,20 @@ def read_file(uri):
         The specific STACObject implementation class that is represented
         by the JSON read from the file located at HREF.
     """
-    return STACObject.from_file(uri)
+    return STACObject.from_file(href)
+
+def write_file(obj, include_self_link=True, dest_href=None):
+    """Writes a STACObject to a file.
+
+    Convenience method for :func:`STACObject.from_file
+            <pystac.STACObject.from_file>`
+
+    Args:
+        obj (STACObject): The STACObject to save.
+        include_self_link (bool): If this is true, include the 'self' link with this object.
+            Otherwise, leave out the self link.
+        dest_href (str): Optional HREF to save the file to. If None, the object will be saved
+            to the object's self href.
+    """
+    obj.save_object(include_self_link=include_self_link,
+                    dest_href=dest_href)
