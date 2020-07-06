@@ -191,7 +191,7 @@ class LabelItemExt(ItemExtension):
     @label_methods.setter
     def label_methods(self, v):
         if v is None:
-            self.item.properties.pop('label:methods')
+            self.item.properties.pop('label:methods', None)
         else:
             if not type(v) is list:
                 raise STACError("label_methods must be a list! Invalid input: {}".format(v))
@@ -216,7 +216,7 @@ class LabelItemExt(ItemExtension):
     @label_overviews.setter
     def label_overviews(self, v):
         if v is None:
-            self.item.properties.pop('label:overviews')
+            self.item.properties.pop('label:overviews', None)
         else:
             if not type(v) is list:
                 raise STACError("label_overviews must be a list! Invalid input: {}".format(v))

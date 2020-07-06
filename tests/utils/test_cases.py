@@ -110,7 +110,11 @@ class TestCases:
 
         image_item.add_asset('ortho', Asset(href='some/geotiff.tiff', media_type=MediaType.GEOTIFF))
 
-        overviews = [LabelOverview('label', counts=[LabelCount('one', 1), LabelCount('two', 2)])]
+        overviews = [
+            LabelOverview.create('label',
+                                 counts=[LabelCount.create('one', 1),
+                                         LabelCount.create('two', 2)])
+        ]
 
         label_item = Item(id='label-items',
                           geometry=RANDOM_GEOM,
@@ -122,7 +126,7 @@ class TestCases:
             label_description='ML Labels',
             label_type='vector',
             label_properties=['label'],
-            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
+            label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
             label_tasks=['classification'],
             label_methods=['manual'],
             label_overviews=overviews)

@@ -252,11 +252,12 @@ class CatalogTest(unittest.TestCase):
                               datetime=datetime.utcnow(),
                               properties={})
             label_ext = label_item.ext.label
-            label_ext.apply(label_description='labels',
-                            label_type='vector',
-                            label_properties=['label'],
-                            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
-                            label_tasks=['classification'])
+            label_ext.apply(
+                label_description='labels',
+                label_type='vector',
+                label_properties=['label'],
+                label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
+                label_tasks=['classification'])
             label_ext.add_source(item, assets=['ortho'])
             label_ext.add_geojson_labels(label_href)
 
@@ -572,11 +573,12 @@ class FullCopyTest(unittest.TestCase):
                               datetime=datetime.utcnow(),
                               properties={})
             label_ext = label_item.ext.label
-            label_ext.apply(label_description='labels',
-                            label_type='vector',
-                            label_properties=['label'],
-                            label_classes=[LabelClasses(classes=['one', 'two'], name='label')],
-                            label_tasks=['classification'])
+            label_ext.apply(
+                label_description='labels',
+                label_type='vector',
+                label_properties=['label'],
+                label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
+                label_tasks=['classification'])
             label_ext.add_source(image_item, assets=['ortho'])
 
             cat.add_items([image_item, label_item])
