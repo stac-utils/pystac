@@ -496,16 +496,17 @@ class CatalogTest(unittest.TestCase):
         for item in cat.get_all_items():
             pass
 
-        new_stac_uri = 'tmp-data/test-case-6'
-        cat.normalize_hrefs(new_stac_uri)
-        cat.save(catalog_type=CatalogType.SELF_CONTAINED)
+        with TemporaryDirectory() as tmp_dir:
+            new_stac_uri = os.path.join(tmp_dir, 'test-case-6')
+            cat.normalize_hrefs(new_stac_uri)
+            cat.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-        # Open the local copy and iterate over it.
-        cat2 = Catalog.from_file(os.path.join(new_stac_uri, 'catalog.json'))
+            # Open the local copy and iterate over it.
+            cat2 = Catalog.from_file(os.path.join(new_stac_uri, 'catalog.json'))
 
-        for item in cat2.get_all_items():
-            # Iterate again over the items. This would fail in #88
-            pass
+            for item in cat2.get_all_items():
+                # Iterate again over the items. This would fail in #88
+                pass
 
 
 class FullCopyTest(unittest.TestCase):
