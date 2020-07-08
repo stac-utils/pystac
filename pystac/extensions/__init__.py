@@ -13,6 +13,7 @@ class Extensions:
     SAR = 'sar'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
+    VIEW = 'view'
 
 
 from pystac.extensions.base import ExtensionError
