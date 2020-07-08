@@ -1,4 +1,4 @@
-from pystac import (STACError, Extensions)
+from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
@@ -14,6 +14,10 @@ class ViewItemExt(ItemExtension):
 
     Attributes:
         item (Item): The Item that is being extended.
+
+    Note:
+        Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
+        the item's stac_extensions.
     """
     def __init__(self, item):
         if item.stac_extensions is None:
@@ -45,7 +49,7 @@ class ViewItemExt(ItemExtension):
             sun_elevation (float): Sun elevation angle. The angle from the tangent of the scene
                 center point to the sun. Measured from the horizon in degrees (0-90).
         """
-        self.off_nadir = off_naidr
+        self.off_nadir = off_nadir
         self.incidence_angle = incidence_angle
         self.azimuth = azimuth
         self.sun_azimuth = sun_azimuth
@@ -132,4 +136,5 @@ class ViewItemExt(ItemExtension):
         return cls(item)
 
 
-VIEW_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.VIEW, [ExtendedObject(Item, ViewItemExt)])
+VIEW_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.VIEW,
+                                                [ExtendedObject(Item, ViewItemExt)])

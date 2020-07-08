@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 import csv
 
-from pystac import (Catalog, Item, Asset, Extent, TemporalExtent, SpatialExtent, MediaType)
+from pystac import (Catalog, Item, Asset, Extent, TemporalExtent, SpatialExtent, MediaType,
+                    Extensions)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
 TEST_LABEL_CATALOG = {
@@ -122,6 +123,7 @@ class TestCases:
                           datetime=datetime.utcnow(),
                           properties={})
 
+        label_item.ext.enable(Extensions.LABEL)
         label_item.ext.label.apply(
             label_description='ML Labels',
             label_type='vector',

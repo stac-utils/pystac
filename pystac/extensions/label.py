@@ -29,6 +29,10 @@ class LabelItemExt(ItemExtension):
 
     See:
         `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
+
+    Note:
+        Using LabelItemExt to directly wrap an item will add the 'label' extension ID to
+        the item's stac_extensions.
     """ # noqa E501
 
     def __init__(self, item):
@@ -649,4 +653,5 @@ class LabelStatistics:
         return {'name': self.name, 'value': self.value}
 
 
-LABEL_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.LABEL, [ExtendedObject(Item, LabelItemExt)])
+LABEL_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.LABEL,
+                                                 [ExtendedObject(Item, LabelItemExt)])

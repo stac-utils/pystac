@@ -5,6 +5,7 @@ from pystac import STACError
 from pystac.link import (Link, LinkType)
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
+from pystac.extensions import ExtensionError
 
 
 class ExtensionIndex:
@@ -12,12 +13,51 @@ class ExtensionIndex:
         self.stac_object = stac_object
 
     def __getitem__(self, extension_id):
+        # Check to make sure this is a registered extension.
+        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        if not self.implements(extension_id):
+            raise ExtensionError("{} does not implement the {} extension. "
+                                 "Use the 'ext.enable' method to enable this extension "
+                                 "first.".format(self.stac_object, extension_id))
+
         return pystac.STAC_EXTENSIONS.extend_object(self.stac_object, extension_id)
 
     def __getattr__(self, extension_id):
         return self[extension_id]
 
+    def enable(self, extension_id):
+        """Enables a stac extension for the given object. If the object already
+        enables the extension, no action is taken. If it does not, the extension ID is
+        added to the object's stac_extension property.
+
+        Args:
+            extension_id (str): The extension ID representing the extension
+            the object should implement
+
+        """
+        # Check to make sure this is a registered extension.
+        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        if self.stac_object.stac_extensions is None:
+            self.stac_object.stac_extensions = [extension_id]
+        elif extension_id not in self.stac_object.stac_extensions:
+            self.stac_object.stac_extensions.append(extension_id)
+
     def implements(self, extension_id):
+        """Returns true if the associated object implements the given extension.
+
+        Args:
+            extension_id (str): The extension ID to check
+
+        Returns:
+            [bool]: True if the object implements the extensions - i.e. if
+                the extension ID is in the "stac_extensions" property.
+        """
         return (self.stac_object.stac_extensions is not None
                 and extension_id in self.stac_object.stac_extensions)
 
@@ -344,7 +384,7 @@ class STACObject(LinkMixin, ABC):
 
     @property
     def ext(self):
-        """TODO
+        """TODO: Documentation
         """
         return ExtensionIndex(self)
 

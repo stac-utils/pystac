@@ -5,7 +5,7 @@ from datetime import datetime
 from collections import defaultdict
 
 from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset,
-                    MediaType)
+                    MediaType, Extensions)
 from pystac.extensions.label import LabelClasses
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
@@ -251,6 +251,7 @@ class CatalogTest(unittest.TestCase):
                               bbox=item.bbox,
                               datetime=datetime.utcnow(),
                               properties={})
+            label_item.ext.enable(Extensions.LABEL)
             label_ext = label_item.ext.label
             label_ext.apply(
                 label_description='labels',
@@ -571,7 +572,8 @@ class FullCopyTest(unittest.TestCase):
                               geometry=RANDOM_GEOM,
                               bbox=RANDOM_BBOX,
                               datetime=datetime.utcnow(),
-                              properties={})
+                              properties={},
+                              stac_extensions=[Extensions.LABEL])
             label_ext = label_item.ext.label
             label_ext.apply(
                 label_description='labels',

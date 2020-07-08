@@ -3,16 +3,11 @@ from abc import (ABC, abstractmethod)
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.item import Item
-
-
-class ExtensionError(Exception):
-    """An error related to the construction of extensions.
-    """
-    pass
+from pystac.extensions import ExtensionError
 
 
 class ExtendedObject:
-    """TODO
+    """TODO: Documentation
     """
     def __init__(self, stac_object_class, extension_class):
         if stac_object_class is Catalog:
@@ -32,7 +27,7 @@ class ExtendedObject:
 
 
 class ExtensionDefinition:
-    """TODO
+    """TODO: Documentation
 
     Note about if an extension extends both Collection and Catalog, list the Collection
     extension first.
@@ -93,6 +88,10 @@ class ItemExtension(ABC):
 class EnabledSTACExtensions:
     def __init__(self, extension_definitions):
         self.extensions = dict([(e.extension_id, e) for e in extension_definitions])
+
+    def is_registered_extension(self, extension_id):
+        """Determines whether or not the given extension ID has been registered."""
+        return extension_id in self.extensions
 
     def add_extension(self, extension_definition):
         e_id = extension_definition.extension_id

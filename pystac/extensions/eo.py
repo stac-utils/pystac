@@ -12,6 +12,10 @@ class EOItemExt(ItemExtension):
 
     Attributes:
         item (Item): The Item that is being extended.
+
+    Note:
+        Using EOItemExt to directly wrap an item will add the 'eo' extension ID to
+        the item's stac_extensions.
     """
     def __init__(self, item):
         if item.stac_extensions is None:

@@ -1,11 +1,10 @@
 import json
-import os
 import unittest
-from tempfile import TemporaryDirectory
 
 import pystac
-from pystac import (Catalog, CatalogType, Item, STACObjectType)
-from tests.utils import (SchemaValidator, STACValidationError, TestCases, test_to_from_dict)
+from pystac.extensions import ExtensionError
+from pystac import (Item, Extensions)
+from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
 class ViewTest(unittest.TestCase):
@@ -18,6 +17,18 @@ class ViewTest(unittest.TestCase):
         with open(self.example_uri) as f:
             d = json.load(f)
         test_to_from_dict(self, Item, d)
+
+    def test_apply(self):
+        item = next(TestCases.test_case_2().get_all_items())
+        with self.assertRaises(ExtensionError):
+            item.ext.view
+
+        item.ext.enable(Extensions.VIEW)
+        item.ext.view.apply(off_nadir=1.0,
+                            incidence_angle=2.0,
+                            azimuth=3.0,
+                            sun_azimuth=2.0,
+                            sun_elevation=1.0)
 
     def test_validate_view(self):
         item = pystac.read_file(self.example_uri)
