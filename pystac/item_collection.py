@@ -75,7 +75,7 @@ class ItemCollection(LinkMixin):
         d = {
             'type': 'FeatureCollection',
             'features': [f.to_dict() for f in self.features],
-            'links': [l.to_dict() for l in links]
+            'links': [link.to_dict() for link in links]
         }
 
         return d

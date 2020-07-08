@@ -37,7 +37,7 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         if isinstance(links, dict):
             links = list(links.values())
 
-        collection_link = next((l for l in links if l['rel'] == 'collection'), None)
+        collection_link = next((link for link in links if link['rel'] == 'collection'), None)
         if collection_link is not None:
             collection_href = collection_link['href']
             if json_href is not None:

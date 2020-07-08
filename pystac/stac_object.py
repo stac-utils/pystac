@@ -40,7 +40,7 @@ class LinkMixin:
              rel (str): The :class:`~pystac.Link` ``rel`` to match on.
         """
 
-        self.links = [l for l in self.links if l.rel != rel]
+        self.links = [link for link in self.links if link.rel != rel]
         return self
 
     def get_single_link(self, rel):
@@ -50,7 +50,7 @@ class LinkMixin:
              rel (str): The :class:`~pystac.Link` ``rel`` to match on.
         """
 
-        return next((l for l in self.links if l.rel == rel), None)
+        return next((link for link in self.links if link.rel == rel), None)
 
     def get_links(self, rel=None):
         """Gets the :class:`~pystac.Link` instances associated with this object.
@@ -66,7 +66,7 @@ class LinkMixin:
         if rel is None:
             return self.links
         else:
-            return [l for l in self.links if l.rel == rel]
+            return [link for link in self.links if link.rel == rel]
 
     def clear_links(self, rel=None):
         """Clears all :class:`~pystac.Link` instances associated with this object.
@@ -75,7 +75,7 @@ class LinkMixin:
             rel (str or None): If set, only clear links that match this relationship.
         """
         if rel is not None:
-            self.links = [l for l in self.links if l.rel != rel]
+            self.links = [link for link in self.links if link.rel != rel]
         else:
             self.links = []
         return self
@@ -85,18 +85,18 @@ class LinkMixin:
         This does not include the self link, as those must always be absolute.
         See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
         """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_relative()
+        for link in self.links:
+            if link.rel != 'self':
+                link.make_relative()
         return self
 
     def make_links_absolute(self):
         """Sets each link associated with this object to be absolute.
         See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
         """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_absolute()
+        for link in self.links:
+            if link.rel != 'self':
+                link.make_absolute()
         return self
 
     def get_self_href(self):

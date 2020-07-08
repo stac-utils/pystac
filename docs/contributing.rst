@@ -29,6 +29,12 @@ or an entire folder using:
 
 	python -m unittest discover -v -s tests/
 
+or the entire project using:
+
+.. code-block:: bash
+
+	./scripts/test
+
 More details on using ``unittest`` are `here <https://docs.python.org/3/library/unittest.html>`_.
 
 Code quality checks
@@ -50,4 +56,4 @@ To format code:
    > yapf -ipr pystac
    > yapf -ipr tests
 
-You could also run the ``.travis/style_checks`` script to check flake8 and yapf.
+You can also run the ``./scripts/test`` script to check flake8 and yapf.
