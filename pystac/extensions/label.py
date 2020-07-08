@@ -649,4 +649,4 @@ class LabelStatistics:
         return {'name': self.name, 'value': self.value}
 
 
-LABEL_EXTENSION_DEFINITION = ExtensionDefinition("label", [ExtendedObject(Item, LabelItemExt)])
+LABEL_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.LABEL, [ExtendedObject(Item, LabelItemExt)])

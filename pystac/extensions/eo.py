@@ -335,4 +335,4 @@ class Band:
         return r
 
 
-EO_EXTENSION_DEFINITION = ExtensionDefinition("eo", [ExtendedObject(Item, EOItemExt)])
+EO_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.EO, [ExtendedObject(Item, EOItemExt)])
