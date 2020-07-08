@@ -14,6 +14,7 @@ class LabelTest(unittest.TestCase):
         self.validator = SchemaValidator()
         self.maxDiff = None
         self.label_example_1_uri = TestCases.get_path('data-files/label/label-example-1.json')
+        self.label_example_2_uri = TestCases.get_path('data-files/label/label-example-2.json')
 
     def test_to_from_dict(self):
         with open(self.label_example_1_uri) as f:
@@ -25,6 +26,14 @@ class LabelTest(unittest.TestCase):
         label_example_1 = Item.from_file(self.label_example_1_uri)
 
         self.assertEqual(len(label_example_1.ext.label.label_overviews[0].counts), 2)
+        self.validator.validate_object(label_example_1)
+
+        label_example_2 = Item.from_file(self.label_example_2_uri)
+        self.assertEqual(len(label_example_2.ext.label.label_overviews[0].counts), 2)
+
+        # TODO: Validate for 1.0 as schema was fixed.
+        # In 0.9.0 the properties are required (but need to be null for raster labels)
+        # self.validator.validate_object(label_example_2)
 
     def test_from_file_pre_081(self):
         d = STAC_IO.read_json(self.label_example_1_uri)
@@ -102,11 +111,14 @@ class LabelTest(unittest.TestCase):
 
     def test_label_properties(self):
         label_item = pystac.read_file(self.label_example_1_uri)
+        label_item2 = pystac.read_file(self.label_example_2_uri)
 
         # Get
         self.assertIn("label:properties", label_item.properties)
         label_prop = label_item.ext.label.label_properties
         self.assertEqual(label_prop, label_item.properties['label:properties'])
+        raster_label_prop = label_item2.ext.label.label_properties
+        self.assertEqual(raster_label_prop, None)
 
         # Set
         label_item.ext.label.label_properties = ["prop1", "prop2"]
@@ -166,8 +178,12 @@ class LabelTest(unittest.TestCase):
         label_item = pystac.read_file(self.label_example_1_uri)
         label_overviews = label_item.ext.label.label_overviews
 
+        label_item2 = pystac.read_file(self.label_example_2_uri)
+        label_overviews2 = label_item2.ext.label.label_overviews
+
         self.assertEqual(len(label_overviews), 2)
         self.assertEqual(label_overviews[1].property_key, "label-reg")
+        self.assertEqual(label_overviews2[1].property_key, None)  # Raster
 
         label_counts = label_overviews[0].counts
         self.assertEqual(label_counts[1].count, 17)
@@ -204,5 +220,3 @@ class LabelTest(unittest.TestCase):
                          [("min", 0.1), ("max", 1.0)])
 
         self.validator.validate_object(label_item)
-
-    # TODO: Test raster labels in LabelItems.
