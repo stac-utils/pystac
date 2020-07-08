@@ -141,16 +141,16 @@ class Collection(Catalog):
 
         clone._resolved_objects.cache(clone)
 
-        for l in self.links:
-            if l.rel == 'root':
+        for link in self.links:
+            if link.rel == 'root':
                 # Collection __init__ sets correct root to clone; don't reset
                 # if the root link points to self
-                root_is_self = l.is_resolved() and l.target is self
+                root_is_self = link.is_resolved() and link.target is self
                 if not root_is_self:
                     clone.set_root(None)
-                    clone.add_link(l.clone())
+                    clone.add_link(link.clone())
             else:
-                clone.add_link(l.clone())
+                clone.add_link(link.clone())
 
         return clone
 
@@ -183,13 +183,13 @@ class Collection(Catalog):
                                 summaries=summaries)
 
         has_self_link = False
-        for l in d['links']:
-            has_self_link |= l['rel'] == 'self'
-            if l['rel'] == 'root':
+        for link in d['links']:
+            has_self_link |= link['rel'] == 'self'
+            if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 collection.remove_links('root')
 
-            collection.add_link(Link.from_dict(l))
+            collection.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:
             collection.add_link(Link.self_href(href))
@@ -310,8 +310,8 @@ class SpatialExtent:
             SpatialExtent: A SpatialExtent with a single bbox that covers the
             given coordinates.
         """
-        def process_coords(l, xmin=None, ymin=None, xmax=None, ymax=None):
-            for coord in l:
+        def process_coords(link, xmin=None, ymin=None, xmax=None, ymax=None):
+            for coord in link:
                 if type(coord[0]) is list:
                     xmin, ymin, xmax, ymax = process_coords(coord, xmin, ymin, xmax, ymax)
                 else:

@@ -5,6 +5,8 @@
 ### Added
 
 ### Changed
+- Migrated CI workflows from Travis CI to GitHub Actions [#108](https://github.com/azavea/pystac/pull/108)
+- Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
 ### Fixed
 

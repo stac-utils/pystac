@@ -39,7 +39,7 @@ class STACWritingTest(unittest.TestCase):
                 if not link.rel == 'self':
                     self.assertEqual(link.link_type, link_type)
 
-            rels = set([l['rel'] for l in item_dict['links']])
+            rels = set([link['rel'] for link in item_dict['links']])
             self.assertEqual('self' in rels, should_include_self)
 
         def validate_catalog_link_type(href, link_type, should_include_self):
@@ -49,7 +49,7 @@ class STACWritingTest(unittest.TestCase):
                 if not link.rel == 'self':
                     self.assertEqual(link.link_type, link_type)
 
-            rels = set([l['rel'] for l in cat_dict['links']])
+            rels = set([link['rel'] for link in cat_dict['links']])
             self.assertEqual('self' in rels, should_include_self)
 
             for child_link in cat.get_child_links():
