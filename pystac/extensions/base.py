@@ -45,12 +45,12 @@ class CatalogExtension(ABC):
     @classmethod
     @abstractmethod
     def from_catalog(cls, catalog):
-        pass
+        raise NotImplementedError("from_catalog")
 
     @classmethod
     @abstractmethod
     def _object_links(cls):
-        pass
+        raise NotImplementedError("_object_links")
 
 
 class CollectionExtension(ABC):
@@ -60,13 +60,13 @@ class CollectionExtension(ABC):
 
     @classmethod
     @abstractmethod
-    def from_catalog(cls, catalog):
-        pass
+    def from_collection(cls, catalog):
+        raise NotImplementedError("from_collection")
 
     @classmethod
     @abstractmethod
     def _object_links(cls):
-        pass
+        raise NotImplementedError("_object_links")
 
 
 class ItemExtension(ABC):
@@ -77,15 +77,15 @@ class ItemExtension(ABC):
     @classmethod
     @abstractmethod
     def from_item(cls, item):
-        pass
+        raise NotImplementedError("from_item")
 
     @classmethod
     @abstractmethod
     def _object_links(cls):
-        pass
+        raise NotImplementedError("_object_links")
 
 
-class EnabledSTACExtensions:
+class RegisteredSTACExtensions:
     def __init__(self, extension_definitions):
         self.extensions = dict([(e.extension_id, e) for e in extension_definitions])
 
@@ -93,12 +93,23 @@ class EnabledSTACExtensions:
         """Determines whether or not the given extension ID has been registered."""
         return extension_id in self.extensions
 
+    def get_registered_extensions(self):
+        """Returns the list of registered extension IDs."""
+        return list(self.extensions.keys())
+
     def add_extension(self, extension_definition):
         e_id = extension_definition.extension_id
         if e_id in self.extensions:
             raise ExtensionError("ExtensionDefinition with id '{}' already exists.".format(e_id))
 
         self.extensions[e_id] = extension_definition
+
+    def remove_extension(self, extension_id):
+        """Remove an extension from PySTAC."""
+        if extension_id not in self.extensions:
+            raise ExtensionError(
+                "ExtensionDefinition with id '{}' is not registered.".format(extension_id))
+        del self.extensions[extension_id]
 
     def extend_object(self, stac_object, extension_id):
         ext = self.extensions.get(extension_id)
@@ -109,15 +120,29 @@ class EnabledSTACExtensions:
 
         stac_object_class = type(stac_object)
 
-        ext_class = next(
-            iter([
-                e.extension_class for e in ext.extended_objects
-                if issubclass(stac_object_class, e.stac_object_class)
-            ]), None)
+        ext_classes = [
+            e.extension_class for e in ext.extended_objects
+            if issubclass(stac_object_class, e.stac_object_class)
+        ]
 
-        if ext_class is None:
+        ext_class = None
+        if len(ext_classes) == 0:
             raise ExtensionError("Extension '{}' does not extend objects of type {}".format(
                 extension_id, ext_class))
+        elif len(ext_classes) == 1:
+            ext_class = ext_classes[0]
+        else:
+            # Need to check collection extensions before catalogs.
+            sort_key = {}
+            for c in ext_classes:
+                for i, base_cl in enumerate([ItemExtension, CollectionExtension, CatalogExtension]):
+                    if issubclass(c, base_cl):
+                        sort_key[c] = i
+                        break
+                if c not in sort_key:
+                    sort_key[c] = -1
+
+            ext_class = sorted(ext_classes, key=lambda c: sort_key[c])[0]
 
         return ext_class._from_object(stac_object)
 
