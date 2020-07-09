@@ -8,6 +8,8 @@
 - `pystac.read_file` as a convenience function for reading in a STACObject from a file at a URI.
 
 ### Changed
+- Migrated CI workflows from Travis CI to GitHub Actions [#108](https://github.com/azavea/pystac/pull/108)
+- Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
 - Extension classes for label, eo and single-file-stac were moved to the `pystac.extensions` package.
 - the eo and label extensions changed from being a subclass of Item to wrapping items. __Note__: This is a major change in the API for dealing with extensions. See the note below for more information.

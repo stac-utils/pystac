@@ -179,7 +179,7 @@ class Item(STACObject):
             'properties': self.properties,
             'geometry': self.geometry,
             'bbox': self.bbox,
-            'links': [l.to_dict() for l in links],
+            'links': [link.to_dict() for link in links],
             'assets': assets
         }
 
@@ -258,9 +258,9 @@ class Item(STACObject):
                     collection=collection_id)
 
         has_self_link = False
-        for l in d['links']:
-            has_self_link |= l['rel'] == 'self'
-            item.add_link(Link.from_dict(l))
+        for link in d['links']:
+            has_self_link |= link['rel'] == 'self'
+            item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:
             item.add_link(Link.self_href(href))

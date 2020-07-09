@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install release dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: Build and publish package
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_AZAVEA_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_AZAVEA_PASSWORD }}
+        run: |
+          python setup.py sdist bdist_wheel
+          twine upload dist/*

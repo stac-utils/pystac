@@ -28,9 +28,9 @@ class STACJSONDescription:
         self.custom_extensions = custom_extensions
 
     def __repr__(self):
-        return '<{} {} common_ext={} custom_ext{}>'.format(self.object_type, self.version_range,
-                                                           ','.join(self.common_extensions),
-                                                           ','.join(self.custom_extensions))
+        return '<{} {} common_ext={} custom_ext={}>'.format(self.object_type, self.version_range,
+                                                            ','.join(self.common_extensions),
+                                                            ','.join(self.custom_extensions))
 
 
 class STACVersionRange:

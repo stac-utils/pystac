@@ -30,7 +30,7 @@ class ItemCollectionTest(unittest.TestCase):
             self.assertEqual(ic.get_self_href(), path)
             self.assertEqual(len(ic.links), 1)
 
-            ic.links = [Link(l.rel, join(tmp_dir, basename(l.target))) for l in ic.links]
+            ic.links = [Link(link.rel, join(tmp_dir, basename(link.target))) for link in ic.links]
             ic.save()
             self.assertTrue(isfile(path))
             with open(path) as f:

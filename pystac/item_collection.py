@@ -82,7 +82,7 @@ class ItemCollection(LinkMixin):
             'type': 'FeatureCollection',
             'stac_version': STAC_VERSION,
             'features': [f.to_dict() for f in self.features],
-            'links': [l.to_dict() for l in links]
+            'links': [link.to_dict() for link in links]
         }
 
         if self.stac_extensions is not None:

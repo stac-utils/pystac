@@ -389,26 +389,26 @@ class CatalogTest(unittest.TestCase):
     def test_make_all_links_relative_or_absolute(self):
         def check_all_relative(cat):
             for root, catalogs, items in cat.walk():
-                for l in root.links:
-                    if l.rel != 'self':
+                for link in root.links:
+                    if link.rel != 'self':
                         # print(l.rel)
-                        self.assertTrue(l.link_type == LinkType.RELATIVE)
-                        self.assertFalse(is_absolute_href(l.get_href()))
-                for i in items:
-                    for l in i.links:
-                        if l.rel != 'self':
-                            self.assertTrue(l.link_type == LinkType.RELATIVE)
-                            self.assertFalse(is_absolute_href(l.get_href()))
+                        self.assertTrue(link.link_type == LinkType.RELATIVE)
+                        self.assertFalse(is_absolute_href(link.get_href()))
+                for item in items:
+                    for link in item.links:
+                        if link.rel != 'self':
+                            self.assertTrue(link.link_type == LinkType.RELATIVE)
+                            self.assertFalse(is_absolute_href(link.get_href()))
 
         def check_all_absolute(cat):
             for root, catalogs, items in cat.walk():
-                for l in root.links:
-                    self.assertTrue(l.link_type == LinkType.ABSOLUTE)
-                    self.assertTrue(is_absolute_href(l.get_href()))
-                for i in items:
-                    for l in i.links:
-                        self.assertTrue(l.link_type == LinkType.ABSOLUTE)
-                        self.assertTrue(is_absolute_href(l.get_href()))
+                for link in root.links:
+                    self.assertTrue(link.link_type == LinkType.ABSOLUTE)
+                    self.assertTrue(is_absolute_href(link.get_href()))
+                for item in items:
+                    for link in item.links:
+                        self.assertTrue(link.link_type == LinkType.ABSOLUTE)
+                        self.assertTrue(is_absolute_href(link.get_href()))
 
         test_cases = TestCases.all_test_catalogs()
 
@@ -500,36 +500,37 @@ class CatalogTest(unittest.TestCase):
         for item in cat.get_all_items():
             pass
 
-        new_stac_uri = 'tmp-data/test-case-6'
-        cat.normalize_hrefs(new_stac_uri)
-        cat.save(catalog_type=CatalogType.SELF_CONTAINED)
+        with TemporaryDirectory() as tmp_dir:
+            new_stac_uri = os.path.join(tmp_dir, 'test-case-6')
+            cat.normalize_hrefs(new_stac_uri)
+            cat.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-        # Open the local copy and iterate over it.
-        cat2 = Catalog.from_file(os.path.join(new_stac_uri, 'catalog.json'))
+            # Open the local copy and iterate over it.
+            cat2 = Catalog.from_file(os.path.join(new_stac_uri, 'catalog.json'))
 
-        for item in cat2.get_all_items():
-            # Iterate again over the items. This would fail in #88
-            pass
+            for item in cat2.get_all_items():
+                # Iterate again over the items. This would fail in #88
+                pass
 
 
 class FullCopyTest(unittest.TestCase):
-    def check_link(self, l, tag):
-        if l.is_resolved():
-            target_href = l.target.get_self_href()
+    def check_link(self, link, tag):
+        if link.is_resolved():
+            target_href = link.target.get_self_href()
         else:
-            target_href = l.target
+            target_href = link.target
         self.assertTrue(tag in target_href,
-                        '[{}] {} does not contain "{}"'.format(l.rel, target_href, tag))
+                        '[{}] {} does not contain "{}"'.format(link.rel, target_href, tag))
 
-    def check_item(self, i, tag):
-        for l in i.links:
-            self.check_link(l, tag)
+    def check_item(self, item, tag):
+        for link in item.links:
+            self.check_link(link, tag)
 
     def check_catalog(self, c, tag):
         self.assertEqual(len(c.get_links('root')), 1)
 
-        for l in c.links:
-            self.check_link(l, tag)
+        for link in c.links:
+            self.check_link(link, tag)
 
         for child in c.get_children():
             self.check_catalog(child, tag)
