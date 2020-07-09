@@ -147,3 +147,11 @@ class EOTest(unittest.TestCase):
 
         with self.assertRaises(KeyError):
             eo_item.ext.eo.set_asset_bands(b1_asset, ['BAD_KEY', 'BAD_KEY_2'])
+
+    def test_read_pre_09_fields_into_common_metadata(self):
+        eo_item = pystac.read_file(
+            TestCases.get_path('data-files/examples/0.8.1/item-spec/examples/'
+                               'landsat8-sample.json'))
+
+        self.assertEqual(eo_item.common_metadata.platform, "landsat-8")
+        self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])

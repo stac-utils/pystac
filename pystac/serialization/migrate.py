@@ -3,7 +3,7 @@ from copy import deepcopy
 
 from pystac import STAC_VERSION
 from pystac.extensions import Extensions
-from pystac.serialization.identify import STACObjectType
+from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange)
 
 # STAC Object Types
 
@@ -55,10 +55,19 @@ def _migrate_datacube(d, version, info):
 
 
 def _migrate_datetime_range(d, version, info):
-    pass
+    if version < '0.9':
+        # Datetime range was removed
+        if 'dtr:start_datetime' in d['properties'] and 'start_datetime' not in d['properties']:
+            d['properties']['start_datetime'] = d['properties']['dtr:start_datetime']
+            del d['properties']['dtr:start_datetime']
+
+        if 'dtr:end_datetime' in d['properties'] and 'end_datetime' not in d['properties']:
+            d['properties']['end_datetime'] = d['properties']['dtr:end_datetime']
+            del d['properties']['dtr:end_datetime']
 
 
 def _migrate_eo(d, version, info):
+    added_extensions = set([])
     if version < '0.5':
         if 'eo:crs' in d['properties']:
             # Try to pull out the EPSG code.
@@ -89,6 +98,38 @@ def _migrate_eo(d, version, info):
                     asset_band_indices.append(keys_to_indices[bk])
                 asset['eo:bands'] = sorted(asset_band_indices)
 
+    if version < '0.9':
+        # Some eo fields became common_metadata
+        if 'eo:platform' in d['properties'] and 'platform' not in d['properties']:
+            d['properties']['platform'] = d['properties']['eo:platform']
+            del d['properties']['eo:platform']
+
+        if 'eo:instrument' in d['properties'] and 'instruments' not in d['properties']:
+            d['properties']['instruments'] = [d['properties']['eo:instrument']]
+            del d['properties']['eo:instrument']
+
+        if 'eo:constellation' in d['properties'] and 'constellation' not in d['properties']:
+            d['properties']['constellation'] = d['properties']['eo:constellation']
+            del d['properties']['eo:constellation']
+
+        # Some eo fields became view extension fields
+        eo_to_view_fields = [
+            'off_nadir', 'azimuth', 'incidence_angle', 'sun_azimuth', 'sun_elevation'
+        ]
+
+        view_enabled = 'view' in d['stac_extensions']
+        for field in eo_to_view_fields:
+            if 'eo:{}'.format(field) in d['properties']:
+                if not view_enabled:
+                    added_extensions.add('view')
+                    view_enabled = True
+                if not 'view:{}'.format(field) in d['properties']:
+                    d['properties']['view:{}'.format(field)] = \
+                        d['properties']['eo:{}'.format(field)]
+                    del d['properties']['eo:{}'.format(field)]
+
+    return added_extensions
+
 
 def _migrate_label(d, version, info):
     if info.object_type == STACObjectType.ITEM and version < '1.0.0':
@@ -117,7 +158,19 @@ def _migrate_pointcloud(d, version, info):
 
 
 def _migrate_sar(d, version, info):
-    pass
+    if version < '0.9':
+        # Some sar fields became common_metadata
+        if 'sar:platform' in d['properties'] and 'platform' not in d['properties']:
+            d['properties']['platform'] = d['properties']['sar:platform']
+            del d['properties']['sar:platform']
+
+        if 'sar:instrument' in d['properties'] and 'instruments' not in d['properties']:
+            d['properties']['instruments'] = [d['properties']['sar:instrument']]
+            del d['properties']['sar:instrument']
+
+        if 'sar:constellation' in d['properties'] and 'constellation' not in d['properties']:
+            d['properties']['constellation'] = d['properties']['sar:constellation']
+            del d['properties']['sar:constellation']
 
 
 def _migrate_scientific(d, version, info):
@@ -139,13 +192,18 @@ _extension_migrations = {
     Extensions.ASSETS: _migrate_assets,
     Extensions.CHECKSUM: _migrate_checksum,
     Extensions.DATACUBE: _migrate_datacube,
-    Extensions.DATETIME_RANGE: _migrate_datetime_range,
     Extensions.EO: _migrate_eo,
     Extensions.LABEL: _migrate_label,
     Extensions.POINTCLOUD: _migrate_pointcloud,
     Extensions.SAR: _migrate_sar,
     Extensions.SCIENTIFIC: _migrate_scientific,
-    Extensions.SINGLE_FILE_STAC: _migrate_single_file_stac,
+    Extensions.SINGLE_FILE_STAC: _migrate_single_file_stac
+}
+
+_removed_extension_migrations = {
+    # Removed in 0.9.0
+    'dtr': _migrate_datetime_range,
+    'datetime-range': _migrate_datetime_range
 }
 
 
@@ -168,9 +226,29 @@ def migrate_to_latest(json_dict, info):
     if version != STAC_VERSION:
         _object_migrations[info.object_type](result, version, info)
 
+        extensions_to_add = set([])
         for ext in info.common_extensions:
-            _extension_migrations[ext](result, version, info)
+            if ext in _extension_migrations:
+                added_extensions = _extension_migrations[ext](result, version, info)
+                if added_extensions:
+                    extensions_to_add |= added_extensions
+
+            if ext in _removed_extension_migrations:
+                _removed_extension_migrations[ext](result, version, info)
+                result['stac_extensions'].remove(ext)
+
+        for ext in extensions_to_add:
+            result['stac_extensions'].append(ext)
+
+        migrated_extensions = set(info.common_extensions)
+        migrated_extensions = migrated_extensions | set(extensions_to_add)
+        migrated_extensions = migrated_extensions - set(_removed_extension_migrations.keys())
+        common_extensions = list(migrated_extensions)
+    else:
+        common_extensions = info.common_extensions
 
     result['stac_version'] = STAC_VERSION
 
-    return result
+    return result, STACJSONDescription(info.object_type,
+                                       STACVersionRange(STAC_VERSION, STAC_VERSION),
+                                       common_extensions, info.custom_extensions)

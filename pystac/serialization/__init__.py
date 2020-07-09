@@ -32,7 +32,7 @@ def stac_object_from_dict(d, href=None, root=None):
 
     info = identify_stac_object(d)
 
-    d = migrate_to_latest(d, info)
+    d, info = migrate_to_latest(d, info)
 
     if info.object_type == STACObjectType.CATALOG:
         return Catalog.from_dict(d, href=href, root=root)

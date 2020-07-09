@@ -34,9 +34,9 @@ class STACJSONDescription:
 
 
 class STACVersionRange:
-    def __init__(self):
-        self.min_version = '0.4.0'
-        self.max_version = STAC_VERSION
+    def __init__(self, min_version='0.4.0', max_version=STAC_VERSION):
+        self.min_version = min_version
+        self.max_version = max_version
 
     def set_min(self, v):
         if self.min_version < v:
