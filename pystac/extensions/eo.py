@@ -84,7 +84,7 @@ class EOItemExt(ItemExtension):
         self.item.properties['eo:cloud_cover'] = v
 
     def __repr__(self):
-        return '<EOItemExt Item id={}>'.format(self.id)
+        return '<EOItemExt Item id={}>'.format(self.item.id)
 
     def get_asset_bands(self, asset):
         """Gets the bands for the given asset.
