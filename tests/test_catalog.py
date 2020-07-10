@@ -4,8 +4,7 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
-from pystac import (Catalog, Collection, CatalogType, STAC_VERSION, LinkType, Item, Asset,
-                    MediaType, Extensions)
+from pystac import (Catalog, Collection, CatalogType, LinkType, Item, Asset, MediaType, Extensions)
 from pystac.extensions.label import LabelClasses
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
@@ -32,7 +31,7 @@ class CatalogTest(unittest.TestCase):
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
         catalog_url = (
             'https://raw.githubusercontent.com/lossyrob/stac-spec/0.9.0/pystac-upgrade-fixes'
-            '/extensions/label/examples/multidataset/catalog.json'.format(STAC_VERSION))
+            '/extensions/label/examples/multidataset/catalog.json')
         cat = Catalog.from_file(catalog_url)
 
         zanzibar = cat.get_child('zanzibar-collection')

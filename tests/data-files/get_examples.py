@@ -17,17 +17,17 @@ def remove_bad_collection(js):
     links = js.get('links')
     if links is not None:
         filtered_links = []
-        for l in links:
-            rel = l.get('rel')
+        for link in links:
+            rel = link.get('rel')
             if rel is not None and rel == 'collection':
-                href = l['href']
+                href = link['href']
                 try:
                     json.loads(STAC_IO.read_text(href))
-                    filtered_links.append(l)
+                    filtered_links.append(link)
                 except (HTTPError, FileNotFoundError, json.decoder.JSONDecodeError):
                     print('===REMOVING UNREADABLE COLLECTION AT {}'.format(href))
             else:
-                filtered_links.append(l)
+                filtered_links.append(link)
         js['links'] = filtered_links
     return js
 

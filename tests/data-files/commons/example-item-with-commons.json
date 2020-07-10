@@ -167,6 +167,10 @@
     },
     "links": [
         {
+            "rel": "collection",
+            "href": "./example-collection-with-commons.json"
+        },
+        {
             "rel": "parent",
             "href": "./example-collection-with-commons.json"
         },

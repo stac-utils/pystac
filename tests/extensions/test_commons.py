@@ -1,9 +1,7 @@
-import json
 import unittest
 
 import pystac
-from pystac.extensions import ExtensionError
-from tests.utils import (SchemaValidator, TestCases, test_to_from_dict, STACValidationError)
+from tests.utils import (SchemaValidator, TestCases, STACValidationError)
 
 
 class CommonsTest(unittest.TestCase):
@@ -13,8 +11,8 @@ class CommonsTest(unittest.TestCase):
 
     def test_reads_common_metadata_if_enabled(self):
         # Test reading from collection
-        collection = pystac.read_file(TestCases.get_path(
-            'data-files/commons/example-collection-with-commons.json'))
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/commons/example-collection-with-commons.json'))
 
         self.assertTrue(collection.ext.implements(pystac.Extensions.COMMONS))
 
@@ -27,18 +25,18 @@ class CommonsTest(unittest.TestCase):
 
         # Test reading item directly
 
-        item2 = pystac.read_file(TestCases.get_path(
-            'data-files/commons/example-item-with-commons.json'))
+        item2 = pystac.read_file(
+            TestCases.get_path('data-files/commons/example-item-with-commons.json'))
 
-        self.assertTrue(item.ext.implements(pystac.Extensions.COMMONS))
-        self.assertTrue(item.ext.implements(pystac.Extensions.EO))
+        self.assertTrue(item2.ext.implements(pystac.Extensions.COMMONS))
+        self.assertTrue(item2.ext.implements(pystac.Extensions.EO))
 
-        self.validator.validate_object(item)
+        self.validator.validate_object(item2)
 
     def test_doesnt_common_metadata_if_not_enabled(self):
         # Test reading from collection
-        collection = pystac.read_file(TestCases.get_path(
-            'data-files/commons/example-collection-without-commons.json'))
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/commons/example-collection-without-commons.json'))
 
         self.assertFalse(collection.ext.implements(pystac.Extensions.COMMONS))
 
@@ -53,11 +51,11 @@ class CommonsTest(unittest.TestCase):
 
         # Test reading item directly
 
-        item2 = pystac.read_file(TestCases.get_path(
-            'data-files/commons/example-item-with-commons.json'))
+        item2 = pystac.read_file(
+            TestCases.get_path('data-files/commons/example-item-without-commons.json'))
 
-        self.assertFalse(item.ext.implements(pystac.Extensions.COMMONS))
-        self.assertTrue(item.ext.implements(pystac.Extensions.EO))
+        self.assertFalse(item2.ext.implements(pystac.Extensions.COMMONS))
+        self.assertTrue(item2.ext.implements(pystac.Extensions.EO))
 
         with self.assertRaises(STACValidationError):
-            self.validator.validate_object(item)
+            self.validator.validate_object(item2)
