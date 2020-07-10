@@ -1,5 +1,5 @@
 ## PySTAC
-![Build Status](https://github.com/azavea/pystac/workflows/CI/badge.svg)
+![Build Status](https://github.com/azavea/pystac/workflows/CI/badge.svg?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
 [![Gitter chat](https://badges.gitter.im/azavea/pystac.svg)](https://gitter.im/azavea/pystac)
