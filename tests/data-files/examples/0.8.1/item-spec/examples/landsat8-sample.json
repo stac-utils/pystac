@@ -141,8 +141,7 @@
   "links": [
     { "rel":"self", "href": "http://landsat-pds.s3.amazonaws.com/L8/153/025/LC81530252014153LGN00/LC81530252014153LGN00.json"},
     { "rel":"alternate", "href": "https://landsatonaws.com/L8/153/025/LC81530252014153LGN00", "type": "text/html"},
-    { "rel":"root", "href": "http://landsat-pds.s3.amazonaws.com/L8/L1T-collection.json"},
-    { "rel":"collection", "href": "http://landsat-pds.s3.amazonaws.com/L8/L1T-collection.json"}
+    { "rel":"root", "href": "http://landsat-pds.s3.amazonaws.com/L8/L1T-collection.json"}
   ],
 
   "assets" :{

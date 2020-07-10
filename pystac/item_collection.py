@@ -1,6 +1,6 @@
 import json
 
-from pystac import STACError
+from pystac import (STACError, STAC_VERSION)
 from pystac.stac_io import STAC_IO
 from pystac.item import Item
 from pystac.link import Link
@@ -13,17 +13,20 @@ class ItemCollection(LinkMixin):
 
     Args:
         features (List[Item]): Optional initial list of items contained by this ItemCollection.
+        stac_extensions (List[str]): Optional list of extensions implemented.
 
     Attributes:
         features (List[Item]): Items contained by this ItemCollection
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this ItemCollection.
     """
-    def __init__(self, features=None):
+    def __init__(self, features=None, stac_extensions=None):
         if features is None:
             self.features = []
         else:
             self.features = features
+
+        self.stac_extensions = stac_extensions
 
         self.links = []
 
@@ -38,7 +41,10 @@ class ItemCollection(LinkMixin):
             ItemCollection: The ItemCollection deserialized from the JSON dict.
         """
         features = [Item.from_dict(feature) for feature in d['features']]
-        ic = ItemCollection(features)
+        stac_extensions = d.get('stac_extensions')
+
+        ic = ItemCollection(features=features, stac_extensions=stac_extensions)
+
         if 'links' in d.keys():
             for link in d['links']:
                 ic.add_link(Link.from_dict(link))
@@ -74,9 +80,13 @@ class ItemCollection(LinkMixin):
 
         d = {
             'type': 'FeatureCollection',
+            'stac_version': STAC_VERSION,
             'features': [f.to_dict() for f in self.features],
-            'links': [l.to_dict() for l in links]
+            'links': [link.to_dict() for link in links]
         }
+
+        if self.stac_extensions is not None:
+            d['stac_extensions'] = self.stac_extensions
 
         return d
 

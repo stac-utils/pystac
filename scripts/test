@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+if [[ -n "${CI}" ]]; then
+    set -x
+fi
+
+function usage() {
+    echo -n \
+        "Usage: $(basename "$0")
+Execute project linters and test suites.
+"
+}
+
+if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
+    if [ "${1:-}" = "--help" ]; then
+        usage
+    else
+        # Lint
+        flake8 pystac tests
+
+        # Code formatting
+        yapf -dpr pystac tests
+
+        # Test suite
+        python -m unittest discover tests/
+    fi
+fi

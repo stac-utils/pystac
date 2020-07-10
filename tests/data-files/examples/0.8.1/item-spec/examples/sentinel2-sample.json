@@ -17,7 +17,7 @@
     },
     {
       "rel": "collection",
-      "href": "https://raw.githubusercontent.com/sat-utils/sat-stac-sentinel/master/satstac/sentinel/sentinel-2-l1c.json"
+      "href": "https://raw.githubusercontent.com/sat-utils/sat-stac-sentinel/4588288e83e12485cdcb2e9d31dce30915ebae4c/stac_sentinel/sentinel-s2-l1c.json"
     }
   ],
   "bbox": [

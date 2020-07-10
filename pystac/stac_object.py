@@ -1,9 +1,86 @@
 from abc import (ABC, abstractmethod)
 
+import pystac
 from pystac import STACError
 from pystac.link import (Link, LinkType)
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
+from pystac.extensions import ExtensionError
+
+
+class ExtensionIndex:
+    def __init__(self, stac_object):
+        self.stac_object = stac_object
+
+    def __getitem__(self, extension_id):
+        """Gets the extension object for the given extension.
+
+        Returns:
+            CatalogExtension or CollectionExtension or ItemExtension: The extension object
+            through which you can access the extension functionality for the extension represented
+            by the extension_id.
+        """
+        # Check to make sure this is a registered extension.
+        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        if not self.implements(extension_id):
+            raise ExtensionError("{} does not implement the {} extension. "
+                                 "Use the 'ext.enable' method to enable this extension "
+                                 "first.".format(self.stac_object, extension_id))
+
+        return pystac.STAC_EXTENSIONS.extend_object(self.stac_object, extension_id)
+
+    def __getattr__(self, extension_id):
+        """Gets an extension based on a dynamic attribute.
+
+        This takes the attribute name and passes it to __getitem__.
+
+        This allows the following two lines to be equivalent::
+
+            item.ext["label"].label_properties
+            item.ext.label.label_properties
+        """
+        return self[extension_id]
+
+    def enable(self, extension_id):
+        """Enables a stac extension for the given object. If the object already
+        enables the extension, no action is taken. If it does not, the extension ID is
+        added to the object's stac_extension property.
+
+        Args:
+            extension_id (str): The extension ID representing the extension
+            the object should implement
+
+        """
+        # Check to make sure this is a registered extension.
+        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        # Check that this extension supports adding to this type of object
+        if not pystac.STAC_EXTENSIONS.can_extend(extension_id, type(self.stac_object)):
+            raise ExtensionError("'{}' does not extend type {} ".format(
+                extension_id, type(self.stac_object)))
+
+        if self.stac_object.stac_extensions is None:
+            self.stac_object.stac_extensions = [extension_id]
+        elif extension_id not in self.stac_object.stac_extensions:
+            self.stac_object.stac_extensions.append(extension_id)
+
+    def implements(self, extension_id):
+        """Returns true if the associated object implements the given extension.
+
+        Args:
+            extension_id (str): The extension ID to check
+
+        Returns:
+            [bool]: True if the object implements the extensions - i.e. if
+                the extension ID is in the "stac_extensions" property.
+        """
+        return (self.stac_object.stac_extensions is not None
+                and extension_id in self.stac_object.stac_extensions)
 
 
 class LinkMixin:
@@ -40,7 +117,7 @@ class LinkMixin:
              rel (str): The :class:`~pystac.Link` ``rel`` to match on.
         """
 
-        self.links = [l for l in self.links if l.rel != rel]
+        self.links = [link for link in self.links if link.rel != rel]
         return self
 
     def get_single_link(self, rel):
@@ -50,7 +127,7 @@ class LinkMixin:
              rel (str): The :class:`~pystac.Link` ``rel`` to match on.
         """
 
-        return next((l for l in self.links if l.rel == rel), None)
+        return next((link for link in self.links if link.rel == rel), None)
 
     def get_links(self, rel=None):
         """Gets the :class:`~pystac.Link` instances associated with this object.
@@ -66,7 +143,7 @@ class LinkMixin:
         if rel is None:
             return self.links
         else:
-            return [l for l in self.links if l.rel == rel]
+            return [link for link in self.links if link.rel == rel]
 
     def clear_links(self, rel=None):
         """Clears all :class:`~pystac.Link` instances associated with this object.
@@ -75,7 +152,7 @@ class LinkMixin:
             rel (str or None): If set, only clear links that match this relationship.
         """
         if rel is not None:
-            self.links = [l for l in self.links if l.rel != rel]
+            self.links = [link for link in self.links if link.rel != rel]
         else:
             self.links = []
         return self
@@ -85,18 +162,18 @@ class LinkMixin:
         This does not include the self link, as those must always be absolute.
         See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
         """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_relative()
+        for link in self.links:
+            if link.rel != 'self':
+                link.make_relative()
         return self
 
     def make_links_absolute(self):
         """Sets each link associated with this object to be absolute.
         See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
         """
-        for l in self.links:
-            if l.rel != 'self':
-                l.make_absolute()
+        for link in self.links:
+            if link.rel != 'self':
+                link.make_absolute()
         return self
 
     def get_self_href(self):
@@ -260,12 +337,14 @@ class STACObject(LinkMixin, ABC):
                 link.resolve_stac_object(root=self.get_root())
                 yield link.target
 
-    def save_object(self, include_self_link=True):
+    def save_object(self, include_self_link=True, dest_href=None):
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
           include_self_link (bool): If this is true, include the 'self' link with this object.
               Otherwise, leave out the self link.
+          dest_href (str): Optional HREF to save the file to. If None, the object will be saved
+              to the object's self href.
 
         Raises:
             :class:`~pystac.STACError`: If no self href is set, this error will be raised.
@@ -275,11 +354,14 @@ class STACObject(LinkMixin, ABC):
             STAC best practices document
             <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
         """
-        self_href = self.get_self_href()
-        if self_href is None:
-            raise STACError('Self HREF must be set before saving.')
+        if dest_href is None:
+            self_href = self.get_self_href()
+            if self_href is None:
+                raise STACError(
+                    'Self HREF must be set before saving without an explicit dest_href.')
+            dest_href = self_href
 
-        STAC_IO.save_json(self.get_self_href(), self.to_dict(include_self_link=include_self_link))
+        STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self, root=None, parent=None):
         """Create a full copy of this STAC object and any stac objects linked to by
@@ -321,6 +403,24 @@ class STACObject(LinkMixin, ABC):
 
         return clone
 
+    @property
+    def ext(self):
+        """Access extensions for this STACObject.
+
+        Example:
+            This example shows accessing a Item's EO extension functionality
+            that gets the band information for an asset::
+
+                item = pystac.read_file("eo_item.json")
+                bands = item.ext.eo.get_asset_bands(item.assets["image"])
+
+        Returns:
+            ExtensionIndex: The object that can be used to access extension information
+            and functionality.
+        """
+        return ExtensionIndex(self)
+
+    @abstractmethod
     def fully_resolve(self):
         """Ensure all STACObjects linked to by this STACObject are
         resolved. This is important for operations such as changing
@@ -328,19 +428,7 @@ class STACObject(LinkMixin, ABC):
 
         This method mutates the entire catalog tree.
         """
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel == 'root':
-                if not link.is_resolved():
-                    if link.get_absolute_href() != self.get_self_href():
-                        link.target = self
-                    else:
-                        link.resolve_stac_object()
-                        link.target.fully_resolve()
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
-                    link.target.fully_resolve()
+        pass
 
     @abstractmethod
     def normalize_hrefs(self, root_href):
@@ -419,9 +507,10 @@ class STACObject(LinkMixin, ABC):
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
-        if not root_link.is_resolved():
-            if root_link.get_absolute_href() == href:
-                o.set_root(o, link_type=root_link.link_type)
+        if root_link is not None:
+            if not root_link.is_resolved():
+                if root_link.get_absolute_href() == href:
+                    o.set_root(o, link_type=root_link.link_type)
         return o
 
     @classmethod

@@ -2,6 +2,7 @@ import os
 import posixpath
 from urllib.parse import (urlparse, ParseResult as URLParseResult)
 from datetime import timezone
+import dateutil.parser
 
 # Allow for modifying the path library for testability
 # (i.e. testing Windows path manipulation on non-Windows systems)
@@ -87,8 +88,12 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
 
     Returns:
         str: The absolute HREF. If the source_href is already an absolute href,
-        then it will be returned unchanged.
+        then it will be returned unchanged. If the source_href it None, it will
+        return None.
     """
+    if source_href is None:
+        return None
+
     if start_href is None:
         start_href = os.getcwd()
         start_is_dir = True
@@ -147,3 +152,41 @@ def datetime_to_str(dt):
         timestamp = '{}Z'.format(timestamp[:-len(zulu)])
 
     return timestamp
+
+
+def str_to_datetime(s):
+    return dateutil.parser.parse(s)
+
+
+def geometry_to_bbox(geometry):
+    """Extract the bounding box from a geojson geometry
+
+    Args:
+        geometry (dict): GeoJSON geometry dict
+
+    Returns:
+        list: Bounding box of geojson geometry, formatted according to:
+        https://tools.ietf.org/html/rfc7946#section-5
+    """
+    coords = geometry['coordinates']
+
+    lats = []
+    lons = []
+
+    def extract_coords(coords):
+        for x in coords:
+            if isinstance(x[0], list):
+                extract_coords(x)
+            else:
+                lat, lon = x
+                lats.append(lat)
+                lons.append(lon)
+
+    extract_coords(coords)
+
+    lons.sort()
+    lats.sort()
+
+    bbox = [lats[0], lons[0], lats[-1], lons[-1]]
+
+    return bbox
