@@ -1,7 +1,8 @@
 import unittest
 from tempfile import TemporaryDirectory
 
-from pystac import (STAC_IO, STACObject, CatalogType, LinkType)
+from pystac import (STAC_IO, STACObject, Collection, CatalogType, LinkType)
+from pystac.serialization import (STACObjectType)
 from pystac.utils import make_absolute_href
 
 from tests.utils import (TestCases, SchemaValidator)
@@ -15,21 +16,21 @@ class STACWritingTest(unittest.TestCase):
         self.schema_validator = SchemaValidator()
 
     def validate_catalog(self, catalog):
-        self.schema_validator.validate_object(catalog)
+        self.schema_validator.validate_object(catalog, print_on_error=True)
         validated_count = 1
 
         for child in catalog.get_children():
             validated_count += self.validate_catalog(child)
 
         for item in catalog.get_items():
-            self.schema_validator.validate_object(item)
+            self.schema_validator.validate_object(item, print_on_error=True)
             validated_count += 1
 
         return validated_count
 
     def validate_file(self, path, object_type):
         d = STAC_IO.read_json(path)
-        return self.schema_validator.validate_dict(d, object_type)
+        return self.schema_validator.validate_dict(d, object_type, print_on_error=True)
 
     def validate_link_types(self, root_href, catalog_type):
         def validate_item_link_type(href, link_type, should_include_self):
@@ -83,10 +84,14 @@ class STACWritingTest(unittest.TestCase):
             self.validate_link_types(root_href, catalog_type)
 
             for parent, children, items in catalog.walk():
-                self.validate_file(parent.get_self_href(), type(parent))
+                if issubclass(type(parent), Collection):
+                    stac_object_type = STACObjectType.COLLECTION
+                else:
+                    stac_object_type = STACObjectType.CATALOG
+                self.validate_file(parent.get_self_href(), stac_object_type)
 
                 for item in items:
-                    self.validate_file(item.get_self_href(), type(item))
+                    self.validate_file(item.get_self_href(), STACObjectType.ITEM)
 
     def test_testcases(self):
         for catalog in TestCases.all_test_catalogs():

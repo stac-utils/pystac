@@ -1,14 +1,14 @@
 
 {
     "type": "Feature",
-    "stac_version": "0.8.1",
+    "stac_version": "0.9.0",
     "id": "label-example-1-label-item",
     "properties": {
         "datetime": "2019-10-04 18:55:37Z",
         "label:description": "labels for area-1-1",
         "label:type": "vector",
         "label:properties": [
-            "label"
+          "label","label2","label-reg"
         ],
         "label:classes": [
             {
@@ -17,10 +17,17 @@
                     "one",
                     "two"
                 ]
+            },
+            {
+                "name": "label2",
+                "classes": [
+                    "three",
+                    "four"
+                ]
             }
         ],
         "label:tasks": [
-            "classification"
+          "classification","regression"
         ],
         "label:methods": [
             "manual"
@@ -36,6 +43,15 @@
                     {
                         "name": "two",
                         "count": 17
+                    }
+                ]
+            },
+            {
+                "property_key": "label-reg",
+                "statistics": [
+                    {
+                        "name": "mean",
+                        "value": 7
                     }
                 ]
             }

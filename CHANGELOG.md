@@ -1,14 +1,52 @@
 # Changelog
 
-## Unreleased
+## [v0.4.0]
+
+The two major changes for this release are:
+- Upgrade to STAC 0.9.0
+- Refactor the extensions API to accomidate items that implement multiple extesions (e.g. `eo` and `view`)
+
+See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/blob/v0.9.0/CHANGELOG.md) and issue [#65](https://github.com/azavea/pystac/issues/65) for more information.
+
+### API Changes
+
+These are the major API changes that will have to be accounted for when upgrading PySTAC:
+
+#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inheret.
+
+This change affects the two extensions that were implemented for Item - `EOItem` and `LabelItem`
+have become `EOItemExt` and `LabelItemExt`, and no longer inheret from Item.
+
+This change was motivated by the 0.9 change that split some properties out from `eo` into
+the `view` extension. If we kept an inheritance-based extension architecture, we would not
+be able to account well for these new items that implemented both the `eo` and `view` extensions.
+
+See the [Extensions section](https://pystac.readthedocs.io/en/0.4/concepts.html#extensions) in the
+documentation for more information on the new way to use extensions.
+
+#### Extensions have moved to their own package:
+- `pystac.label` -> `pystac.extensions.label`
+- `pystac.eo` -> `pystac.extensions.eo`
+- `pystac.single_file_stac` -> `pystac.extensions.single_file_stac`
 
 ### Added
+
+- `pystac.read_file` as a convenience function for reading in a STACObject from a file at a URI which delegates to `STACObject.from_file`.
+- `pystac.read_file` as a convenience function for reading in a STACObject from a file at a URI.
+- Added support for the [view](https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/view) extension.
+- Added support for the [commons](https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/commons) extension.
 
 ### Changed
 - Migrated CI workflows from Travis CI to GitHub Actions [#108](https://github.com/azavea/pystac/pull/108)
 - Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
-### Fixed
+- Extension classes for label, eo and single-file-stac were moved to the `pystac.extensions` package.
+- the eo and label extensions changed from being a subclass of Item to wrapping items. __Note__: This is a major change in the API for dealing with extensions. See the note below for more information.
+- Renamed the class that enumerates extension names from `Extension` to `Extensions`
+- Asset properties always return a dict instead of being None for Assets that have non-core properties.
+- The `Band` constructor in the EO extension changed to taking a dict. To create a band from property values,
+use `Band.create`
+
 
 ## [v0.3.4] - 2020-06-20
 

@@ -23,6 +23,16 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
     collection_id = None
     collection_href = None
 
+    # Check to see if this is an item 0.9 or later that
+    # doesn't extend the commons extension, in which case
+    # we don't have to merge.
+    stac_version = item_dict.get('stac_version')
+    if stac_version is not None and stac_version >= '0.9.0':
+        stac_extensions = item_dict.get('stac_extensions')
+        if type(stac_extensions) is list:
+            if 'commons' not in stac_extensions:
+                return False
+
     # Try the cache if we have a collection ID.
     if 'collection' in item_dict:
         collection_id = item_dict['collection']

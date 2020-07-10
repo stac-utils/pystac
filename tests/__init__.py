@@ -11,24 +11,27 @@ from pystac.stac_io import STAC_IO
 
 def unsafe_read_https_method(uri):
     parsed = urlparse(uri)
-    if parsed.scheme == 'https':
-        context = ssl._create_unverified_context()
-        with urlopen(uri, context=context) as f:
-            return f.read().decode('utf-8')
-    elif parsed.scheme == 'http':
-        # Avoid reading cool-sat.com
-        if parsed.netloc == 'cool-sat.com':
-            raise HTTPError(url=uri,
-                            msg='cool-sat.com does not exist',
-                            hdrs=None,
-                            code=404,
-                            fp=None)
+    try:
+        if parsed.scheme == 'https':
+            context = ssl._create_unverified_context()
+            with urlopen(uri, context=context) as f:
+                return f.read().decode('utf-8')
+        elif parsed.scheme == 'http':
+            # Avoid reading cool-sat.com
+            if parsed.netloc == 'cool-sat.com':
+                raise HTTPError(url=uri,
+                                msg='cool-sat.com does not exist',
+                                hdrs=None,
+                                code=404,
+                                fp=None)
 
-        with urlopen(uri) as f:
-            return f.read().decode('utf-8')
-    else:
-        with open(uri) as f:
-            return f.read()
+            with urlopen(uri) as f:
+                return f.read().decode('utf-8')
+        else:
+            with open(uri) as f:
+                return f.read()
+    except HTTPError as e:
+        raise Exception("Could not read uri {}".format(uri)) from e
 
 
 STAC_IO.read_text_method = unsafe_read_https_method

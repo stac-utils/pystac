@@ -481,7 +481,7 @@ class Catalog(STACObject):
             yield from child.walk()
 
     def _object_links(self):
-        return ['child', 'item']
+        return ['child', 'item'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
 
     def map_items(self, item_mapper):
         """Creates a copy of a catalog, with each item passed through the

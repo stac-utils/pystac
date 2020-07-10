@@ -1,5 +1,5 @@
 from pystac.version import STAC_VERSION
-from pystac.extension import Extension
+from pystac.extensions import Extensions
 
 
 class STACObjectType:
@@ -34,9 +34,9 @@ class STACJSONDescription:
 
 
 class STACVersionRange:
-    def __init__(self):
-        self.min_version = '0.4.0'
-        self.max_version = STAC_VERSION
+    def __init__(self, min_version='0.4.0', max_version=STAC_VERSION):
+        self.min_version = min_version
+        self.max_version = max_version
 
     def set_min(self, v):
         if self.min_version < v:
@@ -68,6 +68,9 @@ class STACVersionRange:
     def is_earlier_than(self, v):
         return self.max_version < v
 
+    def is_later_than(self, v):
+        return v < self.min_version
+
     def __repr__(self):
         return '<VERSIONS {}-{}>'.format(self.min_version, self.max_version)
 
@@ -85,7 +88,7 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     if object_type == STACObjectType.ITEMCOLLECTION:
         if 'assets' in d:
-            stac_extensions.add(Extension.ASSETS)
+            stac_extensions.add(Extensions.ASSETS)
             version_range.set_min('0.8.0')
 
     # checksum
@@ -94,32 +97,32 @@ def _identify_stac_extensions(object_type, d, version_range):
         for link in d['links']:
             if any(filter(lambda p: p.startswith('checksum:'), link)):
                 found_checksum = True
-                stac_extensions.add(Extension.CHECKSUM)
+                stac_extensions.add(Extensions.CHECKSUM)
         if not found_checksum:
             if 'assets' in d:
                 for asset in d['assets']:
                     if any(filter(lambda p: p.startswith('checksum:'), link)):
                         found_checksum = True
-                        stac_extensions.add(Extension.CHECKSUM)
+                        stac_extensions.add(Extensions.CHECKSUM)
         if found_checksum:
             version_range.set_min('0.6.2')
 
     # datacube
     if object_type == STACObjectType.ITEM:
         if any(filter(lambda k: k.startswith('cube:'), d['properties'])):
-            stac_extensions.add(Extension.DATACUBE)
+            stac_extensions.add(Extensions.DATACUBE)
             version_range.set_min('0.6.1')
 
     # datetime-range
     if object_type == STACObjectType.ITEM:
         if 'dtr:start_datetime' in d['properties']:
-            stac_extensions.add(Extension.DATETIME_RANGE)
+            stac_extensions.add(Extensions.DATETIME_RANGE)
             version_range.set_min('0.6.0')
 
     # eo
     if object_type == STACObjectType.ITEM:
         if any(filter(lambda k: k.startswith('eo:'), d['properties'])):
-            stac_extensions.add(Extension.EO)
+            stac_extensions.add(Extensions.EO)
             if 'eo:epsg' in d['properties']:
                 if d['properties']['eo:epsg'] is None:
                     version_range.set_min('0.6.1')
@@ -128,19 +131,19 @@ def _identify_stac_extensions(object_type, d, version_range):
             if 'eo:constellation' in d['properties']:
                 version_range.set_min('0.6.0')
         if 'eo:bands' in d:
-            stac_extensions.add(Extension.EO)
+            stac_extensions.add(Extensions.EO)
             version_range.set_max('0.5.2')
 
     # pointcloud
     if object_type == STACObjectType.ITEM:
         if any(filter(lambda k: k.startswith('pc:'), d['properties'])):
-            stac_extensions.add(Extension.POINTCLOUD)
+            stac_extensions.add(Extensions.POINTCLOUD)
             version_range.set_min('0.6.2')
 
     # sar
     if object_type == STACObjectType.ITEM:
         if any(filter(lambda k: k.startswith('sar:'), d['properties'])):
-            stac_extensions.add(Extension.SAR)
+            stac_extensions.add(Extensions.SAR)
             version_range.set_min('0.6.2')
             if version_range.contains('0.6.2'):
                 for prop in [
@@ -168,14 +171,16 @@ def _identify_stac_extensions(object_type, d, version_range):
     if object_type == STACObjectType.ITEM or object_type == STACObjectType.COLLECTION:
         if 'properties' in d:
             if any(filter(lambda k: k.startswith('sci:'), d['properties'])):
-                stac_extensions.add(Extension.SCIENTIFIC)
+                stac_extensions.add(Extensions.SCIENTIFIC)
                 version_range.set_min('0.6.0')
 
     # Single File STAC
     if object_type == STACObjectType.ITEMCOLLECTION:
         if 'collections' in d:
-            stac_extensions.add(Extension.SINGLE_FILE_STAC)
+            stac_extensions.add(Extensions.SINGLE_FILE_STAC)
             version_range.set_min('0.8.0')
+            if 'stac_extensions' not in d:
+                version_range.set_max('0.8.1')
 
     return list(stac_extensions)
 
@@ -260,9 +265,11 @@ def identify_stac_object(json_dict):
     if stac_extensions is None:
         # If this is post-0.8, we can assume there are no extensions
         # if the stac_extensions property doesn't exist for everything
-        # but ItemCollection.
+        # but ItemCollection (except after 0.9.0, when ItemCollection also got
+        # the stac_extensions property).
         if version_range.is_earlier_than('0.8.0') or \
-           object_type == STACObjectType.ITEMCOLLECTION:
+           (object_type == STACObjectType.ITEMCOLLECTION and not version_range.is_later_than(
+               '0.8.1')):
             stac_extensions = _identify_stac_extensions(object_type, json_dict, version_range)
         else:
             stac_extensions = []
@@ -282,5 +289,4 @@ def identify_stac_object(json_dict):
                 version_range.set_min('0.7.0')
 
     common_extensions, custom_extensions = _split_extensions(stac_extensions)
-
     return STACJSONDescription(object_type, version_range, common_extensions, custom_extensions)

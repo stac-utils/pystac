@@ -3,11 +3,10 @@ from os.path import basename, join, isfile
 import unittest
 from tempfile import TemporaryDirectory
 import json
-from jsonschema import ValidationError
 from copy import deepcopy
 
-from pystac import (ItemCollection, Link, Item)
-from tests.utils import (TestCases, SchemaValidator)
+from pystac import (ItemCollection, Link, Item, STACObjectType)
+from tests.utils import (TestCases, SchemaValidator, STACValidationError)
 
 
 class ItemCollectionTest(unittest.TestCase):
@@ -36,7 +35,7 @@ class ItemCollectionTest(unittest.TestCase):
             self.assertTrue(isfile(path))
             with open(path) as f:
                 ic_val_dict = json.load(f)
-            SchemaValidator().validate_dict(ic_val_dict, ItemCollection)
+            SchemaValidator().validate_dict(ic_val_dict, STACObjectType.ITEMCOLLECTION)
 
     def test_item_collection_features(self):
         ic = ItemCollection.from_file(self.IC_URI)
@@ -65,10 +64,9 @@ class ItemCollectionTest(unittest.TestCase):
         sv = SchemaValidator()
         ic_1 = ItemCollection([])
         sv.validate_object(ic_1)
-        sv.validate_dict(self.IC_DICT, ItemCollection)
+        sv.validate_dict(self.IC_DICT, STACObjectType.ITEMCOLLECTION)
         ic_2 = ItemCollection.from_file(self.IC_URI)
         ic_val_dict = ic_2.to_dict()
         ic_val_dict['features'] = 'not an array'
-        with self.assertRaises(ValidationError):
-            print('[Validation error expected] - ', end='')
-            sv.validate_dict(ic_val_dict, ItemCollection)
+        with self.assertRaises(STACValidationError):
+            sv.validate_dict(ic_val_dict, STACObjectType.ITEMCOLLECTION)

@@ -26,7 +26,7 @@ Writing STACs
 
 While working with STACs in-memory don't require setting file paths, in order to save a STAC,
 you'll need to give each STAC object a ``self`` link that describes the location of where
-it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
+it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
 
 .. code-block:: python
 
@@ -85,7 +85,7 @@ manually by using ``set_self_href``:
 Catalog Types
 -------------
 
-The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
+The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
 
 Note that the catalog types do not dictate the asset HREF formats, only link formats. Asset HREFs in any catalog type can be relative or absolute; see the section on :ref:`rel vs abs asset` below.
 
@@ -219,6 +219,65 @@ If you are only going to read from another source, e.g. HTTP, you could only rep
            return STAC_IO.default_read_text_method(uri)
 
    STAC_IO.read_text_method = my_read_method
+
+Extensions
+==========
+
+All STAC objects are accessed through ``Catalog``, ``Collection`` and ``Item``, and all extension functionality
+is accessed through the ``ext`` property on those objects. For instance, to access the band information
+from the ``eo`` extension for an item that implements the extension, you use:
+
+.. code-block:: python
+
+   # All of the below are equivalent:
+   item.ext['eo'].bands
+   item.ext[pystac.Extensions.EO].bands
+   item.ext.eo.bands
+
+Notice the ``eo`` property on ``ext`` - this utilizes the `__getattr__ <https://docs.python.org/3/reference/datamodel.html#object.__getattr__>`_ method to delegate the property name to the ``__getitem__`` method, so we can access any registered extension as if it were a property on ``ext``.
+
+Extensions now wrap the objects they extend. Extensions hold
+no values of their own, but instead use Python `properties <https://docs.python.org/3/library/functions.html#property>`_
+to directly modify the values of the objects they wrap.
+
+Any object that is returned by extension methods therefore also wrap components of the STAC objects.
+For instance, previously a ``LabelItem`` had a ``label_classes`` property that was an instance of ``LabelClasses``.
+This ``LabelClasses`` held its own properties, and during serialization of the ``LabelItem`` the ``to_dict`` method
+needed to be called to transition those properties into a dictionary to used as JSON. Now, the ``LabelClasses``
+holds a reference to the original ``Item``'s ``label:classes`` property, so that modifying the ``LabelClasses``
+properties through the setters will modify the item properties directly. For example:
+
+.. code-block:: python
+
+    from pystac.extensions import label
+
+    label_classes = item.ext.label.label_classes
+    label_classes[0].classes.append("other_class")
+    assert "other_class" in item.properties['label:classes'][0]['classes']
+
+Because these objects wrap the object's dictionary, the __init__ methods changed to only take
+the dict. Therefore to create a new object, use the class's `.create` method:
+
+.. code-block:: python
+
+   item.ext.label.label_classes = [label.LabelClasses.create(['class1', 'class2'], name='label')]
+
+For extension wrappers and any objects that they return an `apply` method is available to
+pass in property values pertaining to the extension. These will require arguments for properties
+required as part of the extension specification and have `None` default values for optional parameters:
+
+.. code-block:: python
+
+   eo_ext = item.ext.eo
+   eo_ext.apply(0.5, bands, cloud_cover=None) # Do not have to specify cloud_cover
+
+
+If you attempt to retrieve an extension wrapper for an extension that the object doesn't implement,
+you'll get an error.
+
+Enabling an extension
+~~~~~~~~~~~~~~~~~~~~~
+
 
 
 Manipulating STACs
