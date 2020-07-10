@@ -148,6 +148,14 @@ class EOTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             eo_item.ext.eo.set_asset_bands(b1_asset, ['BAD_KEY', 'BAD_KEY_2'])
 
+        # Check adding a new asset
+        asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
+        eo_item.ext.eo.set_asset_bands(asset, [b.name for b in eo_item.ext.eo.bands])
+        eo_item.add_asset("test", asset)
+
+        self.assertEqual(eo_item.assets["test"].properties["eo:bands"],
+                         list(range(0, len(eo_item.ext.eo.bands))))
+
     def test_read_pre_09_fields_into_common_metadata(self):
         eo_item = pystac.read_file(
             TestCases.get_path('data-files/examples/0.8.1/item-spec/examples/'
