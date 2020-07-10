@@ -7,7 +7,16 @@ from pystac.extensions import ExtensionError
 
 
 class ExtendedObject:
-    """TODO: Documentation
+    """ExtendedObject maps STACObject classes (Catalog, Collecition and Item) to
+    extension classes (classes that implement one of CatalogExtension, CollectionExtesion,
+    or ItemCollection). When an extension is registered with PySTAC it uses the registered
+    list of ExtendedObject to determine how to handle extending objects, e.g. when item.ext.label
+    is called, it searches for the ExtendedObject associated with the label extension that
+    maps Item to LabelItemExt.
+
+    Args:
+        stac_object_class: The STAC object class that is being extended.
+        extension_class: The class of the extension, e.g. LabelItemExt
     """
     def __init__(self, stac_object_class, extension_class):
         if stac_object_class is Catalog:
@@ -27,10 +36,14 @@ class ExtendedObject:
 
 
 class ExtensionDefinition:
-    """TODO: Documentation
+    """Defines an extension that can be registered with PySTAC.
 
-    Note about if an extension extends both Collection and Catalog, list the Collection
-    extension first.
+    Args:
+        extension_id: The ID for the extension. This is the same idea that will appear in
+            the ``stac_extensions`` property of implementing objects, and will be used to refer
+            to the extension in PySTAC.
+        extended_objects (List[ExtendedObject]): The list of ExtendedObjects which map STACObject
+            types to their extension. Should only contain one entry per stac object type.
     """
     def __init__(self, extension_id, extended_objects):
         self.extension_id = extension_id
@@ -155,3 +168,26 @@ class RegisteredSTACExtensions:
             if issubclass(type(stac_object), e_obj.stac_object_class)
             for link_rel in e_obj.extension_class._object_links()
         ]
+
+    def can_extend(self, extension_id, stac_object_class):
+        """Returns True if the extension can extend the given object type.
+
+        Args:
+            extension_id (str): The extension ID to check.
+            stac_object_class: the class of the object to check. Will check against subclasses,
+                so will return the correct result even if the object is a subclass of Catalog,
+                Collection or Item.
+
+        Returns:
+            bool
+        """
+        ext = self.extensions.get(extension_id)
+
+        # Check to make sure this is a registered extension.
+        if ext is None:
+            raise ExtensionError("'{}' is not a registered extension".format(extension_id))
+
+        return any([
+            e.extension_class for e in ext.extended_objects
+            if issubclass(stac_object_class, e.stac_object_class)
+        ])

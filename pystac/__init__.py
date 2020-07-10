@@ -45,8 +45,10 @@ STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
 def read_file(href):
     """Reads a STAC object from a file.
 
-    Convenience method for :func:`STACObject.from_file
-            <pystac.STACObject.from_file>`
+    This method will return either a Catalog, a Collection, or an Item based on what the
+    file contains.
+
+    This is a convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
 
     Args:
         href (str): The HREF to read the object from.
@@ -61,8 +63,15 @@ def read_file(href):
 def write_file(obj, include_self_link=True, dest_href=None):
     """Writes a STACObject to a file.
 
-    Convenience method for :func:`STACObject.from_file
-            <pystac.STACObject.from_file>`
+    This will write only the Catalog, Collection or Item ``obj``. It will not attempt
+    to write any other objects that are linked to ``obj``; if you'd like functinoality to
+    save off catalogs recursively see :meth:`Catalog.save <pystac.Catalog.save>`.
+
+    This method will write the JSON of the object to the object's assigned "self" link or
+    to the dest_href if provided. To set the self link, see :meth:`STACObject.set_self_href
+    <pystac.STACObject.set_self_href>`.
+
+    Convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
 
     Args:
         obj (STACObject): The STACObject to save.

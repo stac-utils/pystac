@@ -13,6 +13,13 @@ class ExtensionIndex:
         self.stac_object = stac_object
 
     def __getitem__(self, extension_id):
+        """Gets the extension object for the given extension.
+
+        Returns:
+            CatalogExtension or CollectionExtension or ItemExtension: The extension object
+            through which you can access the extension functionality for the extension represented
+            by the extension_id.
+        """
         # Check to make sure this is a registered extension.
         if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
             raise ExtensionError("'{}' is not an extension "
@@ -26,6 +33,15 @@ class ExtensionIndex:
         return pystac.STAC_EXTENSIONS.extend_object(self.stac_object, extension_id)
 
     def __getattr__(self, extension_id):
+        """Gets an extension based on a dynamic attribute.
+
+        This takes the attribute name and passes it to __getitem__.
+
+        This allows the following two lines to be equivalent::
+
+            item.ext["label"].label_properties
+            item.ext.label.label_properties
+        """
         return self[extension_id]
 
     def enable(self, extension_id):
@@ -42,6 +58,11 @@ class ExtensionIndex:
         if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
             raise ExtensionError("'{}' is not an extension "
                                  "registered with PySTAC".format(extension_id))
+
+        # Check that this extension supports adding to this type of object
+        if not pystac.STAC_EXTENSIONS.can_extend(extension_id, type(self.stac_object)):
+            raise ExtensionError("'{}' does not extend type {} ".format(
+                extension_id, type(self.stac_object)))
 
         if self.stac_object.stac_extensions is None:
             self.stac_object.stac_extensions = [extension_id]
@@ -384,7 +405,18 @@ class STACObject(LinkMixin, ABC):
 
     @property
     def ext(self):
-        """TODO: Documentation
+        """Access extensions for this STACObject.
+
+        Example:
+            This example shows accessing a Item's EO extension functionality
+            that gets the band information for an asset::
+
+                item = pystac.read_file("eo_item.json")
+                bands = item.ext.eo.get_asset_bands(item.assets["image"])
+
+        Returns:
+            ExtensionIndex: The object that can be used to access extension information
+            and functionality.
         """
         return ExtensionIndex(self)
 
