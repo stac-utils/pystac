@@ -65,7 +65,7 @@ class LabelItemExt(ItemExtension):
             label_classes (List[LabelClass]): Optional, but reqiured if ussing categorical data.
                 A list of LabelClasses defining the list of possible class names for each
                 label:properties. (e.g., tree, building, car, hippo)
-            label_tasks (str): Recommended to be a subset of 'regression', 'classification',
+            label_tasks (List[str]): Recommended to be a subset of 'regression', 'classification',
                 'detection', or 'segmentation', but may be an arbitrary value.
             label_methods: Recommended to be a subset of 'automated' or 'manual',
                 but may be an arbitrary value.
