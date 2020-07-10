@@ -2,11 +2,11 @@ from os.path import join, isfile
 import unittest
 from tempfile import TemporaryDirectory
 import json
-from jsonschema import ValidationError
 
-from pystac import (SingleFileSTAC, Collection, Item)
-from tests.utils import (TestCases, SchemaValidator)
-from pystac.single_file_stac import Search
+from pystac import (Collection, Item, STACObjectType)
+from pystac.extensions.single_file_stac import SingleFileSTAC
+from tests.utils import (TestCases, SchemaValidator, STACValidationError)
+from pystac.extensions.single_file_stac import Search
 
 
 class SingleFileSTACTest(unittest.TestCase):
@@ -46,21 +46,18 @@ class SingleFileSTACTest(unittest.TestCase):
 
     def test_validate_single_file(self):
         sv = SchemaValidator()
-        sv.validate_dict(self.EXAMPLE_SF_DICT, SingleFileSTAC)
         sf_from_file = SingleFileSTAC.from_file(self.EXAMPLE_SINGLE_FILE)
-        sv.validate_object(sf_from_file)
 
         with TemporaryDirectory() as tmp_dir:
             tmp_uri = join(tmp_dir, 'test-single-file-val.json')
             sf_from_file.save(tmp_uri)
             with open(tmp_uri) as f:
                 val_dict = json.load(f)
-        sv.validate_dict(val_dict, SingleFileSTAC)
+        sv.validate_dict(val_dict, STACObjectType.ITEMCOLLECTION)
 
         val_dict['search']['endpoint'] = 1
-        with self.assertRaises(ValidationError):
-            print('[Validation error expected] - ', end='')
-            sv.validate_dict(val_dict, SingleFileSTAC)
+        with self.assertRaises(STACValidationError):
+            sv.validate_dict(val_dict, STACObjectType.ITEMCOLLECTION)
 
 
 class SearchTest(unittest.TestCase):

@@ -2,8 +2,8 @@ import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
-from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType, EOItem,
-                    Band)
+from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
+from pystac.extensions.eo import Band
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
@@ -33,14 +33,16 @@ class CollectionTest(unittest.TestCase):
                      stac_extensions=['eo', 'commons'])
 
         wv3_bands = [
-            Band(name='Coastal', description='Coastal: 400 - 450 nm', common_name='coastal'),
-            Band(name='Blue', description='Blue: 450 - 510 nm', common_name='blue'),
-            Band(name='Green', description='Green: 510 - 580 nm', common_name='green'),
-            Band(name='Yellow', description='Yellow: 585 - 625 nm', common_name='yellow'),
-            Band(name='Red', description='Red: 630 - 690 nm', common_name='red'),
-            Band(name='Red Edge', description='Red Edge: 705 - 745 nm', common_name='rededge'),
-            Band(name='Near-IR1', description='Near-IR1: 770 - 895 nm', common_name='nir08'),
-            Band(name='Near-IR2', description='Near-IR2: 860 - 1040 nm', common_name='nir09')
+            Band.create(name='Coastal', description='Coastal: 400 - 450 nm', common_name='coastal'),
+            Band.create(name='Blue', description='Blue: 450 - 510 nm', common_name='blue'),
+            Band.create(name='Green', description='Green: 510 - 580 nm', common_name='green'),
+            Band.create(name='Yellow', description='Yellow: 585 - 625 nm', common_name='yellow'),
+            Band.create(name='Red', description='Red: 630 - 690 nm', common_name='red'),
+            Band.create(name='Red Edge',
+                        description='Red Edge: 705 - 745 nm',
+                        common_name='rededge'),
+            Band.create(name='Near-IR1', description='Near-IR1: 770 - 895 nm', common_name='nir08'),
+            Band.create(name='Near-IR2', description='Near-IR2: 860 - 1040 nm', common_name='nir09')
         ]
 
         spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
@@ -72,12 +74,12 @@ class CollectionTest(unittest.TestCase):
             items = list(read_col.get_all_items())
 
             self.assertEqual(len(items), 2)
-            self.assertIsInstance(items[0], EOItem)
-            self.assertIsInstance(items[1], EOItem)
+            self.assertTrue(items[0].ext.implements('eo'))
+            self.assertTrue(items[1].ext.implements('eo'))
 
     def test_read_eo_items_are_heritable(self):
         cat = TestCases.test_case_5()
         item = next(cat.get_all_items())
 
-        self.assertIsInstance(item, EOItem)
-        self.assertEqual(item.gsd, 20.0)
+        self.assertTrue(item.ext.implements('eo'))
+        self.assertEqual(item.ext.eo.gsd, 20.0)

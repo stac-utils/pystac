@@ -3,6 +3,7 @@ from copy import copy, deepcopy
 
 import dateutil.parser
 
+import pystac
 from pystac import (STAC_VERSION, STACError)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
@@ -178,7 +179,7 @@ class Item(STACObject):
             'properties': self.properties,
             'geometry': self.geometry,
             'bbox': self.bbox,
-            'links': [l.to_dict() for l in links],
+            'links': [link.to_dict() for link in links],
             'assets': assets
         }
 
@@ -205,7 +206,7 @@ class Item(STACObject):
         return clone
 
     def _object_links(self):
-        return ['collection']
+        return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
 
     def normalize_hrefs(self, root_href):
         if not is_absolute_href(root_href):
@@ -257,9 +258,9 @@ class Item(STACObject):
                     collection=collection_id)
 
         has_self_link = False
-        for l in d['links']:
-            has_self_link |= l['rel'] == 'self'
-            item.add_link(Link.from_dict(l))
+        for link in d['links']:
+            has_self_link |= link['rel'] == 'self'
+            item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:
             item.add_link(Link.self_href(href))
@@ -324,7 +325,11 @@ class Asset:
         self.description = description
         self.media_type = media_type
         self.roles = roles
-        self.properties = properties
+
+        if properties is not None:
+            self.properties = properties
+        else:
+            self.properties = {}
 
         # The Item which owns this Asset.
         self.owner = None
@@ -374,7 +379,7 @@ class Asset:
         if self.description is not None:
             d['description'] = self.description
 
-        if self.properties is not None:
+        if self.properties is not None and len(self.properties) > 0:
             for k, v in self.properties.items():
                 d[k] = v
 

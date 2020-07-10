@@ -2,7 +2,121 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1>`_ they relate to, if related to a specific spec item.
+and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0>`_ they relate to, if related to a specific spec item.
+
+pystac
+------
+
+.. automodule:: pystac
+   :members: read_file, write_file
+
+STACObject
+----------
+
+STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Collection <pystac.Collection>` and :class:`Item <pystac.Item>`, and contains a variety of useful methods for dealing with links, copying objects, accessing extensions, and reading and writing files. You shouldn't use STACObject directly, but instead access this functionality through the implementing classes.
+
+.. autoclass:: pystac.STACObject
+   :members:
+   :inherited-members:
+   :undoc-members:
+
+
+Catalog Spec
+------------
+
+These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/catalog-spec>`_.
+
+Catalog
+~~~~~~~
+
+.. autoclass:: pystac.Catalog
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+CatalogType
+~~~~~~~~~~~
+
+.. autoclass:: pystac.CatalogType
+   :members:
+   :inherited-members:
+   :undoc-members:
+
+
+Collection Spec
+---------------
+
+These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/collection-spec>`_.
+
+Collection
+~~~~~~~~~~
+
+.. autoclass:: pystac.Collection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Extent
+~~~~~~
+
+.. autoclass:: pystac.Extent
+   :members:
+   :undoc-members:
+
+SpatialExtent
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.SpatialExtent
+   :members:
+   :undoc-members:
+
+TemporalExtent
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.TemporalExtent
+   :members:
+   :undoc-members:
+
+Provider
+~~~~~~~~
+
+.. autoclass:: pystac.Provider
+   :members:
+   :undoc-members:
+
+Item Spec
+---------
+
+These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/item-spec>`_.
+
+Item
+~~~~
+
+.. autoclass:: pystac.Item
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Asset
+~~~~~
+
+.. autoclass:: pystac.Asset
+   :members:
+   :undoc-members:
+
+CommonMetadata
+~~~~~
+
+.. autoclass:: pystac.CommonMetadata
+   :members:
+   :undoc-members:
+
+ItemCollection
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.ItemCollection
+   :members:
+   :undoc-members:
 
 Links
 -----
@@ -50,120 +164,32 @@ STACError
 
 .. autoclass:: pystac.STACError
 
-Catalog Spec
-------------
-
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/catalog-spec>`_.
-
-Catalog
-~~~~~~~
-
-.. autoclass:: pystac.Catalog
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CatalogType
-~~~~~~~~~~~
-
-.. autoclass:: pystac.CatalogType
-   :members:
-   :inherited-members:
-   :undoc-members:
-
-
-Collection Spec
----------------
-
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/collection-spec>`_.
-
-Collection
-~~~~~~~~~~
-
-.. autoclass:: pystac.Collection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Extent
-~~~~~~
-
-.. autoclass:: pystac.Extent
-   :members:
-   :undoc-members:
-
-SpatialExtent
-~~~~~~~~~~~~~
-
-.. autoclass:: pystac.SpatialExtent
-   :members:
-   :undoc-members:
-
-TemporalExtent
+ExtensionError
 ~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.TemporalExtent
-   :members:
-   :undoc-members:
+.. autoclass:: pystac.extensions.ExtensionError
 
-Provider
-~~~~~~~~
+Extensions
+----------
 
-.. autoclass:: pystac.Provider
-   :members:
-   :undoc-members:
-
-Item Spec
----------
-
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/item-spec>`_.
-
-Item
-~~~~
-
-.. autoclass:: pystac.Item
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Asset
-~~~~~
-
-.. autoclass:: pystac.Asset
-   :members:
-   :undoc-members:
-
-CommonMetadata
-~~~~~
-
-.. autoclass:: pystac.CommonMetadata
-   :members:
-   :undoc-members:
-
-ItemCollection
+ExtensionIndex
 ~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.ItemCollection
-   :members:
-   :undoc-members:
+An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
+
+.. autoclass:: pystac.stac_object.ExtensionIndex
+   :members: __getitem__, __getattr__, enable, implements
+
 
 EO Extension
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo>`_.
+These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/eo>`_.
 
-EOItem
-~~~~~~
+EOItemExt
+~~~~~~~~~
 
-.. autoclass:: pystac.EOItem
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-EOAsset
-~~~~~~~
-
-.. autoclass:: pystac.EOAsset
+.. autoclass:: pystac.extensions.eo.EOItemExt
    :members:
    :undoc-members:
    :show-inheritance:
@@ -171,7 +197,7 @@ EOAsset
 Band
 ~~~~
 
-.. autoclass:: pystac.Band
+.. autoclass:: pystac.extensions.eo.Band
    :members:
    :undoc-members:
 
@@ -179,12 +205,12 @@ Band
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label>`_.
+These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/label>`_.
 
-LabelItem
-~~~~~~~~~
+LabelItemExt
+~~~~~~~~~~~~
 
-.. autoclass:: pystac.LabelItem
+.. autoclass:: pystac.extensions.label.LabelItemExt
    :members:
    :undoc-members:
    :show-inheritance:
@@ -192,47 +218,47 @@ LabelItem
 LabelType
 ~~~~~~~~~
 
-.. autoclass:: pystac.LabelType
+.. autoclass:: pystac.extensions.label.LabelType
    :members:
    :undoc-members:
 
 LabelClasses
 ~~~~~~~~~~~~
 
-.. autoclass:: pystac.LabelClasses
+.. autoclass:: pystac.extensions.label.LabelClasses
    :members:
    :undoc-members:
 
 LabelOverview
 ~~~~~~~~~~~~~
 
-.. autoclass:: pystac.LabelOverview
+.. autoclass:: pystac.extensions.label.LabelOverview
    :members:
    :undoc-members:
 
 LabelCount
 ~~~~~~~~~~
 
-.. autoclass:: pystac.LabelCount
+.. autoclass:: pystac.extensions.label.LabelCount
    :members:
    :undoc-members:
 
 LabelStatistics
 ~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.LabelStatistics
+.. autoclass:: pystac.extensions.label.LabelStatistics
    :members:
    :undoc-members:
 
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/single-file-stac>`_.
+These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/single-file-stac>`_.
 
 SingleFileSTAC
 ~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.SingleFileSTAC
+.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTAC
    :members:
    :undoc-members:
 
@@ -282,19 +308,13 @@ STACObjectType
    :members:
    :undoc-members:
 
+
 PySTAC Internal Classes
 -----------------------
-
-STACObject
-~~~~~~~~~~
-
-.. autoclass:: pystac.STACObject
-   :members:
-   :undoc-members:
 
 ResolvedObjectCache
 ~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.resolved_object_cache.ResolvedObjectCache
+.. autoclass:: pystac.cache.ResolvedObjectCache
    :members:
    :undoc-members:

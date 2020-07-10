@@ -1,12 +1,12 @@
 # flake8: noqa
-from pystac import (Catalog, Collection, SingleFileSTAC, ItemCollection, Item, LabelItem, EOItem,
-                    Extension)
+from pystac import (Catalog, Collection, ItemCollection, Item, Extensions)
 
 from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange,
                                            identify_stac_object, identify_stac_object_type)
 
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
+from pystac.extensions.single_file_stac import SingleFileSTAC
 
 
 def stac_object_from_dict(d, href=None, root=None):
@@ -32,7 +32,7 @@ def stac_object_from_dict(d, href=None, root=None):
 
     info = identify_stac_object(d)
 
-    d = migrate_to_latest(d, info)
+    d, info = migrate_to_latest(d, info)
 
     if info.object_type == STACObjectType.CATALOG:
         return Catalog.from_dict(d, href=href, root=root)
@@ -41,16 +41,10 @@ def stac_object_from_dict(d, href=None, root=None):
         return Collection.from_dict(d, href=href, root=root)
 
     if info.object_type == STACObjectType.ITEMCOLLECTION:
-        if Extension.SINGLE_FILE_STAC in info.common_extensions:
+        if Extensions.SINGLE_FILE_STAC in info.common_extensions:
             return SingleFileSTAC.from_dict(d)
 
         return ItemCollection.from_dict(d)
 
     if info.object_type == STACObjectType.ITEM:
-        if Extension.EO in info.common_extensions:
-            return EOItem.from_dict(d, href=href, root=root)
-
-        if Extension.LABEL in info.common_extensions:
-            return LabelItem.from_dict(d, href=href, root=root)
-
         return Item.from_dict(d, href=href, root=root)

@@ -8,7 +8,7 @@
         "label:description": "labels for area-1-1",
         "label:type": "vector",
         "label:properties": [
-            "label"
+          "label","label2","label-reg"
         ],
         "label:classes": [
             {
@@ -17,10 +17,17 @@
                     "one",
                     "two"
                 ]
+            },
+            {
+                "name": "label2",
+                "classes": [
+                    "three",
+                    "four"
+                ]
             }
         ],
         "label:tasks": [
-            "classification"
+          "classification","regression"
         ],
         "label:methods": [
             "manual"
@@ -36,6 +43,15 @@
                     {
                         "name": "two",
                         "count": 17
+                    }
+                ]
+            },
+            {
+                "property_key": "label-reg",
+                "statistics": [
+                    {
+                        "name": "mean",
+                        "value": 7
                     }
                 ]
             }

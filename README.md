@@ -1,5 +1,5 @@
 ## PySTAC
-[![Build Status](https://api.travis-ci.org/azavea/pystac.svg?branch=develop)](https://travis-ci.org/azavea/pystac)
+![Build Status](https://github.com/azavea/pystac/workflows/CI/badge.svg?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
 [![Gitter chat](https://badges.gitter.im/azavea/pystac.svg)](https://gitter.im/azavea/pystac)
@@ -35,7 +35,7 @@ To install a specific versions of STAC, install the matching version of pystac.
 The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
-| ------ | ----  |
+| ------ | ----- |
 | 0.3.x  | 0.8.x |
 
 ## Documentation
@@ -58,6 +58,12 @@ Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
 > python -m unittest discover tests
 ```
 
+To run linters, code formatters, and test suites all together, use `test`:
+
+```
+> ./scripts/test
+```
+
 ### Code quality checks
 
 PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://github.com/google/yapf) for code formatting and style checks.
@@ -76,7 +82,7 @@ To format code:
 > yapf -ipr tests
 ```
 
-You could also run the `.travis/style_checks` script to check flake8 and yapf.
+You can also run the `./scripts/test` script to check flake8 and yapf.
 
 ### Documentation
 

@@ -24,7 +24,7 @@ class ItemTest(unittest.TestCase):
         # test asset creation additional field(s)
         self.assertEqual(item.assets['analytic'].properties['product'],
                          'http://cool-sat.com/catalog/products/analytic.json')
-        self.assertIsNone(item.assets['thumbnail'].properties)
+        self.assertEqual(len(item.assets['thumbnail'].properties), 0)
 
     def test_asset_absolute_href(self):
         m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
@@ -58,7 +58,7 @@ class ItemTest(unittest.TestCase):
         m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
         with open(m) as f:
             item_dict = json.load(f)['features'][0]
-        item_dict['links'] = [l for l in item_dict['links'] if l['rel'] == 'self']
+        item_dict['links'] = [link for link in item_dict['links'] if link['rel'] == 'self']
         item = Item.from_dict(item_dict)
         self.assertIsInstance(item, Item)
         self.assertEqual(len(item.links), 1)
