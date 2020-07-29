@@ -63,6 +63,18 @@ class ItemTest(unittest.TestCase):
         self.assertIsInstance(item, Item)
         self.assertEqual(len(item.links), 1)
 
+    def test_null_geometry(self):
+        m = TestCases.get_path('data-files/itemcollections/null-geom-item-collections.json')
+        with open(m) as f:
+            item_dict = json.load(f)['features'][0]
+        item = Item.from_dict(item_dict)
+        self.assertIsInstance(item, Item)
+
+        item_dict = item.to_dict()
+        self.assertIsNone(item_dict['geometry'])
+        with self.assertRaises(KeyError):
+            item_dict['bbox']
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):

@@ -22,11 +22,11 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float]):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array must be 2*n where n is the
-            number of dimensions.
         datetime (datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
+        bbox (List[float] or None):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array must be 2*n where n is the
+            number of dimensions. Could also be None in the case of a null geometry.
         stac_extensions (List[str]): Optional list of extensions the Item implements.
         href (str or None): Optional HREF for this item, which be set as the item's
             self link's HREF.
@@ -38,11 +38,11 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float]):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array is 2*n where n is the
-            number of dimensions.
         datetime (datetime): Datetime associated with this item.
         properties (dict): A dictionary of additional metadata for the item.
+        bbox (List[float] or None):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array is 2*n where n is the
+            number of dimensions. Could also be None in the case of a null geometry.
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
@@ -54,9 +54,9 @@ class Item(STACObject):
     def __init__(self,
                  id,
                  geometry,
-                 bbox,
                  datetime,
                  properties,
+                 bbox=None,
                  stac_extensions=None,
                  href=None,
                  collection=None):
@@ -178,10 +178,12 @@ class Item(STACObject):
             'id': self.id,
             'properties': self.properties,
             'geometry': self.geometry,
-            'bbox': self.bbox,
             'links': [link.to_dict() for link in links],
             'assets': assets
         }
+
+        if self.bbox is not None:
+            d['bbox'] = self.bbox
 
         if self.stac_extensions is not None:
             d['stac_extensions'] = self.stac_extensions
@@ -237,8 +239,8 @@ class Item(STACObject):
     def from_dict(cls, d, href=None, root=None):
         id = d['id']
         geometry = d['geometry']
-        bbox = d['bbox']
         properties = d['properties']
+        bbox = d.get('bbox')
         stac_extensions = d.get('stac_extensions')
         collection_id = None
         if 'collection' in d.keys():
