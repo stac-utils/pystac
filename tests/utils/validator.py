@@ -12,15 +12,14 @@ class STACValidationError(Exception):
 
 
 class SchemaValidator:
-    REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
+    REPO = 'https://schemas.stacspec.org'
     TAG = 'v{}'.format(STAC_VERSION)
     SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     core_schemas = {
         STACObjectType.CATALOG: 'catalog-spec/json-schema/catalog.json',
         STACObjectType.COLLECTION: 'collection-spec/json-schema/collection.json',
-        STACObjectType.ITEM: 'item-spec/json-schema/item.json',
-        STACObjectType.ITEMCOLLECTION: 'item-spec/json-schema/itemcollection.json'
+        STACObjectType.ITEM: 'item-spec/json-schema/item.json'
     }
 
     extension_schemas = {
@@ -41,9 +40,10 @@ class SchemaValidator:
 
     # Schemas that need to be downloaded for caching that are not tied directly to STAC objects.
     aux_schemas = [
-        'item-spec/json-schema/basics.json', 'item-spec/json-schema/datetimerange.json',
+        'item-spec/json-schema/basics.json', 'item-spec/json-schema/datetime.json',
         'item-spec/json-schema/instrument.json', 'item-spec/json-schema/licensing.json',
-        'item-spec/json-schema/metadata.json', 'item-spec/json-schema/provider.json',
+        'item-spec/json-schema/provider.json',
+        'https://geojson.org/schema/Geometry.json',
         'https://geojson.org/schema/Feature.json',
         'https://geojson.org/schema/FeatureCollection.json'
     ]
