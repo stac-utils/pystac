@@ -1,19 +1,19 @@
 {
-    "id": "01749366-9e25-4b42-a4d1-5aae9f8c9eec",
-    "stac_version": "0.8.1",
-    "description": "Exported from Raster Foundry 2019-10-04 15:55:13.759",
-    "links": [
-        {
-            "rel": "root",
-            "href": "./catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "child",
-            "href": "./1a8c1632-fa91-4a62-b33e-3a87c2ebdf16/collection.json",
-            "type": "application/json",
-            "title": "Layer Collection"
-        }
-    ],
-    "title": "Test Case 2"
+  "id": "01749366-9e25-4b42-a4d1-5aae9f8c9eec",
+  "stac_version": "1.0.0-beta.2",
+  "description": "Exported from Raster Foundry 2019-10-04 15:55:13.759",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "child",
+      "href": "./1a8c1632-fa91-4a62-b33e-3a87c2ebdf16/collection.json",
+      "type": "application/json",
+      "title": "Layer Collection"
+    }
+  ],
+  "title": "Test Case 2"
 }
