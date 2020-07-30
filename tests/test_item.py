@@ -9,11 +9,16 @@ from datetime import datetime
 
 
 class ItemTest(unittest.TestCase):
+    def get_example_item_dict(self):
+        m = TestCases.get_path('data-files/item/sample-item.json')
+        with open(m) as f:
+            item_dict = json.load(f)
+        return item_dict
+
     def test_to_from_dict(self):
         self.maxDiff = None
-        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
-        with open(m) as f:
-            item_dict = json.load(f)['features'][0]
+
+        item_dict = self.get_example_item_dict()
 
         test_to_from_dict(self, Item, item_dict)
         item = Item.from_dict(item_dict)
@@ -27,9 +32,7 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(len(item.assets['thumbnail'].properties), 0)
 
     def test_asset_absolute_href(self):
-        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
-        with open(m) as f:
-            item_dict = json.load(f)['features'][0]
+        item_dict = self.get_example_item_dict()
         item = Item.from_dict(item_dict)
         rel_asset = Asset('./data.geojson')
         rel_asset.set_owner(item)
@@ -38,9 +41,7 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(expected_href, actual_href)
 
     def test_datetime_ISO8601_format(self):
-        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
-        with open(m) as f:
-            item_dict = json.load(f)['features'][0]
+        item_dict = self.get_example_item_dict()
 
         item = Item.from_dict(item_dict)
 
@@ -55,9 +56,7 @@ class ItemTest(unittest.TestCase):
             self.assertEqual(item.assets[asset_key].owner, item)
 
     def test_self_contained_item(self):
-        m = TestCases.get_path('data-files/itemcollections/sample-item-collection.json')
-        with open(m) as f:
-            item_dict = json.load(f)['features'][0]
+        item_dict = self.get_example_item_dict()
         item_dict['links'] = [link for link in item_dict['links'] if link['rel'] == 'self']
         item = Item.from_dict(item_dict)
         self.assertIsInstance(item, Item)
