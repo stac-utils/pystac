@@ -1,10 +1,11 @@
+from pystac.serialization.identify import STACObjectType
 import unittest
 import json
 
 from pystac import Asset, Item, Provider
 from pystac.item import CommonMetadata
 from pystac.utils import str_to_datetime
-from tests.utils import (TestCases, test_to_from_dict)
+from tests.utils import (TestCases, test_to_from_dict, SchemaValidator)
 from datetime import datetime
 
 
@@ -63,17 +64,23 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(len(item.links), 1)
 
     def test_null_geometry(self):
+        self.validator = SchemaValidator()
         m = TestCases.get_path('data-files/itemcollections/null-geom-item-collections.json')
         with open(m) as f:
             item_dict = json.load(f)['features'][0]
+        self.validator.validate_dict(item_dict, STACObjectType.ITEM)
+
         item = Item.from_dict(item_dict)
         self.assertIsInstance(item, Item)
+        self.validator.validate_object(item)
 
         item_dict = item.to_dict()
         self.assertIsNone(item_dict['geometry'])
         with self.assertRaises(KeyError):
             item_dict['bbox']
-
+        
+        
+        
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
