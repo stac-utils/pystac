@@ -1,5 +1,5 @@
 {
-  "stac_version": "0.7.0",
+  "stac_version": "1.0.0-beta.2",
   "id": "CBERS4MUX",
   "description": "CBERS4 MUX camera catalog",
   "links": [
@@ -15,7 +15,7 @@
       "rel": "child",
       "href": "069/catalog.json"
     }
- ],
+  ],
   "license": "CC-BY-SA-3.0",
   "providers": [
     {
