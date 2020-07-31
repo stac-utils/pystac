@@ -22,7 +22,6 @@ from pystac.link import (Link, LinkType)
 from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
 from pystac.item import (Item, Asset, CommonMetadata)
-from pystac.item_collection import ItemCollection
 
 from pystac.serialization import (STACObjectType, stac_object_from_dict)
 

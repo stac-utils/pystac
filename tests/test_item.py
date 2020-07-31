@@ -65,9 +65,11 @@ class ItemTest(unittest.TestCase):
 
     def test_null_geometry(self):
         self.validator = SchemaValidator()
-        m = TestCases.get_path('data-files/itemcollections/null-geom-item-collections.json')
+        m = TestCases.get_path(
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/null-geom-item.json')
         with open(m) as f:
-            item_dict = json.load(f)['features'][0]
+            item_dict = json.load(f)
+
         self.validator.validate_dict(item_dict, STACObjectType.ITEM)
 
         item = Item.from_dict(item_dict)

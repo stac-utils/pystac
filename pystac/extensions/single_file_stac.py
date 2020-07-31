@@ -1,18 +1,22 @@
 import json
+from pystac.catalog import Catalog
 
 from pystac import STACError
 from pystac.collection import Collection
 from pystac.stac_io import STAC_IO
 from pystac.item import Item
-from pystac.item_collection import ItemCollection
 
 
-class SingleFileSTAC(ItemCollection):
+class SingleFileSTAC(Catalog):
     """Provides a set of Collections and Items as a single file catalog. The single file
     is a self contained catalog that contains everything that would normally be in a
     linked set of STAC files.
 
     Args:
+        id (str): Identifier for the Catalog. Must be unique within the STAC.
+        description (str): Detailed multi-line description to fully explain the catalog.
+            `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY be used for rich text
+            representation.
         features (List[Item]): Optional initial list of items contained by
             this SingleFileSTAC.
         stac_extensions (List[str]): Optional list of extensions implemented.
@@ -21,20 +25,35 @@ class SingleFileSTAC(ItemCollection):
         search (Search): Optional search information associated with this SingleFileSTAC.
 
     Attributes:
-        features (List[Item]): Items contained by this ItemCollection
+        id (str): Identifier for the catalog.
+        description (str): Detailed multi-line description to fully explain the catalog.
+        features (List[Item]): Items contained by this SingleFileSTAC
         collections (List[Collection]): Collections contained
             by this SingleFileSTAC.
         search (Search): Optional search information associated with this SingleFileSTAC.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
-            all links associated with this ItemCollection.
+            all links associated with this SingleFileSTAC.
 
     """
-    def __init__(self, features=None, stac_extensions=None, collections=None, search=None):
-        super().__init__(features, stac_extensions=stac_extensions)
+    def __init__(self,
+                 id,
+                 description,
+                 features=None,
+                 stac_extensions=None,
+                 collections=None,
+                 search=None):
+        super().__init__(id, description, title=None, stac_extensions=stac_extensions)
+
+        if features is None:
+            self.features = []
+        else:
+            self.features = features
+
         if collections is None:
             self.collections = []
         else:
             self.collections = collections
+
         self.search = search
 
     def __repr__(self):
@@ -47,7 +66,7 @@ class SingleFileSTAC(ItemCollection):
         Returns:
             List[Collection]: The Collections of this SingleFileSTAC
         """
-        return self.features
+        return self.collections
 
     def add_collection(self, collection):
         """Adds a Collection to this SingleFileSTAC.
@@ -112,7 +131,7 @@ class SingleFileSTAC(ItemCollection):
         """Generate a dictionary representing the JSON of this SingleFileSTAC.
 
         Args:
-            include_self_link (bool): If True, writes the ItemCollection's self link.
+            include_self_link (bool): If True, writes the SingleFileSTAC's self link.
                 Defaults to False.
 
         Returns:
@@ -122,6 +141,7 @@ class SingleFileSTAC(ItemCollection):
         d = super().to_dict(include_self_link=include_self_link)
 
         d['collections'] = [c.to_dict() for c in self.collections]
+        d['features'] = [f.to_dict() for f in self.features]
         if self.search:
             d['search'] = self.search.to_dict()
 
