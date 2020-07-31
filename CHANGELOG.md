@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
+
 ## [v0.4.0]
 
 The two major changes for this release are:
