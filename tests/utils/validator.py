@@ -29,6 +29,9 @@ class SchemaValidator:
         Extensions.EO: {
             STACObjectType.ITEM: 'extensions/eo/json-schema/schema.json'
         },
+        Extensions.PROJECTION: {
+            STACObjectType.ITEM: 'extensions/projection/json-schema/schema.json'
+        },
         Extensions.SINGLE_FILE_STAC: {
             # TODO: Move off of custom schema if schema in spec was fixed
             # before this extension got removed.
@@ -42,10 +45,11 @@ class SchemaValidator:
     aux_schemas = [
         'item-spec/json-schema/basics.json', 'item-spec/json-schema/datetime.json',
         'item-spec/json-schema/instrument.json', 'item-spec/json-schema/licensing.json',
-        'item-spec/json-schema/provider.json',
-        'https://geojson.org/schema/Geometry.json',
+        'item-spec/json-schema/provider.json', 'https://geojson.org/schema/Geometry.json',
         'https://geojson.org/schema/Feature.json',
-        'https://geojson.org/schema/FeatureCollection.json'
+        'https://geojson.org/schema/FeatureCollection.json',
+        'https://proj.org/schemas/v0.2/projjson.schema.json',
+        'https://geojson.org/schema/Polygon.json'
     ]
 
     _schema_cache = {}
