@@ -597,6 +597,19 @@ class CommonMetadata:
     def mission(self, v):
         self.properties['mission'] = v
 
+    @property
+    def gsd(self):
+        """Get or sets the Ground Sample Distance at the sensor.
+
+        Returns:
+            [float]: Ground Sample Distance at the senso
+        """
+        return self.properties.get('gsd')
+
+    @gsd.setter
+    def gsd(self, v):
+        self.properties['gsd'] = v
+
     # Metadata
     @property
     def created(self):

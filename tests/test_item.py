@@ -78,18 +78,16 @@ class ItemTest(unittest.TestCase):
         self.assertIsNone(item_dict['geometry'])
         with self.assertRaises(KeyError):
             item_dict['bbox']
-        
-        
-        
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
         self.URI_1 = TestCases.get_path(
-            'data-files/examples/0.9.0/item-spec/examples/datetimerange.json')
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json')
         self.ITEM_1 = Item.from_file(self.URI_1)
 
         self.URI_2 = TestCases.get_path(
-            'data-files/examples/0.9.0/item-spec/examples/sample-full.json')
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json')
         self.ITEM_2 = Item.from_file(self.URI_2)
 
         self.EXAMPLE_CM_DICT = {
@@ -281,3 +279,11 @@ class CommonMetadataTest(unittest.TestCase):
         x.common_metadata.mission = example_mission
         self.assertEqual(x.common_metadata.mission, example_mission)
         self.assertEqual(x.properties['mission'], example_mission)
+
+        # GSD
+        gsd = 0.512
+        example_gsd = 0.75
+        self.assertEqual(x.common_metadata.gsd, gsd)
+        x.common_metadata.gsd = example_gsd
+        self.assertEqual(x.common_metadata.gsd, example_gsd)
+        self.assertEqual(x.properties['gsd'], example_gsd)

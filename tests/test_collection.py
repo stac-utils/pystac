@@ -54,7 +54,7 @@ class CollectionTest(unittest.TestCase):
 
         common_properties = {
             'eo:bands': [b.to_dict() for b in wv3_bands],
-            'eo:gsd': 0.3,
+            'gsd': 0.3,
             'eo:platform': 'Maxar',
             'eo:instrument': 'WorldView3'
         }
@@ -84,7 +84,6 @@ class CollectionTest(unittest.TestCase):
         item = next(cat.get_all_items())
 
         self.assertTrue(item.ext.implements('eo'))
-        self.assertEqual(item.ext.eo.gsd, 20.0)
 
     def test_multiple_extents(self):
         self.validator = SchemaValidator()

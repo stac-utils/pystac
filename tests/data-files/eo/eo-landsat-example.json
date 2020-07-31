@@ -45,7 +45,7 @@
     "eo:cloud_cover": 78,
     "landsat:path": 107,
     "landsat:row": 18,
-    "eo:gsd": 30,
+    "gsd": 30,
     "eo:bands": [
       {
         "name": "B1",
