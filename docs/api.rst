@@ -250,6 +250,19 @@ LabelStatistics
    :members:
    :undoc-members:
 
+Projection Extension
+--------------------
+
+Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
+
+ProjectionItemExt
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.ProjectionItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 

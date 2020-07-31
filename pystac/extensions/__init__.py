@@ -17,6 +17,7 @@ class Extensions:
     EO = 'eo'
     LABEL = 'label'
     POINTCLOUD = 'pointcloud'
+    PROJECTION = 'projection'
     SAR = 'sar'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
