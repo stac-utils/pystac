@@ -528,7 +528,7 @@ class CommonMetadata:
         a Provider object or a dict but always stores each provider as a dict
 
         Returns:
-            [Provider]: List of organizations that captured or processed the data,
+            List[Provider]: List of organizations that captured or processed the data,
             encoded as Provider objects
         """
         providers = self.properties.get('providers')
@@ -561,7 +561,7 @@ class CommonMetadata:
         """Get or set the names of the instruments used
 
         Returns:
-            [str]: Name(s) of instrument(s) used
+            List[str]: Name(s) of instrument(s) used
         """
         return self.properties.get('instruments')
 

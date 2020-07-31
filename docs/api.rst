@@ -105,7 +105,7 @@ Asset
    :undoc-members:
 
 CommonMetadata
-~~~~~
+~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.CommonMetadata
    :members:
@@ -171,6 +171,10 @@ ExtensionError
 
 Extensions
 ----------
+
+.. autoclass:: pystac.extensions.Extensions
+   :members:
+   :undoc-members:
 
 ExtensionIndex
 ~~~~~~~~~~~~~~
@@ -256,7 +260,7 @@ Projection Extension
 Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
 
 ProjectionItemExt
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.extensions.projection.ProjectionItemExt
    :members:
@@ -274,6 +278,19 @@ SingleFileSTAC
 .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTAC
    :members:
    :undoc-members:
+
+View Geometry Extension
+-----------------------
+
+Implements the `View Geometry Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/view>`_.
+
+ViewItemExt
+~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.ViewItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Serialization
 -------------
