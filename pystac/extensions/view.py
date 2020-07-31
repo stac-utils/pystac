@@ -61,7 +61,7 @@ class ViewItemExt(ItemExtension):
         and the scene center. Measured in degrees (0-90).
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('view:off_nadir')
 
@@ -76,7 +76,7 @@ class ViewItemExt(ItemExtension):
         the scene center. Measured in degrees (0-90).
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('view:incidence_angle')
 
@@ -91,7 +91,7 @@ class ViewItemExt(ItemExtension):
         north. Measured clockwise from north in degrees (0-360).
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('view:azimuth')
 
@@ -105,7 +105,7 @@ class ViewItemExt(ItemExtension):
         is the angle between truth north and the sun. Measured clockwise in degrees (0-360).
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('view:sun_azimuth')
 
@@ -119,7 +119,7 @@ class ViewItemExt(ItemExtension):
         center point to the sun. Measured from the horizon in degrees (0-90).
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('view:sun_elevation')
 
