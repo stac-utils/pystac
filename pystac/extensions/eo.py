@@ -44,7 +44,7 @@ class EOItemExt(ItemExtension):
         """Get or sets the Ground Sample Distance at the sensor.
 
         Returns:
-            [float]
+            float
         """
         return self.item.properties.get('eo:gsd')
 
@@ -58,7 +58,7 @@ class EOItemExt(ItemExtension):
             the available bands.
 
         Returns:
-            [List[Band]]
+            List[Band]
         """
         bands = self.item.properties.get('eo:bands')
         if bands is None:
@@ -75,7 +75,7 @@ class EOItemExt(ItemExtension):
             entire scene. If not available the field should not be provided.
 
         Returns:
-            [float or None]
+            float or None
         """
         return self.item.properties.get('eo:cloud_cover')
 
@@ -93,7 +93,7 @@ class EOItemExt(ItemExtension):
             asset [Asset]: The asset from the associated item to get the bands of.
 
         Returns:
-            [List[Band] or None]: A list of Band objects associated with the asset, or None
+            List[Band] or None: A list of Band objects associated with the asset, or None
             if the asset doesn't exist or does not contain band information.
         """
         if 'eo:bands' not in asset.properties:
@@ -203,7 +203,7 @@ class Band:
         """Get or sets the name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('name')
 
@@ -218,7 +218,7 @@ class Band:
             <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('common_name')
 
@@ -235,7 +235,7 @@ class Band:
         used for rich text representation.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('description')
 
@@ -251,7 +251,7 @@ class Band:
         """Get or sets the center wavelength of the band, in micrometers (μm).
 
         Returns:
-            [float]
+            float
         """
         return self.properties.get('center_wavelength')
 
