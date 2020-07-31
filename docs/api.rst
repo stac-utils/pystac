@@ -111,13 +111,6 @@ CommonMetadata
    :members:
    :undoc-members:
 
-ItemCollection
-~~~~~~~~~~~~~~
-
-.. autoclass:: pystac.ItemCollection
-   :members:
-   :undoc-members:
-
 Links
 -----
 
