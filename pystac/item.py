@@ -22,7 +22,11 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        datetime (datetime): Datetime associated with this item.
+        datetime (datetime or None): Datetime associated with this item. If None,
+            a start_datetime and end_datetime must be supplied in the properties.
+        bbox (List[float]):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array must be 2*n where n is the
+            number of dimensions.
         properties (dict): A dictionary of additional metadata for the item.
         bbox (List[float] or None):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
@@ -38,7 +42,12 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        datetime (datetime): Datetime associated with this item.
+        datetime (datetime or None): Datetime associated with this item. If None,
+            the start_datetime and end_datetime in the common_metadata
+            will supply the datetime range of the Item.
+        bbox (List[float]):  Bounding Box of the asset represented by this item using
+            either 2D or 3D geometries. The length of the array is 2*n where n is the
+            number of dimensions.
         properties (dict): A dictionary of additional metadata for the item.
         bbox (List[float] or None):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array is 2*n where n is the
@@ -70,6 +79,14 @@ class Item(STACObject):
         self.links = []
         self.assets = {}
 
+        if datetime is None:
+            if 'start_datetime' not in properties or \
+               'end_datetime' not in properties:
+                raise STACError('Invalid Item: If datetime is None, '
+                                'a start_datetime and end_datetime '
+                                'must be supplied in '
+                                'the properties.')
+
         if href is not None:
             self.set_self_href(href)
 
@@ -83,6 +100,31 @@ class Item(STACObject):
 
     def __repr__(self):
         return '<Item id={}>'.format(self.id)
+
+    def get_datetime(self, asset=None):
+        """Gets an Item or an Asset datetime.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value.
+
+        Returns:
+            datetime or None
+        """
+        if asset is None or 'datetime' not in asset.properties:
+            return self.datetime
+        else:
+            return str_to_datetime(asset.properties.get('datetime'))
+
+    def set_datetime(self, datetime, asset=None):
+        """Set an Item or an Asset datetime.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.datetime = datetime
+        else:
+            asset.properties['datetime'] = datetime_to_str(datetime)
 
     def get_assets(self):
         """Get this item's assets.
@@ -170,7 +212,10 @@ class Item(STACObject):
 
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 
-        self.properties['datetime'] = datetime_to_str(self.datetime)
+        if self.datetime is not None:
+            self.properties['datetime'] = datetime_to_str(self.datetime)
+        else:
+            self.properties['datetime'] = None
 
         d = {
             'type': 'Feature',
@@ -247,9 +292,8 @@ class Item(STACObject):
             collection_id = d['collection']
 
         datetime = properties.get('datetime')
-        if datetime is None:
-            raise STACError('Item dict is missing a "datetime" property in the "properties" field')
-        datetime = dateutil.parser.parse(datetime)
+        if datetime is not None:
+            datetime = dateutil.parser.parse(datetime)
 
         item = Item(id=id,
                     geometry=geometry,
@@ -437,8 +481,7 @@ class CommonMetadata:
     this item and are optional
 
     Args:
-        properties (dict): Dictionary of attributes to search for common
-            common metadata fields in
+        properties (dict): Dictionary of attributes that is the Item's properties
     """
     def __init__(self, properties):
         self.properties = properties
@@ -480,15 +523,41 @@ class CommonMetadata:
         Returns:
             datetime: Start date and time for the item
         """
-        start_datetime = self.properties.get('start_datetime')
+        return self.get_start_datetime()
+
+    @start_datetime.setter
+    def start_datetime(self, v):
+        self.set_start_datetime(v)
+
+    def get_start_datetime(self, asset=None):
+        """Gets an Item or an Asset start_datetime.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            datetime
+        """
+        if asset is None or 'start_datetime' not in asset.properties:
+            start_datetime = self.properties.get('start_datetime')
+        else:
+            start_datetime = asset.properties.get('start_datetime')
+
         if start_datetime:
             start_datetime = str_to_datetime(start_datetime)
 
         return start_datetime
 
-    @start_datetime.setter
-    def start_datetime(self, v):
-        self.properties['start_datetime'] = v
+    def set_start_datetime(self, start_datetime, asset=None):
+        """Set an Item or an Asset start_datetime.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['start_datetime'] = datetime_to_str(start_datetime)
+        else:
+            asset.properties['start_datetime'] = datetime_to_str(start_datetime)
 
     @property
     def end_datetime(self):
@@ -499,15 +568,41 @@ class CommonMetadata:
         Returns:
             datetime: End date and time for the item
         """
-        end_datetime = self.properties.get('end_datetime')
+        return self.get_end_datetime()
+
+    @end_datetime.setter
+    def end_datetime(self, v):
+        self.set_end_datetime(v)
+
+    def get_end_datetime(self, asset=None):
+        """Gets an Item or an Asset end_datetime.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            datetime
+        """
+        if asset is None or 'end_datetime' not in asset.properties:
+            end_datetime = self.properties.get('end_datetime')
+        else:
+            end_datetime = asset.properties.get('end_datetime')
+
         if end_datetime:
             end_datetime = str_to_datetime(end_datetime)
 
         return end_datetime
 
-    @end_datetime.setter
-    def end_datetime(self, v):
-        self.properties['end_datetime'] = v
+    def set_end_datetime(self, end_datetime, asset=None):
+        """Set an Item or an Asset end_datetime.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['end_datetime'] = datetime_to_str(end_datetime)
+        else:
+            asset.properties['end_datetime'] = datetime_to_str(end_datetime)
 
     # License
     @property
@@ -517,11 +612,36 @@ class CommonMetadata:
         Returns:
             str: Item's license(s), either SPDX identifier of 'various'
         """
-        return self.properties.get('license')
+        return self.get_license()
 
     @license.setter
     def license(self, v):
-        self.properties['license'] = v
+        self.set_license(v)
+
+    def get_license(self, asset=None):
+        """Gets an Item or an Asset license.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            str
+        """
+        if asset is None or 'license' not in asset.properties:
+            return self.properties.get('license')
+        else:
+            return asset.properties.get('license')
+
+    def set_license(self, license, asset=None):
+        """Set an Item or an Asset license.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['license'] = license
+        else:
+            asset.properties['license'] = license
 
     # Providers
     @property
@@ -533,15 +653,43 @@ class CommonMetadata:
             List[Provider]: List of organizations that captured or processed the data,
             encoded as Provider objects
         """
-        providers = self.properties.get('providers')
+        return self.get_providers()
+
+
+    @providers.setter
+    def providers(self, v):
+        self.set_providers(v)
+
+    def get_providers(self, asset=None):
+        """Gets an Item or an Asset providers.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            List[Provider]
+        """
+        if asset is None or 'providers' not in asset.properties:
+            providers = self.properties.get('providers')
+        else:
+            providers = asset.properties.get('providers')
+
         if providers is not None:
             providers = [Provider.from_dict(d) for d in providers]
 
         return providers
 
-    @providers.setter
-    def providers(self, v):
-        self.properties['providers'] = v
+    def set_providers(self, providers, asset=None):
+        """Set an Item or an Asset providers.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        providers_dicts = [d.to_dict() for d in providers]
+        if asset is None:
+            self.properties['providers'] = providers_dicts
+        else:
+            asset.properties['providers'] = providers_dicts
 
     # Instrument
     @property
@@ -552,11 +700,36 @@ class CommonMetadata:
             str: Unique name of the specific platform to which the instrument
             is attached
         """
-        return self.properties.get('platform')
+        return self.get_platform()
 
     @platform.setter
     def platform(self, v):
-        self.properties['platform'] = v
+        self.set_platform(v)
+
+    def get_platform(self, asset=None):
+        """Gets an Item or an Asset platform.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            str
+        """
+        if asset is None or 'platform' not in asset.properties:
+            return self.properties.get('platform')
+        else:
+            return asset.properties.get('platform')
+
+    def set_platform(self, platform, asset=None):
+        """Set an Item or an Asset platform.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['platform'] = platform
+        else:
+            asset.properties['platform'] = platform
 
     @property
     def instruments(self):
@@ -565,11 +738,36 @@ class CommonMetadata:
         Returns:
             List[str]: Name(s) of instrument(s) used
         """
-        return self.properties.get('instruments')
+        return self.get_instruments()
 
     @instruments.setter
     def instruments(self, v):
-        self.properties['instruments'] = v
+        self.set_instruments(v)
+
+    def get_instruments(self, asset=None):
+        """Gets an Item or an Asset instruments.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            List[str]
+        """
+        if asset is None or 'instruments' not in asset.properties:
+            return self.properties.get('instruments')
+        else:
+            return asset.properties.get('instruments')
+
+    def set_instruments(self, instruments, asset=None):
+        """Set an Item or an Asset instruments.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['instruments'] = instruments
+        else:
+            asset.properties['instruments'] = instruments
 
     @property
     def constellation(self):
@@ -578,11 +776,36 @@ class CommonMetadata:
         Returns:
             str: Name of the constellation to which the platform belongs
         """
-        return self.properties.get('constellation')
+        return self.get_constellation()
 
     @constellation.setter
     def constellation(self, v):
-        self.properties['constellation'] = v
+        self.set_constellation(v)
+
+    def get_constellation(self, asset=None):
+        """Gets an Item or an Asset constellation.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            str
+        """
+        if asset is None or 'constellation' not in asset.properties:
+            return self.properties.get('constellation')
+        else:
+            return asset.properties.get('constellation')
+
+    def set_constellation(self, constellation, asset=None):
+        """Set an Item or an Asset constellation.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['constellation'] = constellation
+        else:
+            asset.properties['constellation'] = constellation
 
     @property
     def mission(self):
@@ -591,11 +814,36 @@ class CommonMetadata:
         Returns:
             str: Name of the mission in which data are collected
         """
-        return self.properties.get('mission')
+        return self.get_mission()
 
     @mission.setter
     def mission(self, v):
-        self.properties['mission'] = v
+        self.set_mission(v)
+
+    def get_mission(self, asset=None):
+        """Gets an Item or an Asset mission.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            str
+        """
+        if asset is None or 'mission' not in asset.properties:
+            return self.properties.get('mission')
+        else:
+            return asset.properties.get('mission')
+
+    def set_mission(self, mission, asset=None):
+        """Set an Item or an Asset mission.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['mission'] = mission
+        else:
+            asset.properties['mission'] = mission
 
     @property
     def gsd(self):
@@ -604,11 +852,36 @@ class CommonMetadata:
         Returns:
             [float]: Ground Sample Distance at the senso
         """
-        return self.properties.get('gsd')
+        return self.get_gsd()
 
     @gsd.setter
     def gsd(self, v):
-        self.properties['gsd'] = v
+        self.set_gsd(v)
+
+    def get_gsd(self, asset=None):
+        """Gets an Item or an Asset gsd.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            float
+        """
+        if asset is None or 'gsd' not in asset.properties:
+            return self.properties.get('gsd')
+        else:
+            return asset.properties.get('gsd')
+
+    def set_gsd(self, gsd, asset=None):
+        """Set an Item or an Asset gsd.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['gsd'] = gsd
+        else:
+            asset.properties['gsd'] = gsd
 
     # Metadata
     @property
@@ -620,32 +893,109 @@ class CommonMetadata:
         Returns:
             datetime: Creation date and time of the metadata file
         """
-        created = self.properties.get('created')
+        return self.get_created()
+
+    @created.setter
+    def created(self, v):
+        self.set_created(v)
+
+    def get_created(self, asset=None):
+        """Gets an Item or an Asset created time.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value.
+
+        Note:
+            ``created`` and ``updated`` have different meaning depending on where they are used.
+            If those fields are available in the Item `properties`, it's referencing to the
+            creation and update times of the metadata. Having those fields in the Item `assets`
+            refers to the creation and update times of the actual data linked to
+            in the Asset Object.
+
+        Returns:
+            datetime
+        """
+        if asset is None or 'created' not in asset.properties:
+            created = self.properties.get('created')
+        else:
+            created = asset.properties.get('created')
+
         if created:
             created = str_to_datetime(created)
 
         return created
 
-    @created.setter
-    def created(self, v):
-        self.properties['created'] = v
+
+    def set_created(self, created, asset=None):
+        """Set an Item or an Asset created time.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['created'] = datetime_to_str(created)
+        else:
+            asset.properties['created'] = datetime_to_str(created)
+
 
     @property
     def updated(self):
-        """Get or set the metadata file's creation date. All datetime attributes have
+        """Get or set the metadata file's update date. All datetime attributes have
         setters that can take either a string or a datetime, but always stores
         the attribute as a string
+
+        Note:
+            ``created`` and ``updated`` have different meaning depending on where they are used.
+            If those fields are available in the Item `properties`, it's referencing to the
+            creation and update times of the metadata. Having those fields in the Item `assets`
+            refers to the creation and update times of the actual data linked to
+            in the Asset Object.
+
 
         Returns:
             datetime: Date and time that the metadata file was most recently
                 updated
         """
-        updated = self.properties.get('updated')
+        return self.get_updated()
+
+    @updated.setter
+    def updated(self, v):
+        self.set_updated(v)
+
+    def get_updated(self, asset=None):
+        """Gets an Item or an Asset updated time.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value.
+
+        Note:
+            ``created`` and ``updated`` have different meaning depending on where they are used.
+            If those fields are available in the Item `properties`, it's referencing to the
+            creation and update times of the metadata. Having those fields in the Item `assets`
+            refers to the creation and update times of the actual data linked to
+            in the Asset Object.
+
+        Returns:
+            datetime
+        """
+        if asset is None or 'updated' not in asset.properties:
+            updated = self.properties.get('updated')
+        else:
+            updated = asset.properties.get('updated')
+
         if updated:
             updated = str_to_datetime(updated)
 
         return updated
 
-    @updated.setter
-    def updated(self, v):
-        self.properties['updated'] = v
+
+    def set_updated(self, updated, asset=None):
+        """Set an Item or an Asset updated time.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.properties['updated'] = datetime_to_str(updated)
+        else:
+            asset.properties['updated'] = datetime_to_str(updated)
