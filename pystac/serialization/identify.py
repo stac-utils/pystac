@@ -211,13 +211,16 @@ def identify_stac_object_type(json_dict):
     """
     object_type = None
 
-    if 'type' in json_dict:
-        if json_dict['type'] == 'FeatureCollection':
-            object_type = STACObjectType.ITEMCOLLECTION
-        else:
-            object_type = STACObjectType.ITEM
-    elif 'extent' in json_dict:
+    # Identify pre-1.0 ITEMCOLLECTION (since removed)
+    if 'type' in json_dict and 'assets' not in json_dict:
+        if 'stac_version' in json_dict and json_dict['stac_version'].startswith('0'):
+            if json_dict['type'] == 'FeatureCollection':
+                object_type = STACObjectType.ITEMCOLLECTION
+
+    if 'extent' in json_dict:
         object_type = STACObjectType.COLLECTION
+    elif 'assets' in json_dict:
+        object_type = STACObjectType.ITEM
     else:
         object_type = STACObjectType.CATALOG
 

@@ -6,7 +6,6 @@ from pystac.serialization.identify import (STACObjectType, STACJSONDescription, 
 
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
-from pystac.extensions.single_file_stac import SingleFileSTAC
 
 
 def stac_object_from_dict(d, href=None, root=None):
@@ -39,12 +38,6 @@ def stac_object_from_dict(d, href=None, root=None):
 
     if info.object_type == STACObjectType.COLLECTION:
         return Collection.from_dict(d, href=href, root=root)
-
-    if info.object_type == STACObjectType.ITEMCOLLECTION:
-        if Extensions.SINGLE_FILE_STAC in info.common_extensions:
-            return SingleFileSTAC.from_dict(d)
-
-        return ItemCollection.from_dict(d)
 
     if info.object_type == STACObjectType.ITEM:
         return Item.from_dict(d, href=href, root=root)
