@@ -1,8 +1,10 @@
 import unittest
+import os
 import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
+import pystac
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
@@ -116,3 +118,21 @@ class CollectionTest(unittest.TestCase):
         invalid_col = Collection.from_dict(multi_ext_dict)
         with self.assertRaises(STACValidationError):
             self.validator.validate_object(invalid_col)
+
+    def test_extra_fields(self):
+        catalog = TestCases.test_case_2()
+        collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
+
+        collection.extra_fields['test'] = 'extra'
+
+        with TemporaryDirectory() as tmp_dir:
+            p = os.path.join(tmp_dir, 'collection.json')
+            collection.save_object(include_self_link=False, dest_href=p)
+            with open(p) as f:
+                col_json = json.load(f)
+            self.assertTrue('test' in col_json)
+            self.assertEqual(col_json['test'], 'extra')
+
+            read_col = pystac.read_file(p)
+            self.assertTrue('test' in read_col.extra_fields)
+            self.assertEqual(read_col.extra_fields['test'], 'extra')

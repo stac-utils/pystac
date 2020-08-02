@@ -32,6 +32,8 @@ class Collection(Catalog):
         properties (dict): Optional dict of common fields across referenced items.
         summaries (dict): An optional map of property summaries,
             either a set of values or statistics such as a range.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
+            of the Collection.
 
     Attributes:
         id (str): Identifier for the collection.
@@ -47,6 +49,8 @@ class Collection(Catalog):
             either a set of values or statistics such as a range.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this Collection.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
+            of the Catalog.
     """
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC object in a cononical format."""
@@ -57,12 +61,13 @@ class Collection(Catalog):
                  title=None,
                  stac_extensions=None,
                  href=None,
+                 extra_fields=None,
                  license='proprietary',
                  keywords=None,
                  providers=None,
                  properties=None,
                  summaries=None):
-        super(Collection, self).__init__(id, description, title, stac_extensions, href)
+        super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields, href)
         self.extent = extent
         self.license = license
 
@@ -125,8 +130,9 @@ class Collection(Catalog):
                            description=self.description,
                            extent=self.extent.clone(),
                            title=self.title,
-                           license=self.license,
                            stac_extensions=self.stac_extensions,
+                           extra_fields=self.extra_fields,
+                           license=self.license,
                            keywords=self.keywords,
                            providers=self.providers,
                            properties=self.properties,
@@ -149,10 +155,11 @@ class Collection(Catalog):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
-        id = d['id']
-        description = d['description']
-        license = d['license']
-        extent = Extent.from_dict(d['extent'])
+        d = deepcopy(d)
+        id = d.pop('id')
+        description = d.pop('description')
+        license = d.pop('license')
+        extent = Extent.from_dict(d.pop('extent'))
         title = d.get('title')
         stac_extensions = d.get('stac_extensions')
         keywords = d.get('keywords')
@@ -161,20 +168,24 @@ class Collection(Catalog):
             providers = list(map(lambda x: Provider.from_dict(x), providers))
         properties = d.get('properties')
         summaries = d.get('summaries')
+        links = d.pop('links')
+
+        d.pop('stac_version')
 
         collection = Collection(id=id,
                                 description=description,
                                 extent=extent,
                                 title=title,
-                                license=license,
                                 stac_extensions=stac_extensions,
+                                extra_fields=d,
+                                license=license,
                                 keywords=keywords,
                                 providers=providers,
                                 properties=properties,
                                 summaries=summaries)
 
         has_self_link = False
-        for link in d['links']:
+        for link in links:
             has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
