@@ -305,6 +305,31 @@ or you can call ``ext.enable`` on an Item (which will work for any item, whether
 
    item.ext.enable(pystac.Extensions.LABEL)
 
+Item Asset properties
+=====================
+
+Properties that apply to Items can be found in two places: the Item's properties or in any of an Item's Assets. If the property is on an Asset, it applies only that specific asset. For example, gsd defined for an Item represents the best Ground Sample Distance (resolution) for the data within the Item. However, some assets may be lower resolution and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.
+
+See the STAC documentation on `Additional Fields for Assets <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/item-spec/item-spec.md#additional-fields-for-assets>`_ and the relevant `Best Practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#common-use-cases-of-additional-fields-for-assets>`_ for more information.
+
+The implementation of this feature in PySTAC uses the method described here and is consistent across Item and ItemExtensions. The bare property names represent values for the Item only, but for each property where it is possible to set on both the Item or the Asset there is a ``get_`` and ``set_`` methods that optionally take an Asset. For the ``get_`` methods, if the property is found on the Asset, the Asset's value is used; otherwise the Item's value will be used. For the ``set_`` method, if an Asset is passed in the value will be applied to the Asset and not the Item.
+
+For example, if we have an Item with a ``gsd`` of 10 with three bands, and only asset "band3" having a ``gsd`` of 20, the ``get_gsd`` method will behave in the following way:
+
+  .. code-block:: python
+
+     assert item.common_metadata.gsd == 10
+     assert item.common_metadata.get_gsd() == 10
+     assert item.common_metadata.get_gsd(item.asset['band1']) == 10
+     assert item.common_metadata.get_gsd(item.asset['band3']) == 20
+
+Similarly, if we set the asset at 'band2' to have a ``gsd`` of 30, it will only affect that asset:
+
+  .. code-block:: python
+
+     item.common_metadata.set_gsd(30, item.assets['band2']
+     assert item.common_metadata.gsd == 10
+     assert item.common_metadata.get_gsd(item.asset['band2']) == 30
 
 Manipulating STACs
 ==================
