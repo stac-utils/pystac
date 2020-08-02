@@ -3,7 +3,7 @@ import json
 import jsonschema
 from jsonschema.validators import RefResolver
 
-from pystac import (STAC_VERSION, STAC_IO, Catalog, Collection, Item, ItemCollection, Extensions)
+from pystac import (STAC_VERSION, STAC_IO, Catalog, Collection, Item, Extensions)
 from pystac.serialization import STACObjectType
 
 
@@ -35,9 +35,9 @@ class SchemaValidator:
         Extensions.SINGLE_FILE_STAC: {
             # TODO: Move off of custom schema if schema in spec was fixed
             # before this extension got removed.
-            STACObjectType.ITEMCOLLECTION: ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
-                                            '0.9.0/fix-single-file-stac-schema/extensions/'
-                                            'single-file-stac/json-schema/schema.json')
+            STACObjectType.CATALOG: ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
+                                     '0.9.0/fix-single-file-stac-schema/extensions/'
+                                     'single-file-stac/json-schema/schema.json')
         }
     }
 
@@ -129,8 +129,6 @@ class SchemaValidator:
             stac_object_type = STACObjectType.CATALOG
         elif issubclass(obj_type, Item):
             stac_object_type = STACObjectType.ITEM
-        elif issubclass(obj_type, ItemCollection):
-            stac_object_type = STACObjectType.ITEMCOLLECTION
         else:
             raise Exception("Unknown STAC Object type: {}".format(obj_type))
 

@@ -73,13 +73,14 @@ class EOTest(unittest.TestCase):
         eo_item = pystac.read_file(TestCases.get_path('data-files/eo/eo-landsat-example.json'))
 
         # Get
-        self.assertIn("eo:gsd", eo_item.properties)
-        eo_gsd = eo_item.ext.eo.gsd
-        self.assertEqual(eo_gsd, eo_item.properties['eo:gsd'])
+        self.assertIn("gsd", eo_item.properties)
+
+        eo_gsd = eo_item.common_metadata.gsd
+        self.assertEqual(eo_gsd, eo_item.properties['gsd'])
 
         # Set
-        eo_item.ext.eo.gsd = eo_gsd + 100
-        self.assertEqual(eo_gsd + 100, eo_item.properties['eo:gsd'])
+        eo_item.common_metadata.gsd = eo_gsd + 100
+        self.assertEqual(eo_gsd + 100, eo_item.properties['gsd'])
         self.validator.validate_object(eo_item)
 
     def test_bands(self):

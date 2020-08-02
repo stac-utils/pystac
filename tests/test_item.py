@@ -1,10 +1,11 @@
+from pystac.serialization.identify import STACObjectType
 import unittest
 import json
 
 from pystac import Asset, Item, Provider
 from pystac.item import CommonMetadata
 from pystac.utils import str_to_datetime
-from tests.utils import (TestCases, test_to_from_dict)
+from tests.utils import (TestCases, test_to_from_dict, SchemaValidator)
 from datetime import datetime
 
 
@@ -62,15 +63,33 @@ class ItemTest(unittest.TestCase):
         self.assertIsInstance(item, Item)
         self.assertEqual(len(item.links), 1)
 
+    def test_null_geometry(self):
+        self.validator = SchemaValidator()
+        m = TestCases.get_path(
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/null-geom-item.json')
+        with open(m) as f:
+            item_dict = json.load(f)
+
+        self.validator.validate_dict(item_dict, STACObjectType.ITEM)
+
+        item = Item.from_dict(item_dict)
+        self.assertIsInstance(item, Item)
+        self.validator.validate_object(item)
+
+        item_dict = item.to_dict()
+        self.assertIsNone(item_dict['geometry'])
+        with self.assertRaises(KeyError):
+            item_dict['bbox']
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
         self.URI_1 = TestCases.get_path(
-            'data-files/examples/0.9.0/item-spec/examples/datetimerange.json')
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json')
         self.ITEM_1 = Item.from_file(self.URI_1)
 
         self.URI_2 = TestCases.get_path(
-            'data-files/examples/0.9.0/item-spec/examples/sample-full.json')
+            'data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json')
         self.ITEM_2 = Item.from_file(self.URI_2)
 
         self.EXAMPLE_CM_DICT = {
@@ -262,3 +281,11 @@ class CommonMetadataTest(unittest.TestCase):
         x.common_metadata.mission = example_mission
         self.assertEqual(x.common_metadata.mission, example_mission)
         self.assertEqual(x.properties['mission'], example_mission)
+
+        # GSD
+        gsd = 0.512
+        example_gsd = 0.75
+        self.assertEqual(x.common_metadata.gsd, gsd)
+        x.common_metadata.gsd = example_gsd
+        self.assertEqual(x.common_metadata.gsd, example_gsd)
+        self.assertEqual(x.properties['gsd'], example_gsd)

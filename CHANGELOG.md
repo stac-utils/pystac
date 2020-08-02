@@ -6,6 +6,17 @@
 
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
 
+### Changed
+
+- Clarification on null geometries, making bbox not required if a null geometry is used. ([#123](https://github.com/azavea/pystac/pull/123))
+- Multiple extents (bounding boxes / intervals) are allowed per Collection ([#123](https://github.com/azavea/pystac/pull/123))
+- Moved eo:gsd from eo extension to core gsd field in Item common metadata ([#123](https://github.com/azavea/pystac/pull/123))
+asset extension renamed to item-assets and renamed assets field in Collections to item_assets ([#123](https://github.com/azavea/pystac/pull/123))
+
+### Removed
+
+- ItemCollection removed from stac-spec core repo, will migrate to stac-api-spec as that is the only place it is used. ([#123](https://github.com/azavea/pystac/pull/123))
+
 ## [v0.4.0]
 
 The two major changes for this release are:

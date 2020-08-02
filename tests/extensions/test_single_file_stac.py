@@ -11,8 +11,8 @@ from pystac.extensions.single_file_stac import Search
 
 class SingleFileSTACTest(unittest.TestCase):
     def setUp(self):
-        self.EXAMPLE_SINGLE_FILE = TestCases.get_path(
-            'data-files/itemcollections/example-search.json')
+        self.EXAMPLE_SINGLE_FILE = TestCases.get_path('data-files/examples/1.0.0-beta.2/\
+            extensions/single-file-stac/examples/example-search.json')
         with open(TestCases.get_path(self.EXAMPLE_SINGLE_FILE)) as f:
             self.EXAMPLE_SF_DICT = json.load(f)
 
@@ -53,19 +53,20 @@ class SingleFileSTACTest(unittest.TestCase):
             sf_from_file.save(tmp_uri)
             with open(tmp_uri) as f:
                 val_dict = json.load(f)
-        sv.validate_dict(val_dict, STACObjectType.ITEMCOLLECTION)
+        sv.validate_dict(val_dict, STACObjectType.CATALOG)
 
         val_dict['search']['endpoint'] = 1
         with self.assertRaises(STACValidationError):
-            sv.validate_dict(val_dict, STACObjectType.ITEMCOLLECTION)
+            sv.validate_dict(val_dict, STACObjectType.CATALOG)
 
 
 class SearchTest(unittest.TestCase):
     def test_search(self):
         s_empty = Search()
         self.assertIsInstance(s_empty.to_dict(), dict)
+        m = TestCases.get_path('data-files/examples/1.0.0-beta.2/extensions/single-file-stac/\
+            examples/example-search.json')
 
-        m = TestCases.get_path('data-files/itemcollections/example-search.json')
         s_from_ic = SingleFileSTAC.from_file(m).search
         with open(m) as f:
             sd = json.load(f)['search']

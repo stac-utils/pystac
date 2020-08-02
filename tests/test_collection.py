@@ -1,10 +1,12 @@
 import unittest
+import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
+from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, SchemaValidator, STACValidationError)
 
 
 class CollectionTest(unittest.TestCase):
@@ -52,7 +54,7 @@ class CollectionTest(unittest.TestCase):
 
         common_properties = {
             'eo:bands': [b.to_dict() for b in wv3_bands],
-            'eo:gsd': 0.3,
+            'gsd': 0.3,
             'eo:platform': 'Maxar',
             'eo:instrument': 'WorldView3'
         }
@@ -82,4 +84,35 @@ class CollectionTest(unittest.TestCase):
         item = next(cat.get_all_items())
 
         self.assertTrue(item.ext.implements('eo'))
-        self.assertEqual(item.ext.eo.gsd, 20.0)
+
+    def test_multiple_extents(self):
+        self.validator = SchemaValidator()
+
+        cat1 = TestCases.test_case_1()
+        col1 = cat1.get_child('country-1').get_child('area-1-1')
+        self.validator.validate_object(col1)
+        self.assertIsInstance(col1, Collection)
+        self.validator.validate_dict(col1.to_dict(), STACObjectType.COLLECTION)
+
+        multi_ext_uri = TestCases.get_path('data-files/collections/multi-extent.json')
+        with open(multi_ext_uri) as f:
+            multi_ext_dict = json.load(f)
+        self.validator.validate_dict(multi_ext_dict, STACObjectType.COLLECTION)
+        self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
+
+        multi_ext_col = Collection.from_file(multi_ext_uri)
+        self.validator.validate_object(multi_ext_col)
+        ext = multi_ext_col.extent
+        extent_dict = multi_ext_dict['extent']
+        self.assertIsInstance(ext, Extent)
+        self.assertIsInstance(ext.spatial.bboxes[0], list)
+        self.assertEqual(len(ext.spatial.bboxes), 2)
+        self.assertDictEqual(ext.to_dict(), extent_dict)
+
+        cloned_ext = ext.clone()
+        self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict['extent'])
+
+        multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
+        invalid_col = Collection.from_dict(multi_ext_dict)
+        with self.assertRaises(STACValidationError):
+            self.validator.validate_object(invalid_col)

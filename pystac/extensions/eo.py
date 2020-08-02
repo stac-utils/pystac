@@ -25,32 +25,17 @@ class EOItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(self, gsd, bands, cloud_cover=None):
+    def apply(self, bands, cloud_cover=None):
         """Applies label extension properties to the extended Item.
 
         Args:
-            gsd (float): The Ground Sample Distance of the sensor
             bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
                 the available bands.
             cloud_cover (float or None): The estimate of cloud cover as a percentage (0-100) of the
                 entire scene. If not available the field should not be provided.
         """
-        self.gsd = gsd
         self.bands = bands
         self.cloud_cover = cloud_cover
-
-    @property
-    def gsd(self):
-        """Get or sets the Ground Sample Distance at the sensor.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get('eo:gsd')
-
-    @gsd.setter
-    def gsd(self, v):
-        self.item.properties['eo:gsd'] = v
 
     @property
     def bands(self):
