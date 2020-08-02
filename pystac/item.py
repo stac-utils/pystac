@@ -22,15 +22,12 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        datetime (datetime or None): Datetime associated with this item. If None,
-            a start_datetime and end_datetime must be supplied in the properties.
-        bbox (List[float]):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array must be 2*n where n is the
-            number of dimensions.
-        properties (dict): A dictionary of additional metadata for the item.
         bbox (List[float] or None):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array must be 2*n where n is the
             number of dimensions. Could also be None in the case of a null geometry.
+        datetime (datetime or None): Datetime associated with this item. If None,
+            a start_datetime and end_datetime must be supplied in the properties.
+        properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str]): Optional list of extensions the Item implements.
         href (str or None): Optional HREF for this item, which be set as the item's
             self link's HREF.
@@ -42,16 +39,13 @@ class Item(STACObject):
         geometry (dict): Defines the full footprint of the asset represented by this item,
             formatted according to `RFC 7946, section 3.1 (GeoJSON)
             <https://tools.ietf.org/html/rfc7946>`_.
-        datetime (datetime or None): Datetime associated with this item. If None,
-            the start_datetime and end_datetime in the common_metadata
-            will supply the datetime range of the Item.
-        bbox (List[float]):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array is 2*n where n is the
-            number of dimensions.
-        properties (dict): A dictionary of additional metadata for the item.
         bbox (List[float] or None):  Bounding Box of the asset represented by this item using
             either 2D or 3D geometries. The length of the array is 2*n where n is the
             number of dimensions. Could also be None in the case of a null geometry.
+        datetime (datetime or None): Datetime associated with this item. If None,
+            the start_datetime and end_datetime in the common_metadata
+            will supply the datetime range of the Item.
+        properties (dict): A dictionary of additional metadata for the item.
         stac_extensions (List[str] or None): Optional list of extensions the Item implements.
         collection (Collection or None): Collection that this item is a part of.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
@@ -63,9 +57,9 @@ class Item(STACObject):
     def __init__(self,
                  id,
                  geometry,
+                 bbox,
                  datetime,
                  properties,
-                 bbox=None,
                  stac_extensions=None,
                  href=None,
                  collection=None):
