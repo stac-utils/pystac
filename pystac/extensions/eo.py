@@ -1,4 +1,4 @@
-from pystac import (STACError, Extensions)
+from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 

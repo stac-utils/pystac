@@ -649,7 +649,6 @@ class CommonMetadata:
         """
         return self.get_providers()
 
-
     @providers.setter
     def providers(self, v):
         self.set_providers(v)
@@ -919,7 +918,6 @@ class CommonMetadata:
 
         return created
 
-
     def set_created(self, created, asset=None):
         """Set an Item or an Asset created time.
 
@@ -930,7 +928,6 @@ class CommonMetadata:
             self.properties['created'] = datetime_to_str(created)
         else:
             asset.properties['created'] = datetime_to_str(created)
-
 
     @property
     def updated(self):
@@ -981,7 +978,6 @@ class CommonMetadata:
             updated = str_to_datetime(updated)
 
         return updated
-
 
     def set_updated(self, updated, asset=None):
         """Set an Item or an Asset updated time.

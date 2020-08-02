@@ -1,19 +1,15 @@
 import json
-import os
 import unittest
-from tempfile import TemporaryDirectory
 
 import pystac
-from pystac import (Catalog, CatalogType, Item, STACObjectType)
+from pystac import Item
 from pystac.extensions.eo import Band
-from tests.utils import (SchemaValidator, STACValidationError, TestCases, test_to_from_dict)
+from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
 class EOTest(unittest.TestCase):
     LANDSAT_EXAMPLE_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
-    BANDS_IN_ITEM_URI = TestCases.get_path(
-        'data-files/eo/sample-bands-in-item-properties.json'
-    )
+    BANDS_IN_ITEM_URI = TestCases.get_path('data-files/eo/sample-bands-in-item-properties.json')
 
     def setUp(self):
         self.validator = SchemaValidator()
@@ -36,8 +32,7 @@ class EOTest(unittest.TestCase):
         # Get
         self.assertIn("eo:bands", eo_item.properties)
         bands = eo_item.ext.eo.bands
-        self.assertEqual(list(map(lambda x: x.name, bands)),
-                         ['band1', 'band2', 'band3', 'band4'])
+        self.assertEqual(list(map(lambda x: x.name, bands)), ['band1', 'band2', 'band3', 'band4'])
 
         # Set
         new_bands = [
@@ -104,17 +99,14 @@ class EOTest(unittest.TestCase):
 
         # Get from Asset
         b2_asset = item.assets['B2']
-        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset),
-                         item.ext.eo.get_cloud_cover())
+        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset), item.ext.eo.get_cloud_cover())
 
         b3_asset = item.assets['B3']
-        self.assertEqual(item.ext.eo.get_cloud_cover(b3_asset),
-                        20)
+        self.assertEqual(item.ext.eo.get_cloud_cover(b3_asset), 20)
 
         # Set on Asset
         item.ext.eo.set_cloud_cover(10, b2_asset)
-        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset),
-                        10)
+        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset), 10)
 
         self.validator.validate_object(item)
 
