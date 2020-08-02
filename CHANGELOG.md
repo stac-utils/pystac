@@ -5,6 +5,7 @@
 ### Added
 
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
+- Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 
 ### Changed
 
