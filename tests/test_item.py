@@ -1,15 +1,19 @@
-from pystac.serialization.identify import STACObjectType
-import unittest
+from datetime import datetime
 import json
+import unittest
 
+import pystac
 from pystac import Asset, Item, Provider
 from pystac.item import CommonMetadata
 from pystac.utils import str_to_datetime
-from tests.utils import (TestCases, test_to_from_dict, SchemaValidator)
-from datetime import datetime
+from pystac.serialization.identify import STACObjectType
+from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
 
 
 class ItemTest(unittest.TestCase):
+    def setUp(self):
+        self.validator = SchemaValidator()
+
     def get_example_item_dict(self):
         m = TestCases.get_path('data-files/item/sample-item.json')
         with open(m) as f:
@@ -49,6 +53,41 @@ class ItemTest(unittest.TestCase):
         formatted_time = item.to_dict()['properties']['datetime']
 
         self.assertEqual('2016-05-03T13:22:30.040000Z', formatted_time)
+
+    def test_null_datetime(self):
+        item = pystac.read_file(TestCases.get_path('data-files/item/sample-item.json'))
+
+        with self.assertRaises(pystac.STACError):
+            Item('test', geometry=item.geometry, bbox=item.bbox, datetime=None, properties={})
+
+        null_dt_item = Item('test',
+                            geometry=item.geometry,
+                            bbox=item.bbox,
+                            datetime=None,
+                            properties={
+                                'start_datetime': pystac.utils.datetime_to_str(item.datetime),
+                                'end_datetime': pystac.utils.datetime_to_str(item.datetime)
+                            })
+
+        self.validator.validate_object(null_dt_item)
+
+    def test_get_set_asset_datetime(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        item_datetime = item.datetime
+
+        # No property on asset
+        self.assertEqual(item.get_datetime(item.assets['thumbnail']), item.datetime)
+
+        # Property on asset
+        self.assertNotEqual(item.get_datetime(item.assets['analytic']), item.datetime)
+        self.assertEqual(item.get_datetime(item.assets['analytic']),
+                         str_to_datetime("2017-05-03T13:22:30.040Z"))
+
+        item.set_datetime(str_to_datetime("2018-05-03T13:22:30.040Z"), item.assets['thumbnail'])
+        self.assertEqual(item.get_datetime(), item_datetime)
+        self.assertEqual(item.get_datetime(item.assets['thumbnail']),
+                         str_to_datetime("2018-05-03T13:22:30.040Z"))
 
     def test_read_eo_item_owns_asset(self):
         item = next(x for x in TestCases.test_case_1().get_all_items() if isinstance(x, Item))
@@ -121,13 +160,13 @@ class CommonMetadataTest(unittest.TestCase):
         x = self.ITEM_1.clone()
         start_datetime_str = "2018-01-01T13:21:30Z"
         start_datetime_dt = str_to_datetime(start_datetime_str)
-        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
         self.assertEqual(x.common_metadata.start_datetime, start_datetime_dt)
         self.assertEqual(x.properties['start_datetime'], start_datetime_str)
 
-        x.common_metadata.start_datetime = example_datetime_str
+        x.common_metadata.start_datetime = example_datetime_dt
 
         self.assertEqual(x.common_metadata.start_datetime, example_datetime_dt)
         self.assertEqual(x.properties['start_datetime'], example_datetime_str)
@@ -136,13 +175,13 @@ class CommonMetadataTest(unittest.TestCase):
         x = self.ITEM_1.clone()
         end_datetime_str = "2018-01-01T13:31:30Z"
         end_datetime_dt = str_to_datetime(end_datetime_str)
-        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
         self.assertEqual(x.common_metadata.end_datetime, end_datetime_dt)
         self.assertEqual(x.properties['end_datetime'], end_datetime_str)
 
-        x.common_metadata.end_datetime = example_datetime_str
+        x.common_metadata.end_datetime = example_datetime_dt
 
         self.assertEqual(x.common_metadata.end_datetime, example_datetime_dt)
         self.assertEqual(x.properties['end_datetime'], example_datetime_str)
@@ -151,13 +190,13 @@ class CommonMetadataTest(unittest.TestCase):
         x = self.ITEM_2.clone()
         created_str = "2016-05-04T00:00:01Z"
         created_dt = str_to_datetime(created_str)
-        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
         self.assertEqual(x.common_metadata.created, created_dt)
         self.assertEqual(x.properties['created'], created_str)
 
-        x.common_metadata.created = example_datetime_str
+        x.common_metadata.created = example_datetime_dt
 
         self.assertEqual(x.common_metadata.created, example_datetime_dt)
         self.assertEqual(x.properties['created'], example_datetime_str)
@@ -166,13 +205,13 @@ class CommonMetadataTest(unittest.TestCase):
         x = self.ITEM_2.clone()
         updated_str = "2017-01-01T00:30:55Z"
         updated_dt = str_to_datetime(updated_str)
-        example_datetime_str = "2020-01-01T00:00:00"
+        example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
         self.assertEqual(x.common_metadata.updated, updated_dt)
         self.assertEqual(x.properties['updated'], updated_str)
 
-        x.common_metadata.updated = example_datetime_str
+        x.common_metadata.updated = example_datetime_dt
 
         self.assertEqual(x.common_metadata.updated, example_datetime_dt)
         self.assertEqual(x.properties['updated'], example_datetime_str)
@@ -211,7 +250,7 @@ class CommonMetadataTest(unittest.TestCase):
             self.assertIsInstance(pd2, dict)
             self.assertDictEqual(pd1, pd2)
 
-        x.common_metadata.providers = example_providers_dict_list
+        x.common_metadata.providers = example_providers_object_list
 
         for i in range(len(x.common_metadata.providers)):
             p1 = x.common_metadata.providers[i]
@@ -289,3 +328,251 @@ class CommonMetadataTest(unittest.TestCase):
         x.common_metadata.gsd = example_gsd
         self.assertEqual(x.common_metadata.gsd, example_gsd)
         self.assertEqual(x.properties['gsd'], example_gsd)
+
+    def test_asset_start_datetime(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.start_datetime
+        a2_known_value = str_to_datetime("2017-05-01T13:22:30.040Z")
+
+        # Get
+        a1_value = cm.get_start_datetime(item.assets['analytic'])
+        a2_value = cm.get_start_datetime(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = str_to_datetime("2014-05-01T13:22:30.040Z")
+        cm.set_start_datetime(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_start_datetime(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.start_datetime, item_value)
+
+    def test_asset_end_datetime(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.end_datetime
+        a2_known_value = str_to_datetime("2017-05-02T13:22:30.040Z")
+
+        # Get
+        a1_value = cm.get_end_datetime(item.assets['analytic'])
+        a2_value = cm.get_end_datetime(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = str_to_datetime("2014-05-01T13:22:30.040Z")
+        cm.set_end_datetime(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_end_datetime(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.end_datetime, item_value)
+
+    def test_asset_license(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.license
+        a2_known_value = 'CC-BY-4.0'
+
+        # Get
+        a1_value = cm.get_license(item.assets['analytic'])
+        a2_value = cm.get_license(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = 'various'
+        cm.set_license(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_license(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.license, item_value)
+
+    def test_asset_providers(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.providers
+        a2_known_value = [
+            pystac.Provider(name="USGS",
+                            url="https://landsat.usgs.gov/",
+                            roles=["producer", "licensor"])
+        ]
+
+        # Get
+        a1_value = cm.get_providers(item.assets['analytic'])
+        a2_value = cm.get_providers(item.assets['thumbnail'])
+        self.assertEqual(a1_value[0].to_dict(), item_value[0].to_dict())
+        self.assertNotEqual(a2_value[0].to_dict(), item_value[0].to_dict())
+        self.assertEqual(a2_value[0].to_dict(), a2_known_value[0].to_dict())
+
+        # Set
+        set_value = [
+            pystac.Provider(name="John Snow", url="https://cholera.com/", roles=["producer"])
+        ]
+        cm.set_providers(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_providers(item.assets['analytic'])
+        self.assertEqual(new_a1_value[0].to_dict(), set_value[0].to_dict())
+        self.assertEqual(cm.providers[0].to_dict(), item_value[0].to_dict())
+
+    def test_asset_platform(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.platform
+        a2_known_value = 'shoes'
+
+        # Get
+        a1_value = cm.get_platform(item.assets['analytic'])
+        a2_value = cm.get_platform(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = 'brick'
+        cm.set_platform(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_platform(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.platform, item_value)
+
+    def test_asset_instruments(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.instruments
+        a2_known_value = ["caliper"]
+
+        # Get
+        a1_value = cm.get_instruments(item.assets['analytic'])
+        a2_value = cm.get_instruments(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = ["horns"]
+        cm.set_instruments(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_instruments(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.instruments, item_value)
+
+    def test_asset_constellation(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.constellation
+        a2_known_value = 'little dipper'
+
+        # Get
+        a1_value = cm.get_constellation(item.assets['analytic'])
+        a2_value = cm.get_constellation(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = 'orion'
+        cm.set_constellation(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_constellation(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.constellation, item_value)
+
+    def test_asset_mission(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.mission
+        a2_known_value = 'possible'
+
+        # Get
+        a1_value = cm.get_mission(item.assets['analytic'])
+        a2_value = cm.get_mission(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = 'critical'
+        cm.set_mission(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_mission(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.mission, item_value)
+
+    def test_asset_gsd(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.gsd
+        a2_known_value = 40
+
+        # Get
+        a1_value = cm.get_gsd(item.assets['analytic'])
+        a2_value = cm.get_gsd(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = 100
+        cm.set_gsd(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_gsd(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.gsd, item_value)
+
+    def test_asset_created(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.created
+        a2_known_value = str_to_datetime("2017-05-17T13:22:30.040Z")
+
+        # Get
+        a1_value = cm.get_created(item.assets['analytic'])
+        a2_value = cm.get_created(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = str_to_datetime("2014-05-17T13:22:30.040Z")
+        cm.set_created(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_created(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.created, item_value)
+
+    def test_asset_updated(self):
+        item = pystac.read_file(
+            TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
+        cm = item.common_metadata
+
+        item_value = cm.updated
+        a2_known_value = str_to_datetime("2017-05-18T13:22:30.040Z")
+
+        # Get
+        a1_value = cm.get_updated(item.assets['analytic'])
+        a2_value = cm.get_updated(item.assets['thumbnail'])
+        self.assertEqual(a1_value, item_value)
+        self.assertNotEqual(a2_value, item_value)
+        self.assertEqual(a2_value, a2_known_value)
+
+        # Set
+        set_value = str_to_datetime("2014-05-18T13:22:30.040Z")
+        cm.set_updated(set_value, item.assets['analytic'])
+        new_a1_value = cm.get_updated(item.assets['analytic'])
+        self.assertEqual(new_a1_value, set_value)
+        self.assertEqual(cm.updated, item_value)

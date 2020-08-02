@@ -5,6 +5,7 @@
 ### Added
 
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
+- Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 
 ### Changed
 
@@ -12,6 +13,7 @@
 - Multiple extents (bounding boxes / intervals) are allowed per Collection ([#123](https://github.com/azavea/pystac/pull/123))
 - Moved eo:gsd from eo extension to core gsd field in Item common metadata ([#123](https://github.com/azavea/pystac/pull/123))
 asset extension renamed to item-assets and renamed assets field in Collections to item_assets ([#123](https://github.com/azavea/pystac/pull/123))
+- `get_asset_bands` and `set_asset_bands` were renamed `get_bands` and `set_bands` and follow the new item asset property access pattern.
 
 ### Removed
 

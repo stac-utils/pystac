@@ -1,8 +1,0 @@
-{
-    "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B1.TIF",
-    "type": "image/tiff; application=geotiff",
-    "eo:bands": [
-        0
-    ],
-    "title": "Band 1 (coastal)"
-}
