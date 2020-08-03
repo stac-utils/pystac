@@ -128,6 +128,24 @@ def _migrate_eo(d, version, info):
                         d['properties']['eo:{}'.format(field)]
                     del d['properties']['eo:{}'.format(field)]
 
+    if version < '1.0.0-beta.1' and info.object_type == STACObjectType.ITEM:
+        # gsd moved from eo to common metadata
+        if 'eo:gsd' in d['properties']:
+            d['properties']['gsd'] = d['properties']['eo:gsd']
+            del d['properties']['eo:gsd']
+
+        # The way bands were declared in assets changed.
+        # In 1.0.0-beta.1 they are inlined into assets as
+        # opposed to having indicies back into a property-level array.
+        if 'eo:bands' in d['properties']:
+            bands = d['properties']['eo:bands']
+            for asset in d['assets'].values():
+                if 'eo:bands' in asset:
+                    new_bands = []
+                    for band_index in asset['eo:bands']:
+                        new_bands.append(bands[band_index])
+                    asset['eo:bands'] = new_bands
+
     return added_extensions
 
 

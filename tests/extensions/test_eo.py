@@ -117,3 +117,20 @@ class EOTest(unittest.TestCase):
 
         self.assertEqual(eo_item.common_metadata.platform, "landsat-8")
         self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
+
+    def test_reads_asset_bands_in_pre_1_0_version(self):
+        eo_item = pystac.read_file(
+            TestCases.get_path('data-files/examples/0.9.0/item-spec/examples/'
+                               'landsat8-sample.json'))
+
+        bands = eo_item.ext.eo.get_bands(eo_item.assets['B9'])
+
+        self.assertEqual(len(bands), 1)
+        self.assertEqual(bands[0].common_name, 'cirrus')
+
+    def test_reads_gsd_in_pre_1_0_version(self):
+        eo_item = pystac.read_file(
+            TestCases.get_path('data-files/examples/0.9.0/item-spec/examples/'
+                               'landsat8-sample.json'))
+
+        self.assertEqual(eo_item.common_metadata.gsd, 30.0)
