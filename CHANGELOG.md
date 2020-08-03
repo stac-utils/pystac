@@ -19,6 +19,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 ### Removed
 
 - ItemCollection was removed. ([#123](https://github.com/azavea/pystac/pull/123))
+- The commons extension was removed. Collection properties will still be merged for pre-1.0.0-beta.1 items where appropriate ([#129](https://github.com/azavea/pystac/pull/129))
 
 ## [v0.4.0]
 
