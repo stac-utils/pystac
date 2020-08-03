@@ -73,7 +73,6 @@ class ExtensionsTest(unittest.TestCase):
         try:
             cat = TestCases.test_case_2()
             col = cat.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
-            print(type(col))
             item = next(cat.get_all_items())
 
             cat.ext.enable("test")

@@ -33,11 +33,7 @@ class SchemaValidator:
             STACObjectType.ITEM: 'extensions/projection/json-schema/schema.json'
         },
         Extensions.SINGLE_FILE_STAC: {
-            # TODO: Move off of custom schema if schema in spec was fixed
-            # before this extension got removed.
-            STACObjectType.CATALOG: ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
-                                     '0.9.0/fix-single-file-stac-schema/extensions/'
-                                     'single-file-stac/json-schema/schema.json')
+            STACObjectType.CATALOG: 'extensions/single-file-stac/json-schema/schema.json'
         }
     }
 
@@ -144,7 +140,6 @@ class SchemaValidator:
                 print(json.dumps(d, indent=2))
             raise STACValidationError(
                 'Validation failed for STAC {}'.format(stac_object_type)) from e
-
         if 'stac_extensions' in d:
             for extension_id in d['stac_extensions']:
                 ext_schema_result = SchemaValidator.get_extension_schema(

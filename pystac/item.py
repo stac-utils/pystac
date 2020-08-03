@@ -33,6 +33,8 @@ class Item(STACObject):
             self link's HREF.
         collection (Collection or str): The Collection or Collection ID that this item
             belongs to.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
+            of the Item.
 
     Attributes:
         id (str): Provider identifier. Unique within the STAC.
@@ -53,6 +55,8 @@ class Item(STACObject):
         assets (Dict[str, Asset]): Dictionary of asset objects that can be downloaded,
             each with a unique key.
         collection_id (str or None): The Collection ID that this item belongs to, if any.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
+            of the Item.
     """
     def __init__(self,
                  id,
@@ -62,13 +66,18 @@ class Item(STACObject):
                  properties,
                  stac_extensions=None,
                  href=None,
-                 collection=None):
+                 collection=None,
+                 extra_fields=None):
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
         self.datetime = datetime
         self.properties = properties
         self.stac_extensions = stac_extensions
+        if extra_fields is None:
+            self.extra_fields = {}
+        else:
+            self.extra_fields = extra_fields
 
         self.links = []
         self.assets = {}
@@ -230,6 +239,9 @@ class Item(STACObject):
         if self.collection_id:
             d['collection'] = self.collection_id
 
+        for key in self.extra_fields:
+            d[key] = self.extra_fields[key]
+
         return deepcopy(d)
 
     def clone(self):
@@ -238,7 +250,8 @@ class Item(STACObject):
                      bbox=copy(self.bbox),
                      datetime=copy(self.datetime),
                      properties=deepcopy(self.properties),
-                     stac_extensions=deepcopy(self.stac_extensions))
+                     stac_extensions=deepcopy(self.stac_extensions),
+                     collection=self.collection_id)
         for link in self.links:
             clone.add_link(link.clone())
 
@@ -276,18 +289,22 @@ class Item(STACObject):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
-        id = d['id']
-        geometry = d['geometry']
-        properties = d['properties']
-        bbox = d.get('bbox')
+        d = deepcopy(d)
+        id = d.pop('id')
+        geometry = d.pop('geometry')
+        properties = d.pop('properties')
+        bbox = d.pop('bbox', None)
         stac_extensions = d.get('stac_extensions')
-        collection_id = None
-        if 'collection' in d.keys():
-            collection_id = d['collection']
+        collection_id = d.pop('collection', None)
 
         datetime = properties.get('datetime')
         if datetime is not None:
             datetime = dateutil.parser.parse(datetime)
+        links = d.pop('links')
+        assets = d.pop('assets')
+
+        d.pop('type')
+        d.pop('stac_version')
 
         item = Item(id=id,
                     geometry=geometry,
@@ -295,17 +312,18 @@ class Item(STACObject):
                     datetime=datetime,
                     properties=properties,
                     stac_extensions=stac_extensions,
-                    collection=collection_id)
+                    collection=collection_id,
+                    extra_fields=d)
 
         has_self_link = False
-        for link in d['links']:
+        for link in links:
             has_self_link |= link['rel'] == 'self'
             item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:
             item.add_link(Link.self_href(href))
 
-        for k, v in d['assets'].items():
+        for k, v in assets.items():
             asset = Asset.from_dict(v)
             asset.set_owner(item)
             item.assets[k] = asset

@@ -14,10 +14,11 @@
 - Moved eo:gsd from eo extension to core gsd field in Item common metadata ([#123](https://github.com/azavea/pystac/pull/123))
 asset extension renamed to item-assets and renamed assets field in Collections to item_assets ([#123](https://github.com/azavea/pystac/pull/123))
 - `get_asset_bands` and `set_asset_bands` were renamed `get_bands` and `set_bands` and follow the new item asset property access pattern.
+- Modified the `single-file-stac` extension to extend `Catalog` ([#128](https://github.com/azavea/pystac/pull/128))
 
 ### Removed
 
-- ItemCollection removed from stac-spec core repo, will migrate to stac-api-spec as that is the only place it is used. ([#123](https://github.com/azavea/pystac/pull/123))
+- ItemCollection was removed. ([#123](https://github.com/azavea/pystac/pull/123))
 
 ## [v0.4.0]
 

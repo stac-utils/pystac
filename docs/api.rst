@@ -8,7 +8,7 @@ pystac
 ------
 
 .. automodule:: pystac
-   :members: read_file, write_file
+   :members: read_file, write_file, read_dict
 
 STACObject
 ----------
@@ -265,10 +265,13 @@ Single File STAC Extension
 
 These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/single-file-stac>`_.
 
-SingleFileSTAC
-~~~~~~~~~~~~~~
+.. automodule:: pystac.extensions.single_file_stac
+   :members: create_single_file_stac
 
-.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTAC
+SingleFileSTACCatalogExt
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
    :members:
    :undoc-members:
 

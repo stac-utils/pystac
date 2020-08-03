@@ -1,6 +1,8 @@
+import os
 from datetime import datetime
 import json
 import unittest
+from tempfile import TemporaryDirectory
 
 import pystac
 from pystac import Asset, Item, Provider
@@ -44,6 +46,23 @@ class ItemTest(unittest.TestCase):
         expected_href = 'http://cool-sat.com/catalog/CS3-20160503_132130_04/data.geojson'
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
+
+    def test_extra_fields(self):
+        item = pystac.read_file(TestCases.get_path('data-files/item/sample-item.json'))
+
+        item.extra_fields['test'] = 'extra'
+
+        with TemporaryDirectory() as tmp_dir:
+            p = os.path.join(tmp_dir, 'item.json')
+            item.save_object(include_self_link=False, dest_href=p)
+            with open(p) as f:
+                item_json = json.load(f)
+            self.assertTrue('test' in item_json)
+            self.assertEqual(item_json['test'], 'extra')
+
+            read_item = pystac.read_file(p)
+            self.assertTrue('test' in read_item.extra_fields)
+            self.assertEqual(read_item.extra_fields['test'], 'extra')
 
     def test_datetime_ISO8601_format(self):
         item_dict = self.get_example_item_dict()

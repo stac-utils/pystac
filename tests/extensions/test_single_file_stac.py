@@ -1,85 +1,58 @@
-from os.path import join, isfile
+import os
 import unittest
 from tempfile import TemporaryDirectory
 import json
 
-from pystac import (Collection, Item, STACObjectType)
-from pystac.extensions.single_file_stac import SingleFileSTAC
-from tests.utils import (TestCases, SchemaValidator, STACValidationError)
-from pystac.extensions.single_file_stac import Search
+import pystac
+from pystac.extensions.single_file_stac import create_single_file_stac
+from tests.utils import (TestCases, SchemaValidator)
 
 
 class SingleFileSTACTest(unittest.TestCase):
     def setUp(self):
-        self.EXAMPLE_SINGLE_FILE = TestCases.get_path('data-files/examples/1.0.0-beta.2/\
-            extensions/single-file-stac/examples/example-search.json')
+        self.validator = SchemaValidator()
+
+        self.EXAMPLE_SINGLE_FILE = TestCases.get_path(
+            'data-files/examples/1.0.0-beta.2/'
+            'extensions/single-file-stac/examples/example-search.json')
         with open(TestCases.get_path(self.EXAMPLE_SINGLE_FILE)) as f:
             self.EXAMPLE_SF_DICT = json.load(f)
 
-    def test_single_file(self):
-        with TemporaryDirectory() as tmp_dir:
-            sf_from_file = SingleFileSTAC.from_file(self.EXAMPLE_SINGLE_FILE)
-            sf_from_dict = SingleFileSTAC.from_dict(self.EXAMPLE_SF_DICT)
-            sf_empty = SingleFileSTAC()
-            single_file_stacs = [sf_from_file, sf_from_dict, sf_empty]
+    def test_read_single_file_stac(self):
+        cat = pystac.read_file(self.EXAMPLE_SINGLE_FILE)
 
-            for i, sf in enumerate(single_file_stacs):
-                for feature in sf.get_items():
-                    self.assertIsInstance(feature, Item)
-                for collection in sf.collections:
-                    self.assertIsInstance(collection, Collection)
-                self.assertIsInstance(sf.to_dict(), dict)
+        self.validator.validate_object(cat)
 
-                dk = ['type', 'features', 'collections', 'links', 'stac_version']
-                if sf.stac_extensions:
-                    dk.append('stac_extensions')
-                if sf.search:
-                    self.assertIsInstance(sf.search, Search)
-                    dk.append('search')
+        features = cat.ext['single-file-stac'].features
+        self.assertEqual(len(features), 2)
 
-                keys = list(sf.to_dict().keys())
-                self.assertEqual(set(keys), set(dk))
+        self.assertEqual(features[0].ext.view.sun_azimuth, 152.63804142)
 
-                tmp_uri = join(tmp_dir, 'test-single-file-{}.json'.format(i))
-                sf.save(tmp_uri)
-                self.assertTrue(isfile(tmp_uri))
+        collections = cat.ext['single-file-stac'].collections
 
-    def test_validate_single_file(self):
-        sv = SchemaValidator()
-        sf_from_file = SingleFileSTAC.from_file(self.EXAMPLE_SINGLE_FILE)
+        self.assertEqual(len(collections), 1)
+        self.assertEqual(collections[0].license, "PDDL-1.0")
+
+    def test_create_single_file_stac(self):
+        cat = TestCases.test_case_1()
+        sfs = create_single_file_stac(TestCases.test_case_1())
 
         with TemporaryDirectory() as tmp_dir:
-            tmp_uri = join(tmp_dir, 'test-single-file-val.json')
-            sf_from_file.save(tmp_uri)
-            with open(tmp_uri) as f:
-                val_dict = json.load(f)
-        sv.validate_dict(val_dict, STACObjectType.CATALOG)
+            path = os.path.join(tmp_dir, 'single_file_stac.json')
+            pystac.write_file(sfs, include_self_link=False, dest_href=path)
 
-        val_dict['search']['endpoint'] = 1
-        with self.assertRaises(STACValidationError):
-            sv.validate_dict(val_dict, STACObjectType.CATALOG)
+            sfs_read = pystac.read_file(path)
 
+            self.validator.validate_object(sfs_read)
 
-class SearchTest(unittest.TestCase):
-    def test_search(self):
-        s_empty = Search()
-        self.assertIsInstance(s_empty.to_dict(), dict)
-        m = TestCases.get_path('data-files/examples/1.0.0-beta.2/extensions/single-file-stac/\
-            examples/example-search.json')
+            self.assertTrue(sfs_read.ext.implements('single-file-stac'))
 
-        s_from_ic = SingleFileSTAC.from_file(m).search
-        with open(m) as f:
-            sd = json.load(f)['search']
-            s_from_dict = Search.from_dict(sd)
+            read_fids = set([f.id for f in sfs_read.ext['single-file-stac'].features])
+            expected_fids = set([f.id for f in cat.get_all_items()])
 
-        for s in (s_from_ic, s_from_dict):
-            self.assertIsInstance(s, Search)
-            if s.endpoint:
-                self.assertIsInstance(s.endpoint, str)
-            if s.parameters:
-                self.assertIsInstance(s.parameters, dict)
+            self.assertEqual(read_fids, expected_fids)
 
-            self.assertIsInstance(s.to_dict(), dict)
-            keys = list(s.to_dict().keys())
-            keys.sort()
-            self.assertEqual(keys, ['endpoint', 'parameters'])
+            read_col_ids = set([col.id for col in sfs_read.ext['single-file-stac'].collections])
+            expected_col_ids = set(['area-1-1', 'area-1-2', 'area-2-1', 'area-2-2'])
+
+            self.assertEqual(read_col_ids, expected_col_ids)
