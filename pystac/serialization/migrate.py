@@ -203,7 +203,8 @@ _extension_migrations = {
 _removed_extension_migrations = {
     # Removed in 0.9.0
     'dtr': _migrate_datetime_range,
-    'datetime-range': _migrate_datetime_range
+    'datetime-range': _migrate_datetime_range,
+    'commons': lambda a, b, c: None  # No changes needed, just remove the extension_id
 }
 
 

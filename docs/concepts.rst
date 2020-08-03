@@ -444,7 +444,7 @@ and any custom extensions (represented by URIs to JSON Schemas).
 
    json_dict = ...
 
-   info = identify_stac_object(json_dict, merge_collection_properties=True)
+   info = identify_stac_object(json_dict)
 
    # The object type
    info.object_type
@@ -461,7 +461,7 @@ and any custom extensions (represented by URIs to JSON Schemas).
 Merging common properties
 -------------------------
 
-The :func:`~pystac.serialization.merge_common_properties` will take a JSON dict that represents
-an item, and if it is associated with a collection, merge in the collection's properties.
-You can pass in a dict that contains previously read collections that caches collections by the HREF of the collection link and/or the collection ID, which can help avoid multiple reads of
+For pre-1.0.0 STAC, The :func:`~pystac.serialization.merge_common_properties` will take a JSON dict that represents an item, and if it is associated with a collection, merge in the collection's properties. You can pass in a dict that contains previously read collections that caches collections by the HREF of the collection link and/or the collection ID, which can help avoid multiple reads of
 collection links.
+
+Note that this feature was dropped in STAC 1.0.0-beta.1
