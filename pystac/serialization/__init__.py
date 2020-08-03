@@ -27,6 +27,7 @@ def stac_object_from_dict(d, href=None, root=None):
         if root is not None:
             collection_cache = root._resolved_objects.as_collection_cache()
 
+        # Merge common properties in case this is an older STAC object.
         merge_common_properties(d, json_href=href, collection_cache=collection_cache)
 
     info = identify_stac_object(d)
