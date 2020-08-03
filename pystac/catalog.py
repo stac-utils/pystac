@@ -306,6 +306,9 @@ class Catalog(STACObject):
             'links': [link.to_dict() for link in links]
         }
 
+        if self.stac_extensions is not None:
+            d['stac_extensions'] = self.stac_extensions
+
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
 
