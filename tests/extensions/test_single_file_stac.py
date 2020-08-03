@@ -4,9 +4,8 @@ from tempfile import TemporaryDirectory
 import json
 
 import pystac
-from pystac import (Collection, Item, STACObjectType)
 from pystac.extensions.single_file_stac import create_single_file_stac
-from tests.utils import (TestCases, SchemaValidator, STACValidationError)
+from tests.utils import (TestCases, SchemaValidator)
 
 
 class SingleFileSTACTest(unittest.TestCase):

@@ -1,11 +1,8 @@
-import json
 from pystac.catalog import Catalog
 
 import pystac
 from pystac import (STACError, Extensions)
 from pystac.collection import Collection
-from pystac.stac_io import STAC_IO
-from pystac.item import Item
 from pystac.extensions.base import (CatalogExtension, ExtensionDefinition, ExtendedObject)
 
 
@@ -44,13 +41,9 @@ def create_single_file_stac(catalog):
     result = catalog.clone()
     result.clear_links()
     result.ext.enable(Extensions.SINGLE_FILE_STAC)
-    result.ext[Extensions.SINGLE_FILE_STAC].apply(
-        features=items,
-        collections=filtered_collections
-    )
+    result.ext[Extensions.SINGLE_FILE_STAC].apply(features=items, collections=filtered_collections)
 
     return result
-
 
 
 class SingleFileSTACCatalogExt(CatalogExtension):
@@ -77,9 +70,7 @@ class SingleFileSTACCatalogExt(CatalogExtension):
 
         self.catalog = catalog
 
-    def apply(self,
-              features,
-              collections=None):
+    def apply(self, features, collections=None):
         """
         Args:
             features (List[Item]): List of items contained by
@@ -89,7 +80,6 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         """
         self.features = features
         self.collections = collections
-
 
     @classmethod
     def enable_extension(cls, catalog):
@@ -105,15 +95,13 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         """
         features = self.catalog.extra_fields.get('features')
         if features is None:
-            raise STACException('Invalid Single File STAC: does not have "features" property.')
+            raise STACError('Invalid Single File STAC: does not have "features" property.')
 
         return [pystac.read_dict(feature) for feature in features]
 
     @features.setter
     def features(self, v):
-        self.catalog.extra_fields['features'] = [
-            item.to_dict() for item in v
-        ]
+        self.catalog.extra_fields['features'] = [item.to_dict() for item in v]
 
     @property
     def collections(self):
@@ -132,9 +120,7 @@ class SingleFileSTACCatalogExt(CatalogExtension):
     @collections.setter
     def collections(self, v):
         if v is not None:
-            self.catalog.extra_fields['collections'] = [
-                col.to_dict() for col in v
-            ]
+            self.catalog.extra_fields['collections'] = [col.to_dict() for col in v]
         else:
             self.catalog.extra_fields.pop('collections', None)
 
@@ -146,7 +132,6 @@ class SingleFileSTACCatalogExt(CatalogExtension):
     def from_catalog(cls, catalog):
         return SingleFileSTACCatalogExt(catalog)
 
-SFS_EXTENSION_DEFINITION = ExtensionDefinition(
-    Extensions.SINGLE_FILE_STAC,
-    [ExtendedObject(Catalog, SingleFileSTACCatalogExt)]
-)
+
+SFS_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.SINGLE_FILE_STAC,
+                                               [ExtendedObject(Catalog, SingleFileSTACCatalogExt)])

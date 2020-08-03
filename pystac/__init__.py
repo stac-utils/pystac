@@ -36,12 +36,10 @@ import pystac.extensions.view
 import pystac.extensions.single_file_stac
 
 STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
-    extensions.commons.COMMONS_EXTENSION_DEFINITION,
-    extensions.eo.EO_EXTENSION_DEFINITION,
+    extensions.commons.COMMONS_EXTENSION_DEFINITION, extensions.eo.EO_EXTENSION_DEFINITION,
     extensions.label.LABEL_EXTENSION_DEFINITION,
     extensions.projection.PROJECTION_EXTENSION_DEFINITION,
-    extensions.view.VIEW_EXTENSION_DEFINITION,
-    extensions.single_file_stac.SFS_EXTENSION_DEFINITION
+    extensions.view.VIEW_EXTENSION_DEFINITION, extensions.single_file_stac.SFS_EXTENSION_DEFINITION
 ])
 
 
@@ -84,6 +82,7 @@ def write_file(obj, include_self_link=True, dest_href=None):
             to the object's self href.
     """
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
+
 
 def read_dict(d, href=None, root=None):
     """Reads a STAC object from a dict representing the serialized JSON version of the

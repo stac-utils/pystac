@@ -68,7 +68,13 @@ class Catalog(STACObject):
 
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a cononical format."""
-    def __init__(self, id, description, title=None, stac_extensions=None, extra_fields=None, href=None):
+    def __init__(self,
+                 id,
+                 description,
+                 title=None,
+                 stac_extensions=None,
+                 extra_fields=None,
+                 href=None):
         self.id = id
         self.description = description
         self.title = title
@@ -608,7 +614,9 @@ class Catalog(STACObject):
 
         d.pop('stac_version')
 
-        cat = Catalog(id=id, description=description, title=title,
+        cat = Catalog(id=id,
+                      description=description,
+                      title=title,
                       stac_extensions=stac_extensions,
                       extra_fields=d)
 

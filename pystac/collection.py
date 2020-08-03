@@ -67,7 +67,8 @@ class Collection(Catalog):
                  providers=None,
                  properties=None,
                  summaries=None):
-        super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields, href)
+        super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields,
+                                         href)
         self.extent = extent
         self.license = license
 
