@@ -13,7 +13,7 @@ class STACError(Exception):
     pass
 
 
-from pystac.version import (__version__, STAC_VERSION)
+from pystac.version import (__version__, get_stac_version, set_stac_version)
 from pystac.stac_io import STAC_IO
 from pystac.extensions import Extensions
 from pystac.stac_object import STACObject

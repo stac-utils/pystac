@@ -8,7 +8,7 @@ pystac
 ------
 
 .. automodule:: pystac
-   :members: read_file, write_file, read_dict
+   :members: read_file, write_file, read_dict, set_stac_version, get_stac_version
 
 STACObject
 ----------

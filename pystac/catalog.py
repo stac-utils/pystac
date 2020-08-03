@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 
 import pystac
-from pystac import (STAC_VERSION, STACError)
+from pystac import STACError
 from pystac.stac_object import STACObject
 from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
@@ -307,7 +307,7 @@ class Catalog(STACObject):
 
         d = {
             'id': self.id,
-            'stac_version': STAC_VERSION,
+            'stac_version': pystac.get_stac_version(),
             'description': self.description,
             'links': [link.to_dict() for link in links]
         }

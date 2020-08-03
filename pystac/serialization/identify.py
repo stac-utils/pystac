@@ -1,4 +1,4 @@
-from pystac.version import STAC_VERSION
+from pystac.version import STACVersion
 from pystac.extensions import Extensions
 
 
@@ -34,9 +34,10 @@ class STACJSONDescription:
 
 
 class STACVersionRange:
-    def __init__(self, min_version='0.4.0', max_version=STAC_VERSION):
+    def __init__(self, min_version='0.4.0', max_version=None):
         self.min_version = min_version
-        self.max_version = max_version
+        if max_version is None:
+            self.max_version = STACVersion.DEFAULT_STAC_VERSION
 
     def set_min(self, v):
         if self.min_version < v:

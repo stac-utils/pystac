@@ -3,7 +3,8 @@ import json
 import jsonschema
 from jsonschema.validators import RefResolver
 
-from pystac import (STAC_VERSION, STAC_IO, Catalog, Collection, Item, Extensions)
+import pystac
+from pystac import (STAC_IO, Catalog, Collection, Item, Extensions)
 from pystac.serialization import STACObjectType
 
 
@@ -13,7 +14,7 @@ class STACValidationError(Exception):
 
 class SchemaValidator:
     REPO = 'https://schemas.stacspec.org'
-    TAG = 'v{}'.format(STAC_VERSION)
+    TAG = 'v{}'.format(pystac.get_stac_version())
     SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     core_schemas = {
