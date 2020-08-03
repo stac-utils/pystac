@@ -250,7 +250,8 @@ class Item(STACObject):
                      bbox=copy(self.bbox),
                      datetime=copy(self.datetime),
                      properties=deepcopy(self.properties),
-                     stac_extensions=deepcopy(self.stac_extensions))
+                     stac_extensions=deepcopy(self.stac_extensions),
+                     collection=self.collection_id)
         for link in self.links:
             clone.add_link(link.clone())
 
