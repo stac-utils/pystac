@@ -33,6 +33,7 @@ import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.projection
 import pystac.extensions.view
+import pystac.extensions.single_file_stac
 
 STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.commons.COMMONS_EXTENSION_DEFINITION,
@@ -40,6 +41,7 @@ STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.label.LABEL_EXTENSION_DEFINITION,
     extensions.projection.PROJECTION_EXTENSION_DEFINITION,
     extensions.view.VIEW_EXTENSION_DEFINITION,
+    extensions.single_file_stac.SFS_EXTENSION_DEFINITION
 ])
 
 
