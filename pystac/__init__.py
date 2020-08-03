@@ -82,3 +82,22 @@ def write_file(obj, include_self_link=True, dest_href=None):
             to the object's self href.
     """
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
+
+def read_dict(d, href=None, root=None):
+    """Reads a STAC object from a dict representing the serialized JSON version of the
+    STAC object.
+
+    This method will return either a Catalog, a Collection, or an Item based on what the
+    dict contains.
+
+    This is a convenience method for :meth:`pystac.serialization.stac_object_from_dict`
+
+    Args:
+        d (dict): The dict to parse.
+        href (str): Optional href that is the file location of the object being
+            parsed.
+        root (Catalog or Collection): Optional root of the catalog for this object.
+            If provided, the root's resolved object cache can be used to search for
+            previously resolved instances of the STAC object.
+    """
+    return stac_object_from_dict(d, href, root)
