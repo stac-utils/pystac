@@ -6,6 +6,7 @@
 
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
 - Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
+- Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
 
 ### Changed
 
@@ -20,6 +21,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 
 - ItemCollection was removed. ([#123](https://github.com/azavea/pystac/pull/123))
 - The commons extension was removed. Collection properties will still be merged for pre-1.0.0-beta.1 items where appropriate ([#129](https://github.com/azavea/pystac/pull/129))
+- Removed `pystac.STAC_VERSION`. See addition of `get_stac_version` above. ([#130](https://github.com/azavea/pystac/pull/130))
 
 ## [v0.4.0]
 
