@@ -29,13 +29,14 @@ From source repository:
 To install a specific versions of STAC, install the matching version of pystac.
 
 ```bash
-> pip install pystac==0.4.*
+> pip install pystac==0.5.*
 ```
 
 The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
 | ------ | ----- |
+| 0.5.x  | 1.0.x |
 | 0.4.x  | 0.9.x |
 | 0.3.x  | 0.8.x |
 

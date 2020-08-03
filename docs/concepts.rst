@@ -26,7 +26,7 @@ Writing STACs
 
 While working with STACs in-memory don't require setting file paths, in order to save a STAC,
 you'll need to give each STAC object a ``self`` link that describes the location of where
-it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
+it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
 
 .. code-block:: python
 
@@ -85,7 +85,7 @@ manually by using ``set_self_href``:
 Catalog Types
 -------------
 
-The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
+The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
 
 Note that the catalog types do not dictate the asset HREF formats, only link formats. Asset HREFs in any catalog type can be relative or absolute; see the section on :ref:`rel vs abs asset` below.
 

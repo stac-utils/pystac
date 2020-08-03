@@ -2,7 +2,7 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0>`_ they relate to, if related to a specific spec item.
+and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2>`_ they relate to, if related to a specific spec item.
 
 pystac
 ------
@@ -24,7 +24,7 @@ STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Coll
 Catalog Spec
 ------------
 
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/catalog-spec>`_.
+These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/catalog-spec>`_.
 
 Catalog
 ~~~~~~~
@@ -46,7 +46,7 @@ CatalogType
 Collection Spec
 ---------------
 
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/collection-spec>`_.
+These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/collection-spec>`_.
 
 Collection
 ~~~~~~~~~~
@@ -87,7 +87,7 @@ Provider
 Item Spec
 ---------
 
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/item-spec>`_.
+These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/item-spec>`_.
 
 Item
 ~~~~
@@ -181,7 +181,7 @@ An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObje
 EO Extension
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/eo>`_.
+These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
 
 EOItemExt
 ~~~~~~~~~
@@ -202,7 +202,7 @@ Band
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/label>`_.
+These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/label>`_.
 
 LabelItemExt
 ~~~~~~~~~~~~
@@ -263,7 +263,7 @@ ProjectionItemExt
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/single-file-stac>`_.
+These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/single-file-stac>`_.
 
 .. automodule:: pystac.extensions.single_file_stac
    :members: create_single_file_stac
