@@ -1,4 +1,4 @@
-from pystac.version import STAC_VERSION
+from pystac.version import STACVersion
 from pystac.extensions import Extensions
 
 
@@ -34,9 +34,10 @@ class STACJSONDescription:
 
 
 class STACVersionRange:
-    def __init__(self, min_version='0.4.0', max_version=STAC_VERSION):
+    def __init__(self, min_version='0.4.0', max_version=None):
         self.min_version = min_version
-        self.max_version = max_version
+        if max_version is None:
+            self.max_version = STACVersion.DEFAULT_STAC_VERSION
 
     def set_min(self, v):
         if self.min_version < v:
@@ -211,13 +212,16 @@ def identify_stac_object_type(json_dict):
     """
     object_type = None
 
-    if 'type' in json_dict:
-        if json_dict['type'] == 'FeatureCollection':
-            object_type = STACObjectType.ITEMCOLLECTION
-        else:
-            object_type = STACObjectType.ITEM
-    elif 'extent' in json_dict:
+    # Identify pre-1.0 ITEMCOLLECTION (since removed)
+    if 'type' in json_dict and 'assets' not in json_dict:
+        if 'stac_version' in json_dict and json_dict['stac_version'].startswith('0'):
+            if json_dict['type'] == 'FeatureCollection':
+                object_type = STACObjectType.ITEMCOLLECTION
+
+    if 'extent' in json_dict:
         object_type = STACObjectType.COLLECTION
+    elif 'assets' in json_dict:
+        object_type = STACObjectType.ITEM
     else:
         object_type = STACObjectType.CATALOG
 

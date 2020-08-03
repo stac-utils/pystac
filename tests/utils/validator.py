@@ -3,7 +3,8 @@ import json
 import jsonschema
 from jsonschema.validators import RefResolver
 
-from pystac import (STAC_VERSION, STAC_IO, Catalog, Collection, Item, ItemCollection, Extensions)
+import pystac
+from pystac import (STAC_IO, Catalog, Collection, Item, Extensions)
 from pystac.serialization import STACObjectType
 
 
@@ -12,15 +13,14 @@ class STACValidationError(Exception):
 
 
 class SchemaValidator:
-    REPO = 'https://raw.githubusercontent.com/radiantearth/stac-spec'
-    TAG = 'v{}'.format(STAC_VERSION)
+    REPO = 'https://schemas.stacspec.org'
+    TAG = 'v{}'.format(pystac.get_stac_version())
     SCHEMA_BASE_URI = '{}/{}'.format(REPO, TAG)
 
     core_schemas = {
         STACObjectType.CATALOG: 'catalog-spec/json-schema/catalog.json',
         STACObjectType.COLLECTION: 'collection-spec/json-schema/collection.json',
-        STACObjectType.ITEM: 'item-spec/json-schema/item.json',
-        STACObjectType.ITEMCOLLECTION: 'item-spec/json-schema/itemcollection.json'
+        STACObjectType.ITEM: 'item-spec/json-schema/item.json'
     }
 
     extension_schemas = {
@@ -30,22 +30,23 @@ class SchemaValidator:
         Extensions.EO: {
             STACObjectType.ITEM: 'extensions/eo/json-schema/schema.json'
         },
+        Extensions.PROJECTION: {
+            STACObjectType.ITEM: 'extensions/projection/json-schema/schema.json'
+        },
         Extensions.SINGLE_FILE_STAC: {
-            # TODO: Move off of custom schema if schema in spec was fixed
-            # before this extension got removed.
-            STACObjectType.ITEMCOLLECTION: ('https://raw.githubusercontent.com/lossyrob/stac-spec/'
-                                            '0.9.0/fix-single-file-stac-schema/extensions/'
-                                            'single-file-stac/json-schema/schema.json')
+            STACObjectType.CATALOG: 'extensions/single-file-stac/json-schema/schema.json'
         }
     }
 
     # Schemas that need to be downloaded for caching that are not tied directly to STAC objects.
     aux_schemas = [
-        'item-spec/json-schema/basics.json', 'item-spec/json-schema/datetimerange.json',
+        'item-spec/json-schema/basics.json', 'item-spec/json-schema/datetime.json',
         'item-spec/json-schema/instrument.json', 'item-spec/json-schema/licensing.json',
-        'item-spec/json-schema/metadata.json', 'item-spec/json-schema/provider.json',
+        'item-spec/json-schema/provider.json', 'https://geojson.org/schema/Geometry.json',
         'https://geojson.org/schema/Feature.json',
-        'https://geojson.org/schema/FeatureCollection.json'
+        'https://geojson.org/schema/FeatureCollection.json',
+        'https://proj.org/schemas/v0.2/projjson.schema.json',
+        'https://geojson.org/schema/Polygon.json'
     ]
 
     _schema_cache = {}
@@ -125,8 +126,6 @@ class SchemaValidator:
             stac_object_type = STACObjectType.CATALOG
         elif issubclass(obj_type, Item):
             stac_object_type = STACObjectType.ITEM
-        elif issubclass(obj_type, ItemCollection):
-            stac_object_type = STACObjectType.ITEMCOLLECTION
         else:
             raise Exception("Unknown STAC Object type: {}".format(obj_type))
 
@@ -142,7 +141,6 @@ class SchemaValidator:
                 print(json.dumps(d, indent=2))
             raise STACValidationError(
                 'Validation failed for STAC {}'.format(stac_object_type)) from e
-
         if 'stac_extensions' in d:
             for extension_id in d['stac_extensions']:
                 ext_schema_result = SchemaValidator.get_extension_schema(

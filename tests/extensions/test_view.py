@@ -45,6 +45,22 @@ class ViewTest(unittest.TestCase):
         # Set
         view_item.ext.view.off_nadir = view_off_nadir + 100
         self.assertEqual(view_off_nadir + 100, view_item.properties['view:off_nadir'])
+
+        # Get from Asset
+        asset_no_prop = view_item.assets['blue']
+        asset_prop = view_item.assets['red']
+        self.assertEqual(view_item.ext.view.get_off_nadir(asset_no_prop),
+                         view_item.ext.view.get_off_nadir())
+        self.assertEqual(view_item.ext.view.get_off_nadir(asset_prop), 3.0)
+
+        # Set to Asset
+        asset_value = 13.0
+        view_item.ext.view.set_off_nadir(asset_value, asset_no_prop)
+        self.assertNotEqual(view_item.ext.view.get_off_nadir(asset_no_prop),
+                            view_item.ext.view.get_off_nadir())
+        self.assertEqual(view_item.ext.view.get_off_nadir(asset_no_prop), asset_value)
+
+        # Validate
         self.validator.validate_object(view_item)
 
     def test_incidence_angle(self):
@@ -58,6 +74,22 @@ class ViewTest(unittest.TestCase):
         # Set
         view_item.ext.view.incidence_angle = view_incidence_angle + 100
         self.assertEqual(view_incidence_angle + 100, view_item.properties['view:incidence_angle'])
+
+        # Get from Asset
+        asset_no_prop = view_item.assets['blue']
+        asset_prop = view_item.assets['red']
+        self.assertEqual(view_item.ext.view.get_incidence_angle(asset_no_prop),
+                         view_item.ext.view.get_incidence_angle())
+        self.assertEqual(view_item.ext.view.get_incidence_angle(asset_prop), 4.0)
+
+        # Set to Asset
+        asset_value = 14.0
+        view_item.ext.view.set_incidence_angle(asset_value, asset_no_prop)
+        self.assertNotEqual(view_item.ext.view.get_incidence_angle(asset_no_prop),
+                            view_item.ext.view.get_incidence_angle())
+        self.assertEqual(view_item.ext.view.get_incidence_angle(asset_no_prop), asset_value)
+
+        # Validate
         self.validator.validate_object(view_item)
 
     def test_azimuth(self):
@@ -71,6 +103,22 @@ class ViewTest(unittest.TestCase):
         # Set
         view_item.ext.view.azimuth = view_azimuth + 100
         self.assertEqual(view_azimuth + 100, view_item.properties['view:azimuth'])
+
+        # Get from Asset
+        asset_no_prop = view_item.assets['blue']
+        asset_prop = view_item.assets['red']
+        self.assertEqual(view_item.ext.view.get_azimuth(asset_no_prop),
+                         view_item.ext.view.get_azimuth())
+        self.assertEqual(view_item.ext.view.get_azimuth(asset_prop), 5.0)
+
+        # Set to Asset
+        asset_value = 15.0
+        view_item.ext.view.set_azimuth(asset_value, asset_no_prop)
+        self.assertNotEqual(view_item.ext.view.get_azimuth(asset_no_prop),
+                            view_item.ext.view.get_azimuth())
+        self.assertEqual(view_item.ext.view.get_azimuth(asset_no_prop), asset_value)
+
+        # Validate
         self.validator.validate_object(view_item)
 
     def test_sun_azimuth(self):
@@ -84,6 +132,22 @@ class ViewTest(unittest.TestCase):
         # Set
         view_item.ext.view.sun_azimuth = view_sun_azimuth + 100
         self.assertEqual(view_sun_azimuth + 100, view_item.properties['view:sun_azimuth'])
+
+        # Get from Asset
+        asset_no_prop = view_item.assets['blue']
+        asset_prop = view_item.assets['red']
+        self.assertEqual(view_item.ext.view.get_sun_azimuth(asset_no_prop),
+                         view_item.ext.view.get_sun_azimuth())
+        self.assertEqual(view_item.ext.view.get_sun_azimuth(asset_prop), 1.0)
+
+        # Set to Asset
+        asset_value = 11.0
+        view_item.ext.view.set_sun_azimuth(asset_value, asset_no_prop)
+        self.assertNotEqual(view_item.ext.view.get_sun_azimuth(asset_no_prop),
+                            view_item.ext.view.get_sun_azimuth())
+        self.assertEqual(view_item.ext.view.get_sun_azimuth(asset_no_prop), asset_value)
+
+        # Validate
         self.validator.validate_object(view_item)
 
     def test_sun_elevation(self):
@@ -97,4 +161,20 @@ class ViewTest(unittest.TestCase):
         # Set
         view_item.ext.view.sun_elevation = view_sun_elevation + 100
         self.assertEqual(view_sun_elevation + 100, view_item.properties['view:sun_elevation'])
+
+        # Get from Asset
+        asset_no_prop = view_item.assets['blue']
+        asset_prop = view_item.assets['red']
+        self.assertEqual(view_item.ext.view.get_sun_elevation(asset_no_prop),
+                         view_item.ext.view.get_sun_elevation())
+        self.assertEqual(view_item.ext.view.get_sun_elevation(asset_prop), 2.0)
+
+        # Set to Asset
+        asset_value = 12.0
+        view_item.ext.view.set_sun_elevation(asset_value, asset_no_prop)
+        self.assertNotEqual(view_item.ext.view.get_sun_elevation(asset_no_prop),
+                            view_item.ext.view.get_sun_elevation())
+        self.assertEqual(view_item.ext.view.get_sun_elevation(asset_no_prop), asset_value)
+
+        # Validate
         self.validator.validate_object(view_item)

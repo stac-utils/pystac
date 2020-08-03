@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 
 import pystac
-from pystac import (STAC_VERSION, STACError)
+from pystac import STACError
 from pystac.stac_object import STACObject
 from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
@@ -60,17 +60,29 @@ class Catalog(STACObject):
         description (str): Detailed multi-line description to fully explain the catalog.
         title (str or None): Optional short descriptive one-line title for the catalog.
         stac_extensions (List[str] or None): Optional list of extensions the Catalog implements.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
+            of the Catalog.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this Catalog.
     """
 
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a cononical format."""
-    def __init__(self, id, description, title=None, stac_extensions=None, href=None):
+    def __init__(self,
+                 id,
+                 description,
+                 title=None,
+                 stac_extensions=None,
+                 extra_fields=None,
+                 href=None):
         self.id = id
         self.description = description
         self.title = title
         self.stac_extensions = stac_extensions
+        if extra_fields is None:
+            self.extra_fields = {}
+        else:
+            self.extra_fields = extra_fields
         self.links = []
         self.add_link(Link.root(self))
 
@@ -295,10 +307,16 @@ class Catalog(STACObject):
 
         d = {
             'id': self.id,
-            'stac_version': STAC_VERSION,
+            'stac_version': pystac.get_stac_version(),
             'description': self.description,
             'links': [link.to_dict() for link in links]
         }
+
+        if self.stac_extensions is not None:
+            d['stac_extensions'] = self.stac_extensions
+
+        for key in self.extra_fields:
+            d[key] = self.extra_fields[key]
 
         if self.title is not None:
             d['title'] = self.title
@@ -306,7 +324,11 @@ class Catalog(STACObject):
         return deepcopy(d)
 
     def clone(self):
-        clone = Catalog(id=self.id, description=self.description, title=self.title)
+        clone = Catalog(id=self.id,
+                        description=self.description,
+                        title=self.title,
+                        stac_extensions=self.stac_extensions,
+                        extra_fields=deepcopy(self.extra_fields))
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
@@ -583,14 +605,23 @@ class Catalog(STACObject):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
-        id = d['id']
-        description = d['description']
-        title = d.get('title')
+        d = deepcopy(d)
+        id = d.pop('id')
+        description = d.pop('description')
+        title = d.pop('title', None)
+        stac_extensions = d.pop('stac_extensions', None)
+        links = d.pop('links')
 
-        cat = Catalog(id=id, description=description, title=title)
+        d.pop('stac_version')
+
+        cat = Catalog(id=id,
+                      description=description,
+                      title=title,
+                      stac_extensions=stac_extensions,
+                      extra_fields=d)
 
         has_self_link = False
-        for link in d['links']:
+        for link in links:
             has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.

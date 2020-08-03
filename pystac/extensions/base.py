@@ -65,6 +65,14 @@ class CatalogExtension(ABC):
     def _object_links(cls):
         raise NotImplementedError("_object_links")
 
+    @classmethod
+    def enable_extension(cls, stac_object):
+        """Enables the extension for the given stac_object.
+        Child classes can choose to override this method in order to
+        modify the stac_object when an extension is enabled.
+        """
+        pass
+
 
 class CollectionExtension(ABC):
     @classmethod
@@ -81,6 +89,14 @@ class CollectionExtension(ABC):
     def _object_links(cls):
         raise NotImplementedError("_object_links")
 
+    @classmethod
+    def enable_extension(cls, stac_object):
+        """Enables the extension for the given stac_object.
+        Child classes can choose to override this method in order to
+        modify the stac_object when an extension is enabled.
+        """
+        pass
+
 
 class ItemExtension(ABC):
     @classmethod
@@ -96,6 +112,14 @@ class ItemExtension(ABC):
     @abstractmethod
     def _object_links(cls):
         raise NotImplementedError("_object_links")
+
+    @classmethod
+    def enable_extension(cls, stac_object):
+        """Enables the extension for the given stac_object.
+        Child classes can choose to override this method in order to
+        modify the stac_object when an extension is enabled.
+        """
+        pass
 
 
 class RegisteredSTACExtensions:
@@ -124,14 +148,15 @@ class RegisteredSTACExtensions:
                 "ExtensionDefinition with id '{}' is not registered.".format(extension_id))
         del self.extensions[extension_id]
 
-    def extend_object(self, stac_object, extension_id):
+    def get_extension_class(self, extension_id, stac_object_class):
+        """Gets the extension class for a given stac object class if one exists, otherwise
+        returns None
+        """
         ext = self.extensions.get(extension_id)
         if ext is None:
             raise ExtensionError("No ExtensionDefinition registered with id '{}'. "
                                  "Is the extension ID correct, or are you forgetting to call "
                                  "'add_extension' for a custom extension?".format(extension_id))
-
-        stac_object_class = type(stac_object)
 
         ext_classes = [
             e.extension_class for e in ext.extended_objects
@@ -140,8 +165,7 @@ class RegisteredSTACExtensions:
 
         ext_class = None
         if len(ext_classes) == 0:
-            raise ExtensionError("Extension '{}' does not extend objects of type {}".format(
-                extension_id, ext_class))
+            return None
         elif len(ext_classes) == 1:
             ext_class = ext_classes[0]
         else:
@@ -156,6 +180,18 @@ class RegisteredSTACExtensions:
                     sort_key[c] = -1
 
             ext_class = sorted(ext_classes, key=lambda c: sort_key[c])[0]
+
+        return ext_class
+
+    def extend_object(self, extension_id, stac_object):
+        """Returns the extension object for the given STACObject and the given
+        extension_id
+        """
+        ext_class = self.get_extension_class(extension_id, type(stac_object))
+
+        if ext_class is None:
+            raise ExtensionError("Extension '{}' does not extend objects of type {}".format(
+                extension_id, type(stac_object)))
 
         return ext_class._from_object(stac_object)
 
@@ -191,3 +227,27 @@ class RegisteredSTACExtensions:
             e.extension_class for e in ext.extended_objects
             if issubclass(stac_object_class, e.stac_object_class)
         ])
+
+    def enable_extension(self, extension_id, stac_object):
+        """Enables the extension for the given object.
+
+        This will at least ensure the extension ID is in the object's "stac_extensions"
+        property. Some extensions may make additional modifications to the object.
+        """
+        # Check to make sure this is a registered extension.
+        if not self.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        ext_class = self.get_extension_class(extension_id, type(stac_object))
+
+        if ext_class is None:
+            raise ExtensionError("Extension '{}' does not extend objects of type {}".format(
+                extension_id, type(stac_object)))
+
+        if stac_object.stac_extensions is None:
+            stac_object.stac_extensions = [extension_id]
+        elif extension_id not in stac_object.stac_extensions:
+            stac_object.stac_extensions.append(extension_id)
+
+        ext_class.enable_extension(stac_object)

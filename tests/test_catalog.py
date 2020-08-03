@@ -1,9 +1,11 @@
 import os
+import json
 import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
+import pystac
 from pystac import (Catalog, Collection, CatalogType, LinkType, Item, Asset, MediaType, Extensions)
 from pystac.extensions.label import LabelClasses
 from pystac.utils import is_absolute_href
@@ -419,6 +421,23 @@ class CatalogTest(unittest.TestCase):
                 check_all_relative(c2)
                 c2.make_all_links_absolute()
                 check_all_absolute(c2)
+
+    def test_extra_fields(self):
+        catalog = TestCases.test_case_1()
+
+        catalog.extra_fields['type'] = 'FeatureCollection'
+
+        with TemporaryDirectory() as tmp_dir:
+            p = os.path.join(tmp_dir, 'catalog.json')
+            catalog.save_object(include_self_link=False, dest_href=p)
+            with open(p) as f:
+                cat_json = json.load(f)
+            self.assertTrue('type' in cat_json)
+            self.assertEqual(cat_json['type'], 'FeatureCollection')
+
+            read_cat = pystac.read_file(p)
+            self.assertTrue('type' in read_cat.extra_fields)
+            self.assertEqual(read_cat.extra_fields['type'], 'FeatureCollection')
 
     def test_set_hrefs_manually(self):
         catalog = TestCases.test_case_1()

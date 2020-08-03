@@ -30,7 +30,7 @@ class ExtensionIndex:
                                  "Use the 'ext.enable' method to enable this extension "
                                  "first.".format(self.stac_object, extension_id))
 
-        return pystac.STAC_EXTENSIONS.extend_object(self.stac_object, extension_id)
+        return pystac.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
 
     def __getattr__(self, extension_id):
         """Gets an extension based on a dynamic attribute.
@@ -54,20 +54,7 @@ class ExtensionIndex:
             the object should implement
 
         """
-        # Check to make sure this is a registered extension.
-        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
-            raise ExtensionError("'{}' is not an extension "
-                                 "registered with PySTAC".format(extension_id))
-
-        # Check that this extension supports adding to this type of object
-        if not pystac.STAC_EXTENSIONS.can_extend(extension_id, type(self.stac_object)):
-            raise ExtensionError("'{}' does not extend type {} ".format(
-                extension_id, type(self.stac_object)))
-
-        if self.stac_object.stac_extensions is None:
-            self.stac_object.stac_extensions = [extension_id]
-        elif extension_id not in self.stac_object.stac_extensions:
-            self.stac_object.stac_extensions.append(extension_id)
+        pystac.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
 
     def implements(self, extension_id):
         """Returns true if the associated object implements the given extension.
