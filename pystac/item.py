@@ -4,7 +4,7 @@ from copy import copy, deepcopy
 import dateutil.parser
 
 import pystac
-from pystac import (STAC_VERSION, STACError)
+from pystac import STACError
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
@@ -222,7 +222,7 @@ class Item(STACObject):
 
         d = {
             'type': 'Feature',
-            'stac_version': STAC_VERSION,
+            'stac_version': pystac.get_stac_version(),
             'id': self.id,
             'properties': self.properties,
             'geometry': self.geometry,

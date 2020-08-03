@@ -1,7 +1,7 @@
 import re
 from copy import deepcopy
 
-from pystac import STAC_VERSION
+from pystac.version import STACVersion
 from pystac.extensions import Extensions
 from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange)
 
@@ -219,12 +219,12 @@ def migrate_to_latest(json_dict, info):
 
     Returns:
         dict: A copy of the dict that is migrated to the latest version (the
-        version that is pystac.STAC_VERSION)
+        version that is pystac.version.STACVersion.DEFAULT_STAC_VERSION)
     """
     result = deepcopy(json_dict)
     version = info.version_range.latest_valid_version()
 
-    if version != STAC_VERSION:
+    if version != STACVersion.DEFAULT_STAC_VERSION:
         _object_migrations[info.object_type](result, version, info)
 
         extensions_to_add = set([])
@@ -248,8 +248,9 @@ def migrate_to_latest(json_dict, info):
     else:
         common_extensions = info.common_extensions
 
-    result['stac_version'] = STAC_VERSION
+    result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
 
-    return result, STACJSONDescription(info.object_type,
-                                       STACVersionRange(STAC_VERSION, STAC_VERSION),
-                                       common_extensions, info.custom_extensions)
+    return result, STACJSONDescription(
+        info.object_type,
+        STACVersionRange(STACVersion.DEFAULT_STAC_VERSION, STACVersion.DEFAULT_STAC_VERSION),
+        common_extensions, info.custom_extensions)
