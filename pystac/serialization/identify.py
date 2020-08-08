@@ -1,3 +1,5 @@
+from functools import total_ordering
+
 from pystac.version import STACVersion
 from pystac.extensions import Extensions
 
@@ -33,11 +35,56 @@ class STACJSONDescription:
                                                             ','.join(self.custom_extensions))
 
 
+@total_ordering
+class STACVersionID:
+    def __init__(self, version_string):
+        self.version_string = version_string
+
+        # Account for RC or beta releases in version
+        version_parts = version_string.split('-')
+        self.version_core = version_parts[0]
+        if len(version_parts) == 1:
+            self.version_prerelease = None
+        else:
+            self.version_prerelease = '-'.join(version_parts[1:])
+
+    def __str__(self):
+        return self.version_string
+
+    def __eq__(self, other):
+        if type(other) is str:
+            other = STACVersionID(other)
+        self.version_string == other.version_string
+
+    def __lt__(self, other):
+        if type(other) is str:
+            other = STACVersionID(other)
+        if self.version_core < other.version_core:
+            return True
+        elif self.version_core > other.version_core:
+            return False
+        else:
+            if self.version_prerelease is None:
+                return other.version_prerelease is not None
+            else:
+                return other.version_prerelease is None or \
+                    other.version_prerelease > self.version_prerelease
+
+
 class STACVersionRange:
     def __init__(self, min_version='0.4.0', max_version=None):
-        self.min_version = min_version
+        if type(min_version) is str:
+            self.min_version = STACVersionID(min_version)
+        else:
+            self.min_version = min_version
+
         if max_version is None:
             self.max_version = STACVersion.DEFAULT_STAC_VERSION
+        else:
+            if type(max_version) is str:
+                self.max_version = STACVersionID(max_version)
+            else:
+                self.max_version = max_version
 
     def set_min(self, v):
         if self.min_version < v:

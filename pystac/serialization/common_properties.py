@@ -1,6 +1,7 @@
 from pystac import Collection
 from pystac.utils import make_absolute_href
 from pystac.stac_io import STAC_IO
+from pystac.serialization.identify import STACVersionID
 
 
 def merge_common_properties(item_dict, collection_cache=None, json_href=None):
@@ -27,7 +28,7 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
 
     # The commons extension was removed in 1.0.0-beta.1, so if this is an earlier STAC
     # item we don't have to bother with merging.
-    if stac_version is not None and not stac_version.startswith('0.'):
+    if stac_version is not None and STACVersionID(stac_version) > '0.9.0':
         return False
 
     # Check to see if this is a 0.9.0 item that
