@@ -1,12 +1,13 @@
 # Changelog
 
-## Unreleased
+## [v0.5.0]
 
 ### Added
 
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
 - Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 - Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
+- Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
 
 ### Changed
 
