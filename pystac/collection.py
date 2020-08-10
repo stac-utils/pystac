@@ -2,7 +2,7 @@ from datetime import datetime
 import dateutil.parser
 from copy import (copy, deepcopy)
 
-from pystac import STACError
+from pystac import (STACError, STACObjectType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -52,6 +52,9 @@ class Collection(Catalog):
         extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
             of the Catalog.
     """
+
+    STAC_OBJECT_TYPE = STACObjectType.COLLECTION
+
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC object in a cononical format."""
     def __init__(self,

@@ -66,6 +66,8 @@ class Catalog(STACObject):
             all links associated with this Catalog.
     """
 
+    STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
+
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a cononical format."""
     def __init__(self,
@@ -75,15 +77,16 @@ class Catalog(STACObject):
                  stac_extensions=None,
                  extra_fields=None,
                  href=None):
+        super().__init__(stac_extensions)
+
         self.id = id
         self.description = description
         self.title = title
-        self.stac_extensions = stac_extensions
         if extra_fields is None:
             self.extra_fields = {}
         else:
             self.extra_fields = extra_fields
-        self.links = []
+
         self.add_link(Link.root(self))
 
         if href is not None:

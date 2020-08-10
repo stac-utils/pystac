@@ -215,8 +215,12 @@ class STACObject(LinkMixin, ABC):
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
     """
-    def __init__(self):
+
+    STAC_OBJECT_TYPE = None  # Overridden by the child classes with their type.
+
+    def __init__(self, stac_extensions):
         self.links = []
+        self.stac_extensions = stac_extensions
 
     def get_root(self):
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
