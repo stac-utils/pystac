@@ -48,7 +48,10 @@ class STACVersionID:
     def __eq__(self, other):
         if type(other) is str:
             other = STACVersionID(other)
-        self.version_string == other.version_string
+        return self.version_string == other.version_string
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __lt__(self, other):
         if type(other) is str:
@@ -58,11 +61,9 @@ class STACVersionID:
         elif self.version_core > other.version_core:
             return False
         else:
-            if self.version_prerelease is None:
-                return other.version_prerelease is not None
-            else:
-                return other.version_prerelease is None or \
-                    other.version_prerelease > self.version_prerelease
+            return self.version_prerelease is not None and (
+                other.version_prerelease is None
+                or other.version_prerelease > self.version_prerelease)
 
 
 class STACVersionRange:
@@ -73,7 +74,7 @@ class STACVersionRange:
             self.min_version = min_version
 
         if max_version is None:
-            self.max_version = STACVersion.DEFAULT_STAC_VERSION
+            self.max_version = STACVersionID(STACVersion.DEFAULT_STAC_VERSION)
         else:
             if type(max_version) is str:
                 self.max_version = STACVersionID(max_version)
@@ -102,15 +103,21 @@ class STACVersionRange:
         return self.max_version
 
     def contains(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return self.min_version <= v and v <= self.max_version
 
     def is_single_version(self):
         return self.min_version >= self.max_version
 
     def is_earlier_than(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return self.max_version < v
 
     def is_later_than(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return v < self.min_version
 
     def __repr__(self):
@@ -130,7 +137,7 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     if object_type == STACObjectType.ITEMCOLLECTION:
         if 'assets' in d:
-            stac_extensions.add(Extensions.ASSETS)
+            stac_extensions.add('assets')
             version_range.set_min('0.8.0')
 
     # checksum
@@ -155,10 +162,10 @@ def _identify_stac_extensions(object_type, d, version_range):
             stac_extensions.add(Extensions.DATACUBE)
             version_range.set_min('0.6.1')
 
-    # datetime-range
+    # datetime-range (old extension)
     if object_type == STACObjectType.ITEM:
         if 'dtr:start_datetime' in d['properties']:
-            stac_extensions.add(Extensions.DATETIME_RANGE)
+            stac_extensions.add('datetime-range')
             version_range.set_min('0.6.0')
 
     # eo

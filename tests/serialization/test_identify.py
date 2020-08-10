@@ -42,8 +42,15 @@ class IdentifyTest(unittest.TestCase):
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self):
-        version_id = STACVersionID('1.0.0-beta.2')
-        self.assertTrue(version_id < '1.0.0')
+        self.assertTrue(STACVersionID('0.9.0') == STACVersionID('0.9.0'))
+        self.assertFalse(STACVersionID('0.9.0') < STACVersionID('0.9.0'))
+        self.assertFalse(STACVersionID('0.9.0') != STACVersionID('0.9.0'))
+        self.assertFalse(STACVersionID('0.9.0') > STACVersionID('0.9.0'))
+        self.assertTrue(STACVersionID('1.0.0-beta.2') < '1.0.0')
+        self.assertFalse(STACVersionID('0.9.0') > '0.9.0')
+        self.assertTrue(STACVersionID('0.9.0') <= '0.9.0')
+        self.assertTrue(STACVersionID('1.0.0-beta.1') <= STACVersionID('1.0.0-beta.2'))
+        self.assertFalse(STACVersionID('1.0.0') < STACVersionID('1.0.0-beta.2'))
 
     def test_version_range_ordering(self):
         version_range = STACVersionRange('0.9.0', '1.0.0-beta.2')
@@ -52,3 +59,6 @@ class VersionTest(unittest.TestCase):
 
         version_range = STACVersionRange('0.9.0', '1.0.0-beta.1')
         self.assertFalse(version_range.contains('1.0.0-beta.2'))
+
+        version_range = STACVersionRange(min_version='0.6.0-rc1', max_version='0.9.0')
+        self.assertTrue(version_range.contains('0.9.0'))
