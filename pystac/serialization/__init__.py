@@ -1,8 +1,4 @@
 # flake8: noqa
-from pystac import (Catalog, Collection, Item, Extensions)
-
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange,
-                                           STACVersionID, identify_stac_object,
 from pystac import (Catalog, Collection, Item, Extensions, STACObjectType)
 
 from pystac.serialization.identify import (STACJSONDescription, STACVersionRange, STACVersionID,
