@@ -1,9 +1,10 @@
 import re
 from copy import deepcopy
 
+from pystac import STACObjectType
 from pystac.version import STACVersion
 from pystac.extensions import Extensions
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange)
+from pystac.serialization.identify import (STACJSONDescription, STACVersionRange)
 
 # STAC Object Types
 

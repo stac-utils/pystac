@@ -8,6 +8,13 @@ from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
 
 
+class STACObjectType:
+    CATALOG = 'CATALOG'
+    COLLECTION = 'COLLECTION'
+    ITEM = 'ITEM'
+    ITEMCOLLECTION = 'ITEMCOLLECTION'
+
+
 class ExtensionIndex:
     def __init__(self, stac_object):
         self.stac_object = stac_object

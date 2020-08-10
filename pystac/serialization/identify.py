@@ -1,14 +1,8 @@
 from functools import total_ordering
 
+from pystac import STACObjectType
 from pystac.version import STACVersion
 from pystac.extensions import Extensions
-
-
-class STACObjectType:
-    CATALOG = 'CATALOG'
-    COLLECTION = 'COLLECTION'
-    ITEM = 'ITEM'
-    ITEMCOLLECTION = 'ITEMCOLLECTION'
 
 
 class STACJSONDescription:
