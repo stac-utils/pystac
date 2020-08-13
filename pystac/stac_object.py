@@ -222,6 +222,14 @@ class STACObject(LinkMixin, ABC):
         self.links = []
         self.stac_extensions = stac_extensions
 
+    def validate(self):
+        """Validate this STACObject.
+
+        Raises:
+            STACValidationError
+        """
+        return pystac.validation.validate(self)
+
     def get_root(self):
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the root for this object. The root is represented by a
