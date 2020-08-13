@@ -1,6 +1,5 @@
 # flake8: noqa
 
-from tests.utils.validator import (SchemaValidator, STACValidationError)
 from tests.utils.test_cases import (TestCases, RANDOM_GEOM, RANDOM_BBOX, RANDOM_EXTENT)
 
 from copy import deepcopy
