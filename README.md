@@ -16,6 +16,13 @@ PySTAC can be installed from pip or the source repository.
 > pip install pystac
 ```
 
+if you'd like to enable the validation feature utilizing the [jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional `validation` requirements:
+
+
+```bash
+> pip install pystac[validation]
+```
+
 From source repository:
 
 ```bash
