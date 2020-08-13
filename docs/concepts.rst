@@ -220,11 +220,62 @@ If you are only going to read from another source, e.g. HTTP, you could only rep
 
    STAC_IO.read_text_method = my_read_method
 
+Validation
+==========
+
+PySTAC includes validation functionality that allows users to validate PySTAC objects as well JSON-encoded STAC objects from STAC versions `0.8.0` and later.
+
+Enabling validation
+-------------------
+
+To enable the validation feature you'll need to have installed PySTAC with the optional dependency via:
+
+.. code-block:: bash
+
+   > pip install pystac[validation]
+
+This installs the ``jsonschema`` package which is used with the default validator. If you
+define your own validation class as described below, you are not required to have this
+extra dependency.
+
+Validating PySTAC objects
+-------------------------
+
+You can validate any :class:`~pystac.Catalog`, :class:`~pystac.Collection` or :class:`~pystac.Item` by calling the :meth:`~pystac.STACObject.validate` method:
+
+.. code-block:: python
+
+   item.validate()
+
+This will validate against the latest set of JSON schemas hosted at https://schemas.stacspec.org, including any extensions that the object extends. If there are validation errors, a :class:`~pystac.validation.STACValidationError` will be raised.
+
+Validating STAC JSON
+--------------------
+
+You can validate STAC JSON represented as a ``dict`` using the :meth:`pystac.validation.validate_json` method:
+
+.. code-block:: python
+
+   import json
+   from pystac.validation import validate_json
+
+   with open('/path/to/item.json') as f:
+       js = json.load(f)
+   validate_json(js)
+
+Using your own validator
+------------------------
+
+By default PySTAC uses the :class:`~pystac.validation.JsonSchemaSTACValidator` implementation for validation. Users can define their own implementations of :class:`~pystac.validation.STACValidator` and register it with pystac using :meth:`pystac.validation.set_validator`.
+
+The :class:`~pystac.validation.JsonSchemaSTACValidator` takes a :class:`~pystac.validation.SchemaUriMap`, which by default uses the :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users cn create their own implementation of :class:`~pystac.validation.SchemaUriMap` and register a new instance of :class:`~pystac.validation.JsonSchemaSTACValidator` using that schema map with :meth:`pystac.validation.set_validator`.
+
+
 Extensions
 ==========
 
 Accessing Extension functionality
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 All STAC objects are accessed through ``Catalog``, ``Collection`` and ``Item``, and all extension functionality
 is accessed through the ``ext`` property on those objects. For instance, to access the band information
@@ -277,7 +328,7 @@ If you attempt to retrieve an extension wrapper for an extension that the object
 throw a `pystac.extensions.ExtensionError`.
 
 Enabling an extension
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 You'll need to enable an extension on an object before using it. For example, if you are creating an Item and want to
 apply the label extension, you can do so in two ways.

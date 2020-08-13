@@ -9,7 +9,7 @@ class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
     Attributes:
-        object_type (STACObjectType): Describes the STAC object type.
+        object_type (str): Describes the STAC object type. One of :class:`~pystac.STACObjectType`.
         version_range (STACVersionRange): The STAC version range that describes what
             has been identified as potential valid versions of the stac object.
         common_extensions (List[str]): List of common extension IDs implemented by this
@@ -31,6 +31,9 @@ class STACJSONDescription:
 
 @total_ordering
 class STACVersionID:
+    """Defines STAC versions in an object that is orderable based on version number.
+    For instance, ``1.0.0-beta.2 < 1.0.0``
+    """
     def __init__(self, version_string):
         self.version_string = version_string
 
@@ -67,6 +70,7 @@ class STACVersionID:
 
 
 class STACVersionRange:
+    """Defines a range of STAC versions."""
     def __init__(self, min_version='0.4.0', max_version=None):
         if type(min_version) is str:
             self.min_version = STACVersionID(min_version)
@@ -285,14 +289,6 @@ def identify_stac_object(json_dict):
     Returns:
         STACJSONDescription: The description of the STAC object serialized in the
         given dict.
-
-    Note:
-        Items are expected to have their collection common properties merged into
-        the dict. You can use :func:`~pystac.serialization.merge_common_properties`
-        to accomplish that. Otherwise, there are cases where the
-        common_extensions returned could be incorrect - e.g. if a collection lists
-        'eo' extension properties but the Item does not contian any properties with
-        the 'eo:' prefix.
     """
     object_type = identify_stac_object_type(json_dict)
 
