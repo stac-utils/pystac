@@ -9,15 +9,19 @@ class ExtensionError(Exception):
 
 class Extensions:
     """Enumerates the IDs of common extensions."""
-    ASSETS = 'asset'
     CHECKSUM = 'checksum'
+    COLLECTION_ASSETS = 'collection-assets'
     DATACUBE = 'datacube'
-    DATETIME_RANGE = 'datetime-range'
     EO = 'eo'
+    ITEM_ASSETS = 'item-assets'
     LABEL = 'label'
     POINTCLOUD = 'pointcloud'
     PROJECTION = 'projection'
     SAR = 'sar'
+    SATELLITE = 'satellite'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
+    TILED_ASSETS = 'tiled-assets'
+    TIMESTAMPS = 'timestamps'
+    VERSION = 'version'
     VIEW = 'view'

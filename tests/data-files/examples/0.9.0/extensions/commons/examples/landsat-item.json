@@ -177,6 +177,10 @@
         {
             "rel": "root",
             "href": "https://<endpoint>/stac"
+        },
+        {
+            "rel": "collection",
+            "href": "./landsat-collection.json"
         }
     ]
 }

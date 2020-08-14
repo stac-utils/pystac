@@ -20,6 +20,10 @@ STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Coll
    :inherited-members:
    :undoc-members:
 
+.. autoclass:: pystac.STACObjectType
+   :members:
+   :undoc-members:
+
 
 Catalog Spec
 ------------
@@ -294,45 +298,72 @@ Serialization
 PySTAC includes a ``pystac.serialization`` package for serialization concerns that
 are used internally, but may also be useful to external tools.
 
-merge_common_properties
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pystac.serialization
-   :members: merge_common_properties
-
-indentify_stac_object
-~~~~~~~~~~~~~~~~~~~~~
+Identification
+~~~~~~~~~~~~~~
 
 .. automodule:: pystac.serialization
    :members: identify_stac_object
-
-indentify_stac_object_type
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pystac.serialization
-   :members: identify_stac_object_type
-
-
-STACJSONDescription
-~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.serialization.STACJSONDescription
    :members:
    :undoc-members:
 
-STACVersionRange
-~~~~~~~~~~~~~~~~
-
 .. autoclass:: pystac.serialization.STACVersionRange
    :members:
    :undoc-members:
 
-STACObjectType
-~~~~~~~~~~~~~~
-
-.. autoclass:: pystac.serialization.STACObjectType
+.. autoclass:: pystac.serialization.STACVersionID
    :members:
    :undoc-members:
+
+
+Migration
+~~~~~~~~~
+
+.. automodule:: pystac.serialization.migrate
+   :members: migrate_to_latest
+
+Common Properties
+~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: merge_common_properties
+
+
+Validation
+----------
+
+pystac.validation
+~~~~~~~~~~~~~~~~~
+
+PySTAC includes a ``pystac.validation`` package for validating STAC objects, including
+from PySTAC objects and directly from JSON.
+
+.. automodule:: pystac.validation
+   :members: validate, validate_dict, set_validator, STACValidationError
+
+STACValidator
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.validation.STACValidator
+   :members:
+
+.. autoclass:: pystac.validation.JsonSchemaSTACValidator
+   :members:
+
+SchemaUriMap
+~~~~~~~~~~~~
+
+A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension ids to
+schema URIs. A default implementation is included that uses known locations; however users
+can provide their own schema URI maps in a :class:`~pystac.validation.JsonSchemaSTACValidator`
+to modify the URIs used.
+
+.. autoclass:: pystac.validation.SchemaUriMap
+   :members:
+
+.. autoclass:: pystac.validation.schema_uri_map.DefaultSchemaUriMap
+   :members:
 
 
 PySTAC Internal Classes

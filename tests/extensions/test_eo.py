@@ -4,7 +4,7 @@ import unittest
 import pystac
 from pystac import Item
 from pystac.extensions.eo import Band
-from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
+from tests.utils import (TestCases, test_to_from_dict)
 
 
 class EOTest(unittest.TestCase):
@@ -12,7 +12,6 @@ class EOTest(unittest.TestCase):
     BANDS_IN_ITEM_URI = TestCases.get_path('data-files/eo/sample-bands-in-item-properties.json')
 
     def setUp(self):
-        self.validator = SchemaValidator()
         self.maxDiff = None
 
     def test_to_from_dict(self):
@@ -23,8 +22,8 @@ class EOTest(unittest.TestCase):
     def test_validate_eo(self):
         item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
         item2 = pystac.read_file(self.BANDS_IN_ITEM_URI)
-        self.validator.validate_object(item)
-        self.validator.validate_object(item2)
+        item.validate()
+        item2.validate()
 
     def test_bands(self):
         eo_item = pystac.read_file(self.BANDS_IN_ITEM_URI)
@@ -45,7 +44,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual('Common name: red, Range: 0.6 to 0.7',
                          eo_item.properties['eo:bands'][0]['description'])
         self.assertEqual(len(eo_item.ext.eo.bands), 3)
-        self.validator.validate_object(eo_item)
+        eo_item.validate()
 
     def test_asset_bands(self):
         eo_item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
@@ -71,7 +70,7 @@ class EOTest(unittest.TestCase):
 
         self.assertEqual(new_b2_asset_bands[0].name, 'B1')
 
-        self.validator.validate_object(eo_item)
+        eo_item.validate()
 
         # Check adding a new asset
         new_bands = [
@@ -108,7 +107,7 @@ class EOTest(unittest.TestCase):
         item.ext.eo.set_cloud_cover(10, b2_asset)
         self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset), 10)
 
-        self.validator.validate_object(item)
+        item.validate()
 
     def test_read_pre_09_fields_into_common_metadata(self):
         eo_item = pystac.read_file(

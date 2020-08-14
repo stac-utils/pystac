@@ -72,12 +72,19 @@ class TestCases:
                 if row[4]:
                     custom_extensions = row[4].split('|')
 
+                valid = True
+                if len(row) > 5:
+                    # The 5th column will be "INVALID" if the example
+                    # shouldn't pass validation
+                    valid = row[5] != 'INVALID'
+
                 examples.append({
                     'path': path,
                     'object_type': object_type,
                     'stac_version': stac_version,
                     'common_extensions': common_extensions,
-                    'custom_extensions': custom_extensions
+                    'custom_extensions': custom_extensions,
+                    'valid': valid
                 })
         return examples
 

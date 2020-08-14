@@ -5,13 +5,11 @@ import json
 
 import pystac
 from pystac.extensions.single_file_stac import create_single_file_stac
-from tests.utils import (TestCases, SchemaValidator)
+from tests.utils import TestCases
 
 
 class SingleFileSTACTest(unittest.TestCase):
     def setUp(self):
-        self.validator = SchemaValidator()
-
         self.EXAMPLE_SINGLE_FILE = TestCases.get_path(
             'data-files/examples/1.0.0-beta.2/'
             'extensions/single-file-stac/examples/example-search.json')
@@ -21,7 +19,7 @@ class SingleFileSTACTest(unittest.TestCase):
     def test_read_single_file_stac(self):
         cat = pystac.read_file(self.EXAMPLE_SINGLE_FILE)
 
-        self.validator.validate_object(cat)
+        cat.validate()
 
         features = cat.ext['single-file-stac'].features
         self.assertEqual(len(features), 2)
@@ -43,7 +41,7 @@ class SingleFileSTACTest(unittest.TestCase):
 
             sfs_read = pystac.read_file(path)
 
-            self.validator.validate_object(sfs_read)
+            sfs_read.validate()
 
             self.assertTrue(sfs_read.ext.implements('single-file-stac'))
 

@@ -16,14 +16,16 @@ class STACError(Exception):
 from pystac.version import (__version__, get_stac_version, set_stac_version)
 from pystac.stac_io import STAC_IO
 from pystac.extensions import Extensions
-from pystac.stac_object import STACObject
+from pystac.stac_object import (STACObject, STACObjectType)
 from pystac.media_type import MediaType
 from pystac.link import (Link, LinkType)
 from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
 from pystac.item import (Item, Asset, CommonMetadata)
 
-from pystac.serialization import (STACObjectType, stac_object_from_dict)
+from pystac.serialization import stac_object_from_dict
+
+import pystac.validation
 
 STAC_IO.stac_object_from_dict = stac_object_from_dict
 

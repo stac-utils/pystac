@@ -5,10 +5,11 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 
 import pystac
+from pystac.validation import (validate_dict, STACValidationError)
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, SchemaValidator, STACValidationError)
+from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
 class CollectionTest(unittest.TestCase):
@@ -88,22 +89,20 @@ class CollectionTest(unittest.TestCase):
         self.assertTrue(item.ext.implements('eo'))
 
     def test_multiple_extents(self):
-        self.validator = SchemaValidator()
-
         cat1 = TestCases.test_case_1()
         col1 = cat1.get_child('country-1').get_child('area-1-1')
-        self.validator.validate_object(col1)
+        col1.validate()
         self.assertIsInstance(col1, Collection)
-        self.validator.validate_dict(col1.to_dict(), STACObjectType.COLLECTION)
+        validate_dict(col1.to_dict(), STACObjectType.COLLECTION)
 
         multi_ext_uri = TestCases.get_path('data-files/collections/multi-extent.json')
         with open(multi_ext_uri) as f:
             multi_ext_dict = json.load(f)
-        self.validator.validate_dict(multi_ext_dict, STACObjectType.COLLECTION)
+        validate_dict(multi_ext_dict, STACObjectType.COLLECTION)
         self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
 
         multi_ext_col = Collection.from_file(multi_ext_uri)
-        self.validator.validate_object(multi_ext_col)
+        multi_ext_col.validate()
         ext = multi_ext_col.extent
         extent_dict = multi_ext_dict['extent']
         self.assertIsInstance(ext, Extent)
@@ -117,7 +116,7 @@ class CollectionTest(unittest.TestCase):
         multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
         invalid_col = Collection.from_dict(multi_ext_dict)
         with self.assertRaises(STACValidationError):
-            self.validator.validate_object(invalid_col)
+            invalid_col.validate()
 
     def test_extra_fields(self):
         catalog = TestCases.test_case_2()

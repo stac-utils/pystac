@@ -6,16 +6,14 @@ from tempfile import TemporaryDirectory
 
 import pystac
 from pystac import Asset, Item, Provider
+from pystac.validation import validate_dict
 from pystac.item import CommonMetadata
 from pystac.utils import str_to_datetime
 from pystac.serialization.identify import STACObjectType
-from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
+from tests.utils import (TestCases, test_to_from_dict)
 
 
 class ItemTest(unittest.TestCase):
-    def setUp(self):
-        self.validator = SchemaValidator()
-
     def get_example_item_dict(self):
         m = TestCases.get_path('data-files/item/sample-item.json')
         with open(m) as f:
@@ -88,7 +86,7 @@ class ItemTest(unittest.TestCase):
                                 'end_datetime': pystac.utils.datetime_to_str(item.datetime)
                             })
 
-        self.validator.validate_object(null_dt_item)
+        null_dt_item.validate()
 
     def test_get_set_asset_datetime(self):
         item = pystac.read_file(
@@ -122,17 +120,16 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(len(item.links), 1)
 
     def test_null_geometry(self):
-        self.validator = SchemaValidator()
         m = TestCases.get_path(
             'data-files/examples/1.0.0-beta.2/item-spec/examples/null-geom-item.json')
         with open(m) as f:
             item_dict = json.load(f)
 
-        self.validator.validate_dict(item_dict, STACObjectType.ITEM)
+        validate_dict(item_dict, STACObjectType.ITEM)
 
         item = Item.from_dict(item_dict)
         self.assertIsInstance(item, Item)
-        self.validator.validate_object(item)
+        item.validate()
 
         item_dict = item.to_dict()
         self.assertIsNone(item_dict['geometry'])

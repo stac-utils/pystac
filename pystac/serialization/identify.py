@@ -1,21 +1,15 @@
 from functools import total_ordering
 
+from pystac import STACObjectType
 from pystac.version import STACVersion
 from pystac.extensions import Extensions
-
-
-class STACObjectType:
-    CATALOG = 'CATALOG'
-    COLLECTION = 'COLLECTION'
-    ITEM = 'ITEM'
-    ITEMCOLLECTION = 'ITEMCOLLECTION'
 
 
 class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
     Attributes:
-        object_type (STACObjectType): Describes the STAC object type.
+        object_type (str): Describes the STAC object type. One of :class:`~pystac.STACObjectType`.
         version_range (STACVersionRange): The STAC version range that describes what
             has been identified as potential valid versions of the stac object.
         common_extensions (List[str]): List of common extension IDs implemented by this
@@ -37,6 +31,9 @@ class STACJSONDescription:
 
 @total_ordering
 class STACVersionID:
+    """Defines STAC versions in an object that is orderable based on version number.
+    For instance, ``1.0.0-beta.2 < 1.0.0``
+    """
     def __init__(self, version_string):
         self.version_string = version_string
 
@@ -54,7 +51,10 @@ class STACVersionID:
     def __eq__(self, other):
         if type(other) is str:
             other = STACVersionID(other)
-        self.version_string == other.version_string
+        return self.version_string == other.version_string
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __lt__(self, other):
         if type(other) is str:
@@ -64,14 +64,13 @@ class STACVersionID:
         elif self.version_core > other.version_core:
             return False
         else:
-            if self.version_prerelease is None:
-                return other.version_prerelease is not None
-            else:
-                return other.version_prerelease is None or \
-                    other.version_prerelease > self.version_prerelease
+            return self.version_prerelease is not None and (
+                other.version_prerelease is None
+                or other.version_prerelease > self.version_prerelease)
 
 
 class STACVersionRange:
+    """Defines a range of STAC versions."""
     def __init__(self, min_version='0.4.0', max_version=None):
         if type(min_version) is str:
             self.min_version = STACVersionID(min_version)
@@ -79,7 +78,7 @@ class STACVersionRange:
             self.min_version = min_version
 
         if max_version is None:
-            self.max_version = STACVersion.DEFAULT_STAC_VERSION
+            self.max_version = STACVersionID(STACVersion.DEFAULT_STAC_VERSION)
         else:
             if type(max_version) is str:
                 self.max_version = STACVersionID(max_version)
@@ -108,15 +107,21 @@ class STACVersionRange:
         return self.max_version
 
     def contains(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return self.min_version <= v and v <= self.max_version
 
     def is_single_version(self):
         return self.min_version >= self.max_version
 
     def is_earlier_than(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return self.max_version < v
 
     def is_later_than(self, v):
+        if type(v) is str:
+            v = STACVersionID(v)
         return v < self.min_version
 
     def __repr__(self):
@@ -136,7 +141,7 @@ def _identify_stac_extensions(object_type, d, version_range):
 
     if object_type == STACObjectType.ITEMCOLLECTION:
         if 'assets' in d:
-            stac_extensions.add(Extensions.ASSETS)
+            stac_extensions.add('assets')
             version_range.set_min('0.8.0')
 
     # checksum
@@ -161,10 +166,10 @@ def _identify_stac_extensions(object_type, d, version_range):
             stac_extensions.add(Extensions.DATACUBE)
             version_range.set_min('0.6.1')
 
-    # datetime-range
+    # datetime-range (old extension)
     if object_type == STACObjectType.ITEM:
         if 'dtr:start_datetime' in d['properties']:
-            stac_extensions.add(Extensions.DATETIME_RANGE)
+            stac_extensions.add('datetime-range')
             version_range.set_min('0.6.0')
 
     # eo
@@ -284,14 +289,6 @@ def identify_stac_object(json_dict):
     Returns:
         STACJSONDescription: The description of the STAC object serialized in the
         given dict.
-
-    Note:
-        Items are expected to have their collection common properties merged into
-        the dict. You can use :func:`~pystac.serialization.merge_common_properties`
-        to accomplish that. Otherwise, there are cases where the
-        common_extensions returned could be incorrect - e.g. if a collection lists
-        'eo' extension properties but the Item does not contian any properties with
-        the 'eo:' prefix.
     """
     object_type = identify_stac_object_type(json_dict)
 
