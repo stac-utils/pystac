@@ -1,7 +1,7 @@
 import os
 
 __version__ = '0.5.0-RC1'
-"""Library verison"""
+"""Library version"""
 
 
 class STACVersion:

@@ -140,7 +140,7 @@ def _migrate_eo(d, version, info):
 
         # The way bands were declared in assets changed.
         # In 1.0.0-beta.1 they are inlined into assets as
-        # opposed to having indicies back into a property-level array.
+        # opposed to having indices back into a property-level array.
         if 'eo:bands' in d['properties']:
             bands = d['properties']['eo:bands']
             for asset in d['assets'].values():

@@ -136,7 +136,7 @@ class Item(STACObject):
         """Get this item's assets.
 
         Returns:
-            Dict[str, Asset]: A copy of the dictonary of this item's assets.
+            Dict[str, Asset]: A copy of the dictionary of this item's assets.
         """
         return dict(self.assets.items())
 

@@ -113,7 +113,7 @@ class Link:
         return href
 
     def get_absolute_href(self):
-        """Gets the aboslute href for this link, if possible.
+        """Gets the absolute href for this link, if possible.
 
         Returns:
             str: Returns this link's HREF. It attempts to derive an absolute HREF
