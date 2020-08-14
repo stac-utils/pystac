@@ -28,6 +28,9 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
     include_package_data=False,
     install_requires=["python-dateutil>=2.7.0"],
+    extras_require={
+        "validation": ["jsonschema==3.2.0"]
+    },
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=[

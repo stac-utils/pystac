@@ -22,14 +22,14 @@ class ExtendedObject:
         if stac_object_class is Catalog:
             if not issubclass(extension_class, CatalogExtension):
                 raise ExtensionError(
-                    "Classes extending catalogs must inheret from CatalogExtension")
+                    "Classes extending catalogs must inherit from CatalogExtension")
         if stac_object_class is Collection:
             if not issubclass(extension_class, CollectionExtension):
                 raise ExtensionError(
-                    "Classes extending collections must inheret from CollectionExtension")
+                    "Classes extending collections must inherit from CollectionExtension")
         if stac_object_class is Item:
             if not issubclass(extension_class, ItemExtension):
-                raise ExtensionError("Classes extending item must inheret from ItemExtension")
+                raise ExtensionError("Classes extending item must inherit from ItemExtension")
 
         self.stac_object_class = stac_object_class
         self.extension_class = extension_class

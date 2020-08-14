@@ -8,7 +8,22 @@ from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
 
 
+class STACObjectType:
+    CATALOG = 'CATALOG'
+    COLLECTION = 'COLLECTION'
+    ITEM = 'ITEM'
+    ITEMCOLLECTION = 'ITEMCOLLECTION'
+
+
 class ExtensionIndex:
+    """Defines methods for accessing extension functionality.
+
+    To access a specific extension, use the __getitem__ on this class with the
+    extension ID::
+
+        # Access the "bands" property on the eo extension.
+        item.ext['eo'].bands
+    """
     def __init__(self, stac_object):
         self.stac_object = stac_object
 
@@ -208,8 +223,20 @@ class STACObject(LinkMixin, ABC):
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
     """
-    def __init__(self):
+
+    STAC_OBJECT_TYPE = None  # Overridden by the child classes with their type.
+
+    def __init__(self, stac_extensions):
         self.links = []
+        self.stac_extensions = stac_extensions
+
+    def validate(self):
+        """Validate this STACObject.
+
+        Raises:
+            STACValidationError
+        """
+        return pystac.validation.validate(self)
 
     def get_root(self):
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to

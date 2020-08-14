@@ -66,6 +66,8 @@ class Catalog(STACObject):
             all links associated with this Catalog.
     """
 
+    STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
+
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a cononical format."""
     def __init__(self,
@@ -75,15 +77,16 @@ class Catalog(STACObject):
                  stac_extensions=None,
                  extra_fields=None,
                  href=None):
+        super().__init__(stac_extensions)
+
         self.id = id
         self.description = description
         self.title = title
-        self.stac_extensions = stac_extensions
         if extra_fields is None:
             self.extra_fields = {}
         else:
             self.extra_fields = extra_fields
-        self.links = []
+
         self.add_link(Link.root(self))
 
         if href is not None:
@@ -376,7 +379,7 @@ class Catalog(STACObject):
 
     def make_all_asset_hrefs_absolute(self):
         """Makes all the HREFs of assets belonging to items in this catalog
-        and all children to be absoluet, recursively.
+        and all children to be absolute, recursively.
         """
         for _, _, items in self.walk():
             for item in items:
@@ -512,7 +515,7 @@ class Catalog(STACObject):
         Args:
             item_mapper (Callable):   A function that takes in an item, and returns either
                 an item or list of items. The item that is passed into the item_mapper
-                is a copy, so the method can mutate it safetly.
+                is a copy, so the method can mutate it safely.
 
         Returns:
             Catalog: A full copy of this catalog, with items manipulated according
@@ -553,7 +556,7 @@ class Catalog(STACObject):
             asset_mapper (Callable): A function that takes in an key and an Asset, and returns
                either an Asset, a (key, Asset), or a dictionary of Assets with unique keys.
                The Asset that is passed into the item_mapper is a copy, so the method can
-               mutate it safetly.
+               mutate it safely.
 
         Returns:
             Catalog: A full copy of this catalog, with assets manipulated according

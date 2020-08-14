@@ -4,7 +4,7 @@ from copy import copy, deepcopy
 import dateutil.parser
 
 import pystac
-from pystac import STACError
+from pystac import (STACError, STACObjectType)
 from pystac.link import Link, LinkType
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
@@ -58,6 +58,9 @@ class Item(STACObject):
         extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
             of the Item.
     """
+
+    STAC_OBJECT_TYPE = STACObjectType.ITEM
+
     def __init__(self,
                  id,
                  geometry,
@@ -68,18 +71,18 @@ class Item(STACObject):
                  href=None,
                  collection=None,
                  extra_fields=None):
+        super().__init__(stac_extensions)
+
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
         self.datetime = datetime
         self.properties = properties
-        self.stac_extensions = stac_extensions
         if extra_fields is None:
             self.extra_fields = {}
         else:
             self.extra_fields = extra_fields
 
-        self.links = []
         self.assets = {}
 
         if datetime is None:
@@ -133,7 +136,7 @@ class Item(STACObject):
         """Get this item's assets.
 
         Returns:
-            Dict[str, Asset]: A copy of the dictonary of this item's assets.
+            Dict[str, Asset]: A copy of the dictionary of this item's assets.
         """
         return dict(self.assets.items())
 

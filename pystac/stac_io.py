@@ -1,6 +1,10 @@
 import os
 import json
 
+from urllib.parse import urlparse
+from urllib.request import urlopen
+from urllib.error import HTTPError
+
 
 class STAC_IO:
     """Methods used to read and save STAC json.
@@ -9,8 +13,16 @@ class STAC_IO:
     """
     def default_read_text_method(uri):
         """Default method for reading text. Only handles local file paths."""
-        with open(uri) as f:
-            return f.read()
+        parsed = urlparse(uri)
+        if parsed.scheme != '':
+            try:
+                with urlopen(uri) as f:
+                    return f.read().decode('utf-8')
+            except HTTPError as e:
+                raise Exception("Could not read uri {}".format(uri)) from e
+        else:
+            with open(uri) as f:
+                return f.read()
 
     def default_write_text_method(uri, txt):
         """Default method for writing text. Only handles local file paths."""

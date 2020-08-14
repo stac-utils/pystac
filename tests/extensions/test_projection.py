@@ -3,9 +3,10 @@ import unittest
 from copy import deepcopy
 
 import pystac
-from pystac.extensions import ExtensionError
 from pystac import (Item, Extensions)
-from tests.utils import (SchemaValidator, STACValidationError, TestCases, test_to_from_dict)
+from pystac.extensions import ExtensionError
+from pystac.validation import STACValidationError
+from tests.utils import (TestCases, test_to_from_dict)
 
 WKT2 = """
 GEOGCS["WGS 84",
@@ -69,7 +70,6 @@ PROJJSON = json.loads("""
 
 class ProjectionTest(unittest.TestCase):
     def setUp(self):
-        self.validator = SchemaValidator()
         self.maxDiff = None
         self.example_uri = TestCases.get_path('data-files/projection/example-landsat8.json')
 
@@ -99,7 +99,7 @@ class ProjectionTest(unittest.TestCase):
 
     def test_validate_proj(self):
         item = pystac.read_file(self.example_uri)
-        self.validator.validate_object(item)
+        item.validate()
 
     def test_epsg(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -127,7 +127,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_epsg(asset_no_prop), 8888)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate
 
     def test_wkt2(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -156,7 +156,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_wkt2(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
     def test_projjson(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -186,12 +186,12 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_projjson(asset_no_prop)['id']['code'], 7777)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
         # Ensure setting bad projjson fails validation
         with self.assertRaises(STACValidationError):
             proj_item.ext.projection.projjson = {"bad": "data"}
-            self.validator.validate_object(proj_item)
+            proj_item.validate()
 
     def test_geometry(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -221,12 +221,12 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_geometry(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
         # Ensure setting bad geometry fails validation
         with self.assertRaises(STACValidationError):
             proj_item.ext.projection.geometry = {"bad": "data"}
-            self.validator.validate_object(proj_item)
+            proj_item.validate()
 
     def test_bbox(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -255,7 +255,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_bbox(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
     def test_centroid(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -288,12 +288,12 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_centroid(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
         # Ensure setting bad centroid fails validation
         with self.assertRaises(STACValidationError):
             proj_item.ext.projection.centroid = {'lat': 2.0, 'lng': 3.0}
-            self.validator.validate_object(proj_item)
+            proj_item.validate()
 
     def test_shape(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -323,7 +323,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_shape(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()
 
     def test_transform(self):
         proj_item = pystac.read_file(self.example_uri)
@@ -354,4 +354,4 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_item.ext.projection.get_transform(asset_no_prop), asset_value)
 
         # Validate
-        self.validator.validate_object(proj_item)
+        proj_item.validate()

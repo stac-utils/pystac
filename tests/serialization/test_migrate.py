@@ -57,3 +57,11 @@ class MigrateTest(unittest.TestCase):
         self.assertEqual(item.ext.view.sun_azimuth, 101.8)
         self.assertEqual(item.ext.view.sun_elevation, 58.8)
         self.assertEqual(item.ext.view.off_nadir, 1)
+
+    def test_migrates_renamed_extension(self):
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/examples/0.9.0/extensions/asset/'
+                               'examples/example-landsat8.json'))
+
+        self.assertTrue('item-assets' in collection.stac_extensions)
+        self.assertTrue('item_assets' in collection.extra_fields)
