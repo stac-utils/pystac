@@ -8,6 +8,8 @@
 - Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 - Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
 - Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
+- Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
+- Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
 
 ### Changed
 
