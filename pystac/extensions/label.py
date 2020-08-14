@@ -235,7 +235,7 @@ class LabelItemExt(ItemExtension):
         """Adds a link to a source item.
 
         Args:
-            source_item (Item): Source imagery that the LabelItem applys to.
+            source_item (Item): Source imagery that the LabelItem applies to.
             title (str): Optional title for the link.
             assets (List[str]): Optional list of assets that deterime what
                 assets in the source item this label item data appliees to.
@@ -568,7 +568,7 @@ class LabelCount:
 
     @property
     def count(self):
-        """Get or sets the number of occurences of the class.
+        """Get or sets the number of occurrences of the class.
 
         Returns:
             int

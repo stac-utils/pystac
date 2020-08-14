@@ -252,16 +252,16 @@ This will validate against the latest set of JSON schemas hosted at https://sche
 Validating STAC JSON
 --------------------
 
-You can validate STAC JSON represented as a ``dict`` using the :meth:`pystac.validation.validate_json` method:
+You can validate STAC JSON represented as a ``dict`` using the :meth:`pystac.validation.validate_dict` method:
 
 .. code-block:: python
 
    import json
-   from pystac.validation import validate_json
+   from pystac.validation import validate_dict
 
    with open('/path/to/item.json') as f:
        js = json.load(f)
-   validate_json(js)
+   validate_dict(js)
 
 Using your own validator
 ------------------------

@@ -16,6 +16,14 @@ class STACObjectType:
 
 
 class ExtensionIndex:
+    """Defines methods for accessing extension functionality.
+
+    To access a specific extension, use the __getitem__ on this class with the
+    extension ID::
+
+        # Access the "bands" property on the eo extension.
+        item.ext['eo'].bands
+    """
     def __init__(self, stac_object):
         self.stac_object = stac_object
 
