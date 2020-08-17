@@ -18,7 +18,7 @@ class Extensions:
     POINTCLOUD = 'pointcloud'
     PROJECTION = 'projection'
     SAR = 'sar'
-    SATELLITE = 'sat'
+    SAT = 'sat'
     SCIENTIFIC = 'scientific'
     SINGLE_FILE_STAC = 'single-file-stac'
     TILED_ASSETS = 'tiled-assets'
