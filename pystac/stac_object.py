@@ -57,6 +57,8 @@ class ExtensionIndex:
             item.ext["label"].label_properties
             item.ext.label.label_properties
         """
+        if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
+            return self.__getattribute__(extension_id)
         return self[extension_id]
 
     def enable(self, extension_id):
