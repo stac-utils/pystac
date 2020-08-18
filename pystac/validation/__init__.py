@@ -37,13 +37,14 @@ def validate(stac_object):
     Raises:
         STACValidationError
     """
-    return validate_dict(stac_dict=stac_object.to_dict(),
-                         stac_object_type=stac_object.STAC_OBJECT_TYPE,
-                         stac_version=pystac.get_stac_version(),
-                         extensions=stac_object.stac_extensions)
+    validate_dict(stac_dict=stac_object.to_dict(),
+                  stac_object_type=stac_object.STAC_OBJECT_TYPE,
+                  stac_version=pystac.get_stac_version(),
+                  extensions=stac_object.stac_extensions,
+                  href=stac_object.get_self_href())
 
 
-def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extensions=None):
+def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extensions=None, href=None):
     """Validate a stac object serialized as JSON into a dict.
 
     This method delegates to the call to :meth:`pystac.validation.STACValidator.validate`
@@ -59,6 +60,7 @@ def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extension
             this will use PySTAC's identification logic to identify the stac version
         extensions (List[str]): Extension IDs for this stac object. If not supplied,
             PySTAC's identification logic to identify the extensions.
+        href (str): Optional HREF of the STAC object being validated.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -82,7 +84,7 @@ def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extension
         extensions = info.common_extensions
 
     return RegisteredValidator.get_validator().validate(stac_dict, stac_object_type, stac_version,
-                                                        extensions)
+                                                        extensions, href)
 
 
 class RegisteredValidator:

@@ -56,3 +56,18 @@ class ValidateTest(unittest.TestCase):
                             except STACValidationError as e:
                                 self.assertIsInstance(e.source, jsonschema.ValidationError)
                                 raise e
+
+    def test_validate_error_contains_href(self):
+        # Test that the exception message contains the HREF of the object if available.
+        cat = TestCases.test_case_1()
+        item = cat.get_item('area-1-1-labels', recursive=True)
+        assert item.get_self_href() is not None
+
+        item.geometry = {'type': 'INVALID'}
+
+        with self.assertRaises(STACValidationError):
+            try:
+                item.validate()
+            except STACValidationError as e:
+                self.assertTrue(item.get_self_href() in str(e))
+                raise e

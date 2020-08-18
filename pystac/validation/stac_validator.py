@@ -19,7 +19,7 @@ class STACValidator(ABC):
     pystac by using the :func:`~pystac.validation.set_validator` method.
     """
     @abstractmethod
-    def validate_core(self, stac_dict, stac_object_type, stac_version):
+    def validate_core(self, stac_dict, stac_object_type, stac_version, href=None):
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -29,11 +29,13 @@ class STACValidator(ABC):
             stac_object_type (str): The stac object type of the object encoded in stac_dict.
                 One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
+            href (str): Optional HREF of the STAC object being validated.
         """
         pass
 
     @abstractmethod
-    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id):
+    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id,
+                           href=None):
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.
@@ -44,10 +46,11 @@ class STACValidator(ABC):
                 One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extension_id (str): The extension ID of the extension to validate against.
+            href (str): Optional HREF of the STAC object being validated.
         """
         pass
 
-    def validate(self, stac_dict, stac_object_type, stac_version, extensions):
+    def validate(self, stac_dict, stac_object_type, stac_version, extensions, href=None):
         """Validate a STAC object JSON.
 
         Args:
@@ -56,6 +59,7 @@ class STACValidator(ABC):
                 One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extensions (List[str]): Extension IDs for this stac object.
+            href (str): Optional href of the STAC object being validated.
 
         Returns:
             List[Object]: List of return values from the validation calls for the
@@ -63,13 +67,13 @@ class STACValidator(ABC):
                STACValidator implementation.
         """
         results = []
-        core_result = self.validate_core(stac_dict, stac_object_type, stac_version)
+        core_result = self.validate_core(stac_dict, stac_object_type, stac_version, href)
         if core_result is not None:
             results.append(core_result)
 
         for extension_id in extensions:
             ext_result = self.validate_extension(stac_dict, stac_object_type, stac_version,
-                                                 extension_id)
+                                                 extension_id, href)
             if ext_result is not None:
                 results.append(ext_result)
 
@@ -123,7 +127,19 @@ class JsonSchemaSTACValidator(STACValidator):
             if uri not in self.schema_cache:
                 self.schema_cache[uri] = resolver.store[uri]
 
-    def validate_core(self, stac_dict, stac_object_type, stac_version):
+    def _get_error_message(self, schema_uri, stac_object_type, extension_id, href, stac_id):
+        s = 'Validation failed for {} '.format(stac_object_type)
+        if href is not None:
+            s += 'at {} '.format(href)
+        if stac_id is not None:
+            s += 'with ID {} '.format(stac_id)
+        s += 'against schema at {}'.format(schema_uri)
+        if extension_id is not None:
+            s += "for STAC extension '{}'".format(extension_id)
+
+        return s
+
+    def validate_core(self, stac_dict, stac_object_type, stac_version, href=None):
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -133,6 +149,7 @@ class JsonSchemaSTACValidator(STACValidator):
             stac_object_type (str): The stac object type of the object encoded in stac_dict.
                 One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
+            href (str): Optional HREF of the STAC object being validated.
 
         Returns:
            str: URI for the JSON schema that was validated against, or None if
@@ -147,11 +164,12 @@ class JsonSchemaSTACValidator(STACValidator):
             self._validate_from_uri(stac_dict, schema_uri)
             return schema_uri
         except jsonschema.exceptions.ValidationError as e:
-            msg = 'Validation failed against schema at {} for STAC {}'.format(
-                schema_uri, stac_object_type)
+            msg = self._get_error_message(schema_uri, stac_object_type, None, href,
+                                          stac_dict.get('id'))
             raise STACValidationError(msg, source=e) from e
 
-    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id):
+    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id,
+                           href=None):
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.
@@ -162,6 +180,7 @@ class JsonSchemaSTACValidator(STACValidator):
                 One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extension_id (str): The extension ID to validate against.
+            href (str): Optional HREF of the STAC object being validated.
 
         Returns:
            str: URI for the JSON schema that was validated against, or None if
@@ -177,7 +196,6 @@ class JsonSchemaSTACValidator(STACValidator):
             self._validate_from_uri(stac_dict, schema_uri)
             return schema_uri
         except jsonschema.exceptions.ValidationError as e:
-            raise STACValidationError('Validation failed against schema at {} '
-                                      'for STAC {} extension {}'.format(
-                                          schema_uri, stac_object_type, extension_id),
-                                      source=e) from e
+            msg = self._get_error_message(schema_uri, stac_object_type, extension_id, href,
+                                          stac_dict.get('id'))
+            raise STACValidationError(msg, source=e) from e
