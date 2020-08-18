@@ -8,6 +8,7 @@ from collections import defaultdict
 import pystac
 from pystac import (Catalog, Collection, CatalogType, LinkType, Item, Asset, MediaType, Extensions)
 from pystac.extensions.label import LabelClasses
+from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
@@ -437,6 +438,27 @@ class CatalogTest(unittest.TestCase):
             read_cat = pystac.read_file(p)
             self.assertTrue('type' in read_cat.extra_fields)
             self.assertEqual(read_cat.extra_fields['type'], 'FeatureCollection')
+
+    def test_validate_all(self):
+        for cat in TestCases.all_test_catalogs():
+            with self.subTest(cat.id):
+                # If hrefs are not set, it will fail validation.
+                if cat.get_self_href() is None:
+                    cat.normalize_hrefs('/tmp')
+                cat.validate_all()
+
+        # Make one invalid, write it off, read it in, ensure it throws
+        cat = TestCases.test_case_1()
+        item = cat.get_item('area-1-1-labels', recursive=True)
+        item.geometry = {'type': 'INVALID', 'coordinates': 'NONE'}
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_hrefs(tmp_dir)
+            cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+
+            cat2 = pystac.read_file(os.path.join(tmp_dir, 'catalog.json'))
+
+            with self.assertRaises(STACValidationError):
+                cat2.validate_all()
 
     def test_set_hrefs_manually(self):
         catalog = TestCases.test_case_1()

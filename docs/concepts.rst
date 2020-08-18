@@ -249,6 +249,12 @@ You can validate any :class:`~pystac.Catalog`, :class:`~pystac.Collection` or :c
 
 This will validate against the latest set of JSON schemas hosted at https://schemas.stacspec.org, including any extensions that the object extends. If there are validation errors, a :class:`~pystac.validation.STACValidationError` will be raised.
 
+You can also call :meth:`~pystac.Catalog.validate_all` on a Catalog or Collection to recursively walk through a catalog and validate all objects within it.
+
+.. code-block:: python
+
+   catalog.validate_all()
+
 Validating STAC JSON
 --------------------
 
