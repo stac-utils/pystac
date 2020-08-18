@@ -63,5 +63,5 @@ class MigrateTest(unittest.TestCase):
             TestCases.get_path('data-files/examples/0.9.0/extensions/asset/'
                                'examples/example-landsat8.json'))
 
-        self.assertTrue('item-assets' in collection.stac_extensions)
-        self.assertTrue('item_assets' in collection.extra_fields)
+        self.assertIn('item-assets', collection.stac_extensions)
+        self.assertIn('item_assets', collection.extra_fields)

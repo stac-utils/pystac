@@ -35,7 +35,7 @@ class ValidateTest(unittest.TestCase):
                 with open(path) as f:
                     stac_json = json.load(f)
 
-                self.assertTrue(len(pystac.validation.validate_dict(stac_json)) == 0)
+                self.assertEqual(len(pystac.validation.validate_dict(stac_json)), 0)
             else:
                 with self.subTest(path):
                     with open(path) as f:
@@ -54,5 +54,5 @@ class ValidateTest(unittest.TestCase):
                             try:
                                 pystac.validation.validate_dict(stac_json)
                             except STACValidationError as e:
-                                self.assertTrue(isinstance(e.source, jsonschema.ValidationError))
+                                self.assertIsInstance(e.source, jsonschema.ValidationError)
                                 raise e
