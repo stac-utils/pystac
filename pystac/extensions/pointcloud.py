@@ -170,7 +170,7 @@ class PointcloudItemExt(ItemExtension):
             asset.properties['proj:encoding'] = encoding
 
     @property
-    def schema(self):
+    def schemas(self):
         """Get or sets a Polygon GeoJSON dict representing the footprint of this item.
 
         This dict should be formatted according the Polygon object format specified in
@@ -273,7 +273,7 @@ class PointcloudItemExt(ItemExtension):
         """
         return self.get_statistics()
 
-    @centroid.setter
+    @statistics.setter
     def statistics(self, v):
         self.set_statistics(v)
 
