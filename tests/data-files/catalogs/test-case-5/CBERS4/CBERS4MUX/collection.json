@@ -5,7 +5,7 @@
   "links": [
     {
       "rel": "child",
-      "href": "./CBERS4 MUX 027/catalog.json",
+      "href": "./CBERS4-MUX-027/catalog.json",
       "type": "application/json"
     },
     {
