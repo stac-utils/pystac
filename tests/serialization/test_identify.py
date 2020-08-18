@@ -42,7 +42,7 @@ class IdentifyTest(unittest.TestCase):
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self):
-        self.assertTrue(STACVersionID('0.9.0') == STACVersionID('0.9.0'))
+        self.assertEqual(STACVersionID('0.9.0'), STACVersionID('0.9.0'))
         self.assertFalse(STACVersionID('0.9.0') < STACVersionID('0.9.0'))
         self.assertFalse(STACVersionID('0.9.0') != STACVersionID('0.9.0'))
         self.assertFalse(STACVersionID('0.9.0') > STACVersionID('0.9.0'))
