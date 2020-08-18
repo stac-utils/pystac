@@ -114,7 +114,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
             Extensions.SAR: ({
                 STACObjectType.ITEM: 'extensions/sar/json-schema/schema.json'
             }, None),
-            Extensions.SATELLITE: ({
+            Extensions.SAT: ({
                 STACObjectType.ITEM: 'extensions/sat/json-schema/schema.json'
             }, None),
             Extensions.SCIENTIFIC: ({

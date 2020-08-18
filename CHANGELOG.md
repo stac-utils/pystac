@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.5.1]
+
+### Added
+
+- A tutorial for creating extensions ([#150](https://github.com/azavea/pystac/pull/150))
+
+### Fixed
+
+- Fixed Satellite extension ID, using `sat` instead of `satellite` ([#146](https://github.com/azavea/pystac/pull/146), [#147](https://github.com/azavea/pystac/pull/147)))
+
 ## [v0.5.0]
 
 ### Added
