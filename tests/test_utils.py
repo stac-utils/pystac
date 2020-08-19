@@ -1,5 +1,6 @@
 import unittest
 import os
+import json
 import ntpath
 from datetime import datetime, timezone, timedelta
 
@@ -138,3 +139,12 @@ class UtilsTest(unittest.TestCase):
             with self.subTest(title=title):
                 got = utils.datetime_to_str(dt)
                 self.assertEqual(expected, got)
+
+    def test_geojson_bbox(self):
+        # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON
+        with open('tests/data-files/geojson/sample.geojson') as sample_geojson:
+            all_features = json.load(sample_geojson)
+            geom_dicts = [f['geometry'] for f in all_features['features']]
+            for geom in geom_dicts:
+                got = utils.geometry_to_bbox(geom)
+                self.assertNotEqual(got, None)
