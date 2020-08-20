@@ -158,3 +158,9 @@ class TestCases:
     def test_case_5():
         """Based on a subset of https://cbers.stac.cloud/"""
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-5/catalog.json'))
+
+    @staticmethod
+    def test_case_6():
+        """Based on a subset of CBERS, contains a root and 4 empty children"""
+        return Catalog.from_file(
+            TestCases.get_path('data-files/catalogs/cbers-partial/catalog.json'))

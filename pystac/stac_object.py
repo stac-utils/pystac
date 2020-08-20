@@ -278,23 +278,32 @@ class STACObject(LinkMixin, ABC):
                 object to set. Passing in None will clear the root.
             link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
+        root_link_index = next(iter([i for i, link in enumerate(self.links) if link.rel == 'root']),
+                               None)
+
         # Remove from old root resolution cache
-        root_link = self.get_root_link()
-        if root_link is not None:
+        if root_link_index is not None:
+            root_link = self.links[root_link_index]
             if root_link.is_resolved():
                 root_link.target._resolved_objects.remove(self)
 
-        if not link_type:
-            prev = self.get_single_link('root')
-            if prev is not None:
-                link_type = prev.link_type
-            else:
-                link_type = LinkType.ABSOLUTE
+            if link_type is None:
+                link_type = root_link.link_type
 
-        self.remove_links('root')
-        if root is not None:
-            self.add_link(Link.root(root, link_type=link_type))
+        if link_type is None:
+            link_type = LinkType.ABSOLUTE
+
+        if root is None:
+            self.remove_links('root')
+        else:
+            new_root_link = Link.root(root, link_type=link_type)
+            if root_link_index is not None:
+                self.links[root_link_index] = new_root_link
+                new_root_link.set_owner(self)
+            else:
+                self.add_link(new_root_link)
             root._resolved_objects.cache(self)
+
         return self
 
     def get_parent(self):
@@ -346,9 +355,9 @@ class STACObject(LinkMixin, ABC):
             Generator[STACObjects]: A possibly empty generator of STACObjects that are
             connected to this object through links with the given ``rel``.
         """
-
-        for i in range(0, len(self.links)):
-            link = self.links[i]
+        links = self.links[:]
+        for i in range(0, len(links)):
+            link = links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
                 yield link.target
