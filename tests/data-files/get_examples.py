@@ -76,6 +76,8 @@ if __name__ == '__main__':
                             print('Creating example at {}'.format(target_path))
 
                             info = identify_stac_object(js)
+                            # Explicitly cover __repr__ functions in tests
+                            str_info = str(info)
 
                             # Handle the case where there are collection links that
                             # don't exist.
