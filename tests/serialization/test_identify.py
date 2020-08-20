@@ -26,6 +26,8 @@ class IdentifyTest(unittest.TestCase):
                     pass
 
             actual = identify_stac_object(d)
+            # Explicitly cover __repr__ functions in tests
+            str_info = str(info)
 
             msg = 'Failed {}:'.format(path)
 
