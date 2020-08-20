@@ -264,6 +264,19 @@ ProjectionItemExt
    :undoc-members:
    :show-inheritance:
 
+Timestamps Extension
+--------------------
+
+Implements the `Timestamps Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/timestamps>`_.
+
+TimestampsItemExt
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 
