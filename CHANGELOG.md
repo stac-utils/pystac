@@ -10,6 +10,7 @@
 - Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
 - Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
 - Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
+- Added support for the timestamps extension([#161](https://github.com/stac-utils/pystac/pull/161))
 
 ### Changed
 
