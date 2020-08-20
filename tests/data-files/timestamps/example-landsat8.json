@@ -53,7 +53,10 @@
             "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B2.TIF",
             "type": "image/tiff; application=geotiff",
             "title": "Band 2 (blue)",
-            "created": "2018-10-02T00:00:00Z"
+            "created": "2018-10-02T00:00:00Z",
+            "published": "2018-11-02T00:00:00Z",
+            "expires": "2018-12-02T00:00:00Z",
+            "unpublished": "2019-01-02T00:00:00Z"
         },
         "green": {
             "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B3.TIF",
