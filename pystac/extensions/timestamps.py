@@ -40,11 +40,11 @@ class TimestampsItemExt(ItemExtension):
 
         Args:
             published (datetime or None): Date and time the corresponding data
-                (see below) was published the first time.
+                was published the first time.
             expires (datetime or None): Date and time the corresponding data
-                (see below) expires (is not valid any longer).
+                expires (is not valid any longer).
             unpublished (datetime or None): Date and time the corresponding data
-                (see below) was unpublished.
+                was unpublished.
         """
         if published is None and expires is None and unpublished is None:
             raise pystac.STACError("timestamps extension needs at least one property value.")
