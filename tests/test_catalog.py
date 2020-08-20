@@ -392,7 +392,6 @@ class CatalogTest(unittest.TestCase):
             for root, catalogs, items in cat.walk():
                 for link in root.links:
                     if link.rel != 'self':
-                        # print(l.rel)
                         self.assertTrue(link.link_type == LinkType.RELATIVE)
                         self.assertFalse(is_absolute_href(link.get_href()))
                 for item in items:
@@ -529,6 +528,10 @@ class CatalogTest(unittest.TestCase):
             for item in cat2.get_all_items():
                 # Iterate again over the items. This would fail in #88
                 pass
+
+    def test_get_children_cbers(self):
+        cat = TestCases.test_case_6()
+        self.assertEqual(len(list(cat.get_children())), 4)
 
 
 class FullCopyTest(unittest.TestCase):
