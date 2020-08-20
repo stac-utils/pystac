@@ -28,6 +28,7 @@ class IdentifyTest(unittest.TestCase):
             actual = identify_stac_object(d)
             # Explicitly cover __repr__ functions in tests
             str_info = str(actual)
+            self.assertIsInstance(str_info, str)
 
             msg = 'Failed {}:'.format(path)
 
