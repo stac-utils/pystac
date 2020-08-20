@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.5.2]
+
+### Added 
+ 
+- `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168)) 
+
 ## [v0.5.1]
 
 ### Added
