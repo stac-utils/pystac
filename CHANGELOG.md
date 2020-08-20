@@ -2,9 +2,13 @@
 
 ## [v0.5.2]
 
-### Added 
- 
-- `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168)) 
+### Added
+
+- `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168))
+
+### Fixed
+
+- Fix bug that caused get_children to miss some links. ([#172](https://github.com/stac-utils/pystac/pull/172))
 
 ## [v0.5.1]
 
