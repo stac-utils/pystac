@@ -77,6 +77,13 @@ class TimestampsItemExt(ItemExtension):
 
     @property
     def published(self):
+        """Get or sets a datetime objects that represent
+            the date and time that the corresponding data
+            was published the first time.
+
+        Returns:
+            datetime
+        """
         return self.get_published()
 
     @published.setter
@@ -87,7 +94,11 @@ class TimestampsItemExt(ItemExtension):
         """Get an Item or Asset published datetime
 
         If an Asset is supplied and the published property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value.
+        return the Asset's value. Otherwise return the Item's value. 'Published'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data linked
+        to the Asset Object. If it comes from the Item properties, it's referencing to
+        the timestamp valid for the metadata.
 
         Returns:
             datetime
@@ -104,6 +115,13 @@ class TimestampsItemExt(ItemExtension):
 
     @property
     def expires(self):
+        """Get or sets a datetime objects that represent
+            the date and time the corresponding data
+            expires (is not valid any longer).
+
+        Returns:
+            datetime
+        """
         return self.get_expires()
 
     @expires.setter
@@ -114,7 +132,11 @@ class TimestampsItemExt(ItemExtension):
         """Get an Item or Asset expires datetime
 
         If an Asset is supplied and the expires property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value.
+        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data linked
+        to the Asset Object. If it comes from the Item properties, it's referencing to
+        the timestamp valid for the metadata.
 
         Returns:
             datetime
@@ -131,6 +153,12 @@ class TimestampsItemExt(ItemExtension):
 
     @property
     def unpublished(self):
+        """Get or sets a datetime objects that represent
+        the Date and time the corresponding data was unpublished.
+
+        Returns:
+            datetime
+        """
         return self.get_unpublished()
 
     @unpublished.setter
@@ -141,7 +169,11 @@ class TimestampsItemExt(ItemExtension):
         """Get an Item or Asset unpublished datetime
 
         If an Asset is supplied and the unpublished property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value.
+        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data linked
+        to the Asset Object. If it comes from the Item properties, it's referencing to
+        the timestamp valid for the metadata.
 
         Returns:
             datetime
