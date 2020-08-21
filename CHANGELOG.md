@@ -5,6 +5,7 @@
 ### Added
 
 - `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168))
+- `validate_all` method to Catalogs (and by inheritance collections) for validating all catalogs, collections and items contained in that catalog ([#162](https://github.com/azavea/pystac/pull/162))
 
 ### Fixed
 
@@ -18,7 +19,7 @@
 
 ### Fixed
 
-- Fixed Satellite extension ID, using `sat` instead of `satellite` ([#146](https://github.com/azavea/pystac/pull/146), [#147](https://github.com/azavea/pystac/pull/147)))
+- Fixed Satellite extension ID, using `sat` instead of `satellite` ([#146](https://github.com/azavea/pystac/pull/146), [#147](https://github.com/azavea/pystac/pull/147))
 
 ## [v0.5.0]
 
