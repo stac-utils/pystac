@@ -2,14 +2,27 @@
 
 ## [v0.5.2]
 
+Thank you to all the new contributors that contributed during STAC Sprint 6!
+
 ### Added
 
+- Added support for the timestamps extension([#161](https://github.com/stac-utils/pystac/pull/161))
 - `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168))
 - `validate_all` method to Catalogs (and by inheritance collections) for validating all catalogs, collections and items contained in that catalog ([#162](https://github.com/azavea/pystac/pull/162))
+- `validate_all` method to pystac.validdation for validating all catalogs, collections and items contained in STAC JSON dicts across STAC versions. ([#162](https://github.com/azavea/pystac/pull/162))
+- Additional test coverage. ([#165](https://github.com/azavea/pystac/pull/165), [#171](https://github.com/azavea/pystac/pull/171))
+- Added codecov to CI ([#163](https://github.com/stac-utils/pystac/pull/164))
 
 ### Fixed
 
 - Fix bug that caused get_children to miss some links. ([#172](https://github.com/stac-utils/pystac/pull/172))
+- Fixed bug in ExtensionIndex that was causing errors when trying to read help() for that object ([#159](https://github.com/stac-utils/pystac/pull/159))
+
+### Changed
+
+- Remove spaces in CBERS test library ([#157](https://github.com/stac-utils/pystac/pull/157))
+- Changed some unit test assertions for better error messages ([#158](https://github.com/stac-utils/pystac/pull/158))
+- Moved PySTAC to the [stac-utils](https://github.com/stac-utils) GitHub organization.
 
 ## [v0.5.1]
 
@@ -31,7 +44,6 @@
 - Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
 - Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
 - Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
-- Added support for the timestamps extension([#161](https://github.com/stac-utils/pystac/pull/161))
 
 ### Changed
 
