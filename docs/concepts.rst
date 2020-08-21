@@ -269,6 +269,18 @@ You can validate STAC JSON represented as a ``dict`` using the :meth:`pystac.val
        js = json.load(f)
    validate_dict(js)
 
+You can also recursively validate all of the catalogs, collections and items across STAC versions
+using the :meth:`pystac.validation.validate_all` method:
+
+.. code-block:: python
+
+   import json
+   from pystac.validation import validate_all
+
+   with open('/path/to/catalog.json') as f:
+       js = json.load(f)
+   validate_all(js)
+
 Using your own validator
 ------------------------
 

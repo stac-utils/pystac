@@ -353,7 +353,7 @@ PySTAC includes a ``pystac.validation`` package for validating STAC objects, inc
 from PySTAC objects and directly from JSON.
 
 .. automodule:: pystac.validation
-   :members: validate, validate_dict, set_validator, STACValidationError
+   :members: validate, validate_dict, validate_all, set_validator, STACValidationError
 
 STACValidator
 ~~~~~~~~~~~~~

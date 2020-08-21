@@ -1,6 +1,7 @@
 # flake8: noqa
 import pystac
 from pystac.serialization.identify import identify_stac_object
+from pystac.utils import make_absolute_href
 
 from pystac.validation.schema_uri_map import (SchemaUriMap)
 
@@ -85,6 +86,47 @@ def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extension
 
     return RegisteredValidator.get_validator().validate(stac_dict, stac_object_type, stac_version,
                                                         extensions, href)
+
+
+def validate_all(stac_dict, href):
+    """Validate STAC JSON and all contained catalogs, collections and items.
+
+    If this stac_dict represents a catalog or collection, this method will
+    recursively be called for each child link and all contained items.
+
+    Args:
+
+        stac_dict (dict): Dictionary that is the STAC json of the object.
+        href (str): HREF of the STAC object being validated. Used for error
+            reporting and resolving relative links.
+
+    Raises:
+        STACValidationError: This will raise a STACValidationError if this or any contained
+            catalog, collection or item has a validation error.
+    """
+    info = identify_stac_object(stac_dict)
+
+    # Validate this object
+    validate_dict(stac_dict,
+                  stac_object_type=info.object_type,
+                  stac_version=info.version_range.latest_valid_version(),
+                  extensions=info.common_extensions,
+                  href=href)
+
+    if info.object_type != pystac.STACObjectType.ITEM:
+        links = stac_dict.get('links')
+        if links is not None:
+            # Account for 0.6 links
+            if isinstance(links, dict):
+                links = list(links.values())
+
+            for link in links:
+                rel = link.get('rel')
+                if rel in ['item', 'child']:
+                    link_href = make_absolute_href(link.get('href'), start_href=href)
+                    if link_href is not None:
+                        d = pystac.STAC_IO.read_json(link_href)
+                        validate_all(d, link_href)
 
 
 class RegisteredValidator:
