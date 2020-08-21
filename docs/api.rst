@@ -251,6 +251,20 @@ LabelStatistics
    :members:
    :undoc-members:
 
+Pointcloud Extension
+--------------------
+
+Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
+
+PointcloudItemExt
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.PointcloudItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Projection Extension
 --------------------
 

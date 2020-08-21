@@ -28,7 +28,8 @@ class PointcloudItemExt(ItemExtension):
               encoding,
               schemas,
               density=None,
-              statistics=None):
+              statistics=None,
+              epsg=None):
         """Applies Pointcloud extension properties to the extended Item.
 
         Args:
@@ -41,6 +42,7 @@ class PointcloudItemExt(ItemExtension):
                 dimensions and their types.
             density (dict or None): Number of points per square unit area.
             statistics (List[int] or None): A sequential array of items mapping to pc:schemas defines per-channel statistics.
+            epsg (str): An EPSG code for the projected coordinates of the pointcloud.
         """
         self.count = count
         self.type = type
@@ -48,6 +50,7 @@ class PointcloudItemExt(ItemExtension):
         self.schemas = schemas
         self.density = density
         self.statistics = statistics
+        self.epsg = epsg
 
     @property
     def count(self):
@@ -63,7 +66,7 @@ class PointcloudItemExt(ItemExtension):
         self.set_count(v)
 
     def get_count(self, asset=None):
-        """Gets an Item or an Asset epsg.
+        """Gets an Item or an Asset count.
 
         If an Asset is supplied and the Item property exists on the Asset,
         returns the Asset's value. Otherwise returns the Item's value
@@ -83,19 +86,13 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:count'] = count
+            self.item.properties['pc:count'] = count
         else:
-            asset.properties['proj:count'] = count
+            asset.properties['pc:count'] = count
 
     @property
     def type(self):
-        """Get or sets the WKT2 string representing the Coordinate Reference System (CRS)
-        that the proj:geometry and proj:bbox fields represent
-
-        This value is a `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
-        If the data does not have a CRS, such as in the case of non-rectified imagery with Ground
-        Control Points, wkt2 should be set to null. It should also be set to null if a CRS exists,
-        but for which a WKT2 string does not exist.
+        """Get or sets the pc:type prop on the Item
 
         Returns:
             str
@@ -115,10 +112,10 @@ class PointcloudItemExt(ItemExtension):
         Returns:
             str
         """
-        if asset is None or 'proj:type' not in asset.properties:
-            return self.item.properties.get('proj:type')
+        if asset is None or 'pc:type' not in asset.properties:
+            return self.item.properties.get('pc:type')
         else:
-            return asset.properties.get('proj:type')
+            return asset.properties.get('pc:type')
 
     def set_type(self, type, asset=None):
         """Set an Item or an Asset type.
@@ -127,18 +124,21 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:type'] = type
+            self.item.properties['pc:type'] = type
         else:
-            asset.properties['proj:type'] = type
+            asset.properties['pc:type'] = type
 
     @property
     def encoding(self):
-        """Get or sets the encoding
+        """Get or sets the content-encoding for the item.
+
+        The content-encoding is the underlying encoding format for the point cloud. 
+        Examples may include: laszip, ascii, binary, etc.
 
         Returns:
-            dict
+            str
         """
-        return self.get_projjson()
+        return self.get_encoding()
 
     @encoding.setter
     def encoding(self, v):
@@ -151,12 +151,12 @@ class PointcloudItemExt(ItemExtension):
         returns the Asset's value. Otherwise returns the Item's value
 
         Returns:
-            dict
+            str
         """
-        if asset is None or 'proj:encoding' not in asset.properties:
-            return self.item.properties.get('proj:encoding')
+        if asset is None or 'pc:encoding' not in asset.properties:
+            return self.item.properties.get('pc:encoding')
         else:
-            return asset.properties.get('proj:encoding')
+            return asset.properties.get('pc:encoding')
 
     def set_encoding(self, encoding, asset=None):
         """Set an Item or an Asset encoding.
@@ -165,23 +165,19 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:encoding'] = encoding
+            self.item.properties['pc:encoding'] = encoding
         else:
-            asset.properties['proj:encoding'] = encoding
+            asset.properties['pc:encoding'] = encoding
 
     @property
     def schemas(self):
-        """Get or sets a Polygon GeoJSON dict representing the footprint of this item.
+        """Get or sets a 
 
-        This dict should be formatted according the Polygon object format specified in
-        `RFC 7946, sections 3.1.6 <https://tools.ietf.org/html/rfc7946>`_,
-        except not necessarily in EPSG:4326 as required by RFC7946. Specified based on the
-        ``epsg``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
-        Ideally, this will be represented by a Polygon with five coordinates, as the item in
-        the asset data CRS should be a square aligned to the original CRS grid.
+        The schemas represent the structure of the data attributes in the pointcloud, 
+        and is represented as a sequential array of items that define the dimensions and their types.
 
         Returns:
-            dict
+            List[dict]
         """
         return self.get_schemas()
 
@@ -198,36 +194,30 @@ class PointcloudItemExt(ItemExtension):
         Returns:
             dict
         """
-        if asset is None or 'proj:schema' not in asset.properties:
-            return self.item.properties.get('proj:schema')
+        if asset is None or 'pc:schema' not in asset.properties:
+            return self.item.properties.get('pc:schema')
         else:
-            return asset.properties.get('proj:schemas')
+            return asset.properties.get('pc:schemas')
 
     def set_schemas(self, schemas, asset=None):
-        """Set an Item or an Asset projection geometry.
+        """Set an Item or an Asset schema
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:schemas'] = schemas
+            self.item.properties['pc:schemas'] = schemas
         else:
-            asset.properties['proj:schemas'] = schemas
+            asset.properties['pc:schemas'] = schemas
 
     @property
     def density(self):
-        """Get or sets the bounding box of the assets represented by this item in the asset
-        data CRS.
+        """Get or sets the density for the item. 
 
-        Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``, ``projjson``
-        or ``wkt2`` properties. First two numbers are coordinates of the lower left corner,
-        followed by coordinates of upper right corner, e.g.,
-        [west, south, east, north], [xmin, ymin, xmax, ymax], [left, down, right, up],
-        or [west, south, lowest, east, north, highest]. The length of the array must be 2*n
-        where n is the number of dimensions.
+        Density is defined as the number of points per square unit area.
 
         Returns:
-            List[float]
+            int
         """
         return self.get_density()
 
@@ -236,18 +226,18 @@ class PointcloudItemExt(ItemExtension):
         self.set_density(v)
 
     def get_density(self, asset=None):
-        """Gets an Item or an Asset projection bbox.
+        """Gets an Item or an Asset density.
 
         If an Asset is supplied and the Item property exists on the Asset,
         returns the Asset's value. Otherwise returns the Item's value
 
         Returns:
-            List[float]
+            int
         """
-        if asset is None or 'proj:density' not in asset.properties:
-            return self.item.properties.get('proj:density')
+        if asset is None or 'pc:density' not in asset.properties:
+            return self.item.properties.get('pc:density')
         else:
-            return asset.properties.get('proj:density')
+            return asset.properties.get('pc:density')
 
     def set_density(self, density, asset=None):
         """Set an Item or an Asset density property.
@@ -256,20 +246,22 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:density'] = density
+            self.item.properties['pc:density'] = density
         else:
-            asset.properties['proj:density'] = density
+            asset.properties['pc:density'] = density
 
     @property
     def statistics(self):
-        """Get or sets coordinates representing the centroid of the item in the asset data CRS.
+        """Get or sets the statistics for each property of the dataset.
+
+        A sequential array of items mapping to pc:schemas defines per-channel statistics.
 
         Exmample::
 
-            item.ext.proj.centroid = { 'lat': 0.0, 'lon': 0.0 }
+            item.ext.pointcloud.statistics = [{ 'name': 'red', 'min': 0, 'max': 255 }]
 
         Returns:
-            dict
+            List[dict]
         """
         return self.get_statistics()
 
@@ -286,10 +278,10 @@ class PointcloudItemExt(ItemExtension):
         Returns:
             dict
         """
-        if asset is None or 'proj:statistics' not in asset.properties:
-            return self.item.properties.get('proj:statistics')
+        if asset is None or 'pc:statistics' not in asset.properties:
+            return self.item.properties.get('pc:statistics')
         else:
-            return asset.properties.get('proj:statistics')
+            return asset.properties.get('pc:statistics')
 
     def set_statistics(self, statistics, asset=None):
         """Set an Item or an Asset centroid.
@@ -298,9 +290,55 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.item.properties['proj:statistics'] = statistics
+            self.item.properties['pc:statistics'] = statistics
         else:
-            asset.properties['proj:statistics'] = statistics
+            asset.properties['pc:statistics'] = statistics
+
+    @property
+    def epsg(self):
+        """Get or sets the EPSG code of the datasource.
+
+        A Coordinate Reference System (CRS) is the data reference system (sometimes called a
+        'projection') used by the asset data, and can usually be referenced using an
+        `EPSG code <http://epsg.io/>`_.
+        If the asset data does not have a CRS, such as in the case of non-rectified imagery with
+        Ground Control Points, epsg should be set to None.
+        It should also be set to null if a CRS exists, but for which there is no valid EPSG code.
+
+        Returns:
+            str
+        """
+        return self.get_epsg()
+
+    @epsg.setter
+    def epsg(self, v):
+        self.set_epsg(v)
+
+    def get_epsg(self, asset=None):
+        """Gets an Item or an Asset epsg.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            str
+        """
+        if asset is None or 'pc:epsg' not in asset.properties:
+            return self.item.properties.get('pc:epsg')
+        else:
+            return asset.properties.get('pc:epsg')
+
+    def set_epsg(self, epsg, asset=None):
+        """Set an Item or an Asset epsg.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.item.properties['pc:epsg'] = epsg
+        else:
+            asset.properties['pc:epsg'] = epsg
+
 
 
     @classmethod
