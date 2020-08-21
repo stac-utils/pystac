@@ -22,14 +22,7 @@ class PointcloudItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(self,
-              count,
-              type,
-              encoding,
-              schemas,
-              density=None,
-              statistics=None,
-              epsg=None):
+    def apply(self, count, type, encoding, schemas, density=None, statistics=None, epsg=None):
         """Applies Pointcloud extension properties to the extended Item.
 
         Args:
@@ -41,7 +34,8 @@ class PointcloudItemExt(ItemExtension):
             schemas (List[dict]): REQUIRED. A sequential array of items that define the
                 dimensions and their types.
             density (dict or None): Number of points per square unit area.
-            statistics (List[int] or None): A sequential array of items mapping to pc:schemas defines per-channel statistics.
+            statistics (List[int] or None): A sequential array of items mapping to pc:schemas
+                defines per-channel statistics.
             epsg (str): An EPSG code for the projected coordinates of the pointcloud.
         """
         self.count = count
@@ -132,7 +126,7 @@ class PointcloudItemExt(ItemExtension):
     def encoding(self):
         """Get or sets the content-encoding for the item.
 
-        The content-encoding is the underlying encoding format for the point cloud. 
+        The content-encoding is the underlying encoding format for the point cloud.
         Examples may include: laszip, ascii, binary, etc.
 
         Returns:
@@ -171,10 +165,11 @@ class PointcloudItemExt(ItemExtension):
 
     @property
     def schemas(self):
-        """Get or sets a 
+        """Get or sets a
 
-        The schemas represent the structure of the data attributes in the pointcloud, 
-        and is represented as a sequential array of items that define the dimensions and their types.
+        The schemas represent the structure of the data attributes in the pointcloud,
+        and is represented as a sequential array of items that define the dimensions
+        and their types,
 
         Returns:
             List[dict]
@@ -195,7 +190,7 @@ class PointcloudItemExt(ItemExtension):
             dict
         """
         if asset is None or 'pc:schema' not in asset.properties:
-            return self.item.properties.get('pc:schema')
+            return self.item.properties.get('pc:schemas')
         else:
             return asset.properties.get('pc:schemas')
 
@@ -212,7 +207,7 @@ class PointcloudItemExt(ItemExtension):
 
     @property
     def density(self):
-        """Get or sets the density for the item. 
+        """Get or sets the density for the item.
 
         Density is defined as the number of points per square unit area.
 
@@ -338,8 +333,6 @@ class PointcloudItemExt(ItemExtension):
             self.item.properties['pc:epsg'] = epsg
         else:
             asset.properties['pc:epsg'] = epsg
-
-
 
     @classmethod
     def _object_links(cls):

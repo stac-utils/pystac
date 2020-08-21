@@ -24,11 +24,11 @@ class PointcloudTest(unittest.TestCase):
             item.ext.pointcloud
 
         item.ext.enable(Extensions.POINTCLOUD)
-        item.ext.pointcloud.apply(
-            1000,
-            'lidar',
-            'laszip',
-            {'name': 'X', 'size': 8, 'type': 'floating'})
+        item.ext.pointcloud.apply(1000, 'lidar', 'laszip', {
+            'name': 'X',
+            'size': 8,
+            'type': 'floating'
+        })
 
     def test_validate_pointcloud(self):
         item = pystac.read_file(self.example_uri)
