@@ -1,7 +1,8 @@
 ## PySTAC
-![Build Status](https://github.com/azavea/pystac/workflows/CI/badge.svg?branch=develop)
+![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
+[![codecov](https://codecov.io/gh/stac-utils/pystac/branch/develop/graph/badge.svg)](https://codecov.io/gh/stac-utils/pystac)
 [![Gitter chat](https://badges.gitter.im/azavea/pystac.svg)](https://gitter.im/azavea/pystac)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 

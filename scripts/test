@@ -23,7 +23,8 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         # Code formatting
         yapf -dpr pystac tests
 
-        # Test suite
-        python -m unittest discover tests/
+        # Test suite with coverage enabled
+        coverage run --source=pystac/ -m unittest discover tests/
+        coverage xml
     fi
 fi

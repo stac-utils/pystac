@@ -9,6 +9,7 @@ from pystac.validation import (validate_dict, STACValidationError)
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
+from pystac.utils import datetime_to_str
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
@@ -135,3 +136,46 @@ class CollectionTest(unittest.TestCase):
             read_col = pystac.read_file(p)
             self.assertTrue('test' in read_col.extra_fields)
             self.assertEqual(read_col.extra_fields['test'], 'extra')
+
+    def test_update_extents(self):
+
+        catalog = TestCases.test_case_2()
+        base_collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
+        base_extent = base_collection.extent
+        collection = base_collection.clone()
+
+        item1 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-180, -90, 180, 90],
+                     datetime=datetime.utcnow(),
+                     properties={'key': 'one'},
+                     stac_extensions=['eo', 'commons'])
+
+        item2 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-180, -90, 180, 90],
+                     datetime=None,
+                     properties={
+                         'start_datetime': datetime_to_str(datetime(2000, 1, 1, 12, 0, 0, 0)),
+                         'end_datetime': datetime_to_str(datetime(2000, 2, 1, 12, 0, 0, 0))
+                     },
+                     stac_extensions=['eo', 'commons'])
+
+        collection.add_item(item1)
+
+        collection.update_extent_from_items()
+        self.assertEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        self.assertEqual(len(base_extent.spatial.bboxes[0]),
+                         len(collection.extent.spatial.bboxes[0]))
+
+        self.assertNotEqual(base_extent.temporal.intervals, collection.extent.temporal.intervals)
+        collection.remove_item('test-item-1')
+        collection.update_extent_from_items()
+        self.assertNotEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        collection.add_item(item2)
+
+        collection.update_extent_from_items()
+
+        self.assertEqual(
+            [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
+            collection.extent.temporal.intervals)

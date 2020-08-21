@@ -99,7 +99,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
             }, None),
             Extensions.LABEL: ({
                 STACObjectType.ITEM: 'extensions/label/json-schema/schema.json'
-            }, [(STACVersionRange(min_version='0.8.1-rc1', max_version='0.8.1'), {
+            }, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.8.1'), {
                 STACObjectType.ITEM: 'extensions/label/schema.json'
             })]),
             Extensions.POINTCLOUD: (
@@ -147,7 +147,13 @@ class DefaultSchemaUriMap(SchemaUriMap):
             }, None),
             Extensions.VIEW: ({
                 STACObjectType.ITEM: 'extensions/view/json-schema/schema.json'
-            }, None)
+            }, None),
+
+            # Removed or renamed extensions.
+            'dtr': (None, None),  # Invalid schema
+            'asset': (None, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.9.0'), {
+                STACObjectType.COLLECTION: 'extensions/asset/json-schema/schema.json'
+            })]),
         }
     }
 

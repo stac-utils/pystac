@@ -13,6 +13,7 @@ stdout*
 /integration*
 .idea/
 docs/_build/
+coverage.xml
 
 # Sphinx documentation
 docs/_build/
