@@ -61,6 +61,7 @@ class VersionTest(unittest.TestCase):
         self.assertIsInstance(str(version_range), str)
         self.assertTrue(version_range.contains('1.0.0-beta.1'))
         self.assertFalse(version_range.contains('1.0.0'))
+        self.assertTrue(version_range.is_later_than('0.8.9'))
 
         version_range = STACVersionRange('0.9.0', '1.0.0-beta.1')
         self.assertFalse(version_range.contains('1.0.0-beta.2'))
