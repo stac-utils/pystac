@@ -1,4 +1,4 @@
-from pystac import (STACError, Extensions)
+from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
@@ -25,32 +25,17 @@ class EOItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(self, gsd, bands, cloud_cover=None):
+    def apply(self, bands, cloud_cover=None):
         """Applies label extension properties to the extended Item.
 
         Args:
-            gsd (float): The Ground Sample Distance of the sensor
             bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
                 the available bands.
             cloud_cover (float or None): The estimate of cloud cover as a percentage (0-100) of the
                 entire scene. If not available the field should not be provided.
         """
-        self.gsd = gsd
         self.bands = bands
         self.cloud_cover = cloud_cover
-
-    @property
-    def gsd(self):
-        """Get or sets the Ground Sample Distance at the sensor.
-
-        Returns:
-            [float]
-        """
-        return self.item.properties.get('eo:gsd')
-
-    @gsd.setter
-    def gsd(self, v):
-        self.item.properties['eo:gsd'] = v
 
     @property
     def bands(self):
@@ -58,16 +43,44 @@ class EOItemExt(ItemExtension):
             the available bands.
 
         Returns:
-            [List[Band]]
+            List[Band]
         """
-        bands = self.item.properties.get('eo:bands')
-        if bands is None:
-            raise STACError("Missing required field 'eo:bands' in item properties")
-        return [Band(b) for b in bands]
+        return self.get_bands()
 
     @bands.setter
     def bands(self, v):
-        self.item.properties['eo:bands'] = [b.to_dict() for b in v]
+        self.set_bands(v)
+
+    def get_bands(self, asset=None):
+        """Gets an Item or an Asset bands.
+
+        If an Asset is supplied and the bands property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            List[Band]
+        """
+        if asset is not None and 'eo:bands' in asset.properties:
+            bands = asset.properties.get('eo:bands')
+        else:
+            bands = self.item.properties.get('eo:bands')
+
+        if bands is not None:
+            bands = [Band(b) for b in bands]
+
+        return bands
+
+    def set_bands(self, bands, asset=None):
+        """Set an Item or an Asset bands.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        band_dicts = [b.to_dict() for b in bands]
+        if asset is not None:
+            asset.properties['eo:bands'] = band_dicts
+        else:
+            self.item.properties['eo:bands'] = band_dicts
 
     @property
     def cloud_cover(self):
@@ -75,58 +88,41 @@ class EOItemExt(ItemExtension):
             entire scene. If not available the field should not be provided.
 
         Returns:
-            [float or None]
+            float or None
         """
-        return self.item.properties.get('eo:cloud_cover')
+        return self.get_cloud_cover()
 
     @cloud_cover.setter
     def cloud_cover(self, v):
-        self.item.properties['eo:cloud_cover'] = v
+        self.set_cloud_cover(v)
+
+    def get_cloud_cover(self, asset=None):
+        """Gets an Item or an Asset cloud_cover.
+
+        If an Asset is supplied and the Item property exists on the Asset,
+        returns the Asset's value. Otherwise returns the Item's value
+
+        Returns:
+            float
+        """
+        if asset is None or 'eo:cloud_cover' not in asset.properties:
+            return self.item.properties.get('eo:cloud_cover')
+        else:
+            return asset.properties.get('eo:cloud_cover')
+
+    def set_cloud_cover(self, cloud_cover, asset=None):
+        """Set an Item or an Asset cloud_cover.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+        """
+        if asset is None:
+            self.item.properties['eo:cloud_cover'] = cloud_cover
+        else:
+            asset.properties['eo:cloud_cover'] = cloud_cover
 
     def __repr__(self):
         return '<EOItemExt Item id={}>'.format(self.item.id)
-
-    def get_asset_bands(self, asset):
-        """Gets the bands for the given asset.
-
-        Args:
-            asset [Asset]: The asset from the associated item to get the bands of.
-
-        Returns:
-            [List[Band] or None]: A list of Band objects associated with the asset, or None
-            if the asset doesn't exist or does not contain band information.
-        """
-        if 'eo:bands' not in asset.properties:
-            return None
-
-        result = []
-        band_length = len(self.bands)
-        for band_idx in asset.properties['eo:bands']:
-            if band_idx >= band_length:
-                raise STACError("Item {} contains assets with band indexes out of range! "
-                                "Band index {} is greater than the number of bands "
-                                "for the item ({})".format(self.item.id, band_idx, band_length))
-            result.append(self.bands[band_idx])
-
-        return result
-
-    def set_asset_bands(self, asset, band_names):
-        """Sets the band information for an asset of this item.
-
-        Args:
-            asset [Asset]: The asset from the associated item to set the bands for.
-            band_names (List[str]): List of band names to assign to the asset.
-                These names must reference names in the item's bands property.
-        """
-        band_idxs = [i for i, b in enumerate(self.bands) if b.name in band_names]
-
-        if len(set(band_idxs)) != len(set(band_names)):
-            missing_band_names = set(band_names) - set([self.bands[i] for i in band_idxs])
-
-            raise KeyError("Bands not found in item's bands: {}".format(','.join(
-                map(lambda x: "'{}'".format(x), missing_band_names))))
-
-        asset.properties['eo:bands'] = band_idxs
 
     @classmethod
     def _object_links(cls):
@@ -203,7 +199,7 @@ class Band:
         """Get or sets the name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('name')
 
@@ -218,7 +214,7 @@ class Band:
             <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('common_name')
 
@@ -235,7 +231,7 @@ class Band:
         used for rich text representation.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('description')
 
@@ -251,7 +247,7 @@ class Band:
         """Get or sets the center wavelength of the band, in micrometers (μm).
 
         Returns:
-            [float]
+            float
         """
         return self.properties.get('center_wavelength')
 

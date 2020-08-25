@@ -1,9 +1,10 @@
 import re
 from copy import deepcopy
 
-from pystac import STAC_VERSION
+from pystac import STACObjectType
+from pystac.version import STACVersion
 from pystac.extensions import Extensions
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange)
+from pystac.serialization.identify import (STACJSONDescription, STACVersionRange)
 
 # STAC Object Types
 
@@ -36,14 +37,17 @@ def _migrate_item(d, version, info):
 def _migrate_itemcollection(d, version, info):
     if version < '0.9.0':
         d['stac_extensions'] = info.common_extensions + info.custom_extensions
-    return d
 
 
 # Extensions
 
 
-def _migrate_assets(d, version, info):
-    pass
+def _migrate_item_assets(d, version, info):
+    if version < '1.0.0-beta.2':
+        if info.object_type == STACObjectType.COLLECTION:
+            if 'assets' in d:
+                d['item_assets'] = d['assets']
+                del d['assets']
 
 
 def _migrate_checksum(d, version, info):
@@ -128,6 +132,24 @@ def _migrate_eo(d, version, info):
                         d['properties']['eo:{}'.format(field)]
                     del d['properties']['eo:{}'.format(field)]
 
+    if version < '1.0.0-beta.1' and info.object_type == STACObjectType.ITEM:
+        # gsd moved from eo to common metadata
+        if 'eo:gsd' in d['properties']:
+            d['properties']['gsd'] = d['properties']['eo:gsd']
+            del d['properties']['eo:gsd']
+
+        # The way bands were declared in assets changed.
+        # In 1.0.0-beta.1 they are inlined into assets as
+        # opposed to having indices back into a property-level array.
+        if 'eo:bands' in d['properties']:
+            bands = d['properties']['eo:bands']
+            for asset in d['assets'].values():
+                if 'eo:bands' in asset:
+                    new_bands = []
+                    for band_index in asset['eo:bands']:
+                        new_bands.append(bands[band_index])
+                    asset['eo:bands'] = new_bands
+
     return added_extensions
 
 
@@ -189,10 +211,10 @@ _object_migrations = {
 }
 
 _extension_migrations = {
-    Extensions.ASSETS: _migrate_assets,
     Extensions.CHECKSUM: _migrate_checksum,
     Extensions.DATACUBE: _migrate_datacube,
     Extensions.EO: _migrate_eo,
+    Extensions.ITEM_ASSETS: _migrate_item_assets,
     Extensions.LABEL: _migrate_label,
     Extensions.POINTCLOUD: _migrate_pointcloud,
     Extensions.SAR: _migrate_sar,
@@ -203,8 +225,11 @@ _extension_migrations = {
 _removed_extension_migrations = {
     # Removed in 0.9.0
     'dtr': _migrate_datetime_range,
-    'datetime-range': _migrate_datetime_range
+    'datetime-range': _migrate_datetime_range,
+    'commons': lambda a, b, c: None  # No changes needed, just remove the extension_id
 }
+
+_extension_renames = {'asset': 'item-assets'}
 
 
 def migrate_to_latest(json_dict, info):
@@ -218,16 +243,21 @@ def migrate_to_latest(json_dict, info):
 
     Returns:
         dict: A copy of the dict that is migrated to the latest version (the
-        version that is pystac.STAC_VERSION)
+        version that is pystac.version.STACVersion.DEFAULT_STAC_VERSION)
     """
     result = deepcopy(json_dict)
     version = info.version_range.latest_valid_version()
 
-    if version != STAC_VERSION:
+    if version != STACVersion.DEFAULT_STAC_VERSION:
         _object_migrations[info.object_type](result, version, info)
 
         extensions_to_add = set([])
         for ext in info.common_extensions:
+            if ext in _extension_renames:
+                result['stac_extensions'].remove(ext)
+                ext = _extension_renames[ext]
+                extensions_to_add.add(ext)
+
             if ext in _extension_migrations:
                 added_extensions = _extension_migrations[ext](result, version, info)
                 if added_extensions:
@@ -243,12 +273,14 @@ def migrate_to_latest(json_dict, info):
         migrated_extensions = set(info.common_extensions)
         migrated_extensions = migrated_extensions | set(extensions_to_add)
         migrated_extensions = migrated_extensions - set(_removed_extension_migrations.keys())
+        migrated_extensions = migrated_extensions - set(_extension_renames.keys())
         common_extensions = list(migrated_extensions)
     else:
         common_extensions = info.common_extensions
 
-    result['stac_version'] = STAC_VERSION
+    result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
 
-    return result, STACJSONDescription(info.object_type,
-                                       STACVersionRange(STAC_VERSION, STAC_VERSION),
-                                       common_extensions, info.custom_extensions)
+    return result, STACJSONDescription(
+        info.object_type,
+        STACVersionRange(STACVersion.DEFAULT_STAC_VERSION, STACVersion.DEFAULT_STAC_VERSION),
+        common_extensions, info.custom_extensions)

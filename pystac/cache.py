@@ -145,7 +145,7 @@ class ResolvedObjectCache:
 
         Args:
             first (ResolvedObjectCache): The first cache to merge. This cache will be
-                the prefered cache for objects in the case of ID conflicts.
+                the preferred cache for objects in the case of ID conflicts.
             second (ResolvedObjectCache): The second cache to merge.
 
         Returns:

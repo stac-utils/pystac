@@ -175,6 +175,11 @@ def geometry_to_bbox(geometry):
 
     def extract_coords(coords):
         for x in coords:
+            # This handles points
+            if isinstance(x, float):
+                lats.append(coords[0])
+                lons.append(coords[1])
+                return
             if isinstance(x[0], list):
                 extract_coords(x)
             else:

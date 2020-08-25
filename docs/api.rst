@@ -2,13 +2,13 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0>`_ they relate to, if related to a specific spec item.
+and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2>`_ they relate to, if related to a specific spec item.
 
 pystac
 ------
 
 .. automodule:: pystac
-   :members: read_file, write_file
+   :members: read_file, write_file, read_dict, set_stac_version, get_stac_version
 
 STACObject
 ----------
@@ -20,11 +20,15 @@ STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Coll
    :inherited-members:
    :undoc-members:
 
+.. autoclass:: pystac.STACObjectType
+   :members:
+   :undoc-members:
+
 
 Catalog Spec
 ------------
 
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/catalog-spec>`_.
+These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/catalog-spec>`_.
 
 Catalog
 ~~~~~~~
@@ -46,7 +50,7 @@ CatalogType
 Collection Spec
 ---------------
 
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/collection-spec>`_.
+These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/collection-spec>`_.
 
 Collection
 ~~~~~~~~~~
@@ -87,7 +91,7 @@ Provider
 Item Spec
 ---------
 
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/item-spec>`_.
+These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/item-spec>`_.
 
 Item
 ~~~~
@@ -105,16 +109,9 @@ Asset
    :undoc-members:
 
 CommonMetadata
-~~~~~
-
-.. autoclass:: pystac.CommonMetadata
-   :members:
-   :undoc-members:
-
-ItemCollection
 ~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.ItemCollection
+.. autoclass:: pystac.CommonMetadata
    :members:
    :undoc-members:
 
@@ -172,6 +169,10 @@ ExtensionError
 Extensions
 ----------
 
+.. autoclass:: pystac.extensions.Extensions
+   :members:
+   :undoc-members:
+
 ExtensionIndex
 ~~~~~~~~~~~~~~
 
@@ -184,7 +185,7 @@ An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObje
 EO Extension
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/eo>`_.
+These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
 
 EOItemExt
 ~~~~~~~~~
@@ -205,7 +206,7 @@ Band
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/label>`_.
+These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/label>`_.
 
 LabelItemExt
 ~~~~~~~~~~~~
@@ -250,17 +251,59 @@ LabelStatistics
    :members:
    :undoc-members:
 
+Projection Extension
+--------------------
+
+Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
+
+ProjectionItemExt
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.ProjectionItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Timestamps Extension
+--------------------
+
+Implements the `Timestamps Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/timestamps>`_.
+
+TimestampsItemExt
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/single-file-stac>`_.
+These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/single-file-stac>`_.
 
-SingleFileSTAC
-~~~~~~~~~~~~~~
+.. automodule:: pystac.extensions.single_file_stac
+   :members: create_single_file_stac
 
-.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTAC
+SingleFileSTACCatalogExt
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
    :members:
    :undoc-members:
+
+View Geometry Extension
+-----------------------
+
+Implements the `View Geometry Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/view>`_.
+
+ViewItemExt
+~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.ViewItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Serialization
 -------------
@@ -268,45 +311,72 @@ Serialization
 PySTAC includes a ``pystac.serialization`` package for serialization concerns that
 are used internally, but may also be useful to external tools.
 
-merge_common_properties
-~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pystac.serialization
-   :members: merge_common_properties
-
-indentify_stac_object
-~~~~~~~~~~~~~~~~~~~~~
+Identification
+~~~~~~~~~~~~~~
 
 .. automodule:: pystac.serialization
    :members: identify_stac_object
-
-indentify_stac_object_type
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pystac.serialization
-   :members: identify_stac_object_type
-
-
-STACJSONDescription
-~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.serialization.STACJSONDescription
    :members:
    :undoc-members:
 
-STACVersionRange
-~~~~~~~~~~~~~~~~
-
 .. autoclass:: pystac.serialization.STACVersionRange
    :members:
    :undoc-members:
 
-STACObjectType
-~~~~~~~~~~~~~~
-
-.. autoclass:: pystac.serialization.STACObjectType
+.. autoclass:: pystac.serialization.STACVersionID
    :members:
    :undoc-members:
+
+
+Migration
+~~~~~~~~~
+
+.. automodule:: pystac.serialization.migrate
+   :members: migrate_to_latest
+
+Common Properties
+~~~~~~~~~~~~~~~~~
+
+.. automodule:: pystac.serialization
+   :members: merge_common_properties
+
+
+Validation
+----------
+
+pystac.validation
+~~~~~~~~~~~~~~~~~
+
+PySTAC includes a ``pystac.validation`` package for validating STAC objects, including
+from PySTAC objects and directly from JSON.
+
+.. automodule:: pystac.validation
+   :members: validate, validate_dict, validate_all, set_validator, STACValidationError
+
+STACValidator
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.validation.STACValidator
+   :members:
+
+.. autoclass:: pystac.validation.JsonSchemaSTACValidator
+   :members:
+
+SchemaUriMap
+~~~~~~~~~~~~
+
+A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension ids to
+schema URIs. A default implementation is included that uses known locations; however users
+can provide their own schema URI maps in a :class:`~pystac.validation.JsonSchemaSTACValidator`
+to modify the URIs used.
+
+.. autoclass:: pystac.validation.SchemaUriMap
+   :members:
+
+.. autoclass:: pystac.validation.schema_uri_map.DefaultSchemaUriMap
+   :members:
 
 
 PySTAC Internal Classes

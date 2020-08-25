@@ -1,68 +1,69 @@
 {
-    "type": "Feature",
-    "stac_version": "0.8.1",
-    "id": "area-1-2-imagery",
-    "properties": {
-        "datetime": "2019-10-04 18:55:37Z"
-    },
-    "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-            [
-                [
-                    -2.5048828125,
-                    3.8916575492899987
-                ],
-                [
-                    -1.9610595703125,
-                    3.8916575492899987
-                ],
-                [
-                    -1.9610595703125,
-                    4.275202171119132
-                ],
-                [
-                    -2.5048828125,
-                    4.275202171119132
-                ],
-                [
-                    -2.5048828125,
-                    3.8916575492899987
-                ]
-            ]
+  "type": "Feature",
+  "stac_version": "1.0.0-beta.2",
+  "id": "area-1-2-imagery",
+  "properties": {
+    "datetime": "2019-10-04 18:55:37Z"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -2.5048828125,
+          3.8916575492899987
+        ],
+        [
+          -1.9610595703125,
+          3.8916575492899987
+        ],
+        [
+          -1.9610595703125,
+          4.275202171119132
+        ],
+        [
+          -2.5048828125,
+          4.275202171119132
+        ],
+        [
+          -2.5048828125,
+          3.8916575492899987
         ]
+      ]
+    ]
+  },
+  "bbox": [
+    -2.5048828125,
+    3.8916575492899987,
+    -1.9610595703125,
+    3.8916575492899987
+  ],
+  "collection": "area-1-2",
+  "links": [
+    {
+      "rel": "collection",
+      "href": "../collection.json",
+      "type": "application/json"
     },
-    "bbox": [
-        -2.5048828125,
-        3.8916575492899987,
-        -1.9610595703125,
-        3.8916575492899987
-    ],
-    "links": [
-        {
-            "rel": "collection",
-            "href": "../collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "root",
-            "href": "../../../catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "parent",
-            "href": "../collection.json",
-            "type": "application/json"
-        }
-    ],
-    "assets": {
-        "ortho": {
-            "href": "http://example.com/area-1-2_ortho.tif",
-            "type": "image/vnd.stac.geotiff"
-        },
-        "dsm": {
-            "href": "http://example.com/area-1-2_dsm.tif",
-            "type": "image/vnd.stac.geotiff"
-        }
+    {
+      "rel": "root",
+      "href": "../../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "../collection.json",
+      "type": "application/json"
     }
+  ],
+  "assets": {
+    "ortho": {
+      "href": "http://example.com/area-1-2_ortho.tif",
+      "type": "image/vnd.stac.geotiff"
+    },
+    "dsm": {
+      "href": "http://example.com/area-1-2_dsm.tif",
+      "type": "image/vnd.stac.geotiff"
+    }
+  }
 }

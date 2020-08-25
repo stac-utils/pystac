@@ -3,10 +3,12 @@ max-line-length = 100
 
 ## IGNORES
 
+# E126: yapf conflicts with "continuation line over-indented for hanging indent"
+
 # E127: flake8 reporting incorrect continuation line indent errors
 # on multi-line and multi-level indents
 
 # W503: flake8 reports this as incorrect, and scripts/format_code
 # changes code to it, so let format_code win.
 
-ignore = E127,W503
+ignore = E126,E127,W503

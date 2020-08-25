@@ -1,7 +1,7 @@
 import unittest
 
 import pystac
-from pystac import (STAC_IO, STAC_VERSION, STACObject)
+from pystac import (STAC_IO, STACObject)
 from pystac.cache import CollectionCache
 from pystac.serialization import (identify_stac_object, identify_stac_object_type,
                                   merge_common_properties, migrate_to_latest, STACObjectType)
@@ -31,7 +31,8 @@ class MigrateTest(unittest.TestCase):
                 migrated_info = identify_stac_object(migrated_d)
 
                 self.assertEqual(migrated_info.object_type, info.object_type)
-                self.assertEqual(migrated_info.version_range.latest_valid_version(), STAC_VERSION)
+                self.assertEqual(migrated_info.version_range.latest_valid_version(),
+                                 pystac.get_stac_version())
                 self.assertEqual(set(migrated_info.common_extensions), set(info.common_extensions))
                 self.assertEqual(set(migrated_info.custom_extensions), set(info.custom_extensions))
 
@@ -56,3 +57,11 @@ class MigrateTest(unittest.TestCase):
         self.assertEqual(item.ext.view.sun_azimuth, 101.8)
         self.assertEqual(item.ext.view.sun_elevation, 58.8)
         self.assertEqual(item.ext.view.off_nadir, 1)
+
+    def test_migrates_renamed_extension(self):
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/examples/0.9.0/extensions/asset/'
+                               'examples/example-landsat8.json'))
+
+        self.assertIn('item-assets', collection.stac_extensions)
+        self.assertIn('item_assets', collection.extra_fields)

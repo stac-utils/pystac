@@ -1,4 +1,4 @@
-jsonschema==3.0.2
+jsonschema==3.2.0
 pylint==1.9.1
 Sphinx==1.8.0
 sphinx-autobuild==0.7.1
@@ -7,3 +7,4 @@ sphinxcontrib-napoleon==0.7
 flake8==3.8.*
 yapf==0.28.*
 nbsphinx==0.4.3
+coverage==5.2.*

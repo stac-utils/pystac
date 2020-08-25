@@ -1,5 +1,65 @@
 # Changelog
 
+## [v0.5.2]
+
+Thank you to all the new contributors that contributed during STAC Sprint 6!
+
+### Added
+
+- Added support for the timestamps extension([#161](https://github.com/stac-utils/pystac/pull/161))
+- `update_extent_from_items` method to Collection for updating Extent objects within a collection based on the contained items. ([#168](https://github.com/stac-utils/pystac/pull/168))
+- `validate_all` method to Catalogs (and by inheritance collections) for validating all catalogs, collections and items contained in that catalog ([#162](https://github.com/azavea/pystac/pull/162))
+- `validate_all` method to pystac.validdation for validating all catalogs, collections and items contained in STAC JSON dicts across STAC versions. ([#162](https://github.com/azavea/pystac/pull/162))
+- Additional test coverage. ([#165](https://github.com/azavea/pystac/pull/165), [#171](https://github.com/azavea/pystac/pull/171))
+- Added codecov to CI ([#163](https://github.com/stac-utils/pystac/pull/164))
+
+### Fixed
+
+- Fix bug that caused get_children to miss some links. ([#172](https://github.com/stac-utils/pystac/pull/172))
+- Fixed bug in ExtensionIndex that was causing errors when trying to read help() for that object ([#159](https://github.com/stac-utils/pystac/pull/159))
+
+### Changed
+
+- Remove spaces in CBERS test library ([#157](https://github.com/stac-utils/pystac/pull/157))
+- Changed some unit test assertions for better error messages ([#158](https://github.com/stac-utils/pystac/pull/158))
+- Moved PySTAC to the [stac-utils](https://github.com/stac-utils) GitHub organization.
+
+## [v0.5.1]
+
+### Added
+
+- A tutorial for creating extensions ([#150](https://github.com/azavea/pystac/pull/150))
+
+### Fixed
+
+- Fixed Satellite extension ID, using `sat` instead of `satellite` ([#146](https://github.com/azavea/pystac/pull/146), [#147](https://github.com/azavea/pystac/pull/147))
+
+## [v0.5.0]
+
+### Added
+
+- Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
+- Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
+- Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
+- Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
+- Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
+- Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
+
+### Changed
+
+- Clarification on null geometries, making bbox not required if a null geometry is used. ([#123](https://github.com/azavea/pystac/pull/123))
+- Multiple extents (bounding boxes / intervals) are allowed per Collection ([#123](https://github.com/azavea/pystac/pull/123))
+- Moved eo:gsd from eo extension to core gsd field in Item common metadata ([#123](https://github.com/azavea/pystac/pull/123))
+asset extension renamed to item-assets and renamed assets field in Collections to item_assets ([#123](https://github.com/azavea/pystac/pull/123))
+- `get_asset_bands` and `set_asset_bands` were renamed `get_bands` and `set_bands` and follow the new item asset property access pattern.
+- Modified the `single-file-stac` extension to extend `Catalog` ([#128](https://github.com/azavea/pystac/pull/128))
+
+### Removed
+
+- ItemCollection was removed. ([#123](https://github.com/azavea/pystac/pull/123))
+- The commons extension was removed. Collection properties will still be merged for pre-1.0.0-beta.1 items where appropriate ([#129](https://github.com/azavea/pystac/pull/129))
+- Removed `pystac.STAC_VERSION`. See addition of `get_stac_version` above. ([#130](https://github.com/azavea/pystac/pull/130))
+
 ## [v0.4.0]
 
 The two major changes for this release are:

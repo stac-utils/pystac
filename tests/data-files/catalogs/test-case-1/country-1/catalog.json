@@ -1,27 +1,27 @@
 {
-    "id": "country-1",
-    "stac_version": "0.8.1",
-    "description": "test catalog country-1",
-    "links": [
-        {
-            "rel": "child",
-            "href": "./area-1-1/collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "child",
-            "href": "./area-1-2/collection.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "root",
-            "href": "../catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "parent",
-            "href": "../catalog.json",
-            "type": "application/json"
-        }
-    ]
+  "id": "country-1",
+  "stac_version": "1.0.0-beta.2",
+  "description": "test catalog country-1",
+  "links": [
+    {
+      "rel": "child",
+      "href": "./area-1-1/collection.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "child",
+      "href": "./area-1-2/collection.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "root",
+      "href": "../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "../catalog.json",
+      "type": "application/json"
+    }
+  ]
 }

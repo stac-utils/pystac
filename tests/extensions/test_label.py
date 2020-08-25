@@ -6,12 +6,11 @@ from tempfile import TemporaryDirectory
 import pystac
 from pystac import (Catalog, Item, CatalogType, STAC_IO)
 from pystac.extensions import label
-from tests.utils import (SchemaValidator, TestCases, test_to_from_dict)
+from tests.utils import (TestCases, test_to_from_dict)
 
 
 class LabelTest(unittest.TestCase):
     def setUp(self):
-        self.validator = SchemaValidator()
         self.maxDiff = None
         self.label_example_1_uri = TestCases.get_path('data-files/label/label-example-1.json')
         self.label_example_2_uri = TestCases.get_path('data-files/label/label-example-2.json')
@@ -26,14 +25,12 @@ class LabelTest(unittest.TestCase):
         label_example_1 = Item.from_file(self.label_example_1_uri)
 
         self.assertEqual(len(label_example_1.ext.label.label_overviews[0].counts), 2)
-        self.validator.validate_object(label_example_1)
+        label_example_1.validate()
 
         label_example_2 = Item.from_file(self.label_example_2_uri)
         self.assertEqual(len(label_example_2.ext.label.label_overviews[0].counts), 2)
 
-        # TODO: Validate for 1.0 as schema was fixed.
-        # In 0.9.0 the properties are required (but need to be null for raster labels)
-        # self.validator.validate_object(label_example_2)
+        label_example_2.validate()
 
     def test_from_file_pre_081(self):
         d = STAC_IO.read_json(self.label_example_1_uri)
@@ -66,7 +63,7 @@ class LabelTest(unittest.TestCase):
     def test_validate_label(self):
         with open(self.label_example_1_uri) as f:
             label_example_1_dict = json.load(f)
-        self.validator.validate_dict(label_example_1_dict, "ITEM")
+        pystac.validation.validate_dict(label_example_1_dict, "ITEM")
 
         with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, 'catalog')
@@ -75,7 +72,7 @@ class LabelTest(unittest.TestCase):
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, 'catalog.json'))
             label_item_read = cat_read.get_item("area-2-2-labels", recursive=True)
-            self.validator.validate_object(label_item_read)
+            label_item_read.validate()
 
     def test_read_label_item_owns_asset(self):
         item = next(x for x in TestCases.test_case_2().get_all_items() if x.ext.implements("label"))
@@ -94,7 +91,7 @@ class LabelTest(unittest.TestCase):
         # Set
         label_item.ext.label.label_description = "A detailed description"
         self.assertEqual("A detailed description", label_item.properties['label:description'])
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_type(self):
         label_item = pystac.read_file(self.label_example_1_uri)
@@ -107,7 +104,7 @@ class LabelTest(unittest.TestCase):
         # Set
         label_item.ext.label.label_type = label.LabelType.RASTER
         self.assertEqual(label.LabelType.RASTER, label_item.properties['label:type'])
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_properties(self):
         label_item = pystac.read_file(self.label_example_1_uri)
@@ -123,7 +120,7 @@ class LabelTest(unittest.TestCase):
         # Set
         label_item.ext.label.label_properties = ["prop1", "prop2"]
         self.assertEqual(["prop1", "prop2"], label_item.properties['label:properties'])
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_classes(self):
         # Get
@@ -145,7 +142,7 @@ class LabelTest(unittest.TestCase):
             for class_name in lc["classes"]
         ], ["five", "six", "seven", "eight"])
 
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_tasks(self):
         label_item = pystac.read_file(self.label_example_1_uri)
@@ -158,7 +155,7 @@ class LabelTest(unittest.TestCase):
         # Set
         label_item.ext.label.label_tasks = ["classification"]
         self.assertEqual(["classification"], label_item.properties['label:tasks'])
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_methods(self):
         label_item = pystac.read_file(self.label_example_1_uri)
@@ -171,7 +168,7 @@ class LabelTest(unittest.TestCase):
         # Set
         label_item.ext.label.label_methods = ["manual", "automated"]
         self.assertEqual(["manual", "automated"], label_item.properties['label:methods'])
-        self.validator.validate_object(label_item)
+        label_item.validate()
 
     def test_label_overviews(self):
         # Get
@@ -219,4 +216,4 @@ class LabelTest(unittest.TestCase):
                           for count in label_item.properties["label:overviews"][1]['statistics']],
                          [("min", 0.1), ("max", 1.0)])
 
-        self.validator.validate_object(label_item)
+        label_item.validate()

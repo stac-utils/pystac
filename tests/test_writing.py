@@ -4,33 +4,31 @@ from tempfile import TemporaryDirectory
 from pystac import (STAC_IO, STACObject, Collection, CatalogType, LinkType)
 from pystac.serialization import (STACObjectType)
 from pystac.utils import make_absolute_href
+from pystac.validation import validate_dict
 
-from tests.utils import (TestCases, SchemaValidator)
+from tests.utils import TestCases
 
 
 class STACWritingTest(unittest.TestCase):
     """Tests writing STACs, using JSON Schema validation,
     and ensure that links are correctly set to relative or absolute.
     """
-    def setUp(self):
-        self.schema_validator = SchemaValidator()
-
     def validate_catalog(self, catalog):
-        self.schema_validator.validate_object(catalog, print_on_error=True)
+        catalog.validate()
         validated_count = 1
 
         for child in catalog.get_children():
             validated_count += self.validate_catalog(child)
 
         for item in catalog.get_items():
-            self.schema_validator.validate_object(item, print_on_error=True)
+            item.validate()
             validated_count += 1
 
         return validated_count
 
     def validate_file(self, path, object_type):
         d = STAC_IO.read_json(path)
-        return self.schema_validator.validate_dict(d, object_type, print_on_error=True)
+        return validate_dict(d, object_type)
 
     def validate_link_types(self, root_href, catalog_type):
         def validate_item_link_type(href, link_type, should_include_self):

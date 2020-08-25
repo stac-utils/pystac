@@ -72,12 +72,19 @@ class TestCases:
                 if row[4]:
                     custom_extensions = row[4].split('|')
 
+                valid = True
+                if len(row) > 5:
+                    # The 5th column will be "INVALID" if the example
+                    # shouldn't pass validation
+                    valid = row[5] != 'INVALID'
+
                 examples.append({
                     'path': path,
                     'object_type': object_type,
                     'stac_version': stac_version,
                     'common_extensions': common_extensions,
-                    'custom_extensions': custom_extensions
+                    'custom_extensions': custom_extensions,
+                    'valid': valid
                 })
         return examples
 
@@ -88,7 +95,8 @@ class TestCases:
             TestCases.test_case_2(),
             TestCases.test_case_3(),
             TestCases.test_case_4(),
-            TestCases.test_case_5()
+            TestCases.test_case_5(),
+            TestCases.test_case_7()
         ]
 
     @staticmethod
@@ -151,3 +159,15 @@ class TestCases:
     def test_case_5():
         """Based on a subset of https://cbers.stac.cloud/"""
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-5/catalog.json'))
+
+    @staticmethod
+    def test_case_6():
+        """Based on a subset of CBERS, contains a root and 4 empty children"""
+        return Catalog.from_file(
+            TestCases.get_path('data-files/catalogs/cbers-partial/catalog.json'))
+
+    @staticmethod
+    def test_case_7():
+        """Test case 4 as STAC version 0.8.1"""
+        return Catalog.from_file(
+            TestCases.get_path('data-files/catalogs/label_catalog_0_8_1/catalog.json'))

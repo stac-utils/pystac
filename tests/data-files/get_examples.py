@@ -1,6 +1,6 @@
 """
 Script to download the examples from the stac-spec repository.
-This is used when new version come out to look for updated examples
+This is used when upgrading to a new version of STAC.
 """
 import os
 import argparse
@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 from subprocess import call
 from urllib.error import HTTPError
 
-from pystac import (STAC_VERSION, STAC_IO)
+import pystac
 from pystac.serialization import identify_stac_object, STACObjectType
 
 
@@ -22,7 +22,7 @@ def remove_bad_collection(js):
             if rel is not None and rel == 'collection':
                 href = link['href']
                 try:
-                    json.loads(STAC_IO.read_text(href))
+                    json.loads(pystac.STAC_IO.read_text(href))
                     filtered_links.append(link)
                 except (HTTPError, FileNotFoundError, json.decoder.JSONDecodeError):
                     print('===REMOVING UNREADABLE COLLECTION AT {}'.format(href))
@@ -33,7 +33,7 @@ def remove_bad_collection(js):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Get examples from the stac-spec repo.')
     parser.add_argument(
         'previous_version',
         metavar='PREVIOUS_VERSION',
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     stac_repo = 'https://github.com/radiantearth/stac-spec'
-    stac_spec_tag = 'v{}'.format(STAC_VERSION)
+    stac_spec_tag = 'v{}'.format(pystac.get_stac_version())
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'examples'))
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         for root, _, _ in os.walk(tmp_dir):
             example_dirs.append(os.path.join(root))
 
-        example_csv_lines = []
+        example_csv_lines = set([])
 
         for example_dir in example_dirs:
             for root, _, files in os.walk(example_dir):
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                             example_version = js.get('stac_version')
                         if example_version is not None and \
                            example_version > args.previous_version:
-                            relpath = '{}/{}'.format(STAC_VERSION,
+                            relpath = '{}/{}'.format(pystac.get_stac_version(),
                                                      path.replace('{}/'.format(tmp_dir), ''))
                             target_path = os.path.join(examples_dir, relpath)
 
@@ -90,14 +90,14 @@ if __name__ == '__main__':
                                 f.write(json.dumps(js, indent=4))
 
                             # Add info to the new example-info.csv lines
-                            example_csv_lines.append([
+                            line_info = [
                                 relpath, info.object_type, example_version,
                                 '|'.join(info.common_extensions), '|'.join(info.custom_extensions)
-                            ])
+                            ]
+                            line = '"{}"'.format('","'.join(line_info))
+                            example_csv_lines.add(line)
 
         # Write the new example-info.csv lines into a temp file for inspection
         with open(os.path.join(examples_dir, 'examples-info-NEW.csv'), 'w') as f:
-            txt = '\n'.join(
-                map(lambda line: '"{}"'.format(line),
-                    map(lambda row: '","'.join(row), example_csv_lines)))
+            txt = '\n'.join(sorted(example_csv_lines))
             f.write(txt)

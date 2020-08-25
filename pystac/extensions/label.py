@@ -65,7 +65,7 @@ class LabelItemExt(ItemExtension):
             label_classes (List[LabelClass]): Optional, but reqiured if ussing categorical data.
                 A list of LabelClasses defining the list of possible class names for each
                 label:properties. (e.g., tree, building, car, hippo)
-            label_tasks (str): Recommended to be a subset of 'regression', 'classification',
+            label_tasks (List[str]): Recommended to be a subset of 'regression', 'classification',
                 'detection', or 'segmentation', but may be an arbitrary value.
             label_methods: Recommended to be a subset of 'automated' or 'manual',
                 but may be an arbitrary value.
@@ -87,7 +87,7 @@ class LabelItemExt(ItemExtension):
         and what it is recommended for.
 
         Returns:
-            [str]
+            str
         """
         return self.item.properties.get('label:description')
 
@@ -101,7 +101,7 @@ class LabelItemExt(ItemExtension):
         of :class:`~pystac.LabelType`).
 
         Returns:
-            [str]
+            str
         """
         return self.item.properties.get('label:type')
 
@@ -123,7 +123,7 @@ class LabelItemExt(ItemExtension):
         If labels are rasters, this should be None.
 
         Returns:
-            [List[str] or None]
+            List[str] or None
         """
         return self.item.properties.get('label:properties')
 
@@ -143,7 +143,7 @@ class LabelItemExt(ItemExtension):
         Optional, but reqiured if using categorical data.
 
         Returns:
-            [List[LabelClasses] or None]
+            List[LabelClasses] or None
         """
         label_classes = self.item.properties.get('label:classes')
         if label_classes is not None:
@@ -168,7 +168,7 @@ class LabelItemExt(ItemExtension):
             'classification', 'detection', or 'segmentation', but may be arbitrary values.
 
         Returns:
-            [List[str] or None]
+            List[str] or None
         """
         return self.item.properties.get('label:tasks')
 
@@ -188,7 +188,7 @@ class LabelItemExt(ItemExtension):
             but may be arbitrary values.
 
         Returns:
-            [List[str] or None]
+            List[str] or None
         """
         return self.item.properties.get('label:methods')
 
@@ -209,7 +209,7 @@ class LabelItemExt(ItemExtension):
         continuous numerical/regression data).
 
         Returns:
-            [List[LabelOverview] or None]
+            List[LabelOverview] or None
         """
         overviews = self.item.properties.get('label:overviews')
         if overviews is not None:
@@ -235,7 +235,7 @@ class LabelItemExt(ItemExtension):
         """Adds a link to a source item.
 
         Args:
-            source_item (Item): Source imagery that the LabelItem applys to.
+            source_item (Item): Source imagery that the LabelItem applies to.
             title (str): Optional title for the link.
             assets (List[str]): Optional list of assets that deterime what
                 assets in the source item this label item data appliees to.
@@ -326,7 +326,7 @@ class LabelClasses:
                 class labels. If labels are raster-formatted, do not supply; required otherwise.
 
         Returns:
-            [LabelClasses]
+            LabelClasses
         """
         c = cls({})
         c.apply(classes, name)
@@ -337,7 +337,7 @@ class LabelClasses:
         """Get or sets the class values.
 
         Returns:
-            [List[str] or List[int] or List[float]]
+            List[str] or List[int] or List[float]
         """
         return self.properties.get('classes')
 
@@ -354,7 +354,7 @@ class LabelClasses:
         class labels. If labels are raster-formatted, do not supply; required otherwise.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('name')
 
@@ -426,7 +426,7 @@ class LabelOverview:
         """Get or sets the property key within the asset corresponding to class labels.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('property_key')
 
@@ -439,7 +439,7 @@ class LabelOverview:
         """Get or sets the list of LabelCounts containing counts for categorical data.
 
         Returns:
-            [List[LabelCount]]
+            List[LabelCount]
         """
         counts = self.properties.get('counts')
         if counts is not None:
@@ -462,7 +462,7 @@ class LabelOverview:
         regression/continuous numeric value data.
 
         Returns:
-            [List[Statistics]]
+            List[Statistics]
         """
         statistics = self.properties.get('statistics')
         if statistics is not None:
@@ -558,7 +558,7 @@ class LabelCount:
         """Get or sets the class that this count represents.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('name')
 
@@ -568,10 +568,10 @@ class LabelCount:
 
     @property
     def count(self):
-        """Get or sets the number of occurences of the class.
+        """Get or sets the number of occurrences of the class.
 
         Returns:
-            [int]
+            int
         """
         return self.properties.get('count')
 
@@ -623,7 +623,7 @@ class LabelStatistics:
         """Get or sets the name of the statistic being reported.
 
         Returns:
-            [str]
+            str
         """
         return self.properties.get('name')
 
@@ -636,7 +636,7 @@ class LabelStatistics:
         """Get or sets the value of the statistic
 
         Returns:
-            [int or float]
+            int or float
         """
         return self.properties.get('value')
 

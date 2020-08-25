@@ -1,12 +1,10 @@
 # flake8: noqa
-from pystac import (Catalog, Collection, ItemCollection, Item, Extensions)
+from pystac import (Catalog, Collection, Item, Extensions, STACObjectType)
 
-from pystac.serialization.identify import (STACObjectType, STACJSONDescription, STACVersionRange,
+from pystac.serialization.identify import (STACJSONDescription, STACVersionRange, STACVersionID,
                                            identify_stac_object, identify_stac_object_type)
-
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
-from pystac.extensions.single_file_stac import SingleFileSTAC
 
 
 def stac_object_from_dict(d, href=None, root=None):
@@ -28,6 +26,7 @@ def stac_object_from_dict(d, href=None, root=None):
         if root is not None:
             collection_cache = root._resolved_objects.as_collection_cache()
 
+        # Merge common properties in case this is an older STAC object.
         merge_common_properties(d, json_href=href, collection_cache=collection_cache)
 
     info = identify_stac_object(d)
@@ -39,12 +38,6 @@ def stac_object_from_dict(d, href=None, root=None):
 
     if info.object_type == STACObjectType.COLLECTION:
         return Collection.from_dict(d, href=href, root=root)
-
-    if info.object_type == STACObjectType.ITEMCOLLECTION:
-        if Extensions.SINGLE_FILE_STAC in info.common_extensions:
-            return SingleFileSTAC.from_dict(d)
-
-        return ItemCollection.from_dict(d)
 
     if info.object_type == STACObjectType.ITEM:
         return Item.from_dict(d, href=href, root=root)

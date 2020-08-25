@@ -1,9 +1,15 @@
 import unittest
+import os
+import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
 
+import pystac
+from pystac.validation import (validate_dict, STACValidationError)
+from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
+from pystac.utils import datetime_to_str
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 
@@ -52,7 +58,7 @@ class CollectionTest(unittest.TestCase):
 
         common_properties = {
             'eo:bands': [b.to_dict() for b in wv3_bands],
-            'eo:gsd': 0.3,
+            'gsd': 0.3,
             'eo:platform': 'Maxar',
             'eo:instrument': 'WorldView3'
         }
@@ -82,4 +88,94 @@ class CollectionTest(unittest.TestCase):
         item = next(cat.get_all_items())
 
         self.assertTrue(item.ext.implements('eo'))
-        self.assertEqual(item.ext.eo.gsd, 20.0)
+
+    def test_multiple_extents(self):
+        cat1 = TestCases.test_case_1()
+        col1 = cat1.get_child('country-1').get_child('area-1-1')
+        col1.validate()
+        self.assertIsInstance(col1, Collection)
+        validate_dict(col1.to_dict(), STACObjectType.COLLECTION)
+
+        multi_ext_uri = TestCases.get_path('data-files/collections/multi-extent.json')
+        with open(multi_ext_uri) as f:
+            multi_ext_dict = json.load(f)
+        validate_dict(multi_ext_dict, STACObjectType.COLLECTION)
+        self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
+
+        multi_ext_col = Collection.from_file(multi_ext_uri)
+        multi_ext_col.validate()
+        ext = multi_ext_col.extent
+        extent_dict = multi_ext_dict['extent']
+        self.assertIsInstance(ext, Extent)
+        self.assertIsInstance(ext.spatial.bboxes[0], list)
+        self.assertEqual(len(ext.spatial.bboxes), 2)
+        self.assertDictEqual(ext.to_dict(), extent_dict)
+
+        cloned_ext = ext.clone()
+        self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict['extent'])
+
+        multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
+        invalid_col = Collection.from_dict(multi_ext_dict)
+        with self.assertRaises(STACValidationError):
+            invalid_col.validate()
+
+    def test_extra_fields(self):
+        catalog = TestCases.test_case_2()
+        collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
+
+        collection.extra_fields['test'] = 'extra'
+
+        with TemporaryDirectory() as tmp_dir:
+            p = os.path.join(tmp_dir, 'collection.json')
+            collection.save_object(include_self_link=False, dest_href=p)
+            with open(p) as f:
+                col_json = json.load(f)
+            self.assertTrue('test' in col_json)
+            self.assertEqual(col_json['test'], 'extra')
+
+            read_col = pystac.read_file(p)
+            self.assertTrue('test' in read_col.extra_fields)
+            self.assertEqual(read_col.extra_fields['test'], 'extra')
+
+    def test_update_extents(self):
+
+        catalog = TestCases.test_case_2()
+        base_collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
+        base_extent = base_collection.extent
+        collection = base_collection.clone()
+
+        item1 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-180, -90, 180, 90],
+                     datetime=datetime.utcnow(),
+                     properties={'key': 'one'},
+                     stac_extensions=['eo', 'commons'])
+
+        item2 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-180, -90, 180, 90],
+                     datetime=None,
+                     properties={
+                         'start_datetime': datetime_to_str(datetime(2000, 1, 1, 12, 0, 0, 0)),
+                         'end_datetime': datetime_to_str(datetime(2000, 2, 1, 12, 0, 0, 0))
+                     },
+                     stac_extensions=['eo', 'commons'])
+
+        collection.add_item(item1)
+
+        collection.update_extent_from_items()
+        self.assertEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        self.assertEqual(len(base_extent.spatial.bboxes[0]),
+                         len(collection.extent.spatial.bboxes[0]))
+
+        self.assertNotEqual(base_extent.temporal.intervals, collection.extent.temporal.intervals)
+        collection.remove_item('test-item-1')
+        collection.update_extent_from_items()
+        self.assertNotEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        collection.add_item(item2)
+
+        collection.update_extent_from_items()
+
+        self.assertEqual(
+            [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
+            collection.extent.temporal.intervals)

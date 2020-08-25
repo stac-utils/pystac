@@ -26,7 +26,7 @@ Writing STACs
 
 While working with STACs in-memory don't require setting file paths, in order to save a STAC,
 you'll need to give each STAC object a ``self`` link that describes the location of where
-it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
+it should be saved to. Luckily, PySTAC makes it easy to create a STAC catalog with a `canonical layout <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#catalog-layout>`_ and with the links that follow the `best practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#use-of-links>`_. You simply call ``normalize_hrefs`` with the root directory of where the STAC will be saved, and then call ``save`` with the type of catalog (described in the :ref:`catalog types` section) that matches your use case.
 
 .. code-block:: python
 
@@ -85,7 +85,7 @@ manually by using ``set_self_href``:
 Catalog Types
 -------------
 
-The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v0.9.0/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
+The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
 
 Note that the catalog types do not dictate the asset HREF formats, only link formats. Asset HREFs in any catalog type can be relative or absolute; see the section on :ref:`rel vs abs asset` below.
 
@@ -220,11 +220,80 @@ If you are only going to read from another source, e.g. HTTP, you could only rep
 
    STAC_IO.read_text_method = my_read_method
 
+Validation
+==========
+
+PySTAC includes validation functionality that allows users to validate PySTAC objects as well JSON-encoded STAC objects from STAC versions `0.8.0` and later.
+
+Enabling validation
+-------------------
+
+To enable the validation feature you'll need to have installed PySTAC with the optional dependency via:
+
+.. code-block:: bash
+
+   > pip install pystac[validation]
+
+This installs the ``jsonschema`` package which is used with the default validator. If you
+define your own validation class as described below, you are not required to have this
+extra dependency.
+
+Validating PySTAC objects
+-------------------------
+
+You can validate any :class:`~pystac.Catalog`, :class:`~pystac.Collection` or :class:`~pystac.Item` by calling the :meth:`~pystac.STACObject.validate` method:
+
+.. code-block:: python
+
+   item.validate()
+
+This will validate against the latest set of JSON schemas hosted at https://schemas.stacspec.org, including any extensions that the object extends. If there are validation errors, a :class:`~pystac.validation.STACValidationError` will be raised.
+
+You can also call :meth:`~pystac.Catalog.validate_all` on a Catalog or Collection to recursively walk through a catalog and validate all objects within it.
+
+.. code-block:: python
+
+   catalog.validate_all()
+
+Validating STAC JSON
+--------------------
+
+You can validate STAC JSON represented as a ``dict`` using the :meth:`pystac.validation.validate_dict` method:
+
+.. code-block:: python
+
+   import json
+   from pystac.validation import validate_dict
+
+   with open('/path/to/item.json') as f:
+       js = json.load(f)
+   validate_dict(js)
+
+You can also recursively validate all of the catalogs, collections and items across STAC versions
+using the :meth:`pystac.validation.validate_all` method:
+
+.. code-block:: python
+
+   import json
+   from pystac.validation import validate_all
+
+   with open('/path/to/catalog.json') as f:
+       js = json.load(f)
+   validate_all(js)
+
+Using your own validator
+------------------------
+
+By default PySTAC uses the :class:`~pystac.validation.JsonSchemaSTACValidator` implementation for validation. Users can define their own implementations of :class:`~pystac.validation.STACValidator` and register it with pystac using :meth:`pystac.validation.set_validator`.
+
+The :class:`~pystac.validation.JsonSchemaSTACValidator` takes a :class:`~pystac.validation.SchemaUriMap`, which by default uses the :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users cn create their own implementation of :class:`~pystac.validation.SchemaUriMap` and register a new instance of :class:`~pystac.validation.JsonSchemaSTACValidator` using that schema map with :meth:`pystac.validation.set_validator`.
+
+
 Extensions
 ==========
 
 Accessing Extension functionality
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 All STAC objects are accessed through ``Catalog``, ``Collection`` and ``Item``, and all extension functionality
 is accessed through the ``ext`` property on those objects. For instance, to access the band information
@@ -277,7 +346,7 @@ If you attempt to retrieve an extension wrapper for an extension that the object
 throw a `pystac.extensions.ExtensionError`.
 
 Enabling an extension
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 You'll need to enable an extension on an object before using it. For example, if you are creating an Item and want to
 apply the label extension, you can do so in two ways.
@@ -305,6 +374,31 @@ or you can call ``ext.enable`` on an Item (which will work for any item, whether
 
    item.ext.enable(pystac.Extensions.LABEL)
 
+Item Asset properties
+=====================
+
+Properties that apply to Items can be found in two places: the Item's properties or in any of an Item's Assets. If the property is on an Asset, it applies only that specific asset. For example, gsd defined for an Item represents the best Ground Sample Distance (resolution) for the data within the Item. However, some assets may be lower resolution and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.
+
+See the STAC documentation on `Additional Fields for Assets <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/item-spec/item-spec.md#additional-fields-for-assets>`_ and the relevant `Best Practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#common-use-cases-of-additional-fields-for-assets>`_ for more information.
+
+The implementation of this feature in PySTAC uses the method described here and is consistent across Item and ItemExtensions. The bare property names represent values for the Item only, but for each property where it is possible to set on both the Item or the Asset there is a ``get_`` and ``set_`` methods that optionally take an Asset. For the ``get_`` methods, if the property is found on the Asset, the Asset's value is used; otherwise the Item's value will be used. For the ``set_`` method, if an Asset is passed in the value will be applied to the Asset and not the Item.
+
+For example, if we have an Item with a ``gsd`` of 10 with three bands, and only asset "band3" having a ``gsd`` of 20, the ``get_gsd`` method will behave in the following way:
+
+  .. code-block:: python
+
+     assert item.common_metadata.gsd == 10
+     assert item.common_metadata.get_gsd() == 10
+     assert item.common_metadata.get_gsd(item.asset['band1']) == 10
+     assert item.common_metadata.get_gsd(item.asset['band3']) == 20
+
+Similarly, if we set the asset at 'band2' to have a ``gsd`` of 30, it will only affect that asset:
+
+  .. code-block:: python
+
+     item.common_metadata.set_gsd(30, item.assets['band2']
+     assert item.common_metadata.gsd == 10
+     assert item.common_metadata.get_gsd(item.asset['band2']) == 30
 
 Manipulating STACs
 ==================
@@ -419,7 +513,7 @@ and any custom extensions (represented by URIs to JSON Schemas).
 
    json_dict = ...
 
-   info = identify_stac_object(json_dict, merge_collection_properties=True)
+   info = identify_stac_object(json_dict)
 
    # The object type
    info.object_type
@@ -436,7 +530,7 @@ and any custom extensions (represented by URIs to JSON Schemas).
 Merging common properties
 -------------------------
 
-The :func:`~pystac.serialization.merge_common_properties` will take a JSON dict that represents
-an item, and if it is associated with a collection, merge in the collection's properties.
-You can pass in a dict that contains previously read collections that caches collections by the HREF of the collection link and/or the collection ID, which can help avoid multiple reads of
+For pre-1.0.0 STAC, The :func:`~pystac.serialization.merge_common_properties` will take a JSON dict that represents an item, and if it is associated with a collection, merge in the collection's properties. You can pass in a dict that contains previously read collections that caches collections by the HREF of the collection link and/or the collection ID, which can help avoid multiple reads of
 collection links.
+
+Note that this feature was dropped in STAC 1.0.0-beta.1

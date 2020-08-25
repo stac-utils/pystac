@@ -1,7 +1,8 @@
 ## PySTAC
-![Build Status](https://github.com/azavea/pystac/workflows/CI/badge.svg?branch=develop)
+![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
+[![codecov](https://codecov.io/gh/stac-utils/pystac/branch/develop/graph/badge.svg)](https://codecov.io/gh/stac-utils/pystac)
 [![Gitter chat](https://badges.gitter.im/azavea/pystac.svg)](https://gitter.im/azavea/pystac)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -14,6 +15,13 @@ PySTAC can be installed from pip or the source repository.
 
 ```bash
 > pip install pystac
+```
+
+if you'd like to enable the validation feature utilizing the [jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional `validation` requirements:
+
+
+```bash
+> pip install pystac[validation]
 ```
 
 From source repository:
@@ -29,13 +37,14 @@ From source repository:
 To install a specific versions of STAC, install the matching version of pystac.
 
 ```bash
-> pip install pystac==0.4.*
+> pip install pystac==0.5.*
 ```
 
 The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
 | ------ | ----- |
+| 0.5.x  | 1.0.x |
 | 0.4.x  | 0.9.x |
 | 0.3.x  | 0.8.x |
 

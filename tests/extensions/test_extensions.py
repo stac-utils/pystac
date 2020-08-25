@@ -3,7 +3,8 @@ import unittest
 import pystac
 from pystac import (Catalog, Collection, Item)
 from pystac.extensions.base import (CatalogExtension, CollectionExtension, ItemExtension,
-                                    ExtensionDefinition, ExtendedObject)
+                                    ExtensionDefinition, ExtendedObject, ExtensionError)
+from pystac.stac_object import ExtensionIndex
 
 from tests.utils import TestCases
 
@@ -73,7 +74,6 @@ class ExtensionsTest(unittest.TestCase):
         try:
             cat = TestCases.test_case_2()
             col = cat.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
-            print(type(col))
             item = next(cat.get_all_items())
 
             cat.ext.enable("test")
@@ -89,3 +89,12 @@ class ExtensionsTest(unittest.TestCase):
 
         self.assertFalse(pystac.STAC_EXTENSIONS.is_registered_extension("test"))
         self.assertEqual(pystac.STAC_EXTENSIONS.get_registered_extensions(), prev_extensions)
+
+    def test_getattribute_overload(self):
+        catalog = Catalog(id='test', description='test')
+        self.assertEqual(ExtensionIndex.__name__, 'ExtensionIndex')
+        self.assertRaises(ExtensionError, catalog.ext.__getattr__, 'foo')
+        self.assertRaises(ExtensionError, catalog.ext.__getattr__, 'eo')
+        catalog.ext.enable('single-file-stac')
+        self.assertTrue(catalog.ext.__getattr__('single-file-stac'),
+                        pystac.extensions.single_file_stac.SingleFileSTACCatalogExt)

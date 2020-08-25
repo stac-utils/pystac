@@ -1,11 +1,14 @@
 import os
+import json
 import unittest
 from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
+import pystac
 from pystac import (Catalog, Collection, CatalogType, LinkType, Item, Asset, MediaType, Extensions)
 from pystac.extensions.label import LabelClasses
+from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
@@ -390,7 +393,6 @@ class CatalogTest(unittest.TestCase):
             for root, catalogs, items in cat.walk():
                 for link in root.links:
                     if link.rel != 'self':
-                        # print(l.rel)
                         self.assertTrue(link.link_type == LinkType.RELATIVE)
                         self.assertFalse(is_absolute_href(link.get_href()))
                 for item in items:
@@ -419,6 +421,44 @@ class CatalogTest(unittest.TestCase):
                 check_all_relative(c2)
                 c2.make_all_links_absolute()
                 check_all_absolute(c2)
+
+    def test_extra_fields(self):
+        catalog = TestCases.test_case_1()
+
+        catalog.extra_fields['type'] = 'FeatureCollection'
+
+        with TemporaryDirectory() as tmp_dir:
+            p = os.path.join(tmp_dir, 'catalog.json')
+            catalog.save_object(include_self_link=False, dest_href=p)
+            with open(p) as f:
+                cat_json = json.load(f)
+            self.assertTrue('type' in cat_json)
+            self.assertEqual(cat_json['type'], 'FeatureCollection')
+
+            read_cat = pystac.read_file(p)
+            self.assertTrue('type' in read_cat.extra_fields)
+            self.assertEqual(read_cat.extra_fields['type'], 'FeatureCollection')
+
+    def test_validate_all(self):
+        for cat in TestCases.all_test_catalogs():
+            with self.subTest(cat.id):
+                # If hrefs are not set, it will fail validation.
+                if cat.get_self_href() is None:
+                    cat.normalize_hrefs('/tmp')
+                cat.validate_all()
+
+        # Make one invalid, write it off, read it in, ensure it throws
+        cat = TestCases.test_case_1()
+        item = cat.get_item('area-1-1-labels', recursive=True)
+        item.geometry = {'type': 'INVALID', 'coordinates': 'NONE'}
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_hrefs(tmp_dir)
+            cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+
+            cat2 = pystac.read_file(os.path.join(tmp_dir, 'catalog.json'))
+
+            with self.assertRaises(STACValidationError):
+                cat2.validate_all()
 
     def test_set_hrefs_manually(self):
         catalog = TestCases.test_case_1()
@@ -510,6 +550,10 @@ class CatalogTest(unittest.TestCase):
             for item in cat2.get_all_items():
                 # Iterate again over the items. This would fail in #88
                 pass
+
+    def test_get_children_cbers(self):
+        cat = TestCases.test_case_6()
+        self.assertEqual(len(list(cat.get_children())), 4)
 
 
 class FullCopyTest(unittest.TestCase):
