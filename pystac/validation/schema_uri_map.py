@@ -102,12 +102,10 @@ class DefaultSchemaUriMap(SchemaUriMap):
             }, [(STACVersionRange(min_version='0.8.1-rc1', max_version='0.8.1'), {
                 STACObjectType.ITEM: 'extensions/label/schema.json'
             })]),
-            Extensions.POINTCLOUD: (
-                # Schema is invalid JSON, fixed past 1.0.0-beta.2
-                {
-                    STACObjectType.ITEM: None  # 'extensions/pointcloud/json-schema/schema.json'
-                },
-                None),
+            Extensions.POINTCLOUD: ({
+                STACObjectType.ITEM:
+                'extensions/pointcloud/json-schema/schema.json'
+            }, None),
             Extensions.PROJECTION: ({
                 STACObjectType.ITEM:
                 'extensions/projection/json-schema/schema.json'
