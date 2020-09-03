@@ -289,51 +289,6 @@ class PointcloudItemExt(ItemExtension):
         else:
             asset.properties['pc:statistics'] = statistics
 
-    @property
-    def epsg(self):
-        """Get or sets the EPSG code of the datasource.
-
-        A Coordinate Reference System (CRS) is the data reference system (sometimes called a
-        'projection') used by the asset data, and can usually be referenced using an
-        `EPSG code <http://epsg.io/>`_.
-        If the asset data does not have a CRS, such as in the case of non-rectified imagery with
-        Ground Control Points, epsg should be set to None.
-        It should also be set to null if a CRS exists, but for which there is no valid EPSG code.
-
-        Returns:
-            str
-        """
-        return self.get_epsg()
-
-    @epsg.setter
-    def epsg(self, v):
-        self.set_epsg(v)
-
-    def get_epsg(self, asset=None):
-        """Gets an Item or an Asset epsg.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            str
-        """
-        if asset is None or 'pc:epsg' not in asset.properties:
-            return self.item.properties.get('pc:epsg')
-        else:
-            return asset.properties.get('pc:epsg')
-
-    def set_epsg(self, epsg, asset=None):
-        """Set an Item or an Asset epsg.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        if asset is None:
-            self.item.properties['pc:epsg'] = epsg
-        else:
-            asset.properties['pc:epsg'] = epsg
-
     @classmethod
     def _object_links(cls):
         return []
