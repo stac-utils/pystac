@@ -25,11 +25,12 @@ class PointcloudTest(unittest.TestCase):
             item.ext.pointcloud
 
         item.ext.enable(Extensions.POINTCLOUD)
-        item.ext.pointcloud.apply(1000, 'lidar', 'laszip', [PointcloudSchema({
-            'name': 'X',
-            'size': 8,
-            'type': 'floating'
-        })])
+        item.ext.pointcloud.apply(1000, 'lidar', 'laszip',
+                                  [PointcloudSchema({
+                                      'name': 'X',
+                                      'size': 8,
+                                      'type': 'floating'
+                                  })])
 
     def test_validate_pointcloud(self):
         item = pystac.read_file(self.example_uri)
@@ -112,16 +113,18 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(pc_statistics, pc_item.properties['pc:statistics'])
 
         # Set
-        stats = [PointcloudStatistic({
-            "average": 1,
-            "count": 1,
-            "maximum": 1,
-            "minimum": 1,
-            "name": "Test",
-            "position": 1,
-            "stddev": 1,
-            "variance": 1
-        })]
+        stats = [
+            PointcloudStatistic({
+                "average": 1,
+                "count": 1,
+                "maximum": 1,
+                "minimum": 1,
+                "name": "Test",
+                "position": 1,
+                "stddev": 1,
+                "variance": 1
+            })
+        ]
         pc_item.ext.pointcloud.statistics = stats
         self.assertEqual([s.to_dict() for s in stats], pc_item.properties['pc:statistics'])
 
