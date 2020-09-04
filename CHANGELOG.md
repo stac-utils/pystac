@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.5.3]
+
+### Added
+
+- Added support for the pointcloud extension ([#176](https://github.com/stac-utils/pystac/pull/176))
+
 ## [v0.5.2]
 
 Thank you to all the new contributors that contributed during STAC Sprint 6!
