@@ -1,7 +1,7 @@
 from datetime import datetime
 import dateutil.parser
+from dateutil import tz
 from copy import (copy, deepcopy)
-
 from pystac import (STACError, STACObjectType)
 from pystac.catalog import Catalog
 from pystac.link import Link
@@ -201,6 +201,37 @@ class Collection(Catalog):
             collection.add_link(Link.self_href(href))
 
         return collection
+
+    def update_extent_from_items(self):
+        """
+        Update datetime and bbox based on all items to a single bbox and time window.
+        """
+        def extract_extent_props(item):
+            return item.bbox + [
+                item.datetime, item.common_metadata.start_datetime,
+                item.common_metadata.end_datetime
+            ]
+
+        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(
+            *map(extract_extent_props, self.get_all_items()))
+
+        if not any(datetimes + starts):
+            start_timestamp = None
+        else:
+            start_timestamp = min([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + starts)
+            ])
+        if not any(datetimes + ends):
+            end_timestamp = None
+        else:
+            end_timestamp = max([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + ends)
+            ])
+
+        self.extent.spatial.bboxes = [[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]]
+        self.extent.temporal.intervals = [[start_timestamp, end_timestamp]]
 
 
 class Extent:

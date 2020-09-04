@@ -505,6 +505,22 @@ class Catalog(STACObject):
         for child in self.get_children():
             yield from child.walk()
 
+    def validate_all(self):
+        """Validates each catalog, collection contained within this catalog.
+
+        Walks through the children and items of the catalog and validates each
+        stac object.
+
+        Raises:
+            STACValidationError: Raises this error on any item that is invalid.
+                Will raise on the first invalid stac object encountered.
+        """
+        self.validate()
+        for child in self.get_children():
+            child.validate_all()
+        for item in self.get_items():
+            item.validate()
+
     def _object_links(self):
         return ['child', 'item'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
 
