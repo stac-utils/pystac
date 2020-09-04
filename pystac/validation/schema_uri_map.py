@@ -104,7 +104,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
             })]),
             Extensions.POINTCLOUD: (
                 {
-                    STACObjectType.ITEM: None  # Schema is invalid JSON, fixed past 1.0.0-beta.2
+                    STACObjectType.ITEM: None  # 'extensions/pointcloud/json-schema/schema.json'
                 },
                 None),
             Extensions.PROJECTION: ({
