@@ -5,6 +5,7 @@ import unittest
 import pystac
 from pystac import (Item, Extensions)
 from pystac.extensions import ExtensionError
+from pystac.extensions.pointcloud import PointcloudSchema, PointcloudStatistic
 from tests.utils import (TestCases, test_to_from_dict)
 
 
@@ -24,11 +25,11 @@ class PointcloudTest(unittest.TestCase):
             item.ext.pointcloud
 
         item.ext.enable(Extensions.POINTCLOUD)
-        item.ext.pointcloud.apply(1000, 'lidar', 'laszip', {
+        item.ext.pointcloud.apply(1000, 'lidar', 'laszip', [PointcloudSchema({
             'name': 'X',
             'size': 8,
             'type': 'floating'
-        })
+        })])
 
     def test_validate_pointcloud(self):
         item = pystac.read_file(self.example_uri)
@@ -49,8 +50,9 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate
 
-        # Cannot text validation errors until the pointcloud schema.json syntax is fixed
+        # Cannot test validation errors until the pointcloud schema.json syntax is fixed
         # Ensure setting bad count fails validation
+
         # with self.assertRaises(STACValidationError):
         #    pc_item.ext.pointcloud.count = 'not_an_int'
         #    pc_item.validate()
@@ -90,13 +92,92 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:schemas", pc_item.properties)
-        pc_schemas = pc_item.ext.pointcloud.schemas
+        pc_schemas = [s.to_dict() for s in pc_item.ext.pointcloud.schemas]
         self.assertEqual(pc_schemas, pc_item.properties['pc:schemas'])
 
         # Set
-        schema = [{'name': 'X', 'size': 8, 'type': 'floating'}]
+        schema = [PointcloudSchema({'name': 'X', 'size': 8, 'type': 'floating'})]
         pc_item.ext.pointcloud.schemas = schema
-        self.assertEqual(schema, pc_item.properties['pc:schemas'])
+        self.assertEqual([s.to_dict() for s in schema], pc_item.properties['pc:schemas'])
 
         # Validate
         pc_item.validate
+
+    def test_statistics(self):
+        pc_item = pystac.read_file(self.example_uri)
+
+        # Get
+        self.assertIn("pc:statistics", pc_item.properties)
+        pc_statistics = [s.to_dict() for s in pc_item.ext.pointcloud.statistics]
+        self.assertEqual(pc_statistics, pc_item.properties['pc:statistics'])
+
+        # Set
+        stats = [PointcloudStatistic({
+            "average": 1,
+            "count": 1,
+            "maximum": 1,
+            "minimum": 1,
+            "name": "Test",
+            "position": 1,
+            "stddev": 1,
+            "variance": 1
+        })]
+        pc_item.ext.pointcloud.statistics = stats
+        self.assertEqual([s.to_dict() for s in stats], pc_item.properties['pc:statistics'])
+
+        # Validate
+        pc_item.validate
+
+    def test_density(self):
+        pc_item = pystac.read_file(self.example_uri)
+        # Get
+        self.assertIn("pc:density", pc_item.properties)
+        pc_density = pc_item.ext.pointcloud.density
+        self.assertEqual(pc_density, pc_item.properties['pc:density'])
+        # Set
+        density = 100
+        pc_item.ext.pointcloud.density = density
+        self.assertEqual(density, pc_item.properties['pc:density'])
+        # Validate
+        pc_item.validate
+
+    def test_pointcloud_schema(self):
+        props = {
+            "name": "test",
+            "size": 8,
+            "type": "floating",
+        }
+        schema = PointcloudSchema(props)
+        self.assertEqual(props, schema.properties)
+
+        # test all getters and setters
+        for k in props:
+            if isinstance(props[k], str):
+                val = props[k] + str(1)
+            else:
+                val = props[k] + 1
+            setattr(schema, k, val)
+            self.assertEqual(getattr(schema, k), val)
+
+    def test_pointcloud_statistics(self):
+        props = {
+            "average": 1,
+            "count": 1,
+            "maximum": 1,
+            "minimum": 1,
+            "name": "Test",
+            "position": 1,
+            "stddev": 1,
+            "variance": 1
+        }
+        stat = PointcloudStatistic(props)
+        self.assertEqual(props, stat.properties)
+
+        # test all getters and setters
+        for k in props:
+            if isinstance(props[k], str):
+                val = props[k] + str(1)
+            else:
+                val = props[k] + 1
+            setattr(stat, k, val)
+            self.assertEqual(getattr(stat, k), val)
