@@ -135,7 +135,7 @@ class JsonSchemaSTACValidator(STACValidator):
             s += 'with ID {} '.format(stac_id)
         s += 'against schema at {}'.format(schema_uri)
         if extension_id is not None:
-            s += "for STAC extension '{}'".format(extension_id)
+            s += " for STAC extension '{}'".format(extension_id)
 
         return s
 
