@@ -15,8 +15,7 @@ def MakeItem(year):
     bbox = [-160.26, 18.85, -154.66, 22.29]
     start = datetime.datetime(year, 1, 2)
 
-    item = pystac.Item(
-        id=asset_id, geometry=None, bbox=bbox, datetime=start, properties={})
+    item = pystac.Item(id=asset_id, geometry=None, bbox=bbox, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
     item.ext.enable(pystac.Extensions.VERSION)

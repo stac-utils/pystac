@@ -19,12 +19,10 @@ MEDIA_TYPE = 'application/json'
 
 class VersionItemExt(base.ItemExtension):
     """Add an asset version string to a STAC Item."""
-
     def __init__(self, an_item):
         self.item = an_item
 
-    def apply(self, version,
-              deprecated=None, latest=None, predecessor=None, successor=None):
+    def apply(self, version, deprecated=None, latest=None, predecessor=None, successor=None):
         self.version = version
         if deprecated is not None:
             self.deprecated = deprecated
