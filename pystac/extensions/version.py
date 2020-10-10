@@ -21,7 +21,7 @@ class VersionItemExt(base.ItemExtension):
     """Add an asset version string to a STAC Item."""
 
     def __init__(self, an_item):
-      self.item = an_item
+        self.item = an_item
 
     def apply(self, version,
               deprecated=None, latest=None, predecessor=None, successor=None):
