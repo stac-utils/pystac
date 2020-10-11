@@ -12,10 +12,9 @@ URL_TEMPLATE = 'http://example.com/catalog/%s.json'
 def MakeItem(year):
     """Create basic test items that are only slightly different."""
     asset_id = f'USGS/GAP/CONUS/{year}'
-    bbox = [-160.26, 18.85, -154.66, 22.29]
     start = datetime.datetime(year, 1, 2)
 
-    item = pystac.Item(id=asset_id, geometry=None, bbox=bbox, datetime=start, properties={})
+    item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
     item.ext.enable(pystac.Extensions.VERSION)
@@ -32,8 +31,14 @@ class VersionTest(unittest.TestCase):
 
         self.item.ext.enable(pystac.Extensions.VERSION)
 
+    def tearDown(self):
+        super().tearDown()
+        self.item.validate()
+
     def testStacExtensions(self):
         self.assertEqual([pystac.Extensions.VERSION], self.item.stac_extensions)
+        # Make sure the item is valid for tearDown check.
+        self.item.ext.version.apply(self.version)
 
     def testVersionInProperties(self):
         self.item.ext.version.apply(self.version, deprecated=True)
@@ -85,6 +90,14 @@ class VersionTest(unittest.TestCase):
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, successor_link.get_href())
+
+    def testAllLinks(self):
+        deprecated = True
+        latest = MakeItem(2013)
+        predecessor = MakeItem(2010)
+        successor = MakeItem(2012)
+        self.item.ext.version.apply(self.version, deprecated, latest, predecessor, successor)
+        # Just validate in tearDown.
 
 
 if __name__ == '__main__':
