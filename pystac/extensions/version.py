@@ -4,6 +4,7 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
 """
 
 import pystac
+from pystac import collection
 from pystac import Extensions
 from pystac import item
 from pystac import link
@@ -90,7 +91,80 @@ class VersionItemExt(base.ItemExtension):
         return []  # TODO(schwehr): What should this return?
 
 
-# TODO(schwehr): class VersionCollectionExt(base.CollectionExtension):
+class VersionCollectionExt(base.CollectionExtension):
+    """Add an asset version string to a STAC Collection."""
+    def __init__(self, a_collection):
+        self.collection = a_collection
 
-VERSION_EXTENSION_DEFINITION = base.ExtensionDefinition(
-    Extensions.VERSION, [base.ExtendedObject(item.Item, VersionItemExt)])
+    @property
+    def version(self):
+        return self.collection.extra_fields.get('version')
+
+    @version.setter
+    def version(self, v):
+        self.collection.extra_fields['version'] = v
+
+    @property
+    def deprecated(self):
+        return bool(self.collection.extra_fields.get('deprecated'))
+
+    @deprecated.setter
+    def deprecated(self, v):
+        if not isinstance(v, bool):
+            raise pystac.STACError('deprecated must be a bool')
+        self.collection.extra_fields['deprecated'] = v
+
+    @property
+    def latest_link(self):
+        links = self.collection.get_links(LATEST_VERSION)
+        if links:
+            return links[0]
+
+    @latest_link.setter
+    def latest_link(self, source_collection):
+        self.collection.add_link(link.Link(LATEST_VERSION, source_collection, MEDIA_TYPE))
+
+    @property
+    def predecessor_link(self):
+        links = self.collection.get_links(PREDECESSOR_VERSION)
+        if links:
+            return links[0]
+
+    @predecessor_link.setter
+    def predecessor_link(self, source_collection):
+        self.collection.add_link(link.Link(PREDECESSOR_VERSION, source_collection, MEDIA_TYPE))
+
+    @property
+    def successor_link(self):
+        links = self.collection.get_links(SUCCESSOR_VERSION)
+        if links:
+            return links[0]
+
+    @successor_link.setter
+    def successor_link(self, source_collection):
+        self.collection.add_link(link.Link(SUCCESSOR_VERSION, source_collection, MEDIA_TYPE))
+
+    @classmethod
+    def from_collection(cls, a_collection):
+        return cls(a_collection)
+
+    @classmethod
+    def _object_links(cls):
+        return []  # TODO(schwehr): What should this return?
+
+    def apply(self, version, deprecated=None, latest=None, predecessor=None, successor=None):
+        self.version = version
+        if deprecated is not None:
+            self.deprecated = deprecated
+        if latest:
+            self.latest_link = latest
+        if predecessor:
+            self.predecessor_link = predecessor
+        if successor:
+            self.successor_link = successor
+
+
+VERSION_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.VERSION, [
+    base.ExtendedObject(item.Item, VersionItemExt),
+    base.ExtendedObject(collection.Collection, VersionCollectionExt)
+])
