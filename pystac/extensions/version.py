@@ -88,7 +88,7 @@ class VersionItemExt(base.ItemExtension):
 
     @classmethod
     def _object_links(cls):
-        return []  # TODO(schwehr): What should this return?
+        return [LATEST_VERSION, PREDECESSOR_VERSION, SUCCESSOR_VERSION]
 
 
 class VersionCollectionExt(base.CollectionExtension):
@@ -150,7 +150,7 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @classmethod
     def _object_links(cls):
-        return []  # TODO(schwehr): What should this return?
+        return [LATEST_VERSION, PREDECESSOR_VERSION, SUCCESSOR_VERSION]
 
     def apply(self, version, deprecated=None, latest=None, predecessor=None, successor=None):
         self.version = version
