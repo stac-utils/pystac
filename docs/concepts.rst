@@ -499,7 +499,7 @@ JSON objects, without utilizing PySTAC object types. This is used internally by 
 
 
 Identifying STAC objects from JSON
----------------------------------
+----------------------------------
 
 Users can identify STAC information, including the object type, version and extensions,
 from JSON. The main method for this is :func:`~pystac.serialization.identify_stac_object`,
