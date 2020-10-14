@@ -34,6 +34,7 @@ import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
+import pystac.extensions.scientific
 import pystac.extensions.single_file_stac
 import pystac.extensions.timestamps
 import pystac.extensions.version
