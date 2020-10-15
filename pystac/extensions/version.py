@@ -10,9 +10,9 @@ from pystac import item
 from pystac import link
 from pystac.extensions import base
 
-LATEST_VERSION = 'latest-version'
-PREDECESSOR_VERSION = 'predecessor-version'
-SUCCESSOR_VERSION = 'successor-version'
+LATEST = 'latest-version'
+PREDECESSOR = 'predecessor-version'
+SUCCESSOR = 'successor-version'
 
 # Media type for links.
 MEDIA_TYPE = 'application/json'
@@ -54,33 +54,33 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def latest(self):
-        links = self.item.get_links(LATEST_VERSION)
+        links = self.item.get_links(LATEST)
         if links:
             return links[0]
 
     @latest.setter
     def latest(self, source_item):
-        self.item.add_link(link.Link(LATEST_VERSION, source_item, MEDIA_TYPE))
+        self.item.add_link(link.Link(LATEST, source_item, MEDIA_TYPE))
 
     @property
     def predecessor(self):
-        links = self.item.get_links(PREDECESSOR_VERSION)
+        links = self.item.get_links(PREDECESSOR)
         if links:
             return links[0]
 
     @predecessor.setter
     def predecessor(self, source_item):
-        self.item.add_link(link.Link(PREDECESSOR_VERSION, source_item, MEDIA_TYPE))
+        self.item.add_link(link.Link(PREDECESSOR, source_item, MEDIA_TYPE))
 
     @property
     def successor(self):
-        links = self.item.get_links(SUCCESSOR_VERSION)
+        links = self.item.get_links(SUCCESSOR)
         if links:
             return links[0]
 
     @successor.setter
     def successor(self, source_item):
-        self.item.add_link(link.Link(SUCCESSOR_VERSION, source_item, MEDIA_TYPE))
+        self.item.add_link(link.Link(SUCCESSOR, source_item, MEDIA_TYPE))
 
     @classmethod
     def from_item(cls, an_item):
@@ -88,7 +88,7 @@ class VersionItemExt(base.ItemExtension):
 
     @classmethod
     def _object_links(cls):
-        return [LATEST_VERSION, PREDECESSOR_VERSION, SUCCESSOR_VERSION]
+        return [LATEST, PREDECESSOR, SUCCESSOR]
 
 
 class VersionCollectionExt(base.CollectionExtension):
@@ -116,33 +116,33 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def latest(self):
-        links = self.collection.get_links(LATEST_VERSION)
+        links = self.collection.get_links(LATEST)
         if links:
             return links[0]
 
     @latest.setter
     def latest(self, source_collection):
-        self.collection.add_link(link.Link(LATEST_VERSION, source_collection, MEDIA_TYPE))
+        self.collection.add_link(link.Link(LATEST, source_collection, MEDIA_TYPE))
 
     @property
     def predecessor(self):
-        links = self.collection.get_links(PREDECESSOR_VERSION)
+        links = self.collection.get_links(PREDECESSOR)
         if links:
             return links[0]
 
     @predecessor.setter
     def predecessor(self, source_collection):
-        self.collection.add_link(link.Link(PREDECESSOR_VERSION, source_collection, MEDIA_TYPE))
+        self.collection.add_link(link.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
 
     @property
     def successor(self):
-        links = self.collection.get_links(SUCCESSOR_VERSION)
+        links = self.collection.get_links(SUCCESSOR)
         if links:
             return links[0]
 
     @successor.setter
     def successor(self, source_collection):
-        self.collection.add_link(link.Link(SUCCESSOR_VERSION, source_collection, MEDIA_TYPE))
+        self.collection.add_link(link.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
 
     @classmethod
     def from_collection(cls, a_collection):
@@ -150,7 +150,7 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @classmethod
     def _object_links(cls):
-        return [LATEST_VERSION, PREDECESSOR_VERSION, SUCCESSOR_VERSION]
+        return [LATEST, PREDECESSOR, SUCCESSOR]
 
     def apply(self, version, deprecated=None, latest=None, predecessor=None, successor=None):
         self.version = version

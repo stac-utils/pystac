@@ -65,7 +65,7 @@ class VersionItemExtTest(unittest.TestCase):
         latest = make_item(year)
         self.item.ext.version.apply(self.version, latest=latest)
         latest = self.item.ext.version.latest
-        self.assertEqual(version.LATEST_VERSION, latest.rel)
+        self.assertEqual(version.LATEST, latest.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, latest.get_href())
@@ -76,7 +76,7 @@ class VersionItemExtTest(unittest.TestCase):
         predecessor = make_item(year)
         self.item.ext.version.apply(self.version, predecessor=predecessor)
         predecessor = self.item.ext.version.predecessor
-        self.assertEqual(version.PREDECESSOR_VERSION, predecessor.rel)
+        self.assertEqual(version.PREDECESSOR, predecessor.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, predecessor.get_href())
@@ -87,7 +87,7 @@ class VersionItemExtTest(unittest.TestCase):
         successor = make_item(year)
         self.item.ext.version.apply(self.version, successor=successor)
         successor = self.item.ext.version.successor
-        self.assertEqual(version.SUCCESSOR_VERSION, successor.rel)
+        self.assertEqual(version.SUCCESSOR, successor.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, successor.get_href())
@@ -130,9 +130,9 @@ class VersionItemExtTest(unittest.TestCase):
         # Check to see if the version links point to the instances of the
         # item objects as they should.
 
-        predecessor = item1_copy.get_single_link(version.PREDECESSOR_VERSION).target
-        successor = item2_copy.get_single_link(version.SUCCESSOR_VERSION).target
-        latest = item2_copy.get_single_link(version.LATEST_VERSION).target
+        predecessor = item1_copy.get_single_link(version.PREDECESSOR).target
+        successor = item2_copy.get_single_link(version.SUCCESSOR).target
+        latest = item2_copy.get_single_link(version.LATEST).target
 
         self.assertIs(predecessor, item2_copy)
         self.assertIs(successor, item1_copy)
@@ -196,7 +196,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         latest = make_collection(year)
         self.collection.ext.version.apply(self.version, latest=latest)
         latest = self.collection.ext.version.latest
-        self.assertEqual(version.LATEST_VERSION, latest.rel)
+        self.assertEqual(version.LATEST, latest.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, latest.get_href())
@@ -207,7 +207,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         predecessor = make_collection(year)
         self.collection.ext.version.apply(self.version, predecessor=predecessor)
         predecessor = self.collection.ext.version.predecessor
-        self.assertEqual(version.PREDECESSOR_VERSION, predecessor.rel)
+        self.assertEqual(version.PREDECESSOR, predecessor.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, predecessor.get_href())
@@ -218,7 +218,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         successor = make_collection(year)
         self.collection.ext.version.apply(self.version, successor=successor)
         successor = self.collection.ext.version.successor
-        self.assertEqual(version.SUCCESSOR_VERSION, successor.rel)
+        self.assertEqual(version.SUCCESSOR, successor.rel)
 
         expected_href = URL_TEMPLATE % year
         self.assertEqual(expected_href, successor.get_href())
@@ -261,9 +261,9 @@ class VersionCollectionExtTest(unittest.TestCase):
         # Check to see if the version links point to the instances of the
         # col objects as they should.
 
-        predecessor = col1_copy.get_single_link(version.PREDECESSOR_VERSION).target
-        successor = col2_copy.get_single_link(version.SUCCESSOR_VERSION).target
-        latest = col2_copy.get_single_link(version.LATEST_VERSION).target
+        predecessor = col1_copy.get_single_link(version.PREDECESSOR).target
+        successor = col2_copy.get_single_link(version.SUCCESSOR).target
+        latest = col2_copy.get_single_link(version.LATEST).target
 
         self.assertIs(predecessor, col2_copy)
         self.assertIs(successor, col1_copy)
