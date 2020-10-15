@@ -15,7 +15,7 @@ class STACValidator(ABC):
     """STACValidator defines methods for validating STAC
     JSON. Implementations define methods for validating core objects and extension.
     By default the JsonSchemaSTACValidator is used by PySTAC; users can define their own
-    STACValidator implemetnation and set that validator to be used by
+    STACValidator implementation and set that validator to be used by
     pystac by using the :func:`~pystac.validation.set_validator` method.
     """
     @abstractmethod
@@ -90,7 +90,7 @@ class JsonSchemaSTACValidator(STACValidator):
     Args:
         schema_uri_map (SchemaUriMap): The SchemaUriMap that defines where
             the validator will retrieve the JSON schemas for validation.
-            Defautls to an instance of
+            Defaults to an instance of
             :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`
 
     Note:

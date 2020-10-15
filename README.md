@@ -110,7 +110,7 @@ __Note__: `nbsphinx` requires that a local `pystac` is installed; use `pip insta
 
 
 
-## Runing the quickstart and tutorials
+## Running the quickstart and tutorials
 
 There is a quickstart and tutorials written as jupyter notebooks in the `docs/tutorials` folder.
 To run the notebooks, run a jupyter notebook with the `docs` directory as the notebook directory:
