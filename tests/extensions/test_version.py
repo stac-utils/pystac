@@ -1,6 +1,7 @@
 """Tests for pystac.extensions.version."""
 
 import datetime
+from tests.utils import TestCases
 import unittest
 
 import pystac
@@ -104,6 +105,39 @@ class VersionItemExtTest(unittest.TestCase):
         self.item.ext.version.apply(self.version, deprecated, latest, predecessor, successor)
         self.item.validate()
 
+    def test_full_copy(self):
+        cat = TestCases.test_case_1()
+
+        # Fetch two items from the catalog
+        item1 = cat.get_item('area-1-1-imagery', recursive=True)
+        item2 = cat.get_item('area-2-2-imagery', recursive=True)
+
+        # Enable the version extension on each, and link them
+        # as if they are different versions of the same Item
+        item1.ext.enable(pystac.Extensions.VERSION)
+        item2.ext.enable(pystac.Extensions.VERSION)
+
+        item1.ext.version.apply(version='2.0', predecessor=item2)
+        item2.ext.version.apply(version='1.0', successor=item1, latest=item1)
+
+        # Make a full copy of the catalog
+        cat_copy = cat.full_copy()
+
+        # Retrieve the copied version of the items
+        item1_copy = cat_copy.get_item('area-1-1-imagery', recursive=True)
+        item2_copy = cat_copy.get_item('area-2-2-imagery', recursive=True)
+
+        # Check to see if the version links point to the instances of the
+        # item objects as they should.
+
+        predecessor = item1_copy.get_single_link(version.PREDECESSOR_VERSION).target
+        successor = item2_copy.get_single_link(version.SUCCESSOR_VERSION).target
+        latest = item2_copy.get_single_link(version.LATEST_VERSION).target
+
+        self.assertIs(predecessor, item2_copy)
+        self.assertIs(successor, item1_copy)
+        self.assertIs(latest, item1_copy)
+
 
 def make_collection(year):
     asset_id = 'my/collection/of/things'
@@ -201,6 +235,39 @@ class VersionCollectionExtTest(unittest.TestCase):
         successor = make_collection(2012)
         self.collection.ext.version.apply(self.version, deprecated, latest, predecessor, successor)
         self.collection.validate()
+
+    def test_full_copy(self):
+        cat = TestCases.test_case_1()
+
+        # Fetch two collections from the catalog
+        col1 = cat.get_child('area-1-1', recursive=True)
+        col2 = cat.get_child('area-2-2', recursive=True)
+
+        # Enable the version extension on each, and link them
+        # as if they are different versions of the same Collection
+        col1.ext.enable(pystac.Extensions.VERSION)
+        col2.ext.enable(pystac.Extensions.VERSION)
+
+        col1.ext.version.apply(version='2.0', predecessor=col2)
+        col2.ext.version.apply(version='1.0', successor=col1, latest=col1)
+
+        # Make a full copy of the catalog
+        cat_copy = cat.full_copy()
+
+        # Retrieve the copied version of the items
+        col1_copy = cat_copy.get_child('area-1-1', recursive=True)
+        col2_copy = cat_copy.get_child('area-2-2', recursive=True)
+
+        # Check to see if the version links point to the instances of the
+        # col objects as they should.
+
+        predecessor = col1_copy.get_single_link(version.PREDECESSOR_VERSION).target
+        successor = col2_copy.get_single_link(version.SUCCESSOR_VERSION).target
+        latest = col2_copy.get_single_link(version.LATEST_VERSION).target
+
+        self.assertIs(predecessor, col2_copy)
+        self.assertIs(successor, col1_copy)
+        self.assertIs(latest, col1_copy)
 
 
 if __name__ == '__main__':
