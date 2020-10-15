@@ -64,33 +64,36 @@ class VersionItemExtTest(unittest.TestCase):
         year = 2013
         latest = make_item(year)
         self.item.ext.version.apply(self.version, latest=latest)
-        latest = self.item.ext.version.latest
-        self.assertEqual(version.LATEST, latest.rel)
+        latest_result = self.item.ext.version.latest
+        self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, latest.get_href())
+        link = self.item.get_links(version.LATEST)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
     def test_predecessor(self):
         year = 2010
         predecessor = make_item(year)
         self.item.ext.version.apply(self.version, predecessor=predecessor)
-        predecessor = self.item.ext.version.predecessor
-        self.assertEqual(version.PREDECESSOR, predecessor.rel)
+        predecessor_result = self.item.ext.version.predecessor
+        self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, predecessor.get_href())
+        link = self.item.get_links(version.PREDECESSOR)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
     def test_successor(self):
         year = 2012
         successor = make_item(year)
         self.item.ext.version.apply(self.version, successor=successor)
-        successor = self.item.ext.version.successor
-        self.assertEqual(version.SUCCESSOR, successor.rel)
+        successor_result = self.item.ext.version.successor
+        self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, successor.get_href())
+        link = self.item.get_links(version.SUCCESSOR)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
     def test_fail_validate(self):
@@ -129,7 +132,6 @@ class VersionItemExtTest(unittest.TestCase):
 
         # Check to see if the version links point to the instances of the
         # item objects as they should.
-
         predecessor = item1_copy.get_single_link(version.PREDECESSOR).target
         successor = item2_copy.get_single_link(version.SUCCESSOR).target
         latest = item2_copy.get_single_link(version.LATEST).target
@@ -140,7 +142,7 @@ class VersionItemExtTest(unittest.TestCase):
 
 
 def make_collection(year):
-    asset_id = 'my/collection/of/things'
+    asset_id = f'my/collection/of/things/{year}'
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180, -90, 180, 90]]
@@ -195,33 +197,36 @@ class VersionCollectionExtTest(unittest.TestCase):
         year = 2013
         latest = make_collection(year)
         self.collection.ext.version.apply(self.version, latest=latest)
-        latest = self.collection.ext.version.latest
-        self.assertEqual(version.LATEST, latest.rel)
+        latest_result = self.collection.ext.version.latest
+        self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, latest.get_href())
+        link = self.collection.get_links(version.LATEST)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
     def test_predecessor(self):
         year = 2010
         predecessor = make_collection(year)
         self.collection.ext.version.apply(self.version, predecessor=predecessor)
-        predecessor = self.collection.ext.version.predecessor
-        self.assertEqual(version.PREDECESSOR, predecessor.rel)
+        predecessor_result = self.collection.ext.version.predecessor
+        self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, predecessor.get_href())
+        link = self.collection.get_links(version.PREDECESSOR)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
     def test_successor(self):
         year = 2012
         successor = make_collection(year)
         self.collection.ext.version.apply(self.version, successor=successor)
-        successor = self.collection.ext.version.successor
-        self.assertEqual(version.SUCCESSOR, successor.rel)
+        successor_result = self.collection.ext.version.successor
+        self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, successor.get_href())
+        link = self.collection.get_links(version.SUCCESSOR)[0]
+        self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
     def test_fail_validate(self):
@@ -260,7 +265,6 @@ class VersionCollectionExtTest(unittest.TestCase):
 
         # Check to see if the version links point to the instances of the
         # col objects as they should.
-
         predecessor = col1_copy.get_single_link(version.PREDECESSOR).target
         successor = col2_copy.get_single_link(version.SUCCESSOR).target
         latest = col2_copy.get_single_link(version.LATEST).target

@@ -10,6 +10,8 @@ from pystac import item
 from pystac import link
 from pystac.extensions import base
 
+VERSION = 'version'
+DEPRECATED = 'deprecated'
 LATEST = 'latest-version'
 PREDECESSOR = 'predecessor-version'
 SUCCESSOR = 'successor-version'
@@ -36,27 +38,27 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def version(self):
-        return self.item.properties.get('version')
+        return self.item.properties.get(VERSION)
 
     @version.setter
     def version(self, v):
-        self.item.properties['version'] = v
+        self.item.properties[VERSION] = v
 
     @property
     def deprecated(self):
-        return bool(self.item.properties.get('deprecated'))
+        return bool(self.item.properties.get(DEPRECATED))
 
     @deprecated.setter
     def deprecated(self, v):
         if not isinstance(v, bool):
-            raise pystac.STACError('deprecated must be a bool')
-        self.item.properties['deprecated'] = v
+            raise pystac.STACError(DEPRECATED + ' must be a bool')
+        self.item.properties[DEPRECATED] = v
 
     @property
     def latest(self):
-        links = self.item.get_links(LATEST)
-        if links:
-            return links[0]
+        items = self.item.get_stac_objects(LATEST)
+        if items:
+            return next(items)
 
     @latest.setter
     def latest(self, source_item):
@@ -64,9 +66,9 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def predecessor(self):
-        links = self.item.get_links(PREDECESSOR)
-        if links:
-            return links[0]
+        items = self.item.get_stac_objects(PREDECESSOR)
+        if items:
+            return next(items)
 
     @predecessor.setter
     def predecessor(self, source_item):
@@ -74,9 +76,9 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def successor(self):
-        links = self.item.get_links(SUCCESSOR)
-        if links:
-            return links[0]
+        items = self.item.get_stac_objects(SUCCESSOR)
+        if items:
+            return next(items)
 
     @successor.setter
     def successor(self, source_item):
@@ -98,27 +100,27 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def version(self):
-        return self.collection.extra_fields.get('version')
+        return self.collection.extra_fields.get(VERSION)
 
     @version.setter
     def version(self, v):
-        self.collection.extra_fields['version'] = v
+        self.collection.extra_fields[VERSION] = v
 
     @property
     def deprecated(self):
-        return bool(self.collection.extra_fields.get('deprecated'))
+        return bool(self.collection.extra_fields.get(DEPRECATED))
 
     @deprecated.setter
     def deprecated(self, v):
         if not isinstance(v, bool):
-            raise pystac.STACError('deprecated must be a bool')
-        self.collection.extra_fields['deprecated'] = v
+            raise pystac.STACError(DEPRECATED + ' must be a bool')
+        self.collection.extra_fields[DEPRECATED] = v
 
     @property
     def latest(self):
-        links = self.collection.get_links(LATEST)
-        if links:
-            return links[0]
+        collections = self.collection.get_stac_objects(LATEST)
+        if collections:
+            return next(collections)
 
     @latest.setter
     def latest(self, source_collection):
@@ -126,9 +128,9 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def predecessor(self):
-        links = self.collection.get_links(PREDECESSOR)
-        if links:
-            return links[0]
+        collections = self.collection.get_stac_objects(PREDECESSOR)
+        if collections:
+            return next(collections)
 
     @predecessor.setter
     def predecessor(self, source_collection):
@@ -136,9 +138,9 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def successor(self):
-        links = self.collection.get_links(SUCCESSOR)
-        if links:
-            return links[0]
+        collections = self.collection.get_stac_objects(SUCCESSOR)
+        if collections:
+            return next(collections)
 
     @successor.setter
     def successor(self, source_collection):
