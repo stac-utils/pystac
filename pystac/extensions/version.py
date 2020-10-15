@@ -28,11 +28,11 @@ class VersionItemExt(base.ItemExtension):
         if deprecated is not None:
             self.deprecated = deprecated
         if latest:
-            self.latest_link = latest
+            self.latest = latest
         if predecessor:
-            self.predecessor_link = predecessor
+            self.predecessor = predecessor
         if successor:
-            self.successor_link = successor
+            self.successor = successor
 
     @property
     def version(self):
@@ -53,33 +53,33 @@ class VersionItemExt(base.ItemExtension):
         self.item.properties['deprecated'] = v
 
     @property
-    def latest_link(self):
+    def latest(self):
         links = self.item.get_links(LATEST_VERSION)
         if links:
             return links[0]
 
-    @latest_link.setter
-    def latest_link(self, source_item):
+    @latest.setter
+    def latest(self, source_item):
         self.item.add_link(link.Link(LATEST_VERSION, source_item, MEDIA_TYPE))
 
     @property
-    def predecessor_link(self):
+    def predecessor(self):
         links = self.item.get_links(PREDECESSOR_VERSION)
         if links:
             return links[0]
 
-    @predecessor_link.setter
-    def predecessor_link(self, source_item):
+    @predecessor.setter
+    def predecessor(self, source_item):
         self.item.add_link(link.Link(PREDECESSOR_VERSION, source_item, MEDIA_TYPE))
 
     @property
-    def successor_link(self):
+    def successor(self):
         links = self.item.get_links(SUCCESSOR_VERSION)
         if links:
             return links[0]
 
-    @successor_link.setter
-    def successor_link(self, source_item):
+    @successor.setter
+    def successor(self, source_item):
         self.item.add_link(link.Link(SUCCESSOR_VERSION, source_item, MEDIA_TYPE))
 
     @classmethod
@@ -115,33 +115,33 @@ class VersionCollectionExt(base.CollectionExtension):
         self.collection.extra_fields['deprecated'] = v
 
     @property
-    def latest_link(self):
+    def latest(self):
         links = self.collection.get_links(LATEST_VERSION)
         if links:
             return links[0]
 
-    @latest_link.setter
-    def latest_link(self, source_collection):
+    @latest.setter
+    def latest(self, source_collection):
         self.collection.add_link(link.Link(LATEST_VERSION, source_collection, MEDIA_TYPE))
 
     @property
-    def predecessor_link(self):
+    def predecessor(self):
         links = self.collection.get_links(PREDECESSOR_VERSION)
         if links:
             return links[0]
 
-    @predecessor_link.setter
-    def predecessor_link(self, source_collection):
+    @predecessor.setter
+    def predecessor(self, source_collection):
         self.collection.add_link(link.Link(PREDECESSOR_VERSION, source_collection, MEDIA_TYPE))
 
     @property
-    def successor_link(self):
+    def successor(self):
         links = self.collection.get_links(SUCCESSOR_VERSION)
         if links:
             return links[0]
 
-    @successor_link.setter
-    def successor_link(self, source_collection):
+    @successor.setter
+    def successor(self, source_collection):
         self.collection.add_link(link.Link(SUCCESSOR_VERSION, source_collection, MEDIA_TYPE))
 
     @classmethod
@@ -157,11 +157,11 @@ class VersionCollectionExt(base.CollectionExtension):
         if deprecated is not None:
             self.deprecated = deprecated
         if latest:
-            self.latest_link = latest
+            self.latest = latest
         if predecessor:
-            self.predecessor_link = predecessor
+            self.predecessor = predecessor
         if successor:
-            self.successor_link = successor
+            self.successor = successor
 
 
 VERSION_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.VERSION, [

@@ -64,33 +64,33 @@ class VersionItemExtTest(unittest.TestCase):
         year = 2013
         latest = make_item(year)
         self.item.ext.version.apply(self.version, latest=latest)
-        latest_link = self.item.ext.version.latest_link
-        self.assertEqual(version.LATEST_VERSION, latest_link.rel)
+        latest = self.item.ext.version.latest
+        self.assertEqual(version.LATEST_VERSION, latest.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, latest_link.get_href())
+        self.assertEqual(expected_href, latest.get_href())
         self.item.validate()
 
     def test_predecessor(self):
         year = 2010
         predecessor = make_item(year)
         self.item.ext.version.apply(self.version, predecessor=predecessor)
-        predecessor_link = self.item.ext.version.predecessor_link
-        self.assertEqual(version.PREDECESSOR_VERSION, predecessor_link.rel)
+        predecessor = self.item.ext.version.predecessor
+        self.assertEqual(version.PREDECESSOR_VERSION, predecessor.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, predecessor_link.get_href())
+        self.assertEqual(expected_href, predecessor.get_href())
         self.item.validate()
 
     def test_successor(self):
         year = 2012
         successor = make_item(year)
         self.item.ext.version.apply(self.version, successor=successor)
-        successor_link = self.item.ext.version.successor_link
-        self.assertEqual(version.SUCCESSOR_VERSION, successor_link.rel)
+        successor = self.item.ext.version.successor
+        self.assertEqual(version.SUCCESSOR_VERSION, successor.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, successor_link.get_href())
+        self.assertEqual(expected_href, successor.get_href())
         self.item.validate()
 
     def test_fail_validate(self):
@@ -195,33 +195,33 @@ class VersionCollectionExtTest(unittest.TestCase):
         year = 2013
         latest = make_collection(year)
         self.collection.ext.version.apply(self.version, latest=latest)
-        latest_link = self.collection.ext.version.latest_link
-        self.assertEqual(version.LATEST_VERSION, latest_link.rel)
+        latest = self.collection.ext.version.latest
+        self.assertEqual(version.LATEST_VERSION, latest.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, latest_link.get_href())
+        self.assertEqual(expected_href, latest.get_href())
         self.collection.validate()
 
     def test_predecessor(self):
         year = 2010
         predecessor = make_collection(year)
         self.collection.ext.version.apply(self.version, predecessor=predecessor)
-        predecessor_link = self.collection.ext.version.predecessor_link
-        self.assertEqual(version.PREDECESSOR_VERSION, predecessor_link.rel)
+        predecessor = self.collection.ext.version.predecessor
+        self.assertEqual(version.PREDECESSOR_VERSION, predecessor.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, predecessor_link.get_href())
+        self.assertEqual(expected_href, predecessor.get_href())
         self.collection.validate()
 
     def test_successor(self):
         year = 2012
         successor = make_collection(year)
         self.collection.ext.version.apply(self.version, successor=successor)
-        successor_link = self.collection.ext.version.successor_link
-        self.assertEqual(version.SUCCESSOR_VERSION, successor_link.rel)
+        successor = self.collection.ext.version.successor
+        self.assertEqual(version.SUCCESSOR_VERSION, successor.rel)
 
         expected_href = URL_TEMPLATE % year
-        self.assertEqual(expected_href, successor_link.get_href())
+        self.assertEqual(expected_href, successor.get_href())
         self.collection.validate()
 
     def test_fail_validate(self):
