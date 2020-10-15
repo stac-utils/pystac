@@ -38,25 +38,25 @@ class VersionItemExtTest(unittest.TestCase):
     def test_add_version(self):
         self.item.ext.version.apply(self.version)
         self.assertEqual(self.version, self.item.ext.version.version)
-        self.assertNotIn('deprecated', self.item.properties)
+        self.assertNotIn(version.DEPRECATED, self.item.properties)
         self.assertFalse(self.item.ext.version.deprecated)
         self.item.validate()
 
     def test_version_in_properties(self):
         self.item.ext.version.apply(self.version, deprecated=True)
-        self.assertIn('version', self.item.properties)
-        self.assertIn('deprecated', self.item.properties)
+        self.assertIn(version.VERSION, self.item.properties)
+        self.assertIn(version.DEPRECATED, self.item.properties)
         self.item.validate()
 
     def test_add_not_deprecated_version(self):
         self.item.ext.version.apply(self.version, deprecated=False)
-        self.assertIn('deprecated', self.item.properties)
+        self.assertIn(version.DEPRECATED, self.item.properties)
         self.assertFalse(self.item.ext.version.deprecated)
         self.item.validate()
 
     def test_add_deprecated_version(self):
         self.item.ext.version.apply(self.version, deprecated=True)
-        self.assertIn('deprecated', self.item.properties)
+        self.assertIn(version.DEPRECATED, self.item.properties)
         self.assertTrue(self.item.ext.version.deprecated)
         self.item.validate()
 
@@ -171,25 +171,25 @@ class VersionCollectionExtTest(unittest.TestCase):
     def test_add_version(self):
         self.collection.ext.version.apply(self.version)
         self.assertEqual(self.version, self.collection.ext.version.version)
-        self.assertNotIn('deprecated', self.collection.extra_fields)
+        self.assertNotIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertFalse(self.collection.ext.version.deprecated)
         self.collection.validate()
 
     def test_version_deprecated(self):
         self.collection.ext.version.apply(self.version, deprecated=True)
-        self.assertIn('version', self.collection.extra_fields)
-        self.assertIn('deprecated', self.collection.extra_fields)
+        self.assertIn(version.VERSION, self.collection.extra_fields)
+        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.collection.validate()
 
     def test_add_not_deprecated_version(self):
         self.collection.ext.version.apply(self.version, deprecated=False)
-        self.assertIn('deprecated', self.collection.extra_fields)
+        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertFalse(self.collection.ext.version.deprecated)
         self.collection.validate()
 
     def test_add_deprecated_version(self):
         self.collection.ext.version.apply(self.version, deprecated=True)
-        self.assertIn('deprecated', self.collection.extra_fields)
+        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertTrue(self.collection.ext.version.deprecated)
         self.collection.validate()
 
