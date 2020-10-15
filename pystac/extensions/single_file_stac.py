@@ -76,7 +76,7 @@ class SingleFileSTACCatalogExt(CatalogExtension):
             features (List[Item]): List of items contained by
                 this SingleFileSTAC.
             collections (List[Collection]): Optional list of collections that are
-                used by any of teh Items in the catalog.
+                used by any of the Items in the catalog.
         """
         self.features = features
         self.collections = collections

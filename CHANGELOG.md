@@ -47,7 +47,7 @@ Thank you to all the new contributors that contributed during STAC Sprint 6!
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
 - Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 - Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
-- Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
+- Added support for prerelease versions in version comparisons for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
 - Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
 - Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
 
@@ -70,7 +70,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 
 The two major changes for this release are:
 - Upgrade to STAC 0.9.0
-- Refactor the extensions API to accomidate items that implement multiple extesions (e.g. `eo` and `view`)
+- Refactor the extensions API to accommodate items that implement multiple extensions (e.g. `eo` and `view`)
 
 See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/blob/v0.9.0/CHANGELOG.md) and issue [#65](https://github.com/azavea/pystac/issues/65) for more information.
 
@@ -78,10 +78,10 @@ See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/bl
 
 These are the major API changes that will have to be accounted for when upgrading PySTAC:
 
-#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inheret.
+#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit.
 
 This change affects the two extensions that were implemented for Item - `EOItem` and `LabelItem`
-have become `EOItemExt` and `LabelItemExt`, and no longer inheret from Item.
+have become `EOItemExt` and `LabelItemExt`, and no longer inherit from Item.
 
 This change was motivated by the 0.9 change that split some properties out from `eo` into
 the `view` extension. If we kept an inheritance-based extension architecture, we would not
@@ -131,7 +131,7 @@ use `Band.create`
 
 ### Added
 
-- Allow for backwards compatibilty for reading STAC [#77](https://github.com/azavea/pystac/pull/70)
+- Allow for backwards compatibility for reading STAC [#77](https://github.com/azavea/pystac/pull/70)
 
 ### Fixed
 

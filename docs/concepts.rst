@@ -498,8 +498,8 @@ The ``pystac.serialization`` package has some functionality around working direc
 JSON objects, without utilizing PySTAC object types. This is used internally by PySTAC, but might also be useful to users working directly with JSON (e.g. on validation).
 
 
-Identifing STAC objects from JSON
----------------------------------
+Identifying STAC objects from JSON
+----------------------------------
 
 Users can identify STAC information, including the object type, version and extensions,
 from JSON. The main method for this is :func:`~pystac.serialization.identify_stac_object`,
