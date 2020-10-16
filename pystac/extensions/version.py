@@ -56,9 +56,7 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def latest(self):
-        items = self.item.get_stac_objects(LATEST)
-        if items:
-            return next(items)
+        return next(self.item.get_stac_objects(LATEST), None)
 
     @latest.setter
     def latest(self, source_item):
@@ -66,9 +64,7 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def predecessor(self):
-        items = self.item.get_stac_objects(PREDECESSOR)
-        if items:
-            return next(items)
+        return next(self.item.get_stac_objects(PREDECESSOR), None)
 
     @predecessor.setter
     def predecessor(self, source_item):
@@ -76,9 +72,7 @@ class VersionItemExt(base.ItemExtension):
 
     @property
     def successor(self):
-        items = self.item.get_stac_objects(SUCCESSOR)
-        if items:
-            return next(items)
+        return next(self.item.get_stac_objects(SUCCESSOR), None)
 
     @successor.setter
     def successor(self, source_item):
@@ -118,9 +112,7 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def latest(self):
-        collections = self.collection.get_stac_objects(LATEST)
-        if collections:
-            return next(collections)
+        return next(self.collection.get_stac_objects(LATEST), None)
 
     @latest.setter
     def latest(self, source_collection):
@@ -128,9 +120,7 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def predecessor(self):
-        collections = self.collection.get_stac_objects(PREDECESSOR)
-        if collections:
-            return next(collections)
+        return next(self.collection.get_stac_objects(PREDECESSOR), None)
 
     @predecessor.setter
     def predecessor(self, source_collection):
@@ -138,9 +128,7 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @property
     def successor(self):
-        collections = self.collection.get_stac_objects(SUCCESSOR)
-        if collections:
-            return next(collections)
+        return next(self.collection.get_stac_objects(SUCCESSOR), None)
 
     @successor.setter
     def successor(self, source_collection):
