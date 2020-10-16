@@ -254,12 +254,12 @@ LabelStatistics
 Pointcloud Extension
 --------------------
 
-Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
+Implements the `Point Cloud Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
 
 PointcloudItemExt
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.projection.PointcloudItemExt
+.. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
    :members:
    :undoc-members:
    :show-inheritance:
@@ -305,6 +305,27 @@ SingleFileSTACCatalogExt
 .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
    :members:
    :undoc-members:
+
+Version Extension
+-----------------
+
+Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
+
+VersionCollectionExt
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionCollectionExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+VersionItemExt
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 View Geometry Extension
 -----------------------
