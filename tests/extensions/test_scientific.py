@@ -65,8 +65,8 @@ class ScientificItemExtTest(unittest.TestCase):
     def test_publications_one(self):
         publications = PUBLICATIONS[:1]
         self.item.ext.scientific.apply(publications=publications)
-        pubs_dict = [pub.to_dict() for pub in publications]
-        self.assertEqual(pubs_dict, self.item.ext.scientific.publications)
+        self.assertEqual([1], [int('1')])
+        self.assertEqual(publications, self.item.ext.scientific.publications)
         self.assertIn(scientific.PUBLICATIONS, self.item.properties)
 
         links = self.item.get_links(scientific.CITE_AS)
@@ -78,8 +78,7 @@ class ScientificItemExtTest(unittest.TestCase):
 
     def test_publications(self):
         self.item.ext.scientific.apply(publications=PUBLICATIONS)
-        pubs_dict = [pub.to_dict() for pub in PUBLICATIONS]
-        self.assertEqual(pubs_dict, self.item.ext.scientific.publications)
+        self.assertEqual(PUBLICATIONS, self.item.ext.scientific.publications)
         self.assertIn(scientific.PUBLICATIONS, self.item.properties)
 
         links = self.item.get_links(scientific.CITE_AS)
@@ -133,8 +132,7 @@ class ScientificCollectionExtTest(unittest.TestCase):
     def test_publications_one(self):
         publications = PUBLICATIONS[:1]
         self.collection.ext.scientific.apply(publications=publications)
-        pubs_dict = [pub.to_dict() for pub in publications]
-        self.assertEqual(pubs_dict, self.collection.ext.scientific.publications)
+        self.assertEqual(publications, self.collection.ext.scientific.publications)
         self.assertIn(scientific.PUBLICATIONS, self.collection.extra_fields)
 
         links = self.collection.get_links(scientific.CITE_AS)
@@ -146,8 +144,7 @@ class ScientificCollectionExtTest(unittest.TestCase):
 
     def test_publications(self):
         self.collection.ext.scientific.apply(publications=PUBLICATIONS)
-        pubs_dict = [pub.to_dict() for pub in PUBLICATIONS]
-        self.assertEqual(pubs_dict, self.collection.ext.scientific.publications)
+        self.assertEqual(PUBLICATIONS, self.collection.ext.scientific.publications)
         self.assertIn(scientific.PUBLICATIONS, self.collection.extra_fields)
 
         links = self.collection.get_links(scientific.CITE_AS)

@@ -41,6 +41,12 @@ class Publication:
         self.doi = doi
         self.citation = citation
 
+    def __eq__(self, other):
+        if not isinstance(other, Publication):
+            return NotImplemented
+
+        return self.doi == other.doi and self.citation == other.citation
+
     def __repr__(self):
         return f'<Publication doi={self.doi} target={self.citation}>'
 
@@ -97,7 +103,7 @@ class ScientificItemExt(base.ItemExtension):
 
     @property
     def publications(self):
-        return self.item.properties.get(PUBLICATIONS)
+        return [Publication.from_dict(pub) for pub in self.item.properties.get(PUBLICATIONS)]
 
     @publications.setter
     def publications(self, v):
@@ -147,7 +153,7 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @property
     def publications(self):
-        return self.collection.extra_fields.get(PUBLICATIONS)
+        return [Publication.from_dict(pub) for pub in self.collection.extra_fields.get(PUBLICATIONS)]
 
     @publications.setter
     def publications(self, v):
