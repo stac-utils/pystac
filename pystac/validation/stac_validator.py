@@ -67,12 +67,17 @@ class STACValidator(ABC):
                STACValidator implementation.
         """
         results = []
-        core_result = self.validate_core(stac_dict, stac_object_type, stac_version, href)
+
+        # Pass the dict through JSON serialization and parsing, otherwise
+        # some valid properties can be marked as invalid (e.g. tuples in
+        # coordinate sequences for geometries).
+        json_dict = json.loads(json.dumps(stac_dict))
+        core_result = self.validate_core(json_dict, stac_object_type, stac_version, href)
         if core_result is not None:
             results.append(core_result)
 
         for extension_id in extensions:
-            ext_result = self.validate_extension(stac_dict, stac_object_type, stac_version,
+            ext_result = self.validate_extension(json_dict, stac_object_type, stac_version,
                                                  extension_id, href)
             if ext_result is not None:
                 results.append(ext_result)

@@ -1,6 +1,7 @@
+from datetime import datetime
+import json
 import os
 import shutil
-import json
 import unittest
 from tempfile import TemporaryDirectory
 
@@ -108,3 +109,25 @@ class ValidateTest(unittest.TestCase):
 
             with self.assertRaises(STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
+
+    def test_validates_geojson_with_tuple_coordinates(self):
+        """This unit tests guards against a bug where if a geometry
+        dict has tuples instead of lists for the coordinate sequence,
+        which can be produced by shapely, then the geometry still passses
+        validation.
+        """
+        geom = {
+            'type':
+            'Polygon',
+            'coordinates': (((-115.3057626, 36.1265426997), (-115.3057626, 36.1282976997),
+                             (-115.3075176, 36.1282976997), (-115.3075176, 36.1265426997),
+                             (-115.3057626, 36.1265426997)), )
+        }
+
+        item = pystac.Item(id='test-item',
+                           geometry=geom,
+                           bbox=[-115.308, 36.126, -115.305, 36.129],
+                           datetime=datetime.utcnow(),
+                           properties={'key': 'one'})
+
+        self.assertIsNone(item.validate())
