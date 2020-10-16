@@ -153,7 +153,7 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @property
     def publications(self):
-        return [Publication.from_dict(pub) for pub in self.collection.extra_fields.get(PUBLICATIONS)]
+        return [Publication.from_dict(p) for p in self.collection.extra_fields.get(PUBLICATIONS)]
 
     @publications.setter
     def publications(self, v):
