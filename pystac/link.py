@@ -105,7 +105,7 @@ class Link:
             else:
                 href = self.target
 
-            if is_absolute_href(href) and self.owner is not None:
+            if href and is_absolute_href(href) and self.owner is not None:
                 href = make_relative_href(href, self.owner.get_self_href())
         else:
             href = self.get_absolute_href()
