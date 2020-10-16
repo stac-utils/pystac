@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 
 import pystac
-from pystac.validation import (validate_dict, STACValidationError)
+from pystac.validation import validate_dict
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
@@ -114,11 +114,6 @@ class CollectionTest(unittest.TestCase):
         cloned_ext = ext.clone()
         self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict['extent'])
 
-        multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
-        invalid_col = Collection.from_dict(multi_ext_dict)
-        with self.assertRaises(STACValidationError):
-            invalid_col.validate()
-
     def test_extra_fields(self):
         catalog = TestCases.test_case_2()
         collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
@@ -179,3 +174,37 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(
             [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
             collection.extent.temporal.intervals)
+
+
+class ExtentTest(unittest.TestCase):
+    def test_spatial_allows_single_bbox(self):
+        temporal_extent = TemporalExtent(intervals=[[datetime.utcnow(), None]])
+
+        # Pass in a single BBOX
+        spatial_extent = SpatialExtent(bboxes=RANDOM_BBOX)
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+
+        collection = Collection(id='test',
+                                description='test',
+                                extent=collection_extent,
+                                license='CC-BY-SA-4.0')
+        collection.set_self_href('/usr/collection.json')
+
+        collection.validate()
+
+    def test_temporal_allows_single_interval(self):
+        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+
+        # Pass in a single interval
+        temporal_extent = TemporalExtent(intervals=[datetime.utcnow(), None])
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+
+        collection = Collection(id='test',
+                                description='test',
+                                extent=collection_extent,
+                                license='CC-BY-SA-4.0')
+        collection.set_self_href('/usr/collection.json')
+
+        collection.validate()

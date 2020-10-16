@@ -1,3 +1,4 @@
+import collections.abc
 from datetime import datetime
 import dateutil.parser
 from dateutil import tz
@@ -305,6 +306,12 @@ class SpatialExtent:
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
     """
     def __init__(self, bboxes):
+        # A common mistake is to pass in a single bbox instead of a list of bboxes.
+        # Account for this by transforming the input in that case.
+        if isinstance(bboxes, collections.abc.Sequence):
+            if not isinstance(bboxes[0], collections.abc.Sequence):
+                bboxes = [bboxes]
+
         self.bboxes = bboxes
 
     def to_dict(self):
@@ -388,6 +395,13 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
     def __init__(self, intervals):
+        # A common mistake is to pass in a single interval instead of a
+        # list of intervals. Account for this by transforming the input
+        # in that case.
+        if isinstance(intervals, collections.abc.Sequence):
+            if not isinstance(intervals[0], collections.abc.Sequence):
+                intervals = [intervals]
+
         for i in intervals:
             if i[0] is None and i[1] is None:
                 raise STACError('TemporalExtent interval must have either '
