@@ -81,15 +81,13 @@ PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://gith
 To run the flake8 style checks:
 
 ```
-> flake8 pystac
-> flake8 tests
+> flake8 pystac tests
 ```
 
 To format code:
 
 ```
-> yapf -ipr pystac
-> yapf -ipr tests
+> yapf -ipr pystac tests
 ```
 
 You can also run the `./scripts/test` script to check flake8 and yapf.
