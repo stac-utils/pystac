@@ -107,10 +107,10 @@ class Publication:
 
 def remove_link(links: List[link.Link], pub: Publication):
     url = pub.doi.url()
-    for i, link in enumerate(links):
-        if link.rel != CITE_AS:
+    for i, a_link in enumerate(links):
+        if a_link.rel != CITE_AS:
             continue
-        if link.target == url:
+        if a_link.target == url:
             del links[i]
             break
 
