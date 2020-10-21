@@ -94,14 +94,14 @@ class Collection(Catalog):
             Overridden for collections so that the root's ResolutionObjectCache can properly
             update the HREF cache.
         """
-        root = self.get_root()
-        if root is not None:
-            root._resolved_objects.remove(self)
+        root_link = self.get_root_link()
+        if root_link is not None and root_link.is_resolved():
+            root_link.target._resolved_objects.remove(self)
 
         super().set_self_href(href)
 
-        if root is not None:
-            root._resolved_objects.cache(self)
+        if root_link is not None and root_link.is_resolved():
+            root_link.target._resolved_objects.cache(self)
 
         return self
 
