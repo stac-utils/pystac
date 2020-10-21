@@ -34,6 +34,7 @@ import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
+import pystac.extensions.sar
 import pystac.extensions.single_file_stac
 import pystac.extensions.timestamps
 import pystac.extensions.version
@@ -42,7 +43,7 @@ import pystac.extensions.view
 STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.eo.EO_EXTENSION_DEFINITION, extensions.label.LABEL_EXTENSION_DEFINITION,
     extensions.pointcloud.POINTCLOUD_EXTENSION_DEFINITION,
-    extensions.projection.PROJECTION_EXTENSION_DEFINITION,
+    extensions.projection.PROJECTION_EXTENSION_DEFINITION, extensions.sar.SAR_EXTENSION_DEFINITION,
     extensions.single_file_stac.SFS_EXTENSION_DEFINITION,
     extensions.timestamps.TIMESTAMPS_EXTENSION_DEFINITION,
     extensions.version.VERSION_EXTENSION_DEFINITION, extensions.view.VIEW_EXTENSION_DEFINITION
