@@ -119,15 +119,15 @@ class ValidateTest(unittest.TestCase):
         geom = {
             'type':
             'Polygon',
-            'coordinates': (((-115.3057626, 36.1265426997), (-115.3057626, 36.1282976997),
-                             (-115.3075176, 36.1282976997), (-115.3075176, 36.1265426997),
-                             (-115.3057626, 36.1265426997)), )
+            # Last , is required to ensure tuple creation.
+            'coordinates': (((-115.305, 36.126), (-115.305, 36.128), (-115.307, 36.128),
+                             (-115.307, 36.126), (-115.305, 36.126)), )
         }
 
         item = pystac.Item(id='test-item',
                            geometry=geom,
                            bbox=[-115.308, 36.126, -115.305, 36.129],
                            datetime=datetime.utcnow(),
-                           properties={'key': 'one'})
+                           properties={})
 
         self.assertIsNone(item.validate())
