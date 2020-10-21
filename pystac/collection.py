@@ -1,4 +1,4 @@
-import collections.abc
+from collections import abc
 from datetime import datetime
 import dateutil.parser
 from dateutil import tz
@@ -308,8 +308,8 @@ class SpatialExtent:
     def __init__(self, bboxes):
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
-        if isinstance(bboxes, collections.abc.Sequence):
-            if not isinstance(bboxes[0], collections.abc.Sequence):
+        if isinstance(bboxes, abc.Sequence):
+            if not isinstance(bboxes[0], abc.Sequence):
                 bboxes = [bboxes]
 
         self.bboxes = bboxes
@@ -398,8 +398,8 @@ class TemporalExtent:
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
-        if isinstance(intervals, collections.abc.Sequence):
-            if not isinstance(intervals[0], collections.abc.Sequence):
+        if isinstance(intervals, abc.Sequence):
+            if not isinstance(intervals[0], abc.Sequence):
                 intervals = [intervals]
 
         for i in intervals:
