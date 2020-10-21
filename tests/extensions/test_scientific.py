@@ -26,7 +26,7 @@ PUBLICATIONS = [
 ]
 
 
-def make_item():
+def make_item() -> pystac.Item:
     asset_id = 'USGS/GAP/CONUS/2011'
     start = datetime.datetime(2011, 1, 2)
     item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
@@ -51,7 +51,6 @@ class ScientificItemExtTest(unittest.TestCase):
         self.assertIn(scientific.DOI, self.item.properties)
         link = self.item.get_links(scientific.CITE_AS)[0]
         self.assertEqual(DOI_URL, link.get_href())
-
         self.item.validate()
 
     def test_citation(self):
@@ -59,7 +58,6 @@ class ScientificItemExtTest(unittest.TestCase):
         self.assertEqual(CITATION, self.item.ext.scientific.citation)
         self.assertIn(scientific.CITATION, self.item.properties)
         self.assertFalse(self.item.get_links(scientific.CITE_AS))
-
         self.item.validate()
 
     def test_publications_one(self):
@@ -73,7 +71,6 @@ class ScientificItemExtTest(unittest.TestCase):
         doi_urls = [link.get_href() for link in links]
         expected = [PUB1_DOI_URL]
         self.assertCountEqual(expected, doi_urls)
-
         self.item.validate()
 
     def test_publications(self):
@@ -85,11 +82,82 @@ class ScientificItemExtTest(unittest.TestCase):
         doi_urls = [link.get_href() for link in links]
         expected = [PUB1_DOI_URL, PUB2_DOI_URL]
         self.assertCountEqual(expected, doi_urls)
+        self.item.validate()
 
+    def test_remove_publication_one(self):
+        publications = PUBLICATIONS[:1]
+        self.item.ext.scientific.apply(DOI, publications=publications)
+        self.item.ext.scientific.remove_publication(publications[0])
+        self.assertFalse(self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.item.validate()
+
+    def test_remove_all_publications_one(self):
+        publications = PUBLICATIONS[:1]
+        self.item.ext.scientific.apply(DOI, publications=publications)
+        self.item.ext.scientific.remove_publication()
+        self.assertFalse(self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.item.validate()
+
+    def test_remove_publication_forward(self):
+        self.item.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+
+        self.item.ext.scientific.remove_publication(PUBLICATIONS[0])
+        self.assertEqual([PUBLICATIONS[1]], self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(2, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.assertEqual(PUB2_DOI_URL, links[1].target)
+        self.item.validate()
+
+        self.item.ext.scientific.remove_publication(PUBLICATIONS[1])
+        self.assertFalse(self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.item.validate()
+
+    def test_remove_publication_reverse(self):
+        self.item.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+
+        self.item.ext.scientific.remove_publication(PUBLICATIONS[1])
+        self.assertEqual([PUBLICATIONS[0]], self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(2, len(links))
+        self.assertEqual(PUB1_DOI_URL, links[1].target)
+
+        self.item.validate()
+        self.item.ext.scientific.remove_publication(PUBLICATIONS[0])
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.item.validate()
+
+    def test_remove_all_publications_with_some(self):
+        self.item.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+        self.item.ext.scientific.remove_publication()
+        self.assertFalse(self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.item.validate()
+
+    def test_remove_all_publications_with_none(self):
+        self.item.ext.scientific.apply(DOI)
+        self.item.ext.scientific.remove_publication()
+        self.assertFalse(self.item.ext.scientific.publications)
+        links = self.item.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
 
-def make_collection():
+def make_collection() -> pystac.Collection:
     asset_id = 'my/thing'
     start = datetime.datetime(2018, 8, 24)
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
@@ -152,6 +220,78 @@ class ScientificCollectionExtTest(unittest.TestCase):
         expected = [PUB1_DOI_URL, PUB2_DOI_URL]
         self.assertCountEqual(expected, doi_urls)
 
+        self.collection.validate()
+
+    def test_remove_publication_one(self):
+        publications = PUBLICATIONS[:1]
+        self.collection.ext.scientific.apply(DOI, publications=publications)
+        self.collection.ext.scientific.remove_publication(publications[0])
+        self.assertFalse(self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.collection.validate()
+
+    def test_remove_all_publications_one(self):
+        publications = PUBLICATIONS[:1]
+        self.collection.ext.scientific.apply(DOI, publications=publications)
+        self.collection.ext.scientific.remove_publication()
+        self.assertFalse(self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.collection.validate()
+
+    def test_remove_publication_forward(self):
+        self.collection.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+
+        self.collection.ext.scientific.remove_publication(PUBLICATIONS[0])
+        self.assertEqual([PUBLICATIONS[1]], self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(2, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.assertEqual(PUB2_DOI_URL, links[1].target)
+        self.collection.validate()
+
+        self.collection.ext.scientific.remove_publication(PUBLICATIONS[1])
+        self.assertFalse(self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.collection.validate()
+
+    def test_remove_publication_reverse(self):
+        self.collection.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+
+        self.collection.ext.scientific.remove_publication(PUBLICATIONS[1])
+        self.assertEqual([PUBLICATIONS[0]], self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(2, len(links))
+        self.assertEqual(PUB1_DOI_URL, links[1].target)
+
+        self.collection.validate()
+        self.collection.ext.scientific.remove_publication(PUBLICATIONS[0])
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.collection.validate()
+
+    def test_remove_all_publications_with_some(self):
+        self.collection.ext.scientific.apply(DOI, publications=PUBLICATIONS)
+        self.collection.ext.scientific.remove_publication()
+        self.assertFalse(self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
+        self.collection.validate()
+
+    def test_remove_all_publications_with_none(self):
+        self.collection.ext.scientific.apply(DOI)
+        self.collection.ext.scientific.remove_publication()
+        self.assertFalse(self.collection.ext.scientific.publications)
+        links = self.collection.get_links(scientific.CITE_AS)
+        self.assertEqual(1, len(links))
+        self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
 
