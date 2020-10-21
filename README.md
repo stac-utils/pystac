@@ -90,6 +90,8 @@ To format code:
 > yapf -ipr pystac tests
 ```
 
+Note that you may have to use `yapf3` explicitly depending on your environment.
+
 You can also run the `./scripts/test` script to check flake8 and yapf.
 
 ### Documentation
