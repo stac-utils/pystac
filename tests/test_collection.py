@@ -12,6 +12,8 @@ from pystac.extensions.eo import Band
 from pystac.utils import datetime_to_str
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
+TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
+
 
 class CollectionTest(unittest.TestCase):
     def test_spatial_extent_from_coordinates(self):
@@ -27,14 +29,14 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
         item2 = Item(id='test-item-2',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'two'},
                      stac_extensions=['eo', 'commons'])
 
@@ -142,7 +144,7 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=[-180, -90, 180, 90],
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
@@ -178,18 +180,17 @@ class CollectionTest(unittest.TestCase):
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self):
-        temporal_extent = TemporalExtent(intervals=[[datetime.utcnow(), None]])
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
         # Pass in a single BBOX
         spatial_extent = SpatialExtent(bboxes=RANDOM_BBOX)
 
         collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
 
-        collection = Collection(id='test',
-                                description='test',
-                                extent=collection_extent,
-                                license='CC-BY-SA-4.0')
-        collection.set_self_href('/usr/collection.json')
+        collection = Collection(id='test', description='test desc', extent=collection_extent)
+
+        # HREF required by validation
+        collection.set_self_href('https://example.com/collection.json')
 
         collection.validate()
 
@@ -197,14 +198,13 @@ class ExtentTest(unittest.TestCase):
         spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
 
         # Pass in a single interval
-        temporal_extent = TemporalExtent(intervals=[datetime.utcnow(), None])
+        temporal_extent = TemporalExtent(intervals=[TEST_DATETIME, None])
 
         collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
 
-        collection = Collection(id='test',
-                                description='test',
-                                extent=collection_extent,
-                                license='CC-BY-SA-4.0')
-        collection.set_self_href('/usr/collection.json')
+        collection = Collection(id='test', description='test desc', extent=collection_extent)
+
+        # HREF required by validation
+        collection.set_self_href('https://example.com/collection.json')
 
         collection.validate()
