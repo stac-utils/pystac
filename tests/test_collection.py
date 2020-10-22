@@ -5,12 +5,14 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 
 import pystac
-from pystac.validation import (validate_dict, STACValidationError)
+from pystac.validation import validate_dict
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
 from pystac.utils import datetime_to_str
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+
+TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
 
 class CollectionTest(unittest.TestCase):
@@ -27,14 +29,14 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
         item2 = Item(id='test-item-2',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'two'},
                      stac_extensions=['eo', 'commons'])
 
@@ -114,11 +116,6 @@ class CollectionTest(unittest.TestCase):
         cloned_ext = ext.clone()
         self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict['extent'])
 
-        multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
-        invalid_col = Collection.from_dict(multi_ext_dict)
-        with self.assertRaises(STACValidationError):
-            invalid_col.validate()
-
     def test_extra_fields(self):
         catalog = TestCases.test_case_2()
         collection = catalog.get_child('1a8c1632-fa91-4a62-b33e-3a87c2ebdf16')
@@ -147,7 +144,7 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=[-180, -90, 180, 90],
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
@@ -179,3 +176,35 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(
             [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
             collection.extent.temporal.intervals)
+
+
+class ExtentTest(unittest.TestCase):
+    def test_spatial_allows_single_bbox(self):
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+
+        # Pass in a single BBOX
+        spatial_extent = SpatialExtent(bboxes=RANDOM_BBOX)
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+
+        collection = Collection(id='test', description='test desc', extent=collection_extent)
+
+        # HREF required by validation
+        collection.set_self_href('https://example.com/collection.json')
+
+        collection.validate()
+
+    def test_temporal_allows_single_interval(self):
+        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+
+        # Pass in a single interval
+        temporal_extent = TemporalExtent(intervals=[TEST_DATETIME, None])
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+
+        collection = Collection(id='test', description='test desc', extent=collection_extent)
+
+        # HREF required by validation
+        collection.set_self_href('https://example.com/collection.json')
+
+        collection.validate()
