@@ -177,6 +177,20 @@ class CollectionTest(unittest.TestCase):
             [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
             collection.extent.temporal.intervals)
 
+    def test_supplying_href_in_init_does_not_fail(self):
+        test_href = "http://example.com/collection.json"
+        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+        collection = Collection(id='test',
+                                description='test desc',
+                                extent=collection_extent,
+                                properties={},
+                                href=test_href)
+
+        self.assertEqual(collection.get_self_href(), test_href)
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self):

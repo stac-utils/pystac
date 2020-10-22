@@ -87,13 +87,13 @@ class Catalog(STACObject):
         else:
             self.extra_fields = extra_fields
 
+        self._resolved_objects = ResolvedObjectCache()
+        self._resolved_objects.cache(self)
+
         self.add_link(Link.root(self))
 
         if href is not None:
             self.set_self_href(href)
-
-        self._resolved_objects = ResolvedObjectCache()
-        self._resolved_objects.cache(self)
 
     def __repr__(self):
         return '<Catalog id={}>'.format(self.id)
