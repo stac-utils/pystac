@@ -512,7 +512,7 @@ class CatalogTest(unittest.TestCase):
             with MockStacIO() as mock_io:
                 expected_collection_reads = set([])
                 for root, children, items in cat.walk():
-                    if isinstance(root, Collection):
+                    if isinstance(root, Collection) and root != cat:
                         expected_collection_reads.add(root.get_self_href())
 
                     # Iterate over items to make sure they are read
@@ -554,6 +554,11 @@ class CatalogTest(unittest.TestCase):
     def test_get_children_cbers(self):
         cat = TestCases.test_case_6()
         self.assertEqual(len(list(cat.get_children())), 4)
+
+    def test_fully_resolve_planet(self):
+        """Test against a bug that caused infinite recursion during fully_resolve"""
+        cat = TestCases.test_case_8()
+        cat.fully_resolve()
 
 
 class FullCopyTest(unittest.TestCase):

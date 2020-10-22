@@ -1,0 +1,101 @@
+{
+    "id": "planet-disaster-data",
+    "stac_version": "1.0.0-beta.2",
+    "description": "[Planet Disaster Data](https://www.planet.com/disasterdata/) makes imagery available directly to the public, volunteers, humanitarian organizations, and other coordinating bodies in support of the International Charter for Space and Major Disasters. Data is released for individual disaster events, providing a 30 day window pre- and post-disaster. Imagery is provided under Creative Commons licenses, free of charge, with either CC-BY-SA or CC-BY-NC.",
+    "links": [
+        {
+            "rel": "root",
+            "href": "./collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "./hurricane-harvey/catalog.json",
+            "title": "Hurricane Harvey"
+        }
+    ],
+    "title": "Planet Disaster Data",
+    "keywords": [
+        "disaster",
+        "open"
+    ],
+    "providers": [
+        {
+            "name": "Planet",
+            "description": "Contact Planet at [planet.com/contact-sales](https://www.planet.com/contact-sales/)",
+            "roles": [
+                "producer",
+                "processor"
+            ],
+            "url": "http://planet.com"
+        },
+        {
+            "name": "Planet Disaster Team",
+            "description": "The Planet Disaster Data Team (<disaster-team@planet.com>) has released this data as CC-BY-SA-4.0 to help disaster response",
+            "roles": [
+                "licensor"
+            ],
+            "url": "https://www.planet.com/disasterdata/"
+        },
+        {
+            "name": "GitHub",
+            "description": "This catalog is hosted in the [sample-stac](https://github.com/cholmes/sample-stac) repository on GitHub",
+            "roles": [
+                "host"
+            ],
+            "url": "https://github.com"
+        }
+    ],
+    "summaries": {
+        "constellation": [
+            "skysat",
+            "planetscope"
+        ],
+        "platform": [
+            "SS02",
+            "SSC1",
+            "101c"
+        ],
+        "view:off_nadir": {
+            "min": 0.2,
+            "max": 27.3
+        },
+        "view:sun_elevation": {
+            "min": 56.3,
+            "max": 65.1
+        },
+        "view:sun_azimuth": {
+            "min": 122,
+            "max": 231.9
+        },
+        "eo:gsd": {
+            "min": 0.9,
+            "max": 3.7
+        },
+        "eo:cloud_cover": {
+            "min": 0,
+            "max": 24
+        }
+    },
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -96,
+                    28,
+                    -93,
+                    31
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2017-08-28T10:00:00-08:00",
+                    null
+                ]
+            ]
+        }
+    },
+    "license": "CC-BY-SA-4.0"
+}
