@@ -3,7 +3,7 @@ import unittest
 
 import pystac
 
-TEST_DATETIME = datetime.datetime(2020, 3, 14, 16, 32)
+TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
 
 
 class LinkTest(unittest.TestCase):
@@ -98,3 +98,103 @@ class LinkTest(unittest.TestCase):
 
         link = catalog.get_single_link('item')
         self.assertIsNone(link.get_href())
+
+    # TODO: Test get_href when href is absolute and there is an owner
+    # TODO: Test get_absolute_href when there is an owner
+    # TODO: Test when resolve_stac_object on link when target is a str.
+
+    def test_resolve_stac_object_no_root_and_target_is_item(self):
+        link = pystac.Link('my rel', target=self.item)
+        link.resolve_stac_object()
+
+
+class StaticLinkTest(unittest.TestCase):
+    def test_from_dict_round_trip(self):
+        test_cases = [
+            {
+                'rel': '',
+                'href': ''
+            },  # Not valid, but works.
+            {
+                'rel': 'r',
+                'href': 't'
+            },
+            {
+                'rel': 'r',
+                'href': '/t'
+            },
+            {
+                'rel': 'r',
+                'href': 't',
+                'type': 'a/b',
+                'title': 't',
+                'c': 'd',
+                1: 2
+            },
+            # Special case.
+            {
+                'rel': 'self',
+                'href': 't'
+            },
+        ]
+        for d in test_cases:
+            d2 = pystac.Link.from_dict(d).to_dict()
+            self.assertEqual(d, d2)
+
+    def test_from_dict_link_type(self):
+        test_cases = [
+            ({
+                'rel': '',
+                'href': 'https://a'
+            }, pystac.LinkType.ABSOLUTE),
+            ({
+                'rel': '',
+                'href': '/a'
+            }, pystac.LinkType.ABSOLUTE),
+            ({
+                'rel': '',
+                'href': 'a'
+            }, pystac.LinkType.RELATIVE),
+            ({
+                'rel': '',
+                'href': './a'
+            }, pystac.LinkType.RELATIVE),
+            # 'self' is a special case.
+            ({
+                'rel': 'self',
+                'href': 'does not matter'
+            }, pystac.LinkType.ABSOLUTE),
+        ]
+        for case in test_cases:
+            item = pystac.Link.from_dict(case[0])
+            self.assertEqual(case[1], item.link_type)
+
+    def test_from_dict_failures(self):
+        for d in [{}, {'href': 't'}, {'rel': 'r'}]:
+            with self.assertRaises(KeyError):
+                pystac.Link.from_dict(d)
+
+        for d in [
+            {
+                'rel': '',
+                'href': 1
+            },
+            {
+                'rel': '',
+                'href': None
+            },
+        ]:
+            with self.assertRaises(AttributeError):
+                pystac.Link.from_dict(d)
+
+    def test_collection(self):
+        c = pystac.Collection('collection id', 'desc', extent=None)
+        link = pystac.Link.collection(c)
+        expected = {'rel': 'collection', 'href': None, 'type': 'application/json'}
+        self.assertEqual(expected, link.to_dict())
+
+    def test_child(self):
+        c = pystac.Collection('collection id', 'desc', extent=None)
+        link = pystac.Link.child(c)
+        expected = {'rel': 'child', 'href': None, 'type': 'application/json'}
+        self.assertEqual(expected, link.to_dict())
