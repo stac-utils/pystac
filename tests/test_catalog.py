@@ -560,6 +560,13 @@ class CatalogTest(unittest.TestCase):
         cat = TestCases.test_case_8()
         cat.fully_resolve()
 
+    def test_handles_children_with_same_id(self):
+        # This catalog has the root and child collection share an ID.
+        cat = pystac.read_file(TestCases.get_path('data-files/invalid/shared-id/catalog.json'))
+        items = list(cat.get_all_items())
+
+        self.assertEqual(len(items), 1)
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link, tag):

@@ -151,22 +151,27 @@ class Link:
                     raise STACError('Relative path {} encountered '
                                     'without owner or start_href.'.format(target_href))
                 start_href = self.owner.get_self_href()
+
                 if start_href is None:
                     raise STACError('Relative path {} encountered '
                                     'without owner "self" link set.'.format(target_href))
 
                 target_href = make_absolute_href(target_href, start_href)
+            obj = None
 
-            obj = STAC_IO.read_stac_object(target_href, root=root)
-            obj.set_self_href(target_href)
+            if root is not None:
+                obj = root._resolved_objects.get_by_href(target_href)
+
+            if obj is None:
+                obj = STAC_IO.read_stac_object(target_href, root=root)
+                obj.set_self_href(target_href)
+                if root is not None:
+                    obj = root._resolved_objects.get_or_cache(obj)
+                    obj.set_root(root, link_type=self.link_type)
         else:
             obj = self.target
 
-        if root is not None:
-            self.target = root._resolved_objects.get_or_cache(obj)
-            self.target.set_root(root, link_type=self.link_type)
-        else:
-            self.target = obj
+        self.target = obj
 
         if self.owner and self.rel in ['child', 'item']:
             self.target.set_parent(self.owner, link_type=self.link_type)
