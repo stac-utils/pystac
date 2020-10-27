@@ -71,7 +71,7 @@ def write_file(obj, include_self_link=True, dest_href=None):
     """Writes a STACObject to a file.
 
     This will write only the Catalog, Collection or Item ``obj``. It will not attempt
-    to write any other objects that are linked to ``obj``; if you'd like functinoality to
+    to write any other objects that are linked to ``obj``; if you'd like functionality to
     save off catalogs recursively see :meth:`Catalog.save <pystac.Catalog.save>`.
 
     This method will write the JSON of the object to the object's assigned "self" link or
