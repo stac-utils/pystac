@@ -265,31 +265,6 @@ class Item(STACObject):
     def _object_links(self):
         return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
 
-    def normalize_hrefs(self, root_href):
-        if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
-
-        old_self_href = self.get_self_href()
-        new_self_href = os.path.join(root_href, '{}.json'.format(self.id))
-        self.set_self_href(new_self_href)
-
-        # Make sure relative asset links remain valid.
-        # This will only work if there is a self href set.
-        for asset in self.assets.values():
-            asset_href = asset.href
-            if not is_absolute_href(asset_href):
-                if old_self_href is not None:
-                    abs_href = make_absolute_href(asset_href, old_self_href)
-                    new_relative_href = make_relative_href(abs_href, new_self_href)
-                    asset.href = new_relative_href
-
-    def fully_resolve(self):
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
-
     @classmethod
     def from_dict(cls, d, href=None, root=None):
         d = deepcopy(d)

@@ -161,6 +161,38 @@ class CatalogTest(unittest.TestCase):
                         'Clone of {} has {} {} links, original has {}'.format(
                             obj_id, actual_counts[rel], rel, expected_counts[rel]))
 
+    def test_normalize_hrefs_sets_all_hrefs(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('http://example.com')
+        for root, _, items in catalog.walk():
+            self.assertTrue(root.get_self_href().startswith('http://example.com'))
+            for link in root.links:
+                if link.is_resolved():
+                    target_href = link.target.get_self_href()
+                else:
+                    target_href = link.get_absolute_href()
+                self.assertTrue(
+                    'http://example.com' in target_href,
+                    '[{}] {} does not contain "{}"'.format(link.rel, target_href,
+                                                           'http://example.com'))
+            for item in items:
+                self.assertIn('http://example.com', item.get_self_href())
+
+    def test_normalize_hrefs_makes_absolute_href(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('./relativepath')
+        abspath = os.path.abspath('./relativepath')
+        self.assertTrue(catalog.get_self_href().startswith(abspath))
+
+    def test_normalize_href_works_with_label_source_links(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('http://example.com')
+        item = catalog.get_item('area-1-1-labels', recursive=True)
+        source = next(item.ext.label.get_sources())
+        self.assertEqual(
+            source.get_self_href(),
+            "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
+
     def test_map_items(self):
         def item_mapper(item):
             item.properties['ITEM_MAPPER'] = 'YEP'
@@ -422,6 +454,19 @@ class CatalogTest(unittest.TestCase):
                 c2.make_all_links_absolute()
                 check_all_absolute(c2)
 
+    def test_full_copy_and_normalize_works_with_created_stac(self):
+        cat = TestCases.test_case_3()
+        cat_copy = cat.full_copy()
+        cat_copy.normalize_hrefs('http://example.com')
+        for root, catalogs, items in cat_copy.walk():
+            for link in root.links:
+                if link.rel != 'self':
+                    self.assertIsNot(link.target, None)
+            for item in items:
+                for link in item.links:
+                    if link.rel != 'self':
+                        self.assertIsNot(link.get_href(), None)
+
     def test_extra_fields(self):
         catalog = TestCases.test_case_1()
 
@@ -555,10 +600,13 @@ class CatalogTest(unittest.TestCase):
         cat = TestCases.test_case_6()
         self.assertEqual(len(list(cat.get_children())), 4)
 
-    def test_fully_resolve_planet(self):
-        """Test against a bug that caused infinite recursion during fully_resolve"""
+    def test_resolve_planet(self):
+        """Test against a bug that caused infinite recursion during link resolution"""
         cat = TestCases.test_case_8()
-        cat.fully_resolve()
+        for root, _, items in cat.walk():
+            for item in items:
+                item.resolve_links()
+            root.resolve_links()
 
     def test_handles_children_with_same_id(self):
         # This catalog has the root and child collection share an ID.
