@@ -193,6 +193,33 @@ class CatalogTest(unittest.TestCase):
             source.get_self_href(),
             "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
 
+    def test_generate_subcatalogs_works_with_custom_properties(self):
+        catalog = TestCases.test_case_8()
+        defaults = {'pl:item_type': 'PlanetScope'}
+        catalog.generate_subcatalogs('${year}/${month}/${pl:item_type}', defaults=defaults)
+
+        month_cat = catalog.get_child('8', recursive=True)
+        type_cats = set([cat.id for cat in month_cat.get_children()])
+
+        self.assertEqual(type_cats, set(['PSScene4Band', 'SkySatScene', 'PlanetScope']))
+
+    def test_generate_subcatalogs_does_not_change_item_count(self):
+        catalog = TestCases.test_case_7()
+
+        item_counts = {cat.id: len(list(cat.get_all_items())) for cat in catalog.get_children()}
+
+        catalog.generate_subcatalogs("${year}/${day}")
+
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.save(pystac.CatalogType.SELF_CONTAINED)
+
+            cat2 = pystac.read_file(os.path.join(tmp_dir, 'catalog.json'))
+            for child in cat2.get_children():
+                actual = len(list(child.get_all_items()))
+                expected = item_counts[child.id]
+                self.assertEqual(actual, expected, msg=" for child '{}'".format(child.id))
+
     def test_map_items(self):
         def item_mapper(item):
             item.properties['ITEM_MAPPER'] = 'YEP'

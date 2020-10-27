@@ -478,6 +478,48 @@ class Catalog(STACObject):
 
         return self
 
+    def generate_subcatalogs(self, template, defaults=None, **kwargs):
+        """Walks through the catalog and generates subcatalogs
+        for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
+        for details on the construction of template strings. This template string
+        will be applied to the items, and subcatalogs will be created that separate
+        and organize the items based on template values.
+
+        Args:
+            template (str):   A template string that
+                can be consumed by a :class:`~pystac.layout.LayoutTemplate`
+            defaults (dict):  Default values for the template variables
+                that will be used if the property cannot be found on
+                the item.
+
+        Returns:
+            [catalog]: List of new catalogs created
+        """
+        result = []
+        for child in self.get_children():
+            result.extend(child.generate_subcatalogs(template, defaults=defaults))
+
+        layout_template = LayoutTemplate(template, defaults=defaults)
+        subcat_id_to_cat = {}
+        items = list(self.get_items())
+        for item in items:
+            item_parts = layout_template.get_template_values(item)
+            curr_parent = self
+            for k, v in item_parts.items():
+                subcat_id = '{}'.format(v)
+                subcat = subcat_id_to_cat.get(subcat_id)
+                if subcat is None:
+                    subcat_desc = 'Catalog of items from {} with {} of {}'.format(
+                        curr_parent.id, k, v)
+                    subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
+                    curr_parent.add_child(subcat)
+                    subcat_id_to_cat[subcat_id] = subcat
+                    result.append(subcat)
+                curr_parent = subcat
+            self.remove_item(item.id)
+            curr_parent.add_item(item)
+
+        return result
 
     def save(self, catalog_type):
         """Save this catalog and all it's children/item to files determined by the object's
