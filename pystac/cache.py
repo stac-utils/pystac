@@ -120,7 +120,7 @@ class ResolvedObjectCache:
 
         Returns:
             Collection or None: Returns the collection if there is one cached
-                with the given ID, otehrwise None.
+                with the given ID, otherwise None.
         """
         return self.ids_to_collections.get(id)
 
