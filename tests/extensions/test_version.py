@@ -1,16 +1,16 @@
 """Tests for pystac.extensions.version."""
 
 import datetime
-from tests.utils import TestCases
 import unittest
 
 import pystac
 from pystac.extensions import version
+from tests.utils import TestCases
 
-URL_TEMPLATE = 'http://example.com/catalog/%s.json'
+URL_TEMPLATE: str = 'http://example.com/catalog/%s.json'
 
 
-def make_item(year):
+def make_item(year: int) -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = f'USGS/GAP/CONUS/{year}'
     start = datetime.datetime(year, 1, 2)
@@ -24,7 +24,7 @@ def make_item(year):
 
 
 class VersionItemExtTest(unittest.TestCase):
-    version = '1.2.3'
+    version: str = '1.2.3'
 
     def setUp(self):
         super().setUp()
@@ -141,7 +141,7 @@ class VersionItemExtTest(unittest.TestCase):
         self.assertIs(latest, item1_copy)
 
 
-def make_collection(year):
+def make_collection(year: int) -> pystac.Collection:
     asset_id = f'my/collection/of/things/{year}'
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
@@ -159,7 +159,7 @@ def make_collection(year):
 
 
 class VersionCollectionExtTest(unittest.TestCase):
-    version = '1.2.3'
+    version: str = '1.2.3'
 
     def setUp(self):
         super().setUp()
