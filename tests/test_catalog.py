@@ -105,6 +105,49 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(children), 1)
         self.assertEqual(children[0].description, 'test3')
 
+    def test_clear_children_sets_parent_and_root_to_None(self):
+        catalog = Catalog(id='test', description='test')
+        subcat1 = Catalog(id='subcat', description='test')
+        subcat2 = Catalog(id='subcat2', description='test2')
+        catalog.add_children([subcat1, subcat2])
+
+        self.assertIsNotNone(subcat1.get_parent())
+        self.assertIsNotNone(subcat2.get_parent())
+        self.assertIsNotNone(subcat1.get_root())
+        self.assertIsNotNone(subcat2.get_root())
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 2)
+
+        catalog.clear_children()
+
+        self.assertIsNone(subcat1.get_parent())
+        self.assertIsNone(subcat2.get_parent())
+        self.assertIsNone(subcat1.get_root())
+        self.assertIsNone(subcat2.get_root())
+
+    def test_add_child_throws_if_item(self):
+        cat = TestCases.test_case_1()
+        item = next(cat.get_all_items())
+        with self.assertRaises(pystac.STACError):
+            cat.add_child(item)
+
+    def test_add_item_throws_if_child(self):
+        cat = TestCases.test_case_1()
+        child = next(cat.get_children())
+        with self.assertRaises(pystac.STACError):
+            cat.add_item(child)
+
+    def test_get_child_returns_none_if_not_found(self):
+        cat = TestCases.test_case_1()
+        child = cat.get_child('thisshouldnotbeachildid', recursive=True)
+        self.assertIsNone(child)
+
+    def test_get_item_returns_none_if_not_found(self):
+        cat = TestCases.test_case_1()
+        item = cat.get_item('thisshouldnotbeanitemid', recursive=True)
+        self.assertIsNone(item)
+
     def test_walk_iterates_correctly(self):
         def test_catalog(cat):
             expected_catalog_iterations = 1
@@ -151,6 +194,7 @@ class CatalogTest(unittest.TestCase):
 
             self.assertEqual(set(expected_link_types_to_counts.keys()),
                              set(actual_link_types_to_counts.keys()))
+
             for obj_id in actual_link_types_to_counts:
                 expected_counts = expected_link_types_to_counts[obj_id]
                 actual_counts = actual_link_types_to_counts[obj_id]

@@ -123,6 +123,17 @@ class Catalog(STACObject):
         child.set_parent(self)
         self.add_link(Link.child(child, title=title))
 
+    def add_children(self, children):
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`s.
+        This method will set each child's parent to this object, and their root to
+        this Catalog's root.
+
+        Args:
+            children (Iterable[Catalog or Collection]): The children to add.
+        """
+        for child in children:
+            self.add_child(child)
+
     def add_item(self, item, title=None):
         """Adds a link to an :class:`~pystac.Item`.
         This method will set the item's parent to this object, and its root to
@@ -195,7 +206,9 @@ class Catalog(STACObject):
         Return:
             Catalog: Returns ``self``
         """
-        self.links = [link for link in self.links if link.rel != 'child']
+        child_ids = [child.id for child in self.get_children()]
+        for child_id in child_ids:
+            self.remove_child(child_id)
         return self
 
     def remove_child(self, child_id):
