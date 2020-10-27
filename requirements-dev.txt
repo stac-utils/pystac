@@ -1,3 +1,4 @@
+codespell==1.17.1
 ipython==7.16.1
 jsonschema==3.2.0
 pylint==1.9.1

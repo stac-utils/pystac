@@ -92,7 +92,16 @@ To format code:
 
 Note that you may have to use `yapf3` explicitly depending on your environment.
 
-You can also run the `./scripts/test` script to check flake8 and yapf.
+To check for spelling mistakes in modified files:
+
+```
+> git diff --name-only | xargs codespell -I .codespellignore -f
+
+You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
+
+### Continuous Integration
+
+CI will run the `scripts/test` script to check for code quality. If you have a Pull Request that fails CI, make sure to fix any linting, spelling or test issues reported by `scripts/test`.
 
 ### Documentation
 
