@@ -33,7 +33,6 @@ class LinkTest(unittest.TestCase):
 
         # Run the same tests on the clone.
         clone = link.clone()
-        # TODO(schwehr): Does link need an __eq__?
         self.assertNotEqual(link, clone)
 
         self.assertEqual(target, clone.get_href())
@@ -64,9 +63,6 @@ class LinkTest(unittest.TestCase):
 
         link.set_owner(self.item)
         self.assertEqual(self.item, link.owner)
-        # TODO(schwehr): Cannot call link.get_href() after set_owner.
-
-        # TODO(schwehr): Test link.resolve_stac_object()
 
     def test_relative(self):
         rel = 'my rel'
@@ -98,10 +94,6 @@ class LinkTest(unittest.TestCase):
 
         link = catalog.get_single_link('item')
         self.assertIsNone(link.get_href())
-
-    # TODO: Test get_href when href is absolute and there is an owner
-    # TODO: Test get_absolute_href when there is an owner
-    # TODO: Test when resolve_stac_object on link when target is a str.
 
     def test_resolve_stac_object_no_root_and_target_is_item(self):
         link = pystac.Link('my rel', target=self.item)
