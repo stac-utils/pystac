@@ -3,67 +3,77 @@
 https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 """
 
-# TODO(schwehr): Document.
-
 import enum
 from typing import List, Optional, TypeVar
 
 import pystac
 from pystac import Extensions
-from pystac import item
 from pystac.extensions import base
 
 # Required
-INSTRUMENT_MODE = 'sar:instrument_mode'
-FREQUENCY_BAND = 'sar:frequency_band'
-POLARIZATIONS = 'sar:polarizations'
-PRODUCT_TYPE = 'sar:product_type'
+INSTRUMENT_MODE: str = 'sar:instrument_mode'
+FREQUENCY_BAND: str = 'sar:frequency_band'
+POLARIZATIONS: str = 'sar:polarizations'
+PRODUCT_TYPE: str = 'sar:product_type'
 
 # Not required
-CENTER_FREQUENCY = 'sar:center_frequency'
-RESOLUTION_RANGE = 'sar:resolution_range'
-RESOLUTION_AZIMUTH = 'sar:resolution_azimuth'
-PIXEL_SPACING_RANGE = 'sar:pixel_spacing_range'
-PIXEL_SPACING_AZIMUTH = 'sar:pixel_spacing_azimuth'
-LOOKS_RANGE = 'sar:looks_range'
-LOOKS_AZIMUTH = 'sar:looks_azimuth'
-LOOKS_EQUIVALENT_NUMBER = 'sar:looks_equivalent_number'
-OBSERVATION_DIRECTION = 'sar:observation_direction'
+CENTER_FREQUENCY: str = 'sar:center_frequency'
+RESOLUTION_RANGE: str = 'sar:resolution_range'
+RESOLUTION_AZIMUTH: str = 'sar:resolution_azimuth'
+PIXEL_SPACING_RANGE: str = 'sar:pixel_spacing_range'
+PIXEL_SPACING_AZIMUTH: str = 'sar:pixel_spacing_azimuth'
+LOOKS_RANGE: str = 'sar:looks_range'
+LOOKS_AZIMUTH: str = 'sar:looks_azimuth'
+LOOKS_EQUIVALENT_NUMBER: str = 'sar:looks_equivalent_number'
+OBSERVATION_DIRECTION: str = 'sar:observation_direction'
 
 SarItemExtType = TypeVar('SarItemExtType')
 
 
 class FrequencyBand(enum.Enum):
-    P = 'P'
-    L = 'L'
-    S = 'S'
-    C = 'C'
-    X = 'X'
-    KU = 'Ku'
-    K = 'K'
-    KA = 'Ka'
+    P: str = 'P'
+    L: str = 'L'
+    S: str = 'S'
+    C: str = 'C'
+    X: str = 'X'
+    KU: str = 'Ku'
+    K: str = 'K'
+    KA: str = 'Ka'
 
 
 class Polarization(enum.Enum):
-    HH = 'HH'
-    VV = 'VV'
-    HV = 'HV'
-    VH = 'VH'
+    HH: str = 'HH'
+    VV: str = 'VV'
+    HV: str = 'HV'
+    VH: str = 'VH'
 
 
 class ObservationDirection(enum.Enum):
-    LEFT = 'left'
-    RIGHT = 'right'
+    LEFT: str = 'left'
+    RIGHT: str = 'right'
 
 
 class SarItemExt(base.ItemExtension):
-    """Add sar properties to a STAC Item."""
-    def __init__(self, an_item: item.Item) -> None:
+    """SarItemExt extends Item to add sar properties to a STAC Item.
+
+    Args:
+        item (Item): The item to be extended.
+
+    Attributes:
+        item (Item): The item that is being extended.
+
+    Note:
+        Using SarItemExt to directly wrap an item will add the 'sar'
+        extension ID to the item's stac_extensions.
+    """
+    item: pystac.Item
+
+    def __init__(self, an_item: pystac.Item) -> None:
         self.item = an_item
 
     def apply(self,
               instrument_mode: str,
-              frequency_band: str,
+              frequency_band: FrequencyBand,
               polarizations: List[Polarization],
               product_type: str,
               center_frequency: Optional[float] = None,
@@ -75,6 +85,36 @@ class SarItemExt(base.ItemExtension):
               looks_azimuth: Optional[int] = None,
               looks_equivalent_number: Optional[float] = None,
               observation_direction: Optional[ObservationDirection] = None):
+        """Applies sar extension properties to the extended Item.
+
+        Args:
+            instrument_mode (str): The name of the sensor acquisition mode that is commonly used.
+                This should be the short name, if available. For example, WV for "Wave mode."
+            frequency_band (FrequencyBand): The common name for the frequency band to make it easier
+                to search for bands across instruments. See section "Common Frequency Band Names"
+                for a list of accepted names.
+            polarizations (List[Polarization]): Any combination of polarizations.
+            product_type (str): The product type, for example SSC, MGD, or SGC.
+            center_frequency (float): Optional center frequency of the instrument in
+                gigahertz (GHz).
+            resolution_range (float): Optional range resolution, which is the maximum ability to
+                distinguish two adjacent targets perpendicular to the flight path, in meters (m).
+            resolution_azimuth (float): Optional azimuth resolution, which is the maximum ability
+                to distinguish two adjacent targets parallel to the flight path, in meters (m).
+            pixel_spacing_range (float): Optional range pixel spacing, which is the distance
+                between adjacent pixels perpendicular to the flight path, in meters (m). Strongly
+                RECOMMENDED to be specified for products of type GRD.
+            pixel_spacing_azimuth (float): Optional azimuth pixel spacing, which is the distance
+                between adjacent pixels parallel to the flight path, in meters (m). Strongly
+                RECOMMENDED to be specified for products of type GRD.
+            looks_range (int): Optional number of groups of signal samples (looks) perpendicular
+                to the flight path.
+            looks_azimuth (int): Optional number of groups of signal samples (looks) parallel
+                to the flight path.
+            looks_equivalent_number (float): Optional equivalent number of looks (ENL).
+            observation_direction (ObservationDirection): Optional Antenna pointing direction
+                relative to the flight trajectory of the satellite.
+        """
         self.instrument_mode = instrument_mode
         self.frequency_band = frequency_band
         self.polarizations = polarizations
@@ -99,7 +139,7 @@ class SarItemExt(base.ItemExtension):
             self.observation_direction = observation_direction
 
     @classmethod
-    def from_item(cls: SarItemExtType, an_item: item.Item) -> SarItemExtType:
+    def from_item(cls: SarItemExtType, an_item: pystac.Item) -> SarItemExtType:
         return cls(an_item)
 
     @classmethod
@@ -108,6 +148,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def instrument_mode(self) -> str:
+        """Get or sets an instrument mode string for the item.
+
+        Returns:
+            str
+        """
         return self.item.properties.get(INSTRUMENT_MODE)
 
     @instrument_mode.setter
@@ -116,6 +161,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def frequency_band(self) -> FrequencyBand:
+        """Get or sets a FrequencyBand for the item.
+
+        Returns:
+            FrequencyBand
+        """
         return FrequencyBand(self.item.properties.get(FREQUENCY_BAND))
 
     @frequency_band.setter
@@ -124,6 +174,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def polarizations(self) -> List[Polarization]:
+        """Get or sets a list of polarizations for the item.
+
+        Returns:
+            List[Polarization]
+        """
         return [Polarization(v) for v in self.item.properties.get(POLARIZATIONS)]
 
     @polarizations.setter
@@ -134,6 +189,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def product_type(self) -> str:
+        """Get or sets a product type string for the item.
+
+        Returns:
+            str
+        """
         return self.item.properties.get(PRODUCT_TYPE)
 
     @product_type.setter
@@ -142,6 +202,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def center_frequency(self) -> float:
+        """Get or sets a center frequency for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(CENTER_FREQUENCY)
 
     @center_frequency.setter
@@ -150,6 +215,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def resolution_range(self) -> float:
+        """Get or sets a resolution range for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(RESOLUTION_RANGE)
 
     @resolution_range.setter
@@ -158,6 +228,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def resolution_azimuth(self) -> float:
+        """Get or sets a resolution azimuth for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(RESOLUTION_AZIMUTH)
 
     @resolution_azimuth.setter
@@ -166,6 +241,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def pixel_spacing_range(self) -> float:
+        """Get or sets a pixel spacing range for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(PIXEL_SPACING_RANGE)
 
     @pixel_spacing_range.setter
@@ -174,6 +254,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def pixel_spacing_azimuth(self) -> float:
+        """Get or sets a pixel spacing azimuth for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(PIXEL_SPACING_AZIMUTH)
 
     @pixel_spacing_azimuth.setter
@@ -182,6 +267,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def looks_range(self) -> int:
+        """Get or sets a looks range for the item.
+
+        Returns:
+            int
+        """
         return self.item.properties.get(LOOKS_RANGE)
 
     @looks_range.setter
@@ -190,6 +280,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def looks_azimuth(self) -> int:
+        """Get or sets a looks azimuth for the item.
+
+        Returns:
+            int
+        """
         return self.item.properties.get(LOOKS_AZIMUTH)
 
     @looks_azimuth.setter
@@ -198,6 +293,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def looks_equivalent_number(self) -> float:
+        """Get or sets a looks equivalent number for the item.
+
+        Returns:
+            float
+        """
         return self.item.properties.get(LOOKS_EQUIVALENT_NUMBER)
 
     @looks_equivalent_number.setter
@@ -206,6 +306,11 @@ class SarItemExt(base.ItemExtension):
 
     @property
     def observation_direction(self) -> ObservationDirection:
+        """Get or sets an observation direction for the item.
+
+        Returns:
+            ObservationDirection
+        """
         return ObservationDirection(self.item.properties.get(OBSERVATION_DIRECTION))
 
     @observation_direction.setter
@@ -214,5 +319,5 @@ class SarItemExt(base.ItemExtension):
 
 
 SAR_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SAR, [
-    base.ExtendedObject(item.Item, SarItemExt),
+    base.ExtendedObject(pystac.Item, SarItemExt),
 ])
