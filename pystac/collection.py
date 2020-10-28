@@ -82,30 +82,6 @@ class Collection(Catalog):
         self.properties = properties
         self.summaries = summaries
 
-    def set_self_href(self, href):
-        """Sets the absolute HREF that is represented by the ``rel == 'self'``
-        :class:`~pystac.Link`.
-
-        Args:
-            str: The absolute HREF of this object. If the given HREF
-                is not absolute, it will be transformed to an absolute
-                HREF based on the current working directory.
-
-        Note:
-            Overridden for collections so that the root's ResolutionObjectCache can properly
-            update the HREF cache.
-        """
-        root_link = self.get_root_link()
-        if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.remove(self)
-
-        super().set_self_href(href)
-
-        if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.cache(self)
-
-        return self
-
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
 
