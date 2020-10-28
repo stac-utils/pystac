@@ -187,19 +187,16 @@ class Collection(Catalog):
                                 keywords=keywords,
                                 providers=providers,
                                 properties=properties,
-                                summaries=summaries)
+                                summaries=summaries,
+                                href=href)
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 collection.remove_links('root')
 
-            collection.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            collection.add_link(Link.self_href(href))
+            if link['rel'] != 'self' or href is None:
+                collection.add_link(Link.from_dict(link))
 
         return collection
 
