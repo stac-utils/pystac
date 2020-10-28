@@ -1,4 +1,3 @@
-import os
 from copy import copy, deepcopy
 
 import dateutil.parser
@@ -193,7 +192,8 @@ class Item(STACObject):
         this item.
 
         Args:
-            collection (Collection): The collection to set as this item's collection.
+            collection (Collection or None): The collection to set as this
+                item's collection. If None, will clear the collection.
             link_type (str): the link type to use for the collection link.
                 One of :class:`~pystac.LinkType`.
 
@@ -207,9 +207,25 @@ class Item(STACObject):
             else:
                 link_type = LinkType.ABSOLUTE
         self.remove_links('collection')
-        self.add_link(Link.collection(collection, link_type=link_type))
-        self.collection_id = collection.id
+        self.collection_id = None
+        if collection is not None:
+            self.add_link(Link.collection(collection, link_type=link_type))
+            self.collection_id = collection.id
+
         return self
+
+    def get_collection(self):
+        """Gets the collection of this item, if one exists.
+
+        Returns:
+            Collection or None: If this item belongs to a collection, returns
+            a reference to the collection. Otherwise returns None.
+        """
+        collection_link = self.get_single_link('collection')
+        if collection_link is None:
+            return None
+        else:
+            return collection_link.resolve_stac_object().target
 
     def to_dict(self, include_self_link=True):
         links = self.links
@@ -264,31 +280,6 @@ class Item(STACObject):
 
     def _object_links(self):
         return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
-
-    def normalize_hrefs(self, root_href):
-        if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
-
-        old_self_href = self.get_self_href()
-        new_self_href = os.path.join(root_href, '{}.json'.format(self.id))
-        self.set_self_href(new_self_href)
-
-        # Make sure relative asset links remain valid.
-        # This will only work if there is a self href set.
-        for asset in self.assets.values():
-            asset_href = asset.href
-            if not is_absolute_href(asset_href):
-                if old_self_href is not None:
-                    abs_href = make_absolute_href(asset_href, old_self_href)
-                    new_relative_href = make_relative_href(abs_href, new_self_href)
-                    asset.href = new_relative_href
-
-    def fully_resolve(self):
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):

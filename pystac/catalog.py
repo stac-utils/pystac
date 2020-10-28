@@ -4,9 +4,10 @@ from copy import deepcopy
 import pystac
 from pystac import STACError
 from pystac.stac_object import STACObject
+from pystac.layout import (BestPracticesLayoutStrategy, LayoutTemplate)
 from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
-from pystac.utils import (is_absolute_href, make_absolute_href)
+from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href)
 
 
 class CatalogType:
@@ -123,6 +124,17 @@ class Catalog(STACObject):
         child.set_parent(self)
         self.add_link(Link.child(child, title=title))
 
+    def add_children(self, children):
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`s.
+        This method will set each child's parent to this object, and their root to
+        this Catalog's root.
+
+        Args:
+            children (Iterable[Catalog or Collection]): The children to add.
+        """
+        for child in children:
+            self.add_child(child)
+
     def add_item(self, item, title=None):
         """Adds a link to an :class:`~pystac.Item`.
         This method will set the item's parent to this object, and its root to
@@ -195,7 +207,9 @@ class Catalog(STACObject):
         Return:
             Catalog: Returns ``self``
         """
-        self.links = [link for link in self.links if link.rel != 'child']
+        child_ids = [child.id for child in self.get_children()]
+        for child_id in child_ids:
+            self.remove_child(child_id)
         return self
 
     def remove_child(self, child_id):
@@ -386,7 +400,7 @@ class Catalog(STACObject):
             for item in items:
                 item.make_asset_hrefs_absolute()
 
-    def normalize_and_save(self, root_href, catalog_type):
+    def normalize_and_save(self, root_href, catalog_type, strategy=None):
         """Normalizes link HREFs to the given root_href, and saves
         the catalog with the given catalog_type.
 
@@ -398,46 +412,128 @@ class Catalog(STACObject):
             root_href (str): The absolute HREF that all links will be normalized against.
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
+                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
         """
-        self.normalize_hrefs(root_href)
+        self.normalize_hrefs(root_href, strategy=strategy)
         self.save(catalog_type)
 
-    def normalize_hrefs(self, root_href):
+    def normalize_hrefs(self, root_href, strategy=None):
+        """Normalize HREFs will regenerate all link HREFs based on
+        an absolute root_href and the canonical catalog layout as specified
+        in the STAC specification's best practices.
+
+        This method mutates the entire catalog tree.
+
+        Args:
+            root_href (str): The absolute HREF that all links will be normalized against.
+            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
+                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
+
+        See:
+            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
+        """ # noqa E501
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
+
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        # Fully resolve the STAC to avoid linking issues.
-        # This particularly can happen with unresolved links that have
-        # relative paths.
-        self.fully_resolve()
+        def process_item(item, _root_href):
+            item.resolve_links()
 
-        for child in self.get_children():
-            child_root = os.path.join(root_href, '{}/'.format(child.id))
-            child.normalize_hrefs(child_root)
+            old_self_href = item.get_self_href()
+            new_self_href = strategy.get_href(item, _root_href)
 
-        for item in self.get_items():
-            item_root = os.path.join(root_href, '{}'.format(item.id))
-            item.normalize_hrefs(item_root)
+            def fn():
+                item.set_self_href(new_self_href)
 
-        self.set_self_href(os.path.join(root_href, self.DEFAULT_FILE_NAME))
+                # Make sure relative asset links remain valid.
+                # This will only work if there is a self href set.
+                for asset in item.assets.values():
+                    asset_href = asset.href
+                    if not is_absolute_href(asset_href):
+                        if old_self_href is not None:
+                            abs_href = make_absolute_href(asset_href, old_self_href)
+                            new_relative_href = make_relative_href(abs_href, new_self_href)
+                            asset.href = new_relative_href
+
+            return fn
+
+        def process_catalog(cat, _root_href, is_root):
+            setter_funcs = []
+
+            cat.resolve_links()
+
+            new_self_href = strategy.get_href(cat, _root_href, is_root)
+            new_root = os.path.dirname(new_self_href)
+
+            for item in cat.get_items():
+                setter_funcs.append(process_item(item, new_root))
+
+            for child in cat.get_children():
+                setter_funcs.extend(process_catalog(child, new_root, is_root=False))
+
+            def fn():
+                cat.set_self_href(new_self_href)
+
+            setter_funcs.append(fn)
+
+            return setter_funcs
+
+        # Collect functions that will actually mutate the objects.
+        # Delay mutation as setting hrefs while walking the catalog
+        # can result in bad links.
+        setter_funcs = process_catalog(self, root_href, is_root=True)
+
+        for fn in setter_funcs:
+            fn()
 
         return self
 
-    def fully_resolve(self):
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel == 'root':
-                if not link.is_resolved():
-                    if link.get_absolute_href() != self.get_self_href():
-                        link.target = self
-                    else:
-                        link.resolve_stac_object()
-                        link.target.fully_resolve()
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
-                link.target.fully_resolve()
+    def generate_subcatalogs(self, template, defaults=None, **kwargs):
+        """Walks through the catalog and generates subcatalogs
+        for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
+        for details on the construction of template strings. This template string
+        will be applied to the items, and subcatalogs will be created that separate
+        and organize the items based on template values.
+
+        Args:
+            template (str):   A template string that
+                can be consumed by a :class:`~pystac.layout.LayoutTemplate`
+            defaults (dict):  Default values for the template variables
+                that will be used if the property cannot be found on
+                the item.
+
+        Returns:
+            [catalog]: List of new catalogs created
+        """
+        result = []
+        for child in self.get_children():
+            result.extend(child.generate_subcatalogs(template, defaults=defaults))
+
+        layout_template = LayoutTemplate(template, defaults=defaults)
+        subcat_id_to_cat = {}
+        items = list(self.get_items())
+        for item in items:
+            item_parts = layout_template.get_template_values(item)
+            curr_parent = self
+            for k, v in item_parts.items():
+                subcat_id = '{}'.format(v)
+                subcat = subcat_id_to_cat.get(subcat_id)
+                if subcat is None:
+                    subcat_desc = 'Catalog of items from {} with {} of {}'.format(
+                        curr_parent.id, k, v)
+                    subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
+                    curr_parent.add_child(subcat)
+                    subcat_id_to_cat[subcat_id] = subcat
+                    result.append(subcat)
+                curr_parent = subcat
+            self.remove_item(item.id)
+            curr_parent.add_item(item)
+
+        return result
 
     def save(self, catalog_type):
         """Save this catalog and all it's children/item to files determined by the object's

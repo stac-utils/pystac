@@ -455,31 +455,19 @@ class STACObject(LinkMixin, ABC):
         """
         return ExtensionIndex(self)
 
-    @abstractmethod
-    def fully_resolve(self):
+    def resolve_links(self):
         """Ensure all STACObjects linked to by this STACObject are
         resolved. This is important for operations such as changing
         HREFs.
 
         This method mutates the entire catalog tree.
         """
-        pass
+        link_rels = set(self._object_links()) | set(['root', 'parent'])
 
-    @abstractmethod
-    def normalize_hrefs(self, root_href):
-        """Normalize HREFs will regenerate all link HREFs based on
-        an absolute root_href and the canonical catalog layout as specified
-        in the STAC specification's best practices.
-
-        This method mutates the entire catalog tree.
-
-        Args:
-            root_href (str): The absolute HREF that all links will be normalized against.
-
-        See:
-            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
-        """ # noqa E501
-        pass
+        for link in self.links:
+            if link.rel in link_rels:
+                if not link.is_resolved():
+                    link.resolve_stac_object(root=self.get_root())
 
     @abstractmethod
     def _object_links(self):

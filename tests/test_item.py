@@ -62,6 +62,17 @@ class ItemTest(unittest.TestCase):
             self.assertTrue('test' in read_item.extra_fields)
             self.assertEqual(read_item.extra_fields['test'], 'extra')
 
+    def test_clearing_collection(self):
+        collection = TestCases.test_case_4().get_child('acc')
+        item = next(collection.get_all_items())
+        self.assertEqual(item.collection_id, collection.id)
+        item.set_collection(None)
+        self.assertIsNone(item.collection_id)
+        self.assertIsNone(item.get_collection())
+        item.set_collection(collection)
+        self.assertEqual(item.collection_id, collection.id)
+        self.assertIs(item.get_collection(), collection)
+
     def test_datetime_ISO8601_format(self):
         item_dict = self.get_example_item_dict()
 

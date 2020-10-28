@@ -153,6 +153,30 @@ STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users
    :members:
    :undoc-members:
 
+Layout
+------
+
+These classes are used to set the HREFs of a STAC according to some layout.
+The templating functionality is also used when generating subcatalogs based on
+a template.
+
+Templating
+~~~~~~~~~~
+
+.. autoclass:: pystac.layout.LayoutTemplate
+   :members:
+
+.. autoclass:: pystac.layout.TemplateError
+
+HREF Layout Strategies
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.layout.BestPracticesLayoutStrategy
+
+.. autoclass:: pystac.layout.TemplateLayoutStrategy
+
+.. autoclass:: pystac.layout.CustomLayoutStrategy
+
 Errors
 ------
 
@@ -263,7 +287,6 @@ PointcloudItemExt
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Projection Extension
 --------------------
