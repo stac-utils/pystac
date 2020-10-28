@@ -3,6 +3,7 @@ import os
 import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
+from dateutil import tz
 
 import pystac
 from pystac.validation import validate_dict
@@ -223,17 +224,42 @@ class ExtentTest(unittest.TestCase):
 
         collection.validate()
 
-    def test_temporal_allows_single_interval(self):
-        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+    def test_from_items(self):
+        item1 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-10, -20, 0, -10],
+                     datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+                     properties={})
 
-        # Pass in a single interval
-        temporal_extent = TemporalExtent(intervals=[TEST_DATETIME, None])
+        item2 = Item(id='test-item-2',
+                     geometry=RANDOM_GEOM,
+                     bbox=[0, -9, 10, 1],
+                     datetime=None,
+                     properties={
+                         'start_datetime':
+                         datetime_to_str(datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)),
+                         'end_datetime':
+                         datetime_to_str(datetime(2000, 7, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+                     })
 
-        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+        item3 = Item(id='test-item-2',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-5, -20, 5, 0],
+                     datetime=None,
+                     properties={
+                         'start_datetime':
+                         datetime_to_str(datetime(2000, 12, 1, 12, 0, 0, 0, tzinfo=tz.UTC)),
+                         'end_datetime':
+                         datetime_to_str(datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC), )
+                     })
 
-        collection = Collection(id='test', description='test desc', extent=collection_extent)
+        extent = Extent.from_items([item1, item2, item3])
 
-        # HREF required by validation
-        collection.set_self_href('https://example.com/collection.json')
+        self.assertEqual(len(extent.spatial.bboxes), 1)
+        self.assertEqual(extent.spatial.bboxes[0], [-10, -20, 10, 1])
 
-        collection.validate()
+        self.assertEqual(len(extent.temporal.intervals), 1)
+        interval = extent.temporal.intervals[0]
+
+        self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+        self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))

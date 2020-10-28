@@ -180,32 +180,7 @@ class Collection(Catalog):
         """
         Update datetime and bbox based on all items to a single bbox and time window.
         """
-        def extract_extent_props(item):
-            return item.bbox + [
-                item.datetime, item.common_metadata.start_datetime,
-                item.common_metadata.end_datetime
-            ]
-
-        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(
-            *map(extract_extent_props, self.get_all_items()))
-
-        if not any(datetimes + starts):
-            start_timestamp = None
-        else:
-            start_timestamp = min([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + starts)
-            ])
-        if not any(datetimes + ends):
-            end_timestamp = None
-        else:
-            end_timestamp = max([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + ends)
-            ])
-
-        self.extent.spatial.bboxes = [[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]]
-        self.extent.temporal.intervals = [[start_timestamp, end_timestamp]]
+        self.extent = Extent.from_items(self.get_all_items())
 
 
 class Extent:
@@ -261,6 +236,45 @@ class Extent:
 
         return Extent(SpatialExtent.from_dict(spatial_extent_dict),
                       TemporalExtent.from_dict(temporal_extent_dict))
+
+    @staticmethod
+    def from_items(items):
+        """Create an Extent based on the datetimes and bboxes of a list of items.
+
+        Args:
+            items (List[Item]): A list of items to derive the extent from.
+
+        Returns:
+            Extent: An Extent that spatially and temporally covers all of the
+                given items.
+        """
+        def extract_extent_props(item):
+            return item.bbox + [
+                item.datetime, item.common_metadata.start_datetime,
+                item.common_metadata.end_datetime
+            ]
+
+        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(*map(extract_extent_props, items))
+
+        if not any(datetimes + starts):
+            start_timestamp = None
+        else:
+            start_timestamp = min([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + starts)
+            ])
+        if not any(datetimes + ends):
+            end_timestamp = None
+        else:
+            end_timestamp = max([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + ends)
+            ])
+
+        spatial = SpatialExtent([[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]])
+        temporal = TemporalExtent([[start_timestamp, end_timestamp]])
+
+        return Extent(spatial, temporal)
 
 
 class SpatialExtent:
