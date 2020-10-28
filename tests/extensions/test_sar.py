@@ -1,6 +1,7 @@
 """Tests for pystac.extensions.sar."""
 
 import datetime
+from typing import List
 import unittest
 
 import pystac
@@ -26,10 +27,10 @@ class SarItemExtTest(unittest.TestCase):
         self.assertEqual([pystac.Extensions.SAR], self.item.stac_extensions)
 
     def test_required(self):
-        mode = 'Nonesense mode'
-        frequency_band = sar.FrequencyBand.P
-        polarizations = [sar.Polarization.HV, sar.Polarization.VH]
-        product_type = 'Some product'
+        mode: str = 'Nonesense mode'
+        frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
+        polarizations: List[sar.Polarization] = [sar.Polarization.HV, sar.Polarization.VH]
+        product_type: str = 'Some product'
         self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type)
         self.assertEqual(mode, self.item.ext.sar.instrument_mode)
         self.assertIn(sar.INSTRUMENT_MODE, self.item.properties)
@@ -46,19 +47,19 @@ class SarItemExtTest(unittest.TestCase):
         self.item.validate()
 
     def test_all(self):
-        mode = 'WV'
-        frequency_band = sar.FrequencyBand.KA
-        polarizations = [sar.Polarization.VV, sar.Polarization.HH]
-        product_type = 'Some product'
-        center_frequency = 1.2
-        resolution_range = 3.1
-        resolution_azimuth = 4.1
-        pixel_spacing_range = 5.1
-        pixel_spacing_azimuth = 6.1
-        looks_range = 7
-        looks_azimuth = 8
-        looks_equivalent_number = 9.1
-        observation_direction = sar.ObservationDirection.LEFT
+        mode: str = 'WV'
+        frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
+        polarizations: List[sar.Polarization] = [sar.Polarization.VV, sar.Polarization.HH]
+        product_type: str = 'Some product'
+        center_frequency: float = 1.2
+        resolution_range: float = 3.1
+        resolution_azimuth: float = 4.1
+        pixel_spacing_range: float = 5.1
+        pixel_spacing_azimuth: float = 6.1
+        looks_range: int = 7
+        looks_azimuth: int = 8
+        looks_equivalent_number: float = 9.1
+        observation_direction: sar.ObservationDirection = sar.ObservationDirection.LEFT
 
         self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type, center_frequency,
                                 resolution_range, resolution_azimuth, pixel_spacing_range,
@@ -93,6 +94,15 @@ class SarItemExtTest(unittest.TestCase):
         self.assertIn(sar.OBSERVATION_DIRECTION, self.item.properties)
 
         self.item.validate()
+
+    def test_polarization_must_be_list(self):
+        mode: str = 'Nonesense mode'
+        frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
+        # Skip type hint as we are passing in an incorrect polarization.
+        polarizations = sar.Polarization.HV
+        product_type: str = 'Some product'
+        with self.assertRaises(pystac.STACError):
+            self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type)
 
 
 if __name__ == '__main__':
