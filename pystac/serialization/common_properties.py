@@ -39,6 +39,8 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         if type(stac_extensions) is list:
             if 'commons' not in stac_extensions:
                 return False
+        else:
+            return False
 
     # Try the cache if we have a collection ID.
     if 'collection' in item_dict:
