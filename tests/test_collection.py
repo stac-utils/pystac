@@ -191,6 +191,12 @@ class CollectionTest(unittest.TestCase):
 
         self.assertEqual(collection.get_self_href(), test_href)
 
+    def test_reading_0_8_1_collection_as_catalog_throws_correct_exception(self):
+        cat = pystac.Catalog.from_file(
+            TestCases.get_path('data-files/examples/hand-0.8.1/collection.json'))
+        with self.assertRaises(ValueError):
+            list(cat.get_all_items())
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self):
