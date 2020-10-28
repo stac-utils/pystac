@@ -88,12 +88,13 @@ class Catalog(STACObject):
             self.extra_fields = extra_fields
 
         self._resolved_objects = ResolvedObjectCache()
-        self._resolved_objects.cache(self)
 
         self.add_link(Link.root(self))
 
         if href is not None:
             self.set_self_href(href)
+
+        self._resolved_objects.cache(self)
 
     def __repr__(self):
         return '<Catalog id={}>'.format(self.id)
@@ -637,18 +638,15 @@ class Catalog(STACObject):
                       description=description,
                       title=title,
                       stac_extensions=stac_extensions,
-                      extra_fields=d)
+                      extra_fields=d,
+                      href=href)
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 cat.remove_links('root')
 
-            cat.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            cat.add_link(Link.self_href(href))
+            if link['rel'] != 'self' or href is None:
+                cat.add_link(Link.from_dict(link))
 
         return cat

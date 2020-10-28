@@ -136,6 +136,15 @@ class ItemTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             item_dict['bbox']
 
+    def test_0_9_item_with_no_extensions_does_not_read_collection_data(self):
+        item_json = pystac.STAC_IO.read_json(
+            TestCases.get_path('data-files/examples/hand-0.9.0/010100/010100.json'))
+        assert item_json.get('stac_extensions') is None
+        assert item_json.get('stac_version') == '0.9.0'
+
+        did_merge = pystac.serialization.common_properties.merge_common_properties(item_json)
+        self.assertFalse(did_merge)
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):

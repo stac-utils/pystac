@@ -82,30 +82,6 @@ class Collection(Catalog):
         self.properties = properties
         self.summaries = summaries
 
-    def set_self_href(self, href):
-        """Sets the absolute HREF that is represented by the ``rel == 'self'``
-        :class:`~pystac.Link`.
-
-        Args:
-            str: The absolute HREF of this object. If the given HREF
-                is not absolute, it will be transformed to an absolute
-                HREF based on the current working directory.
-
-        Note:
-            Overridden for collections so that the root's ResolutionObjectCache can properly
-            update the HREF cache.
-        """
-        root_link = self.get_root_link()
-        if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.remove(self)
-
-        super().set_self_href(href)
-
-        if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.cache(self)
-
-        return self
-
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
 
@@ -187,19 +163,16 @@ class Collection(Catalog):
                                 keywords=keywords,
                                 providers=providers,
                                 properties=properties,
-                                summaries=summaries)
+                                summaries=summaries,
+                                href=href)
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 collection.remove_links('root')
 
-            collection.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            collection.add_link(Link.self_href(href))
+            if link['rel'] != 'self' or href is None:
+                collection.add_link(Link.from_dict(link))
 
         return collection
 

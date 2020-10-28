@@ -567,6 +567,14 @@ class CatalogTest(unittest.TestCase):
 
         self.assertEqual(len(items), 1)
 
+    def test_catalog_with_href_caches_by_href(self):
+        cat = TestCases.test_case_1()
+        cache = cat._resolved_objects
+
+        # Since all of our STAC objects have HREFs, everything should be
+        # cached only by HREF
+        self.assertEqual(len(cache.id_keys_to_objects), 0)
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link, tag):

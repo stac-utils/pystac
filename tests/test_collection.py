@@ -191,6 +191,21 @@ class CollectionTest(unittest.TestCase):
 
         self.assertEqual(collection.get_self_href(), test_href)
 
+    def test_reading_0_8_1_collection_as_catalog_throws_correct_exception(self):
+        cat = pystac.Catalog.from_file(
+            TestCases.get_path('data-files/examples/hand-0.8.1/collection.json'))
+        with self.assertRaises(ValueError):
+            list(cat.get_all_items())
+
+    def test_collection_with_href_caches_by_href(self):
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/examples/hand-0.8.1/collection.json'))
+        cache = collection._resolved_objects
+
+        # Since all of our STAC objects have HREFs, everything should be
+        # cached only by HREF
+        self.assertEqual(len(cache.id_keys_to_objects), 0)
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self):
