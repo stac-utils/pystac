@@ -106,6 +106,36 @@ class Item(STACObject):
     def __repr__(self):
         return '<Item id={}>'.format(self.id)
 
+    def set_self_href(self, href):
+        """Sets the absolute HREF that is represented by the ``rel == 'self'``
+        :class:`~pystac.Link`.
+
+        Changing the self HREF of the item will ensure that all asset HREFs
+        remain valid. If asset HREFs are relative, the HREFs will change
+        to point to the same location based on the new item self HREF,
+        either by making them relative to the new location or making them
+        absolute links if the new location does not share the same protocol
+        as the old location.
+
+        Args:
+            href (str): The absolute HREF of this object. If the given HREF
+                is not absolute, it will be transformed to an absolute
+                HREF based on the current working directory. If this is None
+                the call will clear the self HREF link.
+        """
+        prev_href = self.get_self_href()
+        super().set_self_href(href)
+        new_href = self.get_self_href()  # May have been made absolute.
+
+        if prev_href is not None:
+            # Make sure relative asset links remain valid.
+            for asset in self.assets.values():
+                asset_href = asset.href
+                if not is_absolute_href(asset_href):
+                    abs_href = make_absolute_href(asset_href, prev_href)
+                    new_relative_href = make_relative_href(abs_href, new_href)
+                    asset.href = new_relative_href
+
     def get_datetime(self, asset=None):
         """Gets an Item or an Asset datetime.
 

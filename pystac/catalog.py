@@ -7,7 +7,7 @@ from pystac.stac_object import STACObject
 from pystac.layout import (BestPracticesLayoutStrategy, LayoutTemplate)
 from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
-from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href)
+from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
 class CatalogType:
@@ -481,21 +481,10 @@ class Catalog(STACObject):
         def process_item(item, _root_href):
             item.resolve_links()
 
-            old_self_href = item.get_self_href()
             new_self_href = strategy.get_href(item, _root_href)
 
             def fn():
                 item.set_self_href(new_self_href)
-
-                # Make sure relative asset links remain valid.
-                # This will only work if there is a self href set.
-                for asset in item.assets.values():
-                    asset_href = asset.href
-                    if not is_absolute_href(asset_href):
-                        if old_self_href is not None:
-                            abs_href = make_absolute_href(asset_href, old_self_href)
-                            new_relative_href = make_relative_href(abs_href, new_self_href)
-                            asset.href = new_relative_href
 
             return fn
 
