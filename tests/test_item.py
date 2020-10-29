@@ -8,7 +8,7 @@ import pystac
 from pystac import Asset, Item, Provider
 from pystac.validation import validate_dict
 from pystac.item import CommonMetadata
-from pystac.utils import str_to_datetime
+from pystac.utils import (str_to_datetime, is_absolute_href)
 from pystac.serialization.identify import STACObjectType
 from tests.utils import (TestCases, test_to_from_dict)
 
@@ -35,6 +35,17 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(item.assets['analytic'].properties['product'],
                          'http://cool-sat.com/catalog/products/analytic.json')
         self.assertEqual(len(item.assets['thumbnail'].properties), 0)
+
+    def test_set_self_href_doesnt_break_asset_hrefs(self):
+        cat = TestCases.test_case_6()
+        for item in cat.get_all_items():
+            for asset in item.assets.values():
+                print(asset.href)
+                assert not is_absolute_href(asset.href)
+            item.set_self_href('http://example.com/item.json')
+            for asset in item.assets.values():
+                self.assertTrue(is_absolute_href(asset.href))
+                self.assertTrue(os.path.exists(asset.href))
 
     def test_asset_absolute_href(self):
         item_dict = self.get_example_item_dict()
