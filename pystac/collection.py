@@ -3,7 +3,7 @@ from datetime import datetime
 import dateutil.parser
 from dateutil import tz
 from copy import (copy, deepcopy)
-from pystac import (STACError, STACObjectType)
+from pystac import (STACError, STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -66,13 +66,14 @@ class Collection(Catalog):
                  stac_extensions=None,
                  href=None,
                  extra_fields=None,
+                 catalog_type=None,
                  license='proprietary',
                  keywords=None,
                  providers=None,
                  properties=None,
                  summaries=None):
         super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields,
-                                         href)
+                                         href, catalog_type)
         self.extent = extent
         self.license = license
 
@@ -136,6 +137,8 @@ class Collection(Catalog):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
+        catalog_type = CatalogType.determine_type(d)
+
         d = deepcopy(d)
         id = d.pop('id')
         description = d.pop('description')
@@ -164,7 +167,8 @@ class Collection(Catalog):
                                 providers=providers,
                                 properties=properties,
                                 summaries=summaries,
-                                href=href)
+                                href=href,
+                                catalog_type=catalog_type)
 
         for link in links:
             if link['rel'] == 'root':

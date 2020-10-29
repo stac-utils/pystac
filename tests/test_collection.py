@@ -92,6 +92,18 @@ class CollectionTest(unittest.TestCase):
 
         self.assertTrue(item.ext.implements('eo'))
 
+    def test_save_uses_previous_catalog_type(self):
+        collection = TestCases.test_case_8()
+        assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
+        self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
+        with TemporaryDirectory() as tmp_dir:
+            collection.normalize_hrefs(tmp_dir)
+            href = collection.get_self_href()
+            collection.save()
+
+            collection2 = pystac.read_file(href)
+            self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_multiple_extents(self):
         cat1 = TestCases.test_case_1()
         col1 = cat1.get_child('country-1').get_child('area-1-1')
