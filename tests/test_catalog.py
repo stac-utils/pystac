@@ -13,6 +13,41 @@ from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
 
+class CatalogTypeTest(unittest.TestCase):
+    def test_determine_type_for_absolute_published(self):
+        cat = TestCases.test_case_1()
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+            cat_json = pystac.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
+
+    def test_determine_type_for_relative_published(self):
+        cat = TestCases.test_case_2()
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
+            cat_json = pystac.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
+
+    def test_determine_type_for_self_contained(self):
+        cat_json = pystac.STAC_IO.read_json(
+            TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_determine_type_for_unknown(self):
+        catalog = Catalog(id='test', description='test desc')
+        subcat = Catalog(id='subcat', description='subcat desc')
+        catalog.add_child(subcat)
+        catalog.normalize_hrefs('http://example.com')
+        d = catalog.to_dict(include_self_link=False)
+
+        self.assertIsNone(CatalogType.determine_type(d))
+
+
 class CatalogTest(unittest.TestCase):
     def test_create_and_read(self):
         with TemporaryDirectory() as tmp_dir:
@@ -148,6 +183,11 @@ class CatalogTest(unittest.TestCase):
         item = cat.get_item('thisshouldnotbeanitemid', recursive=True)
         self.assertIsNone(item)
 
+    def test_sets_catalog_type(self):
+        cat = TestCases.test_case_1()
+
+        self.assertEqual(cat.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_walk_iterates_correctly(self):
         def test_catalog(cat):
             expected_catalog_iterations = 1
@@ -204,6 +244,25 @@ class CatalogTest(unittest.TestCase):
                         actual_counts[rel], expected_counts[rel],
                         'Clone of {} has {} {} links, original has {}'.format(
                             obj_id, actual_counts[rel], rel, expected_counts[rel]))
+
+    def test_save_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_1()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            href = catalog.get_self_href()
+            catalog.save()
+
+            cat2 = pystac.read_file(href)
+            self.assertEqual(cat2.catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_save_throws_if_no_catalog_type(self):
+        catalog = TestCases.test_case_3()
+        assert catalog.catalog_type is None
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            with self.assertRaises(ValueError):
+                catalog.save()
 
     def test_normalize_hrefs_sets_all_hrefs(self):
         catalog = TestCases.test_case_1()

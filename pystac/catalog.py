@@ -38,6 +38,38 @@ class CatalogType:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
+    @staticmethod
+    def determine_type(stac_json):
+        """Determines the catalog type based on a STAC JSON dict.
+
+        Only applies to Catalogs or Collections
+
+        Args:
+            stac_json (dict): The STAC JSON dict to determine the catalog type
+
+        Returns:
+            str or None: The catalog type of the catalog or collection.
+                Will return None if it cannot be determined.
+        """
+        self_link = None
+        relative = False
+        for link in stac_json['links']:
+            if link['rel'] == 'self':
+                self_link = link
+            else:
+                relative |= not is_absolute_href(link['href'])
+
+        if self_link:
+            if relative:
+                return CatalogType.RELATIVE_PUBLISHED
+            else:
+                return CatalogType.ABSOLUTE_PUBLISHED
+        else:
+            if relative:
+                return CatalogType.SELF_CONTAINED
+            else:
+                return None
+
 
 class Catalog(STACObject):
     """A PySTAC Catalog represents a STAC catalog in memory.
@@ -55,6 +87,8 @@ class Catalog(STACObject):
         stac_extensions (List[str]): Optional list of extensions the Catalog implements.
         href (str or None): Optional HREF for this catalog, which be set as the catalog's
             self link's HREF.
+        catalog_type (str or None): Optional catalog type for this catalog. Must
+            be one of the values in :class`~pystac.CatalogType`.
 
     Attributes:
         id (str): Identifier for the catalog.
@@ -65,6 +99,7 @@ class Catalog(STACObject):
             of the Catalog.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this Catalog.
+        catalog_type (str or None): The catalog type, or None if not known.
     """
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
@@ -77,7 +112,8 @@ class Catalog(STACObject):
                  title=None,
                  stac_extensions=None,
                  extra_fields=None,
-                 href=None):
+                 href=None,
+                 catalog_type=None):
         super().__init__(stac_extensions)
 
         self.id = id
@@ -94,6 +130,8 @@ class Catalog(STACObject):
 
         if href is not None:
             self.set_self_href(href)
+
+        self.catalog_type = catalog_type
 
         self._resolved_objects.cache(self)
 
@@ -535,13 +573,15 @@ class Catalog(STACObject):
 
         return result
 
-    def save(self, catalog_type):
+    def save(self, catalog_type=None):
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF.
 
         Args:
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+                If not supplied, the catalog_type of this catalog will be used.
+                If that attribute is not set, an exception will be raised.
 
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
@@ -551,7 +591,15 @@ class Catalog(STACObject):
             Link types will be set to RELATIVE.
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will be
             included. Link types will be set to RELATIVE.
+
+        Raises:
+            ValueError: Raises if the catalog_type argument is not supplied and
+                there is no catalog_type attribute on this catalog.
         """
+        catalog_type = catalog_type or self.catalog_type
+
+        if catalog_type is None:
+            raise ValueError('Must supply a catalog_type if one is not set on the catalog.')
 
         # Ensure relative vs absolute
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
@@ -579,6 +627,8 @@ class Catalog(STACObject):
                 item_link.target.save_object(include_self_link=items_include_self_link)
 
         self.save_object(include_self_link=include_self_link)
+
+        self.catalog_type = catalog_type
 
     def walk(self):
         """Walks through children and items of catalogs.
@@ -721,7 +771,10 @@ class Catalog(STACObject):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
+        catalog_type = CatalogType.determine_type(d)
+
         d = deepcopy(d)
+
         id = d.pop('id')
         description = d.pop('description')
         title = d.pop('title', None)
@@ -735,7 +788,8 @@ class Catalog(STACObject):
                       title=title,
                       stac_extensions=stac_extensions,
                       extra_fields=d,
-                      href=href)
+                      href=href,
+                      catalog_type=catalog_type)
 
         for link in links:
             if link['rel'] == 'root':
