@@ -110,7 +110,9 @@ class VersionItemExt(base.ItemExtension):
 
     @latest.setter
     def latest(self, source_item: pystac.Item) -> None:
-        self.item.add_link(pystac.Link(LATEST, source_item, MEDIA_TYPE))
+        self.item.clear_links(LATEST)
+        if source_item:
+            self.item.add_link(pystac.Link(LATEST, source_item, MEDIA_TYPE))
 
     @property
     def predecessor(self) -> Optional[pystac.Item]:
@@ -123,7 +125,9 @@ class VersionItemExt(base.ItemExtension):
 
     @predecessor.setter
     def predecessor(self, source_item: pystac.Item) -> None:
-        self.item.add_link(pystac.Link(PREDECESSOR, source_item, MEDIA_TYPE))
+        self.item.clear_links(PREDECESSOR)
+        if source_item:
+            self.item.add_link(pystac.Link(PREDECESSOR, source_item, MEDIA_TYPE))
 
     @property
     def successor(self) -> Optional[pystac.Item]:
@@ -136,7 +140,9 @@ class VersionItemExt(base.ItemExtension):
 
     @successor.setter
     def successor(self, source_item: pystac.Item) -> None:
-        self.item.add_link(pystac.Link(SUCCESSOR, source_item, MEDIA_TYPE))
+        self.item.clear_links(SUCCESSOR)
+        if source_item:
+            self.item.add_link(pystac.Link(SUCCESSOR, source_item, MEDIA_TYPE))
 
     @classmethod
     def from_item(cls, an_item: pystac.Item):
@@ -205,7 +211,9 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @latest.setter
     def latest(self, source_collection) -> None:
-        self.collection.add_link(pystac.Link(LATEST, source_collection, MEDIA_TYPE))
+        self.collection.clear_links(LATEST)
+        if source_collection:
+            self.collection.add_link(pystac.Link(LATEST, source_collection, MEDIA_TYPE))
 
     @property
     def predecessor(self) -> Optional[pystac.Collection]:
@@ -218,7 +226,9 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @predecessor.setter
     def predecessor(self, source_collection) -> None:
-        self.collection.add_link(pystac.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
+        self.collection.clear_links(PREDECESSOR)
+        if source_collection:
+            self.collection.add_link(pystac.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
 
     @property
     def successor(self) -> Optional[pystac.Collection]:
@@ -231,7 +241,9 @@ class VersionCollectionExt(base.CollectionExtension):
 
     @successor.setter
     def successor(self, source_collection) -> None:
-        self.collection.add_link(pystac.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
+        self.collection.clear_links(SUCCESSOR)
+        if source_collection:
+            self.collection.add_link(pystac.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
 
     @classmethod
     def from_collection(cls, a_collection: pystac.Collection):
