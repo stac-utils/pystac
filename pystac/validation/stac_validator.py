@@ -15,7 +15,7 @@ class STACValidator(ABC):
     """STACValidator defines methods for validating STAC
     JSON. Implementations define methods for validating core objects and extension.
     By default the JsonSchemaSTACValidator is used by PySTAC; users can define their own
-    STACValidator implemetnation and set that validator to be used by
+    STACValidator implementation and set that validator to be used by
     pystac by using the :func:`~pystac.validation.set_validator` method.
     """
     @abstractmethod
@@ -67,12 +67,17 @@ class STACValidator(ABC):
                STACValidator implementation.
         """
         results = []
-        core_result = self.validate_core(stac_dict, stac_object_type, stac_version, href)
+
+        # Pass the dict through JSON serialization and parsing, otherwise
+        # some valid properties can be marked as invalid (e.g. tuples in
+        # coordinate sequences for geometries).
+        json_dict = json.loads(json.dumps(stac_dict))
+        core_result = self.validate_core(json_dict, stac_object_type, stac_version, href)
         if core_result is not None:
             results.append(core_result)
 
         for extension_id in extensions:
-            ext_result = self.validate_extension(stac_dict, stac_object_type, stac_version,
+            ext_result = self.validate_extension(json_dict, stac_object_type, stac_version,
                                                  extension_id, href)
             if ext_result is not None:
                 results.append(ext_result)
@@ -90,7 +95,7 @@ class JsonSchemaSTACValidator(STACValidator):
     Args:
         schema_uri_map (SchemaUriMap): The SchemaUriMap that defines where
             the validator will retrieve the JSON schemas for validation.
-            Defautls to an instance of
+            Defaults to an instance of
             :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`
 
     Note:
@@ -135,7 +140,7 @@ class JsonSchemaSTACValidator(STACValidator):
             s += 'with ID {} '.format(stac_id)
         s += 'against schema at {}'.format(schema_uri)
         if extension_id is not None:
-            s += "for STAC extension '{}'".format(extension_id)
+            s += " for STAC extension '{}'".format(extension_id)
 
         return s
 

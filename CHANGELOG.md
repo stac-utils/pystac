@@ -1,5 +1,41 @@
 # Changelog
 
+## [v0.5.3]
+
+### Added
+
+- Added support for the pointcloud extension ([#176](https://github.com/stac-utils/pystac/pull/176))
+- Added support for the version extension ([#193](https://github.com/stac-utils/pystac/pull/193))
+- Added support for the SAR extension ([#203](https://github.com/stac-utils/pystac/pull/203))
+- Added the capability to more flexibly organize STACs using `normalize_hrefs` ([#219](https://github.com/stac-utils/pystac/pull/219))
+- Added a 'generate_subcatalogs' to Catalog to allow for subcatalogs to be created by using item properties via a template string ([#219](https://github.com/stac-utils/pystac/pull/219))
+- Added 'from_items' method to Extent ([#223](https://github.com/stac-utils/pystac/pull/223))
+- Added a `catalog_type` property to track the CatalogType of read in or previously saved catalogs ([#224](https://github.com/stac-utils/pystac/pull/224))
+- Added a tutorial for creating Landsat 8 STACs ([#181](https://github.com/stac-utils/pystac/pull/181))
+- Added codespell to CI ([#206](https://github.com/stac-utils/pystac/pull/206))
+- Added more teesting to Links ([#211](https://github.com/stac-utils/pystac/pull/211))
+
+### Fixed
+
+- Fixed issue that can cause infinite recursion during full resolve ([#204](https://github.com/stac-utils/pystac/pull/193))
+- Fixed issue that required label_classes in label items ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Fixed issue that caused geometries and bboxes produced by Shapely to fail PySTAC's validaton ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Allow for path prefixes like /vsitar/ ([#208](https://github.com/stac-utils/pystac/pull/208))
+- Fix Item set_self_href to ensure item asset locations do not break ([#226](https://github.com/stac-utils/pystac/pull/226))
+- Fixed an incorrect exception being thrown from Link.get_href() if there is no target_href ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Fixed issue where 0.9.0 items were executing the commons extension logic when they shouldn't ([#221](https://github.com/stac-utils/pystac/pull/221))
+- Fixed issue where cloned assets did not have their owning Items set ([#228](https://github.com/stac-utils/pystac/pull/228))
+- Fixed issue that caused make_asset_hrefs_relative to produce incorrect HREFs when asset HREFs were already relative ([#229](https://github.com/stac-utils/pystac/pull/229))
+- Improve error handling when accidentally importing a Collection with Catalog ([#186](https://github.com/stac-utils/pystac/issues/186))
+- Fixed spacenet tutorial bbox issue ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Fix formatting of error message in stac_validator ([#190](https://github.com/stac-utils/pystac/pull/204))
+- Fixed typos ([#192](https://github.com/stac-utils/pystac/pull/192), [#195](https://github.com/stac-utils/pystac/pull/195))
+
+### Changed
+
+- Refactor caching to utilize HREFs and parent IDs. STAC objects now no longer need unique IDs to work with PySTAC ([#214](https://github.com/stac-utils/pystac/pull/214), [#160](https://github.com/stac-utils/pystac/issues/160))
+- Allow a user to pass a single list as bbox and interval for `SpatialExtent` and `TemporalExtent` ([#201](https://github.com/stac-utils/pystac/pull/201), fixes [#198](https://github.com/stac-utils/pystac/issues/198))
+
 ## [v0.5.2]
 
 Thank you to all the new contributors that contributed during STAC Sprint 6!
@@ -41,7 +77,7 @@ Thank you to all the new contributors that contributed during STAC Sprint 6!
 - Added support for the Projection extension([#125](https://github.com/azavea/pystac/pull/125))
 - Add support for Item Asset properties ([#127](https://github.com/azavea/pystac/pull/127))
 - Added support for dynamically changing the STAC version via `pystac.set_stac_version` and `pystac.get_stac_version` ([#130](https://github.com/azavea/pystac/pull/130))
-- Added support for prerelease versions in version comparisions for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
+- Added support for prerelease versions in version comparisons for the `pystac.serialization.identify` package ([#138](https://github.com/azavea/pystac/pull/138))
 - Added validation for PySTAC STACObjects as well as arbitrary STAC JSON ([#139](https://github.com/azavea/pystac/pull/139))
 - Added the ability to read HTTP and HTTPS uris by default ([#139](https://github.com/azavea/pystac/pull/139))
 
@@ -64,7 +100,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 
 The two major changes for this release are:
 - Upgrade to STAC 0.9.0
-- Refactor the extensions API to accomidate items that implement multiple extesions (e.g. `eo` and `view`)
+- Refactor the extensions API to accommodate items that implement multiple extensions (e.g. `eo` and `view`)
 
 See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/blob/v0.9.0/CHANGELOG.md) and issue [#65](https://github.com/azavea/pystac/issues/65) for more information.
 
@@ -72,10 +108,10 @@ See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/bl
 
 These are the major API changes that will have to be accounted for when upgrading PySTAC:
 
-#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inheret.
+#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit.
 
 This change affects the two extensions that were implemented for Item - `EOItem` and `LabelItem`
-have become `EOItemExt` and `LabelItemExt`, and no longer inheret from Item.
+have become `EOItemExt` and `LabelItemExt`, and no longer inherit from Item.
 
 This change was motivated by the 0.9 change that split some properties out from `eo` into
 the `view` extension. If we kept an inheritance-based extension architecture, we would not
@@ -125,7 +161,7 @@ use `Band.create`
 
 ### Added
 
-- Allow for backwards compatibilty for reading STAC [#77](https://github.com/azavea/pystac/pull/70)
+- Allow for backwards compatibility for reading STAC [#77](https://github.com/azavea/pystac/pull/70)
 
 ### Fixed
 

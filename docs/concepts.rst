@@ -50,35 +50,49 @@ Catalog, Collection and Items, all based off of the root URI that is passed in:
     catalog.normalize_hrefs('/some/location')
     catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-If you want to set your HREFs in a non-canonical format, you can set each STAC object href
-manually by using ``set_self_href``:
+This will lay out the HREFs of the STAC according to the `best practices document <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_.
+
+Layouts
+~~~~~~~
+
+PySTAC provides a few different strategies for laying out the HREFs of a STAC.
+To use them you can pass in a strategy to the normalize_hrefs call.
+
+Using templates
+'''''''''''''''
+
+You can utilze template strings to determine the file paths of HREFs set on Catalogs,
+Collection or Items. These templates use python format strings, which can name
+the property or attribute of the item you want to use for replacing the template
+variable. For example:
 
 .. code-block:: python
 
-   import os
+    from pystac.layout import TemplateLayoutStrategy
 
-   top_level_dir = '/some/location'
-   for root, _, items in catalog.walk():
-
-       # Set root's HREF based off the parent
-       parent = root.get_parent()
-       if parent is None:
-           root_dir = top_level_dir
-       else:
-           d = os.path.dirname(parent.get_self_href())
-           root_dir = os.path.join(d, root.id)
-       root_href = os.path.join(root_dir, root.DEFAULT_FILE_NAME)
-       root.set_self_href(root_href)
-
-       # Set each item's HREF based on it's datetime
-       for item in items:
-           item_href = '{}/{}-{}/{}.json'.format(root_dir,
-                                                 item.datetime.year,
-                                                 item.datetime.month,
-                                                 item.id)
-           item.set_self_href(item_href)
-
+    strategy = TemplateLayoutStrategy(item_template="${collection}/${year}/${month}")
+    catalog.normalize_hrefs('/some/location', strategy=strategy)
     catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
+
+The above code will save items in subfolders based on the collection ID, year and month of
+it's datetime (or start_datetime if a date range is defined and no datetime is defined).
+
+You can use dot notation to specify attributes of objects or keys in dictionaries for
+template variables. PySTAC will look at the object, it's ``properties`` and its ``extra_fields``
+for property names or dictionary keys. Some special cases, like ``year``, ``month``, ``day`` and
+``date`` exist for datetime on Items, as well as ``collection`` for Item's Collection's ID.
+
+See the documentation on :class:`~pystac.layout.LayoutTemplate` for more documentation on
+how layout templates work.
+
+Using custom functions
+''''''''''''''''''''''
+
+If you want to build your own strategy, you can subclass ``HrefLayoutStrategy`` or use
+:class:`~pystac.layout.CustomLayoutStrategy` to provide functions that work with
+Catalogs, Collections or Items. Similar to the templating strategy, you can provide a
+fallback strategy (which defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`)
+for any stac object type that you don't supply a function for.
 
 .. _catalog types:
 
@@ -498,8 +512,8 @@ The ``pystac.serialization`` package has some functionality around working direc
 JSON objects, without utilizing PySTAC object types. This is used internally by PySTAC, but might also be useful to users working directly with JSON (e.g. on validation).
 
 
-Identifing STAC objects from JSON
----------------------------------
+Identifying STAC objects from JSON
+----------------------------------
 
 Users can identify STAC information, including the object type, version and extensions,
 from JSON. The main method for this is :func:`~pystac.serialization.identify_stac_object`,

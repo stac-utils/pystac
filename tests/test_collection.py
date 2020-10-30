@@ -3,14 +3,17 @@ import os
 import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
+from dateutil import tz
 
 import pystac
-from pystac.validation import (validate_dict, STACValidationError)
+from pystac.validation import validate_dict
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
 from pystac.utils import datetime_to_str
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+
+TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
 
 class CollectionTest(unittest.TestCase):
@@ -27,14 +30,14 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
         item2 = Item(id='test-item-2',
                      geometry=RANDOM_GEOM,
                      bbox=RANDOM_BBOX,
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'two'},
                      stac_extensions=['eo', 'commons'])
 
@@ -89,6 +92,24 @@ class CollectionTest(unittest.TestCase):
 
         self.assertTrue(item.ext.implements('eo'))
 
+    def test_save_uses_previous_catalog_type(self):
+        collection = TestCases.test_case_8()
+        assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
+        self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
+        with TemporaryDirectory() as tmp_dir:
+            collection.normalize_hrefs(tmp_dir)
+            href = collection.get_self_href()
+            collection.save()
+
+            collection2 = pystac.read_file(href)
+            self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_clone_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_8()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        clone = catalog.clone()
+        self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_multiple_extents(self):
         cat1 = TestCases.test_case_1()
         col1 = cat1.get_child('country-1').get_child('area-1-1')
@@ -113,11 +134,6 @@ class CollectionTest(unittest.TestCase):
 
         cloned_ext = ext.clone()
         self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict['extent'])
-
-        multi_ext_dict['extent']['spatial']['bbox'] = multi_ext_dict['extent']['spatial']['bbox'][0]
-        invalid_col = Collection.from_dict(multi_ext_dict)
-        with self.assertRaises(STACValidationError):
-            invalid_col.validate()
 
     def test_extra_fields(self):
         catalog = TestCases.test_case_2()
@@ -147,7 +163,7 @@ class CollectionTest(unittest.TestCase):
         item1 = Item(id='test-item-1',
                      geometry=RANDOM_GEOM,
                      bbox=[-180, -90, 180, 90],
-                     datetime=datetime.utcnow(),
+                     datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
@@ -179,3 +195,89 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(
             [[item2.common_metadata.start_datetime, base_extent.temporal.intervals[0][1]]],
             collection.extent.temporal.intervals)
+
+    def test_supplying_href_in_init_does_not_fail(self):
+        test_href = "http://example.com/collection.json"
+        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+        collection = Collection(id='test',
+                                description='test desc',
+                                extent=collection_extent,
+                                properties={},
+                                href=test_href)
+
+        self.assertEqual(collection.get_self_href(), test_href)
+
+    def test_reading_0_8_1_collection_as_catalog_throws_correct_exception(self):
+        cat = pystac.Catalog.from_file(
+            TestCases.get_path('data-files/examples/hand-0.8.1/collection.json'))
+        with self.assertRaises(ValueError):
+            list(cat.get_all_items())
+
+    def test_collection_with_href_caches_by_href(self):
+        collection = pystac.read_file(
+            TestCases.get_path('data-files/examples/hand-0.8.1/collection.json'))
+        cache = collection._resolved_objects
+
+        # Since all of our STAC objects have HREFs, everything should be
+        # cached only by HREF
+        self.assertEqual(len(cache.id_keys_to_objects), 0)
+
+
+class ExtentTest(unittest.TestCase):
+    def test_spatial_allows_single_bbox(self):
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+
+        # Pass in a single BBOX
+        spatial_extent = SpatialExtent(bboxes=RANDOM_BBOX)
+
+        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+
+        collection = Collection(id='test', description='test desc', extent=collection_extent)
+
+        # HREF required by validation
+        collection.set_self_href('https://example.com/collection.json')
+
+        collection.validate()
+
+    def test_from_items(self):
+        item1 = Item(id='test-item-1',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-10, -20, 0, -10],
+                     datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+                     properties={})
+
+        item2 = Item(id='test-item-2',
+                     geometry=RANDOM_GEOM,
+                     bbox=[0, -9, 10, 1],
+                     datetime=None,
+                     properties={
+                         'start_datetime':
+                         datetime_to_str(datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)),
+                         'end_datetime':
+                         datetime_to_str(datetime(2000, 7, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+                     })
+
+        item3 = Item(id='test-item-2',
+                     geometry=RANDOM_GEOM,
+                     bbox=[-5, -20, 5, 0],
+                     datetime=None,
+                     properties={
+                         'start_datetime':
+                         datetime_to_str(datetime(2000, 12, 1, 12, 0, 0, 0, tzinfo=tz.UTC)),
+                         'end_datetime':
+                         datetime_to_str(datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC), )
+                     })
+
+        extent = Extent.from_items([item1, item2, item3])
+
+        self.assertEqual(len(extent.spatial.bboxes), 1)
+        self.assertEqual(extent.spatial.bboxes[0], [-10, -20, 10, 1])
+
+        self.assertEqual(len(extent.temporal.intervals), 1)
+        interval = extent.temporal.intervals[0]
+
+        self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+        self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))

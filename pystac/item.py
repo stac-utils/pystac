@@ -1,4 +1,3 @@
-import os
 from copy import copy, deepcopy
 
 import dateutil.parser
@@ -107,6 +106,36 @@ class Item(STACObject):
     def __repr__(self):
         return '<Item id={}>'.format(self.id)
 
+    def set_self_href(self, href):
+        """Sets the absolute HREF that is represented by the ``rel == 'self'``
+        :class:`~pystac.Link`.
+
+        Changing the self HREF of the item will ensure that all asset HREFs
+        remain valid. If asset HREFs are relative, the HREFs will change
+        to point to the same location based on the new item self HREF,
+        either by making them relative to the new location or making them
+        absolute links if the new location does not share the same protocol
+        as the old location.
+
+        Args:
+            href (str): The absolute HREF of this object. If the given HREF
+                is not absolute, it will be transformed to an absolute
+                HREF based on the current working directory. If this is None
+                the call will clear the self HREF link.
+        """
+        prev_href = self.get_self_href()
+        super().set_self_href(href)
+        new_href = self.get_self_href()  # May have been made absolute.
+
+        if prev_href is not None:
+            # Make sure relative asset links remain valid.
+            for asset in self.assets.values():
+                asset_href = asset.href
+                if not is_absolute_href(asset_href):
+                    abs_href = make_absolute_href(asset_href, prev_href)
+                    new_relative_href = make_relative_href(abs_href, new_href)
+                    asset.href = new_relative_href
+
     def get_datetime(self, asset=None):
         """Gets an Item or an Asset datetime.
 
@@ -157,11 +186,17 @@ class Item(STACObject):
         Returns:
             Item: self
         """
-        self_href = self.get_self_href()
-        if self_href is None:
-            raise STACError('Cannot make asset HREFs relative if no self_href is set.')
+
+        self_href = None
         for asset in self.assets.values():
-            asset.href = make_relative_href(asset.href, self_href)
+            href = asset.href
+            if is_absolute_href(href):
+                if self_href is None:
+                    self_href = self.get_self_href()
+                    if self_href is None:
+                        raise STACError('Cannot make asset HREFs relative '
+                                        'if no self_href is set.')
+                asset.href = make_relative_href(asset.href, self_href)
         return self
 
     def make_asset_hrefs_absolute(self):
@@ -193,7 +228,8 @@ class Item(STACObject):
         this item.
 
         Args:
-            collection (Collection): The collection to set as this item's collection.
+            collection (Collection or None): The collection to set as this
+                item's collection. If None, will clear the collection.
             link_type (str): the link type to use for the collection link.
                 One of :class:`~pystac.LinkType`.
 
@@ -207,9 +243,25 @@ class Item(STACObject):
             else:
                 link_type = LinkType.ABSOLUTE
         self.remove_links('collection')
-        self.add_link(Link.collection(collection, link_type=link_type))
-        self.collection_id = collection.id
+        self.collection_id = None
+        if collection is not None:
+            self.add_link(Link.collection(collection, link_type=link_type))
+            self.collection_id = collection.id
+
         return self
+
+    def get_collection(self):
+        """Gets the collection of this item, if one exists.
+
+        Returns:
+            Collection or None: If this item belongs to a collection, returns
+            a reference to the collection. Otherwise returns None.
+        """
+        collection_link = self.get_single_link('collection')
+        if collection_link is None:
+            return None
+        else:
+            return collection_link.resolve_stac_object().target
 
     def to_dict(self, include_self_link=True):
         links = self.links
@@ -258,37 +310,13 @@ class Item(STACObject):
         for link in self.links:
             clone.add_link(link.clone())
 
-        clone.assets = dict([(k, a.clone()) for (k, a) in self.assets.items()])
+        for k, asset in self.assets.items():
+            clone.add_asset(k, asset.clone())
 
         return clone
 
     def _object_links(self):
         return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
-
-    def normalize_hrefs(self, root_href):
-        if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
-
-        old_self_href = self.get_self_href()
-        new_self_href = os.path.join(root_href, '{}.json'.format(self.id))
-        self.set_self_href(new_self_href)
-
-        # Make sure relative asset links remain valid.
-        # This will only work if there is a self href set.
-        for asset in self.assets.values():
-            asset_href = asset.href
-            if not is_absolute_href(asset_href):
-                if old_self_href is not None:
-                    abs_href = make_absolute_href(asset_href, old_self_href)
-                    new_relative_href = make_relative_href(abs_href, new_self_href)
-                    asset.href = new_relative_href
-
-    def fully_resolve(self):
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):

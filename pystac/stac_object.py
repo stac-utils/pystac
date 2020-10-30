@@ -180,6 +180,16 @@ class LinkMixin:
                 link.make_absolute()
         return self
 
+    def get_root_link(self):
+        """Get the :class:`~pystac.Link` representing
+        the root for this object.
+
+        Returns:
+            :class:`~pystac.Link` or None: The root link for this object,
+            or ``None`` if no root link is set.
+        """
+        return self.get_single_link('root')
+
     def get_self_href(self):
         """Gets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
@@ -206,12 +216,22 @@ class LinkMixin:
         :class:`~pystac.Link`.
 
         Args:
-            str: The absolute HREF of this object. If the given HREF
+            href (str): The absolute HREF of this object. If the given HREF
                 is not absolute, it will be transformed to an absolute
-                HREF based on the current working directory.
+                HREF based on the current working directory. If this is None
+                the call will clear the self HREF link.
         """
+        root_link = self.get_root_link()
+        if root_link is not None and root_link.is_resolved():
+            root_link.target._resolved_objects.remove(self)
+
         self.remove_links('self')
-        self.add_link(Link.self_href(href))
+        if href is not None:
+            self.add_link(Link.self_href(href))
+
+        if root_link is not None and root_link.is_resolved():
+            root_link.target._resolved_objects.cache(self)
+
         return self
 
 
@@ -258,16 +278,6 @@ class STACObject(LinkMixin, ABC):
             return root_link.target
         else:
             return None
-
-    def get_root_link(self):
-        """Get the :class:`~pystac.Link` representing
-        the root for this object.
-
-        Returns:
-            :class:`~pystac.Link` or None: The root link for this object,
-            or ``None`` if no root link is set.
-        """
-        return self.get_single_link('root')
 
     def set_root(self, root, link_type=None):
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
@@ -445,31 +455,19 @@ class STACObject(LinkMixin, ABC):
         """
         return ExtensionIndex(self)
 
-    @abstractmethod
-    def fully_resolve(self):
+    def resolve_links(self):
         """Ensure all STACObjects linked to by this STACObject are
         resolved. This is important for operations such as changing
         HREFs.
 
         This method mutates the entire catalog tree.
         """
-        pass
+        link_rels = set(self._object_links()) | set(['root', 'parent'])
 
-    @abstractmethod
-    def normalize_hrefs(self, root_href):
-        """Normalize HREFs will regenerate all link HREFs based on
-        an absolute root_href and the canonical catalog layout as specified
-        in the STAC specification's best practices.
-
-        This method mutates the entire catalog tree.
-
-        Args:
-            root_href (str): The absolute HREF that all links will be normalized against.
-
-        See:
-            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
-        """ # noqa E501
-        pass
+        for link in self.links:
+            if link.rel in link_rels:
+                if not link.is_resolved():
+                    link.resolve_stac_object(root=self.get_root())
 
     @abstractmethod
     def _object_links(self):

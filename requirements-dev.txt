@@ -1,3 +1,5 @@
+codespell==1.17.1
+ipython==7.16.1
 jsonschema==3.2.0
 pylint==1.9.1
 Sphinx==1.8.0
@@ -6,5 +8,5 @@ sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-napoleon==0.7
 flake8==3.8.*
 yapf==0.28.*
-nbsphinx==0.4.3
+nbsphinx==0.7.1
 coverage==5.2.*

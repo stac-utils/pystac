@@ -13,6 +13,41 @@ from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
 
 
+class CatalogTypeTest(unittest.TestCase):
+    def test_determine_type_for_absolute_published(self):
+        cat = TestCases.test_case_1()
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+            cat_json = pystac.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
+
+    def test_determine_type_for_relative_published(self):
+        cat = TestCases.test_case_2()
+        with TemporaryDirectory() as tmp_dir:
+            cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
+            cat_json = pystac.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
+
+    def test_determine_type_for_self_contained(self):
+        cat_json = pystac.STAC_IO.read_json(
+            TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
+        catalog_type = CatalogType.determine_type(cat_json)
+        self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_determine_type_for_unknown(self):
+        catalog = Catalog(id='test', description='test desc')
+        subcat = Catalog(id='subcat', description='subcat desc')
+        catalog.add_child(subcat)
+        catalog.normalize_hrefs('http://example.com')
+        d = catalog.to_dict(include_self_link=False)
+
+        self.assertIsNone(CatalogType.determine_type(d))
+
+
 class CatalogTest(unittest.TestCase):
     def test_create_and_read(self):
         with TemporaryDirectory() as tmp_dir:
@@ -105,6 +140,54 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(children), 1)
         self.assertEqual(children[0].description, 'test3')
 
+    def test_clear_children_sets_parent_and_root_to_None(self):
+        catalog = Catalog(id='test', description='test')
+        subcat1 = Catalog(id='subcat', description='test')
+        subcat2 = Catalog(id='subcat2', description='test2')
+        catalog.add_children([subcat1, subcat2])
+
+        self.assertIsNotNone(subcat1.get_parent())
+        self.assertIsNotNone(subcat2.get_parent())
+        self.assertIsNotNone(subcat1.get_root())
+        self.assertIsNotNone(subcat2.get_root())
+
+        children = list(catalog.get_children())
+        self.assertEqual(len(children), 2)
+
+        catalog.clear_children()
+
+        self.assertIsNone(subcat1.get_parent())
+        self.assertIsNone(subcat2.get_parent())
+        self.assertIsNone(subcat1.get_root())
+        self.assertIsNone(subcat2.get_root())
+
+    def test_add_child_throws_if_item(self):
+        cat = TestCases.test_case_1()
+        item = next(cat.get_all_items())
+        with self.assertRaises(pystac.STACError):
+            cat.add_child(item)
+
+    def test_add_item_throws_if_child(self):
+        cat = TestCases.test_case_1()
+        child = next(cat.get_children())
+        with self.assertRaises(pystac.STACError):
+            cat.add_item(child)
+
+    def test_get_child_returns_none_if_not_found(self):
+        cat = TestCases.test_case_1()
+        child = cat.get_child('thisshouldnotbeachildid', recursive=True)
+        self.assertIsNone(child)
+
+    def test_get_item_returns_none_if_not_found(self):
+        cat = TestCases.test_case_1()
+        item = cat.get_item('thisshouldnotbeanitemid', recursive=True)
+        self.assertIsNone(item)
+
+    def test_sets_catalog_type(self):
+        cat = TestCases.test_case_1()
+
+        self.assertEqual(cat.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_walk_iterates_correctly(self):
         def test_catalog(cat):
             expected_catalog_iterations = 1
@@ -151,6 +234,7 @@ class CatalogTest(unittest.TestCase):
 
             self.assertEqual(set(expected_link_types_to_counts.keys()),
                              set(actual_link_types_to_counts.keys()))
+
             for obj_id in actual_link_types_to_counts:
                 expected_counts = expected_link_types_to_counts[obj_id]
                 actual_counts = actual_link_types_to_counts[obj_id]
@@ -160,6 +244,90 @@ class CatalogTest(unittest.TestCase):
                         actual_counts[rel], expected_counts[rel],
                         'Clone of {} has {} {} links, original has {}'.format(
                             obj_id, actual_counts[rel], rel, expected_counts[rel]))
+
+    def test_save_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_1()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            href = catalog.get_self_href()
+            catalog.save()
+
+            cat2 = pystac.read_file(href)
+            self.assertEqual(cat2.catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_clone_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_1()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        clone = catalog.clone()
+        self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_save_throws_if_no_catalog_type(self):
+        catalog = TestCases.test_case_3()
+        assert catalog.catalog_type is None
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            with self.assertRaises(ValueError):
+                catalog.save()
+
+    def test_normalize_hrefs_sets_all_hrefs(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('http://example.com')
+        for root, _, items in catalog.walk():
+            self.assertTrue(root.get_self_href().startswith('http://example.com'))
+            for link in root.links:
+                if link.is_resolved():
+                    target_href = link.target.get_self_href()
+                else:
+                    target_href = link.get_absolute_href()
+                self.assertTrue(
+                    'http://example.com' in target_href,
+                    '[{}] {} does not contain "{}"'.format(link.rel, target_href,
+                                                           'http://example.com'))
+            for item in items:
+                self.assertIn('http://example.com', item.get_self_href())
+
+    def test_normalize_hrefs_makes_absolute_href(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('./relativepath')
+        abspath = os.path.abspath('./relativepath')
+        self.assertTrue(catalog.get_self_href().startswith(abspath))
+
+    def test_normalize_href_works_with_label_source_links(self):
+        catalog = TestCases.test_case_1()
+        catalog.normalize_hrefs('http://example.com')
+        item = catalog.get_item('area-1-1-labels', recursive=True)
+        source = next(item.ext.label.get_sources())
+        self.assertEqual(
+            source.get_self_href(),
+            "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
+
+    def test_generate_subcatalogs_works_with_custom_properties(self):
+        catalog = TestCases.test_case_8()
+        defaults = {'pl:item_type': 'PlanetScope'}
+        catalog.generate_subcatalogs('${year}/${month}/${pl:item_type}', defaults=defaults)
+
+        month_cat = catalog.get_child('8', recursive=True)
+        type_cats = set([cat.id for cat in month_cat.get_children()])
+
+        self.assertEqual(type_cats, set(['PSScene4Band', 'SkySatScene', 'PlanetScope']))
+
+    def test_generate_subcatalogs_does_not_change_item_count(self):
+        catalog = TestCases.test_case_7()
+
+        item_counts = {cat.id: len(list(cat.get_all_items())) for cat in catalog.get_children()}
+
+        catalog.generate_subcatalogs("${year}/${day}")
+
+        with TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.save(pystac.CatalogType.SELF_CONTAINED)
+
+            cat2 = pystac.read_file(os.path.join(tmp_dir, 'catalog.json'))
+            for child in cat2.get_children():
+                actual = len(list(child.get_all_items()))
+                expected = item_counts[child.id]
+                self.assertEqual(actual, expected, msg=" for child '{}'".format(child.id))
 
     def test_map_items(self):
         def item_mapper(item):
@@ -388,6 +556,20 @@ class CatalogTest(unittest.TestCase):
         href = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed'].href
         self.assertTrue(is_absolute_href(href))
 
+    def test_make_all_asset_hrefs_relative(self):
+        cat = TestCases.test_case_2()
+        item = cat.get_item('cf73ec1a-d790-4b59-b077-e101738571ed', recursive=True)
+        asset = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed']
+        original_href = asset.href
+        cat.make_all_asset_hrefs_absolute()
+
+        assert is_absolute_href(asset.href)
+
+        cat.make_all_asset_hrefs_relative()
+
+        self.assertFalse(is_absolute_href(asset.href))
+        self.assertEqual(asset.href, original_href)
+
     def test_make_all_links_relative_or_absolute(self):
         def check_all_relative(cat):
             for root, catalogs, items in cat.walk():
@@ -421,6 +603,19 @@ class CatalogTest(unittest.TestCase):
                 check_all_relative(c2)
                 c2.make_all_links_absolute()
                 check_all_absolute(c2)
+
+    def test_full_copy_and_normalize_works_with_created_stac(self):
+        cat = TestCases.test_case_3()
+        cat_copy = cat.full_copy()
+        cat_copy.normalize_hrefs('http://example.com')
+        for root, catalogs, items in cat_copy.walk():
+            for link in root.links:
+                if link.rel != 'self':
+                    self.assertIsNot(link.target, None)
+            for item in items:
+                for link in item.links:
+                    if link.rel != 'self':
+                        self.assertIsNot(link.get_href(), None)
 
     def test_extra_fields(self):
         catalog = TestCases.test_case_1()
@@ -512,7 +707,7 @@ class CatalogTest(unittest.TestCase):
             with MockStacIO() as mock_io:
                 expected_collection_reads = set([])
                 for root, children, items in cat.walk():
-                    if isinstance(root, Collection):
+                    if isinstance(root, Collection) and root != cat:
                         expected_collection_reads.add(root.get_self_href())
 
                     # Iterate over items to make sure they are read
@@ -554,6 +749,29 @@ class CatalogTest(unittest.TestCase):
     def test_get_children_cbers(self):
         cat = TestCases.test_case_6()
         self.assertEqual(len(list(cat.get_children())), 4)
+
+    def test_resolve_planet(self):
+        """Test against a bug that caused infinite recursion during link resolution"""
+        cat = TestCases.test_case_8()
+        for root, _, items in cat.walk():
+            for item in items:
+                item.resolve_links()
+            root.resolve_links()
+
+    def test_handles_children_with_same_id(self):
+        # This catalog has the root and child collection share an ID.
+        cat = pystac.read_file(TestCases.get_path('data-files/invalid/shared-id/catalog.json'))
+        items = list(cat.get_all_items())
+
+        self.assertEqual(len(items), 1)
+
+    def test_catalog_with_href_caches_by_href(self):
+        cat = TestCases.test_case_1()
+        cache = cat._resolved_objects
+
+        # Since all of our STAC objects have HREFs, everything should be
+        # cached only by HREF
+        self.assertEqual(len(cache.id_keys_to_objects), 0)
 
 
 class FullCopyTest(unittest.TestCase):

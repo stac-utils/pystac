@@ -1,0 +1,43 @@
+{
+    "id": "hurricane-harvey-0831",
+    "stac_version": "1.0.0-beta.2",
+    "description": "Planet Scenes and Composites for Hurricane Harvey on Aug 31, 2017",
+    "links": [
+        {
+            "rel": "root",
+            "href": "../../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "item",
+            "href": "./20170831_172754_101c/20170831_172754_101c.json",
+            "title": "20170831_172754_101c"
+        },
+        {
+            "rel": "item",
+            "href": "./2017831_195552_SS02/2017831_195552_SS02.json",
+            "title": "20170831_195552_SS02"
+        },
+        {
+            "rel": "item",
+            "href": "./20170831_195425_SS02/20170831_195425_SS02.json",
+            "title": "20170831_195425_SS02"
+        },
+        {
+            "rel": "item",
+            "href": "./20170831_162740_ssc1d1/20170831_162740_ssc1d1.json",
+            "title": "20170831_162740_ssc1d1"
+        },
+        {
+            "rel": "item",
+            "href": "./Houston-East-20170831-103f-100d-0f4f-RGB/Houston-East-20170831-103f-100d-0f4f-RGB.json",
+            "title": "Houston-East-20170831-103f-100d-0f4f-RGB"
+        }
+    ],
+    "title": "Hurricane Harvey 08-31-2017"
+}

@@ -237,8 +237,8 @@ class LabelItemExt(ItemExtension):
         Args:
             source_item (Item): Source imagery that the LabelItem applies to.
             title (str): Optional title for the link.
-            assets (List[str]): Optional list of assets that deterime what
-                assets in the source item this label item data appliees to.
+            assets (List[str]): Optional list of assets that determine what
+                assets in the source item this label item data applies to.
         """
         properties = None
         if assets is not None:
