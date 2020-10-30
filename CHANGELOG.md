@@ -13,7 +13,7 @@
 - Added a `catalog_type` property to track the CatalogType of read in or previously saved catalogs ([#224](https://github.com/stac-utils/pystac/pull/224))
 - Added a tutorial for creating Landsat 8 STACs ([#181](https://github.com/stac-utils/pystac/pull/181))
 - Added codespell to CI ([#206](https://github.com/stac-utils/pystac/pull/206))
-- Added more teesting to Links ([#211](https://github.com/stac-utils/pystac/pull/211))
+- Added more testing to Links ([#211](https://github.com/stac-utils/pystac/pull/211))
 
 ### Fixed
 
