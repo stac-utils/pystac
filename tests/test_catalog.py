@@ -556,6 +556,20 @@ class CatalogTest(unittest.TestCase):
         href = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed'].href
         self.assertTrue(is_absolute_href(href))
 
+    def test_make_all_asset_hrefs_relative(self):
+        cat = TestCases.test_case_2()
+        item = cat.get_item('cf73ec1a-d790-4b59-b077-e101738571ed', recursive=True)
+        asset = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed']
+        original_href = asset.href
+        cat.make_all_asset_hrefs_absolute()
+
+        assert is_absolute_href(asset.href)
+
+        cat.make_all_asset_hrefs_relative()
+
+        self.assertFalse(is_absolute_href(asset.href))
+        self.assertEqual(asset.href, original_href)
+
     def test_make_all_links_relative_or_absolute(self):
         def check_all_relative(cat):
             for root, catalogs, items in cat.walk():
