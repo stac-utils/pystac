@@ -291,6 +291,19 @@ TimestampsItemExt
    :undoc-members:
    :show-inheritance:
 
+SAR Extension
+-------------
+
+Implements the `SAR Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sar>`_.
+
+SarItemExt
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.SarItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 
