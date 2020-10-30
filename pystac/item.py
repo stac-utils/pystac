@@ -304,7 +304,8 @@ class Item(STACObject):
         for link in self.links:
             clone.add_link(link.clone())
 
-        clone.assets = dict([(k, a.clone()) for (k, a) in self.assets.items()])
+        for k, asset in self.assets.items():
+            clone.add_asset(k, asset.clone())
 
         return clone
 

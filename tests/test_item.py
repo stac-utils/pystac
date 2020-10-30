@@ -167,6 +167,16 @@ class ItemTest(unittest.TestCase):
         did_merge = pystac.serialization.common_properties.merge_common_properties(item_json)
         self.assertFalse(did_merge)
 
+    def test_clone_sets_asset_owner(self):
+        cat = TestCases.test_case_2()
+        item = next(cat.get_all_items())
+        original_asset = list(item.assets.values())[0]
+        assert original_asset.owner is item
+
+        clone = item.clone()
+        clone_asset = list(clone.assets.values())[0]
+        self.assertIs(clone_asset.owner, clone)
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
