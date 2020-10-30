@@ -108,6 +108,13 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
             else:
                 start_dir = _pathlib.dirname(parsed_start.path)
             abs_path = _pathlib.abspath(_join(is_path, start_dir, parsed_source.path))
+
+            # Account for the normalization of abspath for
+            # things like /vsitar// prefixes by replacing the
+            # original start_dir text when abspath modifies the start_dir.
+            if not start_dir == _pathlib.abspath(start_dir):
+                abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
+
             if parsed_start.scheme != '':
                 if not is_path:
                     abs_path = abs_path.replace('\\', '/')

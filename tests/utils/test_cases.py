@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import csv
 
+import pystac
 from pystac import (Catalog, Item, Asset, Extent, TemporalExtent, SpatialExtent, MediaType,
                     Extensions)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
@@ -96,7 +97,8 @@ class TestCases:
             TestCases.test_case_3(),
             TestCases.test_case_4(),
             TestCases.test_case_5(),
-            TestCases.test_case_7()
+            TestCases.test_case_7(),
+            TestCases.test_case_8()
         ]
 
     @staticmethod
@@ -171,3 +173,10 @@ class TestCases:
         """Test case 4 as STAC version 0.8.1"""
         return Catalog.from_file(
             TestCases.get_path('data-files/catalogs/label_catalog_0_8_1/catalog.json'))
+
+    @staticmethod
+    def test_case_8():
+        """Planet disaster data example catalog, 1.0.0-beta.2"""
+        return pystac.read_file(
+            TestCases.get_path('data-files/catalogs/'
+                               'planet-example-1.0.0-beta.2/collection.json'))

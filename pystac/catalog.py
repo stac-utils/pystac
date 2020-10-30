@@ -4,6 +4,7 @@ from copy import deepcopy
 import pystac
 from pystac import STACError
 from pystac.stac_object import STACObject
+from pystac.layout import (BestPracticesLayoutStrategy, LayoutTemplate)
 from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
@@ -37,6 +38,38 @@ class CatalogType:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
+    @staticmethod
+    def determine_type(stac_json):
+        """Determines the catalog type based on a STAC JSON dict.
+
+        Only applies to Catalogs or Collections
+
+        Args:
+            stac_json (dict): The STAC JSON dict to determine the catalog type
+
+        Returns:
+            str or None: The catalog type of the catalog or collection.
+                Will return None if it cannot be determined.
+        """
+        self_link = None
+        relative = False
+        for link in stac_json['links']:
+            if link['rel'] == 'self':
+                self_link = link
+            else:
+                relative |= not is_absolute_href(link['href'])
+
+        if self_link:
+            if relative:
+                return CatalogType.RELATIVE_PUBLISHED
+            else:
+                return CatalogType.ABSOLUTE_PUBLISHED
+        else:
+            if relative:
+                return CatalogType.SELF_CONTAINED
+            else:
+                return None
+
 
 class Catalog(STACObject):
     """A PySTAC Catalog represents a STAC catalog in memory.
@@ -54,6 +87,8 @@ class Catalog(STACObject):
         stac_extensions (List[str]): Optional list of extensions the Catalog implements.
         href (str or None): Optional HREF for this catalog, which be set as the catalog's
             self link's HREF.
+        catalog_type (str or None): Optional catalog type for this catalog. Must
+            be one of the values in :class`~pystac.CatalogType`.
 
     Attributes:
         id (str): Identifier for the catalog.
@@ -64,6 +99,7 @@ class Catalog(STACObject):
             of the Catalog.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this Catalog.
+        catalog_type (str or None): The catalog type, or None if not known.
     """
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
@@ -76,7 +112,8 @@ class Catalog(STACObject):
                  title=None,
                  stac_extensions=None,
                  extra_fields=None,
-                 href=None):
+                 href=None,
+                 catalog_type=None):
         super().__init__(stac_extensions)
 
         self.id = id
@@ -87,12 +124,15 @@ class Catalog(STACObject):
         else:
             self.extra_fields = extra_fields
 
+        self._resolved_objects = ResolvedObjectCache()
+
         self.add_link(Link.root(self))
 
         if href is not None:
             self.set_self_href(href)
 
-        self._resolved_objects = ResolvedObjectCache()
+        self.catalog_type = catalog_type
+
         self._resolved_objects.cache(self)
 
     def __repr__(self):
@@ -121,6 +161,17 @@ class Catalog(STACObject):
         child.set_root(self.get_root())
         child.set_parent(self)
         self.add_link(Link.child(child, title=title))
+
+    def add_children(self, children):
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`s.
+        This method will set each child's parent to this object, and their root to
+        this Catalog's root.
+
+        Args:
+            children (Iterable[Catalog or Collection]): The children to add.
+        """
+        for child in children:
+            self.add_child(child)
 
     def add_item(self, item, title=None):
         """Adds a link to an :class:`~pystac.Item`.
@@ -194,7 +245,9 @@ class Catalog(STACObject):
         Return:
             Catalog: Returns ``self``
         """
-        self.links = [link for link in self.links if link.rel != 'child']
+        child_ids = [child.id for child in self.get_children()]
+        for child_id in child_ids:
+            self.remove_child(child_id)
         return self
 
     def remove_child(self, child_id):
@@ -331,7 +384,8 @@ class Catalog(STACObject):
                         description=self.description,
                         title=self.title,
                         stac_extensions=self.stac_extensions,
-                        extra_fields=deepcopy(self.extra_fields))
+                        extra_fields=deepcopy(self.extra_fields),
+                        catalog_type=self.catalog_type)
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
@@ -385,7 +439,7 @@ class Catalog(STACObject):
             for item in items:
                 item.make_asset_hrefs_absolute()
 
-    def normalize_and_save(self, root_href, catalog_type):
+    def normalize_and_save(self, root_href, catalog_type, strategy=None):
         """Normalizes link HREFs to the given root_href, and saves
         the catalog with the given catalog_type.
 
@@ -397,54 +451,127 @@ class Catalog(STACObject):
             root_href (str): The absolute HREF that all links will be normalized against.
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
+                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
         """
-        self.normalize_hrefs(root_href)
+        self.normalize_hrefs(root_href, strategy=strategy)
         self.save(catalog_type)
 
-    def normalize_hrefs(self, root_href):
+    def normalize_hrefs(self, root_href, strategy=None):
+        """Normalize HREFs will regenerate all link HREFs based on
+        an absolute root_href and the canonical catalog layout as specified
+        in the STAC specification's best practices.
+
+        This method mutates the entire catalog tree.
+
+        Args:
+            root_href (str): The absolute HREF that all links will be normalized against.
+            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
+                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
+
+        See:
+            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
+        """ # noqa E501
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
+
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        # Fully resolve the STAC to avoid linking issues.
-        # This particularly can happen with unresolved links that have
-        # relative paths.
-        self.fully_resolve()
+        def process_item(item, _root_href):
+            item.resolve_links()
 
-        for child in self.get_children():
-            child_root = os.path.join(root_href, '{}/'.format(child.id))
-            child.normalize_hrefs(child_root)
+            new_self_href = strategy.get_href(item, _root_href)
 
-        for item in self.get_items():
-            item_root = os.path.join(root_href, '{}'.format(item.id))
-            item.normalize_hrefs(item_root)
+            def fn():
+                item.set_self_href(new_self_href)
 
-        self.set_self_href(os.path.join(root_href, self.DEFAULT_FILE_NAME))
+            return fn
+
+        def process_catalog(cat, _root_href, is_root):
+            setter_funcs = []
+
+            cat.resolve_links()
+
+            new_self_href = strategy.get_href(cat, _root_href, is_root)
+            new_root = os.path.dirname(new_self_href)
+
+            for item in cat.get_items():
+                setter_funcs.append(process_item(item, new_root))
+
+            for child in cat.get_children():
+                setter_funcs.extend(process_catalog(child, new_root, is_root=False))
+
+            def fn():
+                cat.set_self_href(new_self_href)
+
+            setter_funcs.append(fn)
+
+            return setter_funcs
+
+        # Collect functions that will actually mutate the objects.
+        # Delay mutation as setting hrefs while walking the catalog
+        # can result in bad links.
+        setter_funcs = process_catalog(self, root_href, is_root=True)
+
+        for fn in setter_funcs:
+            fn()
 
         return self
 
-    def fully_resolve(self):
-        link_rels = set(self._object_links())
-        for link in self.links:
-            if link.rel == 'root':
-                if not link.is_resolved():
-                    if link.get_absolute_href() != self.get_self_href():
-                        link.target = self
-                    else:
-                        link.resolve_stac_object()
-                        link.target.fully_resolve()
-            if link.rel in link_rels:
-                if not link.is_resolved():
-                    link.resolve_stac_object(root=self.get_root())
-                link.target.fully_resolve()
+    def generate_subcatalogs(self, template, defaults=None, **kwargs):
+        """Walks through the catalog and generates subcatalogs
+        for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
+        for details on the construction of template strings. This template string
+        will be applied to the items, and subcatalogs will be created that separate
+        and organize the items based on template values.
 
-    def save(self, catalog_type):
+        Args:
+            template (str):   A template string that
+                can be consumed by a :class:`~pystac.layout.LayoutTemplate`
+            defaults (dict):  Default values for the template variables
+                that will be used if the property cannot be found on
+                the item.
+
+        Returns:
+            [catalog]: List of new catalogs created
+        """
+        result = []
+        for child in self.get_children():
+            result.extend(child.generate_subcatalogs(template, defaults=defaults))
+
+        layout_template = LayoutTemplate(template, defaults=defaults)
+        subcat_id_to_cat = {}
+        items = list(self.get_items())
+        for item in items:
+            item_parts = layout_template.get_template_values(item)
+            curr_parent = self
+            for k, v in item_parts.items():
+                subcat_id = '{}'.format(v)
+                subcat = subcat_id_to_cat.get(subcat_id)
+                if subcat is None:
+                    subcat_desc = 'Catalog of items from {} with {} of {}'.format(
+                        curr_parent.id, k, v)
+                    subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
+                    curr_parent.add_child(subcat)
+                    subcat_id_to_cat[subcat_id] = subcat
+                    result.append(subcat)
+                curr_parent = subcat
+            self.remove_item(item.id)
+            curr_parent.add_item(item)
+
+        return result
+
+    def save(self, catalog_type=None):
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF.
 
         Args:
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+                If not supplied, the catalog_type of this catalog will be used.
+                If that attribute is not set, an exception will be raised.
 
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
@@ -454,7 +581,15 @@ class Catalog(STACObject):
             Link types will be set to RELATIVE.
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will be
             included. Link types will be set to RELATIVE.
+
+        Raises:
+            ValueError: Raises if the catalog_type argument is not supplied and
+                there is no catalog_type attribute on this catalog.
         """
+        catalog_type = catalog_type or self.catalog_type
+
+        if catalog_type is None:
+            raise ValueError('Must supply a catalog_type if one is not set on the catalog.')
 
         # Ensure relative vs absolute
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
@@ -482,6 +617,8 @@ class Catalog(STACObject):
                 item_link.target.save_object(include_self_link=items_include_self_link)
 
         self.save_object(include_self_link=include_self_link)
+
+        self.catalog_type = catalog_type
 
     def walk(self):
         """Walks through children and items of catalogs.
@@ -624,7 +761,10 @@ class Catalog(STACObject):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
+        catalog_type = CatalogType.determine_type(d)
+
         d = deepcopy(d)
+
         id = d.pop('id')
         description = d.pop('description')
         title = d.pop('title', None)
@@ -637,18 +777,16 @@ class Catalog(STACObject):
                       description=description,
                       title=title,
                       stac_extensions=stac_extensions,
-                      extra_fields=d)
+                      extra_fields=d,
+                      href=href,
+                      catalog_type=catalog_type)
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 cat.remove_links('root')
 
-            cat.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            cat.add_link(Link.self_href(href))
+            if link['rel'] != 'self' or href is None:
+                cat.add_link(Link.from_dict(link))
 
         return cat

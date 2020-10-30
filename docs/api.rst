@@ -153,6 +153,30 @@ STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users
    :members:
    :undoc-members:
 
+Layout
+------
+
+These classes are used to set the HREFs of a STAC according to some layout.
+The templating functionality is also used when generating subcatalogs based on
+a template.
+
+Templating
+~~~~~~~~~~
+
+.. autoclass:: pystac.layout.LayoutTemplate
+   :members:
+
+.. autoclass:: pystac.layout.TemplateError
+
+HREF Layout Strategies
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.layout.BestPracticesLayoutStrategy
+
+.. autoclass:: pystac.layout.TemplateLayoutStrategy
+
+.. autoclass:: pystac.layout.CustomLayoutStrategy
+
 Errors
 ------
 
@@ -251,6 +275,19 @@ LabelStatistics
    :members:
    :undoc-members:
 
+Pointcloud Extension
+--------------------
+
+Implements the `Point Cloud Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
+
+PointcloudItemExt
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Projection Extension
 --------------------
 
@@ -277,6 +314,19 @@ TimestampsItemExt
    :undoc-members:
    :show-inheritance:
 
+SAR Extension
+-------------
+
+Implements the `SAR Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sar>`_.
+
+SarItemExt
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.SarItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 
@@ -291,6 +341,27 @@ SingleFileSTACCatalogExt
 .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
    :members:
    :undoc-members:
+
+Version Extension
+-----------------
+
+Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
+
+VersionCollectionExt
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionCollectionExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+VersionItemExt
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 View Geometry Extension
 -----------------------

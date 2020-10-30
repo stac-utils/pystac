@@ -39,6 +39,8 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         if type(stac_extensions) is list:
             if 'commons' not in stac_extensions:
                 return False
+        else:
+            return False
 
     # Try the cache if we have a collection ID.
     if 'collection' in item_dict:
@@ -71,10 +73,13 @@ def merge_common_properties(item_dict, collection_cache=None, json_href=None):
         if isinstance(collection, Collection):
             collection_id = collection.id
             collection_props = collection.properties
-        else:
+        elif type(collection) is dict:
             collection_id = collection['id']
             if 'properties' in collection:
                 collection_props = collection['properties']
+        else:
+            raise ValueError('{} is expected to be a Collection or '
+                             'dict but is neither.'.format(collection))
 
         if collection_props is not None:
             for k in collection_props:
