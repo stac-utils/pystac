@@ -24,6 +24,8 @@ class Collection(Catalog):
         stac_extensions (List[str]): Optional list of extensions the Collection implements.
         href (str or None): Optional HREF for this collection, which be set as the collection's
             self link's HREF.
+        catalog_type (str or None): Optional catalog type for this catalog. Must
+            be one of the values in :class`~pystac.CatalogType`.
         license (str):  Collection's license(s) as a `SPDX License identifier
             <https://spdx.org/licenses/>`_, `various`, or `proprietary`. If collection includes
             data with multiple different licenses, use `various` and add a link for each.
@@ -114,6 +116,7 @@ class Collection(Catalog):
                            title=self.title,
                            stac_extensions=self.stac_extensions,
                            extra_fields=self.extra_fields,
+                           catalog_type=self.catalog_type,
                            license=self.license,
                            keywords=self.keywords,
                            providers=self.providers,
