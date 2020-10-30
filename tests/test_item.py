@@ -177,6 +177,16 @@ class ItemTest(unittest.TestCase):
         clone_asset = list(clone.assets.values())[0]
         self.assertIs(clone_asset.owner, clone)
 
+    def test_make_asset_href_relative_is_noop_on_relative_hrefs(self):
+        cat = TestCases.test_case_2()
+        item = next(cat.get_all_items())
+        asset = list(item.assets.values())[0]
+        assert not is_absolute_href(asset.href)
+        original_href = asset.get_absolute_href()
+
+        item.make_asset_hrefs_relative()
+        self.assertEqual(asset.get_absolute_href(), original_href)
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self):
