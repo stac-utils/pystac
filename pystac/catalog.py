@@ -384,7 +384,8 @@ class Catalog(STACObject):
                         description=self.description,
                         title=self.title,
                         stac_extensions=self.stac_extensions,
-                        extra_fields=deepcopy(self.extra_fields))
+                        extra_fields=deepcopy(self.extra_fields),
+                        catalog_type=self.catalog_type)
         clone._resolved_objects.cache(clone)
 
         for link in self.links:

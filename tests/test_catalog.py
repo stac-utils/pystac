@@ -256,6 +256,12 @@ class CatalogTest(unittest.TestCase):
             cat2 = pystac.read_file(href)
             self.assertEqual(cat2.catalog_type, CatalogType.SELF_CONTAINED)
 
+    def test_clone_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_1()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        clone = catalog.clone()
+        self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_save_throws_if_no_catalog_type(self):
         catalog = TestCases.test_case_3()
         assert catalog.catalog_type is None

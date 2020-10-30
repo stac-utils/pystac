@@ -104,6 +104,12 @@ class CollectionTest(unittest.TestCase):
             collection2 = pystac.read_file(href)
             self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
 
+    def test_clone_uses_previous_catalog_type(self):
+        catalog = TestCases.test_case_8()
+        assert catalog.catalog_type == CatalogType.SELF_CONTAINED
+        clone = catalog.clone()
+        self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+
     def test_multiple_extents(self):
         cat1 = TestCases.test_case_1()
         col1 = cat1.get_child('country-1').get_child('area-1-1')
