@@ -79,6 +79,13 @@ class UtilsTest(unittest.TestCase):
             actual = make_absolute_href(source_href, start_href)
             self.assertEqual(actual, expected)
 
+    def test_make_absolute_href_on_vsitar(self):
+        rel_path = 'some/item.json'
+        cat_path = '/vsitar//tmp/catalog.tar/catalog.json'
+        expected = '/vsitar//tmp/catalog.tar/some/item.json'
+
+        self.assertEqual(expected, make_absolute_href(rel_path, cat_path))
+
     def test_make_absolute_href_windows(self):
         utils._pathlib = ntpath
         try:

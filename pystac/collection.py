@@ -1,8 +1,9 @@
+from collections import abc
 from datetime import datetime
 import dateutil.parser
 from dateutil import tz
 from copy import (copy, deepcopy)
-from pystac import (STACError, STACObjectType)
+from pystac import (STACError, STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -23,6 +24,8 @@ class Collection(Catalog):
         stac_extensions (List[str]): Optional list of extensions the Collection implements.
         href (str or None): Optional HREF for this collection, which be set as the collection's
             self link's HREF.
+        catalog_type (str or None): Optional catalog type for this catalog. Must
+            be one of the values in :class`~pystac.CatalogType`.
         license (str):  Collection's license(s) as a `SPDX License identifier
             <https://spdx.org/licenses/>`_, `various`, or `proprietary`. If collection includes
             data with multiple different licenses, use `various` and add a link for each.
@@ -65,13 +68,14 @@ class Collection(Catalog):
                  stac_extensions=None,
                  href=None,
                  extra_fields=None,
+                 catalog_type=None,
                  license='proprietary',
                  keywords=None,
                  providers=None,
                  properties=None,
                  summaries=None):
         super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields,
-                                         href)
+                                         href, catalog_type)
         self.extent = extent
         self.license = license
 
@@ -80,30 +84,6 @@ class Collection(Catalog):
         self.providers = providers
         self.properties = properties
         self.summaries = summaries
-
-    def set_self_href(self, href):
-        """Sets the absolute HREF that is represented by the ``rel == 'self'``
-        :class:`~pystac.Link`.
-
-        Args:
-            str: The absolute HREF of this object. If the given HREF
-                is not absolute, it will be transformed to an absolute
-                HREF based on the current working directory.
-
-        Note:
-            Overridden for collections so that the root's ResolutionObjectCache can properly
-            update the HREF cache.
-        """
-        root = self.get_root()
-        if root is not None:
-            root._resolved_objects.remove(self)
-
-        super().set_self_href(href)
-
-        if root is not None:
-            root._resolved_objects.cache(self)
-
-        return self
 
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
@@ -136,6 +116,7 @@ class Collection(Catalog):
                            title=self.title,
                            stac_extensions=self.stac_extensions,
                            extra_fields=self.extra_fields,
+                           catalog_type=self.catalog_type,
                            license=self.license,
                            keywords=self.keywords,
                            providers=self.providers,
@@ -159,6 +140,8 @@ class Collection(Catalog):
 
     @classmethod
     def from_dict(cls, d, href=None, root=None):
+        catalog_type = CatalogType.determine_type(d)
+
         d = deepcopy(d)
         id = d.pop('id')
         description = d.pop('description')
@@ -186,19 +169,17 @@ class Collection(Catalog):
                                 keywords=keywords,
                                 providers=providers,
                                 properties=properties,
-                                summaries=summaries)
+                                summaries=summaries,
+                                href=href,
+                                catalog_type=catalog_type)
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
             if link['rel'] == 'root':
                 # Remove the link that's generated in Catalog's constructor.
                 collection.remove_links('root')
 
-            collection.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            collection.add_link(Link.self_href(href))
+            if link['rel'] != 'self' or href is None:
+                collection.add_link(Link.from_dict(link))
 
         return collection
 
@@ -206,32 +187,7 @@ class Collection(Catalog):
         """
         Update datetime and bbox based on all items to a single bbox and time window.
         """
-        def extract_extent_props(item):
-            return item.bbox + [
-                item.datetime, item.common_metadata.start_datetime,
-                item.common_metadata.end_datetime
-            ]
-
-        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(
-            *map(extract_extent_props, self.get_all_items()))
-
-        if not any(datetimes + starts):
-            start_timestamp = None
-        else:
-            start_timestamp = min([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + starts)
-            ])
-        if not any(datetimes + ends):
-            end_timestamp = None
-        else:
-            end_timestamp = max([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + ends)
-            ])
-
-        self.extent.spatial.bboxes = [[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]]
-        self.extent.temporal.intervals = [[start_timestamp, end_timestamp]]
+        self.extent = Extent.from_items(self.get_all_items())
 
 
 class Extent:
@@ -288,6 +244,45 @@ class Extent:
         return Extent(SpatialExtent.from_dict(spatial_extent_dict),
                       TemporalExtent.from_dict(temporal_extent_dict))
 
+    @staticmethod
+    def from_items(items):
+        """Create an Extent based on the datetimes and bboxes of a list of items.
+
+        Args:
+            items (List[Item]): A list of items to derive the extent from.
+
+        Returns:
+            Extent: An Extent that spatially and temporally covers all of the
+                given items.
+        """
+        def extract_extent_props(item):
+            return item.bbox + [
+                item.datetime, item.common_metadata.start_datetime,
+                item.common_metadata.end_datetime
+            ]
+
+        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(*map(extract_extent_props, items))
+
+        if not any(datetimes + starts):
+            start_timestamp = None
+        else:
+            start_timestamp = min([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + starts)
+            ])
+        if not any(datetimes + ends):
+            end_timestamp = None
+        else:
+            end_timestamp = max([
+                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                for dt in filter(None, datetimes + ends)
+            ])
+
+        spatial = SpatialExtent([[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]])
+        temporal = TemporalExtent([[start_timestamp, end_timestamp]])
+
+        return Extent(spatial, temporal)
+
 
 class SpatialExtent:
     """Describes the spatial extent of a Collection.
@@ -305,6 +300,12 @@ class SpatialExtent:
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
     """
     def __init__(self, bboxes):
+        # A common mistake is to pass in a single bbox instead of a list of bboxes.
+        # Account for this by transforming the input in that case.
+        if isinstance(bboxes, abc.Sequence):
+            if not isinstance(bboxes[0], abc.Sequence):
+                bboxes = [bboxes]
+
         self.bboxes = bboxes
 
     def to_dict(self):
@@ -388,6 +389,13 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
     def __init__(self, intervals):
+        # A common mistake is to pass in a single interval instead of a
+        # list of intervals. Account for this by transforming the input
+        # in that case.
+        if isinstance(intervals, abc.Sequence):
+            if not isinstance(intervals[0], abc.Sequence):
+                intervals = [intervals]
+
         for i in intervals:
             if i[0] is None and i[1] is None:
                 raise STACError('TemporalExtent interval must have either '

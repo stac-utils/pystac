@@ -8,7 +8,7 @@ import pystac
 from pystac import Asset, Item, Provider
 from pystac.validation import validate_dict
 from pystac.item import CommonMetadata
-from pystac.utils import str_to_datetime
+from pystac.utils import (str_to_datetime, is_absolute_href)
 from pystac.serialization.identify import STACObjectType
 from tests.utils import (TestCases, test_to_from_dict)
 
@@ -36,6 +36,17 @@ class ItemTest(unittest.TestCase):
                          'http://cool-sat.com/catalog/products/analytic.json')
         self.assertEqual(len(item.assets['thumbnail'].properties), 0)
 
+    def test_set_self_href_doesnt_break_asset_hrefs(self):
+        cat = TestCases.test_case_6()
+        for item in cat.get_all_items():
+            for asset in item.assets.values():
+                print(asset.href)
+                assert not is_absolute_href(asset.href)
+            item.set_self_href('http://example.com/item.json')
+            for asset in item.assets.values():
+                self.assertTrue(is_absolute_href(asset.href))
+                self.assertTrue(os.path.exists(asset.href))
+
     def test_asset_absolute_href(self):
         item_dict = self.get_example_item_dict()
         item = Item.from_dict(item_dict)
@@ -61,6 +72,17 @@ class ItemTest(unittest.TestCase):
             read_item = pystac.read_file(p)
             self.assertTrue('test' in read_item.extra_fields)
             self.assertEqual(read_item.extra_fields['test'], 'extra')
+
+    def test_clearing_collection(self):
+        collection = TestCases.test_case_4().get_child('acc')
+        item = next(collection.get_all_items())
+        self.assertEqual(item.collection_id, collection.id)
+        item.set_collection(None)
+        self.assertIsNone(item.collection_id)
+        self.assertIsNone(item.get_collection())
+        item.set_collection(collection)
+        self.assertEqual(item.collection_id, collection.id)
+        self.assertIs(item.get_collection(), collection)
 
     def test_datetime_ISO8601_format(self):
         item_dict = self.get_example_item_dict()
@@ -135,6 +157,35 @@ class ItemTest(unittest.TestCase):
         self.assertIsNone(item_dict['geometry'])
         with self.assertRaises(KeyError):
             item_dict['bbox']
+
+    def test_0_9_item_with_no_extensions_does_not_read_collection_data(self):
+        item_json = pystac.STAC_IO.read_json(
+            TestCases.get_path('data-files/examples/hand-0.9.0/010100/010100.json'))
+        assert item_json.get('stac_extensions') is None
+        assert item_json.get('stac_version') == '0.9.0'
+
+        did_merge = pystac.serialization.common_properties.merge_common_properties(item_json)
+        self.assertFalse(did_merge)
+
+    def test_clone_sets_asset_owner(self):
+        cat = TestCases.test_case_2()
+        item = next(cat.get_all_items())
+        original_asset = list(item.assets.values())[0]
+        assert original_asset.owner is item
+
+        clone = item.clone()
+        clone_asset = list(clone.assets.values())[0]
+        self.assertIs(clone_asset.owner, clone)
+
+    def test_make_asset_href_relative_is_noop_on_relative_hrefs(self):
+        cat = TestCases.test_case_2()
+        item = next(cat.get_all_items())
+        asset = list(item.assets.values())[0]
+        assert not is_absolute_href(asset.href)
+        original_href = asset.get_absolute_href()
+
+        item.make_asset_hrefs_relative()
+        self.assertEqual(asset.get_absolute_href(), original_href)
 
 
 class CommonMetadataTest(unittest.TestCase):

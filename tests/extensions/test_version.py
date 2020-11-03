@@ -1,16 +1,16 @@
 """Tests for pystac.extensions.version."""
 
 import datetime
-from tests.utils import TestCases
 import unittest
 
 import pystac
 from pystac.extensions import version
+from tests.utils import TestCases
 
-URL_TEMPLATE = 'http://example.com/catalog/%s.json'
+URL_TEMPLATE: str = 'http://example.com/catalog/%s.json'
 
 
-def make_item(year):
+def make_item(year: int) -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = f'USGS/GAP/CONUS/{year}'
     start = datetime.datetime(year, 1, 2)
@@ -24,7 +24,7 @@ def make_item(year):
 
 
 class VersionItemExtTest(unittest.TestCase):
-    version = '1.2.3'
+    version: str = '1.2.3'
 
     def setUp(self):
         super().setUp()
@@ -140,8 +140,61 @@ class VersionItemExtTest(unittest.TestCase):
         self.assertIs(successor, item1_copy)
         self.assertIs(latest, item1_copy)
 
+    def test_setting_none_clears_link(self):
+        deprecated = False
+        latest = make_item(2013)
+        predecessor = make_item(2010)
+        successor = make_item(2012)
+        self.item.ext.version.apply(self.version, deprecated, latest, predecessor, successor)
 
-def make_collection(year):
+        self.item.ext.version.latest = None
+        links = self.item.get_links(version.LATEST)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.item.ext.version.latest)
+
+        self.item.ext.version.predecessor = None
+        links = self.item.get_links(version.PREDECESSOR)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.item.ext.version.predecessor)
+
+        self.item.ext.version.successor = None
+        links = self.item.get_links(version.SUCCESSOR)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.item.ext.version.successor)
+
+    def test_multiple_link_setting(self):
+        deprecated = False
+        latest1 = make_item(2013)
+        predecessor1 = make_item(2010)
+        successor1 = make_item(2012)
+        self.item.ext.version.apply(self.version, deprecated, latest1, predecessor1, successor1)
+
+        year = 2015
+        latest2 = make_item(year)
+        expected_href = URL_TEMPLATE % year
+        self.item.ext.version.latest = latest2
+        links = self.item.get_links(version.LATEST)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
+
+        year = 2009
+        predecessor2 = make_item(year)
+        expected_href = URL_TEMPLATE % year
+        self.item.ext.version.predecessor = predecessor2
+        links = self.item.get_links(version.PREDECESSOR)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
+
+        year = 2014
+        successor2 = make_item(year)
+        expected_href = URL_TEMPLATE % year
+        self.item.ext.version.successor = successor2
+        links = self.item.get_links(version.SUCCESSOR)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
+
+
+def make_collection(year: int) -> pystac.Collection:
     asset_id = f'my/collection/of/things/{year}'
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
@@ -159,7 +212,7 @@ def make_collection(year):
 
 
 class VersionCollectionExtTest(unittest.TestCase):
-    version = '1.2.3'
+    version: str = '1.2.3'
 
     def setUp(self):
         super().setUp()
@@ -272,6 +325,60 @@ class VersionCollectionExtTest(unittest.TestCase):
         self.assertIs(predecessor, col2_copy)
         self.assertIs(successor, col1_copy)
         self.assertIs(latest, col1_copy)
+
+    def test_setting_none_clears_link(self):
+        deprecated = False
+        latest = make_collection(2013)
+        predecessor = make_collection(2010)
+        successor = make_collection(2012)
+        self.collection.ext.version.apply(self.version, deprecated, latest, predecessor, successor)
+
+        self.collection.ext.version.latest = None
+        links = self.collection.get_links(version.LATEST)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.collection.ext.version.latest)
+
+        self.collection.ext.version.predecessor = None
+        links = self.collection.get_links(version.PREDECESSOR)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.collection.ext.version.predecessor)
+
+        self.collection.ext.version.successor = None
+        links = self.collection.get_links(version.SUCCESSOR)
+        self.assertEqual(0, len(links))
+        self.assertIsNone(self.collection.ext.version.successor)
+
+    def test_multiple_link_setting(self):
+        deprecated = False
+        latest1 = make_collection(2013)
+        predecessor1 = make_collection(2010)
+        successor1 = make_collection(2012)
+        self.collection.ext.version.apply(self.version, deprecated, latest1, predecessor1,
+                                          successor1)
+
+        year = 2015
+        latest2 = make_collection(year)
+        expected_href = URL_TEMPLATE % year
+        self.collection.ext.version.latest = latest2
+        links = self.collection.get_links(version.LATEST)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
+
+        year = 2009
+        predecessor2 = make_collection(year)
+        expected_href = URL_TEMPLATE % year
+        self.collection.ext.version.predecessor = predecessor2
+        links = self.collection.get_links(version.PREDECESSOR)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
+
+        year = 2014
+        successor2 = make_collection(year)
+        expected_href = URL_TEMPLATE % year
+        self.collection.ext.version.successor = successor2
+        links = self.collection.get_links(version.SUCCESSOR)
+        self.assertEqual(1, len(links))
+        self.assertEqual(expected_href, links[0].get_href())
 
 
 if __name__ == '__main__':

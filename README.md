@@ -81,18 +81,28 @@ PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://gith
 To run the flake8 style checks:
 
 ```
-> flake8 pystac
-> flake8 tests
+> flake8 pystac tests
 ```
 
 To format code:
 
 ```
-> yapf -ipr pystac
-> yapf -ipr tests
+> yapf -ipr pystac tests
 ```
 
-You can also run the `./scripts/test` script to check flake8 and yapf.
+Note that you may have to use `yapf3` explicitly depending on your environment.
+
+To check for spelling mistakes in modified files:
+
+```
+> git diff --name-only | xargs codespell -I .codespellignore -f
+```
+
+You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
+
+### Continuous Integration
+
+CI will run the `scripts/test` script to check for code quality. If you have a Pull Request that fails CI, make sure to fix any linting, spelling or test issues reported by `scripts/test`.
 
 ### Documentation
 

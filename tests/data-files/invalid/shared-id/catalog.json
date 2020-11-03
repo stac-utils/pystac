@@ -1,0 +1,17 @@
+{
+    "id": "test",
+    "stac_version": "1.0.0-beta.2",
+    "description": "test desc",
+    "links": [
+        {
+            "rel": "root",
+            "href": "./catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "./test/collection.json",
+            "type": "application/json"
+        }
+    ]
+}

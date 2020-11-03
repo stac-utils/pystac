@@ -34,6 +34,7 @@ import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
+import pystac.extensions.sar
 import pystac.extensions.scientific
 import pystac.extensions.single_file_stac
 import pystac.extensions.timestamps
@@ -43,7 +44,7 @@ import pystac.extensions.view
 STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.eo.EO_EXTENSION_DEFINITION, extensions.label.LABEL_EXTENSION_DEFINITION,
     extensions.pointcloud.POINTCLOUD_EXTENSION_DEFINITION,
-    extensions.projection.PROJECTION_EXTENSION_DEFINITION,
+    extensions.projection.PROJECTION_EXTENSION_DEFINITION, extensions.sar.SAR_EXTENSION_DEFINITION,
     extensions.scientific.SCIENTIFIC_EXTENSION_DEFINITION,
     extensions.single_file_stac.SFS_EXTENSION_DEFINITION,
     extensions.timestamps.TIMESTAMPS_EXTENSION_DEFINITION,
@@ -73,7 +74,7 @@ def write_file(obj, include_self_link=True, dest_href=None):
     """Writes a STACObject to a file.
 
     This will write only the Catalog, Collection or Item ``obj``. It will not attempt
-    to write any other objects that are linked to ``obj``; if you'd like functinoality to
+    to write any other objects that are linked to ``obj``; if you'd like functionality to
     save off catalogs recursively see :meth:`Catalog.save <pystac.Catalog.save>`.
 
     This method will write the JSON of the object to the object's assigned "self" link or

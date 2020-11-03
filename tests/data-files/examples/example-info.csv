@@ -134,3 +134,5 @@
 "sentinel-0.6.0/sentinel-2-l1c/9/V/catalog.json","CATALOG","0.6.0","",""
 "sentinel-0.6.0/sentinel-2-l1c/9/catalog.json","CATALOG","0.6.0","",""
 "sentinel-0.6.0/sentinel-2-l1c/catalog.json","COLLECTION","0.6.0","",""
+"hand-0.9.0/collection.json","COLLECTION","0.9.0","",""
+"hand-0.8.1/collection.json","COLLECTION","0.8.1","",""
