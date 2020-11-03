@@ -5,11 +5,9 @@ DOI Handbook: https://doi.org/10.1000/182
 https://github.com/radiantearth/stac-spec/tree/dev/extensions/scientific
 """
 
-# TODO(schwehr): Document.
-
 import copy
 import re
-from typing import Dict, List, Optional, TypeVar, Union
+from typing import Dict, List, Optional, TypeVar
 from urllib import parse
 
 import pystac
@@ -32,7 +30,6 @@ CITE_AS: str = 'cite-as'
 DOI_REGEX = r'10[.][0-9]{4}([.][0-9]+)*/.+'
 DOI_URL_BASE = 'https://doi.org/'
 
-_DoiType = TypeVar('Doi')
 _PublicationType = TypeVar('Publication')
 _ScientificItemExtType = TypeVar('ScientificItemExt')
 _ScientificCollectionExtType = TypeVar('ScientificCollectionExtType')
@@ -42,45 +39,13 @@ def is_doi_valid(doi: str) -> bool:
     return bool(re.match(DOI_REGEX, doi))
 
 
-class Doi:
-    """A minimal Document Object Identifier (DOI) representation."""
-    def __init__(self, doi: str) -> None:
-        if is_doi_valid(doi):
-            self.doi = doi
-            return
-
-        # Assume the doi string in a DOI URL.
-        urlsplit = parse.urlsplit(doi)
-        if urlsplit.scheme not in ('http', 'https'):
-            raise pystac.STACError('nope scheme')
-        if urlsplit.netloc not in ['doi.org', 'dx.doi.org']:
-            raise pystac.STACError('nope')
-
-        doi_str = parse.unquote(urlsplit.path[1:])  # Drop leading '/'
-        if not is_doi_valid(doi_str):
-            raise pystac.STACError('Not valid DOI or DOI URL: "%s"' % doi)
-
-        self.doi = doi_str
-
-    def __repr__(self) -> str:
-        return f'<Doi {self.doi}>'
-
-    def __eq__(self, other: _DoiType) -> bool:
-        """Compares with the other using case in-sensitive check on self.doi."""
-        if not isinstance(other, Doi):
-            return False
-
-        return self.doi.lower() == other.doi.lower()
-
-    def url(self) -> str:
-        return DOI_URL_BASE + parse.quote(self.doi)
+def doi_to_url(doi: str) -> str:
+    return DOI_URL_BASE + parse.quote(doi)
 
 
 class Publication:
     """Helper for Publication entries."""
-    def __init__(self, doi: Union[str, Doi], citation: str) -> None:
-        if not isinstance(doi, Doi):
-            doi = Doi(doi)
+    def __init__(self, doi: str, citation: str) -> None:
         self.doi = doi
         self.citation = citation
 
@@ -94,19 +59,18 @@ class Publication:
         return f'<Publication doi={self.doi} target={self.citation}>'
 
     def to_dict(self) -> Dict[str, str]:
-        return copy.deepcopy({'doi': self.doi.doi, 'citation': self.citation})
+        return copy.deepcopy({'doi': self.doi, 'citation': self.citation})
 
     @staticmethod
     def from_dict(d: Dict[str, str]) -> _PublicationType:
         return Publication(d['doi'], d['citation'])
 
     def get_link(self) -> link.Link:
-        url = self.doi.url()
-        return link.Link(CITE_AS, url)
+        return link.Link(CITE_AS, doi_to_url(self.doi))
 
 
 def remove_link(links: List[link.Link], pub: Publication):
-    url = pub.doi.url()
+    url = doi_to_url(pub.doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
             continue
@@ -121,7 +85,7 @@ class ScientificItemExt(base.ItemExtension):
         self.item = an_item
 
     def apply(self,
-              doi: Optional[Union[str, Doi]] = None,
+              doi: Optional[str] = None,
               citation: Optional[str] = None,
               publications: Optional[List[Publication]] = None) -> None:
         if doi:
@@ -140,15 +104,13 @@ class ScientificItemExt(base.ItemExtension):
         return []
 
     @property
-    def doi(self) -> Doi:
+    def doi(self) -> str:
         return self.item.properties.get(DOI)
 
     @doi.setter
-    def doi(self, v: Union[str, Doi]) -> None:
-        if isinstance(v, Doi):
-            v = v.doi
+    def doi(self, v: str) -> None:
         self.item.properties[DOI] = v
-        url = DOI_URL_BASE + self.doi
+        url = doi_to_url(self.doi)  # TODO(schwehr): Remove links for doi
         self.item.add_link(pystac.link.Link(CITE_AS, url))
 
     @property
@@ -196,7 +158,7 @@ class ScientificCollectionExt(base.CollectionExtension):
         self.collection = a_collection
 
     def apply(self,
-              doi: Optional[Union[str, Doi]] = None,
+              doi: Optional[str] = None,
               citation: Optional[str] = None,
               publications: Optional[List[Publication]] = None):
         if doi:
@@ -216,13 +178,13 @@ class ScientificCollectionExt(base.CollectionExtension):
         return []
 
     @property
-    def doi(self) -> Doi:
+    def doi(self) -> str:
         return self.collection.extra_fields.get(DOI)
 
     @doi.setter
-    def doi(self, v: Union[str, Doi]) -> None:
+    def doi(self, v: str) -> None:
         self.collection.extra_fields[DOI] = v
-        url = DOI_URL_BASE + self.doi
+        url = doi_to_url(self.doi)  # TODO(schwehr) Remove.
         self.collection.add_link(pystac.link.Link(CITE_AS, url))
 
     @property
