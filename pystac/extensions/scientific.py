@@ -1,22 +1,21 @@
 """Implement the scientific extension.
 
-DOI Handbook: https://doi.org/10.1000/182
-
 https://github.com/radiantearth/stac-spec/tree/dev/extensions/scientific
+
+For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
+
+https://doi.org/10.1000/182
 """
 
 import copy
-import re
 from typing import Dict, List, Optional, TypeVar
 from urllib import parse
 
 import pystac
-from pystac import collection
 from pystac import Extensions
-from pystac import item
-from pystac import link
 from pystac.extensions import base
 
+# STAC fields strings.
 PREFIX: str = 'sci:'
 DOI: str = PREFIX + 'doi'
 CITATION: str = PREFIX + 'citation'
@@ -25,18 +24,11 @@ PUBLICATIONS: str = PREFIX + 'publications'
 # Link type.
 CITE_AS: str = 'cite-as'
 
-# TODO(schwehr): What is the correct regex for doi?
-# https://github.com/radiantearth/stac-spec/issues/910
-DOI_REGEX = r'10[.][0-9]{4}([.][0-9]+)*/.+'
 DOI_URL_BASE = 'https://doi.org/'
 
 _PublicationType = TypeVar('Publication')
 _ScientificItemExtType = TypeVar('ScientificItemExt')
 _ScientificCollectionExtType = TypeVar('ScientificCollectionExtType')
-
-
-def is_doi_valid(doi: str) -> bool:
-    return bool(re.match(DOI_REGEX, doi))
 
 
 def doi_to_url(doi: str) -> str:
@@ -65,11 +57,11 @@ class Publication:
     def from_dict(d: Dict[str, str]) -> _PublicationType:
         return Publication(d['doi'], d['citation'])
 
-    def get_link(self) -> link.Link:
-        return link.Link(CITE_AS, doi_to_url(self.doi))
+    def get_link(self) -> pystac.Link:
+        return pystac.Link(CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[link.Link], pub: Publication):
+def remove_link(links: List[pystac.Link], pub: Publication):
     url = doi_to_url(pub.doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
@@ -80,14 +72,35 @@ def remove_link(links: List[link.Link], pub: Publication):
 
 
 class ScientificItemExt(base.ItemExtension):
-    """Add an citation and dois to a STAC Item."""
-    def __init__(self, an_item: item.Item) -> None:
+    """ScientificItemExt extends Item to add citations and DOIs to a STAC Item.
+
+    Args:
+        item (Item): The item to be extended.
+
+    Attributes:
+        item (Item): The item that is being extended.
+
+    Note:
+        Using ScientificItemExt to directly wrap an item will add the 'scientific'
+        extension ID to the item's stac_extensions.
+    """
+    item: pystac.Item
+
+    def __init__(self, an_item: pystac.Item) -> None:
         self.item = an_item
 
     def apply(self,
               doi: Optional[str] = None,
               citation: Optional[str] = None,
               publications: Optional[List[Publication]] = None) -> None:
+        """Applies scientific extension properties to the extended Item.
+
+        Args:
+            doi (str): Optional DOI string for the item.  Must not be a DOI link.
+            citation (str): Optional human-readable reference.
+            publications (List[Publication]): Optional list of relevant publications
+                referencing and describing the data.
+        """
         if doi:
             self.doi = doi
         if citation:
@@ -96,7 +109,7 @@ class ScientificItemExt(base.ItemExtension):
             self.publications = publications
 
     @classmethod
-    def from_item(cls: _ScientificItemExtType, an_item: item.Item) -> _ScientificItemExtType:
+    def from_item(cls: _ScientificItemExtType, an_item: pystac.Item) -> _ScientificItemExtType:
         return cls(an_item)
 
     @classmethod
@@ -105,16 +118,26 @@ class ScientificItemExt(base.ItemExtension):
 
     @property
     def doi(self) -> str:
+        """Get or sets the DOI for the item.
+
+        Returns:
+            str
+        """
         return self.item.properties.get(DOI)
 
     @doi.setter
     def doi(self, v: str) -> None:
         self.item.properties[DOI] = v
-        url = doi_to_url(self.doi)  # TODO(schwehr): Remove links for doi
-        self.item.add_link(pystac.link.Link(CITE_AS, url))
+        url = doi_to_url(self.doi)
+        self.item.add_link(pystac.Link(CITE_AS, url))
 
     @property
     def citation(self) -> str:
+        """Get or sets the citation for the item.
+
+        Returns:
+            str
+        """
         return self.item.properties.get(CITATION)
 
     @citation.setter
@@ -123,6 +146,11 @@ class ScientificItemExt(base.ItemExtension):
 
     @property
     def publications(self) -> List[Publication]:
+        """Get or sets the publication list for the item.
+
+        Returns:
+            List of Publication instances.
+        """
         return [Publication.from_dict(pub) for pub in self.item.properties.get(PUBLICATIONS, [])]
 
     @publications.setter
@@ -133,6 +161,11 @@ class ScientificItemExt(base.ItemExtension):
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:
+        """Removes publications from the item.
+
+        Args:
+            publication (Publication): The specific publication to remove of None to remove all.
+        """
         if PUBLICATIONS not in self.item.properties:
             return
 
@@ -153,7 +186,20 @@ class ScientificItemExt(base.ItemExtension):
 
 
 class ScientificCollectionExt(base.CollectionExtension):
-    """Add an citation and dois to a STAC Collection."""
+    """ScientificCollectionExt extends Collection to add citations and DOIs to a STAC Collection.
+
+    Args:
+        collection (Collection): The collection to be extended.
+
+    Attributes:
+        collection (Collection): The collection that is being extended.
+
+    Note:
+        Using ScientificCollectionExt to directly wrap a collection will add the 'scientific'
+        extension ID to the collection's stac_extensions.
+    """
+    collection: pystac.Collection
+
     def __init__(self, a_collection):
         self.collection = a_collection
 
@@ -161,6 +207,14 @@ class ScientificCollectionExt(base.CollectionExtension):
               doi: Optional[str] = None,
               citation: Optional[str] = None,
               publications: Optional[List[Publication]] = None):
+        """Applies scientific extension properties to the extended Collection.
+
+        Args:
+            doi (str): Optional DOI string for the collection.  Must not be a DOI link.
+            citation (str): Optional human-readable reference.
+            publications (List[Publication]): Optional list of relevant publications
+                referencing and describing the data.
+        """
         if doi:
             self.doi = doi
         if citation:
@@ -170,7 +224,7 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @classmethod
     def from_collection(cls: _ScientificCollectionExtType,
-                        a_collection: collection.Collection) -> _ScientificCollectionExtType:
+                        a_collection: pystac.Collection) -> _ScientificCollectionExtType:
         return cls(a_collection)
 
     @classmethod
@@ -179,16 +233,26 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @property
     def doi(self) -> str:
+        """Get or sets the DOI for the collection.
+
+        Returns:
+            str
+        """
         return self.collection.extra_fields.get(DOI)
 
     @doi.setter
     def doi(self, v: str) -> None:
         self.collection.extra_fields[DOI] = v
-        url = doi_to_url(self.doi)  # TODO(schwehr) Remove.
-        self.collection.add_link(pystac.link.Link(CITE_AS, url))
+        url = doi_to_url(self.doi)
+        self.collection.add_link(pystac.Link(CITE_AS, url))
 
     @property
     def citation(self) -> str:
+        """Get or sets the citation for the collection.
+
+        Returns:
+            str
+        """
         return self.collection.extra_fields.get(CITATION)
 
     @citation.setter
@@ -197,6 +261,11 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @property
     def publications(self) -> List[Publication]:
+        """Get or sets the publication list for the collection.
+
+        Returns:
+            List of Publication instances.
+        """
         return [
             Publication.from_dict(p) for p in self.collection.extra_fields.get(PUBLICATIONS, [])
         ]
@@ -209,6 +278,11 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:
+        """Removes publications from the collection.
+
+        Args:
+            publication (Publication): The specific publication to remove of None to remove all.
+        """
         if PUBLICATIONS not in self.collection.extra_fields:
             return
 
@@ -229,6 +303,6 @@ class ScientificCollectionExt(base.CollectionExtension):
 
 
 SCIENTIFIC_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SCIENTIFIC, [
-    base.ExtendedObject(item.Item, ScientificItemExt),
-    base.ExtendedObject(collection.Collection, ScientificCollectionExt)
+    base.ExtendedObject(pystac.Item, ScientificItemExt),
+    base.ExtendedObject(pystac.Collection, ScientificCollectionExt)
 ])
