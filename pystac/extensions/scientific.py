@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 """
 
 import copy
-from typing import Dict, List, Optional, TypeVar
+from typing import Dict, List, Optional
 from urllib import parse
 
 import pystac
@@ -26,10 +26,6 @@ CITE_AS: str = 'cite-as'
 
 DOI_URL_BASE = 'https://doi.org/'
 
-_PublicationType = TypeVar('Publication')
-_ScientificItemExtType = TypeVar('ScientificItemExt')
-_ScientificCollectionExtType = TypeVar('ScientificCollectionExtType')
-
 
 def doi_to_url(doi: str) -> str:
     return DOI_URL_BASE + parse.quote(doi)
@@ -41,7 +37,7 @@ class Publication:
         self.doi = doi
         self.citation = citation
 
-    def __eq__(self, other: _PublicationType) -> bool:
+    def __eq__(self, other):
         if not isinstance(other, Publication):
             return NotImplemented
 
@@ -54,7 +50,7 @@ class Publication:
         return copy.deepcopy({'doi': self.doi, 'citation': self.citation})
 
     @staticmethod
-    def from_dict(d: Dict[str, str]) -> _PublicationType:
+    def from_dict(d: Dict[str, str]):
         return Publication(d['doi'], d['citation'])
 
     def get_link(self) -> pystac.Link:
@@ -109,11 +105,11 @@ class ScientificItemExt(base.ItemExtension):
             self.publications = publications
 
     @classmethod
-    def from_item(cls: _ScientificItemExtType, an_item: pystac.Item) -> _ScientificItemExtType:
+    def from_item(cls, an_item: pystac.Item):
         return cls(an_item)
 
     @classmethod
-    def _object_links(cls: _ScientificItemExtType) -> List:
+    def _object_links(cls) -> List:
         return []
 
     @property
@@ -223,12 +219,11 @@ class ScientificCollectionExt(base.CollectionExtension):
             self.publications = publications
 
     @classmethod
-    def from_collection(cls: _ScientificCollectionExtType,
-                        a_collection: pystac.Collection) -> _ScientificCollectionExtType:
+    def from_collection(cls, a_collection: pystac.Collection):
         return cls(a_collection)
 
     @classmethod
-    def _object_links(cls: _ScientificCollectionExtType) -> List:
+    def _object_links(cls) -> List:
         return []
 
     @property
