@@ -150,7 +150,7 @@ def datetime_to_str(dt):
     Returns:
         str: The ISO8601 formatted string representing the datetime.
     """
-    
+
     # workaround for CFTime datetimes
     if hasattr(dt, 'tzinfo') and dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
