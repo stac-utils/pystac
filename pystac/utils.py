@@ -150,8 +150,10 @@ def datetime_to_str(dt):
     Returns:
         str: The ISO8601 formatted string representing the datetime.
     """
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+    
+    if hasattr(dt, 'tzinfo'):
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
 
     timestamp = dt.isoformat()
     zulu = '+00:00'
