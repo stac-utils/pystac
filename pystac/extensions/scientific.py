@@ -57,8 +57,8 @@ class Publication:
         return pystac.Link(CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], pub: Publication):
-    url = doi_to_url(pub.doi)
+def remove_link(links: List[pystac.Link], doi: str):
+    url = doi_to_url(doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
             continue
@@ -123,6 +123,11 @@ class ScientificItemExt(base.ItemExtension):
 
     @doi.setter
     def doi(self, v: str) -> None:
+        if DOI in self.item.properties:
+            if v == self.item.properties[DOI]:
+                return
+            remove_link(self.item.links, self.item.properties[DOI])
+
         self.item.properties[DOI] = v
         url = doi_to_url(self.doi)
         self.item.add_link(pystac.Link(CITE_AS, url))
@@ -167,13 +172,13 @@ class ScientificItemExt(base.ItemExtension):
 
         if not publication:
             for one_pub in self.item.ext.scientific.publications:
-                remove_link(self.item.links, one_pub)
+                remove_link(self.item.links, one_pub.doi)
 
             del self.item.properties[PUBLICATIONS]
             return
 
         # One publication and link to remove
-        remove_link(self.item.links, publication)
+        remove_link(self.item.links, publication.doi)
         to_remove = publication.to_dict()
         self.item.properties[PUBLICATIONS].remove(to_remove)
 
@@ -237,6 +242,10 @@ class ScientificCollectionExt(base.CollectionExtension):
 
     @doi.setter
     def doi(self, v: str) -> None:
+        if DOI in self.collection.extra_fields:
+            if v == self.collection.extra_fields[DOI]:
+                return
+            remove_link(self.collection.links, self.collection.extra_fields[DOI])
         self.collection.extra_fields[DOI] = v
         url = doi_to_url(self.doi)
         self.collection.add_link(pystac.Link(CITE_AS, url))
@@ -283,13 +292,13 @@ class ScientificCollectionExt(base.CollectionExtension):
 
         if not publication:
             for one_pub in self.collection.ext.scientific.publications:
-                remove_link(self.collection.links, one_pub)
+                remove_link(self.collection.links, one_pub.doi)
 
             del self.collection.extra_fields[PUBLICATIONS]
             return
 
         # One publication and link to remove
-        remove_link(self.collection.links, publication)
+        remove_link(self.collection.links, publication.doi)
         to_remove = publication.to_dict()
         self.collection.extra_fields[PUBLICATIONS].remove(to_remove)
 

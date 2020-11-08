@@ -53,6 +53,20 @@ class ScientificItemExtTest(unittest.TestCase):
         self.assertEqual(DOI_URL, link.get_href())
         self.item.validate()
 
+        # Check that setting the doi does not cause extra links.
+
+        # Same doi.
+        self.item.ext.scientific.doi = DOI
+        self.assertEqual(1, len(self.item.get_links(scientific.CITE_AS)))
+        self.item.validate()
+
+        # Different doi.
+        self.item.ext.scientific.doi = PUB1_DOI
+        self.assertEqual(1, len(self.item.get_links(scientific.CITE_AS)))
+        link = self.item.get_links(scientific.CITE_AS)[0]
+        self.assertEqual(PUB1_DOI_URL, link.get_href())
+        self.item.validate()
+
     def test_citation(self):
         self.item.ext.scientific.apply(citation=CITATION)
         self.assertEqual(CITATION, self.item.ext.scientific.citation)
@@ -187,7 +201,20 @@ class ScientificCollectionExtTest(unittest.TestCase):
         self.assertIn(scientific.DOI, self.collection.extra_fields)
         link = self.collection.get_links(scientific.CITE_AS)[0]
         self.assertEqual(DOI_URL, link.get_href())
+        self.collection.validate()
 
+        # Check that setting the doi does not cause extra links.
+
+        # Same doi.
+        self.collection.ext.scientific.doi = DOI
+        self.assertEqual(1, len(self.collection.get_links(scientific.CITE_AS)))
+        self.collection.validate()
+
+        # Different doi.
+        self.collection.ext.scientific.doi = PUB1_DOI
+        self.assertEqual(1, len(self.collection.get_links(scientific.CITE_AS)))
+        link = self.collection.get_links(scientific.CITE_AS)[0]
+        self.assertEqual(PUB1_DOI_URL, link.get_href())
         self.collection.validate()
 
     def test_citation(self):
