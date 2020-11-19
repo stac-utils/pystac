@@ -542,7 +542,13 @@ class Catalog(STACObject):
             result.extend(child.generate_subcatalogs(template, defaults=defaults))
 
         layout_template = LayoutTemplate(template, defaults=defaults)
+
         subcat_id_to_cat = {}
+        curr_parent = self
+        while curr_parent is not None:
+            subcat_id_to_cat[curr_parent.id] = curr_parent
+            curr_parent = curr_parent.get_parent()
+
         items = list(self.get_items())
         for item in items:
             item_parts = layout_template.get_template_values(item)
