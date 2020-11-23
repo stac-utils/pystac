@@ -520,7 +520,7 @@ class Catalog(STACObject):
 
         return self
 
-    def generate_subcatalogs(self, template, defaults=None, **kwargs):
+    def generate_subcatalogs(self, template, defaults=None, parent_ids=None, **kwargs):
         """Walks through the catalog and generates subcatalogs
         for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
         for details on the construction of template strings. This template string
@@ -533,35 +533,37 @@ class Catalog(STACObject):
             defaults (dict):  Default values for the template variables
                 that will be used if the property cannot be found on
                 the item.
+            parent_ids (List[str]): Optional list of the parent catalogs'
+                identifiers. If the bottom-most subcatalags already match the
+                template, no subcatalog is added.
 
         Returns:
             [catalog]: List of new catalogs created
         """
         result = []
+        parent_ids = parent_ids or list()
+        parent_ids.append(self.id)
         for child in self.get_children():
-            result.extend(child.generate_subcatalogs(template, defaults=defaults))
+            result.extend(child.generate_subcatalogs(template, defaults=defaults,
+                                                     parent_ids=parent_ids.copy()))
 
         layout_template = LayoutTemplate(template, defaults=defaults)
-
-        subcat_id_to_cat = {}
-        curr_parent = self
-        while curr_parent is not None:
-            subcat_id_to_cat[curr_parent.id] = curr_parent
-            curr_parent = curr_parent.get_parent()
 
         items = list(self.get_items())
         for item in items:
             item_parts = layout_template.get_template_values(item)
+            id_iter = reversed(parent_ids)
+            if all([id == next(id_iter, None) for id in reversed(item_parts.values())]):
+                continue
             curr_parent = self
             for k, v in item_parts.items():
                 subcat_id = '{}'.format(v)
-                subcat = subcat_id_to_cat.get(subcat_id)
+                subcat = curr_parent.get_child(subcat_id)
                 if subcat is None:
                     subcat_desc = 'Catalog of items from {} with {} of {}'.format(
                         curr_parent.id, k, v)
                     subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)
-                    subcat_id_to_cat[subcat_id] = subcat
                     result.append(subcat)
                 curr_parent = subcat
             self.remove_item(item.id)
