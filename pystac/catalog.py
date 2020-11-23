@@ -544,8 +544,10 @@ class Catalog(STACObject):
         parent_ids = parent_ids or list()
         parent_ids.append(self.id)
         for child in self.get_children():
-            result.extend(child.generate_subcatalogs(template, defaults=defaults,
-                                                     parent_ids=parent_ids.copy()))
+            result.extend(
+                child.generate_subcatalogs(template,
+                                           defaults=defaults,
+                                           parent_ids=parent_ids.copy()))
 
         layout_template = LayoutTemplate(template, defaults=defaults)
 
