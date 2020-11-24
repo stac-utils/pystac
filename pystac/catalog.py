@@ -555,7 +555,8 @@ class Catalog(STACObject):
         for item in items:
             item_parts = layout_template.get_template_values(item)
             id_iter = reversed(parent_ids)
-            if all([id == next(id_iter, None) for id in reversed(item_parts.values())]):
+            if all(['{}'.format(id) == next(id_iter, None)
+                    for id in reversed(item_parts.values())]):
                 continue
             curr_parent = self
             for k, v in item_parts.items():
