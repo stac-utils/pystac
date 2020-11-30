@@ -55,7 +55,7 @@ class EOItemExt(ItemExtension):
         """Gets an Item or an Asset bands.
 
         If an Asset is supplied and the bands property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value or 
+        returns the Asset's value. Otherwise returns the Item's value or
         all the asset's eo bands
 
         Returns:
