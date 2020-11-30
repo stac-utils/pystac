@@ -67,7 +67,7 @@ class EOItemExt(ItemExtension):
             bands = self.item.properties.get('eo:bands')
 
         # get assets with eo:bands even if not in item
-        if bands is None:
+        if asset is None and bands is None:
             bands = []
             for (key, value) in self.item.get_assets().items():
                 if 'eo:bands' in value.properties:
