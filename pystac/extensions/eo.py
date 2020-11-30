@@ -55,7 +55,8 @@ class EOItemExt(ItemExtension):
         """Gets an Item or an Asset bands.
 
         If an Asset is supplied and the bands property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
+        returns the Asset's value. Otherwise returns the Item's value or 
+        all the asset's eo bands
 
         Returns:
             List[Band]
@@ -64,6 +65,13 @@ class EOItemExt(ItemExtension):
             bands = asset.properties.get('eo:bands')
         else:
             bands = self.item.properties.get('eo:bands')
+
+        # get assets with eo:bands even if not in item
+        if bands is None:
+            bands = []
+            for (value) in self.item.get_assets().items():
+                if 'eo:bands' in value.properties:
+                    bands.extend(value.properties.get('eo:bands'))
 
         if bands is not None:
             bands = [Band(b) for b in bands]
