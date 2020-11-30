@@ -61,7 +61,7 @@ class EOTest(unittest.TestCase):
         asset_bands = eo_item.ext.eo.get_bands(index_asset)
         self.assertIs(None, asset_bands)
 
-        ## No asset specified
+        # No asset specified
         asset_bands = eo_item.ext.eo.get_bands()
         self.assertIsNot(None, asset_bands)
 
