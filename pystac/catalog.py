@@ -594,8 +594,10 @@ class Catalog(STACObject):
         # Ensure relative vs absolute
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             self.make_all_links_absolute()
-        else:
+        elif catalog_type in (CatalogType.SELF_CONTAINED, CatalogType.RELATIVE_PUBLISHED):
             self.make_all_links_relative()
+        else:
+            raise ValueError(f'catalog_type is not a CatalogType: "{catalog_type}"')
 
         include_self_link = catalog_type in [
             CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
