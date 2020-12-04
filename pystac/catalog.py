@@ -557,6 +557,9 @@ class Catalog(STACObject):
             id_iter = reversed(parent_ids)
             if all(['{}'.format(id) == next(id_iter, None)
                     for id in reversed(item_parts.values())]):
+                # Skip items for which the sub-catalog structure already
+                # matches the template. The list of parent IDs can include more
+                # elements on the root side, so compare the reversed sequences.
                 continue
             curr_parent = self
             for k, v in item_parts.items():
