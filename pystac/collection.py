@@ -396,10 +396,6 @@ class TemporalExtent:
             if not isinstance(intervals[0], abc.Sequence):
                 intervals = [intervals]
 
-        for i in intervals:
-            if i[0] is None and i[1] is None:
-                raise STACError('TemporalExtent interval must have either '
-                                'a start or an end time, or both')
         self.intervals = intervals
 
     def to_dict(self):
