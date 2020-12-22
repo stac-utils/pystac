@@ -3,7 +3,7 @@ from datetime import datetime
 import dateutil.parser
 from dateutil import tz
 from copy import (copy, deepcopy)
-from pystac import (STACError, STACObjectType, CatalogType)
+from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
