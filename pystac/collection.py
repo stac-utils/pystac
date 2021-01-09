@@ -3,7 +3,7 @@ from datetime import datetime
 import dateutil.parser
 from dateutil import tz
 from copy import (copy, deepcopy)
-from pystac import (STACError, STACObjectType, CatalogType)
+from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -396,10 +396,6 @@ class TemporalExtent:
             if not isinstance(intervals[0], abc.Sequence):
                 intervals = [intervals]
 
-        for i in intervals:
-            if i[0] is None and i[1] is None:
-                raise STACError('TemporalExtent interval must have either '
-                                'a start or an end time, or both')
         self.intervals = intervals
 
     def to_dict(self):
