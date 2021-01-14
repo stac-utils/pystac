@@ -608,8 +608,10 @@ class Catalog(STACObject):
         # Ensure relative vs absolute
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             self.make_all_links_absolute()
+            self.make_all_asset_hrefs_absolute()
         elif catalog_type in (CatalogType.SELF_CONTAINED, CatalogType.RELATIVE_PUBLISHED):
             self.make_all_links_relative()
+            self.make_all_asset_hrefs_relative()
         else:
             raise ValueError(f'catalog_type is not a CatalogType: "{catalog_type}"')
 
