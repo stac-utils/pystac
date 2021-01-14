@@ -44,6 +44,7 @@ class STACWritingTest(unittest.TestCase):
                         self.assertEqual(asset.href, rel_href)
                     else:
                         self.assertTrue(is_valid)
+
         def validate_item_link_type(href, link_type, should_include_self):
             item_dict = STAC_IO.read_json(href)
             item = STACObject.from_file(href)
