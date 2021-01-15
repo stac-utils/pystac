@@ -27,7 +27,7 @@ if you'd like to enable the validation feature utilizing the [jsonschema](https:
 From source repository:
 
 ```bash
-> git clone https://github.com/azavea/pystac.git
+> git clone https://github.com/stac-utils/pystac.git
 > cd pystac
 > pip install .
 ```

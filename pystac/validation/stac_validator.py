@@ -34,7 +34,11 @@ class STACValidator(ABC):
         pass
 
     @abstractmethod
-    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id,
+    def validate_extension(self,
+                           stac_dict,
+                           stac_object_type,
+                           stac_version,
+                           extension_id,
                            href=None):
         """Validate an extension stac object.
 
@@ -173,7 +177,11 @@ class JsonSchemaSTACValidator(STACValidator):
                                           stac_dict.get('id'))
             raise STACValidationError(msg, source=e) from e
 
-    def validate_extension(self, stac_dict, stac_object_type, stac_version, extension_id,
+    def validate_extension(self,
+                           stac_dict,
+                           stac_object_type,
+                           stac_version,
+                           extension_id,
                            href=None):
         """Validate an extension stac object.
 

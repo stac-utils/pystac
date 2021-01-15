@@ -1,5 +1,24 @@
 # Changelog
 
+## [v0.5.4]
+
+### Added
+
+- SAT Extension ([#236](https://github.com/stac-utils/pystac/pull/236))
+- Add support for the scientific extension. ([#199](https://github.com/stac-utils/pystac/pull/199))
+
+### Fixed
+
+- Fix unexpected behaviour of `generate_subcatalogs` ([#241](https://github.com/stac-utils/pystac/pull/241))
+- Get eo bands defined in assets only ([#243](https://github.com/stac-utils/pystac/pull/243))
+- Collection TemporalExtent can be open ended ([#247](https://github.com/stac-utils/pystac/pull/247))
+- Make asset HREFs relative or absolute based on CatalogType during save ([#251](https://github.com/stac-utils/pystac/pull/251))
+
+### Changed
+
+- Be more strict with CatalogType in `Catalog.save` ([#244](https://github.com/stac-utils/pystac/pull/244))
+
+
 ## [v0.5.3]
 
 ### Added
@@ -13,7 +32,7 @@
 - Added a `catalog_type` property to track the CatalogType of read in or previously saved catalogs ([#224](https://github.com/stac-utils/pystac/pull/224))
 - Added a tutorial for creating Landsat 8 STACs ([#181](https://github.com/stac-utils/pystac/pull/181))
 - Added codespell to CI ([#206](https://github.com/stac-utils/pystac/pull/206))
-- Added more teesting to Links ([#211](https://github.com/stac-utils/pystac/pull/211))
+- Added more testing to Links ([#211](https://github.com/stac-utils/pystac/pull/211))
 
 ### Fixed
 

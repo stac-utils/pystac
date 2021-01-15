@@ -101,7 +101,7 @@ Catalog Types
 
 The STAC `best practices document <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_ lays out different catalog types, and how their links should be formatted. A brief description is below, but check out the document for the official take on these types:
 
-Note that the catalog types do not dictate the asset HREF formats, only link formats. Asset HREFs in any catalog type can be relative or absolute; see the section on :ref:`rel vs abs asset` below.
+The catalog types will also dictate the asset HREF formats. Asset HREFs in any catalog type can be relative or absolute may be absolute depending on their location; see the section on :ref:`rel vs abs asset` below.
 
 
 Self-Contained Catalogs

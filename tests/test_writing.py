@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 from pystac import (STAC_IO, STACObject, Collection, CatalogType, LinkType)
 from pystac.serialization import (STACObjectType)
-from pystac.utils import make_absolute_href
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict
 
 from tests.utils import TestCases
@@ -31,12 +31,28 @@ class STACWritingTest(unittest.TestCase):
         return validate_dict(d, object_type)
 
     def validate_link_types(self, root_href, catalog_type):
+        def validate_asset_href_type(item, item_href, link_type):
+            for asset in item.assets.values():
+                if link_type == LinkType.ABSOLUTE:
+                    self.assertTrue(is_absolute_href(asset.href))
+                else:
+                    is_valid = not is_absolute_href(asset.href)
+                    if not is_valid:
+                        # If the item href and asset href don't share
+                        # the same root, the asset href must be absolute
+                        rel_href = make_relative_href(asset.href, item_href)
+                        self.assertEqual(asset.href, rel_href)
+                    else:
+                        self.assertTrue(is_valid)
+
         def validate_item_link_type(href, link_type, should_include_self):
             item_dict = STAC_IO.read_json(href)
             item = STACObject.from_file(href)
             for link in item.get_links():
                 if not link.rel == 'self':
                     self.assertEqual(link.link_type, link_type)
+
+            validate_asset_href_type(item, href, link_type)
 
             rels = set([link['rel'] for link in item_dict['links']])
             self.assertEqual('self' in rels, should_include_self)

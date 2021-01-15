@@ -24,7 +24,7 @@ class LayoutTemplate:
 
     - The object's attributes
     - Keys in the ``properties`` attribute, if it exists.
-    - Keys in the ``extra_fiels`` attribute, if it exists.
+    - Keys in the ``extra_fields`` attribute, if it exists.
 
     Some special keys can be used in template variables:
 
