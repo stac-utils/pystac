@@ -5,6 +5,7 @@
 ### Added
 
 - SAT Extension ([#236](https://github.com/stac-utils/pystac/pull/236))
+- Add support for the scientific extension. ([#199](https://github.com/stac-utils/pystac/pull/199))
 
 ### Fixed
 
