@@ -1,7 +1,6 @@
 from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
-from typing import Optional
 
 
 class ViewItemExt(ItemExtension):
