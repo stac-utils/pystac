@@ -29,6 +29,29 @@ class ViewTest(unittest.TestCase):
                             sun_azimuth=2.0,
                             sun_elevation=1.0)
 
+    def test_apply_one(self):
+        item = next(TestCases.test_case_2().get_all_items())
+        with self.assertRaises(ExtensionError):
+            item.ext.view
+
+        item.ext.enable(Extensions.VIEW)
+        item.ext.view.apply(off_nadir=1.0)
+
+    @unittest.expectedFailure
+    def test_apply_none(self):
+        item = next(TestCases.test_case_2().get_all_items())
+        with self.assertRaises(ExtensionError):
+            item.ext.view
+
+        item.ext.enable(Extensions.VIEW)
+        item.ext.view.apply(
+            off_nadir=None,
+            incidence_angle=None,
+            azimuth=None,
+            sun_azimuth=None,
+            sun_elevation=None,
+        )
+
     def test_validate_view(self):
         item = pystac.read_file(self.example_uri)
         item.validate()
