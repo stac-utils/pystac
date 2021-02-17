@@ -10,6 +10,7 @@ from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
+
 class CatalogType(str, Enum):
     def __str__(self):
         return str(self.value)
