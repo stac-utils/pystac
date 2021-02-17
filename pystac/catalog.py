@@ -1,5 +1,6 @@
 import os
 from copy import deepcopy
+from enum import Enum
 
 import pystac
 from pystac import STACError
@@ -9,8 +10,10 @@ from pystac.link import (Link, LinkType)
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
+class CatalogType(str, Enum):
+    def __str__(self):
+        return str(self.value)
 
-class CatalogType:
     SELF_CONTAINED = 'SELF_CONTAINED'
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download a catalog from online and be able to use it on their
@@ -38,8 +41,8 @@ class CatalogType:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
-    @staticmethod
-    def determine_type(stac_json):
+    @classmethod
+    def determine_type(cls, stac_json):
         """Determines the catalog type based on a STAC JSON dict.
 
         Only applies to Catalogs or Collections
@@ -61,12 +64,12 @@ class CatalogType:
 
         if self_link:
             if relative:
-                return CatalogType.RELATIVE_PUBLISHED
+                return cls.RELATIVE_PUBLISHED
             else:
-                return CatalogType.ABSOLUTE_PUBLISHED
+                return cls.ABSOLUTE_PUBLISHED
         else:
             if relative:
-                return CatalogType.SELF_CONTAINED
+                return cls.SELF_CONTAINED
             else:
                 return None
 

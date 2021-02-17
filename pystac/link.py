@@ -1,12 +1,16 @@
 from copy import (copy, deepcopy)
+from enum import Enum
 
 from pystac import STACError
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 
-class LinkType:
+class LinkType(str, Enum):
     """Enumerates link types; used to determine if a link is absolute or relative."""
+    def __str__(self):
+        return str(self.value)
+
     ABSOLUTE = 'ABSOLUTE'
     RELATIVE = 'RELATIVE'
 
