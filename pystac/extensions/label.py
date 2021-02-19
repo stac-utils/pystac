@@ -11,6 +11,9 @@ from pystac.link import Link
 
 class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
+    def __str__(self):
+        return str(self.value)
+
     VECTOR = 'vector'
     RASTER = 'raster'
 
