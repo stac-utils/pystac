@@ -6,6 +6,10 @@
 
 - Fix handling of optional properties when using apply on view extension ([#259](https://github.com/stac-utils/pystac/pull/259))
 
+### Changed
+
+- Subclass relevant classes from `enum.Enum`. This allows iterating over the class' contents. The `__str__` method is overwritten so this should not break backwards compatibility. ([#261](https://github.com/stac-utils/pystac/pull/261))
+
 ## [v0.5.4]
 
 ### Added
