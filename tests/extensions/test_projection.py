@@ -97,6 +97,14 @@ class ProjectionTest(unittest.TestCase):
             shape=[100, 100],
             transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0])
 
+    def test_partial_apply(self):
+        proj_item = pystac.read_file(self.example_uri)
+
+        proj_item.ext.projection.apply(epsg=1111)
+
+        self.assertEqual(proj_item.ext.projection.epsg, 1111)
+        proj_item.validate()
+
     def test_validate_proj(self):
         item = pystac.read_file(self.example_uri)
         item.validate()
