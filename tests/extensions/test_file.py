@@ -54,8 +54,7 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(FileDataType.UINT8,
-                         item.ext.file.get_data_type(asset))
+        self.assertEqual(FileDataType.UINT8, item.ext.file.get_data_type(asset))
 
         # Set
         new_data_type = FileDataType.UINT16
@@ -75,4 +74,3 @@ class FileTest(unittest.TestCase):
         item.ext.file.set_nodata(new_nodata, asset)
         self.assertEqual(new_nodata, item.ext.file.get_nodata(asset))
         item.validate()
-

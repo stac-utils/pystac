@@ -46,11 +46,7 @@ class FileItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(self,
-              data_type=None,
-              size=None,
-              nodata=None,
-              checksum=None):
+    def apply(self, data_type=None, size=None, nodata=None, checksum=None):
         """Applies file extension properties to the extended Item.
 
         Args:
@@ -227,4 +223,5 @@ class FileItemExt(ItemExtension):
         return cls(item)
 
 
-FILE_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.FILE, [ExtendedObject(Item, FileItemExt)])
+FILE_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.FILE,
+                                                [ExtendedObject(Item, FileItemExt)])
