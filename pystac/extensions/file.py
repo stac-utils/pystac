@@ -65,6 +65,13 @@ class FileItemExt(ItemExtension):
         self.nodata = nodata
         self.checksum = checksum
 
+    def _set_property(self, key, value, asset):
+        target = self.item.properties if asset is None else asset.properties
+        if value is None:
+            target.pop(key, None)
+        else:
+            target[key] = value
+
     @property
     def data_type(self):
         """Get or sets the data_type of the file.
@@ -90,7 +97,7 @@ class FileItemExt(ItemExtension):
         if asset is not None and 'file:data_type' in asset.properties:
             data_type = asset.properties.get('file:data_type')
         else:
-            data_type = self.item.properties.get('file_data_type')
+            data_type = self.item.properties.get('file:data_type')
 
         if data_type is not None:
             return FileDataType(data_type)
@@ -101,10 +108,7 @@ class FileItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is not None:
-            asset.properties['file:data_type'] = data_type.value
-        else:
-            self.item.properties['file:data_type'] = data_type.value
+        self._set_property('file:data_type', data_type.value, asset)
 
     @property
     def size(self):
@@ -139,10 +143,7 @@ class FileItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['file:size'] = size
-        else:
-            asset.properties['file:size'] = size
+        self._set_property('file:size', size, asset)
 
     @property
     def nodata(self):
@@ -177,10 +178,7 @@ class FileItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['file:nodata'] = nodata
-        else:
-            asset.properties['file:nodata'] = nodata
+        self._set_property('file:nodata', nodata, asset)
 
     @property
     def checksum(self):
@@ -191,7 +189,7 @@ class FileItemExt(ItemExtension):
         """
         return self.get_checksum()
 
-    @nodata.setter
+    @checksum.setter
     def checksum(self, v):
         self.set_checksum(v)
 
@@ -215,10 +213,7 @@ class FileItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['file:checksum'] = checksum
-        else:
-            asset.properties['file:checksum'] = checksum
+        self._set_property('file:checksum', checksum, asset)
 
     def __repr__(self):
         return '<FileItemExt Item id={}>'.format(self.item.id)
