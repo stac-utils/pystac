@@ -1,5 +1,6 @@
 from abc import (ABC, abstractmethod)
 from enum import Enum
+from urllib.request import pathname2url
 
 import pystac
 from pystac import STACError
@@ -521,6 +522,7 @@ class STACObject(LinkMixin, ABC):
         """
         if not is_absolute_href(href):
             href = make_absolute_href(href)
+        href = f"file:{pathname2url(href)}"
         d = STAC_IO.read_json(href)
 
         if cls == STACObject:
