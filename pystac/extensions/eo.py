@@ -85,10 +85,7 @@ class EOItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         band_dicts = [b.to_dict() for b in bands]
-        if asset is not None:
-            asset.properties['eo:bands'] = band_dicts
-        else:
-            self.item.properties['eo:bands'] = band_dicts
+        self._set_property('eo:bands', band_dicts, asset)
 
     @property
     def cloud_cover(self):
@@ -124,10 +121,7 @@ class EOItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['eo:cloud_cover'] = cloud_cover
-        else:
-            asset.properties['eo:cloud_cover'] = cloud_cover
+        self._set_property('eo:cloud_cover', cloud_cover, asset)
 
     def __repr__(self):
         return '<EOItemExt Item id={}>'.format(self.item.id)

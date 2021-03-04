@@ -101,10 +101,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:off_nadir'] = off_nadir
-        else:
-            asset.properties['view:off_nadir'] = off_nadir
+        self._set_property('view:off_nadir', off_nadir, asset)
 
     @property
     def incidence_angle(self):
@@ -141,10 +138,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:incidence_angle'] = incidence_angle
-        else:
-            asset.properties['view:incidence_angle'] = incidence_angle
+        self._set_property('view:incidence_angle', incidence_angle, asset)
 
     @property
     def azimuth(self):
@@ -181,10 +175,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:azimuth'] = azimuth
-        else:
-            asset.properties['view:azimuth'] = azimuth
+        self._set_property('view:azimuth', azimuth, asset)
 
     @property
     def sun_azimuth(self):
@@ -220,10 +211,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:sun_azimuth'] = sun_azimuth
-        else:
-            asset.properties['view:sun_azimuth'] = sun_azimuth
+        self._set_property('view:sun_azimuth', sun_azimuth, asset)
 
     @property
     def sun_elevation(self):
@@ -259,10 +247,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:sun_elevation'] = sun_elevation
-        else:
-            asset.properties['view:sun_elevation'] = sun_elevation
+        self._set_property('view:sun_elevation', sun_elevation, asset)
 
     @classmethod
     def _object_links(cls):

@@ -103,10 +103,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:epsg'] = epsg
-        else:
-            asset.properties['proj:epsg'] = epsg
+        self._set_property('proj:epsg', epsg, asset)
 
     @property
     def wkt2(self):
@@ -147,10 +144,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:wkt2'] = wkt2
-        else:
-            asset.properties['proj:wkt2'] = wkt2
+        self._set_property('proj:wkt2', wkt2, asset)
 
     @property
     def projjson(self):
@@ -194,10 +188,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:projjson'] = projjson
-        else:
-            asset.properties['proj:projjson'] = projjson
+        self._set_property('proj:projjson', projjson, asset)
 
     @property
     def geometry(self):
@@ -239,10 +230,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:geometry'] = geometry
-        else:
-            asset.properties['proj:geometry'] = geometry
+        self._set_property('proj:geometry', geometry, asset)
 
     @property
     def bbox(self):
@@ -285,10 +273,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:bbox'] = bbox
-        else:
-            asset.properties['proj:bbox'] = bbox
+        self._set_property('proj:bbox', bbox, asset)
 
     @property
     def centroid(self):
@@ -330,10 +315,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:centroid'] = centroid
-        else:
-            asset.properties['proj:centroid'] = centroid
+        self._set_property('proj:centroid', centroid, asset)
 
     @property
     def shape(self):
@@ -373,10 +355,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:shape'] = shape
-        else:
-            asset.properties['proj:shape'] = shape
+        self._set_property('proj:shape', shape, asset)
 
     @property
     def transform(self):
@@ -419,10 +398,7 @@ class ProjectionItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['proj:transform'] = transform
-        else:
-            asset.properties['proj:transform'] = transform
+        self._set_property('proj:transform', transform, asset)
 
     @classmethod
     def _object_links(cls):
