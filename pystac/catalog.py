@@ -381,7 +381,7 @@ class Catalog(STACObject):
         if self.title is not None:
             d['title'] = self.title
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         clone = Catalog(id=self.id,
