@@ -6,6 +6,8 @@
 
 ### Fixed
 
+- Fixed error when accessing the statistics attribute of the pointcloud extension when no statistics were defined ([#282](https://github.com/stac-utils/pystac/pull/282))
+
 ### Changed
 
 ### Removed
@@ -20,8 +22,6 @@
 
 - Fix handling of optional properties when using apply on view extension ([#259](https://github.com/stac-utils/pystac/pull/259))
 - Fixed issue with setting None into projection extension fields that are not required breaking validation ([#269](https://github.com/stac-utils/pystac/pull/269))
-- Remove unnecessary `deepcopy` calls in `to_dict` methods to avoid costly overhead ([#273](https://github.com/stac-utils/pystac/pull/273))
-
 
 ### Changed
 
