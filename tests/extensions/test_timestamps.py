@@ -50,7 +50,7 @@ class TimestampsTest(unittest.TestCase):
             self.assertIsNone(d)
 
         for p in ('expires', 'unpublished'):
-            self.assertIsNone(item.properties[p])
+            self.assertNotIn(p, item.properties)
 
     def test_validate_timestamps(self):
         item = pystac.read_file(self.example_uri)

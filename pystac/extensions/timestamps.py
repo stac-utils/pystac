@@ -66,14 +66,9 @@ class TimestampsItemExt(ItemExtension):
         return timestamp
 
     def _timestamp_setter(self, timestamp, key, asset=None):
-        if timestamp is None:
-            self.item.properties[key] = timestamp
-        else:
-            timestamp_str = datetime_to_str(timestamp)
-            if asset is not None:
-                asset.properties[key] = timestamp_str
-            else:
-                self.item.properties[key] = timestamp_str
+        if timestamp is not None:
+            timestamp = datetime_to_str(timestamp)
+        self._set_property(key, timestamp, asset)
 
     @property
     def published(self):

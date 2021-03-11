@@ -121,6 +121,30 @@ class ItemExtension(ABC):
         """
         pass
 
+    def _set_property(self, key, value, asset):
+        '''
+        Set an Item or an Asset property.
+
+        If an Asset is supplied, sets the property on the Asset.
+        Otherwise sets the Item's value.
+
+        If the passed value to set is None, the property key is removed from
+        the dictionary of properties.
+
+        It's recommended to use this method from extensions, instead of implementing
+        the logic for that in the corresponding subclasses.
+
+        Args:
+            key (str): The name of the property
+            value (Object): the value to set
+            asset: The Asset to modify. If None, the property will be set in the Item
+        '''
+        target = self.item.properties if asset is None else asset.properties
+        if value is None:
+            target.pop(key, None)
+        else:
+            target[key] = value
+
 
 class RegisteredSTACExtensions:
     def __init__(self, extension_definitions):
