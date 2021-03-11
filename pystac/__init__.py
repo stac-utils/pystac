@@ -41,6 +41,7 @@ import pystac.extensions.single_file_stac
 import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
+import pystac.extensions.file
 
 STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.eo.EO_EXTENSION_DEFINITION, extensions.label.LABEL_EXTENSION_DEFINITION,
@@ -49,7 +50,8 @@ STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
     extensions.sat.SAT_EXTENSION_DEFINITION, extensions.scientific.SCIENTIFIC_EXTENSION_DEFINITION,
     extensions.single_file_stac.SFS_EXTENSION_DEFINITION,
     extensions.timestamps.TIMESTAMPS_EXTENSION_DEFINITION,
-    extensions.version.VERSION_EXTENSION_DEFINITION, extensions.view.VIEW_EXTENSION_DEFINITION
+    extensions.version.VERSION_EXTENSION_DEFINITION, extensions.view.VIEW_EXTENSION_DEFINITION,
+    extensions.file.FILE_EXTENSION_DEFINITION
 ])
 
 

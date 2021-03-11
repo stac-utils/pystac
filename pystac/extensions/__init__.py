@@ -29,3 +29,4 @@ class Extensions(str, Enum):
     TIMESTAMPS = 'timestamps'
     VERSION = 'version'
     VIEW = 'view'
+    FILE = 'file'
