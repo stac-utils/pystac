@@ -1,6 +1,16 @@
 # Changelog
 
-## [unreleased]
+## unreleased
+
+### Added
+
+### Fixed
+
+### Changed
+
+### Removed
+
+## [v0.5.5]
 
 ### Added
 
