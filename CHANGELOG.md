@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+### Added
+
+- Added support for STAC file extension ([#270](https://github.com/stac-utils/pystac/pull/270))
+
 ### Fixed
 
 - Fix handling of optional properties when using apply on view extension ([#259](https://github.com/stac-utils/pystac/pull/259))
