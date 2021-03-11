@@ -1,4 +1,5 @@
 from abc import (ABC, abstractmethod)
+from enum import Enum
 
 import pystac
 from pystac import STACError
@@ -8,7 +9,10 @@ from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
 
 
-class STACObjectType:
+class STACObjectType(str, Enum):
+    def __str__(self):
+        return str(self.value)
+
     CATALOG = 'CATALOG'
     COLLECTION = 'COLLECTION'
     ITEM = 'ITEM'

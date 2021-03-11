@@ -1,4 +1,5 @@
 # flake8: noqa
+from enum import Enum
 
 
 class ExtensionError(Exception):
@@ -7,8 +8,11 @@ class ExtensionError(Exception):
     pass
 
 
-class Extensions:
+class Extensions(str, Enum):
     """Enumerates the IDs of common extensions."""
+    def __str__(self):
+        return str(self.value)
+
     CHECKSUM = 'checksum'
     COLLECTION_ASSETS = 'collection-assets'
     DATACUBE = 'datacube'
@@ -25,3 +29,4 @@ class Extensions:
     TIMESTAMPS = 'timestamps'
     VERSION = 'version'
     VIEW = 'view'
+    FILE = 'file'

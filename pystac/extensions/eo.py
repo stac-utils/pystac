@@ -55,7 +55,8 @@ class EOItemExt(ItemExtension):
         """Gets an Item or an Asset bands.
 
         If an Asset is supplied and the bands property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
+        returns the Asset's value. Otherwise returns the Item's value or
+        all the asset's eo bands
 
         Returns:
             List[Band]
@@ -64,6 +65,13 @@ class EOItemExt(ItemExtension):
             bands = asset.properties.get('eo:bands')
         else:
             bands = self.item.properties.get('eo:bands')
+
+        # get assets with eo:bands even if not in item
+        if asset is None and bands is None:
+            bands = []
+            for (key, value) in self.item.get_assets().items():
+                if 'eo:bands' in value.properties:
+                    bands.extend(value.properties.get('eo:bands'))
 
         if bands is not None:
             bands = [Band(b) for b in bands]
@@ -77,10 +85,7 @@ class EOItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         band_dicts = [b.to_dict() for b in bands]
-        if asset is not None:
-            asset.properties['eo:bands'] = band_dicts
-        else:
-            self.item.properties['eo:bands'] = band_dicts
+        self._set_property('eo:bands', band_dicts, asset)
 
     @property
     def cloud_cover(self):
@@ -116,10 +121,7 @@ class EOItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['eo:cloud_cover'] = cloud_cover
-        else:
-            asset.properties['eo:cloud_cover'] = cloud_cover
+        self._set_property('eo:cloud_cover', cloud_cover, asset)
 
     def __repr__(self):
         return '<EOItemExt Item id={}>'.format(self.item.id)

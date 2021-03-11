@@ -329,6 +329,91 @@ class CatalogTest(unittest.TestCase):
                 expected = item_counts[child.id]
                 self.assertEqual(actual, expected, msg=" for child '{}'".format(child.id))
 
+    def test_generate_subcatalogs_can_be_applied_multiple_times(self):
+        catalog = TestCases.test_case_8()
+
+        _ = catalog.generate_subcatalogs('${year}/${month}')
+        catalog.normalize_hrefs('/tmp')
+        expected_hrefs = {item.id: item.get_self_href() for item in catalog.get_all_items()}
+
+        result = catalog.generate_subcatalogs('${year}/${month}')
+        self.assertEqual(len(result), 0)
+        catalog.normalize_hrefs('/tmp')
+        for item in catalog.get_all_items():
+            self.assertEqual(item.get_self_href(),
+                             expected_hrefs[item.id],
+                             msg=" for item '{}'".format(item.id))
+
+    def test_generate_subcatalogs_works_after_adding_more_items(self):
+        catalog = Catalog(id='test', description='Test')
+        properties = dict(property1='A', property2=1)
+        catalog.add_item(
+            Item(id='item1',
+                 geometry=RANDOM_GEOM,
+                 bbox=RANDOM_BBOX,
+                 datetime=datetime.utcnow(),
+                 properties=properties))
+        catalog.generate_subcatalogs('${property1}/${property2}')
+        catalog.add_item(
+            Item(id='item2',
+                 geometry=RANDOM_GEOM,
+                 bbox=RANDOM_BBOX,
+                 datetime=datetime.utcnow(),
+                 properties=properties))
+        catalog.generate_subcatalogs('${property1}/${property2}')
+
+        catalog.normalize_hrefs('/tmp')
+        item1_parent = catalog.get_item('item1', recursive=True).get_parent()
+        item2_parent = catalog.get_item('item2', recursive=True).get_parent()
+        self.assertEqual(item1_parent.get_self_href(), item2_parent.get_self_href())
+
+    def test_generate_subcatalogs_works_for_branched_subcatalogs(self):
+        catalog = Catalog(id='test', description='Test')
+        item_properties = [
+            dict(property1='A', property2=1, property3='i'),  # add 3 subcats
+            dict(property1='A', property2=1, property3='j'),  # add 1 more
+            dict(property1='A', property2=2, property3='i'),  # add 2 more
+            dict(property1='B', property2=1, property3='i'),  # add 3 more
+        ]
+        for ni, properties in enumerate(item_properties):
+            catalog.add_item(
+                Item(id='item{}'.format(ni),
+                     geometry=RANDOM_GEOM,
+                     bbox=RANDOM_BBOX,
+                     datetime=datetime.utcnow(),
+                     properties=properties))
+        result = catalog.generate_subcatalogs('${property1}/${property2}/${property3}')
+        self.assertEqual(len(result), 9)
+
+        actual_subcats = set([cat.id for cat in result])
+        expected_subcats = {'A', 'B', '1', '2', 'i', 'j'}
+        self.assertSetEqual(actual_subcats, expected_subcats)
+
+    def test_generate_subcatalogs_works_for_subcatalogs_with_same_ids(self):
+        catalog = Catalog(id='test', description='Test')
+        item_properties = [
+            dict(property1=1, property2=1),  # add 2 subcats
+            dict(property1=1, property2=2),  # add 1 more
+            dict(property1=2, property2=1),  # add 2 more
+            dict(property1=2, property2=2),  # add 1 more
+        ]
+        for ni, properties in enumerate(item_properties):
+            catalog.add_item(
+                Item(id='item{}'.format(ni),
+                     geometry=RANDOM_GEOM,
+                     bbox=RANDOM_BBOX,
+                     datetime=datetime.utcnow(),
+                     properties=properties))
+        result = catalog.generate_subcatalogs('${property1}/${property2}')
+        self.assertEqual(len(result), 6)
+
+        catalog.normalize_hrefs('/')
+        for item in catalog.get_all_items():
+            parent_href = item.get_parent().get_self_href()
+            path_to_parent, _ = os.path.split(parent_href)
+            subcats = [el for el in path_to_parent.split('/') if el]
+            self.assertEqual(len(subcats), 2, msg=" for item '{}'".format(item.id))
+
     def test_map_items(self):
         def item_mapper(item):
             item.properties['ITEM_MAPPER'] = 'YEP'

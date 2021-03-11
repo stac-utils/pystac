@@ -1,5 +1,7 @@
 """STAC Model classes for Label extension.
 """
+from enum import Enum
+
 from pystac import STACError
 from pystac.extensions import Extensions
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
@@ -7,8 +9,11 @@ from pystac.item import (Item, Asset)
 from pystac.link import Link
 
 
-class LabelType:
+class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
+    def __str__(self):
+        return str(self.value)
+
     VECTOR = 'vector'
     RASTER = 'raster'
 

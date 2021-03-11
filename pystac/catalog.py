@@ -1,5 +1,6 @@
 import os
 from copy import deepcopy
+from enum import Enum
 
 import pystac
 from pystac import STACError
@@ -10,7 +11,10 @@ from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
 
-class CatalogType:
+class CatalogType(str, Enum):
+    def __str__(self):
+        return str(self.value)
+
     SELF_CONTAINED = 'SELF_CONTAINED'
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download a catalog from online and be able to use it on their
@@ -38,8 +42,8 @@ class CatalogType:
         `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
     """ # noqa E501
 
-    @staticmethod
-    def determine_type(stac_json):
+    @classmethod
+    def determine_type(cls, stac_json):
         """Determines the catalog type based on a STAC JSON dict.
 
         Only applies to Catalogs or Collections
@@ -61,12 +65,12 @@ class CatalogType:
 
         if self_link:
             if relative:
-                return CatalogType.RELATIVE_PUBLISHED
+                return cls.RELATIVE_PUBLISHED
             else:
-                return CatalogType.ABSOLUTE_PUBLISHED
+                return cls.ABSOLUTE_PUBLISHED
         else:
             if relative:
-                return CatalogType.SELF_CONTAINED
+                return cls.SELF_CONTAINED
             else:
                 return None
 
@@ -377,7 +381,7 @@ class Catalog(STACObject):
         if self.title is not None:
             d['title'] = self.title
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         clone = Catalog(id=self.id,
@@ -520,7 +524,7 @@ class Catalog(STACObject):
 
         return self
 
-    def generate_subcatalogs(self, template, defaults=None, **kwargs):
+    def generate_subcatalogs(self, template, defaults=None, parent_ids=None, **kwargs):
         """Walks through the catalog and generates subcatalogs
         for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
         for details on the construction of template strings. This template string
@@ -533,29 +537,43 @@ class Catalog(STACObject):
             defaults (dict):  Default values for the template variables
                 that will be used if the property cannot be found on
                 the item.
+            parent_ids (List[str]): Optional list of the parent catalogs'
+                identifiers. If the bottom-most subcatalags already match the
+                template, no subcatalog is added.
 
         Returns:
             [catalog]: List of new catalogs created
         """
         result = []
+        parent_ids = parent_ids or list()
+        parent_ids.append(self.id)
         for child in self.get_children():
-            result.extend(child.generate_subcatalogs(template, defaults=defaults))
+            result.extend(
+                child.generate_subcatalogs(template,
+                                           defaults=defaults,
+                                           parent_ids=parent_ids.copy()))
 
         layout_template = LayoutTemplate(template, defaults=defaults)
-        subcat_id_to_cat = {}
+
         items = list(self.get_items())
         for item in items:
             item_parts = layout_template.get_template_values(item)
+            id_iter = reversed(parent_ids)
+            if all(['{}'.format(id) == next(id_iter, None)
+                    for id in reversed(item_parts.values())]):
+                # Skip items for which the sub-catalog structure already
+                # matches the template. The list of parent IDs can include more
+                # elements on the root side, so compare the reversed sequences.
+                continue
             curr_parent = self
             for k, v in item_parts.items():
                 subcat_id = '{}'.format(v)
-                subcat = subcat_id_to_cat.get(subcat_id)
+                subcat = curr_parent.get_child(subcat_id)
                 if subcat is None:
                     subcat_desc = 'Catalog of items from {} with {} of {}'.format(
                         curr_parent.id, k, v)
                     subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)
-                    subcat_id_to_cat[subcat_id] = subcat
                     result.append(subcat)
                 curr_parent = subcat
             self.remove_item(item.id)
@@ -594,8 +612,12 @@ class Catalog(STACObject):
         # Ensure relative vs absolute
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             self.make_all_links_absolute()
-        else:
+            self.make_all_asset_hrefs_absolute()
+        elif catalog_type in (CatalogType.SELF_CONTAINED, CatalogType.RELATIVE_PUBLISHED):
             self.make_all_links_relative()
+            self.make_all_asset_hrefs_relative()
+        else:
+            raise ValueError(f'catalog_type is not a CatalogType: "{catalog_type}"')
 
         include_self_link = catalog_type in [
             CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED

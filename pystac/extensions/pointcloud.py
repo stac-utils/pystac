@@ -79,10 +79,7 @@ class PointcloudItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['pc:count'] = count
-        else:
-            asset.properties['pc:count'] = count
+        self._set_property('pc:count', count, asset)
 
     @property
     def type(self):
@@ -117,10 +114,7 @@ class PointcloudItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['pc:type'] = type
-        else:
-            asset.properties['pc:type'] = type
+        self._set_property('pc:type', type, asset)
 
     @property
     def encoding(self):
@@ -158,10 +152,7 @@ class PointcloudItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['pc:encoding'] = encoding
-        else:
-            asset.properties['pc:encoding'] = encoding
+        self._set_property('pc:encoding', encoding, asset)
 
     @property
     def schemas(self):
@@ -202,10 +193,7 @@ class PointcloudItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         dicts = [s.to_dict() for s in schemas]
-        if asset is None:
-            self.item.properties['pc:schemas'] = dicts
-        else:
-            asset.properties['pc:schemas'] = dicts
+        self._set_property('pc:schemas', dicts, asset)
 
     @property
     def density(self):
@@ -242,10 +230,7 @@ class PointcloudItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['pc:density'] = density
-        else:
-            asset.properties['pc:density'] = density
+        self._set_property('pc:density', density, asset)
 
     @property
     def statistics(self):
@@ -289,10 +274,7 @@ class PointcloudItemExt(ItemExtension):
         """
         if statistics is not None:
             statistics = [s.to_dict() for s in statistics]
-        if asset is None:
-            self.item.properties['pc:statistics'] = statistics
-        else:
-            asset.properties['pc:statistics'] = statistics
+        self._set_property('pc:statistics', statistics, asset)
 
     @classmethod
     def _object_links(cls):

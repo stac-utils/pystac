@@ -1,6 +1,8 @@
+import pystac
 from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
+from typing import Optional
 
 
 class ViewItemExt(ItemExtension):
@@ -28,11 +30,11 @@ class ViewItemExt(ItemExtension):
         self.item = item
 
     def apply(self,
-              off_nadir=None,
-              incidence_angle=None,
-              azimuth=None,
-              sun_azimuth=None,
-              sun_elevation=None):
+              off_nadir: Optional[float] = None,
+              incidence_angle: Optional[float] = None,
+              azimuth: Optional[float] = None,
+              sun_azimuth: Optional[float] = None,
+              sun_elevation: Optional[float] = None):
         """Applies View Geometry extension properties to the extended Item.
 
         Args:
@@ -49,11 +51,21 @@ class ViewItemExt(ItemExtension):
             sun_elevation (float): Sun elevation angle. The angle from the tangent of the scene
                 center point to the sun. Measured from the horizon in degrees (0-90).
         """
-        self.off_nadir = off_nadir
-        self.incidence_angle = incidence_angle
-        self.azimuth = azimuth
-        self.sun_azimuth = sun_azimuth
-        self.sun_elevation = sun_elevation
+        if (off_nadir is None and incidence_angle is None and azimuth is None
+                and sun_azimuth is None and sun_elevation is None):
+            raise pystac.STACError(
+                'Must provide at least one of: off_nadir, incidence_angle, azimuth, sun_azimuth, sun_elevation'  # noqa: E501
+            )
+        if off_nadir:
+            self.off_nadir = off_nadir
+        if incidence_angle:
+            self.incidence_angle = incidence_angle
+        if azimuth:
+            self.azimuth = azimuth
+        if sun_azimuth:
+            self.sun_azimuth = sun_azimuth
+        if sun_elevation:
+            self.sun_elevation = sun_elevation
 
     @property
     def off_nadir(self):
@@ -89,10 +101,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:off_nadir'] = off_nadir
-        else:
-            asset.properties['view:off_nadir'] = off_nadir
+        self._set_property('view:off_nadir', off_nadir, asset)
 
     @property
     def incidence_angle(self):
@@ -129,10 +138,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:incidence_angle'] = incidence_angle
-        else:
-            asset.properties['view:incidence_angle'] = incidence_angle
+        self._set_property('view:incidence_angle', incidence_angle, asset)
 
     @property
     def azimuth(self):
@@ -169,10 +175,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:azimuth'] = azimuth
-        else:
-            asset.properties['view:azimuth'] = azimuth
+        self._set_property('view:azimuth', azimuth, asset)
 
     @property
     def sun_azimuth(self):
@@ -208,10 +211,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:sun_azimuth'] = sun_azimuth
-        else:
-            asset.properties['view:sun_azimuth'] = sun_azimuth
+        self._set_property('view:sun_azimuth', sun_azimuth, asset)
 
     @property
     def sun_elevation(self):
@@ -247,10 +247,7 @@ class ViewItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        if asset is None:
-            self.item.properties['view:sun_elevation'] = sun_elevation
-        else:
-            asset.properties['view:sun_elevation'] = sun_elevation
+        self._set_property('view:sun_elevation', sun_elevation, asset)
 
     @classmethod
     def _object_links(cls):

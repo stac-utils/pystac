@@ -297,7 +297,7 @@ class Item(STACObject):
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         clone = Item(id=self.id,
@@ -475,7 +475,7 @@ class Asset:
         if self.roles is not None:
             d['roles'] = self.roles
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         """Clones this asset.

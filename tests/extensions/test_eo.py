@@ -61,6 +61,10 @@ class EOTest(unittest.TestCase):
         asset_bands = eo_item.ext.eo.get_bands(index_asset)
         self.assertIs(None, asset_bands)
 
+        # No asset specified
+        asset_bands = eo_item.ext.eo.get_bands()
+        self.assertIsNot(None, asset_bands)
+
         # Set
         b2_asset = eo_item.assets['B2']
         self.assertEqual(eo_item.ext.eo.get_bands(b2_asset)[0].name, "B2")

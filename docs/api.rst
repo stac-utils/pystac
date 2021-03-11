@@ -327,6 +327,19 @@ SarItemExt
    :undoc-members:
    :show-inheritance:
 
+SAT Extension
+-------------
+
+Implements the `SAT Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sat>`_.
+
+SatItemExt
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.SatItemExt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Single File STAC Extension
 --------------------------
 
