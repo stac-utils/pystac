@@ -12,6 +12,7 @@
 ### Changed
 
 - Subclass relevant classes from `enum.Enum`. This allows iterating over the class' contents. The `__str__` method is overwritten so this should not break backwards compatibility. ([#261](https://github.com/stac-utils/pystac/pull/261))
+- Extract method to correctly handle setting properties in Item/Asset for ItemExtensions ([#272](https://github.com/stac-utils/pystac/pull/272))
 
 ## [v0.5.4]
 
