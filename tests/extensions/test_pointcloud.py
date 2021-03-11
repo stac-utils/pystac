@@ -13,6 +13,8 @@ class PointcloudTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.example_uri = TestCases.get_path('data-files/pointcloud/example-laz.json')
+        self.example_uri_no_statistics = TestCases.get_path(
+            'data-files/pointcloud/example-laz-no-statistics.json')
 
     def test_to_from_dict(self):
         with open(self.example_uri) as f:
@@ -184,3 +186,7 @@ class PointcloudTest(unittest.TestCase):
                 val = props[k] + 1
             setattr(stat, k, val)
             self.assertEqual(getattr(stat, k), val)
+
+    def test_statistics_accessor_when_no_stats(self):
+        pc_item = pystac.read_file(self.example_uri_no_statistics)
+        self.assertEqual(pc_item.ext.pointcloud.statistics, None)

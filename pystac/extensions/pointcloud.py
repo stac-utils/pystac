@@ -262,7 +262,10 @@ class PointcloudItemExt(ItemExtension):
         """
         if asset is None or 'pc:statistics' not in asset.properties:
             stats = self.item.properties.get('pc:statistics')
-            return [PointcloudStatistic(s) for s in stats]
+            if stats:
+                return [PointcloudStatistic(s) for s in stats]
+            else:
+                return None
         else:
             return [PointcloudStatistic.create(s) for s in asset.properties.get('pc:statistics')]
 
