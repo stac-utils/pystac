@@ -2,15 +2,10 @@ from copy import copy
 
 from pystac.stac_object import STACObject
 from pystac import STACError
-from pystac.utils import (
-    is_absolute_href,
-    make_absolute_href,
-    make_relative_href
-)
+from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href)
 
 
 class STACObjectWithAssets(STACObject):
-
     def get_assets(self):
         """Get this object's assets.
 

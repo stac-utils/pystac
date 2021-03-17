@@ -241,9 +241,9 @@ class CollectionTest(unittest.TestCase):
         cat.set_self_href('http://example.com/item.json')
         for asset in cat.assets.values():
             self.assertTrue(is_absolute_href(asset.href))
-            self.assertEqual(os.path.join(os.path.dirname(__file__), "data-files",
-                                          "collections", "test.json"),
-                             asset.href)
+            self.assertEqual(
+                os.path.join(os.path.dirname(__file__), "data-files", "collections", "test.json"),
+                asset.href)
 
     def test_clone_sets_asset_owner(self):
         cat = TestCases.test_case_9()
@@ -258,8 +258,8 @@ class CollectionTest(unittest.TestCase):
         cat = TestCases.test_case_9()
         rel_asset = Asset('./data.geojson')
         rel_asset.set_owner(cat)
-        expected_href = os.path.join(os.path.dirname(__file__), "data-files",
-                                     "collections", "data.geojson")
+        expected_href = os.path.join(os.path.dirname(__file__), "data-files", "collections",
+                                     "data.geojson")
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
 

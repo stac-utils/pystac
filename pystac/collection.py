@@ -143,7 +143,6 @@ class Collection(Catalog, STACObjectWithAssets):
             else:
                 clone.add_link(link.clone())
 
-
         for k, asset in self.assets.items():
             clone.add_asset(k, asset.clone())
 

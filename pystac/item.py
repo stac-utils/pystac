@@ -6,10 +6,10 @@ import pystac
 from pystac import (STACError, STACObjectType)
 from pystac.link import Link, LinkType
 
-from pystac.utils import (datetime_to_str,
-                          str_to_datetime)
+from pystac.utils import (datetime_to_str, str_to_datetime)
 from pystac.collection import Collection, Provider
 from pystac.asset import Asset, STACObjectWithAssets
+
 
 class Item(STACObjectWithAssets):
     """An Item is the core granular entity in a STAC, containing the core metadata

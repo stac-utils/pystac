@@ -184,5 +184,4 @@ class TestCases:
     @staticmethod
     def test_case_9():
         """Test case with a collection containing assets"""
-        return Collection.from_file(
-            TestCases.get_path('data-files/collections/with_assets.json'))
+        return Collection.from_file(TestCases.get_path('data-files/collections/with_assets.json'))
