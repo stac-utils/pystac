@@ -10,6 +10,8 @@
 
 ### Changed
 
+- Implemented collection assets as a core property of collections (([#266](https://github.com/stac-utils/pystac/pull/266)))
+
 ### Removed
 
 ## [v0.5.5]
