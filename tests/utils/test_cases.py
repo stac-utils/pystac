@@ -4,7 +4,7 @@ import csv
 
 import pystac
 from pystac import (Catalog, Item, Asset, Extent, TemporalExtent, SpatialExtent, MediaType,
-                    Extensions)
+                    Extensions, Collection)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
 TEST_LABEL_CATALOG = {
@@ -180,3 +180,9 @@ class TestCases:
         return pystac.read_file(
             TestCases.get_path('data-files/catalogs/'
                                'planet-example-1.0.0-beta.2/collection.json'))
+
+    @staticmethod
+    def test_case_9():
+        """Test case with a collection containing assets"""
+        return Collection.from_file(
+            TestCases.get_path('data-files/collections/with_assets.json'))

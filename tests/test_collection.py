@@ -6,11 +6,12 @@ from datetime import datetime
 from dateutil import tz
 
 import pystac
+from pystac import Asset
 from pystac.validation import validate_dict
 from pystac.serialization.identify import STACObjectType
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.extensions.eo import Band
-from pystac.utils import datetime_to_str
+from pystac.utils import (datetime_to_str, is_absolute_href)
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
@@ -224,6 +225,52 @@ class CollectionTest(unittest.TestCase):
         # Since all of our STAC objects have HREFs, everything should be
         # cached only by HREF
         self.assertEqual(len(cache.id_keys_to_objects), 0)
+
+    def test_assets_correctly_read_from_file(self):
+        cat = TestCases.test_case_9()
+        assets = list(cat.assets.items())
+        self.assertEqual(1, len(assets))
+        name, asset = assets[0]
+        self.assertEqual('test', name)
+        self.assertEqual('A sample asset for testing', asset.title)
+
+    def test_set_self_href_doesnt_break_asset_hrefs(self):
+        cat = TestCases.test_case_9()
+        for asset in cat.assets.values():
+            assert not is_absolute_href(asset.href)
+        cat.set_self_href('http://example.com/item.json')
+        for asset in cat.assets.values():
+            self.assertTrue(is_absolute_href(asset.href))
+            self.assertEqual(os.path.join(os.path.dirname(__file__), "data-files",
+                                          "collections", "test.json"),
+                             asset.href)
+
+    def test_clone_sets_asset_owner(self):
+        cat = TestCases.test_case_9()
+        original_asset = list(cat.assets.values())[0]
+        assert original_asset.owner is cat
+
+        clone = cat.clone()
+        clone_asset = list(clone.assets.values())[0]
+        self.assertIs(clone_asset.owner, clone)
+
+    def test_asset_absolute_href(self):
+        cat = TestCases.test_case_9()
+        rel_asset = Asset('./data.geojson')
+        rel_asset.set_owner(cat)
+        expected_href = os.path.join(os.path.dirname(__file__), "data-files",
+                                     "collections", "data.geojson")
+        actual_href = rel_asset.get_absolute_href()
+        self.assertEqual(expected_href, actual_href)
+
+    def test_make_asset_href_relative_is_noop_on_relative_hrefs(self):
+        cat = TestCases.test_case_9()
+        asset = list(cat.assets.values())[0]
+        assert not is_absolute_href(asset.href)
+        original_href = asset.get_absolute_href()
+
+        cat.make_asset_hrefs_relative()
+        self.assertEqual(asset.get_absolute_href(), original_href)
 
 
 class ExtentTest(unittest.TestCase):

@@ -21,7 +21,8 @@ from pystac.media_type import MediaType
 from pystac.link import (Link, LinkType)
 from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
-from pystac.item import (Item, Asset, CommonMetadata)
+from pystac.item import (Item, CommonMetadata)
+from pystac.asset import Asset
 
 from pystac.serialization import stac_object_from_dict
 

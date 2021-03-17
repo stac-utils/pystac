@@ -7,9 +7,10 @@ from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
+from pystac.asset import Asset, STACObjectWithAssets
 
 
-class Collection(Catalog):
+class Collection(Catalog, STACObjectWithAssets):
     """A Collection extends the Catalog spec with additional metadata that helps
     enable discovery.
 
@@ -54,6 +55,8 @@ class Collection(Catalog):
             all links associated with this Collection.
         extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
             of the Catalog.
+        assets (Dict[str, Asset]): Dictionary of asset objects that can be downloaded,
+            each with a unique key.
     """
 
     STAC_OBJECT_TYPE = STACObjectType.COLLECTION
@@ -85,6 +88,8 @@ class Collection(Catalog):
         self.properties = properties
         self.summaries = summaries
 
+        self.assets = {}
+
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
 
@@ -94,6 +99,8 @@ class Collection(Catalog):
 
     def to_dict(self, include_self_link=True):
         d = super(Collection, self).to_dict(include_self_link)
+        assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
+        d['assets'] = assets
         d['extent'] = self.extent.to_dict()
         d['license'] = self.license
         if self.stac_extensions is not None:
@@ -135,6 +142,10 @@ class Collection(Catalog):
                     clone.add_link(link.clone())
             else:
                 clone.add_link(link.clone())
+
+
+        for k, asset in self.assets.items():
+            clone.add_asset(k, asset.clone())
 
         return clone
 
@@ -180,6 +191,12 @@ class Collection(Catalog):
 
             if link['rel'] != 'self' or href is None:
                 collection.add_link(Link.from_dict(link))
+
+        assets = d.get('assets', {})
+        for k, v in assets.items():
+            asset = Asset.from_dict(v)
+            asset.set_owner(collection)
+            collection.assets[k] = asset
 
         return collection
 

@@ -5,8 +5,9 @@ from enum import Enum
 from pystac import STACError
 from pystac.extensions import Extensions
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
-from pystac.item import (Item, Asset)
+from pystac.item import Item
 from pystac.link import Link
+from pystac.asset import Asset
 
 
 class LabelType(str, Enum):
