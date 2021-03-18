@@ -144,6 +144,11 @@ def _identify_stac_extensions(object_type, d, version_range):
             stac_extensions.add('assets')
             version_range.set_min('0.8.0')
 
+
+    if object_type == STACObjectType.COLLECTION:
+        if 'assets' in d:
+            stac_extensions.add(Extensions.ITEM_ASSETS)
+
     # checksum
     if 'links' in d:
         found_checksum = False
