@@ -1,7 +1,7 @@
 import unittest
 from tempfile import TemporaryDirectory
 
-from pystac import (STAC_IO, STACObject, Collection, CatalogType, LinkType)
+from pystac import (STAC_IO, STACObject, Collection, CatalogType)
 from pystac.serialization import (STACObjectType)
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict

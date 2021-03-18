@@ -3,7 +3,7 @@ from enum import Enum
 
 import pystac
 from pystac import STACError
-from pystac.link import (Link, LinkType)
+from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
@@ -283,14 +283,13 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_root(self, root, link_type=None):
+    def set_root(self, root):
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
         Args:
             root (Catalog, Collection or None): The root
                 object to set. Passing in None will clear the root.
-            link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
         root_link_index = next(iter([i for i, link in enumerate(self.links) if link.rel == 'root']),
                                None)
@@ -301,16 +300,10 @@ class STACObject(LinkMixin, ABC):
             if root_link.is_resolved():
                 root_link.target._resolved_objects.remove(self)
 
-            if link_type is None:
-                link_type = root_link.link_type
-
-        if link_type is None:
-            link_type = LinkType.ABSOLUTE
-
         if root is None:
             self.remove_links('root')
         else:
-            new_root_link = Link.root(root, link_type=link_type)
+            new_root_link = Link.root(root)
             if root_link_index is not None:
                 self.links[root_link_index] = new_root_link
                 new_root_link.set_owner(self)
@@ -336,25 +329,18 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_parent(self, parent, link_type=None):
+    def set_parent(self, parent):
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
         Args:
             parent (Catalog, Collection or None): The parent
                 object to set. Passing in None will clear the parent.
-            link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
-        if not link_type:
-            prev = self.get_single_link('parent')
-            if prev is not None:
-                link_type = prev.link_type
-            else:
-                link_type = LinkType.ABSOLUTE
 
         self.remove_links('parent')
         if parent is not None:
-            self.add_link(Link.parent(parent, link_type=link_type))
+            self.add_link(Link.parent(parent))
         return self
 
     def get_stac_objects(self, rel):
@@ -537,7 +523,7 @@ class STACObject(LinkMixin, ABC):
         if root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(o, link_type=root_link.link_type)
+                    o.set_root(o)
         return o
 
     @classmethod

@@ -4,7 +4,7 @@ import dateutil.parser
 
 import pystac
 from pystac import (STACError, STACObjectType)
-from pystac.link import Link, LinkType
+from pystac.link import Link
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
                           str_to_datetime)
@@ -221,7 +221,7 @@ class Item(STACObject):
 
         return self
 
-    def set_collection(self, collection, link_type=None):
+    def set_collection(self, collection):
         """Set the collection of this item.
 
         This method will replace any existing Collection link and attribute for
@@ -230,22 +230,14 @@ class Item(STACObject):
         Args:
             collection (Collection or None): The collection to set as this
                 item's collection. If None, will clear the collection.
-            link_type (str): the link type to use for the collection link.
-                One of :class:`~pystac.LinkType`.
 
         Returns:
             Item: self
         """
-        if not link_type:
-            prev = self.get_single_link('collection')
-            if prev is not None:
-                link_type = prev.link_type
-            else:
-                link_type = LinkType.ABSOLUTE
         self.remove_links('collection')
         self.collection_id = None
         if collection is not None:
-            self.add_link(Link.collection(collection, link_type=link_type))
+            self.add_link(Link.collection(collection))
             self.collection_id = collection.id
 
         return self
