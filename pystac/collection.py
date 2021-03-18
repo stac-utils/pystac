@@ -7,10 +7,10 @@ from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
-from pystac.asset import Asset, STACObjectWithAssets
+from pystac.asset import Asset, AssetsMixin
 
 
-class Collection(Catalog, STACObjectWithAssets):
+class Collection(AssetsMixin, Catalog):
     """A Collection extends the Catalog spec with additional metadata that helps
     enable discovery.
 

@@ -3,15 +3,15 @@ from copy import copy, deepcopy
 import dateutil.parser
 
 import pystac
-from pystac import (STACError, STACObjectType)
+from pystac import (STACError, STACObjectType, STACObject)
 from pystac.link import Link, LinkType
 
 from pystac.utils import (datetime_to_str, str_to_datetime)
 from pystac.collection import Collection, Provider
-from pystac.asset import Asset, STACObjectWithAssets
+from pystac.asset import Asset, AssetsMixin
 
 
-class Item(STACObjectWithAssets):
+class Item(AssetsMixin, STACObject):
     """An Item is the core granular entity in a STAC, containing the core metadata
     that enables any client to search or crawl online catalogs of spatial 'assets' -
     satellite imagery, derived data, DEM's, etc.

@@ -1,11 +1,15 @@
 from copy import copy
 
-from pystac.stac_object import STACObject
 from pystac import STACError
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href)
 
 
-class STACObjectWithAssets(STACObject):
+class AssetsMixin:
+    """Mixin class for classes that contain assets.
+
+    Implementing classes must have a `assets` attribute that is
+    a dictionary of Asset objects.
+    """
     def get_assets(self):
         """Get this object's assets.
 
