@@ -79,7 +79,7 @@ class Link:
         if self.is_resolved():
             href = self.target.get_self_href()
         else:
-            href = self.target        
+            href = self.target
 
         # if a hierarchical link with an owner and root, and relative catalog
         if self.rel in HIERARCHICAL_LINKS and self.owner is not None:
