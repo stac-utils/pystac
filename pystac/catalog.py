@@ -405,28 +405,6 @@ class Catalog(STACObject):
 
         return clone
 
-    def make_all_links_relative(self):
-        """Makes all the links of this catalog and all children and item
-        to be relative, recursively
-        """
-        super().make_links_relative()
-
-        for child in self.get_children():
-            child.make_all_links_relative()
-        for item in self.get_items():
-            item.make_links_relative()
-
-    def make_all_links_absolute(self):
-        """Makes all the links of this catalog and all children and item
-        to be absolute, recursively
-        """
-        super().make_links_absolute()
-
-        for child in self.get_children():
-            child.make_all_links_absolute()
-        for item in self.get_items():
-            item.make_links_absolute()
-
     def make_all_asset_hrefs_relative(self):
         """Makes all the HREFs of assets belonging to items in this catalog
         and all children to be relative, recursively.
@@ -514,7 +492,7 @@ class Catalog(STACObject):
             setter_funcs.append(fn)
 
             return setter_funcs
-
+        
         # Collect functions that will actually mutate the objects.
         # Delay mutation as setting hrefs while walking the catalog
         # can result in bad links.
@@ -601,12 +579,14 @@ class Catalog(STACObject):
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will be
             included and hierarchical links will be relative URLs.
         """
-        if catalog_type is None:
-            root = self.get_root()
-            # if there is a root catalog use it's catalog type
-            catalog_type = self.catalog_type if root is None else root.catalog_type
+        root = self.get_root()
+        if root is None:
+            raise Exception('There is no root catalog')
 
-        items_include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
+        if catalog_type is not None:
+            root.catalog_type = catalog_type
+
+        items_include_self_link = root.catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
 
         for child_link in self.get_child_links():
             if child_link.is_resolved():
@@ -616,10 +596,13 @@ class Catalog(STACObject):
             if item_link.is_resolved():
                 item_link.target.save_object(include_self_link=items_include_self_link)
 
-        # include a self link if this is the root catalog
-        include_self_link = True if catalog_type == CatalogType.ABSOLUTE_PUBLISHED else False
-        if (self.get_self_href() == self.get_root_link().get_absolute_href()):
+        include_self_link = False
+        # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
+        if ((self.get_self_href() == self.get_root_link().get_absolute_href() 
+            and root.catalog_type != CatalogType.SELF_CONTAINED) or
+            root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
             include_self_link = True
+        
         self.save_object(include_self_link=include_self_link)
 
         self.catalog_type = catalog_type
