@@ -30,7 +30,7 @@ class STACWritingTest(unittest.TestCase):
         d = STAC_IO.read_json(path)
         return validate_dict(d, object_type)
 
-    def validate_link_types(self, root_href, catalog_type):           
+    def validate_link_types(self, root_href, catalog_type):
 
         def validate_asset_href_type(item, item_href, link_type):
             for asset in item.assets.values():

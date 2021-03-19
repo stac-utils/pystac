@@ -492,7 +492,7 @@ class Catalog(STACObject):
             setter_funcs.append(fn)
 
             return setter_funcs
-        
+
         # Collect functions that will actually mutate the objects.
         # Delay mutation as setting hrefs while walking the catalog
         # can result in bad links.
@@ -598,11 +598,11 @@ class Catalog(STACObject):
 
         include_self_link = False
         # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
-        if ((self.get_self_href() == self.get_root_link().get_absolute_href() 
-            and root.catalog_type != CatalogType.SELF_CONTAINED) or
-            root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
+        if ((self.get_self_href() == self.get_root_link().get_absolute_href()
+                and root.catalog_type != CatalogType.SELF_CONTAINED)
+                or root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
             include_self_link = True
-        
+
         self.save_object(include_self_link=include_self_link)
 
         self.catalog_type = catalog_type

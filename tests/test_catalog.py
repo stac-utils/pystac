@@ -6,7 +6,8 @@ from datetime import datetime
 from collections import defaultdict
 
 import pystac
-from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, Extensions, HIERARCHICAL_LINKS)
+from pystac import (Catalog, Collection, CatalogType,
+                    Item, Asset, MediaType, Extensions, HIERARCHICAL_LINKS)
 from pystac.extensions.label import LabelClasses
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
@@ -656,8 +657,6 @@ class CatalogTest(unittest.TestCase):
                 for item in items:
                     for link in item.links:
                         if link.rel in HIERARCHICAL_LINKS:
-                            if is_absolute_href(link.get_href()):
-                                import pdb; pdb.set_trace()
                             self.assertFalse(is_absolute_href(link.get_href()))
 
         def check_all_absolute(cat):

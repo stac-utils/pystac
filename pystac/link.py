@@ -1,5 +1,4 @@
 from copy import (copy, deepcopy)
-from enum import Enum
 
 from pystac import STACError
 from pystac.stac_io import STAC_IO
@@ -77,9 +76,9 @@ class Link:
         """Gets the HREF for this link.
 
         Returns:
-            str: Returns this link's HREF. If there is an owner of the link and 
+            str: Returns this link's HREF. If there is an owner of the link and
             the root catalog (if there is one) is of type RELATIVE_PUBLISHED,
-            then the HREF returned will be relative. 
+            then the HREF returned will be relative.
             In all other cases, this method will return an absolute HREF.
         """
         href = None
