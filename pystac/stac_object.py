@@ -165,25 +165,6 @@ class LinkMixin:
             self.links = []
         return self
 
-    def make_links_relative(self):
-        """Sets each link associated with this object to be relative.
-        This does not include the self link, as those must always be absolute.
-        See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
-        """
-        for link in self.links:
-            if link.rel != 'self':
-                link.make_relative()
-        return self
-
-    def make_links_absolute(self):
-        """Sets each link associated with this object to be absolute.
-        See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
-        """
-        for link in self.links:
-            if link.rel != 'self':
-                link.make_absolute()
-        return self
-
     def get_root_link(self):
         """Get the :class:`~pystac.Link` representing
         the root for this object.
