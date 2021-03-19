@@ -75,20 +75,19 @@ class Link:
             then the HREF returned will be relative.
             In all other cases, this method will return an absolute HREF.
         """
-        href = None
+        # get the self href
+        if self.is_resolved():
+            href = self.target.get_self_href()
+        else:
+            href = self.target        
+
+        # if a hierarchical link with an owner and root, and relative catalog
         if self.rel in HIERARCHICAL_LINKS and self.owner is not None:
-            # get root
             root = self.owner.get_root()
-            if root is not None:
-                if root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
-                    if self.is_resolved():
-                        href = self.target.get_self_href()
-                    else:
-                        href = self.target
-                    if href and is_absolute_href(href):
-                        href = make_relative_href(href, self.owner.get_self_href())
-        if href is None:
-            href = self.get_absolute_href()
+            if root is not None and root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
+                if href and is_absolute_href(href):
+                    href = make_relative_href(href, self.owner.get_self_href())
+
         return href
 
     def get_absolute_href(self):

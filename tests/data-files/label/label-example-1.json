@@ -95,7 +95,7 @@
   "links": [
     {
       "rel": "source",
-      "href": "http://example.com/area-1-1-imagery/area-1-1-imagery.json",
+      "href": "../area-1-1-imagery/area-1-1-imagery.json",
       "type": "application/json"
     }
   ],
