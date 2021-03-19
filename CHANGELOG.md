@@ -4,13 +4,19 @@
 
 ### Added
 
+- HIERARCHICAL_LINKS array constant of all the types of hierarchical links (self is not included)
+
 ### Fixed
 
 - Fixed error when accessing the statistics attribute of the pointcloud extension when no statistics were defined ([#282](https://github.com/stac-utils/pystac/pull/282))
 
 ### Changed
 
+- Link behavior - link URLs can be either relative or absolute. Hierarchical (e.g., parent, child) links are made relative or absolute based on the value of the root catalog's `catalog_type` field
+
 ### Removed
+
+- Removed LinkType class and the `link_type` field from links
 
 ## [v0.5.5]
 
