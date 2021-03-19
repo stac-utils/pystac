@@ -107,7 +107,7 @@ class Collection(Catalog):
         if self.summaries is not None:
             d['summaries'] = self.summaries
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         clone = Collection(id=self.id,
@@ -213,7 +213,7 @@ class Extent:
         """
         d = {'spatial': self.spatial.to_dict(), 'temporal': self.temporal.to_dict()}
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         """Clones this object.
@@ -315,7 +315,7 @@ class SpatialExtent:
             dict: A serializion of the SpatialExtent that can be written out as JSON.
         """
         d = {'bbox': self.bboxes}
-        return deepcopy(d)
+        return d
 
     def clone(self):
         """Clones this object.
@@ -418,7 +418,7 @@ class TemporalExtent:
             encoded_intervals.append([start, end])
 
         d = {'interval': encoded_intervals}
-        return deepcopy(d)
+        return d
 
     def clone(self):
         """Clones this object.
@@ -505,7 +505,7 @@ class Provider:
         if self.url is not None:
             d['url'] = self.url
 
-        return deepcopy(d)
+        return d
 
     @staticmethod
     def from_dict(d):

@@ -1,4 +1,4 @@
-from copy import (copy, deepcopy)
+from copy import copy
 
 from pystac import STACError
 from pystac.stac_io import STAC_IO
@@ -192,7 +192,7 @@ class Link:
             for k, v in self.properties.items():
                 d[k] = v
 
-        return deepcopy(d)
+        return d
 
     def clone(self):
         """Clones this link.
