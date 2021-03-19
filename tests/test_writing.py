@@ -31,7 +31,6 @@ class STACWritingTest(unittest.TestCase):
         return validate_dict(d, object_type)
 
     def validate_link_types(self, root_href, catalog_type):
-
         def validate_asset_href_type(item, item_href, link_type):
             for asset in item.assets.values():
                 if not is_absolute_href(asset.href):
@@ -110,10 +109,9 @@ class STACWritingTest(unittest.TestCase):
         for catalog in TestCases.all_test_catalogs():
             catalog = catalog.full_copy()
             ctypes = [
-                      CatalogType.ABSOLUTE_PUBLISHED,
-                      CatalogType.RELATIVE_PUBLISHED,
-                      CatalogType.SELF_CONTAINED
-                    ]
+                CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
+                CatalogType.SELF_CONTAINED
+            ]
             for catalog_type in ctypes:
                 with self.subTest(title='Catalog {} [{}]'.format(catalog.id, catalog_type)):
                     self.do_test(catalog, catalog_type)

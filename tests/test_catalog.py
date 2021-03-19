@@ -6,8 +6,8 @@ from datetime import datetime
 from collections import defaultdict
 
 import pystac
-from pystac import (Catalog, Collection, CatalogType,
-                    Item, Asset, MediaType, Extensions, HIERARCHICAL_LINKS)
+from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, Extensions,
+                    HIERARCHICAL_LINKS)
 from pystac.extensions.label import LabelClasses
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href

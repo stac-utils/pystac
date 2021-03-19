@@ -4,7 +4,6 @@ from pystac import STACError
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
-
 HIERARCHICAL_LINKS = ['root', 'child', 'parent', 'collection', 'item', 'items']
 
 
@@ -50,12 +49,7 @@ class Link:
             to resolve objects, and will create absolute HREFs from relative HREFs against
             the owner's self HREF.
     """
-    def __init__(self,
-                 rel,
-                 target,
-                 media_type=None,
-                 title=None,
-                 properties=None):
+    def __init__(self, rel, target, media_type=None, title=None, properties=None):
         self.rel = rel
         self.target = target  # An object or an href
         self.media_type = media_type
@@ -204,10 +198,7 @@ class Link:
             Link: The cloned link.
         """
 
-        return Link(rel=self.rel,
-                    target=self.target,
-                    media_type=self.media_type,
-                    title=self.title)
+        return Link(rel=self.rel, target=self.target, media_type=self.media_type, title=self.title)
 
     @staticmethod
     def from_dict(d):
@@ -229,11 +220,7 @@ class Link:
         if any(d):
             properties = d
 
-        return Link(rel=rel,
-                    target=href,
-                    media_type=media_type,
-                    title=title,
-                    properties=properties)
+        return Link(rel=rel, target=href, media_type=media_type, title=title, properties=properties)
 
     @staticmethod
     def root(c):

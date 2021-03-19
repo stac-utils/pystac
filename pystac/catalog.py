@@ -599,7 +599,7 @@ class Catalog(STACObject):
         include_self_link = False
         # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
         if ((self.get_self_href() == self.get_root_link().get_absolute_href()
-                and root.catalog_type != CatalogType.SELF_CONTAINED)
+             and root.catalog_type != CatalogType.SELF_CONTAINED)
                 or root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
             include_self_link = True
 
