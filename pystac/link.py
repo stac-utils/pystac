@@ -6,6 +6,9 @@ from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 
+HIERARCHICAL_LINKS = ['root', 'child', 'parent', 'collection', 'item', 'items']
+
+
 class Link:
     """A link is connects a :class:`~pystac.STACObject` to another entity.
 
@@ -80,11 +83,11 @@ class Link:
             In all other cases, this method will return an absolute HREF.
         """
         href = None
-        if self.rel in ['root', 'child', 'parent', 'item'] and self.owner is not None:
+        if self.rel in HIERARCHICAL_LINKS and self.owner is not None:
             # get root
             root = self.owner.get_root()
             if root is not None:
-                if root.catalog_type == 'RELATIVE_PUBLISHED':
+                if root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
                     if self.is_resolved():
                         href = self.target.get_self_href()
                     else:
