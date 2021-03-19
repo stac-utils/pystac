@@ -155,14 +155,17 @@ Relative vs Absolute Link HREFs
 
 Absolute links point to their file locations in a fully described way. Relative links
 are relative to the linking object's file location. For example, if a catalog at
-``/some/location/catalog.json`` has a link to an item that has an HREF set to ``item-id/item-id.json``, then that link should resolve to the absolute path ``/some/location/item-id/item-id.json``.
+``/some/location/catalog.json`` has a link to an item that has an HREF set to ``item-id/item-id.json``,
+then that link should resolve to the absolute path ``/some/location/item-id/item-id.json``.
 
-The implementation of :class:`~pystac.Link` in PySTAC allows for the link to be marked as
-``link_type=LinkType.ABSOLUTE`` or ``link_type=LinkType.RELATIVE``. This means that,
-even if the stored HREF of the link is absolute, if the link is marked as relative, serializing
-the link will produce a relative link, based on the self link of the parent object.
+Links are set as absolute or relative HREFs at save time, as determine by the root catalog's catalog_type
+:attribute:`~pystac.Catalog.catalog_type`. This means that, even if the stored HREF of the link is absolute,
+if the root ``catalog_type=CatalogType.RELATIVE_PUBLISHED`` or ``catalog_type=CatalogType.SELF_CONTAINED``
+and subsequent serializing of the any links in the catalog will produce a relative link,
+based on the self link of the parent object.
 
-You can make all the links of a catalog relative or absolute using the :func:`Catalog.make_all_links_relative <pystac.Catalog.make_all_links_relative>` and :func:`Catalog.make_all_links_absolute <pystac.Catalog.make_all_links_absolute>` methods.
+You can make all the links of a catalog relative or absolute by setting the :func:`Catalog.catalog_type` field
+then resaving the entire catalog.
 
 .. _rel vs abs asset:
 
