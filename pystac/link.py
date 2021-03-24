@@ -1,5 +1,6 @@
 from copy import copy
 
+import pystac
 from pystac import STACError
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
@@ -81,12 +82,14 @@ class Link:
         else:
             href = self.target
 
-        # if a hierarchical link with an owner and root, and relative catalog
-        if self.rel in HIERARCHICAL_LINKS and self.owner is not None:
-            root = self.owner.get_root()
-            if root is not None and root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
-                if href and is_absolute_href(href):
-                    href = make_relative_href(href, self.owner.get_self_href())
+        if href and self.owner is not None:
+            rel_links = HIERARCHICAL_LINKS + pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
+            # if a hierarchical link with an owner and root, and relative catalog
+            if self.rel in rel_links:
+                root = self.owner.get_root()
+                if root is not None and root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
+                    if href and is_absolute_href(href):
+                        href = make_relative_href(href, self.owner.get_self_href())
 
         return href
 

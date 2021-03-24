@@ -1,6 +1,7 @@
 import unittest
 from tempfile import TemporaryDirectory
 
+import pystac
 from pystac import (STAC_IO, STACObject, Collection, CatalogType, HIERARCHICAL_LINKS)
 from pystac.serialization import (STACObjectType)
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
@@ -46,9 +47,10 @@ class STACWritingTest(unittest.TestCase):
         def validate_item_link_type(href, link_type, should_include_self):
             item_dict = STAC_IO.read_json(href)
             item = STACObject.from_file(href)
+            rel_links = HIERARCHICAL_LINKS + pystac.STAC_EXTENSIONS.get_extended_object_links(item)
             for link in item.get_links():
                 if not link.rel == 'self':
-                    if link_type == 'RELATIVE' and link.rel in HIERARCHICAL_LINKS:
+                    if link_type == 'RELATIVE' and link.rel in rel_links:
                         self.assertFalse(is_absolute_href(link.get_href()))
                     else:
                         self.assertTrue(is_absolute_href(link.get_href()))
