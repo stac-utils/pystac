@@ -148,6 +148,9 @@ class Catalog(STACObject):
             root._resolved_objects = ResolvedObjectCache.merge(root._resolved_objects,
                                                                self._resolved_objects)
 
+    def is_relative(self):
+        return self.catalog_type in [CatalogType.RELATIVE_PUBLISHED, CatalogType.SELF_CONTAINED]
+
     def add_child(self, child, title=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
         This method will set the child's parent to this object, and its root to
