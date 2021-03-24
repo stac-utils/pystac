@@ -46,6 +46,16 @@ class ItemTest(unittest.TestCase):
             for asset in item.assets.values():
                 self.assertTrue(is_absolute_href(asset.href))
 
+    def test_set_self_href_none_ignores_relative_asset_hrefs(self):
+        cat = TestCases.test_case_2()
+        for item in cat.get_all_items():
+            for asset in item.assets.values():
+                if is_absolute_href(asset.href):
+                    asset.href = (f'./{os.path.basename(asset.href)}')
+            item.set_self_href(None)
+            for asset in item.assets.values():
+                self.assertFalse(is_absolute_href(asset.href))
+
     def test_asset_absolute_href(self):
         item_dict = self.get_example_item_dict()
         item = Item.from_dict(item_dict)
