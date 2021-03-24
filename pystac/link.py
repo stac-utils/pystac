@@ -82,14 +82,13 @@ class Link:
         else:
             href = self.target
 
-        if href and self.owner is not None:
-            rel_links = HIERARCHICAL_LINKS + pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
+        if href and is_absolute_href(href) and self.owner and self.owner.get_root():
+            root = self.owner.get_root()
+            rel_links = HIERARCHICAL_LINKS + \
+                pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
             # if a hierarchical link with an owner and root, and relative catalog
-            if self.rel in rel_links:
-                root = self.owner.get_root()
-                if root is not None and root.catalog_type in ['RELATIVE_PUBLISHED', 'SELF_CONTAINED']:
-                    if href and is_absolute_href(href):
-                        href = make_relative_href(href, self.owner.get_self_href())
+            if root.is_relative() and self.rel in rel_links:
+                href = make_relative_href(href, self.owner.get_self_href())
 
         return href
 
