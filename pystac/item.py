@@ -127,7 +127,7 @@ class Item(STACObject):
         super().set_self_href(href)
         new_href = self.get_self_href()  # May have been made absolute.
 
-        if prev_href is not None:
+        if prev_href is not None and new_href is not None:
             # Make sure relative asset links remain valid.
             for asset in self.assets.values():
                 asset_href = asset.href
