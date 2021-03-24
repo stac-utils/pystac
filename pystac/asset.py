@@ -33,7 +33,7 @@ class AssetsMixin:
         """Modify each asset's HREF to be relative to this object's self HREF.
 
         Returns:
-            STACObjectWithAssets: self
+            AssetsMixin: self
         """
 
         self_href = None
@@ -55,7 +55,7 @@ class AssetsMixin:
         object's self HREF.
 
         Returns:
-            STACObjectWithAssets: self
+            AssetsMixin: self
         """
         self_href = None
         for asset in self.assets.values():
@@ -159,7 +159,7 @@ class Asset:
         The owning itelementem will be used to resolve relative HREFs of this asset.
 
         Args:
-            element (STACObjectWithAssets): The Item that owns this asset.
+            element (Collection or Item): The Item that owns this asset.
         """
         self.owner = element
 
