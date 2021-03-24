@@ -442,7 +442,7 @@ class STACObject(LinkMixin, ABC):
 
     @abstractmethod
     def _object_links(self):
-        """Inhereted classes return a list of link 'rel' types that represent
+        """Inherited classes return a list of link 'rel' types that represent
         STACObjects linked to by this object (not including root, parent or self).
         This can include optional relations (which may not be present).
         """
