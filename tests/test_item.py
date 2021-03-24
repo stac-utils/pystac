@@ -37,15 +37,24 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(len(item.assets['thumbnail'].properties), 0)
 
     def test_set_self_href_doesnt_break_asset_hrefs(self):
-        cat = TestCases.test_case_6()
+        cat = TestCases.test_case_2()
         for item in cat.get_all_items():
             for asset in item.assets.values():
-                print(asset.href)
-                assert not is_absolute_href(asset.href)
+                if is_absolute_href(asset.href):
+                    asset.href = (f'./{os.path.basename(asset.href)}')
             item.set_self_href('http://example.com/item.json')
             for asset in item.assets.values():
                 self.assertTrue(is_absolute_href(asset.href))
-                self.assertTrue(os.path.exists(asset.href))
+
+    def test_set_self_href_none_ignores_relative_asset_hrefs(self):
+        cat = TestCases.test_case_2()
+        for item in cat.get_all_items():
+            for asset in item.assets.values():
+                if is_absolute_href(asset.href):
+                    asset.href = (f'./{os.path.basename(asset.href)}')
+            item.set_self_href(None)
+            for asset in item.assets.values():
+                self.assertFalse(is_absolute_href(asset.href))
 
     def test_asset_absolute_href(self):
         item_dict = self.get_example_item_dict()
