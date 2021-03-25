@@ -3,7 +3,7 @@ from enum import Enum
 
 import pystac
 from pystac import STACError
-from pystac.link import (Link, LinkType)
+from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
@@ -165,25 +165,6 @@ class LinkMixin:
             self.links = []
         return self
 
-    def make_links_relative(self):
-        """Sets each link associated with this object to be relative.
-        This does not include the self link, as those must always be absolute.
-        See :func:`Link.make_relative <pystac.Link.make_relative>` for more information.
-        """
-        for link in self.links:
-            if link.rel != 'self':
-                link.make_relative()
-        return self
-
-    def make_links_absolute(self):
-        """Sets each link associated with this object to be absolute.
-        See :func:`Link.make_absolute <pystac.Link.make_absolute>` for more information.
-        """
-        for link in self.links:
-            if link.rel != 'self':
-                link.make_absolute()
-        return self
-
     def get_root_link(self):
         """Get the :class:`~pystac.Link` representing
         the root for this object.
@@ -283,14 +264,13 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_root(self, root, link_type=None):
+    def set_root(self, root):
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
         Args:
             root (Catalog, Collection or None): The root
                 object to set. Passing in None will clear the root.
-            link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
         root_link_index = next(iter([i for i, link in enumerate(self.links) if link.rel == 'root']),
                                None)
@@ -301,16 +281,10 @@ class STACObject(LinkMixin, ABC):
             if root_link.is_resolved():
                 root_link.target._resolved_objects.remove(self)
 
-            if link_type is None:
-                link_type = root_link.link_type
-
-        if link_type is None:
-            link_type = LinkType.ABSOLUTE
-
         if root is None:
             self.remove_links('root')
         else:
-            new_root_link = Link.root(root, link_type=link_type)
+            new_root_link = Link.root(root)
             if root_link_index is not None:
                 self.links[root_link_index] = new_root_link
                 new_root_link.set_owner(self)
@@ -336,25 +310,18 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_parent(self, parent, link_type=None):
+    def set_parent(self, parent):
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
         Args:
             parent (Catalog, Collection or None): The parent
                 object to set. Passing in None will clear the parent.
-            link_type (str): The link type (see :class:`~pystac.LinkType`)
         """
-        if not link_type:
-            prev = self.get_single_link('parent')
-            if prev is not None:
-                link_type = prev.link_type
-            else:
-                link_type = LinkType.ABSOLUTE
 
         self.remove_links('parent')
         if parent is not None:
-            self.add_link(Link.parent(parent, link_type=link_type))
+            self.add_link(Link.parent(parent))
         return self
 
     def get_stac_objects(self, rel):
@@ -475,7 +442,7 @@ class STACObject(LinkMixin, ABC):
 
     @abstractmethod
     def _object_links(self):
-        """Inhereted classes return a list of link 'rel' types that represent
+        """Inherited classes return a list of link 'rel' types that represent
         STACObjects linked to by this object (not including root, parent or self).
         This can include optional relations (which may not be present).
         """
@@ -537,7 +504,7 @@ class STACObject(LinkMixin, ABC):
         if root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(o, link_type=root_link.link_type)
+                    o.set_root(o)
         return o
 
     @classmethod

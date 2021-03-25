@@ -227,18 +227,5 @@
             "title": "HTML index page"
         }
     },
-    "links": [
-        {
-            "rel": "self",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/search?id=LC08_L1TP_107018_20181001_20181001_01_RT"
-        },
-        {
-            "rel": "parent",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac/collections/landsat-8-l1"
-        },
-        {
-            "rel": "root",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac"
-        }
-    ]
+    "links": []
 }

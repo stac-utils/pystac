@@ -97,16 +97,6 @@
       "rel": "source",
       "href": "../area-1-1-imagery/area-1-1-imagery.json",
       "type": "application/json"
-    },
-    {
-      "rel": "root",
-      "href": "../../../catalog.json",
-      "type": "application/json"
-    },
-    {
-      "rel": "parent",
-      "href": "../collection.json",
-      "type": "application/json"
     }
   ],
   "assets": {

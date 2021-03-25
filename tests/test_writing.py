@@ -1,7 +1,8 @@
 import unittest
 from tempfile import TemporaryDirectory
 
-from pystac import (STAC_IO, STACObject, Collection, CatalogType, LinkType)
+import pystac
+from pystac import (STAC_IO, STACObject, Collection, CatalogType, HIERARCHICAL_LINKS)
 from pystac.serialization import (STACObjectType)
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict
@@ -33,9 +34,7 @@ class STACWritingTest(unittest.TestCase):
     def validate_link_types(self, root_href, catalog_type):
         def validate_asset_href_type(item, item_href, link_type):
             for asset in item.assets.values():
-                if link_type == LinkType.ABSOLUTE:
-                    self.assertTrue(is_absolute_href(asset.href))
-                else:
+                if not is_absolute_href(asset.href):
                     is_valid = not is_absolute_href(asset.href)
                     if not is_valid:
                         # If the item href and asset href don't share
@@ -48,9 +47,13 @@ class STACWritingTest(unittest.TestCase):
         def validate_item_link_type(href, link_type, should_include_self):
             item_dict = STAC_IO.read_json(href)
             item = STACObject.from_file(href)
+            rel_links = HIERARCHICAL_LINKS + pystac.STAC_EXTENSIONS.get_extended_object_links(item)
             for link in item.get_links():
                 if not link.rel == 'self':
-                    self.assertEqual(link.link_type, link_type)
+                    if link_type == 'RELATIVE' and link.rel in rel_links:
+                        self.assertFalse(is_absolute_href(link.get_href()))
+                    else:
+                        self.assertTrue(is_absolute_href(link.get_href()))
 
             validate_asset_href_type(item, href, link_type)
 
@@ -60,9 +63,6 @@ class STACWritingTest(unittest.TestCase):
         def validate_catalog_link_type(href, link_type, should_include_self):
             cat_dict = STAC_IO.read_json(href)
             cat = STACObject.from_file(href)
-            for link in cat.get_links():
-                if not link.rel == 'self':
-                    self.assertEqual(link.link_type, link_type)
 
             rels = set([link['rel'] for link in cat_dict['links']])
             self.assertEqual('self' in rels, should_include_self)
@@ -77,9 +77,9 @@ class STACWritingTest(unittest.TestCase):
                 validate_item_link_type(item_href, link_type,
                                         catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
 
-        link_type = LinkType.RELATIVE
+        link_type = 'RELATIVE'
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
-            link_type = LinkType.ABSOLUTE
+            link_type = 'ABSOLUTE'
 
         root_should_include_href = catalog_type in [
             CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
@@ -110,9 +110,10 @@ class STACWritingTest(unittest.TestCase):
     def test_testcases(self):
         for catalog in TestCases.all_test_catalogs():
             catalog = catalog.full_copy()
-            for catalog_type in [
-                    CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
-                    CatalogType.SELF_CONTAINED
-            ]:
+            ctypes = [
+                CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
+                CatalogType.SELF_CONTAINED
+            ]
+            for catalog_type in ctypes:
                 with self.subTest(title='Catalog {} [{}]'.format(catalog.id, catalog_type)):
                     self.do_test(catalog, catalog_type)

@@ -7,7 +7,7 @@ from pystac.extensions import ExtensionError
 
 
 class ExtendedObject:
-    """ExtendedObject maps STACObject classes (Catalog, Collecition and Item) to
+    """ExtendedObject maps STACObject classes (Catalog, Collection and Item) to
     extension classes (classes that implement one of CatalogExtension, CollectionExtesion,
     or ItemCollection). When an extension is registered with PySTAC it uses the registered
     list of ExtendedObject to determine how to handle extending objects, e.g. when item.ext.label

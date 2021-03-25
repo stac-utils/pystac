@@ -18,7 +18,7 @@ from pystac.stac_io import STAC_IO
 from pystac.extensions import Extensions
 from pystac.stac_object import (STACObject, STACObjectType)
 from pystac.media_type import MediaType
-from pystac.link import (Link, LinkType)
+from pystac.link import (Link, HIERARCHICAL_LINKS)
 from pystac.catalog import (Catalog, CatalogType)
 from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
 from pystac.item import (Item, Asset, CommonMetadata)

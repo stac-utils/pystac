@@ -6,7 +6,7 @@ import pystac
 from pystac import STACError
 from pystac.stac_object import STACObject
 from pystac.layout import (BestPracticesLayoutStrategy, LayoutTemplate)
-from pystac.link import (Link, LinkType)
+from pystac.link import Link
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
@@ -117,7 +117,7 @@ class Catalog(STACObject):
                  stac_extensions=None,
                  extra_fields=None,
                  href=None,
-                 catalog_type=None):
+                 catalog_type=CatalogType.ABSOLUTE_PUBLISHED):
         super().__init__(stac_extensions)
 
         self.id = id
@@ -142,11 +142,14 @@ class Catalog(STACObject):
     def __repr__(self):
         return '<Catalog id={}>'.format(self.id)
 
-    def set_root(self, root, link_type=LinkType.ABSOLUTE):
-        STACObject.set_root(self, root, link_type)
+    def set_root(self, root):
+        STACObject.set_root(self, root)
         if root is not None:
             root._resolved_objects = ResolvedObjectCache.merge(root._resolved_objects,
                                                                self._resolved_objects)
+
+    def is_relative(self):
+        return self.catalog_type in [CatalogType.RELATIVE_PUBLISHED, CatalogType.SELF_CONTAINED]
 
     def add_child(self, child, title=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
@@ -405,28 +408,6 @@ class Catalog(STACObject):
 
         return clone
 
-    def make_all_links_relative(self):
-        """Makes all the links of this catalog and all children and item
-        to be relative, recursively
-        """
-        super().make_links_relative()
-
-        for child in self.get_children():
-            child.make_all_links_relative()
-        for item in self.get_items():
-            item.make_links_relative()
-
-    def make_all_links_absolute(self):
-        """Makes all the links of this catalog and all children and item
-        to be absolute, recursively
-        """
-        super().make_links_absolute()
-
-        for child in self.get_children():
-            child.make_all_links_absolute()
-        for item in self.get_items():
-            item.make_links_absolute()
-
     def make_all_asset_hrefs_relative(self):
         """Makes all the HREFs of assets belonging to items in this catalog
         and all children to be relative, recursively.
@@ -443,9 +424,8 @@ class Catalog(STACObject):
             for item in items:
                 item.make_asset_hrefs_absolute()
 
-    def normalize_and_save(self, root_href, catalog_type, strategy=None):
-        """Normalizes link HREFs to the given root_href, and saves
-        the catalog with the given catalog_type.
+    def normalize_and_save(self, root_href, catalog_type=None, strategy=None):
+        """Normalizes link HREFs to the given root_href, and saves the catalog.
 
         This is a convenience method that simply calls :func:`Catalog.normalize_hrefs
         <pystac.Catalog.normalize_hrefs>` and :func:`Catalog.save <pystac.Catalog.save>`
@@ -455,6 +435,8 @@ class Catalog(STACObject):
             root_href (str): The absolute HREF that all links will be normalized against.
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+                Defaults to the root catalog.catalog_type or the current catalog catalog_type
+                if there is no root catalog.
             strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
                 for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
         """
@@ -593,50 +575,36 @@ class Catalog(STACObject):
 
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
-            all self links will be included, and link type will be set to ABSOLUTE.
+            all self links will be included, and hierarchical links be absolute URLs.
             If the catalog type is ``CatalogType.RELATIVE_PUBLISHED``, this catalog's self
-            link will be included, but no child catalog will have self links.
-            Link types will be set to RELATIVE.
+            link will be included, but no child catalog will have self links, and
+            hierarchical links will be relative URLs
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will be
-            included. Link types will be set to RELATIVE.
-
-        Raises:
-            ValueError: Raises if the catalog_type argument is not supplied and
-                there is no catalog_type attribute on this catalog.
+            included and hierarchical links will be relative URLs.
         """
-        catalog_type = catalog_type or self.catalog_type
+        root = self.get_root()
+        if root is None:
+            raise Exception('There is no root catalog')
 
-        if catalog_type is None:
-            raise ValueError('Must supply a catalog_type if one is not set on the catalog.')
+        if catalog_type is not None:
+            root.catalog_type = catalog_type
 
-        # Ensure relative vs absolute
-        if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
-            self.make_all_links_absolute()
-            self.make_all_asset_hrefs_absolute()
-        elif catalog_type in (CatalogType.SELF_CONTAINED, CatalogType.RELATIVE_PUBLISHED):
-            self.make_all_links_relative()
-            self.make_all_asset_hrefs_relative()
-        else:
-            raise ValueError(f'catalog_type is not a CatalogType: "{catalog_type}"')
-
-        include_self_link = catalog_type in [
-            CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
-        ]
-
-        if catalog_type == CatalogType.RELATIVE_PUBLISHED:
-            child_catalog_type = CatalogType.SELF_CONTAINED
-        else:
-            child_catalog_type = catalog_type
-
-        items_include_self_link = catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
+        items_include_self_link = root.catalog_type in [CatalogType.ABSOLUTE_PUBLISHED]
 
         for child_link in self.get_child_links():
             if child_link.is_resolved():
-                child_link.target.save(catalog_type=child_catalog_type)
+                child_link.target.save()
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
                 item_link.target.save_object(include_self_link=items_include_self_link)
+
+        include_self_link = False
+        # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
+        if ((self.get_self_href() == self.get_root_link().get_absolute_href()
+             and root.catalog_type != CatalogType.SELF_CONTAINED)
+                or root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
+            include_self_link = True
 
         self.save_object(include_self_link=include_self_link)
 

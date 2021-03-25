@@ -6,7 +6,8 @@ from datetime import datetime
 from collections import defaultdict
 
 import pystac
-from pystac import (Catalog, Collection, CatalogType, LinkType, Item, Asset, MediaType, Extensions)
+from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, Extensions,
+                    HIERARCHICAL_LINKS)
 from pystac.extensions.label import LabelClasses
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
@@ -261,14 +262,6 @@ class CatalogTest(unittest.TestCase):
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
-
-    def test_save_throws_if_no_catalog_type(self):
-        catalog = TestCases.test_case_3()
-        assert catalog.catalog_type is None
-        with TemporaryDirectory() as tmp_dir:
-            catalog.normalize_hrefs(tmp_dir)
-            with self.assertRaises(ValueError):
-                catalog.save()
 
     def test_normalize_hrefs_sets_all_hrefs(self):
         catalog = TestCases.test_case_1()
@@ -659,23 +652,19 @@ class CatalogTest(unittest.TestCase):
         def check_all_relative(cat):
             for root, catalogs, items in cat.walk():
                 for link in root.links:
-                    if link.rel != 'self':
-                        self.assertTrue(link.link_type == LinkType.RELATIVE)
+                    if link.rel in HIERARCHICAL_LINKS:
                         self.assertFalse(is_absolute_href(link.get_href()))
                 for item in items:
                     for link in item.links:
-                        if link.rel != 'self':
-                            self.assertTrue(link.link_type == LinkType.RELATIVE)
+                        if link.rel in HIERARCHICAL_LINKS:
                             self.assertFalse(is_absolute_href(link.get_href()))
 
         def check_all_absolute(cat):
             for root, catalogs, items in cat.walk():
                 for link in root.links:
-                    self.assertTrue(link.link_type == LinkType.ABSOLUTE)
                     self.assertTrue(is_absolute_href(link.get_href()))
                 for item in items:
                     for link in item.links:
-                        self.assertTrue(link.link_type == LinkType.ABSOLUTE)
                         self.assertTrue(is_absolute_href(link.get_href()))
 
         test_cases = TestCases.all_test_catalogs()
@@ -684,9 +673,9 @@ class CatalogTest(unittest.TestCase):
             with TemporaryDirectory() as tmp_dir:
                 c2 = catalog.full_copy()
                 c2.normalize_hrefs(tmp_dir)
-                c2.make_all_links_relative()
+                c2.catalog_type = CatalogType.RELATIVE_PUBLISHED
                 check_all_relative(c2)
-                c2.make_all_links_absolute()
+                c2.catalog_type = CatalogType.ABSOLUTE_PUBLISHED
                 check_all_absolute(c2)
 
     def test_full_copy_and_normalize_works_with_created_stac(self):

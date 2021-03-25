@@ -1,18 +1,11 @@
 from copy import copy
-from enum import Enum
 
+import pystac
 from pystac import STACError
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
-
-class LinkType(str, Enum):
-    """Enumerates link types; used to determine if a link is absolute or relative."""
-    def __str__(self):
-        return str(self.value)
-
-    ABSOLUTE = 'ABSOLUTE'
-    RELATIVE = 'RELATIVE'
+HIERARCHICAL_LINKS = ['root', 'child', 'parent', 'collection', 'item', 'items']
 
 
 class Link:
@@ -40,8 +33,6 @@ class Link:
         properties (dict): Optional, additional properties for this link. This is used by
             extensions as a way to serialize and deserialize properties on link
             object JSON.
-        link_type (str): The link type, either relative or absolute. Use one of
-            :class:`~pystac.LinkType`.
 
     Attributes:
         rel (str): The relation of the link (e.g. 'child', 'item')
@@ -54,26 +45,17 @@ class Link:
         properties (dict or None): Optional, additional properties for this link.
             This is used by extensions as a way to serialize and deserialize properties
             on link object JSON.
-        link_type (str): The link type, either relative or absolute. Use one of
-            :class:`~pystac.LinkType`.
         owner (STACObject or None): The owner of this link. The link will use
             its owner's root catalog :class:`~pystac.resolved_object_cache.ResolvedObjectCache`
             to resolve objects, and will create absolute HREFs from relative HREFs against
             the owner's self HREF.
     """
-    def __init__(self,
-                 rel,
-                 target,
-                 media_type=None,
-                 title=None,
-                 properties=None,
-                 link_type=LinkType.ABSOLUTE):
+    def __init__(self, rel, target, media_type=None, title=None, properties=None):
         self.rel = rel
         self.target = target  # An object or an href
         self.media_type = media_type
         self.title = title
         self.properties = properties
-        self.link_type = link_type
         self.owner = None
 
     def set_owner(self, owner):
@@ -85,34 +67,28 @@ class Link:
         self.owner = owner
         return self
 
-    def make_absolute(self):
-        """Sets the link type of this link to absolute"""
-        self.link_type = LinkType.ABSOLUTE
-        return self
-
-    def make_relative(self):
-        """Sets the link type of this link to relative"""
-        self.link_type = LinkType.RELATIVE
-        return self
-
     def get_href(self):
         """Gets the HREF for this link.
 
         Returns:
-            str: Returns this link's HREF. If the link type is LinkType.RELATIVE,
-            and there is an owner of the link, then the HREF returned will be
-            relative. In all other cases, this method will return an absolute HREF.
+            str: Returns this link's HREF. If there is an owner of the link and
+            the root catalog (if there is one) is of type RELATIVE_PUBLISHED,
+            then the HREF returned will be relative.
+            In all other cases, this method will return an absolute HREF.
         """
-        if self.link_type == LinkType.RELATIVE:
-            if self.is_resolved():
-                href = self.target.get_self_href()
-            else:
-                href = self.target
-
-            if href and is_absolute_href(href) and self.owner is not None:
-                href = make_relative_href(href, self.owner.get_self_href())
+        # get the self href
+        if self.is_resolved():
+            href = self.target.get_self_href()
         else:
-            href = self.get_absolute_href()
+            href = self.target
+
+        if href and is_absolute_href(href) and self.owner and self.owner.get_root():
+            root = self.owner.get_root()
+            rel_links = HIERARCHICAL_LINKS + \
+                pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
+            # if a hierarchical link with an owner and root, and relative catalog
+            if root.is_relative() and self.rel in rel_links:
+                href = make_relative_href(href, self.owner.get_self_href())
 
         return href
 
@@ -171,14 +147,14 @@ class Link:
                 obj.set_self_href(target_href)
                 if root is not None:
                     obj = root._resolved_objects.get_or_cache(obj)
-                    obj.set_root(root, link_type=self.link_type)
+                    obj.set_root(root)
         else:
             obj = self.target
 
         self.target = obj
 
         if self.owner and self.rel in ['child', 'item']:
-            self.target.set_parent(self.owner, link_type=self.link_type)
+            self.target.set_parent(self.owner)
 
         return self
 
@@ -223,11 +199,7 @@ class Link:
             Link: The cloned link.
         """
 
-        return Link(rel=self.rel,
-                    target=self.target,
-                    media_type=self.media_type,
-                    title=self.title,
-                    link_type=self.link_type)
+        return Link(rel=self.rel, target=self.target, media_type=self.media_type, title=self.title)
 
     @staticmethod
     def from_dict(d):
@@ -249,44 +221,34 @@ class Link:
         if any(d):
             properties = d
 
-        if rel == 'self' or is_absolute_href(href):
-            link_type = LinkType.ABSOLUTE
-        else:
-            link_type = LinkType.RELATIVE
-
-        return Link(rel=rel,
-                    target=href,
-                    media_type=media_type,
-                    title=title,
-                    properties=properties,
-                    link_type=link_type)
+        return Link(rel=rel, target=href, media_type=media_type, title=title, properties=properties)
 
     @staticmethod
-    def root(c, link_type=LinkType.ABSOLUTE):
+    def root(c):
         """Creates a link to a root Catalog or Collection."""
-        return Link('root', c, media_type='application/json', link_type=link_type)
+        return Link('root', c, media_type='application/json')
 
     @staticmethod
-    def parent(c, link_type=LinkType.ABSOLUTE):
+    def parent(c):
         """Creates a link to a parent Catalog or Collection."""
-        return Link('parent', c, media_type='application/json', link_type=link_type)
+        return Link('parent', c, media_type='application/json')
 
     @staticmethod
-    def collection(c, link_type=LinkType.ABSOLUTE):
+    def collection(c):
         """Creates a link to an item's Collection."""
-        return Link('collection', c, media_type='application/json', link_type=link_type)
+        return Link('collection', c, media_type='application/json')
 
     @staticmethod
     def self_href(href):
         """Creates a self link to a file's location."""
-        return Link('self', href, media_type='application/json', link_type=LinkType.ABSOLUTE)
+        return Link('self', href, media_type='application/json')
 
     @staticmethod
-    def child(c, title=None, link_type=LinkType.ABSOLUTE):
+    def child(c, title=None):
         """Creates a link to a child Catalog or Collection."""
-        return Link('child', c, title=title, media_type='application/json', link_type=link_type)
+        return Link('child', c, title=title, media_type='application/json')
 
     @staticmethod
-    def item(item, title=None, link_type=LinkType.ABSOLUTE):
+    def item(item, title=None):
         """Creates a link to an Item."""
-        return Link('item', item, title=title, media_type='application/json', link_type=link_type)
+        return Link('item', item, title=title, media_type='application/json')
