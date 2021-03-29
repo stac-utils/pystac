@@ -537,8 +537,11 @@ class Catalog(STACObject):
 
         layout_template = LayoutTemplate(template, defaults=defaults)
 
-        items = list(self.get_items())
-        for item in items:
+        keep_item_links = []
+        item_links = [lk for lk in self.links if lk.rel == 'item']
+        for link in item_links:
+            link.resolve_stac_object(root=self.get_root())
+            item = link.target
             item_parts = layout_template.get_template_values(item)
             id_iter = reversed(parent_ids)
             if all(['{}'.format(id) == next(id_iter, None)
@@ -546,6 +549,7 @@ class Catalog(STACObject):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
                 # elements on the root side, so compare the reversed sequences.
+                keep_item_links.append(link)
                 continue
             curr_parent = self
             for k, v in item_parts.items():
@@ -558,8 +562,11 @@ class Catalog(STACObject):
                     curr_parent.add_child(subcat)
                     result.append(subcat)
                 curr_parent = subcat
-            self.remove_item(item.id)
+
             curr_parent.add_item(item)
+
+        # keep only non-item links and item links that have not been moved elsewhere
+        self.links = [lk for lk in self.links if lk.rel != 'item'] + keep_item_links
 
         return result
 
