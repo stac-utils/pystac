@@ -151,7 +151,7 @@ class Catalog(STACObject):
     def is_relative(self):
         return self.catalog_type in [CatalogType.RELATIVE_PUBLISHED, CatalogType.SELF_CONTAINED]
 
-    def add_child(self, child, title=None):
+    def add_child(self, child, title=None, strategy=None):
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
         This method will set the child's parent to this object, and its root to
         this Catalog's root.
@@ -165,8 +165,18 @@ class Catalog(STACObject):
         if isinstance(child, pystac.Item):
             raise STACError('Cannot add item as child. Use add_item instead.')
 
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
+
         child.set_root(self.get_root())
         child.set_parent(self)
+
+        # set self link
+        self_href = self.get_self_href()
+        if self_href:
+            child_href = strategy.get_href(child, os.path.dirname(self_href))
+            child.set_self_href(child_href)
+
         self.add_link(Link.child(child, title=title))
 
     def add_children(self, children):
@@ -180,7 +190,7 @@ class Catalog(STACObject):
         for child in children:
             self.add_child(child)
 
-    def add_item(self, item, title=None):
+    def add_item(self, item, title=None, strategy=None):
         """Adds a link to an :class:`~pystac.Item`.
         This method will set the item's parent to this object, and its root to
         this Catalog's root.
@@ -194,8 +204,18 @@ class Catalog(STACObject):
         if isinstance(item, pystac.Catalog):
             raise STACError('Cannot add catalog as item. Use add_child instead.')
 
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
+
         item.set_root(self.get_root())
         item.set_parent(self)
+
+        # set self link
+        self_href = self.get_self_href()
+        if self_href:
+            item_href = strategy.get_href(item, os.path.dirname(self_href))
+            item.set_self_href(item_href)
+
         self.add_link(Link.item(item, title=title))
 
     def add_items(self, items):
@@ -559,6 +579,10 @@ class Catalog(STACObject):
                     result.append(subcat)
                 curr_parent = subcat
             self.remove_item(item.id)
+            # resolve collection link so when added back points to correct location
+            link = item.get_single_link('collection')
+            if link is not None:
+                link.resolve_stac_object()
             curr_parent.add_item(item)
 
         return result
