@@ -4,6 +4,16 @@
 
 ### Added
 
+### Fixed
+
+### Changed
+
+### Removed
+
+## [v0.5.6]
+
+### Added
+
 - HIERARCHICAL_LINKS array constant of all the types of hierarchical links (self is not included) ([#290](https://github.com/stac-utils/pystac/pull/290))
 
 ### Fixed
