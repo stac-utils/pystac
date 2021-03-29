@@ -15,6 +15,7 @@
 
 - Link behavior - link URLs can be either relative or absolute. Hierarchical (e.g., parent, child) links are made relative or absolute based on the value of the root catalog's `catalog_type` field
 - Internal self hrefs are set automatically when adding Items or Children to an existing catalog. This removes the need to call `normalize_hrefs` or manual setting of the hrefs for newly added STAC objects
+- Catalog.generate_subcatalogs is an order of magnitude faster
 
 ### Removed
 
