@@ -286,6 +286,17 @@ class CatalogTest(unittest.TestCase):
         abspath = os.path.abspath('./relativepath')
         self.assertTrue(catalog.get_self_href().startswith(abspath))
 
+    def test_normalize_hrefs_dont_make_items_absolute(self):
+        catalog = TestCases.test_case_1()
+        catalog.catalog_type = CatalogType.RELATIVE_PUBLISHED
+        catalog.normalize_hrefs('./relativepath')
+        abspath = os.path.abspath('./relativepath')
+        self.assertTrue(catalog.get_self_href().startswith(abspath))
+        for (_, _, items) in catalog.walk():
+            for item in items:
+                for link in item.links:
+                    self.assertFalse(os.path.isabs(link.get_href()), link.get_href())
+
     def test_normalize_href_works_with_label_source_links(self):
         catalog = TestCases.test_case_1()
         catalog.normalize_hrefs('http://example.com')
