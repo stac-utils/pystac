@@ -286,7 +286,7 @@ class CatalogTest(unittest.TestCase):
         abspath = os.path.abspath('./relativepath')
         self.assertTrue(catalog.get_self_href().startswith(abspath))
 
-    def test_normalize_hrefs_dont_make_items_absolute(self):
+    def test_normalize_hrefs_in_relative_published(self):
         catalog = TestCases.test_case_1()
         catalog.catalog_type = CatalogType.RELATIVE_PUBLISHED
         catalog.normalize_hrefs('./relativepath')
@@ -294,8 +294,37 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(catalog.get_self_href().startswith(abspath))
         for (_, _, items) in catalog.walk():
             for item in items:
-                for link in item.links:
-                    self.assertFalse(os.path.isabs(link.get_href()), link.get_href())
+                for i, link in enumerate(item.links):
+                    self.assertFalse(os.path.isabs(link.get_href()),
+                                     f"link #{i} (rel='{link.rel}'): {link.get_href()}")
+
+    def test_inherit_catalog_type(self):
+        from pystac import Extent
+        item = Item("id",
+                    geometry=RANDOM_GEOM,
+                    bbox=RANDOM_BBOX,
+                    datetime=datetime.now(),
+                    properties={})
+        extent = Extent.from_items([item])
+        collection = Collection(id="collection", description="collection",
+                                extent=extent)  # we shouldn't have to set catalog type here
+        collection.add_item(item)
+        catalog = Catalog(id="test-id",
+                          description="test description",
+                          title="Title",
+                          catalog_type=CatalogType.RELATIVE_PUBLISHED)
+        catalog.add_child(collection)
+        with TemporaryDirectory() as tmp_dir:
+            directory = os.path.join(tmp_dir, "root")
+            catalog.normalize_hrefs(directory)
+            catalog.save(catalog_type=CatalogType.RELATIVE_PUBLISHED)
+            item_path = os.path.join(directory, "collection/id/id.json")
+            with open(item_path) as f:
+                raw_item = json.load(f)
+            for i, link in enumerate(raw_item["links"]):
+                rel = link["rel"]
+                href = link["href"]
+                self.assertFalse(os.path.isabs(href), f"link {i} (rel='{rel}'): {href}")
 
     def test_normalize_href_works_with_label_source_links(self):
         catalog = TestCases.test_case_1()
