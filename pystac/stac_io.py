@@ -41,7 +41,7 @@ class STAC_IO:
     """
 
     write_text_method = default_write_text_method
-    """Users of PySTAC can replace the writte_text_method in order
+    """Users of PySTAC can replace the write_text_method in order
     to expand the ability of PySTAC to write to different file systems.
     For example, a client of the library might replace this class
     member in it's own __init__.py with a method that can read from
