@@ -1,8 +1,8 @@
 import pystac
 from pystac import Extensions
-from pystac.item import Item
+from pystac.item import Asset, Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
-from typing import Optional
+from typing import List, Optional
 
 
 class ViewItemExt(ItemExtension):
@@ -21,11 +21,11 @@ class ViewItemExt(ItemExtension):
         Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item):
+    def __init__(self, item: Item) -> None:
         if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.VIEW]
-        elif Extensions.VIEW not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.VIEW)
+            item.stac_extensions = [str(Extensions.VIEW)]
+        elif str(Extensions.VIEW) not in item.stac_extensions:
+            item.stac_extensions.append(str(Extensions.VIEW))
 
         self.item = item
 
@@ -68,7 +68,7 @@ class ViewItemExt(ItemExtension):
             self.sun_elevation = sun_elevation
 
     @property
-    def off_nadir(self):
+    def off_nadir(self) -> Optional[float]:
         """Get or sets the angle from the sensor between nadir (straight down)
         and the scene center. Measured in degrees (0-90).
 
@@ -78,10 +78,10 @@ class ViewItemExt(ItemExtension):
         return self.get_off_nadir()
 
     @off_nadir.setter
-    def off_nadir(self, v):
+    def off_nadir(self, v: Optional[float]):
         self.set_off_nadir(v)
 
-    def get_off_nadir(self, asset=None):
+    def get_off_nadir(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset off_nadir.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -95,7 +95,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:off_nadir')
 
-    def set_off_nadir(self, off_nadir, asset=None):
+    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[Asset] = None):
         """Set an Item or an Asset off_nadir.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -104,7 +104,7 @@ class ViewItemExt(ItemExtension):
         self._set_property('view:off_nadir', off_nadir, asset)
 
     @property
-    def incidence_angle(self):
+    def incidence_angle(self) -> Optional[float]:
         """Get or sets the incidence angle is the angle between the vertical (normal)
         to the intercepting surface and the line of sight back to the satellite at
         the scene center. Measured in degrees (0-90).
@@ -115,10 +115,10 @@ class ViewItemExt(ItemExtension):
         return self.get_incidence_angle()
 
     @incidence_angle.setter
-    def incidence_angle(self, v):
+    def incidence_angle(self, v: Optional[float]) -> None:
         self.set_incidence_angle(v)
 
-    def get_incidence_angle(self, asset=None):
+    def get_incidence_angle(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset incidence_angle.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -132,7 +132,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:incidence_angle')
 
-    def set_incidence_angle(self, incidence_angle, asset=None):
+    def set_incidence_angle(self, incidence_angle: Optional[float], asset: Optional[Asset] = None):
         """Set an Item or an Asset incidence_angle.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -141,7 +141,7 @@ class ViewItemExt(ItemExtension):
         self._set_property('view:incidence_angle', incidence_angle, asset)
 
     @property
-    def azimuth(self):
+    def azimuth(self) -> Optional[float]:
         """Get or sets the viewing azimuth angle. The angle measured from the sub-satellite
         point (point on the ground below the platform) between the scene center and true
         north. Measured clockwise from north in degrees (0-360).
@@ -152,10 +152,10 @@ class ViewItemExt(ItemExtension):
         return self.get_azimuth()
 
     @azimuth.setter
-    def azimuth(self, v):
+    def azimuth(self, v: Optional[float]) -> None:
         self.set_azimuth(v)
 
-    def get_azimuth(self, asset=None):
+    def get_azimuth(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset azimuth.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -169,7 +169,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:azimuth')
 
-    def set_azimuth(self, azimuth, asset=None):
+    def set_azimuth(self, azimuth: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset azimuth.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -178,7 +178,7 @@ class ViewItemExt(ItemExtension):
         self._set_property('view:azimuth', azimuth, asset)
 
     @property
-    def sun_azimuth(self):
+    def sun_azimuth(self) -> Optional[float]:
         """Get or sets the sun azimuth angle. From the scene center point on the ground, this
         is the angle between truth north and the sun. Measured clockwise in degrees (0-360).
 
@@ -188,10 +188,10 @@ class ViewItemExt(ItemExtension):
         return self.get_sun_azimuth()
 
     @sun_azimuth.setter
-    def sun_azimuth(self, v):
+    def sun_azimuth(self, v: Optional[float]) -> None:
         self.set_sun_azimuth(v)
 
-    def get_sun_azimuth(self, asset=None):
+    def get_sun_azimuth(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset sun_azimuth.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -205,7 +205,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:sun_azimuth')
 
-    def set_sun_azimuth(self, sun_azimuth, asset=None):
+    def set_sun_azimuth(self, sun_azimuth: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset sun_azimuth.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -214,7 +214,7 @@ class ViewItemExt(ItemExtension):
         self._set_property('view:sun_azimuth', sun_azimuth, asset)
 
     @property
-    def sun_elevation(self):
+    def sun_elevation(self) -> Optional[float]:
         """Get or sets the sun elevation angle. The angle from the tangent of the scene
         center point to the sun. Measured from the horizon in degrees (0-90).
 
@@ -224,10 +224,10 @@ class ViewItemExt(ItemExtension):
         return self.get_sun_elevation()
 
     @sun_elevation.setter
-    def sun_elevation(self, v):
+    def sun_elevation(self, v: Optional[float]) -> None:
         self.set_sun_elevation(v)
 
-    def get_sun_elevation(self, asset=None):
+    def get_sun_elevation(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset sun_elevation.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -241,7 +241,9 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:sun_elevation')
 
-    def set_sun_elevation(self, sun_elevation, asset=None):
+    def set_sun_elevation(self,
+                          sun_elevation: Optional[float],
+                          asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset sun_elevation.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -250,11 +252,11 @@ class ViewItemExt(ItemExtension):
         self._set_property('view:sun_elevation', sun_elevation, asset)
 
     @classmethod
-    def _object_links(cls):
+    def _object_links(cls) -> List[str]:
         return []
 
     @classmethod
-    def from_item(cls, item):
+    def from_item(cls, item: Item) -> "ViewItemExt":
         return cls(item)
 
 

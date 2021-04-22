@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 __version__ = '0.5.6'
 """Library version"""
@@ -9,12 +10,12 @@ class STACVersion:
     """Latest STAC version supported by PySTAC"""
 
     # Version that holds a user-set STAC version to use.
-    _override_version = None
+    _override_version: Optional[str] = None
 
     OVERRIDE_VERSION_ENV_VAR = 'PYSTAC_STAC_VERSION_OVERRIDE'
 
     @classmethod
-    def get_stac_version(cls):
+    def get_stac_version(cls) -> str:
         if cls._override_version is not None:
             return cls._override_version
 
@@ -25,11 +26,11 @@ class STACVersion:
         return cls.DEFAULT_STAC_VERSION
 
     @classmethod
-    def set_stac_version(cls, stac_version):
+    def set_stac_version(cls, stac_version: str) -> None:
         cls._override_version = stac_version
 
 
-def get_stac_version():
+def get_stac_version() -> str:
     """Returns the STAC version PySTAC writes as the "stac_version" property for
     any object it serializes into JSON.
 
@@ -43,7 +44,7 @@ def get_stac_version():
     return STACVersion.get_stac_version()
 
 
-def set_stac_version(stac_version):
+def set_stac_version(stac_version: str):
     """Sets the STAC version that PySTAC should use.
 
     This is the version that will be set as the "stac_version" property

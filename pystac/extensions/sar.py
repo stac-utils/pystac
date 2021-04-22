@@ -4,10 +4,10 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 """
 
 import enum
-from typing import List, Optional, TypeVar
+from typing import List, Optional
 
 import pystac
-from pystac import Extensions
+from pystac import Extensions, STACError
 from pystac.extensions import base
 
 # Required
@@ -27,32 +27,31 @@ LOOKS_AZIMUTH: str = 'sar:looks_azimuth'
 LOOKS_EQUIVALENT_NUMBER: str = 'sar:looks_equivalent_number'
 OBSERVATION_DIRECTION: str = 'sar:observation_direction'
 
-SarItemExtType = TypeVar('SarItemExtType')
 
-
-class FrequencyBand(enum.Enum):
-    P: str = 'P'
-    L: str = 'L'
-    S: str = 'S'
-    C: str = 'C'
-    X: str = 'X'
-    KU: str = 'Ku'
-    K: str = 'K'
-    KA: str = 'Ka'
+class FrequencyBand(str, enum.Enum):
+    P = 'P'
+    L = 'L'
+    S = 'S'
+    C = 'C'
+    X = 'X'
+    KU = 'Ku'
+    K = 'K'
+    KA = 'Ka'
 
 
 class Polarization(enum.Enum):
-    HH: str = 'HH'
-    VV: str = 'VV'
-    HV: str = 'HV'
-    VH: str = 'VH'
+    HH = 'HH'
+    VV = 'VV'
+    HV = 'HV'
+    VH = 'VH'
 
 
 class ObservationDirection(enum.Enum):
-    LEFT: str = 'left'
-    RIGHT: str = 'right'
+    LEFT = 'left'
+    RIGHT = 'right'
 
 
+# TODO: Fix to work with Assets
 class SarItemExt(base.ItemExtension):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
@@ -139,11 +138,11 @@ class SarItemExt(base.ItemExtension):
             self.observation_direction = observation_direction
 
     @classmethod
-    def from_item(cls: SarItemExtType, an_item: pystac.Item) -> SarItemExtType:
+    def from_item(cls, an_item: pystac.Item) -> "SarItemExt":
         return cls(an_item)
 
     @classmethod
-    def _object_links(cls) -> List:
+    def _object_links(cls) -> List[str]:
         return []
 
     @property
@@ -153,7 +152,12 @@ class SarItemExt(base.ItemExtension):
         Returns:
             str
         """
-        return self.item.properties.get(INSTRUMENT_MODE)
+        result = self.item.properties.get(INSTRUMENT_MODE)
+        if result is None:
+            raise STACError(
+                f"Item with sar extension does not have property {INSTRUMENT_MODE}, id {self.item.id}"
+            )
+        return result
 
     @instrument_mode.setter
     def instrument_mode(self, v: str) -> None:
@@ -166,7 +170,12 @@ class SarItemExt(base.ItemExtension):
         Returns:
             FrequencyBand
         """
-        return FrequencyBand(self.item.properties.get(FREQUENCY_BAND))
+        result = self.item.properties.get(FREQUENCY_BAND)
+        if result is None:
+            raise STACError(
+                f"Item with sar extension does not have property {FREQUENCY_BAND}, id {self.item.id}"
+            )
+        return FrequencyBand(result)
 
     @frequency_band.setter
     def frequency_band(self, v: FrequencyBand) -> None:
@@ -179,7 +188,12 @@ class SarItemExt(base.ItemExtension):
         Returns:
             List[Polarization]
         """
-        return [Polarization(v) for v in self.item.properties.get(POLARIZATIONS)]
+        result = self.item.properties.get(POLARIZATIONS)
+        if result is None:
+            raise STACError(
+                f"Item with sar extension does not have property {POLARIZATIONS}, id {self.item.id}"
+            )
+        return [Polarization(v) for v in result]
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
@@ -194,14 +208,18 @@ class SarItemExt(base.ItemExtension):
         Returns:
             str
         """
-        return self.item.properties.get(PRODUCT_TYPE)
+        result = self.item.properties.get(PRODUCT_TYPE)
+        if result is None:
+            raise STACError(
+                f"Item with sar extension does not have property {PRODUCT_TYPE}, id {self.item.id}")
+        return result
 
     @product_type.setter
     def product_type(self, v: str) -> None:
         self.item.properties[PRODUCT_TYPE] = v
 
     @property
-    def center_frequency(self) -> float:
+    def center_frequency(self) -> Optional[float]:
         """Get or sets a center frequency for the item.
 
         Returns:
@@ -214,7 +232,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[CENTER_FREQUENCY] = v
 
     @property
-    def resolution_range(self) -> float:
+    def resolution_range(self) -> Optional[float]:
         """Get or sets a resolution range for the item.
 
         Returns:
@@ -227,7 +245,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[RESOLUTION_RANGE] = v
 
     @property
-    def resolution_azimuth(self) -> float:
+    def resolution_azimuth(self) -> Optional[float]:
         """Get or sets a resolution azimuth for the item.
 
         Returns:
@@ -240,7 +258,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[RESOLUTION_AZIMUTH] = v
 
     @property
-    def pixel_spacing_range(self) -> float:
+    def pixel_spacing_range(self) -> Optional[float]:
         """Get or sets a pixel spacing range for the item.
 
         Returns:
@@ -253,7 +271,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[PIXEL_SPACING_RANGE] = v
 
     @property
-    def pixel_spacing_azimuth(self) -> float:
+    def pixel_spacing_azimuth(self) -> Optional[float]:
         """Get or sets a pixel spacing azimuth for the item.
 
         Returns:
@@ -266,7 +284,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[PIXEL_SPACING_AZIMUTH] = v
 
     @property
-    def looks_range(self) -> int:
+    def looks_range(self) -> Optional[int]:
         """Get or sets a looks range for the item.
 
         Returns:
@@ -279,7 +297,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[LOOKS_RANGE] = v
 
     @property
-    def looks_azimuth(self) -> int:
+    def looks_azimuth(self) -> Optional[int]:
         """Get or sets a looks azimuth for the item.
 
         Returns:
@@ -292,7 +310,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[LOOKS_AZIMUTH] = v
 
     @property
-    def looks_equivalent_number(self) -> float:
+    def looks_equivalent_number(self) -> Optional[float]:
         """Get or sets a looks equivalent number for the item.
 
         Returns:
@@ -305,13 +323,16 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[LOOKS_EQUIVALENT_NUMBER] = v
 
     @property
-    def observation_direction(self) -> ObservationDirection:
+    def observation_direction(self) -> Optional[ObservationDirection]:
         """Get or sets an observation direction for the item.
 
         Returns:
             ObservationDirection
         """
-        return ObservationDirection(self.item.properties.get(OBSERVATION_DIRECTION))
+        result = self.item.properties.get(OBSERVATION_DIRECTION)
+        if result is None:
+            return None
+        return ObservationDirection(result)
 
     @observation_direction.setter
     def observation_direction(self, v: ObservationDirection) -> None:

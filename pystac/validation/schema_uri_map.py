@@ -1,4 +1,5 @@
 from abc import (ABC, abstractmethod)
+from typing import Any, Callable, Dict, List, Tuple
 
 import pystac
 from pystac import (STACObjectType, Extensions)
@@ -12,11 +13,11 @@ class SchemaUriMap(ABC):
         pass
 
     @abstractmethod
-    def get_core_schema_uri(self, object_type, stac_version):
+    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> str:
         """Get the schema URI for the given object type and stac version.
 
         Args:
-            object_type (str): STAC object type. One of :class:`~pystac.STACObjectType`
+            object_type (STACObjectType): STAC object type. One of :class:`~pystac.STACObjectType`
             stac_version (str): The STAC version of the schema to return.
 
         Returns:
@@ -25,7 +26,8 @@ class SchemaUriMap(ABC):
         pass
 
     @abstractmethod
-    def get_extension_schema_uri(self, extension_id, object_type, stac_version):
+    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
+                                 stac_version: str) -> str:
         """Get the extension's schema URI for the given object type, stac version.
 
         Args:
@@ -51,10 +53,12 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # for a particular version uses the base URI associated with the version range which
     # contains it. If the version it outside of any VersionRange, there is no URI for the
     # schema.
-    BASE_URIS = [(STACVersionRange(min_version='1.0.0-beta.1'),
-                  lambda version: 'https://schemas.stacspec.org/v{}'.format(version)),
-                 (STACVersionRange(min_version='0.8.0', max_version='0.9.0'), lambda version:
-                  'https://raw.githubusercontent.com/radiantearth/stac-spec/v{}'.format(version))]
+    BASE_URIS: List[Tuple[STACVersionRange, Callable[[str], str]]] = [
+        (STACVersionRange(min_version='1.0.0-beta.1'),
+         lambda version: 'https://schemas.stacspec.org/v{}'.format(version)),
+        (STACVersionRange(min_version='0.8.0', max_version='0.9.0'), lambda version:
+         'https://raw.githubusercontent.com/radiantearth/stac-spec/v{}'.format(version))
+    ]
 
     # DEFAULT_SCHEMA_MAP contains a structure that matches 'core' or 'extension' schema URIs
     # based on the stac object type and the stac version, using a similar technique as BASE_URIS.
@@ -63,7 +67,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # is the latest version. If it's a previous version, the stac_version that matches
     # the listed version range is used, or else the URI from the latest version is used if
     # there are no overrides for previous versions.
-    DEFAULT_SCHEMA_MAP = {
+    DEFAULT_SCHEMA_MAP: Dict[str, Dict[str, Any]] = {
         'core': {
             STACObjectType.CATALOG: ('catalog-spec/json-schema/catalog.json', None),
             STACObjectType.COLLECTION: ('collection-spec/json-schema/collection.json', None),
@@ -158,7 +162,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
     }
 
     @classmethod
-    def _append_base_uri_if_needed(cls, uri, stac_version):
+    def _append_base_uri_if_needed(cls, uri: str, stac_version: str):
         # Only append the base URI if it's not already an absolute URI
         if '://' not in uri:
             base_uri = None
@@ -172,7 +176,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
         else:
             return uri
 
-    def get_core_schema_uri(self, object_type, stac_version):
+    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str):
         uri = None
         is_latest = stac_version == pystac.get_stac_version()
 
@@ -189,7 +193,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
 
         return self._append_base_uri_if_needed(uri, stac_version)
 
-    def get_extension_schema_uri(self, extension_id, object_type, stac_version):
+    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType, stac_version: str):
         uri = None
 
         is_latest = stac_version == pystac.get_stac_version()

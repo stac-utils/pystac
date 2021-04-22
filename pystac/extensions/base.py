@@ -1,14 +1,35 @@
 from abc import (ABC, abstractmethod)
+from typing import Any, Iterable, List, Optional, Type
+from pystac.stac_object import STACObject
 
 from pystac.catalog import Catalog
 from pystac.collection import Collection
-from pystac.item import Item
+from pystac.item import Asset, Item
 from pystac.extensions import ExtensionError
+
+
+class STACObjectExtension(ABC):
+    @classmethod
+    def _from_object(cls, stac_object: STACObject) -> "STACObjectExtension":
+        ...
+
+    @classmethod
+    @abstractmethod
+    def _object_links(cls) -> List[str]:
+        raise NotImplementedError("_object_links")
+
+    @classmethod
+    def enable_extension(cls, stac_object: STACObject) -> None:
+        """Enables the extension for the given stac_object.
+        Child classes can choose to override this method in order to
+        modify the stac_object when an extension is enabled.
+        """
+        pass
 
 
 class ExtendedObject:
     """ExtendedObject maps STACObject classes (Catalog, Collection and Item) to
-    extension classes (classes that implement one of CatalogExtension, CollectionExtesion,
+    extension classes (classes that implement one of CatalogExtension, CollectionExtension,
     or ItemCollection). When an extension is registered with PySTAC it uses the registered
     list of ExtendedObject to determine how to handle extending objects, e.g. when item.ext.label
     is called, it searches for the ExtendedObject associated with the label extension that
@@ -18,7 +39,8 @@ class ExtendedObject:
         stac_object_class: The STAC object class that is being extended.
         extension_class: The class of the extension, e.g. LabelItemExt
     """
-    def __init__(self, stac_object_class, extension_class):
+    def __init__(self, stac_object_class: Type[STACObject],
+                 extension_class: Type[STACObjectExtension]):
         if stac_object_class is Catalog:
             if not issubclass(extension_class, CatalogExtension):
                 raise ExtensionError(
@@ -45,83 +67,56 @@ class ExtensionDefinition:
         extended_objects (List[ExtendedObject]): The list of ExtendedObjects which map STACObject
             types to their extension. Should only contain one entry per stac object type.
     """
-    def __init__(self, extension_id, extended_objects):
+    def __init__(self, extension_id: str, extended_objects: List[ExtendedObject]):
         self.extension_id = extension_id
         self.extended_objects = extended_objects
 
 
-class CatalogExtension(ABC):
+class CatalogExtension(STACObjectExtension):
     @classmethod
-    def _from_object(cls, stac_object):
+    def _from_object(cls, stac_object: STACObject) -> "CatalogExtension":
+        if not isinstance(stac_object, Catalog):
+            raise ValueError(f"This extension applies to Catalogs, not {cls}")
         return cls.from_catalog(stac_object)
 
     @classmethod
     @abstractmethod
-    def from_catalog(cls, catalog):
+    def from_catalog(cls, catalog: Catalog) -> "CatalogExtension":
         raise NotImplementedError("from_catalog")
 
-    @classmethod
-    @abstractmethod
-    def _object_links(cls):
-        raise NotImplementedError("_object_links")
 
+class CollectionExtension(STACObjectExtension):
     @classmethod
-    def enable_extension(cls, stac_object):
-        """Enables the extension for the given stac_object.
-        Child classes can choose to override this method in order to
-        modify the stac_object when an extension is enabled.
-        """
-        pass
-
-
-class CollectionExtension(ABC):
-    @classmethod
-    def _from_object(cls, stac_object):
+    def _from_object(cls, stac_object: STACObject) -> "CollectionExtension":
+        if not isinstance(stac_object, Collection):
+            raise ValueError(f"This extension applies to Collections, not {cls}")
         return cls.from_collection(stac_object)
 
     @classmethod
     @abstractmethod
-    def from_collection(cls, catalog):
+    def from_collection(cls, collection: Collection) -> "CollectionExtension":
         raise NotImplementedError("from_collection")
 
-    @classmethod
-    @abstractmethod
-    def _object_links(cls):
-        raise NotImplementedError("_object_links")
+
+class ItemExtension(STACObjectExtension):
+    item: Item
 
     @classmethod
-    def enable_extension(cls, stac_object):
-        """Enables the extension for the given stac_object.
-        Child classes can choose to override this method in order to
-        modify the stac_object when an extension is enabled.
-        """
-        pass
-
-
-class ItemExtension(ABC):
-    @classmethod
-    def _from_object(cls, stac_object):
+    def _from_object(cls, stac_object: STACObject) -> "ItemExtension":
+        if not isinstance(stac_object, Item):
+            raise ValueError(f"This extension applies to Items, not {cls}")
         return cls.from_item(stac_object)
 
     @classmethod
     @abstractmethod
-    def from_item(cls, item):
+    def from_item(cls, item: Item) -> "ItemExtension":
         raise NotImplementedError("from_item")
 
-    @classmethod
-    @abstractmethod
-    def _object_links(cls):
-        raise NotImplementedError("_object_links")
-
-    @classmethod
-    def enable_extension(cls, stac_object):
-        """Enables the extension for the given stac_object.
-        Child classes can choose to override this method in order to
-        modify the stac_object when an extension is enabled.
-        """
-        pass
-
-    def _set_property(self, key, value, asset):
+    def _set_property(self,
+                      key: str,
+                      value: Any,
+                      asset: Optional[Asset],
+                      pop_if_none: bool = True) -> None:
         '''
         Set an Item or an Asset property.
 
@@ -138,6 +133,11 @@ class ItemExtension(ABC):
             key (str): The name of the property
             value (Object): the value to set
             asset: The Asset to modify. If None, the property will be set in the Item
+            pop_if_none: If True and the value is None, the property will be removed from
+                the item or asset properties. If this is False, a None value will be set
+                (which will translate into a null JSON value). There are some cases
+                where required properties can be nullable, in which case False should
+                be used. Defaults to True.
         '''
         target = self.item.properties if asset is None else asset.properties
         if value is None:
@@ -147,32 +147,34 @@ class ItemExtension(ABC):
 
 
 class RegisteredSTACExtensions:
-    def __init__(self, extension_definitions):
+    def __init__(self, extension_definitions: Iterable[ExtensionDefinition]):
         self.extensions = dict([(e.extension_id, e) for e in extension_definitions])
 
-    def is_registered_extension(self, extension_id):
+    def is_registered_extension(self, extension_id: str) -> bool:
         """Determines whether or not the given extension ID has been registered."""
         return extension_id in self.extensions
 
-    def get_registered_extensions(self):
+    def get_registered_extensions(self) -> List[str]:
         """Returns the list of registered extension IDs."""
         return list(self.extensions.keys())
 
-    def add_extension(self, extension_definition):
+    def add_extension(self, extension_definition: ExtensionDefinition) -> None:
         e_id = extension_definition.extension_id
         if e_id in self.extensions:
             raise ExtensionError("ExtensionDefinition with id '{}' already exists.".format(e_id))
 
         self.extensions[e_id] = extension_definition
 
-    def remove_extension(self, extension_id):
+    def remove_extension(self, extension_id: str) -> None:
         """Remove an extension from PySTAC."""
         if extension_id not in self.extensions:
             raise ExtensionError(
                 "ExtensionDefinition with id '{}' is not registered.".format(extension_id))
         del self.extensions[extension_id]
 
-    def get_extension_class(self, extension_id, stac_object_class):
+    def get_extension_class(
+            self, extension_id: str,
+            stac_object_class: Type[STACObject]) -> Optional[Type[STACObjectExtension]]:
         """Gets the extension class for a given stac object class if one exists, otherwise
         returns None
         """
@@ -207,7 +209,7 @@ class RegisteredSTACExtensions:
 
         return ext_class
 
-    def extend_object(self, extension_id, stac_object):
+    def extend_object(self, extension_id: str, stac_object: STACObject) -> STACObjectExtension:
         """Returns the extension object for the given STACObject and the given
         extension_id
         """
@@ -219,7 +221,7 @@ class RegisteredSTACExtensions:
 
         return ext_class._from_object(stac_object)
 
-    def get_extended_object_links(self, stac_object):
+    def get_extended_object_links(self, stac_object: STACObject) -> List[str]:
         if stac_object.stac_extensions is None:
             return []
         return [
@@ -229,7 +231,7 @@ class RegisteredSTACExtensions:
             for link_rel in e_obj.extension_class._object_links()
         ]
 
-    def can_extend(self, extension_id, stac_object_class):
+    def can_extend(self, extension_id: str, stac_object_class: Type[STACObject]) -> bool:
         """Returns True if the extension can extend the given object type.
 
         Args:
@@ -252,7 +254,7 @@ class RegisteredSTACExtensions:
             if issubclass(stac_object_class, e.stac_object_class)
         ])
 
-    def enable_extension(self, extension_id, stac_object):
+    def enable_extension(self, extension_id: str, stac_object: STACObject) -> None:
         """Enables the extension for the given object.
 
         This will at least ensure the extension ID is in the object's "stac_extensions"

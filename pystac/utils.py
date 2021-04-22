@@ -1,7 +1,8 @@
 import os
 import posixpath
+from typing import Any, Dict, List, Optional, Union
 from urllib.parse import (urlparse, ParseResult as URLParseResult)
-from datetime import timezone
+from datetime import datetime, timezone
 import dateutil.parser
 
 # Allow for modifying the path library for testability
@@ -9,7 +10,7 @@ import dateutil.parser
 _pathlib = os.path
 
 
-def _urlparse(href):
+def _urlparse(href: str) -> URLParseResult:
     """Version of URL parse that takes into account windows paths.
 
     A windows absolute path will be parsed with a scheme from urllib.parse.urlparse.
@@ -27,7 +28,7 @@ def _urlparse(href):
         return parsed
 
 
-def _join(is_path, *args):
+def _join(is_path: bool, *args: str) -> str:
     """Version of os.path.join that takes into account whether or not we are working
     with a URL.
 
@@ -39,7 +40,7 @@ def _join(is_path, *args):
         return posixpath.join(*args)
 
 
-def make_relative_href(source_href, start_href, start_is_dir=False):
+def make_relative_href(source_href: str, start_href: str, start_is_dir: bool=False) -> str:
     """Makes a given HREF relative to the given starting HREF.
 
     Args:
@@ -75,7 +76,9 @@ def make_relative_href(source_href, start_href, start_is_dir=False):
     return relpath
 
 
-def make_absolute_href(source_href, start_href=None, start_is_dir=False):
+def make_absolute_href(source_href: str,
+                       start_href: Optional[str] = None,
+                       start_is_dir: bool = False) -> str:
     """Makes a given HREF absolute based on the given starting HREF.
 
     Args:
@@ -92,7 +95,7 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
         return None.
     """
     if source_href is None:
-        return None
+        return None  # TODO: Remove the None case
 
     if start_href is None:
         start_href = os.getcwd()
@@ -128,7 +131,7 @@ def make_absolute_href(source_href, start_href=None, start_is_dir=False):
         return source_href
 
 
-def is_absolute_href(href):
+def is_absolute_href(href: str) -> bool:
     """Determines if an HREF is absolute or not.
 
     Args:
@@ -141,7 +144,7 @@ def is_absolute_href(href):
     return parsed.scheme != '' or _pathlib.isabs(parsed.path)
 
 
-def datetime_to_str(dt):
+def datetime_to_str(dt: datetime) -> str:
     """Convert a python datetime to an ISO8601 string
 
     Args:
@@ -161,11 +164,11 @@ def datetime_to_str(dt):
     return timestamp
 
 
-def str_to_datetime(s):
+def str_to_datetime(s: str) -> datetime:
     return dateutil.parser.parse(s)
 
 
-def geometry_to_bbox(geometry):
+def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     """Extract the bounding box from a geojson geometry
 
     Args:
@@ -177,22 +180,22 @@ def geometry_to_bbox(geometry):
     """
     coords = geometry['coordinates']
 
-    lats = []
-    lons = []
+    lats: List[float] = []
+    lons: List[float] = []
 
-    def extract_coords(coords):
+    def extract_coords(coords: List[Union[List[float], List[List[Any]]]]):
         for x in coords:
             # This handles points
             if isinstance(x, float):
-                lats.append(coords[0])
-                lons.append(coords[1])
+                lats.append(coords[0])  # type:ignore
+                lons.append(coords[1])  # type:ignore
                 return
             if isinstance(x[0], list):
-                extract_coords(x)
+                extract_coords(x)  # type:ignore
             else:
                 lat, lon = x
-                lats.append(lat)
-                lons.append(lon)
+                lats.append(lat)  # type:ignore
+                lons.append(lon)  # type:ignore
 
     extract_coords(coords)
 

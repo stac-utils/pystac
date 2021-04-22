@@ -1,12 +1,16 @@
 from abc import (ABC, abstractmethod)
 from enum import Enum
+from pystac.catalog import Catalog
+from typing import Any, Dict, Generator, List, Optional, cast
 
 import pystac
+import pystac.validation
 from pystac import STACError
 from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
+from pystac.extensions.base import STACObjectExtension
 
 
 class STACObjectType(str, Enum):
@@ -19,95 +23,26 @@ class STACObjectType(str, Enum):
     ITEMCOLLECTION = 'ITEMCOLLECTION'
 
 
-class ExtensionIndex:
-    """Defines methods for accessing extension functionality.
-
-    To access a specific extension, use the __getitem__ on this class with the
-    extension ID::
-
-        # Access the "bands" property on the eo extension.
-        item.ext['eo'].bands
-    """
-    def __init__(self, stac_object):
-        self.stac_object = stac_object
-
-    def __getitem__(self, extension_id):
-        """Gets the extension object for the given extension.
-
-        Returns:
-            CatalogExtension or CollectionExtension or ItemExtension: The extension object
-            through which you can access the extension functionality for the extension represented
-            by the extension_id.
-        """
-        # Check to make sure this is a registered extension.
-        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
-            raise ExtensionError("'{}' is not an extension "
-                                 "registered with PySTAC".format(extension_id))
-
-        if not self.implements(extension_id):
-            raise ExtensionError("{} does not implement the {} extension. "
-                                 "Use the 'ext.enable' method to enable this extension "
-                                 "first.".format(self.stac_object, extension_id))
-
-        return pystac.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
-
-    def __getattr__(self, extension_id):
-        """Gets an extension based on a dynamic attribute.
-
-        This takes the attribute name and passes it to __getitem__.
-
-        This allows the following two lines to be equivalent::
-
-            item.ext["label"].label_properties
-            item.ext.label.label_properties
-        """
-        if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
-            return self.__getattribute__(extension_id)
-        return self[extension_id]
-
-    def enable(self, extension_id):
-        """Enables a stac extension for the given object. If the object already
-        enables the extension, no action is taken. If it does not, the extension ID is
-        added to the object's stac_extension property.
-
-        Args:
-            extension_id (str): The extension ID representing the extension
-            the object should implement
-
-        """
-        pystac.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
-
-    def implements(self, extension_id):
-        """Returns true if the associated object implements the given extension.
-
-        Args:
-            extension_id (str): The extension ID to check
-
-        Returns:
-            [bool]: True if the object implements the extensions - i.e. if
-                the extension ID is in the "stac_extensions" property.
-        """
-        return (self.stac_object.stac_extensions is not None
-                and extension_id in self.stac_object.stac_extensions)
-
-
 class LinkMixin:
     """Mixin class for adding and accessing links.
 
     Implementing classes must have a `links` attribute that is
     a list of links.
     """
-    def add_link(self, link):
+
+    links: List[Link]
+
+    def add_link(self, link: Link):
         """Add a link to this object's set of links.
 
         Args:
              link (Link): The link to add.
         """
-        link.set_owner(self)
+        link.set_owner(cast(STACObject, self))
         self.links.append(link)
         return self
 
-    def add_links(self, links):
+    def add_links(self, links: List[Link]) -> "LinkMixin":
         """Add links to this object's set of links.
 
         Args:
@@ -118,7 +53,7 @@ class LinkMixin:
             self.add_link(link)
         return self
 
-    def remove_links(self, rel):
+    def remove_links(self, rel: str) -> "LinkMixin":
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
@@ -128,7 +63,7 @@ class LinkMixin:
         self.links = [link for link in self.links if link.rel != rel]
         return self
 
-    def get_single_link(self, rel):
+    def get_single_link(self, rel: str) -> Optional[Link]:
         """Get single link that match the given ``rel``.
 
         Args:
@@ -137,7 +72,7 @@ class LinkMixin:
 
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel=None):
+    def get_links(self, rel: Optional[str] = None):
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -153,7 +88,7 @@ class LinkMixin:
         else:
             return [link for link in self.links if link.rel == rel]
 
-    def clear_links(self, rel=None):
+    def clear_links(self, rel: Optional[str] = None):
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -175,7 +110,7 @@ class LinkMixin:
         """
         return self.get_single_link('root')
 
-    def get_self_href(self):
+    def get_self_href(self) -> Optional[str]:
         """Gets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
 
@@ -192,11 +127,11 @@ class LinkMixin:
         """
         self_link = self.get_single_link('self')
         if self_link:
-            return self_link.target
+            return cast(str, self_link.target)
         else:
             return None
 
-    def set_self_href(self, href):
+    def set_self_href(self, href: str) -> "LinkMixin":
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
 
@@ -208,14 +143,14 @@ class LinkMixin:
         """
         root_link = self.get_root_link()
         if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.remove(self)
+            cast(Catalog, root_link.target)._resolved_objects.remove(cast(STACObject, self))
 
         self.remove_links('self')
         if href is not None:
             self.add_link(Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
-            root_link.target._resolved_objects.cache(self)
+            cast(Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
 
         return self
 
@@ -230,10 +165,11 @@ class STACObject(LinkMixin, ABC):
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
     """
+    id: str
 
     STAC_OBJECT_TYPE = None  # Overridden by the child classes with their type.
 
-    def __init__(self, stac_extensions):
+    def __init__(self, stac_extensions: List[str]):
         self.links = []
         self.stac_extensions = stac_extensions
 
@@ -245,7 +181,7 @@ class STACObject(LinkMixin, ABC):
         """
         return pystac.validation.validate(self)
 
-    def get_root(self):
+    def get_root(self) -> Optional[Catalog]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the root for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'root'``.
@@ -259,12 +195,12 @@ class STACObject(LinkMixin, ABC):
             if not root_link.is_resolved():
                 root_link.resolve_stac_object()
                 # Use set_root, so Catalogs can merge ResolvedObjectCache instances.
-                self.set_root(root_link.target)
-            return root_link.target
+                self.set_root(cast(Catalog, root_link.target))
+            return cast(Catalog, root_link.target)
         else:
             return None
 
-    def set_root(self, root):
+    def set_root(self, root: Optional[Catalog]) -> "STACObject":
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -279,7 +215,7 @@ class STACObject(LinkMixin, ABC):
         if root_link_index is not None:
             root_link = self.links[root_link_index]
             if root_link.is_resolved():
-                root_link.target._resolved_objects.remove(self)
+                cast(Catalog, root_link.target)._resolved_objects.remove(self)
 
         if root is None:
             self.remove_links('root')
@@ -294,7 +230,7 @@ class STACObject(LinkMixin, ABC):
 
         return self
 
-    def get_parent(self):
+    def get_parent(self) -> Optional["STACObject"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the parent for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'parent'``.
@@ -306,11 +242,11 @@ class STACObject(LinkMixin, ABC):
         """
         parent_link = self.get_single_link('parent')
         if parent_link:
-            return parent_link.resolve_stac_object().target
+            return cast(Catalog, parent_link.resolve_stac_object().target)
         else:
             return None
 
-    def set_parent(self, parent):
+    def set_parent(self, parent: Optional[Catalog]) -> "STACObject":
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -324,7 +260,7 @@ class STACObject(LinkMixin, ABC):
             self.add_link(Link.parent(parent))
         return self
 
-    def get_stac_objects(self, rel):
+    def get_stac_objects(self, rel: str) -> Generator["STACObject", None, None]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
@@ -341,9 +277,9 @@ class STACObject(LinkMixin, ABC):
             link = links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
-                yield link.target
+                yield cast("STACObject", link.target)
 
-    def save_object(self, include_self_link=True, dest_href=None):
+    def save_object(self, include_self_link: bool = True, dest_href: Optional[str] = None) -> None:
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
@@ -369,7 +305,9 @@ class STACObject(LinkMixin, ABC):
 
         STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
-    def full_copy(self, root=None, parent=None):
+    def full_copy(self,
+                  root: Optional[Catalog] = None,
+                  parent: Optional[Catalog] = None) -> "STACObject":
         """Create a full copy of this STAC object and any stac objects linked to by
         this object.
 
@@ -385,9 +323,10 @@ class STACObject(LinkMixin, ABC):
         """
         clone = self.clone()
 
-        if root is None:
+        if root is None and isinstance(clone, Catalog):
             root = clone
-        clone.set_root(root)
+
+        clone.set_root(cast(Catalog, root))
         if parent:
             clone.set_parent(parent)
 
@@ -395,22 +334,27 @@ class STACObject(LinkMixin, ABC):
         for link in clone.links:
             if link.rel in link_rels:
                 link.resolve_stac_object()
-                target = link.target
+                target = cast("STACObject", link.target)
                 if target in root._resolved_objects:
                     target = root._resolved_objects.get(target)
+                    assert target is not None
                 else:
-                    copied_target = target.full_copy(root=root, parent=clone)
+                    target_parent = None
+                    if link.rel in ['child', 'item'] and isinstance(clone, Catalog):
+                        target_parent = clone
+                    copied_target = target.full_copy(root=root, parent=target_parent)
                     root._resolved_objects.cache(copied_target)
                     target = copied_target
                 if link.rel in ['child', 'item']:
                     target.set_root(root)
-                    target.set_parent(clone)
+                    if isinstance(clone, Catalog):
+                        target.set_parent(clone)
                 link.target = target
 
         return clone
 
     @property
-    def ext(self):
+    def ext(self) -> "ExtensionIndex":
         """Access extensions for this STACObject.
 
         Example:
@@ -441,7 +385,7 @@ class STACObject(LinkMixin, ABC):
                     link.resolve_stac_object(root=self.get_root())
 
     @abstractmethod
-    def _object_links(self):
+    def _object_links(self) -> List[str]:
         """Inherited classes return a list of link 'rel' types that represent
         STACObjects linked to by this object (not including root, parent or self).
         This can include optional relations (which may not be present).
@@ -449,20 +393,19 @@ class STACObject(LinkMixin, ABC):
         pass
 
     @abstractmethod
-    def to_dict(self, include_self_link=True):
+    def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized object.
 
         Args:
             include_self_link (bool): If True, the dict will contain a self link
                 to this object. If False, the self link will be omitted.
 
-        Returns:
-            dict: A serializion of the object that can be written out as JSON.
+            dict: A serialization of the object that can be written out as JSON.
         """
         pass
 
     @abstractmethod
-    def clone(self):
+    def clone(self) -> "STACObject":
         """Clones this object.
 
         Cloning an object will make a copy of all properties and links of the object;
@@ -476,7 +419,7 @@ class STACObject(LinkMixin, ABC):
         pass
 
     @classmethod
-    def from_file(cls, href):
+    def from_file(cls, href: str) -> "STACObject":
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -491,9 +434,9 @@ class STACObject(LinkMixin, ABC):
         d = STAC_IO.read_json(href)
 
         if cls == STACObject:
-            o = STAC_IO.stac_object_from_dict(d, href=href)
+            o = STAC_IO.stac_object_from_dict(d, href, None)
         else:
-            o = cls.from_dict(d, href=href)
+            o = cls.from_dict(d, href, None)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -504,12 +447,15 @@ class STACObject(LinkMixin, ABC):
         if root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(o)
+                    o.set_root(cast(Catalog, o))
         return o
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, d, href=None, root=None):
+    def from_dict(cls,
+                  d: Dict[str, Any],
+                  href: Optional[str] = None,
+                  root: Optional[Catalog] = None) -> "STACObject":
         """Parses this STACObject from the passed in dictionary.
 
         Args:
@@ -524,3 +470,77 @@ class STACObject(LinkMixin, ABC):
             STACObject: The STACObject parsed from this dict.
         """
         pass
+
+
+class ExtensionIndex:
+    """Defines methods for accessing extension functionality.
+
+    To access a specific extension, use the __getitem__ on this class with the
+    extension ID::
+
+        # Access the "bands" property on the eo extension.
+        item.ext['eo'].bands
+    """
+    def __init__(self, stac_object: STACObject) -> None:
+        self.stac_object = stac_object
+
+    def __getitem__(
+            self, extension_id: str) -> STACObjectExtension:
+        """Gets the extension object for the given extension.
+
+        Returns:
+            CatalogExtension or CollectionExtension or ItemExtension: The extension object
+            through which you can access the extension functionality for the extension represented
+            by the extension_id.
+        """
+        # Check to make sure this is a registered extension.
+        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+            raise ExtensionError("'{}' is not an extension "
+                                 "registered with PySTAC".format(extension_id))
+
+        if not self.implements(extension_id):
+            raise ExtensionError("{} does not implement the {} extension. "
+                                 "Use the 'ext.enable' method to enable this extension "
+                                 "first.".format(self.stac_object, extension_id))
+
+        return pystac.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
+
+    def __getattr__(
+            self, extension_id: str) -> STACObjectExtension:
+        """Gets an extension based on a dynamic attribute.
+
+        This takes the attribute name and passes it to __getitem__.
+
+        This allows the following two lines to be equivalent::
+
+            item.ext["label"].label_properties
+            item.ext.label.label_properties
+        """
+        if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
+            return self.__getattribute__(extension_id)
+        return self[extension_id]
+
+    def enable(self, extension_id: str) -> None:
+        """Enables a stac extension for the given object. If the object already
+        enables the extension, no action is taken. If it does not, the extension ID is
+        added to the object's stac_extension property.
+
+        Args:
+            extension_id (str): The extension ID representing the extension
+            the object should implement
+
+        """
+        pystac.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
+
+    def implements(self, extension_id: str) -> bool:
+        """Returns true if the associated object implements the given extension.
+
+        Args:
+            extension_id (str): The extension ID to check
+
+        Returns:
+            [bool]: True if the object implements the extensions - i.e. if
+                the extension ID is in the "stac_extensions" property.
+        """
+        return (self.stac_object.stac_extensions is not None
+                and extension_id in self.stac_object.stac_extensions)

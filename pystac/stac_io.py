@@ -1,5 +1,8 @@
 import os
 import json
+from pystac.stac_object import STACObject
+from pystac.catalog import Catalog
+from typing import Any, Callable, Dict, Optional
 
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -11,7 +14,8 @@ class STAC_IO:
     Allows users of the library to set their own methods
     (e.g. for reading and writing from cloud storage)
     """
-    def default_read_text_method(uri):
+    @staticmethod
+    def default_read_text_method(uri: str) -> str:
         """Default method for reading text. Only handles local file paths."""
         parsed = urlparse(uri)
         if parsed.scheme != '':
@@ -24,7 +28,8 @@ class STAC_IO:
             with open(uri) as f:
                 return f.read()
 
-    def default_write_text_method(uri, txt):
+    @staticmethod
+    def default_write_text_method(uri: str, txt: str) -> None:
         """Default method for writing text. Only handles local file paths."""
         dirname = os.path.dirname(uri)
         if dirname != '' and not os.path.isdir(dirname):
@@ -32,7 +37,7 @@ class STAC_IO:
         with open(uri, 'w') as f:
             f.write(txt)
 
-    read_text_method = default_read_text_method
+    read_text_method: Callable[[str], str] = default_read_text_method
     """Users of PySTAC can replace the read_text_method in order
     to expand the ability of PySTAC to read different file systems.
     For example, a client of the library might replace this class
@@ -40,7 +45,7 @@ class STAC_IO:
     cloud storage.
     """
 
-    write_text_method = default_write_text_method
+    write_text_method: Callable[[str, str], None] = default_write_text_method
     """Users of PySTAC can replace the write_text_method in order
     to expand the ability of PySTAC to write to different file systems.
     For example, a client of the library might replace this class
@@ -49,13 +54,13 @@ class STAC_IO:
     """
 
     # Replaced in __init__ to account for extension objects.
-    _stac_object_from_dict = None
+    stac_object_from_dict: Optional[Callable[[Dict[str, Any], Optional[str], Optional[Catalog]], STACObject]] = None
 
     # This is set in __init__.py
     _STAC_OBJECT_CLASSES = None
 
     @classmethod
-    def read_text(cls, uri):
+    def read_text(cls, uri: str) -> str:
         """Read text from the given URI.
 
         Args:
@@ -73,7 +78,7 @@ class STAC_IO:
         return cls.read_text_method(uri)
 
     @classmethod
-    def write_text(cls, uri, txt):
+    def write_text(cls, uri: str, txt: str) -> None:
         """Write the given text to a file at the given URI.
 
         Args:
@@ -89,7 +94,7 @@ class STAC_IO:
         cls.write_text_method(uri, txt)
 
     @classmethod
-    def read_json(cls, uri):
+    def read_json(cls, uri: str) -> Dict[str, Any]:
         """Read a dict from the given URI.
 
         Args:
@@ -108,7 +113,7 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri, root=None):
+    def read_stac_object(cls, uri: str, root: Optional[Catalog]=None) -> STACObject:
         """Read a STACObject from a JSON file at the given URI.
 
         Args:
@@ -128,10 +133,10 @@ class STAC_IO:
             with your own implementation.
         """
         d = cls.read_json(uri)
-        return cls.stac_object_from_dict(d, href=uri, root=root)
+        return cls.stac_object_from_dict(d, uri, root)
 
     @classmethod
-    def save_json(cls, uri, json_dict):
+    def save_json(cls, uri: str, json_dict: Dict[str, Any]) -> None:
         """Write a dict to the given URI as JSON.
 
         Args:

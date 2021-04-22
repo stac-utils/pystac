@@ -1,9 +1,9 @@
 # flake8: noqa
+from typing import Dict, List, Any, Optional, cast
+from pystac.stac_object import STACObject
 import pystac
 from pystac.serialization.identify import identify_stac_object
 from pystac.utils import make_absolute_href
-
-from pystac.validation.schema_uri_map import (SchemaUriMap)
 
 
 class STACValidationError(Exception):
@@ -15,7 +15,7 @@ class STACValidationError(Exception):
             validation implementation. For the default JsonSchemaValidator this will a
             the ``jsonschema.ValidationError``.
     """
-    def __init__(self, message, source=None):
+    def __init__(self, message: str, source: Optional[Any]=None):
         super().__init__(message)
         self.source = source
 
@@ -24,7 +24,7 @@ class STACValidationError(Exception):
 from pystac.validation.stac_validator import (STACValidator, JsonSchemaSTACValidator)
 
 
-def validate(stac_object):
+def validate(stac_object: STACObject) -> List[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
@@ -38,14 +38,14 @@ def validate(stac_object):
     Raises:
         STACValidationError
     """
-    validate_dict(stac_dict=stac_object.to_dict(),
+    return validate_dict(stac_dict=stac_object.to_dict(),
                   stac_object_type=stac_object.STAC_OBJECT_TYPE,
                   stac_version=pystac.get_stac_version(),
                   extensions=stac_object.stac_extensions,
                   href=stac_object.get_self_href())
 
 
-def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extensions=None, href=None):
+def validate_dict(stac_dict: Dict[str, Any], stac_object_type: Optional[str]=None, stac_version: Optional[str]=None, extensions: Optional[List[str]]=None, href: Optional[str]=None) -> List[Any]:
     """Validate a stac object serialized as JSON into a dict.
 
     This method delegates to the call to :meth:`pystac.validation.STACValidator.validate`
@@ -78,7 +78,7 @@ def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extension
     if stac_version is None:
         if info is None:
             info = identify_stac_object(stac_dict)
-        stac_version = info.version_range.latest_valid_version()
+        stac_version = str(info.version_range.latest_valid_version())
     if extensions is None:
         if info is None:
             info = identify_stac_object(stac_dict)
@@ -88,7 +88,7 @@ def validate_dict(stac_dict, stac_object_type=None, stac_version=None, extension
                                                         extensions, href)
 
 
-def validate_all(stac_dict, href):
+def validate_all(stac_dict: Dict[str, Any], href: str) -> None:
     """Validate STAC JSON and all contained catalogs, collections and items.
 
     If this stac_dict represents a catalog or collection, this method will
@@ -109,34 +109,34 @@ def validate_all(stac_dict, href):
     # Validate this object
     validate_dict(stac_dict,
                   stac_object_type=info.object_type,
-                  stac_version=info.version_range.latest_valid_version(),
+                  stac_version=str(info.version_range.latest_valid_version()),
                   extensions=info.common_extensions,
                   href=href)
 
     if info.object_type != pystac.STACObjectType.ITEM:
-        links = stac_dict.get('links')
-        if links is not None:
+        if 'links' in stac_dict:
             # Account for 0.6 links
-            if isinstance(links, dict):
-                links = list(links.values())
-
+            if isinstance(stac_dict['links'], Dict[str, Dict[str, Any]]):
+                links: List[Dict[str, Any]] = list(stac_dict['links'].values())
+            else:
+                links: List[Dict[str, Any]] = cast(List[Dict[str, Any]], stac_dict.get('links'))
             for link in links:
                 rel = link.get('rel')
                 if rel in ['item', 'child']:
-                    link_href = make_absolute_href(link.get('href'), start_href=href)
+                    link_href = make_absolute_href(cast(str, link.get('href')), start_href=href)
                     if link_href is not None:
                         d = pystac.STAC_IO.read_json(link_href)
                         validate_all(d, link_href)
 
 
 class RegisteredValidator:
-    _validator = None
+    _validator: Optional[STACValidator] = None
 
     @classmethod
-    def get_validator(cls):
+    def get_validator(cls) -> STACValidator:
         if cls._validator is None:
             try:
-                import jsonschema
+                import jsonschema  # type:ignore
             except ImportError:
                 raise Exception(
                     'Cannot validate with default validator because package "jsonschema" '
@@ -147,19 +147,17 @@ class RegisteredValidator:
         return cls._validator
 
     @classmethod
-    def set_validator(cls, validator):
+    def set_validator(cls, validator: STACValidator) -> None:
         if not issubclass(type(validator), STACValidator):
             raise Exception('Validator must be a subclass of {}'.format(STACValidator))
         cls._validator = validator
 
 
-def set_validator(validator):
+def set_validator(validator: STACValidator):
     """Sets the STACValidator to use in PySTAC.
 
-    TKTK
-
     Args:
-        validator (STACValidator): The STACVlidator implementation to use for
+        validator (STACValidator): The STACValidator implementation to use for
             validation.
     """
     RegisteredValidator.set_validator(validator)

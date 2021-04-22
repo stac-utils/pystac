@@ -1,5 +1,6 @@
+from typing import Any, Dict, List, Optional
 from pystac import Extensions
-from pystac.item import Item
+from pystac.item import Asset, Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
 
@@ -17,23 +18,23 @@ class ProjectionItemExt(ItemExtension):
         Using ProjectionItemExt to directly wrap an item will add the 'proj' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item):
+    def __init__(self, item: Item) -> None:
         if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.PROJECTION]
-        elif Extensions.PROJECTION not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.PROJECTION)
+            item.stac_extensions = [str(Extensions.PROJECTION)]
+        elif str(Extensions.PROJECTION) not in item.stac_extensions:
+            item.stac_extensions.append(str(Extensions.PROJECTION))
 
         self.item = item
 
     def apply(self,
-              epsg,
-              wkt2=None,
-              projjson=None,
-              geometry=None,
-              bbox=None,
-              centroid=None,
-              shape=None,
-              transform=None):
+              epsg: Optional[int],
+              wkt2: Optional[str] = None,
+              projjson: Optional[Dict[str, Any]] = None,
+              geometry: Optional[Dict[str, Any]] = None,
+              bbox: Optional[List[float]] = None,
+              centroid: Optional[Dict[str, float]] = None,
+              shape: Optional[List[int]] = None,
+              transform: Optional[List[float]] = None):
         """Applies Projection extension properties to the extended Item.
 
         Args:
@@ -64,7 +65,7 @@ class ProjectionItemExt(ItemExtension):
         self.transform = transform
 
     @property
-    def epsg(self):
+    def epsg(self) -> Optional[int]:
         """Get or sets the EPSG code of the datasource.
 
         A Coordinate Reference System (CRS) is the data reference system (sometimes called a
@@ -80,10 +81,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_epsg()
 
     @epsg.setter
-    def epsg(self, v):
+    def epsg(self, v: Optional[int]) -> None:
         self.set_epsg(v)
 
-    def get_epsg(self, asset=None):
+    def get_epsg(self, asset: Optional[Asset] = None) -> Optional[int]:
         """Gets an Item or an Asset epsg.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -97,16 +98,16 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:epsg')
 
-    def set_epsg(self, epsg, asset=None):
+    def set_epsg(self, epsg: Optional[int], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset epsg.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        self._set_property('proj:epsg', epsg, asset)
+        self._set_property('proj:epsg', epsg, asset, pop_if_none=False)
 
     @property
-    def wkt2(self):
+    def wkt2(self) -> Optional[str]:
         """Get or sets the WKT2 string representing the Coordinate Reference System (CRS)
         that the proj:geometry and proj:bbox fields represent
 
@@ -121,10 +122,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_wkt2()
 
     @wkt2.setter
-    def wkt2(self, v):
+    def wkt2(self, v: Optional[str]) -> None:
         self.set_wkt2(v)
 
-    def get_wkt2(self, asset=None):
+    def get_wkt2(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset wkt2.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -138,7 +139,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:wkt2')
 
-    def set_wkt2(self, wkt2, asset=None):
+    def set_wkt2(self, wkt2: Optional[str], asset: Optional[Asset] = None):
         """Set an Item or an Asset wkt2.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -147,7 +148,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:wkt2', wkt2, asset)
 
     @property
-    def projjson(self):
+    def projjson(self) -> Optional[Dict[str, Any]]:
         """Get or sets the PROJJSON string representing the Coordinate Reference System (CRS)
         that the proj:geometry and proj:bbox fields represent
 
@@ -165,10 +166,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_projjson()
 
     @projjson.setter
-    def projjson(self, v):
+    def projjson(self, v: Optional[Dict[str, Any]]) -> None:
         self.set_projjson(v)
 
-    def get_projjson(self, asset=None):
+    def get_projjson(self, asset: Optional[Asset] = None) -> Optional[Dict[str, Any]]:
         """Gets an Item or an Asset projjson.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -182,7 +183,9 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:projjson')
 
-    def set_projjson(self, projjson, asset=None):
+    def set_projjson(self,
+                     projjson: Optional[Dict[str, Any]],
+                     asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset projjson.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -191,7 +194,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:projjson', projjson, asset)
 
     @property
-    def geometry(self):
+    def geometry(self) -> Optional[Dict[str, Any]]:
         """Get or sets a Polygon GeoJSON dict representing the footprint of this item.
 
         This dict should be formatted according the Polygon object format specified in
@@ -207,10 +210,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_geometry()
 
     @geometry.setter
-    def geometry(self, v):
+    def geometry(self, v: Optional[Dict[str, Any]]) -> None:
         self.set_geometry(v)
 
-    def get_geometry(self, asset=None):
+    def get_geometry(self, asset: Optional[Asset] = None) -> Optional[Dict[str, Any]]:
         """Gets an Item or an Asset projection geometry.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -224,7 +227,9 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:geometry')
 
-    def set_geometry(self, geometry, asset=None):
+    def set_geometry(self,
+                     geometry: Optional[Dict[str, Any]],
+                     asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset projection geometry.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -233,7 +238,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:geometry', geometry, asset)
 
     @property
-    def bbox(self):
+    def bbox(self) -> Optional[List[float]]:
         """Get or sets the bounding box of the assets represented by this item in the asset
         data CRS.
 
@@ -250,10 +255,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_bbox()
 
     @bbox.setter
-    def bbox(self, v):
+    def bbox(self, v: Optional[List[float]]) -> None:
         self.set_bbox(v)
 
-    def get_bbox(self, asset=None):
+    def get_bbox(self, asset: Optional[Asset] = None) -> Optional[List[float]]:
         """Gets an Item or an Asset projection bbox.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -267,7 +272,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:bbox')
 
-    def set_bbox(self, bbox, asset=None):
+    def set_bbox(self, bbox: Optional[List[float]], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset projection bbox.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -276,7 +281,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:bbox', bbox, asset)
 
     @property
-    def centroid(self):
+    def centroid(self) -> Optional[Dict[str, float]]:
         """Get or sets coordinates representing the centroid of the item in the asset data CRS.
 
         Coordinates are defined in latitude and longitude, even if the data coordinate system
@@ -292,10 +297,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_centroid()
 
     @centroid.setter
-    def centroid(self, v):
+    def centroid(self, v: Optional[Dict[str, float]]) -> None:
         self.set_centroid(v)
 
-    def get_centroid(self, asset=None):
+    def get_centroid(self, asset: Optional[Asset] = None) -> Optional[Dict[str, float]]:
         """Gets an Item or an Asset centroid.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -309,7 +314,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:centroid')
 
-    def set_centroid(self, centroid, asset=None):
+    def set_centroid(self, centroid: Optional[Dict[str, float]], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset centroid.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -318,7 +323,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:centroid', centroid, asset)
 
     @property
-    def shape(self):
+    def shape(self) -> Optional[List[int]]:
         """Get or sets the number of pixels in Y and X directions for the default grid.
 
         The shape is an array of integers that represents the number of pixels in the most
@@ -332,10 +337,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_shape()
 
     @shape.setter
-    def shape(self, v):
+    def shape(self, v: Optional[List[int]]) -> None:
         self.set_shape(v)
 
-    def get_shape(self, asset=None):
+    def get_shape(self, asset: Optional[Asset] = None) -> Optional[List[int]]:
         """Gets an Item or an Asset shape.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -349,7 +354,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:shape')
 
-    def set_shape(self, shape, asset=None):
+    def set_shape(self, shape: Optional[List[int]], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset shape.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -358,7 +363,7 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:shape', shape, asset)
 
     @property
-    def transform(self):
+    def transform(self) -> Optional[List[float]]:
         """Get or sets the the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
@@ -375,10 +380,10 @@ class ProjectionItemExt(ItemExtension):
         return self.get_transform()
 
     @transform.setter
-    def transform(self, v):
+    def transform(self, v: Optional[List[float]]) -> None:
         self.set_transform(v)
 
-    def get_transform(self, asset=None):
+    def get_transform(self, asset: Optional[Asset] = None) -> Optional[List[float]]:
         """Gets an Item or an Asset transform.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -392,7 +397,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:transform')
 
-    def set_transform(self, transform, asset=None):
+    def set_transform(self, transform: Optional[List[float]], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset transform.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -401,11 +406,11 @@ class ProjectionItemExt(ItemExtension):
         self._set_property('proj:transform', transform, asset)
 
     @classmethod
-    def _object_links(cls):
+    def _object_links(cls) -> List[str]:
         return []
 
     @classmethod
-    def from_item(cls, item):
+    def from_item(cls, item: Item) -> "ProjectionItemExt":
         return cls(item)
 
 

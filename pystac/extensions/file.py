@@ -1,7 +1,8 @@
 import enum
+from typing import Any, List, Optional
 
 from pystac import Extensions
-from pystac.item import Item
+from pystac.item import Asset, Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
 
@@ -38,15 +39,19 @@ class FileItemExt(ItemExtension):
         Using FileItemExt to directly wrap an item will add the 'file' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item):
+    def __init__(self, item: Item) -> None:
         if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.FILE]
-        elif Extensions.FILE not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.FILE)
+            item.stac_extensions = [str(Extensions.FILE)]
+        elif str(Extensions.FILE) not in item.stac_extensions:
+            item.stac_extensions.append(str(Extensions.FILE))
 
         self.item = item
 
-    def apply(self, data_type=None, size=None, nodata=None, checksum=None):
+    def apply(self,
+              data_type: Optional[FileDataType] = None,
+              size: Optional[int] = None,
+              nodata: Optional[List[Any]] = None,
+              checksum: Optional[str] = None):
         """Applies file extension properties to the extended Item.
 
         Args:
@@ -61,7 +66,7 @@ class FileItemExt(ItemExtension):
         self.nodata = nodata
         self.checksum = checksum
 
-    def _set_property(self, key, value, asset):
+    def _set_property(self, key: str, value: Any, asset: Optional[Asset]) -> None:
         target = self.item.properties if asset is None else asset.properties
         if value is None:
             target.pop(key, None)
@@ -69,7 +74,7 @@ class FileItemExt(ItemExtension):
             target[key] = value
 
     @property
-    def data_type(self):
+    def data_type(self) -> Optional[FileDataType]:
         """Get or sets the data_type of the file.
 
         Returns:
@@ -78,10 +83,10 @@ class FileItemExt(ItemExtension):
         return self.get_data_type()
 
     @data_type.setter
-    def data_type(self, v):
+    def data_type(self, v: Optional[FileDataType]) -> None:
         self.set_data_type(v)
 
-    def get_data_type(self, asset=None):
+    def get_data_type(self, asset: Optional[Asset] = None) -> Optional[FileDataType]:
         """Gets an Item or an Asset data_type.
 
         If an Asset is supplied and the data_type property exists on the Asset,
@@ -98,7 +103,9 @@ class FileItemExt(ItemExtension):
         if data_type is not None:
             return FileDataType(data_type)
 
-    def set_data_type(self, data_type, asset=None):
+    def set_data_type(self,
+                      data_type: Optional[FileDataType],
+                      asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset data_type.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -107,7 +114,7 @@ class FileItemExt(ItemExtension):
         self._set_property('file:data_type', data_type.value, asset)
 
     @property
-    def size(self):
+    def size(self) -> Optional[int]:
         """Get or sets the size in bytes of the file
 
         Returns:
@@ -116,24 +123,24 @@ class FileItemExt(ItemExtension):
         return self.get_size()
 
     @size.setter
-    def size(self, v):
+    def size(self, v: Optional[int]) -> None:
         self.set_size(v)
 
-    def get_size(self, asset=None):
+    def get_size(self, asset: Optional[Asset]=None) -> Optional[int]:
         """Gets an Item or an Asset file size.
 
         If an Asset is supplied and the Item property exists on the Asset,
         returns the Asset's value. Otherwise returns the Item's value
 
         Returns:
-            float
+            int
         """
         if asset is None or 'file:size' not in asset.properties:
             return self.item.properties.get('file:size')
         else:
             return asset.properties.get('file:size')
 
-    def set_size(self, size, asset=None):
+    def set_size(self, size: Optional[int], asset: Optional[Asset]=None) -> None:
         """Set an Item or an Asset size.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -142,19 +149,15 @@ class FileItemExt(ItemExtension):
         self._set_property('file:size', size, asset)
 
     @property
-    def nodata(self):
-        """Get or sets the no data values
-
-        Returns:
-            int or None
-        """
+    def nodata(self) -> Optional[List[Any]]:
+        """Get or sets the no data values"""
         return self.get_nodata()
 
     @nodata.setter
-    def nodata(self, v):
+    def nodata(self, v: Optional[List[Any]])-> None:
         self.set_nodata(v)
 
-    def get_nodata(self, asset=None):
+    def get_nodata(self, asset: Optional[Asset]=None) -> Optional[List[Any]]:
         """Gets an Item or an Asset nodata values.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -168,7 +171,7 @@ class FileItemExt(ItemExtension):
         else:
             return asset.properties.get('file:nodata')
 
-    def set_nodata(self, nodata, asset=None):
+    def set_nodata(self, nodata: Optional[List[Any]], asset: Optional[Asset]=None) -> None:
         """Set an Item or an Asset nodata values.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -177,7 +180,7 @@ class FileItemExt(ItemExtension):
         self._set_property('file:nodata', nodata, asset)
 
     @property
-    def checksum(self):
+    def checksum(self) -> Optional[str]:
         """Get or sets the checksum
 
         Returns:
@@ -186,24 +189,21 @@ class FileItemExt(ItemExtension):
         return self.get_checksum()
 
     @checksum.setter
-    def checksum(self, v):
+    def checksum(self, v: Optional[str]) -> None:
         self.set_checksum(v)
 
-    def get_checksum(self, asset=None):
+    def get_checksum(self, asset: Optional[Asset]=None) -> Optional[str]:
         """Gets an Item or an Asset checksum.
 
         If an Asset is supplied and the Item property exists on the Asset,
         returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            list[object]
         """
         if asset is None or 'file:checksum' not in asset.properties:
             return self.item.properties.get('file:checksum')
         else:
             return asset.properties.get('file:checksum')
 
-    def set_checksum(self, checksum, asset=None):
+    def set_checksum(self, checksum: Optional[str], asset: Optional[Asset]=None) -> None:
         """Set an Item or an Asset checksum.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -211,15 +211,15 @@ class FileItemExt(ItemExtension):
         """
         self._set_property('file:checksum', checksum, asset)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<FileItemExt Item id={}>'.format(self.item.id)
 
     @classmethod
-    def _object_links(cls):
+    def _object_links(cls) -> List[str]:
         return []
 
     @classmethod
-    def from_item(cls, item):
+    def from_item(cls, item: Item) -> "FileItemExt":
         return cls(item)
 
 

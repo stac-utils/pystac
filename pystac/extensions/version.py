@@ -5,10 +5,10 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
 Note that the version/schema.json does not know about the links.
 """
 
-from typing import List, Optional
+from typing import List, Optional, cast
 
 import pystac
-from pystac import Extensions
+from pystac import Extensions, STACError
 from pystac.extensions import base
 
 # STAC fields - These are unusual for an extension in that they do not have
@@ -78,7 +78,10 @@ class VersionItemExt(base.ItemExtension):
         Returns:
             str
         """
-        return self.item.properties.get(VERSION)
+        result = self.item.properties.get(VERSION)
+        if result is None:
+            raise STACError(f"Item {self.item.id} has version extension but no version property")
+        return result
 
     @version.setter
     def version(self, v: str) -> None:
@@ -106,7 +109,10 @@ class VersionItemExt(base.ItemExtension):
         Returns:
             Item or None
         """
-        return next(self.item.get_stac_objects(LATEST), None)
+        result = next(self.item.get_stac_objects(LATEST), None)
+        if result is None:
+            return None
+        return cast(pystac.Item, result)
 
     @latest.setter
     def latest(self, source_item: pystac.Item) -> None:
@@ -121,7 +127,10 @@ class VersionItemExt(base.ItemExtension):
         Returns:
             Item or None
         """
-        return next(self.item.get_stac_objects(PREDECESSOR), None)
+        result = next(self.item.get_stac_objects(PREDECESSOR), None)
+        if result is None:
+            return None
+        return cast(pystac.Item, result)
 
     @predecessor.setter
     def predecessor(self, source_item: pystac.Item) -> None:
@@ -136,7 +145,10 @@ class VersionItemExt(base.ItemExtension):
         Returns:
             Item or None
         """
-        return next(self.item.get_stac_objects(SUCCESSOR), None)
+        result = next(self.item.get_stac_objects(SUCCESSOR), None)
+        if result is None:
+            return None
+        return cast(pystac.Item, result)
 
     @successor.setter
     def successor(self, source_item: pystac.Item) -> None:
@@ -179,10 +191,13 @@ class VersionCollectionExt(base.CollectionExtension):
         Returns:
             str
         """
-        return self.collection.extra_fields.get(VERSION)
+        result = self.collection.extra_fields.get(VERSION)
+        if result is None:
+            raise STACError(f"Collection {self.collection.id} does not have property {VERSION}")
+        return result
 
     @version.setter
-    def version(self, v) -> None:
+    def version(self, v: str) -> None:
         self.collection.extra_fields[VERSION] = v
 
     @property
@@ -207,10 +222,13 @@ class VersionCollectionExt(base.CollectionExtension):
         Returns:
             Collection or None
         """
-        return next(self.collection.get_stac_objects(LATEST), None)
+        result = next(self.collection.get_stac_objects(LATEST), None)
+        if result is None:
+            return None
+        return cast(pystac.Collection, result)
 
     @latest.setter
-    def latest(self, source_collection) -> None:
+    def latest(self, source_collection: pystac.Collection) -> None:
         self.collection.clear_links(LATEST)
         if source_collection:
             self.collection.add_link(pystac.Link(LATEST, source_collection, MEDIA_TYPE))
@@ -222,10 +240,13 @@ class VersionCollectionExt(base.CollectionExtension):
         Returns:
             Collection or None
         """
-        return next(self.collection.get_stac_objects(PREDECESSOR), None)
+        result = next(self.collection.get_stac_objects(PREDECESSOR), None)
+        if result is None:
+            return None
+        return cast(pystac.Collection, result)
 
     @predecessor.setter
-    def predecessor(self, source_collection) -> None:
+    def predecessor(self, source_collection: pystac.Collection) -> None:
         self.collection.clear_links(PREDECESSOR)
         if source_collection:
             self.collection.add_link(pystac.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
@@ -237,10 +258,13 @@ class VersionCollectionExt(base.CollectionExtension):
         Returns:
             Collection or None
         """
-        return next(self.collection.get_stac_objects(SUCCESSOR), None)
+        result = next(self.collection.get_stac_objects(SUCCESSOR), None)
+        if result is None:
+            return None
+        return cast(pystac.Collection, result)
 
     @successor.setter
-    def successor(self, source_collection) -> None:
+    def successor(self, source_collection: pystac.Collection) -> None:
         self.collection.clear_links(SUCCESSOR)
         if source_collection:
             self.collection.add_link(pystac.Link(SUCCESSOR, source_collection, MEDIA_TYPE))

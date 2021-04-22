@@ -1,12 +1,16 @@
 import json
 from abc import (ABC, abstractmethod)
+from pystac.stac_object import STACObjectType
+from typing import Any, Dict, List, Optional, Tuple
 
 from pystac import STAC_IO
 from pystac.validation import STACValidationError
-from pystac.validation.schema_uri_map import DefaultSchemaUriMap
+from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
 try:
     import jsonschema
+    import jsonschema.validators
+    import jsonschema.exceptions
 except ImportError:
     jsonschema = None
 
@@ -19,7 +23,11 @@ class STACValidator(ABC):
     pystac by using the :func:`~pystac.validation.set_validator` method.
     """
     @abstractmethod
-    def validate_core(self, stac_dict, stac_object_type, stac_version, href=None):
+    def validate_core(self,
+                      stac_dict: Dict[str, Any],
+                      stac_object_type: str,
+                      stac_version: str,
+                      href: Optional[str] = None):
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -35,11 +43,11 @@ class STACValidator(ABC):
 
     @abstractmethod
     def validate_extension(self,
-                           stac_dict,
-                           stac_object_type,
-                           stac_version,
-                           extension_id,
-                           href=None):
+                           stac_dict: Dict[str, Any],
+                           stac_object_type: str,
+                           stac_version: str,
+                           extension_id: str,
+                           href: Optional[str] = None):
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.
@@ -54,7 +62,12 @@ class STACValidator(ABC):
         """
         pass
 
-    def validate(self, stac_dict, stac_object_type, stac_version, extensions, href=None):
+    def validate(self,
+                 stac_dict: Dict[str, Any],
+                 stac_object_type: str,
+                 stac_version: str,
+                 extensions: List[str],
+                 href: Optional[str] = None):
         """Validate a STAC object JSON.
 
         Args:
@@ -66,11 +79,11 @@ class STACValidator(ABC):
             href (str): Optional href of the STAC object being validated.
 
         Returns:
-            List[Object]: List of return values from the validation calls for the
+            List[Any]: List of return values from the validation calls for the
                core object and any extensions. Element type is specific to the
                STACValidator implementation.
         """
-        results = []
+        results: List[Any] = []
 
         # Pass the dict through JSON serialization and parsing, otherwise
         # some valid properties can be marked as invalid (e.g. tuples in
@@ -105,7 +118,7 @@ class JsonSchemaSTACValidator(STACValidator):
     Note:
     This class requires the ``jsonschema`` library to be installed.
     """
-    def __init__(self, schema_uri_map=None):
+    def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None):
         if jsonschema is None:
             raise Exception('Cannot instantiate, requires jsonschema package')
 
@@ -114,9 +127,9 @@ class JsonSchemaSTACValidator(STACValidator):
         else:
             self.schema_uri_map = DefaultSchemaUriMap()
 
-        self.schema_cache = {}
+        self.schema_cache: Dict[str, Dict[str, Any]] = {}
 
-    def get_schema_from_uri(self, schema_uri):
+    def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
         if schema_uri not in self.schema_cache:
             s = json.loads(STAC_IO.read_text(schema_uri))
             self.schema_cache[schema_uri] = s
@@ -129,14 +142,16 @@ class JsonSchemaSTACValidator(STACValidator):
 
         return (schema, resolver)
 
-    def _validate_from_uri(self, stac_dict, schema_uri):
+    def _validate_from_uri(self, stac_dict: Dict[str, Any], schema_uri: str) -> None:
         schema, resolver = self.get_schema_from_uri(schema_uri)
-        jsonschema.validate(instance=stac_dict, schema=schema, resolver=resolver)
+        jsonschema.validate(instance=stac_dict, schema=schema, resolver=resolver)  # type:ignore
         for uri in resolver.store:
             if uri not in self.schema_cache:
                 self.schema_cache[uri] = resolver.store[uri]
 
-    def _get_error_message(self, schema_uri, stac_object_type, extension_id, href, stac_id):
+    def _get_error_message(self, schema_uri: str, stac_object_type: STACObjectType,
+                           extension_id: Optional[str], href: Optional[str],
+                           stac_id: Optional[str]) -> str:
         s = 'Validation failed for {} '.format(stac_object_type)
         if href is not None:
             s += 'at {} '.format(href)
@@ -148,7 +163,11 @@ class JsonSchemaSTACValidator(STACValidator):
 
         return s
 
-    def validate_core(self, stac_dict, stac_object_type, stac_version, href=None):
+    def validate_core(self,
+                      stac_dict: Dict[str, Any],
+                      stac_object_type: STACObjectType,
+                      stac_version: str,
+                      href: Optional[str] = None):
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -178,11 +197,11 @@ class JsonSchemaSTACValidator(STACValidator):
             raise STACValidationError(msg, source=e) from e
 
     def validate_extension(self,
-                           stac_dict,
-                           stac_object_type,
-                           stac_version,
-                           extension_id,
-                           href=None):
+                           stac_dict: Dict[str, Any],
+                           stac_object_type: STACObjectType,
+                           stac_version: str,
+                           extension_id: str,
+                           href: Optional[str]=None):
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.

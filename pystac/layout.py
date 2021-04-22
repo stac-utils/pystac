@@ -1,9 +1,14 @@
 from abc import (abstractmethod, ABC)
 from collections import OrderedDict
 import os
+from pystac.collection import Collection
 from string import Formatter
+from typing import Any, Callable, Dict, List, Optional
 
 import pystac
+from pystac.catalog import Catalog
+from pystac.item import Item
+from pystac.stac_object import STACObject
 
 
 class TemplateError(Exception):
@@ -66,12 +71,12 @@ class LayoutTemplate:
     # Special template vars specific to Items
     ITEM_TEMPLATE_VARS = ['date', 'year', 'month', 'day', 'collection']
 
-    def __init__(self, template, defaults=None):
+    def __init__(self, template: str, defaults: Dict[str, str] = None) -> None:
         self.template = template
         self.defaults = defaults or {}
 
         # Generate list of template vars
-        template_vars = []
+        template_vars: List[str] = []
         for formatter_parse_result in Formatter().parse(template):
             v = formatter_parse_result[1]
             if v is not None:
@@ -80,9 +85,9 @@ class LayoutTemplate:
                 template_vars.append(v)
         self.template_vars = template_vars
 
-    def _get_template_value(self, stac_object, template_var):
+    def _get_template_value(self, stac_object: STACObject, template_var: str) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
-            if stac_object.STAC_OBJECT_TYPE == pystac.STACObjectType.ITEM:
+            if isinstance(stac_object, Item):
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
@@ -121,17 +126,18 @@ class LayoutTemplate:
         try:
             if hasattr(stac_object, props[0]):
                 prop_location = stac_object
-            elif hasattr(
-                    stac_object,
-                    "properties") and stac_object.properties and props[0] in stac_object.properties:
-                prop_location = stac_object.properties
-            elif hasattr(stac_object, "extra_fields"
-                         ) and stac_object.extra_fields and props[0] in stac_object.extra_fields:
-                prop_location = stac_object.extra_fields
+            elif hasattr(stac_object, "properties"):
+                obj_props: Optional[Dict[str, Any]] = stac_object.properties  # type:ignore
+                if obj_props is not None and props[0] in obj_props:
+                    prop_location = obj_props
+            elif hasattr(stac_object, "extra_fields"):
+                extra_fields: Optional[Dict[str, Any]] = stac_object.extra_fields  # type:ignore
+                if extra_fields is not None and props[0] in extra_fields:
+                    prop_location = extra_fields
             else:
                 raise error
 
-            v = prop_location
+            v: Any = prop_location
             for prop in template_var.split('.'):
                 if type(v) is dict:
                     if prop not in v:
@@ -148,7 +154,7 @@ class LayoutTemplate:
 
         return v
 
-    def get_template_values(self, stac_object):
+    def get_template_values(self, stac_object: STACObject) -> Dict[str, Any]:
         """Gets a dictionary of template variables to values derived from
         the given stac_object. If the template vars cannot be found in the
         stac object, and defaults was supplied to this template, a default
@@ -171,7 +177,7 @@ class LayoutTemplate:
         return OrderedDict([(k, self._get_template_value(stac_object, k))
                             for k in self.template_vars])
 
-    def substitute(self, stac_object):
+    def substitute(self, stac_object: STACObject) -> str:
         """Substitutes the values derived from
         :meth:`~pystac.layout.LayoutTemplate.get_template_values` into
         the template string for this template.
@@ -181,7 +187,7 @@ class LayoutTemplate:
                 variable values from.
 
         Returns:
-            [str]: The original template supplied to this LayoutTemplate
+            str: The original template supplied to this LayoutTemplate
                 with template variables replaced by the values derived
                 from this stac object.
 
@@ -200,27 +206,26 @@ class LayoutTemplate:
 
 class HrefLayoutStrategy(ABC):
     """Base class for HREF Layout strategies."""
-    def get_href(self, stac_object, parent_dir, is_root=False):
-        stac_object_type = stac_object.STAC_OBJECT_TYPE
-        if stac_object_type == pystac.STACObjectType.CATALOG:
+    def get_href(self, stac_object: STACObject, parent_dir: str, is_root: bool = False) -> str:
+        if isinstance(stac_object, Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
-        elif stac_object_type == pystac.STACObjectType.COLLECTION:
+        elif isinstance(stac_object, Collection):
             return self.get_collection_href(stac_object, parent_dir, is_root)
-        elif stac_object_type == pystac.STACObjectType.ITEM:
+        elif isinstance(stac_object, Item):
             return self.get_item_href(stac_object, parent_dir)
         else:
-            raise pystac.STACError('Unknown STAC object type {}'.format(stac_object_type))
+            raise pystac.STACError('Unknown STAC object type {}'.format(stac_object))
 
     @abstractmethod
-    def get_catalog_href(self, cat, parent_dir, is_root):
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         pass
 
     @abstractmethod
-    def get_collection_href(self, col, parent_dir, is_root):
+    def get_collection_href(self, col: Collection, parent_dir: str, is_root: bool) -> str:
         pass
 
     @abstractmethod
-    def get_item_href(self, item, parent_dir):
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         pass
 
 
@@ -245,32 +250,32 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
     def __init__(self,
-                 catalog_func=None,
-                 collection_func=None,
-                 item_func=None,
-                 fallback_strategy=None):
+                 catalog_func: Optional[Callable[[Catalog, str, bool], str]] = None,
+                 collection_func: Optional[Callable[[Collection, str, bool], str]] = None,
+                 item_func: Optional[Callable[[Item, str], str]] = None,
+                 fallback_strategy: Optional[HrefLayoutStrategy] = None):
         self.item_func = item_func
         self.collection_func = collection_func
         self.catalog_func = catalog_func
         if fallback_strategy is None:
             fallback_strategy = BestPracticesLayoutStrategy()
-        self.fallback_strategy = fallback_strategy
+        self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
 
-    def get_catalog_href(self, cat, parent_dir, is_root):
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         if self.catalog_func is not None:
             result = self.catalog_func(cat, parent_dir, is_root)
             if result is not None:
                 return result
         return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
 
-    def get_collection_href(self, col, parent_dir, is_root):
+    def get_collection_href(self, col: Collection, parent_dir: str, is_root: bool) -> str:
         if self.collection_func is not None:
             result = self.collection_func(col, parent_dir, is_root)
             if result is not None:
                 return result
         return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
 
-    def get_item_href(self, item, parent_dir):
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         if self.item_func is not None:
             result = self.item_func(item, parent_dir)
             if result is not None:
@@ -303,10 +308,10 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
     def __init__(self,
-                 catalog_template=None,
-                 collection_template=None,
-                 item_template=None,
-                 fallback_strategy=None):
+                 catalog_template: Optional[str] = None,
+                 collection_template: Optional[str] = None,
+                 item_template: Optional[str] = None,
+                 fallback_strategy: Optional[HrefLayoutStrategy] = None):
         self.catalog_template = LayoutTemplate(
             catalog_template) if catalog_template is not None else None
         self.collection_template = LayoutTemplate(
@@ -315,9 +320,9 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
         if fallback_strategy is None:
             fallback_strategy = BestPracticesLayoutStrategy()
-        self.fallback_strategy = fallback_strategy
+        self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
 
-    def get_catalog_href(self, cat, parent_dir, is_root):
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         if is_root or self.catalog_template is None:
             return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
         else:
@@ -327,7 +332,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
             return os.path.join(parent_dir, template_path)
 
-    def get_collection_href(self, col, parent_dir, is_root):
+    def get_collection_href(self, col: Collection, parent_dir: str, is_root: bool) -> str:
         if is_root or self.collection_template is None:
             return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
         else:
@@ -337,7 +342,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
             return os.path.join(parent_dir, template_path)
 
-    def get_item_href(self, item, parent_dir):
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         if self.item_template is None:
             return self.fallback_strategy.get_item_href(item, parent_dir)
         else:
@@ -362,7 +367,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
 
     All paths are appended to the parent directory.
     """
-    def get_catalog_href(self, cat, parent_dir, is_root):
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         if is_root:
             cat_root = parent_dir
         else:
@@ -370,7 +375,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
 
         return os.path.join(cat_root, cat.DEFAULT_FILE_NAME)
 
-    def get_collection_href(self, col, parent_dir, is_root):
+    def get_collection_href(self, col: Collection, parent_dir: str, is_root: bool) -> str:
         if is_root:
             col_root = parent_dir
         else:
@@ -378,7 +383,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
 
         return os.path.join(col_root, col.DEFAULT_FILE_NAME)
 
-    def get_item_href(self, item, parent_dir):
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         item_root = os.path.join(parent_dir, '{}'.format(item.id))
 
         return os.path.join(item_root, '{}.json'.format(item.id))

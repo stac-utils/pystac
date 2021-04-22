@@ -8,7 +8,6 @@ from typing import List, Optional
 
 import pystac
 from pystac import Extensions
-from pystac import item
 from pystac.extensions import base
 
 ORBIT_STATE: str = 'sat:orbit_state'
@@ -16,9 +15,9 @@ RELATIVE_ORBIT: str = 'sat:relative_orbit'
 
 
 class OrbitState(enum.Enum):
-    ASCENDING: str = 'ascending'
-    DESCENDING: str = 'descending'
-    GEOSTATIONARY: str = 'geostationary'
+    ASCENDING = 'ascending'
+    DESCENDING = 'descending'
+    GEOSTATIONARY = 'geostationary'
 
 
 class SatItemExt(base.ItemExtension):
@@ -36,10 +35,10 @@ class SatItemExt(base.ItemExtension):
     """
     item: pystac.Item
 
-    def __init__(self, an_item: item.Item) -> None:
+    def __init__(self, an_item: pystac.Item) -> None:
         self.item = an_item
 
-    def apply(self, orbit_state: Optional[OrbitState] = None, relative_orbit: Optional[str] = None):
+    def apply(self, orbit_state: Optional[OrbitState] = None, relative_orbit: Optional[int] = None):
         """Applies ext extension properties to the extended Item.
 
         Must specify at least one of orbit_state or relative_orbit.
@@ -58,11 +57,11 @@ class SatItemExt(base.ItemExtension):
             self.relative_orbit = relative_orbit
 
     @classmethod
-    def from_item(cls, an_item: item.Item):
+    def from_item(cls, an_item: pystac.Item):
         return cls(an_item)
 
     @classmethod
-    def _object_links(cls) -> List:
+    def _object_links(cls) -> List[str]:
         return []
 
     @property
@@ -74,7 +73,7 @@ class SatItemExt(base.ItemExtension):
         """
         if ORBIT_STATE not in self.item.properties:
             return
-        return OrbitState(self.item.properties.get(ORBIT_STATE))
+        return OrbitState(self.item.properties[ORBIT_STATE])
 
     @orbit_state.setter
     def orbit_state(self, v: Optional[OrbitState]) -> None:
@@ -87,7 +86,7 @@ class SatItemExt(base.ItemExtension):
             self.item.properties[ORBIT_STATE] = v.value
 
     @property
-    def relative_orbit(self) -> int:
+    def relative_orbit(self) -> Optional[int]:
         """Get or sets a relative orbit number of the item.
 
         Returns:

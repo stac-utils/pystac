@@ -1,7 +1,10 @@
+from datetime import datetime as Datetime
+from typing import List, Optional
+
 import pystac
 from pystac import Extensions
 from pystac.extensions.base import (ExtendedObject, ExtensionDefinition, ItemExtension)
-from pystac.item import Item
+from pystac.item import Asset, Item
 from pystac.utils import datetime_to_str, str_to_datetime
 
 
@@ -19,23 +22,26 @@ class TimestampsItemExt(ItemExtension):
         Using TimestampsItemExt to directly wrap an item will add the 'timestamps'
         extension ID to the item's stac_extensions.
     """
-    def __init__(self, item):
+    def __init__(self, item: Item) -> None:
         if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.TIMESTAMPS]
-        elif Extensions.TIMESTAMPS not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.TIMESTAMPS)
+            item.stac_extensions = [str(Extensions.TIMESTAMPS)]
+        elif str(Extensions.TIMESTAMPS) not in item.stac_extensions:
+            item.stac_extensions.append(str(Extensions.TIMESTAMPS))
 
         self.item = item
 
     @classmethod
-    def from_item(cls, item):
+    def from_item(cls, item: Item) -> "TimestampsItemExt":
         return cls(item)
 
     @classmethod
-    def _object_links(cls):
+    def _object_links(cls) -> List[str]:
         return []
 
-    def apply(self, published=None, expires=None, unpublished=None):
+    def apply(self,
+              published: Optional[Datetime] = None,
+              expires: Optional[Datetime] = None,
+              unpublished: Optional[Datetime] = None):
         """Applies timestamps extension properties to the extended Item.
 
         Args:
@@ -53,7 +59,7 @@ class TimestampsItemExt(ItemExtension):
         self.expires = expires
         self.unpublished = unpublished
 
-    def _timestamp_getter(self, key, asset=None):
+    def _timestamp_getter(self, key: str, asset: Optional[Asset] = None) -> Optional[Datetime]:
         if asset is not None and key in asset.properties:
             timestamp_str = asset.properties.get(key)
         else:
@@ -65,13 +71,18 @@ class TimestampsItemExt(ItemExtension):
 
         return timestamp
 
-    def _timestamp_setter(self, timestamp, key, asset=None):
+    def _timestamp_setter(self,
+                          timestamp: Optional[Datetime],
+                          key: str,
+                          asset: Optional[Asset] = None):
         if timestamp is not None:
-            timestamp = datetime_to_str(timestamp)
-        self._set_property(key, timestamp, asset)
+            value = datetime_to_str(timestamp)
+        else:
+            value = None
+        self._set_property(key, value, asset)
 
     @property
-    def published(self):
+    def published(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
             the date and time that the corresponding data
             was published the first time.
@@ -82,10 +93,10 @@ class TimestampsItemExt(ItemExtension):
         return self.get_published()
 
     @published.setter
-    def published(self, v):
+    def published(self, v: Optional[Datetime]) -> None:
         self.set_published(v)
 
-    def get_published(self, asset=None):
+    def get_published(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Get an Item or Asset published datetime
 
         If an Asset is supplied and the published property exists on the Asset,
@@ -100,7 +111,7 @@ class TimestampsItemExt(ItemExtension):
         """
         return self._timestamp_getter('published', asset)
 
-    def set_published(self, published, asset=None):
+    def set_published(self, published: Optional[Datetime], asset: Optional[Asset] = None) -> None:
         """Set an Item or asset published datetime
 
         If an Asset is supplied, sets the property on the Asset.
@@ -109,7 +120,7 @@ class TimestampsItemExt(ItemExtension):
         self._timestamp_setter(published, 'published', asset)
 
     @property
-    def expires(self):
+    def expires(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
             the date and time the corresponding data
             expires (is not valid any longer).
@@ -120,10 +131,10 @@ class TimestampsItemExt(ItemExtension):
         return self.get_expires()
 
     @expires.setter
-    def expires(self, v):
+    def expires(self, v: Optional[Datetime]) -> None:
         self.set_expires(v)
 
-    def get_expires(self, asset=None):
+    def get_expires(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Get an Item or Asset expires datetime
 
         If an Asset is supplied and the expires property exists on the Asset,
@@ -138,7 +149,7 @@ class TimestampsItemExt(ItemExtension):
         """
         return self._timestamp_getter('expires', asset)
 
-    def set_expires(self, expires, asset=None):
+    def set_expires(self, expires: Optional[Datetime], asset: Optional[Asset] = None) -> None:
         """Set an Item or asset expires datetime
 
         If an Asset is supplied, sets the property on the Asset.
@@ -147,7 +158,7 @@ class TimestampsItemExt(ItemExtension):
         self._timestamp_setter(expires, 'expires', asset)
 
     @property
-    def unpublished(self):
+    def unpublished(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
         the Date and time the corresponding data was unpublished.
 
@@ -157,10 +168,10 @@ class TimestampsItemExt(ItemExtension):
         return self.get_unpublished()
 
     @unpublished.setter
-    def unpublished(self, v):
+    def unpublished(self, v: Optional[Datetime]) -> None:
         self.set_unpublished(v)
 
-    def get_unpublished(self, asset=None):
+    def get_unpublished(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Get an Item or Asset unpublished datetime
 
         If an Asset is supplied and the unpublished property exists on the Asset,
@@ -175,7 +186,9 @@ class TimestampsItemExt(ItemExtension):
         """
         return self._timestamp_getter('unpublished', asset)
 
-    def set_unpublished(self, unpublished, asset=None):
+    def set_unpublished(self,
+                        unpublished: Optional[Datetime],
+                        asset: Optional[Asset] = None) -> None:
         """Set an Item or asset unpublished datetime
 
         If an Asset is supplied, sets the property on the Asset.

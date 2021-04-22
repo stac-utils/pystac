@@ -1,6 +1,11 @@
 from copy import copy
+from pystac.item import Item
+from pystac.catalog import Catalog
+from pystac.collection import Collection
+from typing import Any, Dict, Optional, Union, cast
 
 import pystac
+from pystac.stac_object import STACObject
 from pystac import STACError
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
@@ -50,15 +55,20 @@ class Link:
             to resolve objects, and will create absolute HREFs from relative HREFs against
             the owner's self HREF.
     """
-    def __init__(self, rel, target, media_type=None, title=None, properties=None):
+    def __init__(self,
+                 rel: str,
+                 target: Union[str, STACObject],
+                 media_type: Optional[str] = None,
+                 title: Optional[str] = None,
+                 properties: Optional[Dict[str, Any]] = None) -> None:
         self.rel = rel
-        self.target = target  # An object or an href
+        self.target: Union[str, STACObject] = target  # An object or an href
         self.media_type = media_type
         self.title = title
         self.properties = properties
         self.owner = None
 
-    def set_owner(self, owner):
+    def set_owner(self, owner: STACObject) -> "Link":
         """Sets the owner of this link.
 
         Args:
@@ -67,7 +77,7 @@ class Link:
         self.owner = owner
         return self
 
-    def get_href(self):
+    def get_href(self) -> Optional[str]:
         """Gets the HREF for this link.
 
         Returns:
@@ -78,9 +88,9 @@ class Link:
         """
         # get the self href
         if self.is_resolved():
-            href = self.target.get_self_href()
+            href = cast(STACObject, self.target).get_self_href()
         else:
-            href = self.target
+            href = cast(Optional[str], self.target)
 
         if href and is_absolute_href(href) and self.owner and self.owner.get_root():
             root = self.owner.get_root()
@@ -88,11 +98,13 @@ class Link:
                 pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
             # if a hierarchical link with an owner and root, and relative catalog
             if root.is_relative() and self.rel in rel_links:
-                href = make_relative_href(href, self.owner.get_self_href())
+                owner_href = self.owner.get_self_href()
+                if owner_href is not None:
+                    href = make_relative_href(href, owner_href)
 
         return href
 
-    def get_absolute_href(self):
+    def get_absolute_href(self) -> Optional[str]:
         """Gets the absolute href for this link, if possible.
 
         Returns:
@@ -101,11 +113,11 @@ class Link:
             and has an unresolved target, this will return a relative HREF.
         """
         if self.is_resolved():
-            href = self.target.get_self_href()
+            href = cast(STACObject, self.target).get_self_href()
         else:
-            href = self.target
+            href = cast(Optional[str], self.target)
 
-        if self.owner is not None:
+        if href is not None and self.owner is not None:
             href = make_absolute_href(href, self.owner.get_self_href())
 
         return href
@@ -113,7 +125,7 @@ class Link:
     def __repr__(self):
         return '<Link rel={} target={}>'.format(self.rel, self.target)
 
-    def resolve_stac_object(self, root=None):
+    def resolve_stac_object(self, root: Optional[Catalog]=None) -> "Link":
         """Resolves a STAC object from the HREF of this link, if the link is not
         already resolved.
 
@@ -153,7 +165,7 @@ class Link:
 
         self.target = obj
 
-        if self.owner and self.rel in ['child', 'item']:
+        if self.owner and self.rel in ['child', 'item'] and isinstance(self.owner, Catalog):
             self.target.set_parent(self.owner)
 
         return self
@@ -166,14 +178,14 @@ class Link:
         """
         return not isinstance(self.target, str)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
         Returns:
-            dict: A serializion of the Link that can be written out as JSON.
+            dict: A serialization of the Link that can be written out as JSON.
         """
 
-        d = {'rel': self.rel}
+        d: Dict[str, Any] = {'rel': self.rel}
 
         d['href'] = self.get_href()
 
@@ -202,7 +214,7 @@ class Link:
         return Link(rel=self.rel, target=self.target, media_type=self.media_type, title=self.title)
 
     @staticmethod
-    def from_dict(d):
+    def from_dict(d: Dict[str, Any]) -> "Link":
         """Deserializes a Link from a dict.
 
         Args:
@@ -224,31 +236,31 @@ class Link:
         return Link(rel=rel, target=href, media_type=media_type, title=title, properties=properties)
 
     @staticmethod
-    def root(c):
+    def root(c: Catalog) -> "Link":
         """Creates a link to a root Catalog or Collection."""
         return Link('root', c, media_type='application/json')
 
     @staticmethod
-    def parent(c):
+    def parent(c: Catalog) -> "Link":
         """Creates a link to a parent Catalog or Collection."""
         return Link('parent', c, media_type='application/json')
 
     @staticmethod
-    def collection(c):
+    def collection(c: Collection) -> "Link":
         """Creates a link to an item's Collection."""
         return Link('collection', c, media_type='application/json')
 
     @staticmethod
-    def self_href(href):
+    def self_href(href: str) -> "Link":
         """Creates a self link to a file's location."""
         return Link('self', href, media_type='application/json')
 
     @staticmethod
-    def child(c, title=None):
+    def child(c: Catalog, title: Optional[str]=None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
         return Link('child', c, title=title, media_type='application/json')
 
     @staticmethod
-    def item(item, title=None):
+    def item(item: Item, title: Optional[str]=None) -> "Link":
         """Creates a link to an Item."""
         return Link('item', item, title=title, media_type='application/json')

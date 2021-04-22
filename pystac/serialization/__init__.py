@@ -1,13 +1,15 @@
 # flake8: noqa
-from pystac import (Catalog, Collection, Item, Extensions, STACObjectType)
+from pystac.stac_object import STACObject
+from typing import Any, Dict, Optional
+from pystac import (Catalog, Collection, Item, STACObjectType)
 
-from pystac.serialization.identify import (STACJSONDescription, STACVersionRange, STACVersionID,
+from pystac.serialization.identify import (STACJSONDescription, STACVersionRange, STACVersionID,  # type:ignore
                                            identify_stac_object, identify_stac_object_type)
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
 
 
-def stac_object_from_dict(d, href=None, root=None):
+def stac_object_from_dict(d: Dict[str, Any], href: Optional[str]=None, root: Optional[Catalog]=None) -> STACObject:
     """Determines how to deserialize a dictionary into a STAC object.
 
     Args:
@@ -41,3 +43,5 @@ def stac_object_from_dict(d, href=None, root=None):
 
     if info.object_type == STACObjectType.ITEM:
         return Item.from_dict(d, href=href, root=root)
+
+    raise ValueError(f"Unknown STAC object type {info.object_type}")

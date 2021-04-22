@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 """
 
 import copy
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from urllib import parse
 
 import pystac
@@ -37,7 +37,7 @@ class Publication:
         self.doi = doi
         self.citation = citation
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Publication):
             return NotImplemented
 
@@ -109,11 +109,11 @@ class ScientificItemExt(base.ItemExtension):
         return cls(an_item)
 
     @classmethod
-    def _object_links(cls) -> List:
+    def _object_links(cls) -> List[str]:
         return []
 
     @property
-    def doi(self) -> str:
+    def doi(self) -> Optional[str]:
         """Get or sets the DOI for the item.
 
         Returns:
@@ -122,18 +122,19 @@ class ScientificItemExt(base.ItemExtension):
         return self.item.properties.get(DOI)
 
     @doi.setter
-    def doi(self, v: str) -> None:
+    def doi(self, v: Optional[str]) -> None:
         if DOI in self.item.properties:
             if v == self.item.properties[DOI]:
                 return
             remove_link(self.item.links, self.item.properties[DOI])
 
-        self.item.properties[DOI] = v
-        url = doi_to_url(self.doi)
-        self.item.add_link(pystac.Link(CITE_AS, url))
+        if v is not None:
+            self.item.properties[DOI] = v
+            url = doi_to_url(v)
+            self.item.add_link(pystac.Link(CITE_AS, url))
 
     @property
-    def citation(self) -> str:
+    def citation(self) -> Optional[str]:
         """Get or sets the citation for the item.
 
         Returns:
@@ -142,23 +143,31 @@ class ScientificItemExt(base.ItemExtension):
         return self.item.properties.get(CITATION)
 
     @citation.setter
-    def citation(self, v: str) -> None:
-        self.item.properties[CITATION] = v
+    def citation(self, v: Optional[str]) -> None:
+        if v is None:
+            self.item.properties.pop(CITATION, None)
+        else:
+            self.item.properties[CITATION] = v
 
     @property
-    def publications(self) -> List[Publication]:
+    def publications(self) -> Optional[List[Publication]]:
         """Get or sets the publication list for the item.
 
         Returns:
             List of Publication instances.
         """
-        return [Publication.from_dict(pub) for pub in self.item.properties.get(PUBLICATIONS, [])]
+        if PUBLICATIONS in self.item.properties:
+            return [Publication.from_dict(pub) for pub in self.item.properties[PUBLICATIONS]]
+        return None
 
     @publications.setter
-    def publications(self, v: List[Publication]) -> None:
-        self.item.properties[PUBLICATIONS] = [pub.to_dict() for pub in v]
-        for pub in v:
-            self.item.add_link(pub.get_link())
+    def publications(self, v: Optional[List[Publication]]) -> None:
+        if v is None:
+            self.item.properties.pop(PUBLICATIONS, None)
+        else:
+            self.item.properties[PUBLICATIONS] = [pub.to_dict() for pub in v]
+            for pub in v:
+                self.item.add_link(pub.get_link())
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:
@@ -171,8 +180,10 @@ class ScientificItemExt(base.ItemExtension):
             return
 
         if not publication:
-            for one_pub in self.item.ext.scientific.publications:
-                remove_link(self.item.links, one_pub.doi)
+            pubs = self.publications
+            if pubs is not None:
+                for one_pub in pubs:
+                    remove_link(self.item.links, one_pub.doi)
 
             del self.item.properties[PUBLICATIONS]
             return
@@ -201,7 +212,7 @@ class ScientificCollectionExt(base.CollectionExtension):
     """
     collection: pystac.Collection
 
-    def __init__(self, a_collection):
+    def __init__(self, a_collection: pystac.Collection):
         self.collection = a_collection
 
     def apply(self,
@@ -228,11 +239,11 @@ class ScientificCollectionExt(base.CollectionExtension):
         return cls(a_collection)
 
     @classmethod
-    def _object_links(cls) -> List:
+    def _object_links(cls) -> List[str]:
         return []
 
     @property
-    def doi(self) -> str:
+    def doi(self) -> Optional[str]:
         """Get or sets the DOI for the collection.
 
         Returns:
@@ -241,17 +252,18 @@ class ScientificCollectionExt(base.CollectionExtension):
         return self.collection.extra_fields.get(DOI)
 
     @doi.setter
-    def doi(self, v: str) -> None:
+    def doi(self, v: Optional[str]) -> None:
         if DOI in self.collection.extra_fields:
             if v == self.collection.extra_fields[DOI]:
                 return
             remove_link(self.collection.links, self.collection.extra_fields[DOI])
-        self.collection.extra_fields[DOI] = v
-        url = doi_to_url(self.doi)
-        self.collection.add_link(pystac.Link(CITE_AS, url))
+        if v is not None:
+            self.collection.extra_fields[DOI] = v
+            url = doi_to_url(v)
+            self.collection.add_link(pystac.Link(CITE_AS, url))
 
     @property
-    def citation(self) -> str:
+    def citation(self) -> Optional[str]:
         """Get or sets the citation for the collection.
 
         Returns:
@@ -260,25 +272,31 @@ class ScientificCollectionExt(base.CollectionExtension):
         return self.collection.extra_fields.get(CITATION)
 
     @citation.setter
-    def citation(self, v: str) -> None:
-        self.collection.extra_fields[CITATION] = v
+    def citation(self, v: Optional[str]) -> None:
+        if v is None:
+            self.collection.extra_fields.pop(CITATION, None)
+        else:
+            self.collection.extra_fields[CITATION] = v
 
     @property
-    def publications(self) -> List[Publication]:
+    def publications(self) -> Optional[List[Publication]]:
         """Get or sets the publication list for the collection.
 
         Returns:
             List of Publication instances.
         """
-        return [
-            Publication.from_dict(p) for p in self.collection.extra_fields.get(PUBLICATIONS, [])
-        ]
+        if PUBLICATIONS in self.collection.extra_fields:
+            return [Publication.from_dict(p) for p in self.collection.extra_fields[PUBLICATIONS]]
+        return None
 
     @publications.setter
-    def publications(self, v: List[Publication]) -> None:
-        self.collection.extra_fields[PUBLICATIONS] = [pub.to_dict() for pub in v]
-        for pub in v:
-            self.collection.add_link(pub.get_link())
+    def publications(self, v: Optional[List[Publication]]) -> None:
+        if v is None:
+            self.collection.extra_fields.pop(PUBLICATIONS, None)
+        else:
+            self.collection.extra_fields[PUBLICATIONS] = [pub.to_dict() for pub in v]
+            for pub in v:
+                self.collection.add_link(pub.get_link())
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:
@@ -291,7 +309,7 @@ class ScientificCollectionExt(base.CollectionExtension):
             return
 
         if not publication:
-            for one_pub in self.collection.ext.scientific.publications:
+            for one_pub in self.publications:
                 remove_link(self.collection.links, one_pub.doi)
 
             del self.collection.extra_fields[PUBLICATIONS]

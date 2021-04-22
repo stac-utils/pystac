@@ -1,3 +1,5 @@
+from pystac.item import Item
+from typing import List, Optional, cast
 from pystac.catalog import Catalog
 
 import pystac
@@ -6,7 +8,7 @@ from pystac.collection import Collection
 from pystac.extensions.base import (CatalogExtension, ExtensionDefinition, ExtendedObject)
 
 
-def create_single_file_stac(catalog):
+def create_single_file_stac(catalog: Catalog):
     """Creates a Single File STAC from a STAC catalog.
 
     This method will recursively collect any collections and items in the catalog
@@ -18,7 +20,7 @@ def create_single_file_stac(catalog):
     All links in the items and collections will be cleared in the Single File STAC.
 
     Args:
-        catalog (Catalog): Catalog to walk while constructin the Single File STAC
+        catalog (Catalog): Catalog to walk while constructing the Single File STAC
     """
     collections = {}
     items = []
@@ -41,7 +43,8 @@ def create_single_file_stac(catalog):
     result = catalog.clone()
     result.clear_links()
     result.ext.enable(Extensions.SINGLE_FILE_STAC)
-    result.ext[Extensions.SINGLE_FILE_STAC].apply(features=items, collections=filtered_collections)
+    sfs_ext = cast("SingleFileSTACCatalogExt", result.ext[Extensions.SINGLE_FILE_STAC])
+    sfs_ext.apply(features=items, collections=filtered_collections)
 
     return result
 
@@ -62,15 +65,15 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         Using SingleFileSTACCatalogExt to directly wrap a Catalog will
         add the 'proj' extension ID to the catalog's stac_extensions.
     """
-    def __init__(self, catalog):
+    def __init__(self, catalog: Catalog):
         if catalog.stac_extensions is None:
-            catalog.stac_extensions = [Extensions.SINGLE_FILE_STAC]
-        elif Extensions.SINGLE_FILE_STAC not in catalog.stac_extensions:
-            catalog.stac_extensions.append(Extensions.SINGLE_FILE_STAC)
+            catalog.stac_extensions = [str(Extensions.SINGLE_FILE_STAC)]
+        elif str(Extensions.SINGLE_FILE_STAC) not in catalog.stac_extensions:
+            catalog.stac_extensions.append(str(Extensions.SINGLE_FILE_STAC))
 
         self.catalog = catalog
 
-    def apply(self, features, collections=None):
+    def apply(self, features: List[Item], collections: Optional[List[Collection]] = None):
         """
         Args:
             features (List[Item]): List of items contained by
@@ -82,12 +85,12 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         self.collections = collections
 
     @classmethod
-    def enable_extension(cls, catalog):
+    def enable_extension(cls, catalog: Catalog):
         # Ensure the 'type' property is correct so that the Catalog is valid GeoJSON.
         catalog.extra_fields['type'] = 'FeatureCollection'
 
     @property
-    def features(self):
+    def features(self) -> List[Item]:
         """Get or sets a list of :class:`~pystac.Item` contained in this Single File STAC.
 
         Returns:
@@ -97,39 +100,37 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         if features is None:
             raise STACError('Invalid Single File STAC: does not have "features" property.')
 
-        return [pystac.read_dict(feature) for feature in features]
+        return [Item.from_dict(feature) for feature in features]
 
     @features.setter
-    def features(self, v):
+    def features(self, v: List[Item]) -> None:
         self.catalog.extra_fields['features'] = [item.to_dict() for item in v]
 
     @property
-    def collections(self):
+    def collections(self) -> Optional[List[Collection]]:
         """Get or sets a list of :class:`~pystac.Collection` objects contained
         in this Single File STAC.
-
-        Returns:
-            List[Band]
         """
         collections = self.catalog.extra_fields.get('collections')
 
-        if collections is not None:
-            collections = [pystac.read_dict(col) for col in collections]
-        return collections
+        if collections is None:
+            return None
+        else:
+            return [Collection.from_dict(col) for col in collections]
 
     @collections.setter
-    def collections(self, v):
+    def collections(self, v: Optional[List[Collection]]) -> None:
         if v is not None:
             self.catalog.extra_fields['collections'] = [col.to_dict() for col in v]
         else:
             self.catalog.extra_fields.pop('collections', None)
 
     @classmethod
-    def _object_links(cls):
+    def _object_links(cls) -> List[str]:
         return []
 
     @classmethod
-    def from_catalog(cls, catalog):
+    def from_catalog(cls, catalog: Catalog):
         return SingleFileSTACCatalogExt(catalog)
 
 
