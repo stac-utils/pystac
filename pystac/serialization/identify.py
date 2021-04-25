@@ -6,7 +6,7 @@ from pystac.version import STACVersion
 from pystac.extensions import Extensions
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObjectType as STACObjectTypeType
+    from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
 @total_ordering
@@ -122,7 +122,7 @@ class STACJSONDescription:
         custom_extensions (List[str]): List of custom extensions (URIs to JSON Schemas)
             used by this STAC Object.
     """
-    def __init__(self, object_type: "STACObjectTypeType", version_range: STACVersionRange,
+    def __init__(self, object_type: "STACObjectType_Type", version_range: STACVersionRange,
                  common_extensions: List[str], custom_extensions: List[str]) -> None:
         self.object_type = object_type
         self.version_range = version_range
@@ -269,7 +269,7 @@ def _split_extensions(stac_extensions: List[str]) -> Tuple[List[str], List[str]]
     return (common_extensions, custom_extensions)
 
 
-def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectTypeType":
+def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectType_Type":
     """Determines the STACObjectType of the provided JSON dict.
 
     Args:

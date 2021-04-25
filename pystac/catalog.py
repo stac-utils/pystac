@@ -10,7 +10,7 @@ from pystac.link import Link
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
 if TYPE_CHECKING:
-    from pystac.item import Asset as AssetType, Item as ItemType
+    from pystac.item import Asset as Asset_Type, Item as Item_Type
 
 
 class CatalogType(str, Enum):
@@ -198,7 +198,7 @@ class Catalog(STACObject):
             self.add_child(child)
 
     def add_item(self,
-                 item: "ItemType",
+                 item: "Item_Type",
                  title: Optional[str] = None,
                  strategy: Optional[HrefLayoutStrategy] = None) -> None:
         """Adds a link to an :class:`~pystac.Item`.
@@ -228,7 +228,7 @@ class Catalog(STACObject):
 
         self.add_link(Link.item(item, title=title))
 
-    def add_items(self, items: Iterable["ItemType"]) -> None:
+    def add_items(self, items: Iterable["Item_Type"]) -> None:
         """Adds links to multiple :class:`~pystac.Item` s.
         This method will set each item's parent to this object, and their root to
         this Catalog's root.
@@ -307,7 +307,7 @@ class Catalog(STACObject):
                     child.set_root(None)
         self.links = new_links
 
-    def get_item(self, id: str, recursive: bool = False) -> Optional["ItemType"]:
+    def get_item(self, id: str, recursive: bool = False) -> Optional["Item_Type"]:
         """Returns an item with a given ID.
 
         Args:
@@ -327,7 +327,7 @@ class Catalog(STACObject):
                     return item
             return None
 
-    def get_items(self) -> Iterable["ItemType"]:
+    def get_items(self) -> Iterable["Item_Type"]:
         """Return all items of this catalog.
 
         Return:
@@ -370,7 +370,7 @@ class Catalog(STACObject):
                     item.set_root(None)
         self.links = new_links
 
-    def get_all_items(self) -> Iterable["ItemType"]:
+    def get_all_items(self) -> Iterable["Item_Type"]:
         """Get all items from this catalog and all subcatalogs. Will traverse
         any subcatalogs recursively.
 
@@ -500,7 +500,7 @@ class Catalog(STACObject):
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        def process_item(item: "ItemType", _root_href: str) -> Callable[[], None]:
+        def process_item(item: "Item_Type", _root_href: str) -> Callable[[], None]:
             item.resolve_links()
 
             new_self_href = _strategy.get_href(item, _root_href)
@@ -665,7 +665,7 @@ class Catalog(STACObject):
         if catalog_type is not None:
             self.catalog_type = catalog_type
 
-    def walk(self) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable["ItemType"]]]:
+    def walk(self) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable["Item_Type"]]]:
         """Walks through children and items of catalogs.
 
         For each catalog in the STAC's tree rooted at this catalog (including this catalog
@@ -707,8 +707,8 @@ class Catalog(STACObject):
         return ['child', 'item'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
 
     def map_items(
-            self, item_mapper: Callable[["ItemType"], Union["ItemType",
-                                                            List["ItemType"]]]) -> "Catalog":
+            self, item_mapper: Callable[["Item_Type"], Union["Item_Type",
+                                                             List["Item_Type"]]]) -> "Catalog":
         """Creates a copy of a catalog, with each item passed through the
         item_mapper function.
 
@@ -749,8 +749,9 @@ class Catalog(STACObject):
         return new_cat
 
     def map_assets(
-        self, asset_mapper: Callable[[str, "AssetType"], Union["AssetType", Tuple[str, "AssetType"],
-                                                               Dict[str, "AssetType"]]]
+        self, asset_mapper: Callable[[str, "Asset_Type"], Union["Asset_Type", Tuple[str,
+                                                                                    "Asset_Type"],
+                                                                Dict[str, "Asset_Type"]]]
     ) -> "Catalog":
         """Creates a copy of a catalog, with each Asset for each Item passed
         through the asset_mapper function.
@@ -765,7 +766,7 @@ class Catalog(STACObject):
             Catalog: A full copy of this catalog, with assets manipulated according
             to the asset_mapper function.
         """
-        def apply_asset_mapper(tup: Tuple[str, "AssetType"]) -> List[Tuple[str, ps.Asset]]:
+        def apply_asset_mapper(tup: Tuple[str, "Asset_Type"]) -> List[Tuple[str, ps.Asset]]:
             k, v = tup
             result = asset_mapper(k, v)
             if result is None:

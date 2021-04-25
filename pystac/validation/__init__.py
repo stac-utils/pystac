@@ -6,8 +6,8 @@ from pystac.serialization.identify import identify_stac_object
 from pystac.utils import make_absolute_href
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObjectType
-    from pystac.stac_object import STACObjectType as STACObjectTypeType
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
 class STACValidationError(Exception):
@@ -28,7 +28,7 @@ class STACValidationError(Exception):
 from pystac.validation.stac_validator import (STACValidator, JsonSchemaSTACValidator)
 
 
-def validate(stac_object: "STACObjectType") -> List[Any]:
+def validate(stac_object: "STACObject_Type") -> List[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
@@ -50,7 +50,7 @@ def validate(stac_object: "STACObjectType") -> List[Any]:
 
 
 def validate_dict(stac_dict: Dict[str, Any],
-                  stac_object_type: Optional["STACObjectTypeType"] = None,
+                  stac_object_type: Optional["STACObjectType_Type"] = None,
                   stac_version: Optional[str] = None,
                   extensions: Optional[List[str]] = None,
                   href: Optional[str] = None) -> List[Any]:

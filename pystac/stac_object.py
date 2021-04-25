@@ -10,8 +10,8 @@ from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as CatalogType
-    from pystac.extensions.base import STACObjectExtension as STACObjectExtensionType
+    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.extensions.base import STACObjectExtension as STACObjectExtension_Type
 
 
 class STACObjectType(str, Enum):
@@ -185,7 +185,7 @@ class STACObject(ABC):
         if root_link is not None and root_link.is_resolved():
             cast(ps.Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
 
-    def get_root(self) -> Optional["CatalogType"]:
+    def get_root(self) -> Optional["Catalog_Type"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the root for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'root'``.
@@ -200,11 +200,11 @@ class STACObject(ABC):
                 root_link.resolve_stac_object()
                 # Use set_root, so Catalogs can merge ResolvedObjectCache instances.
                 self.set_root(cast(ps.Catalog, root_link.target))
-            return cast("CatalogType", root_link.target)
+            return cast(ps.Catalog, root_link.target)
         else:
             return None
 
-    def set_root(self, root: Optional["CatalogType"]) -> None:
+    def set_root(self, root: Optional["Catalog_Type"]) -> None:
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -232,7 +232,7 @@ class STACObject(ABC):
                 self.add_link(new_root_link)
             root._resolved_objects.cache(self)
 
-    def get_parent(self) -> Optional["CatalogType"]:
+    def get_parent(self) -> Optional["Catalog_Type"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the parent for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'parent'``.
@@ -248,7 +248,7 @@ class STACObject(ABC):
         else:
             return None
 
-    def set_parent(self, parent: Optional["CatalogType"]) -> None:
+    def set_parent(self, parent: Optional["Catalog_Type"]) -> None:
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -307,8 +307,8 @@ class STACObject(ABC):
         STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self,
-                  root: Optional["CatalogType"] = None,
-                  parent: Optional["CatalogType"] = None) -> "STACObject":
+                  root: Optional["Catalog_Type"] = None,
+                  parent: Optional["Catalog_Type"] = None) -> "STACObject":
         """Create a full copy of this STAC object and any stac objects linked to by
         this object.
 
@@ -455,7 +455,7 @@ class STACObject(ABC):
     def from_dict(cls,
                   d: Dict[str, Any],
                   href: Optional[str] = None,
-                  root: Optional["CatalogType"] = None,
+                  root: Optional["Catalog_Type"] = None,
                   migrate: bool = False) -> "STACObject":
         """Parses this STACObject from the passed in dictionary.
 
@@ -487,7 +487,7 @@ class ExtensionIndex:
     def __init__(self, stac_object: STACObject) -> None:
         self.stac_object = stac_object
 
-    def __getitem__(self, extension_id: str) -> "STACObjectExtensionType":
+    def __getitem__(self, extension_id: str) -> "STACObjectExtension_Type":
         """Gets the extension object for the given extension.
 
         Returns:
@@ -507,7 +507,7 @@ class ExtensionIndex:
 
         return ps.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
 
-    def __getattr__(self, extension_id: str) -> "STACObjectExtensionType":
+    def __getattr__(self, extension_id: str) -> "STACObjectExtension_Type":
         """Gets an extension based on a dynamic attribute.
 
         This takes the attribute name and passes it to __getitem__.

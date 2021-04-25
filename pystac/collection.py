@@ -13,7 +13,7 @@ from pystac.link import Link
 from pystac.utils import datetime_to_str
 
 if TYPE_CHECKING:
-    from pystac.item import Item as ItemType
+    from pystac.item import Item as Item_Type
 
 
 class SpatialExtent:
@@ -257,7 +257,7 @@ class Extent:
                       TemporalExtent.from_dict(temporal_extent_dict))
 
     @staticmethod
-    def from_items(items: Iterable["ItemType"]) -> "Extent":
+    def from_items(items: Iterable["Item_Type"]) -> "Extent":
         """Create an Extent based on the datetimes and bboxes of a list of items.
 
         Args:
@@ -449,7 +449,7 @@ class Collection(Catalog):
         return '<Collection id={}>'.format(self.id)
 
     def add_item(self,
-                 item: "ItemType",
+                 item: "Item_Type",
                  title: Optional[str] = None,
                  strategy: Optional[HrefLayoutStrategy] = None) -> None:
         super().add_item(item, title, strategy)

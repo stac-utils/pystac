@@ -6,10 +6,10 @@ from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObjectType
-    from pystac.item import Item as ItemType
-    from pystac.catalog import Catalog as CatalogType
-    from pystac.collection import Collection as CollectionType
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.item import Item as Item_Type
+    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.collection import Collection as Collection_Type
 
 HIERARCHICAL_LINKS = ['root', 'child', 'parent', 'collection', 'item', 'items']
 
@@ -58,18 +58,18 @@ class Link:
     """
     def __init__(self,
                  rel: str,
-                 target: Union[str, "STACObjectType"],
+                 target: Union[str, "STACObject_Type"],
                  media_type: Optional[str] = None,
                  title: Optional[str] = None,
                  properties: Optional[Dict[str, Any]] = None) -> None:
         self.rel = rel
-        self.target: Union[str, "STACObjectType"] = target  # An object or an href
+        self.target: Union[str, "STACObject_Type"] = target  # An object or an href
         self.media_type = media_type
         self.title = title
         self.properties = properties
-        self.owner: Optional["STACObjectType"] = None
+        self.owner: Optional["STACObject_Type"] = None
 
-    def set_owner(self, owner: "STACObjectType") -> "Link":
+    def set_owner(self, owner: "STACObject_Type") -> "Link":
         """Sets the owner of this link.
 
         Args:
@@ -150,7 +150,7 @@ class Link:
     def __repr__(self) -> str:
         return '<Link rel={} target={}>'.format(self.rel, self.target)
 
-    def resolve_stac_object(self, root: Optional["CatalogType"] = None) -> "Link":
+    def resolve_stac_object(self, root: Optional["Catalog_Type"] = None) -> "Link":
         """Resolves a STAC object from the HREF of this link, if the link is not
         already resolved.
 
@@ -261,17 +261,17 @@ class Link:
         return Link(rel=rel, target=href, media_type=media_type, title=title, properties=properties)
 
     @staticmethod
-    def root(c: "CatalogType") -> "Link":
+    def root(c: "Catalog_Type") -> "Link":
         """Creates a link to a root Catalog or Collection."""
         return Link('root', c, media_type='application/json')
 
     @staticmethod
-    def parent(c: "CatalogType") -> "Link":
+    def parent(c: "Catalog_Type") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
         return Link('parent', c, media_type='application/json')
 
     @staticmethod
-    def collection(c: "CollectionType") -> "Link":
+    def collection(c: "Collection_Type") -> "Link":
         """Creates a link to an item's Collection."""
         return Link('collection', c, media_type='application/json')
 
@@ -281,11 +281,11 @@ class Link:
         return Link('self', href, media_type='application/json')
 
     @staticmethod
-    def child(c: "CatalogType", title: Optional[str] = None) -> "Link":
+    def child(c: "Catalog_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
         return Link('child', c, title=title, media_type='application/json')
 
     @staticmethod
-    def item(item: "ItemType", title: Optional[str] = None) -> "Link":
+    def item(item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
         return Link('item', item, title=title, media_type='application/json')

@@ -9,8 +9,8 @@ from urllib.error import HTTPError
 import pystac.serialization
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObjectType
-    from pystac.catalog import Catalog as CatalogType
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.catalog import Catalog as Catalog_Type
 
 
 class STAC_IO:
@@ -60,7 +60,7 @@ class STAC_IO:
     @staticmethod
     def stac_object_from_dict(d: Dict[str, Any],
                               href: Optional[str] = None,
-                              root: Optional["CatalogType"] = None) -> "STACObjectType":
+                              root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
         return pystac.serialization.stac_object_from_dict(d, href, root)
 
     # This is set in __init__.py
@@ -120,7 +120,7 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri: str, root: Optional["CatalogType"] = None) -> "STACObjectType":
+    def read_stac_object(cls, uri: str, root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
         """Read a STACObject from a JSON file at the given URI.
 
         Args:

@@ -5,11 +5,11 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, cast
 import pystac as ps
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject
-    from pystac.collection import Collection
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.collection import Collection as Collection_Type
 
 
-def get_cache_key(stac_object: "STACObject") -> Tuple[str, bool]:
+def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:
     """Produce a cache key for the given STAC object.
 
     If a self href is set, use that as the cache key.
@@ -26,7 +26,7 @@ def get_cache_key(stac_object: "STACObject") -> Tuple[str, bool]:
         return (href, True)
     else:
         ids: List[str] = []
-        obj: Optional[STACObject] = stac_object
+        obj: Optional[ps.STACObject] = stac_object
         while obj is not None:
             ids.append(obj.id)
             obj = obj.get_parent()
@@ -58,16 +58,16 @@ class ResolvedObjectCache:
         ids_to_collections (Dict[str, Collection]): Map of collection IDs to collections.
     """
     def __init__(self,
-                 id_keys_to_objects: Optional[Dict[str, "STACObject"]] = None,
-                 hrefs_to_objects: Optional[Dict[str, "STACObject"]] = None,
-                 ids_to_collections: Dict[str, "Collection"] = None):
+                 id_keys_to_objects: Optional[Dict[str, "STACObject_Type"]] = None,
+                 hrefs_to_objects: Optional[Dict[str, "STACObject_Type"]] = None,
+                 ids_to_collections: Dict[str, "Collection_Type"] = None):
         self.id_keys_to_objects = id_keys_to_objects or {}
         self.hrefs_to_objects = hrefs_to_objects or {}
         self.ids_to_collections = ids_to_collections or {}
 
         self._collection_cache: Optional[ResolvedObjectCollectionCache] = None
 
-    def get_or_cache(self, obj: "STACObject") -> "STACObject":
+    def get_or_cache(self, obj: "STACObject_Type") -> "STACObject_Type":
         """Gets the STACObject that is the cached version of the given STACObject; or, if
         none exists, sets the cached object to the given object.
 
@@ -93,7 +93,7 @@ class ResolvedObjectCache:
                 self.cache(obj)
                 return obj
 
-    def get(self, obj: "STACObject") -> Optional["STACObject"]:
+    def get(self, obj: "STACObject_Type") -> Optional["STACObject_Type"]:
         """Get the cached object that has the same cache key as the given object.
 
         Args:
@@ -109,7 +109,7 @@ class ResolvedObjectCache:
         else:
             return self.id_keys_to_objects.get(key)
 
-    def get_by_href(self, href: str) -> Optional["STACObject"]:
+    def get_by_href(self, href: str) -> Optional["STACObject_Type"]:
         """Gets the cached object at href.
 
         Args:
@@ -120,7 +120,7 @@ class ResolvedObjectCache:
         """
         return self.hrefs_to_objects.get(href)
 
-    def get_collection_by_id(self, id: str) -> Optional["Collection"]:
+    def get_collection_by_id(self, id: str) -> Optional["Collection_Type"]:
         """Retrieved a cached Collection by its ID.
 
         Args:
@@ -132,7 +132,7 @@ class ResolvedObjectCache:
         """
         return self.ids_to_collections.get(id)
 
-    def cache(self, obj: "STACObject") -> None:
+    def cache(self, obj: "STACObject_Type") -> None:
         """Set the given object into the cache.
 
         Args:
@@ -147,7 +147,7 @@ class ResolvedObjectCache:
         if isinstance(obj, ps.Collection):
             self.ids_to_collections[obj.id] = obj
 
-    def remove(self, obj: "STACObject") -> None:
+    def remove(self, obj: "STACObject_Type") -> None:
         """Removes any cached object that matches the given object's cache key.
 
         Args:
@@ -163,7 +163,7 @@ class ResolvedObjectCache:
         if obj.STAC_OBJECT_TYPE == ps.STACObjectType.COLLECTION:
             self.id_keys_to_objects.pop(obj.id, None)
 
-    def __contains__(self, obj: "STACObject") -> bool:
+    def __contains__(self, obj: "STACObject_Type") -> bool:
         key, is_href = get_cache_key(obj)
         return key in self.hrefs_to_objects if is_href else key in self.id_keys_to_objects
 
@@ -215,22 +215,22 @@ class CollectionCache:
     and will set Collection JSON that it reads in order to merge in common properties.
     """
     def __init__(self,
-                 cached_ids: Dict[str, Union["Collection", Dict[str, Any]]] = None,
-                 cached_hrefs: Dict[str, Union["Collection", Dict[str, Any]]] = None):
+                 cached_ids: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
+                 cached_hrefs: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None):
         self.cached_ids = cached_ids or {}
         self.cached_hrefs = cached_hrefs or {}
 
-    def get_by_id(self, collection_id: str) -> Optional[Union["Collection", Dict[str, Any]]]:
+    def get_by_id(self, collection_id: str) -> Optional[Union["Collection_Type", Dict[str, Any]]]:
         return self.cached_ids.get(collection_id)
 
-    def get_by_href(self, href: str) -> Optional[Union["Collection", Dict[str, Any]]]:
+    def get_by_href(self, href: str) -> Optional[Union["Collection_Type", Dict[str, Any]]]:
         return self.cached_hrefs.get(href)
 
     def contains_id(self, collection_id: str) -> bool:
         return collection_id in self.cached_ids
 
     def cache(self,
-              collection: Union["Collection", Dict[str, Any]],
+              collection: Union["Collection_Type", Dict[str, Any]],
               href: Optional[str] = None) -> None:
         """Caches a collection JSON."""
         if isinstance(collection, ps.Collection):
@@ -245,19 +245,19 @@ class CollectionCache:
 class ResolvedObjectCollectionCache(CollectionCache):
     def __init__(self,
                  resolved_object_cache: ResolvedObjectCache,
-                 cached_ids: Dict[str, Union["Collection", Dict[str, Any]]] = None,
-                 cached_hrefs: Dict[str, Union["Collection", Dict[str, Any]]] = None):
+                 cached_ids: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
+                 cached_hrefs: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None):
         super().__init__(cached_ids, cached_hrefs)
         self.resolved_object_cache = resolved_object_cache
 
-    def get_by_id(self, collection_id: str) -> Optional[Union["Collection", Dict[str, Any]]]:
+    def get_by_id(self, collection_id: str) -> Optional[Union["Collection_Type", Dict[str, Any]]]:
         result = self.resolved_object_cache.get_collection_by_id(collection_id)
         if result is None:
             return super().get_by_id(collection_id)
         else:
             return result
 
-    def get_by_href(self, href: str) -> Optional[Union["Collection", Dict[str, Any]]]:
+    def get_by_href(self, href: str) -> Optional[Union["Collection_Type", Dict[str, Any]]]:
         result = self.resolved_object_cache.get_by_href(href)
         if result is None:
             return super().get_by_href(href)
@@ -269,7 +269,7 @@ class ResolvedObjectCollectionCache(CollectionCache):
                 or super().contains_id(collection_id))
 
     def cache(self,
-              collection: Union["Collection", Dict[str, Any]],
+              collection: Union["Collection_Type", Dict[str, Any]],
               href: Optional[str] = None) -> None:
         super().cache(collection, href)
 
