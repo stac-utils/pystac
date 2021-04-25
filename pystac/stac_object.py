@@ -24,14 +24,36 @@ class STACObjectType(str, Enum):
     ITEMCOLLECTION = 'ITEMCOLLECTION'
 
 
-class LinkMixin:
-    """Mixin class for adding and accessing links.
+class STACObject(ABC):
+    """A STACObject is the base class for any element of STAC that
+    has links e.g. (Catalogs, Collections, or Items). A STACObject has
+    common functionality, can be converted to and from Python ``dicts`` representing
+    JSON, and can be cloned or copied.
 
-    Implementing classes must have a `links` attribute that is
-    a list of links.
+    Attributes:
+        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+            all links associated with this STACObject.
     """
+    id: str
 
-    links: List[Link]
+    STAC_OBJECT_TYPE: STACObjectType
+
+    def __init__(self, stac_extensions: List[str]) -> None:
+        self.links: List[Link] = []
+        self.stac_extensions = stac_extensions
+
+    def validate(self) -> List[Any]:
+        """Validate this STACObject.
+
+        Returns a list of validation results, which depends on the validation
+        implementation. For JSON Schema validation, this will be a list
+        of schema URIs that were used during validation.
+
+        Raises:
+            STACValidationError
+        """
+        import pystac.validation
+        return pystac.validation.validate(self)  # type:ignore
 
     def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.
@@ -162,38 +184,6 @@ class LinkMixin:
 
         if root_link is not None and root_link.is_resolved():
             cast(ps.Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
-
-
-class STACObject(LinkMixin, ABC):
-    """A STACObject is the base class for any element of STAC that
-    has links e.g. (Catalogs, Collections, or Items). A STACObject has
-    common functionality, can be converted to and from Python ``dicts`` representing
-    JSON, and can be cloned or copied.
-
-    Attributes:
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
-            all links associated with this STACObject.
-    """
-    id: str
-
-    STAC_OBJECT_TYPE: STACObjectType
-
-    def __init__(self, stac_extensions: List[str]) -> None:
-        self.links = []
-        self.stac_extensions = stac_extensions
-
-    def validate(self) -> List[Any]:
-        """Validate this STACObject.
-
-        Returns a list of validation results, which depends on the validation
-        implementation. For JSON Schema validation, this will be a list
-        of schema URIs that were used during validation.
-
-        Raises:
-            STACValidationError
-        """
-        import pystac.validation
-        return pystac.validation.validate(self)  # type:ignore
 
     def get_root(self) -> Optional["CatalogType"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
@@ -345,7 +335,7 @@ class STACObject(LinkMixin, ABC):
         for link in clone.links:
             if link.rel in link_rels:
                 link.resolve_stac_object()
-                target = cast("STACObject", link.target)
+                target = cast(STACObject, link.target)
                 if root is not None and target in root._resolved_objects:
                     cached_target = root._resolved_objects.get(target)
                     assert cached_target is not None
