@@ -36,7 +36,7 @@ class CommonMetadata:
         return self.properties.get('title')
 
     @title.setter
-    def title(self, v: Optional[str]):
+    def title(self, v: Optional[str]) -> None:
         self.properties['title'] = v
 
     @property
@@ -49,7 +49,7 @@ class CommonMetadata:
         return self.properties.get('description')
 
     @description.setter
-    def description(self, v: Optional[str]):
+    def description(self, v: Optional[str]) -> None:
         self.properties['description'] = v
 
     # Date and Time Range
@@ -232,11 +232,18 @@ class CommonMetadata:
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        providers_dicts = [d.to_dict() for d in providers]
         if asset is None:
-            self.properties['providers'] = providers_dicts
+            if providers is None:
+                self.properties.pop('providers', None)
+            else:
+                providers_dicts = [d.to_dict() for d in providers]
+                self.properties['providers'] = providers_dicts
         else:
-            asset.properties['providers'] = providers_dicts
+            if providers is None:
+                asset.properties.pop('providers', None)
+            else:
+                providers_dicts = [d.to_dict() for d in providers]
+                asset.properties['providers'] = providers_dicts
 
     # Instrument
     @property
@@ -599,7 +606,7 @@ class Asset:
             self.properties = {}
 
         # The Item which owns this Asset.
-        self.owner = None
+        self.owner: Optional[Item] = None
 
     def set_owner(self, item: "Item") -> None:
         """Sets the owning item of this Asset.
@@ -655,7 +662,7 @@ class Asset:
 
         return d
 
-    def clone(self):
+    def clone(self) -> "Asset":
         """Clones this asset.
 
         Returns:
@@ -668,7 +675,7 @@ class Asset:
                      roles=self.roles,
                      properties=self.properties)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<Asset href={}>'.format(self.href)
 
     @staticmethod
@@ -783,15 +790,14 @@ class Item(STACObject):
         if href is not None:
             self.set_self_href(href)
 
+        self.collection_id: Optional[str] = None
         if collection is not None:
             if isinstance(collection, Collection):
                 self.set_collection(collection)
             else:
                 self.collection_id = collection
-        else:
-            self.collection_id = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return '<Item id={}>'.format(self.id)
 
     def set_self_href(self, href: str) -> None:
@@ -950,7 +956,7 @@ class Item(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = filter(lambda x: x.rel != 'self', links)
+            links = [x for x in links if x.rel != 'self']
 
         assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
 

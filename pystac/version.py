@@ -44,7 +44,7 @@ def get_stac_version() -> str:
     return STACVersion.get_stac_version()
 
 
-def set_stac_version(stac_version: str):
+def set_stac_version(stac_version: str) -> None:
     """Sets the STAC version that PySTAC should use.
 
     This is the version that will be set as the "stac_version" property

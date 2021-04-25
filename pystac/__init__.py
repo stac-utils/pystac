@@ -23,7 +23,7 @@ class STACTypeError(Exception):
 
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
-from pystac.stac_io import STAC_IO
+from pystac.stac_io import STAC_IO  # type:ignore
 from pystac.extensions import Extensions  # type:ignore
 from pystac.stac_object import (STACObject, STACObjectType)  # type:ignore
 from pystac.media_type import MediaType  # type:ignore
@@ -37,11 +37,7 @@ from pystac.collection import (
     Provider)  # type:ignore
 from pystac.item import (Item, Asset, CommonMetadata)  # type:ignore
 
-from pystac.serialization import stac_object_from_dict
-
 import pystac.validation
-
-STAC_IO.stac_object_from_dict = stac_object_from_dict
 
 import pystac.extensions.base
 import pystac.extensions.eo
@@ -92,7 +88,9 @@ def read_file(href: str) -> STACObject:
     return STACObject.from_file(href)
 
 
-def write_file(obj: STACObject, include_self_link: bool = True, dest_href: Optional[str] = None):
+def write_file(obj: STACObject,
+               include_self_link: bool = True,
+               dest_href: Optional[str] = None) -> None:
     """Writes a STACObject to a file.
 
     This will write only the Catalog, Collection or Item ``obj``. It will not attempt
@@ -115,7 +113,9 @@ def write_file(obj: STACObject, include_self_link: bool = True, dest_href: Optio
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
 
 
-def read_dict(d: Dict[str, Any], href: Optional[str] = None, root: Optional[Catalog] = None):
+def read_dict(d: Dict[str, Any],
+              href: Optional[str] = None,
+              root: Optional[Catalog] = None) -> STACObject:
     """Reads a STAC object from a dict representing the serialized JSON version of the
     STAC object.
 
@@ -132,4 +132,4 @@ def read_dict(d: Dict[str, Any], href: Optional[str] = None, root: Optional[Cata
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
     """
-    return stac_object_from_dict(d, href, root)
+    return STAC_IO.stac_object_from_dict(d, href, root)

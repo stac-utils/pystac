@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class CatalogType(str, Enum):
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     SELF_CONTAINED = 'SELF_CONTAINED'
@@ -137,7 +137,7 @@ class Catalog(STACObject):
         if href is not None:
             self.set_self_href(href)
 
-        self.catalog_type = catalog_type
+        self.catalog_type: CatalogType = catalog_type
 
         self._resolved_objects.cache(self)
 
@@ -156,7 +156,7 @@ class Catalog(STACObject):
     def add_child(self,
                   child: "Catalog",
                   title: Optional[str] = None,
-                  strategy: Optional[HrefLayoutStrategy] = None):
+                  strategy: Optional[HrefLayoutStrategy] = None) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
         This method will set the child's parent to this object, and its root to
         this Catalog's root.
@@ -268,7 +268,7 @@ class Catalog(STACObject):
         """
         return map(lambda x: cast(ps.Catalog, x), self.get_stac_objects('child'))
 
-    def get_child_links(self):
+    def get_child_links(self) -> List[Link]:
         """Return all child links of this catalog.
 
         Return:
@@ -276,7 +276,7 @@ class Catalog(STACObject):
         """
         return self.get_links('child')
 
-    def clear_children(self) -> "Catalog":
+    def clear_children(self) -> None:
         """Removes all children from this catalog.
 
         Return:
@@ -285,7 +285,6 @@ class Catalog(STACObject):
         child_ids = [child.id for child in self.get_children()]
         for child_id in child_ids:
             self.remove_child(child_id)
-        return self
 
     def remove_child(self, child_id: str) -> None:
         """Removes an child from this catalog.
@@ -336,7 +335,7 @@ class Catalog(STACObject):
         """
         return map(lambda x: cast(ps.Item, x), self.get_stac_objects('item'))
 
-    def clear_items(self) -> "Catalog":
+    def clear_items(self) -> None:
         """Removes all items from this catalog.
 
         Return:
@@ -349,7 +348,6 @@ class Catalog(STACObject):
                 item.set_root(None)
 
         self.links = [link for link in self.links if link.rel != 'item']
-        return self
 
     def remove_item(self, item_id: str) -> None:
         """Removes an item from this catalog.
@@ -396,7 +394,7 @@ class Catalog(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = filter(lambda l: l.rel != 'self', links)
+            links = [x for x in links if x.rel != 'self']
 
         d: Dict[str, Any] = {
             'id': self.id,
@@ -438,7 +436,7 @@ class Catalog(STACObject):
 
         return clone
 
-    def make_all_asset_hrefs_relative(self):
+    def make_all_asset_hrefs_relative(self) -> None:
         """Makes all the HREFs of assets belonging to items in this catalog
         and all children to be relative, recursively.
         """
@@ -446,7 +444,7 @@ class Catalog(STACObject):
             for item in items:
                 item.make_asset_hrefs_relative()
 
-    def make_all_asset_hrefs_absolute(self):
+    def make_all_asset_hrefs_absolute(self) -> None:
         """Makes all the HREFs of assets belonging to items in this catalog
         and all children to be absolute, recursively.
         """
@@ -457,7 +455,7 @@ class Catalog(STACObject):
     def normalize_and_save(self,
                            root_href: str,
                            catalog_type: Optional[CatalogType] = None,
-                           strategy: Optional[HrefLayoutStrategy] = None):
+                           strategy: Optional[HrefLayoutStrategy] = None) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
 
         This is a convenience method that simply calls :func:`Catalog.normalize_hrefs
@@ -476,7 +474,9 @@ class Catalog(STACObject):
         self.normalize_hrefs(root_href, strategy=strategy)
         self.save(catalog_type)
 
-    def normalize_hrefs(self, root_href: str, strategy: Optional[HrefLayoutStrategy] = None):
+    def normalize_hrefs(self,
+                        root_href: str,
+                        strategy: Optional[HrefLayoutStrategy] = None) -> None:
         """Normalize HREFs will regenerate all link HREFs based on
         an absolute root_href and the canonical catalog layout as specified
         in the STAC specification's best practices.
@@ -492,7 +492,9 @@ class Catalog(STACObject):
             `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
         """ # noqa E501
         if strategy is None:
-            strategy = BestPracticesLayoutStrategy()
+            _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
+        else:
+            _strategy = strategy
 
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
@@ -501,9 +503,9 @@ class Catalog(STACObject):
         def process_item(item: "ItemType", _root_href: str) -> Callable[[], None]:
             item.resolve_links()
 
-            new_self_href = strategy.get_href(item, _root_href)
+            new_self_href = _strategy.get_href(item, _root_href)
 
-            def fn():
+            def fn() -> None:
                 item.set_self_href(new_self_href)
 
             return fn
@@ -514,7 +516,7 @@ class Catalog(STACObject):
 
             cat.resolve_links()
 
-            new_self_href = strategy.get_href(cat, _root_href, is_root)
+            new_self_href = _strategy.get_href(cat, _root_href, is_root)
             new_root = os.path.dirname(new_self_href)
 
             for item in cat.get_items():
@@ -523,7 +525,7 @@ class Catalog(STACObject):
             for child in cat.get_children():
                 setter_funcs.extend(process_catalog(child, new_root, is_root=False))
 
-            def fn():
+            def fn() -> None:
                 cat.set_self_href(new_self_href)
 
             setter_funcs.append(fn)
@@ -538,12 +540,10 @@ class Catalog(STACObject):
         for fn in setter_funcs:
             fn()
 
-        return self
-
     def generate_subcatalogs(self,
                              template: str,
                              defaults: Optional[Dict[str, Any]] = None,
-                             parent_ids: List[str] = None,
+                             parent_ids: Optional[List[str]] = None,
                              **kwargs: Any) -> List["Catalog"]:
         """Walks through the catalog and generates subcatalogs
         for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
@@ -582,8 +582,10 @@ class Catalog(STACObject):
             item = cast(ps.Item, link.target)
             item_parts = layout_template.get_template_values(item)
             id_iter = reversed(parent_ids)
-            if all(['{}'.format(id) == next(id_iter, None)
-                    for id in reversed(item_parts.values())]):
+            if all([
+                    '{}'.format(id) == next(id_iter, None)
+                    for id in reversed(list(item_parts.values()))
+            ]):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
                 # elements on the root side, so compare the reversed sequences.
@@ -602,9 +604,9 @@ class Catalog(STACObject):
                 curr_parent = subcat
 
             # resolve collection link so when added back points to correct location
-            link = item.get_single_link('collection')
-            if link is not None:
-                link.resolve_stac_object()
+            col_link = item.get_single_link('collection')
+            if col_link is not None:
+                col_link.resolve_stac_object()
 
             curr_parent.add_item(item)
 
@@ -613,7 +615,7 @@ class Catalog(STACObject):
 
         return result
 
-    def save(self, catalog_type: CatalogType = None) -> None:
+    def save(self, catalog_type: Optional[CatalogType] = None) -> None:
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF.
 
@@ -652,14 +654,16 @@ class Catalog(STACObject):
 
         include_self_link = False
         # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
-        if ((self.get_self_href() == self.get_root_link().get_absolute_href()
-             and root.catalog_type != CatalogType.SELF_CONTAINED)
-                or root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED):
+        if root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             include_self_link = True
+        elif root.catalog_type != CatalogType.SELF_CONTAINED:
+            root_link = self.get_root_link()
+            if root_link and root_link.get_absolute_href() == self.get_self_href():
+                include_self_link = True
 
         self.save_object(include_self_link=include_self_link)
-
-        self.catalog_type = catalog_type
+        if catalog_type is not None:
+            self.catalog_type = catalog_type
 
     def walk(self) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable["ItemType"]]]:
         """Walks through children and items of catalogs.
@@ -702,7 +706,9 @@ class Catalog(STACObject):
     def _object_links(self) -> List[str]:
         return ['child', 'item'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
 
-    def map_items(self, item_mapper: Callable[["ItemType"], Union["ItemType", List["ItemType"]]]):
+    def map_items(
+            self, item_mapper: Callable[["ItemType"], Union["ItemType",
+                                                            List["ItemType"]]]) -> "Catalog":
         """Creates a copy of a catalog, with each item passed through the
         item_mapper function.
 
@@ -718,7 +724,7 @@ class Catalog(STACObject):
 
         new_cat = cast(Catalog, self.full_copy())
 
-        def process_catalog(catalog: Catalog):
+        def process_catalog(catalog: Catalog) -> None:
             for child in catalog.get_children():
                 process_catalog(child)
 
@@ -742,9 +748,10 @@ class Catalog(STACObject):
         process_catalog(new_cat)
         return new_cat
 
-    def map_assets(self, asset_mapper: Callable[[str, "AssetType"],
-                                                Union["AssetType", Tuple[str, "AssetType"],
-                                                      Dict[str, "AssetType"]]]):
+    def map_assets(
+        self, asset_mapper: Callable[[str, "AssetType"], Union["AssetType", Tuple[str, "AssetType"],
+                                                               Dict[str, "AssetType"]]]
+    ) -> "Catalog":
         """Creates a copy of a catalog, with each Asset for each Item passed
         through the asset_mapper function.
 
@@ -758,7 +765,7 @@ class Catalog(STACObject):
             Catalog: A full copy of this catalog, with assets manipulated according
             to the asset_mapper function.
         """
-        def apply_asset_mapper(tup: Tuple[str, "AssetType"]):
+        def apply_asset_mapper(tup: Tuple[str, "AssetType"]) -> List[Tuple[str, ps.Asset]]:
             k, v = tup
             result = asset_mapper(k, v)
             if result is None:
@@ -773,7 +780,7 @@ class Catalog(STACObject):
                     raise Exception('asset_mapper must return a non-empty list')
                 return assets
 
-        def item_mapper(item: ps.Item):
+        def item_mapper(item: ps.Item) -> ps.Item:
             new_assets = [
                 x for result in map(apply_asset_mapper, item.assets.items()) for x in result
             ]
@@ -782,7 +789,7 @@ class Catalog(STACObject):
 
         return self.map_items(item_mapper)
 
-    def describe(self, include_hrefs: bool = False, _indent: int = 0):
+    def describe(self, include_hrefs: bool = False, _indent: int = 0) -> None:
         """Prints out information about this Catalog and all contained
         STACObjects.
 

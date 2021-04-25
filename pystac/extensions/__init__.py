@@ -10,7 +10,7 @@ class ExtensionError(Exception):
 
 class Extensions(str, Enum):
     """Enumerates the IDs of common extensions."""
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     CHECKSUM = 'checksum'

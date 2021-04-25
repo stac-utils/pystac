@@ -7,7 +7,7 @@ Note that the version/schema.json does not know about the links.
 
 from typing import List, Optional, cast
 
-import pystac
+import pystac as ps
 from pystac import Extensions, STACError
 from pystac.extensions import base
 
@@ -39,17 +39,17 @@ class VersionItemExt(base.ItemExtension):
         Using VersionItemExt to directly wrap an item will add the 'version'
         extension ID to the item's stac_extensions.
     """
-    item: pystac.Item
+    item: ps.Item
 
-    def __init__(self, an_item) -> None:
+    def __init__(self, an_item: ps.Item) -> None:
         self.item = an_item
 
     def apply(self,
               version: str,
               deprecated: Optional[bool] = None,
-              latest: Optional[pystac.Item] = None,
-              predecessor: Optional[pystac.Item] = None,
-              successor: Optional[pystac.Item] = None) -> None:
+              latest: Optional[ps.Item] = None,
+              predecessor: Optional[ps.Item] = None,
+              successor: Optional[ps.Item] = None) -> None:
         """Applies version extension properties to the extended Item.
 
         Args:
@@ -99,65 +99,65 @@ class VersionItemExt(base.ItemExtension):
     @deprecated.setter
     def deprecated(self, v: bool) -> None:
         if not isinstance(v, bool):
-            raise pystac.STACError(DEPRECATED + ' must be a bool')
+            raise ps.STACError(DEPRECATED + ' must be a bool')
         self.item.properties[DEPRECATED] = v
 
     @property
-    def latest(self) -> Optional[pystac.Item]:
+    def latest(self) -> Optional[ps.Item]:
         """Get or sets the most recent item.
 
         Returns:
             Item or None
         """
-        result = next(self.item.get_stac_objects(LATEST), None)
+        result = next(iter(self.item.get_stac_objects(LATEST)), None)
         if result is None:
             return None
-        return cast(pystac.Item, result)
+        return cast(ps.Item, result)
 
     @latest.setter
-    def latest(self, source_item: pystac.Item) -> None:
+    def latest(self, source_item: ps.Item) -> None:
         self.item.clear_links(LATEST)
         if source_item:
-            self.item.add_link(pystac.Link(LATEST, source_item, MEDIA_TYPE))
+            self.item.add_link(ps.Link(LATEST, source_item, MEDIA_TYPE))
 
     @property
-    def predecessor(self) -> Optional[pystac.Item]:
+    def predecessor(self) -> Optional[ps.Item]:
         """Get or sets the previous item.
 
         Returns:
             Item or None
         """
-        result = next(self.item.get_stac_objects(PREDECESSOR), None)
+        result = next(iter(self.item.get_stac_objects(PREDECESSOR)), None)
         if result is None:
             return None
-        return cast(pystac.Item, result)
+        return cast(ps.Item, result)
 
     @predecessor.setter
-    def predecessor(self, source_item: pystac.Item) -> None:
+    def predecessor(self, source_item: ps.Item) -> None:
         self.item.clear_links(PREDECESSOR)
         if source_item:
-            self.item.add_link(pystac.Link(PREDECESSOR, source_item, MEDIA_TYPE))
+            self.item.add_link(ps.Link(PREDECESSOR, source_item, MEDIA_TYPE))
 
     @property
-    def successor(self) -> Optional[pystac.Item]:
+    def successor(self) -> Optional[ps.Item]:
         """Get or sets the next item.
 
         Returns:
             Item or None
         """
-        result = next(self.item.get_stac_objects(SUCCESSOR), None)
+        result = next(iter(self.item.get_stac_objects(SUCCESSOR)), None)
         if result is None:
             return None
-        return cast(pystac.Item, result)
+        return cast(ps.Item, result)
 
     @successor.setter
-    def successor(self, source_item: pystac.Item) -> None:
+    def successor(self, source_item: ps.Item) -> None:
         self.item.clear_links(SUCCESSOR)
         if source_item:
-            self.item.add_link(pystac.Link(SUCCESSOR, source_item, MEDIA_TYPE))
+            self.item.add_link(ps.Link(SUCCESSOR, source_item, MEDIA_TYPE))
 
     @classmethod
-    def from_item(cls, an_item: pystac.Item):
+    def from_item(cls, an_item: ps.Item) -> "VersionItemExt":
         return cls(an_item)
 
     @classmethod
@@ -179,9 +179,9 @@ class VersionCollectionExt(base.CollectionExtension):
         Using VersionCollectionExt to directly wrap a collection will add the
         'version' extension ID to the collections's stac_extensions.
     """
-    collection: pystac.Collection
+    collection: ps.Collection
 
-    def __init__(self, a_collection) -> None:
+    def __init__(self, a_collection: ps.Collection) -> None:
         self.collection = a_collection
 
     @property
@@ -210,67 +210,67 @@ class VersionCollectionExt(base.CollectionExtension):
         return bool(self.collection.extra_fields.get(DEPRECATED))
 
     @deprecated.setter
-    def deprecated(self, v) -> None:
+    def deprecated(self, v: bool) -> None:
         if not isinstance(v, bool):
-            raise pystac.STACError(DEPRECATED + ' must be a bool')
+            raise ps.STACError(DEPRECATED + ' must be a bool')
         self.collection.extra_fields[DEPRECATED] = v
 
     @property
-    def latest(self) -> Optional[pystac.Collection]:
+    def latest(self) -> Optional[ps.Collection]:
         """Get or sets the most recent collection.
 
         Returns:
             Collection or None
         """
-        result = next(self.collection.get_stac_objects(LATEST), None)
+        result = next(iter(self.collection.get_stac_objects(LATEST)), None)
         if result is None:
             return None
-        return cast(pystac.Collection, result)
+        return cast(ps.Collection, result)
 
     @latest.setter
-    def latest(self, source_collection: pystac.Collection) -> None:
+    def latest(self, source_collection: ps.Collection) -> None:
         self.collection.clear_links(LATEST)
         if source_collection:
-            self.collection.add_link(pystac.Link(LATEST, source_collection, MEDIA_TYPE))
+            self.collection.add_link(ps.Link(LATEST, source_collection, MEDIA_TYPE))
 
     @property
-    def predecessor(self) -> Optional[pystac.Collection]:
+    def predecessor(self) -> Optional[ps.Collection]:
         """Get or sets the previous collection.
 
         Returns:
             Collection or None
         """
-        result = next(self.collection.get_stac_objects(PREDECESSOR), None)
+        result = next(iter(self.collection.get_stac_objects(PREDECESSOR)), None)
         if result is None:
             return None
-        return cast(pystac.Collection, result)
+        return cast(ps.Collection, result)
 
     @predecessor.setter
-    def predecessor(self, source_collection: pystac.Collection) -> None:
+    def predecessor(self, source_collection: ps.Collection) -> None:
         self.collection.clear_links(PREDECESSOR)
         if source_collection:
-            self.collection.add_link(pystac.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
+            self.collection.add_link(ps.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
 
     @property
-    def successor(self) -> Optional[pystac.Collection]:
+    def successor(self) -> Optional[ps.Collection]:
         """Get or sets the next collection.
 
         Returns:
             Collection or None
         """
-        result = next(self.collection.get_stac_objects(SUCCESSOR), None)
+        result = next(iter(self.collection.get_stac_objects(SUCCESSOR)), None)
         if result is None:
             return None
-        return cast(pystac.Collection, result)
+        return cast(ps.Collection, result)
 
     @successor.setter
-    def successor(self, source_collection: pystac.Collection) -> None:
+    def successor(self, source_collection: ps.Collection) -> None:
         self.collection.clear_links(SUCCESSOR)
         if source_collection:
-            self.collection.add_link(pystac.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
+            self.collection.add_link(ps.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
 
     @classmethod
-    def from_collection(cls, a_collection: pystac.Collection):
+    def from_collection(cls, a_collection: ps.Collection) -> "VersionCollectionExt":
         return cls(a_collection)
 
     @classmethod
@@ -279,10 +279,10 @@ class VersionCollectionExt(base.CollectionExtension):
 
     def apply(self,
               version: str,
-              deprecated: Optional[str] = None,
-              latest: Optional[pystac.Collection] = None,
-              predecessor=None,
-              successor=None) -> None:
+              deprecated: Optional[bool] = None,
+              latest: Optional[ps.Collection] = None,
+              predecessor: Optional[ps.Collection] = None,
+              successor: Optional[ps.Collection] = None) -> None:
         """Applies version extension properties to the extended Collection.
 
         Args:
@@ -305,7 +305,8 @@ class VersionCollectionExt(base.CollectionExtension):
             self.successor = successor
 
 
-VERSION_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.VERSION, [
-    base.ExtendedObject(pystac.Item, VersionItemExt),
-    base.ExtendedObject(pystac.Collection, VersionCollectionExt)
-])
+VERSION_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
+    Extensions.VERSION, [
+        base.ExtendedObject(ps.Item, VersionItemExt),
+        base.ExtendedObject(ps.Collection, VersionCollectionExt)
+    ])

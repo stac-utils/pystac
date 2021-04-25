@@ -50,16 +50,17 @@ def _migrate_item_assets(d: Dict[str, Any], version: STACVersionID,
             if 'assets' in d:
                 d['item_assets'] = d['assets']
                 del d['assets']
+    return None
 
 
 def _migrate_checksum(d: Dict[str, Any], version: STACVersionID,
                       info: STACJSONDescription) -> Optional[Set[str]]:
-    pass
+    return None
 
 
 def _migrate_datacube(d: Dict[str, Any], version: STACVersionID,
                       info: STACJSONDescription) -> Optional[Set[str]]:
-    pass
+    return None
 
 
 def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
@@ -73,6 +74,8 @@ def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
         if 'dtr:end_datetime' in d['properties'] and 'end_datetime' not in d['properties']:
             d['properties']['end_datetime'] = d['properties']['dtr:end_datetime']
             del d['properties']['dtr:end_datetime']
+
+    return None
 
 
 def _migrate_eo(d: Dict[str, Any], version: STACVersionID,
@@ -159,7 +162,8 @@ def _migrate_eo(d: Dict[str, Any], version: STACVersionID,
     return added_extensions
 
 
-def _migrate_label(d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+def _migrate_label(d: Dict[str, Any], version: STACVersionID,
+                   info: STACJSONDescription) -> Optional[Set[str]]:
     if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
         props = d['properties']
         # Migrate 0.8.0-rc1 non-pluralized forms
@@ -180,10 +184,12 @@ def _migrate_label(d: Dict[str, Any], version: STACVersionID, info: STACJSONDesc
             props['label:methods'] = props['label:method']
             del props['label:method']
 
+    return None
+
 
 def _migrate_pointcloud(d: Dict[str, Any], version: STACVersionID,
                         info: STACJSONDescription) -> Optional[Set[str]]:
-    pass
+    return None
 
 
 def _migrate_sar(d: Dict[str, Any], version: STACVersionID,
@@ -202,15 +208,17 @@ def _migrate_sar(d: Dict[str, Any], version: STACVersionID,
             d['properties']['constellation'] = d['properties']['sar:constellation']
             del d['properties']['sar:constellation']
 
+    return None
+
 
 def _migrate_scientific(d: Dict[str, Any], version: STACVersionID,
                         info: STACJSONDescription) -> Optional[Set[str]]:
-    pass
+    return None
 
 
 def _migrate_single_file_stac(d: Dict[str, Any], version: STACVersionID,
                               info: STACJSONDescription) -> Optional[Set[str]]:
-    pass
+    return None
 
 
 def _get_object_migrations(

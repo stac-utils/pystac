@@ -4,7 +4,7 @@ from enum import Enum
 class MediaType(str, Enum):
     """A list of common media types that can be used in STAC Asset and Link metadata.
     """
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     COG = 'image/tiff; application=geotiff; profile=cloud-optimized'

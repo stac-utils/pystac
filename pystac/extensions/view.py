@@ -34,7 +34,7 @@ class ViewItemExt(ItemExtension):
               incidence_angle: Optional[float] = None,
               azimuth: Optional[float] = None,
               sun_azimuth: Optional[float] = None,
-              sun_elevation: Optional[float] = None):
+              sun_elevation: Optional[float] = None) -> None:
         """Applies View Geometry extension properties to the extended Item.
 
         Args:
@@ -78,7 +78,7 @@ class ViewItemExt(ItemExtension):
         return self.get_off_nadir()
 
     @off_nadir.setter
-    def off_nadir(self, v: Optional[float]):
+    def off_nadir(self, v: Optional[float]) -> None:
         self.set_off_nadir(v)
 
     def get_off_nadir(self, asset: Optional[Asset] = None) -> Optional[float]:
@@ -95,7 +95,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:off_nadir')
 
-    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[Asset] = None):
+    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset off_nadir.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -132,7 +132,9 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:incidence_angle')
 
-    def set_incidence_angle(self, incidence_angle: Optional[float], asset: Optional[Asset] = None):
+    def set_incidence_angle(self,
+                            incidence_angle: Optional[float],
+                            asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset incidence_angle.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -260,5 +262,5 @@ class ViewItemExt(ItemExtension):
         return cls(item)
 
 
-VIEW_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.VIEW,
-                                                [ExtendedObject(Item, ViewItemExt)])
+VIEW_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.VIEW, [ExtendedObject(Item, ViewItemExt)])

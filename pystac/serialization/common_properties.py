@@ -1,10 +1,9 @@
-from typing import Any, Dict, Iterable, Optional, Union, cast
-from pystac.utils import make_absolute_href
-from pystac.stac_io import STAC_IO
-from pystac.serialization.identify import STACVersionID
+from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
 import pystac as ps
 from pystac.cache import CollectionCache
+from pystac.serialization.identify import STACVersionID
+from pystac.utils import make_absolute_href
 
 
 def merge_common_properties(item_dict: Dict[str, Any],
@@ -59,7 +58,7 @@ def merge_common_properties(item_dict: Dict[str, Any],
         if isinstance(item_dict['links'], dict):
             links = list(cast(Iterable[Dict[str, Any]], item_dict['links'].values()))
         else:
-            links = cast(Iterable[Dict[str, Any]], item_dict['links'])
+            links = cast(List[Dict[str, Any]], item_dict['links'])
 
         collection_link = next((link for link in links if link['rel'] == 'collection'), None)
         if collection_link is not None:
@@ -71,7 +70,7 @@ def merge_common_properties(item_dict: Dict[str, Any],
                     collection = collection_cache.get_by_href(collection_href)
 
                 if collection is None:
-                    collection = STAC_IO.read_json(collection_href)
+                    collection = ps.STAC_IO.read_json(collection_href)
 
     if collection is not None:
         collection_id = None

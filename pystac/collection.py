@@ -8,6 +8,7 @@ from dateutil import tz
 import pystac as ps
 from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
+from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
 
@@ -36,7 +37,7 @@ class SpatialExtent:
         if isinstance(bboxes, list) and isinstance(bboxes[0], float):
             self.bboxes: List[List[float]] = [cast(List[float], bboxes)]
         else:
-            self.bboxes: List[List[float]] = cast(List[List[float]], bboxes)
+            self.bboxes = cast(List[List[float]], bboxes)
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this SpatialExtent.
@@ -147,10 +148,10 @@ class TemporalExtent:
             start = None
             end = None
 
-            if i[0]:
+            if i[0] is not None:
                 start = datetime_to_str(i[0])
 
-            if i[1]:
+            if i[1] is not None:
                 end = datetime_to_str(i[1])
 
             encoded_intervals.append([start, end])
@@ -266,30 +267,40 @@ class Extent:
             Extent: An Extent that spatially and temporally covers all of the
                 given items.
         """
-        def extract_extent_props(item: ps.Item) -> List[Any]:
-            return item.bbox + [
-                item.datetime, item.common_metadata.start_datetime,
-                item.common_metadata.end_datetime
-            ]  # type:ignore
+        bounds_values: List[List[float]] = [[float('inf')], [float('inf')], [float('-inf')],
+                                            [float('-inf')]]
+        datetimes: List[Datetime] = []
+        starts: List[Datetime] = []
+        ends: List[Datetime] = []
 
-        xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(*map(extract_extent_props, items))
+        for item in items:
+            if item.bbox is not None:
+                for i in range(0, 4):
+                    bounds_values[i].append(item.bbox[i])
+            if item.datetime is not None:
+                datetimes.append(item.datetime)
+            if item.common_metadata.start_datetime is not None:
+                starts.append(item.common_metadata.start_datetime)
+            if item.common_metadata.end_datetime is not None:
+                ends.append(item.common_metadata.end_datetime)
 
         if not any(datetimes + starts):
             start_timestamp = None
         else:
-            start_timestamp = min([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + starts)
-            ])
+            start_timestamp = min(
+                [dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC) for dt in datetimes + starts])
         if not any(datetimes + ends):
             end_timestamp = None
         else:
-            end_timestamp = max([
-                dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
-                for dt in filter(None, datetimes + ends)
-            ])
+            end_timestamp = max(
+                [dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC) for dt in datetimes + ends])
 
-        spatial = SpatialExtent([[min(xmins), min(ymins), max(xmaxs), max(ymaxs)]])
+        spatial = SpatialExtent([[
+            min(bounds_values[0]),
+            min(bounds_values[1]),
+            max(bounds_values[2]),
+            max(bounds_values[3])
+        ]])
         temporal = TemporalExtent([[start_timestamp, end_timestamp]])
 
         return Extent(spatial, temporal)
@@ -424,8 +435,8 @@ class Collection(Catalog):
                  keywords: Optional[List[str]] = None,
                  providers: Optional[List[Provider]] = None,
                  summaries: Optional[Dict[str, Any]] = None):
-        super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields,
-                                         href, catalog_type or CatalogType.ABSOLUTE_PUBLISHED)
+        super().__init__(id, description, title, stac_extensions, extra_fields, href, catalog_type
+                         or CatalogType.ABSOLUTE_PUBLISHED)
         self.extent = extent
         self.license = license
 
@@ -437,12 +448,15 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return '<Collection id={}>'.format(self.id)
 
-    def add_item(self, item: "ItemType", title: Optional[str] = None) -> None:
-        super(Collection, self).add_item(item, title)
+    def add_item(self,
+                 item: "ItemType",
+                 title: Optional[str] = None,
+                 strategy: Optional[HrefLayoutStrategy] = None) -> None:
+        super().add_item(item, title, strategy)
         item.set_collection(self)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
-        d = super(Collection, self).to_dict(include_self_link)
+        d = super().to_dict(include_self_link)
         d['extent'] = self.extent.to_dict()
         d['license'] = self.license
         if self.stac_extensions is not None:
@@ -456,7 +470,7 @@ class Collection(Catalog):
 
         return d
 
-    def clone(self):
+    def clone(self) -> "Collection":
         clone = Collection(id=self.id,
                            description=self.description,
                            extent=self.extent.clone(),
@@ -537,7 +551,7 @@ class Collection(Catalog):
 
         return collection
 
-    def update_extent_from_items(self):
+    def update_extent_from_items(self) -> None:
         """
         Update datetime and bbox based on all items to a single bbox and time window.
         """

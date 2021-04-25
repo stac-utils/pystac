@@ -25,9 +25,9 @@ class STACValidator(ABC):
     @abstractmethod
     def validate_core(self,
                       stac_dict: Dict[str, Any],
-                      stac_object_type: str,
+                      stac_object_type: STACObjectType,
                       stac_version: str,
-                      href: Optional[str] = None):
+                      href: Optional[str] = None) -> Any:
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -44,10 +44,10 @@ class STACValidator(ABC):
     @abstractmethod
     def validate_extension(self,
                            stac_dict: Dict[str, Any],
-                           stac_object_type: str,
+                           stac_object_type: STACObjectType,
                            stac_version: str,
                            extension_id: str,
-                           href: Optional[str] = None):
+                           href: Optional[str] = None) -> Any:
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.
@@ -64,10 +64,10 @@ class STACValidator(ABC):
 
     def validate(self,
                  stac_dict: Dict[str, Any],
-                 stac_object_type: str,
+                 stac_object_type: STACObjectType,
                  stac_version: str,
                  extensions: List[str],
-                 href: Optional[str] = None):
+                 href: Optional[str] = None) -> List[Any]:
         """Validate a STAC object JSON.
 
         Args:
@@ -118,7 +118,7 @@ class JsonSchemaSTACValidator(STACValidator):
     Note:
     This class requires the ``jsonschema`` library to be installed.
     """
-    def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None):
+    def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None) -> None:
         if jsonschema is None:
             raise Exception('Cannot instantiate, requires jsonschema package')
 
@@ -167,7 +167,7 @@ class JsonSchemaSTACValidator(STACValidator):
                       stac_dict: Dict[str, Any],
                       stac_object_type: STACObjectType,
                       stac_version: str,
-                      href: Optional[str] = None):
+                      href: Optional[str] = None) -> Optional[str]:
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -201,7 +201,7 @@ class JsonSchemaSTACValidator(STACValidator):
                            stac_object_type: STACObjectType,
                            stac_version: str,
                            extension_id: str,
-                           href: Optional[str] = None):
+                           href: Optional[str] = None) -> Optional[str]:
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.

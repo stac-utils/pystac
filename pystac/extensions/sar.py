@@ -83,7 +83,7 @@ class SarItemExt(base.ItemExtension):
               looks_range: Optional[int] = None,
               looks_azimuth: Optional[int] = None,
               looks_equivalent_number: Optional[float] = None,
-              observation_direction: Optional[ObservationDirection] = None):
+              observation_direction: Optional[ObservationDirection] = None) -> None:
         """Applies sar extension properties to the extended Item.
 
         Args:
@@ -337,6 +337,7 @@ class SarItemExt(base.ItemExtension):
         self.item.properties[OBSERVATION_DIRECTION] = v.value
 
 
-SAR_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SAR, [
-    base.ExtendedObject(pystac.Item, SarItemExt),
-])
+SAR_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
+    Extensions.SAR, [
+        base.ExtendedObject(pystac.Item, SarItemExt),
+    ])

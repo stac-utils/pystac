@@ -17,6 +17,9 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
+        # Types
+        mypy pystac
+
         # Lint
         flake8 pystac tests
 

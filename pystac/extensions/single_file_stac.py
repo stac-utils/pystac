@@ -1,13 +1,11 @@
 from pystac.item import Item
-from typing import List, Optional, cast
-from pystac.catalog import Catalog
+from typing import Dict, List, Optional, cast
 
-from pystac import (STACError, Extensions)
-from pystac.collection import Collection
+import pystac as ps
 from pystac.extensions.base import (CatalogExtension, ExtensionDefinition, ExtendedObject)
 
 
-def create_single_file_stac(catalog: Catalog):
+def create_single_file_stac(catalog: ps.Catalog) -> ps.Catalog:
     """Creates a Single File STAC from a STAC catalog.
 
     This method will recursively collect any collections and items in the catalog
@@ -21,10 +19,10 @@ def create_single_file_stac(catalog: Catalog):
     Args:
         catalog (Catalog): Catalog to walk while constructing the Single File STAC
     """
-    collections = {}
-    items = []
+    collections: Dict[str, ps.Collection] = {}
+    items: List[ps.Item] = []
     for root, _, cat_items in catalog.walk():
-        if issubclass(type(root), Collection):
+        if isinstance(root, ps.Collection):
             new_collection = root.clone()
             new_collection.clear_links()
             collections[root.id] = new_collection
@@ -33,16 +31,16 @@ def create_single_file_stac(catalog: Catalog):
             new_item.clear_links()
             items.append(new_item)
 
-    filtered_collections = []
+    filtered_collections: List[ps.Collection] = []
     for item in items:
-        if item.collection_id in collections:
+        if item.collection_id is not None and item.collection_id in collections:
             filtered_collections.append(collections[item.collection_id])
             collections.pop(item.collection_id)
 
     result = catalog.clone()
     result.clear_links()
-    result.ext.enable(Extensions.SINGLE_FILE_STAC)
-    sfs_ext = cast("SingleFileSTACCatalogExt", result.ext[Extensions.SINGLE_FILE_STAC])
+    result.ext.enable(ps.Extensions.SINGLE_FILE_STAC)
+    sfs_ext = cast("SingleFileSTACCatalogExt", result.ext[ps.Extensions.SINGLE_FILE_STAC])
     sfs_ext.apply(features=items, collections=filtered_collections)
 
     return result
@@ -64,15 +62,17 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         Using SingleFileSTACCatalogExt to directly wrap a Catalog will
         add the 'proj' extension ID to the catalog's stac_extensions.
     """
-    def __init__(self, catalog: Catalog):
+    def __init__(self, catalog: ps.Catalog) -> None:
         if catalog.stac_extensions is None:
-            catalog.stac_extensions = [str(Extensions.SINGLE_FILE_STAC)]
-        elif str(Extensions.SINGLE_FILE_STAC) not in catalog.stac_extensions:
-            catalog.stac_extensions.append(str(Extensions.SINGLE_FILE_STAC))
+            catalog.stac_extensions = [str(ps.Extensions.SINGLE_FILE_STAC)]
+        elif str(ps.Extensions.SINGLE_FILE_STAC) not in catalog.stac_extensions:
+            catalog.stac_extensions.append(str(ps.Extensions.SINGLE_FILE_STAC))
 
         self.catalog = catalog
 
-    def apply(self, features: List[Item], collections: Optional[List[Collection]] = None):
+    def apply(self,
+              features: List[Item],
+              collections: Optional[List[ps.Collection]] = None) -> None:
         """
         Args:
             features (List[Item]): List of items contained by
@@ -84,9 +84,10 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         self.collections = collections
 
     @classmethod
-    def enable_extension(cls, catalog: Catalog):
+    def enable_extension(cls, stac_object: ps.STACObject) -> None:
         # Ensure the 'type' property is correct so that the Catalog is valid GeoJSON.
-        catalog.extra_fields['type'] = 'FeatureCollection'
+        if isinstance(stac_object, ps.Catalog):
+            stac_object.extra_fields['type'] = 'FeatureCollection'
 
     @property
     def features(self) -> List[Item]:
@@ -97,7 +98,7 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         """
         features = self.catalog.extra_fields.get('features')
         if features is None:
-            raise STACError('Invalid Single File STAC: does not have "features" property.')
+            raise ps.STACError('Invalid Single File STAC: does not have "features" property.')
 
         return [Item.from_dict(feature) for feature in features]
 
@@ -106,7 +107,7 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         self.catalog.extra_fields['features'] = [item.to_dict() for item in v]
 
     @property
-    def collections(self) -> Optional[List[Collection]]:
+    def collections(self) -> Optional[List[ps.Collection]]:
         """Get or sets a list of :class:`~pystac.Collection` objects contained
         in this Single File STAC.
         """
@@ -115,10 +116,10 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         if collections is None:
             return None
         else:
-            return [Collection.from_dict(col) for col in collections]
+            return [ps.Collection.from_dict(col) for col in collections]
 
     @collections.setter
-    def collections(self, v: Optional[List[Collection]]) -> None:
+    def collections(self, v: Optional[List[ps.Collection]]) -> None:
         if v is not None:
             self.catalog.extra_fields['collections'] = [col.to_dict() for col in v]
         else:
@@ -129,9 +130,9 @@ class SingleFileSTACCatalogExt(CatalogExtension):
         return []
 
     @classmethod
-    def from_catalog(cls, catalog: Catalog):
+    def from_catalog(cls, catalog: ps.Catalog) -> "SingleFileSTACCatalogExt":
         return SingleFileSTACCatalogExt(catalog)
 
 
-SFS_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.SINGLE_FILE_STAC,
-                                               [ExtendedObject(Catalog, SingleFileSTACCatalogExt)])
+SFS_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    ps.Extensions.SINGLE_FILE_STAC, [ExtendedObject(ps.Catalog, SingleFileSTACCatalogExt)])

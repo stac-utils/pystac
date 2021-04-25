@@ -180,7 +180,7 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     lats: List[float] = []
     lons: List[float] = []
 
-    def extract_coords(coords: List[Union[List[float], List[List[Any]]]]):
+    def extract_coords(coords: List[Union[List[float], List[List[Any]]]]) -> None:
         for x in coords:
             # This handles points
             if isinstance(x, float):

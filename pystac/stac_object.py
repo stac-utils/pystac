@@ -1,6 +1,6 @@
 from abc import (ABC, abstractmethod)
 from enum import Enum
-from typing import Any, Dict, Generator, List, Optional, cast, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING
 
 import pystac as ps
 from pystac import STACError
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class STACObjectType(str, Enum):
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     CATALOG = 'CATALOG'
@@ -33,7 +33,7 @@ class LinkMixin:
 
     links: List[Link]
 
-    def add_link(self, link: Link):
+    def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.
 
         Args:
@@ -41,9 +41,8 @@ class LinkMixin:
         """
         link.set_owner(cast(STACObject, self))
         self.links.append(link)
-        return self
 
-    def add_links(self, links: List[Link]) -> "LinkMixin":
+    def add_links(self, links: List[Link]) -> None:
         """Add links to this object's set of links.
 
         Args:
@@ -52,9 +51,8 @@ class LinkMixin:
 
         for link in links:
             self.add_link(link)
-        return self
 
-    def remove_links(self, rel: str) -> "LinkMixin":
+    def remove_links(self, rel: str) -> None:
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
@@ -62,7 +60,6 @@ class LinkMixin:
         """
 
         self.links = [link for link in self.links if link.rel != rel]
-        return self
 
     def get_single_link(self, rel: str) -> Optional[Link]:
         """Get single link that match the given ``rel``.
@@ -73,7 +70,7 @@ class LinkMixin:
 
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel: Optional[str] = None):
+    def get_links(self, rel: Optional[str] = None) -> List[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -89,7 +86,7 @@ class LinkMixin:
         else:
             return [link for link in self.links if link.rel == rel]
 
-    def clear_links(self, rel: Optional[str] = None):
+    def clear_links(self, rel: Optional[str] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -99,9 +96,8 @@ class LinkMixin:
             self.links = [link for link in self.links if link.rel != rel]
         else:
             self.links = []
-        return self
 
-    def get_root_link(self):
+    def get_root_link(self) -> Optional[Link]:
         """Get the :class:`~pystac.Link` representing
         the root for this object.
 
@@ -146,7 +142,7 @@ class LinkMixin:
         else:
             return None
 
-    def set_self_href(self, href: str) -> "LinkMixin":
+    def set_self_href(self, href: str) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
 
@@ -167,8 +163,6 @@ class LinkMixin:
         if root_link is not None and root_link.is_resolved():
             cast(ps.Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
 
-        return self
-
 
 class STACObject(LinkMixin, ABC):
     """A STACObject is the base class for any element of STAC that
@@ -182,9 +176,9 @@ class STACObject(LinkMixin, ABC):
     """
     id: str
 
-    STAC_OBJECT_TYPE = None  # Overridden by the child classes with their type.
+    STAC_OBJECT_TYPE: STACObjectType
 
-    def __init__(self, stac_extensions: List[str]):
+    def __init__(self, stac_extensions: List[str]) -> None:
         self.links = []
         self.stac_extensions = stac_extensions
 
@@ -220,7 +214,7 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_root(self, root: Optional["CatalogType"]) -> "STACObject":
+    def set_root(self, root: Optional["CatalogType"]) -> None:
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -248,8 +242,6 @@ class STACObject(LinkMixin, ABC):
                 self.add_link(new_root_link)
             root._resolved_objects.cache(self)
 
-        return self
-
     def get_parent(self) -> Optional["CatalogType"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the parent for this object. The root is represented by a
@@ -266,7 +258,7 @@ class STACObject(LinkMixin, ABC):
         else:
             return None
 
-    def set_parent(self, parent: Optional["CatalogType"]) -> "STACObject":
+    def set_parent(self, parent: Optional["CatalogType"]) -> None:
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -278,9 +270,8 @@ class STACObject(LinkMixin, ABC):
         self.remove_links('parent')
         if parent is not None:
             self.add_link(Link.parent(parent))
-        return self
 
-    def get_stac_objects(self, rel: str) -> Generator["STACObject", None, None]:
+    def get_stac_objects(self, rel: str) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
@@ -289,7 +280,7 @@ class STACObject(LinkMixin, ABC):
                 ``rel`` property against.
 
         Returns:
-            Generator[STACObjects]: A possibly empty generator of STACObjects that are
+            Iterable[STACObjects]: A possibly empty iterable of STACObjects that are
             connected to this object through links with the given ``rel``.
         """
         links = self.links[:]
@@ -355,15 +346,17 @@ class STACObject(LinkMixin, ABC):
             if link.rel in link_rels:
                 link.resolve_stac_object()
                 target = cast("STACObject", link.target)
-                if target in root._resolved_objects:
-                    target = root._resolved_objects.get(target)
-                    assert target is not None
+                if root is not None and target in root._resolved_objects:
+                    cached_target = root._resolved_objects.get(target)
+                    assert cached_target is not None
+                    target = cached_target
                 else:
                     target_parent = None
                     if link.rel in ['child', 'item'] and isinstance(clone, ps.Catalog):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
-                    root._resolved_objects.cache(copied_target)
+                    if root is not None:
+                        root._resolved_objects.cache(copied_target)
                     target = copied_target
                 if link.rel in ['child', 'item']:
                     target.set_root(root)
@@ -390,7 +383,7 @@ class STACObject(LinkMixin, ABC):
         """
         return ExtensionIndex(self)
 
-    def resolve_links(self):
+    def resolve_links(self) -> None:
         """Ensure all STACObjects linked to by this STACObject are
         resolved. This is important for operations such as changing
         HREFs.

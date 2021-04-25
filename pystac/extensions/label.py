@@ -13,7 +13,7 @@ from pystac.link import Link
 
 class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
     VECTOR = 'vector'
@@ -31,7 +31,9 @@ class LabelClasses:
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
 
-    def apply(self, classes: Union[List[str], List[int], List[float]], name: Optional[str] = None):
+    def apply(self,
+              classes: Union[List[str], List[int], List[float]],
+              name: Optional[str] = None) -> None:
         """Sets the properties for this LabelClasses.
 
         Args:
@@ -113,7 +115,7 @@ class LabelCount:
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
 
-    def apply(self, name: str, count: int):
+    def apply(self, name: str, count: int) -> None:
         """Sets the properties for this LabelCount.
 
         Args:
@@ -164,7 +166,7 @@ class LabelCount:
         return result
 
     @count.setter
-    def count(self, v: int):
+    def count(self, v: int) -> None:
         self.properties['count'] = v
 
     def to_dict(self) -> Dict[str, Any]:
@@ -259,7 +261,7 @@ class LabelOverview:
     def apply(self,
               property_key: Optional[str],
               counts: Optional[List[LabelCount]] = None,
-              statistics: Optional[List[LabelStatistics]] = None):
+              statistics: Optional[List[LabelStatistics]] = None) -> None:
         """Sets the properties for this LabelOverview.
 
         Either ``counts`` or ``statistics``, or both, can be placed in an overview;
@@ -380,7 +382,7 @@ class LabelOverview:
             else:
                 count_by_prop: Dict[str, int] = {}
 
-                def add_counts(counts: List[LabelCount]):
+                def add_counts(counts: List[LabelCount]) -> None:
                     for c in counts:
                         if c.name not in count_by_prop:
                             count_by_prop[c.name] = c.count
@@ -435,7 +437,7 @@ class LabelItemExt(ItemExtension):
               label_classes: Optional[List[LabelClasses]] = None,
               label_tasks: Optional[List[str]] = None,
               label_methods: Optional[List[str]] = None,
-              label_overviews: Optional[List[LabelOverview]] = None):
+              label_overviews: Optional[List[LabelOverview]] = None) -> None:
         """Applies label extension properties to the extended Item.
 
         Args:
@@ -493,7 +495,7 @@ class LabelItemExt(ItemExtension):
         return LabelType(result)
 
     @label_type.setter
-    def label_type(self, v: LabelType):
+    def label_type(self, v: LabelType) -> None:
         if v not in LabelType.ALL:
             raise STACError("label_type must be one of "
                             "{}. Invalid input: {}".format(LabelType.ALL, v))
@@ -621,7 +623,7 @@ class LabelItemExt(ItemExtension):
     def add_source(self,
                    source_item: Item,
                    title: Optional[str] = None,
-                   assets: Optional[List[str]] = None):
+                   assets: Optional[List[str]] = None) -> None:
         """Adds a link to a source item.
 
         Args:
@@ -654,7 +656,7 @@ class LabelItemExt(ItemExtension):
                    href: str,
                    title: Optional[str] = None,
                    media_type: Optional[str] = None,
-                   properties: Optional[Dict[str, Any]] = None):
+                   properties: Optional[Dict[str, Any]] = None) -> None:
         """Adds a label asset to this LabelItem.
 
         Args:
@@ -673,7 +675,7 @@ class LabelItemExt(ItemExtension):
     def add_geojson_labels(self,
                            href: str,
                            title: Optional[str] = None,
-                           properties: Optional[Dict[str, Any]] = None):
+                           properties: Optional[Dict[str, Any]] = None) -> None:
         """Adds a GeoJSON label asset to this LabelItem.
 
         Args:
@@ -694,5 +696,5 @@ class LabelItemExt(ItemExtension):
         return cls(item)
 
 
-LABEL_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.LABEL,
-                                                 [ExtendedObject(Item, LabelItemExt)])
+LABEL_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.LABEL, [ExtendedObject(Item, LabelItemExt)])

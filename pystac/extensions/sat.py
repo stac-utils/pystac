@@ -38,7 +38,9 @@ class SatItemExt(base.ItemExtension):
     def __init__(self, an_item: pystac.Item) -> None:
         self.item = an_item
 
-    def apply(self, orbit_state: Optional[OrbitState] = None, relative_orbit: Optional[int] = None):
+    def apply(self,
+              orbit_state: Optional[OrbitState] = None,
+              relative_orbit: Optional[int] = None) -> None:
         """Applies ext extension properties to the extended Item.
 
         Must specify at least one of orbit_state or relative_orbit.
@@ -57,7 +59,7 @@ class SatItemExt(base.ItemExtension):
             self.relative_orbit = relative_orbit
 
     @classmethod
-    def from_item(cls, an_item: pystac.Item):
+    def from_item(cls, an_item: pystac.Item) -> "SatItemExt":
         return cls(an_item)
 
     @classmethod
@@ -72,7 +74,7 @@ class SatItemExt(base.ItemExtension):
             OrbitState or None
         """
         if ORBIT_STATE not in self.item.properties:
-            return
+            return None
         return OrbitState(self.item.properties[ORBIT_STATE])
 
     @orbit_state.setter
@@ -108,6 +110,7 @@ class SatItemExt(base.ItemExtension):
         self.item.properties[RELATIVE_ORBIT] = v
 
 
-SAT_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SAT, [
-    base.ExtendedObject(pystac.Item, SatItemExt),
-])
+SAT_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
+    Extensions.SAT, [
+        base.ExtendedObject(pystac.Item, SatItemExt),
+    ])

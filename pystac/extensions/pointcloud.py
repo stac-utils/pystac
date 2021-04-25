@@ -119,7 +119,7 @@ class PointcloudStatistic:
               maximum: Optional[float] = None,
               minimum: Optional[float] = None,
               stddev: Optional[float] = None,
-              variance: Optional[float] = None):
+              variance: Optional[float] = None) -> None:
         """Sets the properties for this PointcloudStatistic.
 
         Args:
@@ -150,7 +150,7 @@ class PointcloudStatistic:
                maximum: Optional[float] = None,
                minimum: Optional[float] = None,
                stddev: Optional[float] = None,
-               variance: Optional[float] = None):
+               variance: Optional[float] = None) -> "PointcloudStatistic":
         """Creates a new PointcloudStatistic class.
 
         Args:
@@ -346,7 +346,7 @@ class PointcloudItemExt(ItemExtension):
               schemas: List[PointcloudSchema],
               density: Optional[float] = None,
               statistics: Optional[List[PointcloudStatistic]] = None,
-              epsg: Optional[int] = None):  # TODO: Remove epsg per spec
+              epsg: Optional[int] = None) -> None:  # TODO: Remove epsg per spec
         """Applies Pointcloud extension properties to the extended Item.
 
         Args:
@@ -402,7 +402,7 @@ class PointcloudItemExt(ItemExtension):
 
         return result
 
-    def set_count(self, count: int, asset: Optional[Asset] = None):
+    def set_count(self, count: int, asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset count.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -524,7 +524,10 @@ class PointcloudItemExt(ItemExtension):
         else:
             schemas = asset.properties.get('pc:schemas')
 
-        return [PointcloudSchema(s) for s in schemas]
+        if schemas is None:
+            return []
+        else:
+            return [PointcloudSchema(s) for s in schemas]
 
     def set_schemas(self, schemas: List[PointcloudSchema], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset schema
@@ -585,7 +588,7 @@ class PointcloudItemExt(ItemExtension):
         return self.get_statistics()
 
     @statistics.setter
-    def statistics(self, v: Optional[List[PointcloudStatistic]]):
+    def statistics(self, v: Optional[List[PointcloudStatistic]]) -> None:
         self.set_statistics(v)
 
     def get_statistics(self, asset: Optional[Asset] = None) -> Optional[List[PointcloudStatistic]]:
@@ -628,5 +631,5 @@ class PointcloudItemExt(ItemExtension):
         return cls(item)
 
 
-POINTCLOUD_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.POINTCLOUD,
-                                                      [ExtendedObject(Item, PointcloudItemExt)])
+POINTCLOUD_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.POINTCLOUD, [ExtendedObject(Item, PointcloudItemExt)])

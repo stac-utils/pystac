@@ -50,14 +50,14 @@ class Publication:
         return copy.deepcopy({'doi': self.doi, 'citation': self.citation})
 
     @staticmethod
-    def from_dict(d: Dict[str, str]):
+    def from_dict(d: Dict[str, str]) -> "Publication":
         return Publication(d['doi'], d['citation'])
 
     def get_link(self) -> pystac.Link:
         return pystac.Link(CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], doi: str):
+def remove_link(links: List[pystac.Link], doi: str) -> None:
     url = doi_to_url(doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
@@ -105,7 +105,7 @@ class ScientificItemExt(base.ItemExtension):
             self.publications = publications
 
     @classmethod
-    def from_item(cls, an_item: pystac.Item):
+    def from_item(cls, an_item: pystac.Item) -> "ScientificItemExt":
         return cls(an_item)
 
     @classmethod
@@ -218,7 +218,7 @@ class ScientificCollectionExt(base.CollectionExtension):
     def apply(self,
               doi: Optional[str] = None,
               citation: Optional[str] = None,
-              publications: Optional[List[Publication]] = None):
+              publications: Optional[List[Publication]] = None) -> None:
         """Applies scientific extension properties to the extended Collection.
 
         Args:
@@ -235,7 +235,7 @@ class ScientificCollectionExt(base.CollectionExtension):
             self.publications = publications
 
     @classmethod
-    def from_collection(cls, a_collection: pystac.Collection):
+    def from_collection(cls, a_collection: pystac.Collection) -> "ScientificCollectionExt":
         return cls(a_collection)
 
     @classmethod
@@ -309,7 +309,7 @@ class ScientificCollectionExt(base.CollectionExtension):
             return
 
         if not publication:
-            for one_pub in self.publications:
+            for one_pub in self.publications or []:
                 remove_link(self.collection.links, one_pub.doi)
 
             del self.collection.extra_fields[PUBLICATIONS]
@@ -324,7 +324,8 @@ class ScientificCollectionExt(base.CollectionExtension):
             del self.collection.extra_fields[PUBLICATIONS]
 
 
-SCIENTIFIC_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SCIENTIFIC, [
-    base.ExtendedObject(pystac.Item, ScientificItemExt),
-    base.ExtendedObject(pystac.Collection, ScientificCollectionExt)
-])
+SCIENTIFIC_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
+    Extensions.SCIENTIFIC, [
+        base.ExtendedObject(pystac.Item, ScientificItemExt),
+        base.ExtendedObject(pystac.Collection, ScientificCollectionExt)
+    ])

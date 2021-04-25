@@ -41,7 +41,7 @@ class TimestampsItemExt(ItemExtension):
     def apply(self,
               published: Optional[Datetime] = None,
               expires: Optional[Datetime] = None,
-              unpublished: Optional[Datetime] = None):
+              unpublished: Optional[Datetime] = None) -> None:
         """Applies timestamps extension properties to the extended Item.
 
         Args:
@@ -74,9 +74,9 @@ class TimestampsItemExt(ItemExtension):
     def _timestamp_setter(self,
                           timestamp: Optional[Datetime],
                           key: str,
-                          asset: Optional[Asset] = None):
+                          asset: Optional[Asset] = None) -> None:
         if timestamp is not None:
-            value = datetime_to_str(timestamp)
+            value: Optional[str] = datetime_to_str(timestamp)
         else:
             value = None
         self._set_property(key, value, asset)
@@ -197,5 +197,5 @@ class TimestampsItemExt(ItemExtension):
         self._timestamp_setter(unpublished, 'unpublished', asset)
 
 
-TIMESTAMPS_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.TIMESTAMPS,
-                                                      [ExtendedObject(Item, TimestampsItemExt)])
+TIMESTAMPS_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.TIMESTAMPS, [ExtendedObject(Item, TimestampsItemExt)])

@@ -26,7 +26,7 @@ def get_cache_key(stac_object: "STACObject") -> Tuple[str, bool]:
         return (href, True)
     else:
         ids: List[str] = []
-        obj = stac_object
+        obj: Optional[STACObject] = stac_object
         while obj is not None:
             ids.append(obj.id)
             obj = obj.get_parent()
@@ -65,7 +65,7 @@ class ResolvedObjectCache:
         self.hrefs_to_objects = hrefs_to_objects or {}
         self.ids_to_collections = ids_to_collections or {}
 
-        self._collection_cache = None
+        self._collection_cache: Optional[ResolvedObjectCollectionCache] = None
 
     def get_or_cache(self, obj: "STACObject") -> "STACObject":
         """Gets the STACObject that is the cached version of the given STACObject; or, if
@@ -268,7 +268,9 @@ class ResolvedObjectCollectionCache(CollectionCache):
         return (self.resolved_object_cache.contains_collection_id(collection_id)
                 or super().contains_id(collection_id))
 
-    def cache(self, collection: Dict[str, Any], href: Optional[str] = None) -> None:
+    def cache(self,
+              collection: Union["Collection", Dict[str, Any]],
+              href: Optional[str] = None) -> None:
         super().cache(collection, href)
 
     @staticmethod

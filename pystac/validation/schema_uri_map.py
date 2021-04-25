@@ -1,5 +1,5 @@
 from abc import (ABC, abstractmethod)
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pystac
 from pystac import (STACObjectType, Extensions)
@@ -9,11 +9,11 @@ from pystac.serialization import STACVersionRange
 class SchemaUriMap(ABC):
     """Abstract class defining schema URIs for STAC core objects and extensions.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @abstractmethod
-    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> str:
+    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
         """Get the schema URI for the given object type and stac version.
 
         Args:
@@ -27,7 +27,7 @@ class SchemaUriMap(ABC):
 
     @abstractmethod
     def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
-                                 stac_version: str) -> str:
+                                 stac_version: str) -> Optional[str]:
         """Get the extension's schema URI for the given object type, stac version.
 
         Args:
@@ -162,7 +162,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
     }
 
     @classmethod
-    def _append_base_uri_if_needed(cls, uri: str, stac_version: str):
+    def _append_base_uri_if_needed(cls, uri: str, stac_version: str) -> Optional[str]:
         # Only append the base URI if it's not already an absolute URI
         if '://' not in uri:
             base_uri = None
@@ -176,7 +176,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
         else:
             return uri
 
-    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str):
+    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
         uri = None
         is_latest = stac_version == pystac.get_stac_version()
 
@@ -194,7 +194,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
         return self._append_base_uri_if_needed(uri, stac_version)
 
     def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
-                                 stac_version: str):
+                                 stac_version: str) -> Optional[str]:
         uri = None
 
         is_latest = stac_version == pystac.get_stac_version()

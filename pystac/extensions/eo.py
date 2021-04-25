@@ -17,7 +17,7 @@ class Band:
               common_name: Optional[str] = None,
               description: Optional[str] = None,
               center_wavelength: Optional[float] = None,
-              full_width_half_max: Optional[float] = None):
+              full_width_half_max: Optional[float] = None) -> None:
         """
         Sets the properties for this Band.
 
@@ -43,7 +43,7 @@ class Band:
                common_name: Optional[str] = None,
                description: Optional[str] = None,
                center_wavelength: Optional[float] = None,
-               full_width_half_max: Optional[float] = None):
+               full_width_half_max: Optional[float] = None) -> "Band":
         """
         Creates a new band.
 
@@ -202,8 +202,8 @@ class Band:
         """ # noqa E501
         r = Band.band_range(common_name)
         if r is not None:
-            r = "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
-        return r
+            return "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
+        return None
 
 
 class EOItemExt(ItemExtension):
@@ -228,7 +228,7 @@ class EOItemExt(ItemExtension):
 
         self.item = item
 
-    def apply(self, bands: List[Band], cloud_cover: Optional[float] = None):
+    def apply(self, bands: List[Band], cloud_cover: Optional[float] = None) -> None:
         """Applies label extension properties to the extended Item.
 
         Args:
@@ -340,4 +340,5 @@ class EOItemExt(ItemExtension):
         return cls(item)
 
 
-EO_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.EO, [ExtendedObject(Item, EOItemExt)])
+EO_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.EO, [ExtendedObject(Item, EOItemExt)])

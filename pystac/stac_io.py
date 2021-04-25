@@ -6,9 +6,11 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
+import pystac.serialization
+
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject
-    from pystac.catalog import Catalog
+    from pystac.stac_object import STACObject as STACObjectType
+    from pystac.catalog import Catalog as CatalogType
 
 
 class STAC_IO:
@@ -55,9 +57,11 @@ class STAC_IO:
     cloud storage.
     """
 
-    # Replaced in __init__ to account for extension objects.
-    stac_object_from_dict: Optional[Callable[[Dict[str, Any], Optional[str], Optional["Catalog"]],
-                                             "STACObject"]] = None
+    @staticmethod
+    def stac_object_from_dict(d: Dict[str, Any],
+                              href: Optional[str] = None,
+                              root: Optional["CatalogType"] = None) -> "STACObjectType":
+        return pystac.serialization.stac_object_from_dict(d, href, root)
 
     # This is set in __init__.py
     _STAC_OBJECT_CLASSES = None
@@ -116,7 +120,7 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri: str, root: Optional["Catalog"] = None) -> "STACObject":
+    def read_stac_object(cls, uri: str, root: Optional["CatalogType"] = None) -> "STACObjectType":
         """Read a STACObject from a JSON file at the given URI.
 
         Args:

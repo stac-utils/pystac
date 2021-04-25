@@ -34,7 +34,7 @@ class ProjectionItemExt(ItemExtension):
               bbox: Optional[List[float]] = None,
               centroid: Optional[Dict[str, float]] = None,
               shape: Optional[List[int]] = None,
-              transform: Optional[List[float]] = None):
+              transform: Optional[List[float]] = None) -> None:
         """Applies Projection extension properties to the extended Item.
 
         Args:
@@ -139,7 +139,7 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:wkt2')
 
-    def set_wkt2(self, wkt2: Optional[str], asset: Optional[Asset] = None):
+    def set_wkt2(self, wkt2: Optional[str], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset wkt2.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -418,5 +418,5 @@ class ProjectionItemExt(ItemExtension):
         return cls(item)
 
 
-PROJECTION_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.PROJECTION,
-                                                      [ExtendedObject(Item, ProjectionItemExt)])
+PROJECTION_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.PROJECTION, [ExtendedObject(Item, ProjectionItemExt)])

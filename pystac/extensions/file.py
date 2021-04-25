@@ -51,7 +51,7 @@ class FileItemExt(ItemExtension):
               data_type: Optional[FileDataType] = None,
               size: Optional[int] = None,
               nodata: Optional[List[Any]] = None,
-              checksum: Optional[str] = None):
+              checksum: Optional[str] = None) -> None:
         """Applies file extension properties to the extended Item.
 
         Args:
@@ -65,13 +65,6 @@ class FileItemExt(ItemExtension):
         self.size = size
         self.nodata = nodata
         self.checksum = checksum
-
-    def _set_property(self, key: str, value: Any, asset: Optional[Asset]) -> None:
-        target = self.item.properties if asset is None else asset.properties
-        if value is None:
-            target.pop(key, None)
-        else:
-            target[key] = value
 
     @property
     def data_type(self) -> Optional[FileDataType]:
@@ -102,6 +95,7 @@ class FileItemExt(ItemExtension):
 
         if data_type is not None:
             return FileDataType(data_type)
+        return None
 
     def set_data_type(self,
                       data_type: Optional[FileDataType],
@@ -111,7 +105,8 @@ class FileItemExt(ItemExtension):
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
-        self._set_property('file:data_type', data_type.value, asset)
+        v = None if data_type is None else data_type.value
+        self._set_property('file:data_type', v, asset)
 
     @property
     def size(self) -> Optional[int]:
@@ -223,5 +218,5 @@ class FileItemExt(ItemExtension):
         return cls(item)
 
 
-FILE_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.FILE,
-                                                [ExtendedObject(Item, FileItemExt)])
+FILE_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
+    Extensions.FILE, [ExtendedObject(Item, FileItemExt)])
