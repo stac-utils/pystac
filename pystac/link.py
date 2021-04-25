@@ -1,14 +1,15 @@
 from copy import copy
-from pystac.item import Item
-from pystac.catalog import Catalog
-from pystac.collection import Collection
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, Optional, TYPE_CHECKING, Union, cast
 
-import pystac
-from pystac.stac_object import STACObject
-from pystac import STACError
+import pystac as ps
 from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
+
+if TYPE_CHECKING:
+    from pystac.stac_object import STACObject
+    from pystac.item import Item
+    from pystac.catalog import Catalog
+    from pystac.collection import Collection
 
 HIERARCHICAL_LINKS = ['root', 'child', 'parent', 'collection', 'item', 'items']
 
@@ -57,18 +58,18 @@ class Link:
     """
     def __init__(self,
                  rel: str,
-                 target: Union[str, STACObject],
+                 target: Union[str, "STACObject"],
                  media_type: Optional[str] = None,
                  title: Optional[str] = None,
                  properties: Optional[Dict[str, Any]] = None) -> None:
         self.rel = rel
-        self.target: Union[str, STACObject] = target  # An object or an href
+        self.target: Union[str, "STACObject"] = target  # An object or an href
         self.media_type = media_type
         self.title = title
         self.properties = properties
         self.owner = None
 
-    def set_owner(self, owner: STACObject) -> "Link":
+    def set_owner(self, owner: "STACObject") -> "Link":
         """Sets the owner of this link.
 
         Args:
@@ -76,6 +77,18 @@ class Link:
         """
         self.owner = owner
         return self
+
+    @property
+    def href(self) -> str:
+        """Returns the HREF for this link.
+
+        If the href is None, this will throw an exception.
+        Use get_href if there may not be an href.
+        """
+        result = self.get_href()
+        if result is None:
+            raise ValueError(f'{self} does not have an HREF set.')
+        return result
 
     def get_href(self) -> Optional[str]:
         """Gets the HREF for this link.
@@ -88,14 +101,14 @@ class Link:
         """
         # get the self href
         if self.is_resolved():
-            href = cast(STACObject, self.target).get_self_href()
+            href = cast(ps.STACObject, self.target).get_self_href()
         else:
             href = cast(Optional[str], self.target)
 
         if href and is_absolute_href(href) and self.owner and self.owner.get_root():
             root = self.owner.get_root()
             rel_links = HIERARCHICAL_LINKS + \
-                pystac.STAC_EXTENSIONS.get_extended_object_links(self.owner)
+                ps.STAC_EXTENSIONS.get_extended_object_links(self.owner)
             # if a hierarchical link with an owner and root, and relative catalog
             if root.is_relative() and self.rel in rel_links:
                 owner_href = self.owner.get_self_href()
@@ -103,6 +116,18 @@ class Link:
                     href = make_relative_href(href, owner_href)
 
         return href
+
+    @property
+    def absolute_href(self) -> str:
+        """Returns the absolute HREF for this link.
+
+        If the href is None, this will throw an exception.
+        Use get_absolute_href if there may not be an href set.
+        """
+        result = self.get_absolute_href()
+        if result is None:
+            raise ValueError(f'{self} does not have an HREF set.')
+        return result
 
     def get_absolute_href(self) -> Optional[str]:
         """Gets the absolute href for this link, if possible.
@@ -113,7 +138,7 @@ class Link:
             and has an unresolved target, this will return a relative HREF.
         """
         if self.is_resolved():
-            href = cast(STACObject, self.target).get_self_href()
+            href = cast(ps.STACObject, self.target).get_self_href()
         else:
             href = cast(Optional[str], self.target)
 
@@ -125,7 +150,7 @@ class Link:
     def __repr__(self):
         return '<Link rel={} target={}>'.format(self.rel, self.target)
 
-    def resolve_stac_object(self, root: Optional[Catalog]=None) -> "Link":
+    def resolve_stac_object(self, root: Optional["Catalog"] = None) -> "Link":
         """Resolves a STAC object from the HREF of this link, if the link is not
         already resolved.
 
@@ -140,13 +165,13 @@ class Link:
             # If it's a relative link, base it off the parent.
             if not is_absolute_href(target_href):
                 if self.owner is None:
-                    raise STACError('Relative path {} encountered '
-                                    'without owner or start_href.'.format(target_href))
+                    raise ps.STACError('Relative path {} encountered '
+                                       'without owner or start_href.'.format(target_href))
                 start_href = self.owner.get_self_href()
 
                 if start_href is None:
-                    raise STACError('Relative path {} encountered '
-                                    'without owner "self" link set.'.format(target_href))
+                    raise ps.STACError('Relative path {} encountered '
+                                       'without owner "self" link set.'.format(target_href))
 
                 target_href = make_absolute_href(target_href, start_href)
             obj = None
@@ -165,7 +190,7 @@ class Link:
 
         self.target = obj
 
-        if self.owner and self.rel in ['child', 'item'] and isinstance(self.owner, Catalog):
+        if self.owner and self.rel in ['child', 'item'] and isinstance(self.owner, ps.Catalog):
             self.target.set_parent(self.owner)
 
         return self
@@ -236,17 +261,17 @@ class Link:
         return Link(rel=rel, target=href, media_type=media_type, title=title, properties=properties)
 
     @staticmethod
-    def root(c: Catalog) -> "Link":
+    def root(c: "Catalog") -> "Link":
         """Creates a link to a root Catalog or Collection."""
         return Link('root', c, media_type='application/json')
 
     @staticmethod
-    def parent(c: Catalog) -> "Link":
+    def parent(c: "Catalog") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
         return Link('parent', c, media_type='application/json')
 
     @staticmethod
-    def collection(c: Collection) -> "Link":
+    def collection(c: "Collection") -> "Link":
         """Creates a link to an item's Collection."""
         return Link('collection', c, media_type='application/json')
 
@@ -256,11 +281,11 @@ class Link:
         return Link('self', href, media_type='application/json')
 
     @staticmethod
-    def child(c: Catalog, title: Optional[str]=None) -> "Link":
+    def child(c: "Catalog", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
         return Link('child', c, title=title, media_type='application/json')
 
     @staticmethod
-    def item(item: Item, title: Optional[str]=None) -> "Link":
+    def item(item: "Item", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
         return Link('item', item, title=title, media_type='application/json')

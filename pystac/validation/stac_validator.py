@@ -201,7 +201,7 @@ class JsonSchemaSTACValidator(STACValidator):
                            stac_object_type: STACObjectType,
                            stac_version: str,
                            extension_id: str,
-                           href: Optional[str]=None):
+                           href: Optional[str] = None):
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.

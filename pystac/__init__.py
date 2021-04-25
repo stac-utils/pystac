@@ -13,6 +13,14 @@ class STACError(Exception):
     pass
 
 
+class STACTypeError(Exception):
+    """A STACTypeError is raised when encountering a representation of
+    a STAC entity that is not correct for the context; for example, if
+    a Catalog JSON was read in as an Item.
+    """
+    pass
+
+
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
 from pystac.stac_io import STAC_IO
@@ -21,8 +29,12 @@ from pystac.stac_object import (STACObject, STACObjectType)  # type:ignore
 from pystac.media_type import MediaType  # type:ignore
 from pystac.link import (Link, HIERARCHICAL_LINKS)  # type:ignore
 from pystac.catalog import (Catalog, CatalogType)  # type:ignore
-from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, # type:ignore
-                               Provider)  # type:ignore
+from pystac.collection import (
+    Collection,  # type:ignore
+    Extent,  # type:ignore
+    SpatialExtent,  # type:ignore
+    TemporalExtent,  # type:ignore
+    Provider)  # type:ignore
 from pystac.item import (Item, Asset, CommonMetadata)  # type:ignore
 
 from pystac.serialization import stac_object_from_dict

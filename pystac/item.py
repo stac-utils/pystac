@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 import dateutil.parser
 
-import pystac
+import pystac as ps
 from pystac import (STACError, STACObjectType)
 from pystac.link import Link
 from pystac.stac_object import STACObject
@@ -747,8 +747,8 @@ class Item(STACObject):
 
     def __init__(self,
                  id: str,
-                 geometry: Dict[str, Any],
-                 bbox: List[float],
+                 geometry: Optional[Dict[str, Any]],
+                 bbox: Optional[List[float]],
                  datetime: Optional[Datetime],
                  properties: Dict[str, Any],
                  stac_extensions: Optional[List[str]] = None,
@@ -913,7 +913,7 @@ class Item(STACObject):
 
         return self
 
-    def set_collection(self, collection: Collection) -> "Item":
+    def set_collection(self, collection: Optional[Collection]) -> "Item":
         """Set the collection of this item.
 
         This method will replace any existing Collection link and attribute for
@@ -961,7 +961,7 @@ class Item(STACObject):
 
         d: Dict[str, Any] = {
             'type': 'Feature',
-            'stac_version': pystac.get_stac_version(),
+            'stac_version': ps.get_stac_version(),
             'id': self.id,
             'properties': self.properties,
             'geometry': self.geometry,
@@ -1000,18 +1000,25 @@ class Item(STACObject):
         return clone
 
     def _object_links(self) -> List[str]:
-        return ['collection'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
+        return ['collection'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
 
     @classmethod
     def from_dict(cls,
                   d: Dict[str, Any],
                   href: Optional[str] = None,
-                  root: Optional[Catalog] = None) -> "Item":
+                  root: Optional[Catalog] = None,
+                  migrate: bool = False) -> "Item":
+        if migrate:
+            result = ps.read_dict(d, href=href, root=root)
+            if not isinstance(result, Item):
+                raise ps.STACError(f"{result} is not a Catalog")
+            return result
+
         d = deepcopy(d)
         id = d.pop('id')
         geometry = d.pop('geometry')
         properties = d.pop('properties')
-        bbox = d.pop('bbox')  # TODO: Ensure this shouldn't pop with a default
+        bbox = d.pop('bbox', None)
         stac_extensions = d.get('stac_extensions')
         collection_id = d.pop('collection', None)
 
@@ -1056,3 +1063,15 @@ class Item(STACObject):
             CommonMetada: contains all common metadata fields in the items properties
         """
         return CommonMetadata(self.properties)
+
+    def full_copy(self,
+                  root: Optional["Catalog"] = None,
+                  parent: Optional["Catalog"] = None) -> "Item":
+        return cast(Item, super().full_copy(root, parent))
+
+    @classmethod
+    def from_file(cls, href: str) -> "Item":
+        result = super().from_file(href)
+        if not isinstance(result, Item):
+            raise ps.STACTypeError(f"{result} is not a {Item}.")
+        return result

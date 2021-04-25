@@ -193,7 +193,8 @@ class DefaultSchemaUriMap(SchemaUriMap):
 
         return self._append_base_uri_if_needed(uri, stac_version)
 
-    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType, stac_version: str):
+    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
+                                 stac_version: str):
         uri = None
 
         is_latest = stac_version == pystac.get_stac_version()

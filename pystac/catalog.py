@@ -1,16 +1,16 @@
 import os
 from copy import deepcopy
 from enum import Enum
-from pystac.item import Asset, Item
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, Dict, Iterable, List, Optional, TYPE_CHECKING, Tuple, Union, cast
 
-import pystac
-from pystac import STACError
+import pystac as ps
 from pystac.stac_object import STACObject
 from pystac.layout import (BestPracticesLayoutStrategy, HrefLayoutStrategy, LayoutTemplate)
 from pystac.link import Link
 from pystac.cache import ResolvedObjectCache
 from pystac.utils import (is_absolute_href, make_absolute_href)
+if TYPE_CHECKING:
+    from pystac.item import Asset as AssetType, Item as ItemType
 
 
 class CatalogType(str, Enum):
@@ -108,7 +108,7 @@ class Catalog(STACObject):
         catalog_type (str): The catalog type. Defaults to ABSOLUTE_PUBLISHED
     """
 
-    STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
+    STAC_OBJECT_TYPE = ps.STACObjectType.CATALOG
 
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a canonical format."""
@@ -169,8 +169,8 @@ class Catalog(STACObject):
         """
 
         # Prevent typo confusion
-        if isinstance(child, pystac.Item):
-            raise STACError('Cannot add item as child. Use add_item instead.')
+        if isinstance(child, ps.Item):
+            raise ps.STACError('Cannot add item as child. Use add_item instead.')
 
         if strategy is None:
             strategy = BestPracticesLayoutStrategy()
@@ -198,7 +198,7 @@ class Catalog(STACObject):
             self.add_child(child)
 
     def add_item(self,
-                 item: Item,
+                 item: "ItemType",
                  title: Optional[str] = None,
                  strategy: Optional[HrefLayoutStrategy] = None) -> None:
         """Adds a link to an :class:`~pystac.Item`.
@@ -211,8 +211,8 @@ class Catalog(STACObject):
         """
 
         # Prevent typo confusion
-        if isinstance(item, pystac.Catalog):
-            raise STACError('Cannot add catalog as item. Use add_child instead.')
+        if isinstance(item, ps.Catalog):
+            raise ps.STACError('Cannot add catalog as item. Use add_child instead.')
 
         if strategy is None:
             strategy = BestPracticesLayoutStrategy()
@@ -228,7 +228,7 @@ class Catalog(STACObject):
 
         self.add_link(Link.item(item, title=title))
 
-    def add_items(self, items: Iterable[Item]) -> None:
+    def add_items(self, items: Iterable["ItemType"]) -> None:
         """Adds links to multiple :class:`~pystac.Item` s.
         This method will set each item's parent to this object, and their root to
         this Catalog's root.
@@ -266,7 +266,7 @@ class Catalog(STACObject):
             Iterable[Catalog]: Generator of children who's parent
             is this catalog.
         """
-        return map(lambda x: cast(Catalog, x), self.get_stac_objects('child'))
+        return map(lambda x: cast(ps.Catalog, x), self.get_stac_objects('child'))
 
     def get_child_links(self):
         """Return all child links of this catalog.
@@ -293,7 +293,7 @@ class Catalog(STACObject):
         Args:
             child_id (str): The ID of the child to remove.
         """
-        new_links: List[Link] = []
+        new_links: List[ps.Link] = []
         root = self.get_root()
         for link in self.links:
             if link.rel != 'child':
@@ -308,7 +308,7 @@ class Catalog(STACObject):
                     child.set_root(None)
         self.links = new_links
 
-    def get_item(self, id: str, recursive: bool = False) -> Optional[Item]:
+    def get_item(self, id: str, recursive: bool = False) -> Optional["ItemType"]:
         """Returns an item with a given ID.
 
         Args:
@@ -328,13 +328,13 @@ class Catalog(STACObject):
                     return item
             return None
 
-    def get_items(self) -> Iterable[Item]:
+    def get_items(self) -> Iterable["ItemType"]:
         """Return all items of this catalog.
 
         Return:
             Iterable[Item]: Generator of items who's parent is this catalog.
         """
-        return map(lambda x: cast(Item, x), self.get_stac_objects('item'))
+        return map(lambda x: cast(ps.Item, x), self.get_stac_objects('item'))
 
     def clear_items(self) -> "Catalog":
         """Removes all items from this catalog.
@@ -344,7 +344,7 @@ class Catalog(STACObject):
         """
         for link in self.get_item_links():
             if link.is_resolved():
-                item = cast(Item, link.target)
+                item = cast(ps.Item, link.target)
                 item.set_parent(None)
                 item.set_root(None)
 
@@ -357,14 +357,14 @@ class Catalog(STACObject):
         Args:
             item_id (str): The ID of the item to remove.
         """
-        new_links: List[Link] = []
+        new_links: List[ps.Link] = []
         root = self.get_root()
         for link in self.links:
             if link.rel != 'item':
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
-                item = cast(Item, link.target)
+                item = cast(ps.Item, link.target)
                 if item.id != item_id:
                     new_links.append(link)
                 else:
@@ -372,7 +372,7 @@ class Catalog(STACObject):
                     item.set_root(None)
         self.links = new_links
 
-    def get_all_items(self) -> Iterable[Item]:
+    def get_all_items(self) -> Iterable["ItemType"]:
         """Get all items from this catalog and all subcatalogs. Will traverse
         any subcatalogs recursively.
 
@@ -400,7 +400,7 @@ class Catalog(STACObject):
 
         d: Dict[str, Any] = {
             'id': self.id,
-            'stac_version': pystac.get_stac_version(),
+            'stac_version': ps.get_stac_version(),
             'description': self.description,
             'links': [link.to_dict() for link in links]
         }
@@ -498,7 +498,7 @@ class Catalog(STACObject):
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        def process_item(item: Item, _root_href: str) -> Callable[[], None]:
+        def process_item(item: "ItemType", _root_href: str) -> Callable[[], None]:
             item.resolve_links()
 
             new_self_href = strategy.get_href(item, _root_href)
@@ -579,7 +579,7 @@ class Catalog(STACObject):
         item_links = [lk for lk in self.links if lk.rel == 'item']
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
-            item = cast(Item, link.target)
+            item = cast(ps.Item, link.target)
             item_parts = layout_template.get_template_values(item)
             id_iter = reversed(parent_ids)
             if all(['{}'.format(id) == next(id_iter, None)
@@ -596,7 +596,7 @@ class Catalog(STACObject):
                 if subcat is None:
                     subcat_desc = 'Catalog of items from {} with {} of {}'.format(
                         curr_parent.id, k, v)
-                    subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
+                    subcat = ps.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)
                     result.append(subcat)
                 curr_parent = subcat
@@ -647,7 +647,8 @@ class Catalog(STACObject):
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
-                cast(Item, item_link.target).save_object(include_self_link=items_include_self_link)
+                cast(ps.Item,
+                     item_link.target).save_object(include_self_link=items_include_self_link)
 
         include_self_link = False
         # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
@@ -660,7 +661,7 @@ class Catalog(STACObject):
 
         self.catalog_type = catalog_type
 
-    def walk(self) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable[Item]]]:
+    def walk(self) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable["ItemType"]]]:
         """Walks through children and items of catalogs.
 
         For each catalog in the STAC's tree rooted at this catalog (including this catalog
@@ -699,9 +700,9 @@ class Catalog(STACObject):
             item.validate()
 
     def _object_links(self) -> List[str]:
-        return ['child', 'item'] + (pystac.STAC_EXTENSIONS.get_extended_object_links(self))
+        return ['child', 'item'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
 
-    def map_items(self, item_mapper: Callable[[Item], Union[Item, List[Item]]]):
+    def map_items(self, item_mapper: Callable[["ItemType"], Union["ItemType", List["ItemType"]]]):
         """Creates a copy of a catalog, with each item passed through the
         item_mapper function.
 
@@ -724,10 +725,10 @@ class Catalog(STACObject):
             item_links: List[Link] = []
             for item_link in catalog.get_item_links():
                 item_link.resolve_stac_object(root=self.get_root())
-                mapped = item_mapper(cast(Item, item_link.target))
+                mapped = item_mapper(cast(ps.Item, item_link.target))
                 if mapped is None:
                     raise Exception('item_mapper cannot return None.')
-                if isinstance(mapped, Item):
+                if isinstance(mapped, ps.Item):
                     item_link.target = mapped
                     item_links.append(item_link)
                 else:
@@ -741,8 +742,9 @@ class Catalog(STACObject):
         process_catalog(new_cat)
         return new_cat
 
-    def map_assets(self, asset_mapper: Callable[[str, Asset], Union[Asset, Tuple[str, Asset],
-                                                                    Dict[str, Asset]]]):
+    def map_assets(self, asset_mapper: Callable[[str, "AssetType"],
+                                                Union["AssetType", Tuple[str, "AssetType"],
+                                                      Dict[str, "AssetType"]]]):
         """Creates a copy of a catalog, with each Asset for each Item passed
         through the asset_mapper function.
 
@@ -756,12 +758,12 @@ class Catalog(STACObject):
             Catalog: A full copy of this catalog, with assets manipulated according
             to the asset_mapper function.
         """
-        def apply_asset_mapper(tup: Tuple[str, Asset]):
+        def apply_asset_mapper(tup: Tuple[str, "AssetType"]):
             k, v = tup
             result = asset_mapper(k, v)
             if result is None:
                 raise Exception('asset_mapper cannot return None.')
-            if isinstance(result, pystac.Asset):
+            if isinstance(result, ps.Asset):
                 return [(k, result)]
             elif isinstance(result, tuple):
                 return [result]
@@ -771,7 +773,7 @@ class Catalog(STACObject):
                     raise Exception('asset_mapper must return a non-empty list')
                 return assets
 
-        def item_mapper(item: Item):
+        def item_mapper(item: ps.Item):
             new_assets = [
                 x for result in map(apply_asset_mapper, item.assets.items()) for x in result
             ]
@@ -804,7 +806,14 @@ class Catalog(STACObject):
     def from_dict(cls,
                   d: Dict[str, Any],
                   href: Optional[str] = None,
-                  root: Optional["Catalog"] = None) -> "Catalog":
+                  root: Optional["Catalog"] = None,
+                  migrate: bool = False) -> "Catalog":
+        if migrate:
+            result = ps.read_dict(d, href=href, root=root)
+            if not isinstance(result, Catalog):
+                raise ps.STACError(f"{result} is not a Catalog")
+            return result
+
         catalog_type = CatalogType.determine_type(d)
 
         d = deepcopy(d)
@@ -834,3 +843,15 @@ class Catalog(STACObject):
                 cat.add_link(Link.from_dict(link))
 
         return cat
+
+    def full_copy(self,
+                  root: Optional["Catalog"] = None,
+                  parent: Optional["Catalog"] = None) -> "Catalog":
+        return cast(Catalog, super().full_copy(root, parent))
+
+    @classmethod
+    def from_file(cls, href: str) -> "Catalog":
+        result = super().from_file(href)
+        if not isinstance(result, Catalog):
+            raise ps.STACTypeError(f"{result} is not a {Catalog}.")
+        return result

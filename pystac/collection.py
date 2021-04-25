@@ -1,13 +1,18 @@
+from copy import (copy, deepcopy)
 from datetime import datetime as Datetime
-from pystac.item import Item
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, TYPE_CHECKING, Tuple, Union, cast
+
 import dateutil.parser
 from dateutil import tz
-from copy import (copy, deepcopy)
+
+import pystac as ps
 from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
+
+if TYPE_CHECKING:
+    from pystac.item import Item as ItemType
 
 
 class SpatialExtent:
@@ -251,7 +256,7 @@ class Extent:
                       TemporalExtent.from_dict(temporal_extent_dict))
 
     @staticmethod
-    def from_items(items: Iterable[Item]) -> "Extent":
+    def from_items(items: Iterable["ItemType"]) -> "Extent":
         """Create an Extent based on the datetimes and bboxes of a list of items.
 
         Args:
@@ -261,11 +266,11 @@ class Extent:
             Extent: An Extent that spatially and temporally covers all of the
                 given items.
         """
-        def extract_extent_props(item: Item) -> List[Any]:
+        def extract_extent_props(item: ps.Item) -> List[Any]:
             return item.bbox + [
                 item.datetime, item.common_metadata.start_datetime,
                 item.common_metadata.end_datetime
-            ]  #  type:ignore
+            ]  # type:ignore
 
         xmins, ymins, xmaxs, ymaxs, datetimes, starts, ends = zip(*map(extract_extent_props, items))
 
@@ -418,23 +423,21 @@ class Collection(Catalog):
                  license: str = 'proprietary',
                  keywords: Optional[List[str]] = None,
                  providers: Optional[List[Provider]] = None,
-                 properties: Optional[Dict[str, Any]] = None,
                  summaries: Optional[Dict[str, Any]] = None):
         super(Collection, self).__init__(id, description, title, stac_extensions, extra_fields,
                                          href, catalog_type or CatalogType.ABSOLUTE_PUBLISHED)
         self.extent = extent
         self.license = license
 
-        self.stac_extensions = stac_extensions
+        self.stac_extensions: List[str] = stac_extensions or []
         self.keywords = keywords
         self.providers = providers
-        self.properties = properties
         self.summaries = summaries
 
     def __repr__(self) -> str:
         return '<Collection id={}>'.format(self.id)
 
-    def add_item(self, item: Item, title: Optional[str] = None) -> None:
+    def add_item(self, item: "ItemType", title: Optional[str] = None) -> None:
         super(Collection, self).add_item(item, title)
         item.set_collection(self)
 
@@ -448,8 +451,6 @@ class Collection(Catalog):
             d['keywords'] = self.keywords
         if self.providers is not None:
             d['providers'] = list(map(lambda x: x.to_dict(), self.providers))
-        if self.properties is not None:
-            d['properties'] = self.properties
         if self.summaries is not None:
             d['summaries'] = self.summaries
 
@@ -466,7 +467,6 @@ class Collection(Catalog):
                            license=self.license,
                            keywords=self.keywords,
                            providers=self.providers,
-                           properties=self.properties,
                            summaries=self.summaries)
 
         clone._resolved_objects.cache(clone)
@@ -488,7 +488,14 @@ class Collection(Catalog):
     def from_dict(cls,
                   d: Dict[str, Any],
                   href: Optional[str] = None,
-                  root: Optional[Catalog] = None) -> "Collection":
+                  root: Optional[Catalog] = None,
+                  migrate: bool = False) -> "Collection":
+        if migrate:
+            result = ps.read_dict(d, href=href, root=root)
+            if not isinstance(result, Collection):
+                raise ps.STACError(f"{result} is not a Catalog")
+            return result
+
         catalog_type = CatalogType.determine_type(d)
 
         d = deepcopy(d)
@@ -502,7 +509,6 @@ class Collection(Catalog):
         providers = d.get('providers')
         if providers is not None:
             providers = list(map(lambda x: Provider.from_dict(x), providers))
-        properties = d.get('properties')
         summaries = d.get('summaries')
         links = d.pop('links')
 
@@ -517,7 +523,6 @@ class Collection(Catalog):
                                 license=license,
                                 keywords=keywords,
                                 providers=providers,
-                                properties=properties,
                                 summaries=summaries,
                                 href=href,
                                 catalog_type=catalog_type)
@@ -537,3 +542,15 @@ class Collection(Catalog):
         Update datetime and bbox based on all items to a single bbox and time window.
         """
         self.extent = Extent.from_items(self.get_all_items())
+
+    def full_copy(self,
+                  root: Optional["Catalog"] = None,
+                  parent: Optional["Catalog"] = None) -> "Collection":
+        return cast(Collection, super().full_copy(root, parent))
+
+    @classmethod
+    def from_file(cls, href: str) -> "Collection":
+        result = super().from_file(href)
+        if not isinstance(result, Collection):
+            raise ps.STACTypeError(f"{result} is not a {Collection}.")
+        return result

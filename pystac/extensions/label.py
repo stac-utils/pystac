@@ -257,7 +257,7 @@ class LabelOverview:
         self.properties = properties
 
     def apply(self,
-              property_key: str,
+              property_key: Optional[str],
               counts: Optional[List[LabelCount]] = None,
               statistics: Optional[List[LabelStatistics]] = None):
         """Sets the properties for this LabelOverview.
@@ -266,7 +266,9 @@ class LabelOverview:
         at least one is required.
 
         Args:
-            property_key (str): The property key within the asset corresponding to class labels.
+            property_key (str): The property key within the asset corresponding to class labels
+                that these counts or statistics are referencing. If the label data is raster data,
+                this should be None.
             counts: Optional list of LabelCounts containing counts
                 for categorical data.
             statistics: Optional list of statistics containing statistics for
@@ -278,7 +280,7 @@ class LabelOverview:
 
     @classmethod
     def create(cls,
-               property_key: str,
+               property_key: Optional[str],
                counts: Optional[List[LabelCount]] = None,
                statistics: Optional[List[LabelStatistics]] = None) -> "LabelOverview":
         """Creates a new LabelOverview.
@@ -298,19 +300,16 @@ class LabelOverview:
         return x
 
     @property
-    def property_key(self) -> str:
+    def property_key(self) -> Optional[str]:
         """Get or sets the property key within the asset corresponding to class labels.
 
         Returns:
             str
         """
-        result = self.properties.get('property_key')
-        if result is None:
-            raise STACError(f"Label overview has no property_key: {self.properties}")
-        return result
+        return self.properties.get('property_key')
 
     @property_key.setter
-    def property_key(self, v: str) -> None:
+    def property_key(self, v: Optional[str]) -> None:
         self.properties['property_key'] = v
 
     @property
@@ -651,7 +650,11 @@ class LabelItemExt(ItemExtension):
         """
         return map(lambda x: cast(Item, x), self.item.get_stac_objects('source'))
 
-    def add_labels(self, href: str, title: Optional[str]=None, media_type: Optional[str]=None, properties: Optional[Dict[str, Any]]=None):
+    def add_labels(self,
+                   href: str,
+                   title: Optional[str] = None,
+                   media_type: Optional[str] = None,
+                   properties: Optional[Dict[str, Any]] = None):
         """Adds a label asset to this LabelItem.
 
         Args:
@@ -667,7 +670,10 @@ class LabelItemExt(ItemExtension):
         self.item.add_asset(
             "labels", Asset(href=href, title=title, media_type=media_type, properties=properties))
 
-    def add_geojson_labels(self, href: str, title: Optional[str]=None, properties:Optional[Dict[str, Any]]=None):
+    def add_geojson_labels(self,
+                           href: str,
+                           title: Optional[str] = None,
+                           properties: Optional[Dict[str, Any]] = None):
         """Adds a GeoJSON label asset to this LabelItem.
 
         Args:

@@ -1,15 +1,22 @@
 # flake8: noqa
-from pystac.stac_object import STACObject
-from typing import Any, Dict, Optional
-from pystac import (Catalog, Collection, Item, STACObjectType)
+from typing import Any, Dict, Optional, TYPE_CHECKING
 
-from pystac.serialization.identify import (STACJSONDescription, STACVersionRange, STACVersionID,  # type:ignore
-                                           identify_stac_object, identify_stac_object_type)
+import pystac as ps
+from pystac.serialization.identify import (
+    STACVersionRange,  # type:ignore
+    identify_stac_object,
+    identify_stac_object_type)
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
 
+if TYPE_CHECKING:
+    from pystac.stac_object import STACObject
+    from pystac.catalog import Catalog
 
-def stac_object_from_dict(d: Dict[str, Any], href: Optional[str]=None, root: Optional[Catalog]=None) -> STACObject:
+
+def stac_object_from_dict(d: Dict[str, Any],
+                          href: Optional[str] = None,
+                          root: Optional["Catalog"] = None) -> "STACObject":
     """Determines how to deserialize a dictionary into a STAC object.
 
     Args:
@@ -23,7 +30,7 @@ def stac_object_from_dict(d: Dict[str, Any], href: Optional[str]=None, root: Opt
     Note: This is used internally in STAC_IO to deserialize STAC Objects.
     It is in the top level __init__ in order to avoid circular dependencies.
     """
-    if identify_stac_object_type(d) == STACObjectType.ITEM:
+    if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
         collection_cache = None
         if root is not None:
             collection_cache = root._resolved_objects.as_collection_cache()
@@ -35,13 +42,13 @@ def stac_object_from_dict(d: Dict[str, Any], href: Optional[str]=None, root: Opt
 
     d, info = migrate_to_latest(d, info)
 
-    if info.object_type == STACObjectType.CATALOG:
-        return Catalog.from_dict(d, href=href, root=root)
+    if info.object_type == ps.STACObjectType.CATALOG:
+        return ps.Catalog.from_dict(d, href=href, root=root, migrate=False)
 
-    if info.object_type == STACObjectType.COLLECTION:
-        return Collection.from_dict(d, href=href, root=root)
+    if info.object_type == ps.STACObjectType.COLLECTION:
+        return ps.Collection.from_dict(d, href=href, root=root, migrate=False)
 
-    if info.object_type == STACObjectType.ITEM:
-        return Item.from_dict(d, href=href, root=root)
+    if info.object_type == ps.STACObjectType.ITEM:
+        return ps.Item.from_dict(d, href=href, root=root, migrate=False)
 
     raise ValueError(f"Unknown STAC object type {info.object_type}")

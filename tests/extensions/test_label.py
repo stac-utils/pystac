@@ -3,9 +3,10 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
-import pystac
+import pystac as ps
 from pystac import (Catalog, Item, CatalogType, STAC_IO)
 from pystac.extensions import label
+import pystac.validation
 from tests.utils import (TestCases, test_to_from_dict)
 
 
@@ -44,7 +45,7 @@ class LabelTest(unittest.TestCase):
         d['properties'].pop('label:methods')
         d['properties']['label:task'] = d['properties']['label:tasks']
         d['properties'].pop('label:tasks')
-        label_example_1 = STAC_IO.stac_object_from_dict(d)
+        label_example_1 = ps.Item.from_dict(d, migrate=True)
 
         self.assertEqual(len(label_example_1.ext.label.label_tasks), 2)
 
@@ -81,7 +82,7 @@ class LabelTest(unittest.TestCase):
             self.assertEqual(item.assets[asset_key].owner, item)
 
     def test_label_description(self):
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:description", label_item.properties)
@@ -94,7 +95,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_type(self):
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:type", label_item.properties)
@@ -107,8 +108,8 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_properties(self):
-        label_item = pystac.read_file(self.label_example_1_uri)
-        label_item2 = pystac.read_file(self.label_example_2_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item2 = ps.Item.from_file(self.label_example_2_uri)
 
         # Get
         self.assertIn("label:properties", label_item.properties)
@@ -124,7 +125,7 @@ class LabelTest(unittest.TestCase):
 
     def test_label_classes(self):
         # Get
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
         label_classes = label_item.ext.label.label_classes
 
         self.assertEqual(len(label_classes), 2)
@@ -145,7 +146,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_tasks(self):
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:tasks", label_item.properties)
@@ -158,7 +159,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_methods(self):
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:methods", label_item.properties)
@@ -172,10 +173,10 @@ class LabelTest(unittest.TestCase):
 
     def test_label_overviews(self):
         # Get
-        label_item = pystac.read_file(self.label_example_1_uri)
+        label_item = ps.Item.from_file(self.label_example_1_uri)
         label_overviews = label_item.ext.label.label_overviews
 
-        label_item2 = pystac.read_file(self.label_example_2_uri)
+        label_item2 = ps.Item.from_file(self.label_example_2_uri)
         label_overviews2 = label_item2.ext.label.label_overviews
 
         self.assertEqual(len(label_overviews), 2)

@@ -1,10 +1,10 @@
 import os
 from datetime import datetime
 import csv
+from typing import Any, Dict, List
 
-import pystac
-from pystac import (Catalog, Item, Asset, Extent, TemporalExtent, SpatialExtent, MediaType,
-                    Extensions)
+from pystac import (Catalog, Collection, Item, Asset, Extent, TemporalExtent, SpatialExtent,
+                    MediaType, Extensions)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
 TEST_LABEL_CATALOG = {
@@ -34,7 +34,7 @@ TEST_LABEL_CATALOG = {
     }
 }
 
-RANDOM_GEOM = {
+RANDOM_GEOM: Dict[str, Any] = {
     "type":
     "Polygon",
     "coordinates": [[[-2.5048828125, 3.8916575492899987], [-1.9610595703125, 3.8916575492899987],
@@ -42,7 +42,7 @@ RANDOM_GEOM = {
                      [-2.5048828125, 3.8916575492899987]]]
 }
 
-RANDOM_BBOX = [
+RANDOM_BBOX: List[float] = [
     RANDOM_GEOM['coordinates'][0][0][0], RANDOM_GEOM['coordinates'][0][0][1],
     RANDOM_GEOM['coordinates'][0][1][0], RANDOM_GEOM['coordinates'][0][1][1]
 ]
@@ -53,11 +53,11 @@ RANDOM_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(RANDOM_GEOM['coord
 
 class TestCases:
     @staticmethod
-    def get_path(rel_path):
+    def get_path(rel_path: str) -> str:
         return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', rel_path))
 
     @staticmethod
-    def get_examples_info():
+    def get_examples_info() -> List[Dict[str, Any]]:
         examples = []
 
         info_path = TestCases.get_path('data-files/examples/example-info.csv')
@@ -90,7 +90,7 @@ class TestCases:
         return examples
 
     @staticmethod
-    def all_test_catalogs():
+    def all_test_catalogs() -> List[Catalog]:
         return [
             TestCases.test_case_1(),
             TestCases.test_case_2(),
@@ -102,15 +102,15 @@ class TestCases:
         ]
 
     @staticmethod
-    def test_case_1():
+    def test_case_1() -> Catalog:
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
 
     @staticmethod
-    def test_case_2():
+    def test_case_2() -> Catalog:
         return Catalog.from_file(TestCases.get_path('data-files/catalogs/test-case-2/catalog.json'))
 
     @staticmethod
-    def test_case_3():
+    def test_case_3() -> Catalog:
         root_cat = Catalog(id='test3', description='test case 3 catalog', title='test case 3 title')
 
         image_item = Item(id='imagery-item',
@@ -175,8 +175,8 @@ class TestCases:
             TestCases.get_path('data-files/catalogs/label_catalog_0_8_1/catalog.json'))
 
     @staticmethod
-    def test_case_8():
+    def test_case_8() -> Collection:
         """Planet disaster data example catalog, 1.0.0-beta.2"""
-        return pystac.read_file(
+        return Collection.from_file(
             TestCases.get_path('data-files/catalogs/'
                                'planet-example-1.0.0-beta.2/collection.json'))

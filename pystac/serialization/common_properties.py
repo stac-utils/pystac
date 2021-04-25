@@ -1,9 +1,10 @@
-from pystac.cache import CollectionCache
-from typing import Any, Dict, Optional, Union, cast
-from pystac import Collection
+from typing import Any, Dict, Iterable, Optional, Union, cast
 from pystac.utils import make_absolute_href
 from pystac.stac_io import STAC_IO
 from pystac.serialization.identify import STACVersionID
+
+import pystac as ps
+from pystac.cache import CollectionCache
 
 
 def merge_common_properties(item_dict: Dict[str, Any],
@@ -24,7 +25,7 @@ def merge_common_properties(item_dict: Dict[str, Any],
     """
     properties_merged = False
 
-    collection: Optional[Union[Collection, Dict[str, Any]]] = None
+    collection: Optional[Union[ps.Collection, Dict[str, Any]]] = None
     collection_id: Optional[str] = None
     collection_href: Optional[str] = None
 
@@ -40,7 +41,7 @@ def merge_common_properties(item_dict: Dict[str, Any],
     # we don't have to merge.
     if stac_version is not None and stac_version == '0.9.0':
         stac_extensions = item_dict.get('stac_extensions')
-        if type(stac_extensions) is list:
+        if isinstance(stac_extensions, list):
             if 'commons' not in stac_extensions:
                 return False
         else:
@@ -54,11 +55,11 @@ def merge_common_properties(item_dict: Dict[str, Any],
 
     # Next, try the collection link.
     if collection is None:
-        links = item_dict['links']
-
         # Account for 0.5 links, which were dicts
-        if isinstance(links, Dict[str, Dict[str, Any]]):
-            links = list(links.values())
+        if isinstance(item_dict['links'], dict):
+            links = list(cast(Iterable[Dict[str, Any]], item_dict['links'].values()))
+        else:
+            links = cast(Iterable[Dict[str, Any]], item_dict['links'])
 
         collection_link = next((link for link in links if link['rel'] == 'collection'), None)
         if collection_link is not None:
@@ -72,13 +73,12 @@ def merge_common_properties(item_dict: Dict[str, Any],
                 if collection is None:
                     collection = STAC_IO.read_json(collection_href)
 
-    # TODO: Remove properties from Collection, it would be in extra_fields
     if collection is not None:
         collection_id = None
         collection_props: Optional[Dict[str, Any]] = None
-        if isinstance(collection, Collection):
+        if isinstance(collection, ps.Collection):
             collection_id = collection.id
-            collection_props = collection.properties
+            collection_props = collection.extra_fields.get("properties")
         elif isinstance(collection, dict):
             collection_id = collection['id']
             if 'properties' in collection:

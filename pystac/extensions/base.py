@@ -1,16 +1,18 @@
 from abc import (ABC, abstractmethod)
-from typing import Any, Iterable, List, Optional, Type
-from pystac.stac_object import STACObject
+from typing import Any, Iterable, List, Optional, TYPE_CHECKING, Type
 
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.item import Asset, Item
 from pystac.extensions import ExtensionError
 
+if TYPE_CHECKING:
+    from pystac.stac_object import STACObject
+
 
 class STACObjectExtension(ABC):
     @classmethod
-    def _from_object(cls, stac_object: STACObject) -> "STACObjectExtension":
+    def _from_object(cls, stac_object: "STACObject") -> "STACObjectExtension":
         ...
 
     @classmethod
@@ -19,7 +21,7 @@ class STACObjectExtension(ABC):
         raise NotImplementedError("_object_links")
 
     @classmethod
-    def enable_extension(cls, stac_object: STACObject) -> None:
+    def enable_extension(cls, stac_object: "STACObject") -> None:
         """Enables the extension for the given stac_object.
         Child classes can choose to override this method in order to
         modify the stac_object when an extension is enabled.
@@ -39,7 +41,7 @@ class ExtendedObject:
         stac_object_class: The STAC object class that is being extended.
         extension_class: The class of the extension, e.g. LabelItemExt
     """
-    def __init__(self, stac_object_class: Type[STACObject],
+    def __init__(self, stac_object_class: Type["STACObject"],
                  extension_class: Type[STACObjectExtension]):
         if stac_object_class is Catalog:
             if not issubclass(extension_class, CatalogExtension):
@@ -74,7 +76,7 @@ class ExtensionDefinition:
 
 class CatalogExtension(STACObjectExtension):
     @classmethod
-    def _from_object(cls, stac_object: STACObject) -> "CatalogExtension":
+    def _from_object(cls, stac_object: "STACObject") -> "CatalogExtension":
         if not isinstance(stac_object, Catalog):
             raise ValueError(f"This extension applies to Catalogs, not {cls}")
         return cls.from_catalog(stac_object)
@@ -87,7 +89,7 @@ class CatalogExtension(STACObjectExtension):
 
 class CollectionExtension(STACObjectExtension):
     @classmethod
-    def _from_object(cls, stac_object: STACObject) -> "CollectionExtension":
+    def _from_object(cls, stac_object: "STACObject") -> "CollectionExtension":
         if not isinstance(stac_object, Collection):
             raise ValueError(f"This extension applies to Collections, not {cls}")
         return cls.from_collection(stac_object)
@@ -102,7 +104,7 @@ class ItemExtension(STACObjectExtension):
     item: Item
 
     @classmethod
-    def _from_object(cls, stac_object: STACObject) -> "ItemExtension":
+    def _from_object(cls, stac_object: "STACObject") -> "ItemExtension":
         if not isinstance(stac_object, Item):
             raise ValueError(f"This extension applies to Items, not {cls}")
         return cls.from_item(stac_object)
@@ -174,7 +176,7 @@ class RegisteredSTACExtensions:
 
     def get_extension_class(
             self, extension_id: str,
-            stac_object_class: Type[STACObject]) -> Optional[Type[STACObjectExtension]]:
+            stac_object_class: Type["STACObject"]) -> Optional[Type[STACObjectExtension]]:
         """Gets the extension class for a given stac object class if one exists, otherwise
         returns None
         """
@@ -209,7 +211,7 @@ class RegisteredSTACExtensions:
 
         return ext_class
 
-    def extend_object(self, extension_id: str, stac_object: STACObject) -> STACObjectExtension:
+    def extend_object(self, extension_id: str, stac_object: "STACObject") -> STACObjectExtension:
         """Returns the extension object for the given STACObject and the given
         extension_id
         """
@@ -221,7 +223,7 @@ class RegisteredSTACExtensions:
 
         return ext_class._from_object(stac_object)
 
-    def get_extended_object_links(self, stac_object: STACObject) -> List[str]:
+    def get_extended_object_links(self, stac_object: "STACObject") -> List[str]:
         if stac_object.stac_extensions is None:
             return []
         return [
@@ -231,7 +233,7 @@ class RegisteredSTACExtensions:
             for link_rel in e_obj.extension_class._object_links()
         ]
 
-    def can_extend(self, extension_id: str, stac_object_class: Type[STACObject]) -> bool:
+    def can_extend(self, extension_id: str, stac_object_class: Type["STACObject"]) -> bool:
         """Returns True if the extension can extend the given object type.
 
         Args:
@@ -254,7 +256,7 @@ class RegisteredSTACExtensions:
             if issubclass(stac_object_class, e.stac_object_class)
         ])
 
-    def enable_extension(self, extension_id: str, stac_object: STACObject) -> None:
+    def enable_extension(self, extension_id: str, stac_object: "STACObject") -> None:
         """Enables the extension for the given object.
 
         This will at least ensure the extension ID is in the object's "stac_extensions"

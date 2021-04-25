@@ -314,7 +314,9 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:centroid')
 
-    def set_centroid(self, centroid: Optional[Dict[str, float]], asset: Optional[Asset] = None) -> None:
+    def set_centroid(self,
+                     centroid: Optional[Dict[str, float]],
+                     asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset centroid.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -397,7 +399,9 @@ class ProjectionItemExt(ItemExtension):
         else:
             return asset.properties.get('proj:transform')
 
-    def set_transform(self, transform: Optional[List[float]], asset: Optional[Asset] = None) -> None:
+    def set_transform(self,
+                      transform: Optional[List[float]],
+                      asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset transform.
 
         If an Asset is supplied, sets the property on the Asset.

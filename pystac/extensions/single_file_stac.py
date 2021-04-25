@@ -2,7 +2,6 @@ from pystac.item import Item
 from typing import List, Optional, cast
 from pystac.catalog import Catalog
 
-import pystac
 from pystac import (STACError, Extensions)
 from pystac.collection import Collection
 from pystac.extensions.base import (CatalogExtension, ExtensionDefinition, ExtendedObject)

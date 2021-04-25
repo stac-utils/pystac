@@ -1,16 +1,17 @@
 from abc import (ABC, abstractmethod)
 from enum import Enum
-from pystac.catalog import Catalog
-from typing import Any, Dict, Generator, List, Optional, cast
+from typing import Any, Dict, Generator, List, Optional, cast, TYPE_CHECKING
 
-import pystac
-import pystac.validation
+import pystac as ps
 from pystac import STACError
 from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
 from pystac.extensions import ExtensionError
-from pystac.extensions.base import STACObjectExtension
+
+if TYPE_CHECKING:
+    from pystac.catalog import Catalog as CatalogType
+    from pystac.extensions.base import STACObjectExtension as STACObjectExtensionType
 
 
 class STACObjectType(str, Enum):
@@ -110,6 +111,20 @@ class LinkMixin:
         """
         return self.get_single_link('root')
 
+    @property
+    def self_href(self) -> str:
+        """Gets the absolute HREF that is represented by the ``rel == 'self'``
+        :class:`~pystac.Link`.
+
+        Raises:
+            ValueError: If the self_href is not set, this method will throw a ValueError.
+                Use get_self_href if there may not be an href set.
+        """
+        result = self.get_self_href()
+        if result is None:
+            raise ValueError(f"{self} does not have a self_href set.")
+        return result
+
     def get_self_href(self) -> Optional[str]:
         """Gets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
@@ -143,14 +158,14 @@ class LinkMixin:
         """
         root_link = self.get_root_link()
         if root_link is not None and root_link.is_resolved():
-            cast(Catalog, root_link.target)._resolved_objects.remove(cast(STACObject, self))
+            cast(ps.Catalog, root_link.target)._resolved_objects.remove(cast(STACObject, self))
 
         self.remove_links('self')
         if href is not None:
             self.add_link(Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
-            cast(Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
+            cast(ps.Catalog, root_link.target)._resolved_objects.cache(cast(STACObject, self))
 
         return self
 
@@ -173,15 +188,20 @@ class STACObject(LinkMixin, ABC):
         self.links = []
         self.stac_extensions = stac_extensions
 
-    def validate(self):
+    def validate(self) -> List[Any]:
         """Validate this STACObject.
+
+        Returns a list of validation results, which depends on the validation
+        implementation. For JSON Schema validation, this will be a list
+        of schema URIs that were used during validation.
 
         Raises:
             STACValidationError
         """
-        return pystac.validation.validate(self)
+        import pystac.validation
+        return pystac.validation.validate(self)  # type:ignore
 
-    def get_root(self) -> Optional[Catalog]:
+    def get_root(self) -> Optional["CatalogType"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the root for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'root'``.
@@ -195,12 +215,12 @@ class STACObject(LinkMixin, ABC):
             if not root_link.is_resolved():
                 root_link.resolve_stac_object()
                 # Use set_root, so Catalogs can merge ResolvedObjectCache instances.
-                self.set_root(cast(Catalog, root_link.target))
-            return cast(Catalog, root_link.target)
+                self.set_root(cast(ps.Catalog, root_link.target))
+            return cast("CatalogType", root_link.target)
         else:
             return None
 
-    def set_root(self, root: Optional[Catalog]) -> "STACObject":
+    def set_root(self, root: Optional["CatalogType"]) -> "STACObject":
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -215,7 +235,7 @@ class STACObject(LinkMixin, ABC):
         if root_link_index is not None:
             root_link = self.links[root_link_index]
             if root_link.is_resolved():
-                cast(Catalog, root_link.target)._resolved_objects.remove(self)
+                cast(ps.Catalog, root_link.target)._resolved_objects.remove(self)
 
         if root is None:
             self.remove_links('root')
@@ -230,7 +250,7 @@ class STACObject(LinkMixin, ABC):
 
         return self
 
-    def get_parent(self) -> Optional["STACObject"]:
+    def get_parent(self) -> Optional["CatalogType"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the parent for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'parent'``.
@@ -242,11 +262,11 @@ class STACObject(LinkMixin, ABC):
         """
         parent_link = self.get_single_link('parent')
         if parent_link:
-            return cast(Catalog, parent_link.resolve_stac_object().target)
+            return cast(ps.Catalog, parent_link.resolve_stac_object().target)
         else:
             return None
 
-    def set_parent(self, parent: Optional[Catalog]) -> "STACObject":
+    def set_parent(self, parent: Optional["CatalogType"]) -> "STACObject":
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -306,8 +326,8 @@ class STACObject(LinkMixin, ABC):
         STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self,
-                  root: Optional[Catalog] = None,
-                  parent: Optional[Catalog] = None) -> "STACObject":
+                  root: Optional["CatalogType"] = None,
+                  parent: Optional["CatalogType"] = None) -> "STACObject":
         """Create a full copy of this STAC object and any stac objects linked to by
         this object.
 
@@ -323,10 +343,10 @@ class STACObject(LinkMixin, ABC):
         """
         clone = self.clone()
 
-        if root is None and isinstance(clone, Catalog):
+        if root is None and isinstance(clone, ps.Catalog):
             root = clone
 
-        clone.set_root(cast(Catalog, root))
+        clone.set_root(cast(ps.Catalog, root))
         if parent:
             clone.set_parent(parent)
 
@@ -340,14 +360,14 @@ class STACObject(LinkMixin, ABC):
                     assert target is not None
                 else:
                     target_parent = None
-                    if link.rel in ['child', 'item'] and isinstance(clone, Catalog):
+                    if link.rel in ['child', 'item'] and isinstance(clone, ps.Catalog):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     root._resolved_objects.cache(copied_target)
                     target = copied_target
                 if link.rel in ['child', 'item']:
                     target.set_root(root)
-                    if isinstance(clone, Catalog):
+                    if isinstance(clone, ps.Catalog):
                         target.set_parent(clone)
                 link.target = target
 
@@ -433,10 +453,7 @@ class STACObject(LinkMixin, ABC):
             href = make_absolute_href(href)
         d = STAC_IO.read_json(href)
 
-        if cls == STACObject:
-            o = STAC_IO.stac_object_from_dict(d, href, None)
-        else:
-            o = cls.from_dict(d, href, None)
+        o = STAC_IO.stac_object_from_dict(d, href, None)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -447,7 +464,7 @@ class STACObject(LinkMixin, ABC):
         if root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(cast(Catalog, o))
+                    o.set_root(cast(ps.Catalog, o))
         return o
 
     @classmethod
@@ -455,7 +472,8 @@ class STACObject(LinkMixin, ABC):
     def from_dict(cls,
                   d: Dict[str, Any],
                   href: Optional[str] = None,
-                  root: Optional[Catalog] = None) -> "STACObject":
+                  root: Optional["CatalogType"] = None,
+                  migrate: bool = False) -> "STACObject":
         """Parses this STACObject from the passed in dictionary.
 
         Args:
@@ -465,6 +483,8 @@ class STACObject(LinkMixin, ABC):
             root (Catalog or Collection): Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
+            migrate: Use True if this dict represents JSON from an older STAC object,
+                so that migrations are run against it.
 
         Returns:
             STACObject: The STACObject parsed from this dict.
@@ -484,8 +504,7 @@ class ExtensionIndex:
     def __init__(self, stac_object: STACObject) -> None:
         self.stac_object = stac_object
 
-    def __getitem__(
-            self, extension_id: str) -> STACObjectExtension:
+    def __getitem__(self, extension_id: str) -> "STACObjectExtensionType":
         """Gets the extension object for the given extension.
 
         Returns:
@@ -494,7 +513,7 @@ class ExtensionIndex:
             by the extension_id.
         """
         # Check to make sure this is a registered extension.
-        if not pystac.STAC_EXTENSIONS.is_registered_extension(extension_id):
+        if not ps.STAC_EXTENSIONS.is_registered_extension(extension_id):
             raise ExtensionError("'{}' is not an extension "
                                  "registered with PySTAC".format(extension_id))
 
@@ -503,10 +522,9 @@ class ExtensionIndex:
                                  "Use the 'ext.enable' method to enable this extension "
                                  "first.".format(self.stac_object, extension_id))
 
-        return pystac.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
+        return ps.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
 
-    def __getattr__(
-            self, extension_id: str) -> STACObjectExtension:
+    def __getattr__(self, extension_id: str) -> "STACObjectExtensionType":
         """Gets an extension based on a dynamic attribute.
 
         This takes the attribute name and passes it to __getitem__.
@@ -530,7 +548,7 @@ class ExtensionIndex:
             the object should implement
 
         """
-        pystac.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
+        ps.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
 
     def implements(self, extension_id: str) -> bool:
         """Returns true if the associated object implements the given extension.

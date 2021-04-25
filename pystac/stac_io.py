@@ -1,12 +1,14 @@
 import os
 import json
-from pystac.stac_object import STACObject
-from pystac.catalog import Catalog
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, TYPE_CHECKING
 
 from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
+
+if TYPE_CHECKING:
+    from pystac.stac_object import STACObject
+    from pystac.catalog import Catalog
 
 
 class STAC_IO:
@@ -54,7 +56,8 @@ class STAC_IO:
     """
 
     # Replaced in __init__ to account for extension objects.
-    stac_object_from_dict: Optional[Callable[[Dict[str, Any], Optional[str], Optional[Catalog]], STACObject]] = None
+    stac_object_from_dict: Optional[Callable[[Dict[str, Any], Optional[str], Optional["Catalog"]],
+                                             "STACObject"]] = None
 
     # This is set in __init__.py
     _STAC_OBJECT_CLASSES = None
@@ -113,7 +116,7 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri: str, root: Optional[Catalog]=None) -> STACObject:
+    def read_stac_object(cls, uri: str, root: Optional["Catalog"] = None) -> "STACObject":
         """Read a STACObject from a JSON file at the given URI.
 
         Args:

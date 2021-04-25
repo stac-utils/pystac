@@ -40,7 +40,7 @@ def _join(is_path: bool, *args: str) -> str:
         return posixpath.join(*args)
 
 
-def make_relative_href(source_href: str, start_href: str, start_is_dir: bool=False) -> str:
+def make_relative_href(source_href: str, start_href: str, start_is_dir: bool = False) -> str:
     """Makes a given HREF relative to the given starting HREF.
 
     Args:
@@ -94,9 +94,6 @@ def make_absolute_href(source_href: str,
         then it will be returned unchanged. If the source_href it None, it will
         return None.
     """
-    if source_href is None:
-        return None  # TODO: Remove the None case
-
     if start_href is None:
         start_href = os.getcwd()
         start_is_dir = True

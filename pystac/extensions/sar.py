@@ -154,9 +154,8 @@ class SarItemExt(base.ItemExtension):
         """
         result = self.item.properties.get(INSTRUMENT_MODE)
         if result is None:
-            raise STACError(
-                f"Item with sar extension does not have property {INSTRUMENT_MODE}, id {self.item.id}"
-            )
+            raise STACError(f"Item with sar extension does not have property {INSTRUMENT_MODE}, "
+                            f"id {self.item.id}")
         return result
 
     @instrument_mode.setter
@@ -172,9 +171,8 @@ class SarItemExt(base.ItemExtension):
         """
         result = self.item.properties.get(FREQUENCY_BAND)
         if result is None:
-            raise STACError(
-                f"Item with sar extension does not have property {FREQUENCY_BAND}, id {self.item.id}"
-            )
+            raise STACError(f"Item with sar extension does not have property {FREQUENCY_BAND}, "
+                            f"id {self.item.id}")
         return FrequencyBand(result)
 
     @frequency_band.setter

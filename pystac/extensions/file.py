@@ -126,7 +126,7 @@ class FileItemExt(ItemExtension):
     def size(self, v: Optional[int]) -> None:
         self.set_size(v)
 
-    def get_size(self, asset: Optional[Asset]=None) -> Optional[int]:
+    def get_size(self, asset: Optional[Asset] = None) -> Optional[int]:
         """Gets an Item or an Asset file size.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -140,7 +140,7 @@ class FileItemExt(ItemExtension):
         else:
             return asset.properties.get('file:size')
 
-    def set_size(self, size: Optional[int], asset: Optional[Asset]=None) -> None:
+    def set_size(self, size: Optional[int], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset size.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -154,10 +154,10 @@ class FileItemExt(ItemExtension):
         return self.get_nodata()
 
     @nodata.setter
-    def nodata(self, v: Optional[List[Any]])-> None:
+    def nodata(self, v: Optional[List[Any]]) -> None:
         self.set_nodata(v)
 
-    def get_nodata(self, asset: Optional[Asset]=None) -> Optional[List[Any]]:
+    def get_nodata(self, asset: Optional[Asset] = None) -> Optional[List[Any]]:
         """Gets an Item or an Asset nodata values.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -171,7 +171,7 @@ class FileItemExt(ItemExtension):
         else:
             return asset.properties.get('file:nodata')
 
-    def set_nodata(self, nodata: Optional[List[Any]], asset: Optional[Asset]=None) -> None:
+    def set_nodata(self, nodata: Optional[List[Any]], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset nodata values.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -192,7 +192,7 @@ class FileItemExt(ItemExtension):
     def checksum(self, v: Optional[str]) -> None:
         self.set_checksum(v)
 
-    def get_checksum(self, asset: Optional[Asset]=None) -> Optional[str]:
+    def get_checksum(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset checksum.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -203,7 +203,7 @@ class FileItemExt(ItemExtension):
         else:
             return asset.properties.get('file:checksum')
 
-    def set_checksum(self, checksum: Optional[str], asset: Optional[Asset]=None) -> None:
+    def set_checksum(self, checksum: Optional[str], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset checksum.
 
         If an Asset is supplied, sets the property on the Asset.

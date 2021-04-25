@@ -1,7 +1,7 @@
 from functools import total_ordering
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-from pystac import STACObjectType
+import pystac
 from pystac.version import STACVersion
 from pystac.extensions import Extensions
 
@@ -132,7 +132,8 @@ class STACJSONDescription:
                                                             ','.join(self.custom_extensions))
 
 
-def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range: STACVersionRange) -> List[str]:
+def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
+                              version_range: STACVersionRange) -> List[str]:
     """Identifies extensions for STAC Objects that don't list their
     extensions in a 'stac_extensions' property.
 
@@ -143,7 +144,7 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
 
     # assets (collection assets)
 
-    if object_type == STACObjectType.ITEMCOLLECTION:
+    if object_type == pystac.STACObjectType.ITEMCOLLECTION:
         if 'assets' in d:
             stac_extensions.add('assets')
             version_range.set_min(STACVersionID('0.8.0'))
@@ -152,7 +153,12 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
     if 'links' in d:
         found_checksum = False
         for link in d['links']:
-            link_props = cast(Dict[str, Any], link).keys()
+            # Account for old links as dicts
+            if isinstance(link, str):
+                link_props = cast(Dict[str, Any], d['links'][link]).keys()
+            else:
+                link_props = cast(Dict[str, Any], link).keys()
+
             if any(prop.startswith('checksum:') for prop in link_props):
                 found_checksum = True
                 stac_extensions.add(Extensions.CHECKSUM)
@@ -167,19 +173,19 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
             version_range.set_min(STACVersionID('0.6.2'))
 
     # datacube
-    if object_type == STACObjectType.ITEM:
+    if object_type == pystac.STACObjectType.ITEM:
         if any(k.startswith('cube:') for k in cast(Dict[str, Any], d['properties'])):
             stac_extensions.add(Extensions.DATACUBE)
             version_range.set_min(STACVersionID('0.6.1'))
 
     # datetime-range (old extension)
-    if object_type == STACObjectType.ITEM:
+    if object_type == pystac.STACObjectType.ITEM:
         if 'dtr:start_datetime' in d['properties']:
             stac_extensions.add('datetime-range')
             version_range.set_min(STACVersionID('0.6.0'))
 
     # eo
-    if object_type == STACObjectType.ITEM:
+    if object_type == pystac.STACObjectType.ITEM:
         if any(k.startswith('eo:') for k in cast(Dict[str, Any], d['properties'])):
             stac_extensions.add(Extensions.EO)
             if 'eo:epsg' in d['properties']:
@@ -194,13 +200,13 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
             version_range.set_max(STACVersionID('0.5.2'))
 
     # pointcloud
-    if object_type == STACObjectType.ITEM:
+    if object_type == pystac.STACObjectType.ITEM:
         if any(k.startswith('pc:') for k in cast(Dict[str, Any], d['properties'])):
             stac_extensions.add(Extensions.POINTCLOUD)
             version_range.set_min(STACVersionID('0.6.2'))
 
     # sar
-    if object_type == STACObjectType.ITEM:
+    if object_type == pystac.STACObjectType.ITEM:
         if any(k.startswith('sar:') for k in cast(Dict[str, Any], d['properties'])):
             stac_extensions.add(Extensions.SAR)
             version_range.set_min(STACVersionID('0.6.2'))
@@ -227,7 +233,7 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
                 version_range.set_max(STACVersionID('0.6.2'))
 
     # scientific
-    if object_type == STACObjectType.ITEM or object_type == STACObjectType.COLLECTION:
+    if object_type == pystac.STACObjectType.ITEM or object_type == pystac.STACObjectType.COLLECTION:
         if 'properties' in d:
             prop_keys = cast(Dict[str, Any], d['properties']).keys()
             if any(k.startswith('sci:') for k in prop_keys):
@@ -235,7 +241,7 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any], version_range
                 version_range.set_min(STACVersionID('0.6.0'))
 
     # Single File STAC
-    if object_type == STACObjectType.ITEMCOLLECTION:
+    if object_type == pystac.STACObjectType.ITEMCOLLECTION:
         if 'collections' in d:
             stac_extensions.add(Extensions.SINGLE_FILE_STAC)
             version_range.set_min(STACVersionID('0.8.0'))
@@ -275,14 +281,14 @@ def identify_stac_object_type(json_dict: Dict[str, Any]):
     if 'type' in json_dict and 'assets' not in json_dict:
         if 'stac_version' in json_dict and cast(str, json_dict['stac_version']).startswith('0'):
             if json_dict['type'] == 'FeatureCollection':
-                object_type = STACObjectType.ITEMCOLLECTION
+                object_type = pystac.STACObjectType.ITEMCOLLECTION
 
     if 'extent' in json_dict:
-        object_type = STACObjectType.COLLECTION
+        object_type = pystac.STACObjectType.COLLECTION
     elif 'assets' in json_dict:
-        object_type = STACObjectType.ITEM
+        object_type = pystac.STACObjectType.ITEM
     else:
-        object_type = STACObjectType.CATALOG
+        object_type = pystac.STACObjectType.CATALOG
 
     return object_type
 
@@ -305,9 +311,10 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     stac_extensions = json_dict.get('stac_extensions', None)
 
     if stac_version is None:
-        if object_type == STACObjectType.CATALOG or object_type == STACObjectType.COLLECTION:
+        if (object_type == pystac.STACObjectType.CATALOG
+                or object_type == pystac.STACObjectType.COLLECTION):
             version_range.set_max(STACVersionID('0.5.2'))
-        elif object_type == STACObjectType.ITEM:
+        elif object_type == pystac.STACObjectType.ITEM:
             version_range.set_max(STACVersionID('0.7.0'))
         else:  # ItemCollection
             version_range.set_min(STACVersionID('0.8.0'))
@@ -323,7 +330,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         # but ItemCollection (except after 0.9.0, when ItemCollection also got
         # the stac_extensions property).
         if version_range.is_earlier_than('0.8.0') or \
-           (object_type == STACObjectType.ITEMCOLLECTION and not version_range.is_later_than(
+           (object_type == pystac.STACObjectType.ITEMCOLLECTION and not version_range.is_later_than(
                '0.8.1')):
             stac_extensions = _identify_stac_extensions(object_type, json_dict, version_range)
         else:
