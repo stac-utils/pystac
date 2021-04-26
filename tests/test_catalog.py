@@ -7,7 +7,7 @@ from datetime import datetime
 from collections import defaultdict
 
 import pystac as ps
-from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, Extensions,
+from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, _OldExtensionShortIDs,
                     HIERARCHICAL_LINKS)
 from pystac.extensions.label import LabelClasses
 from pystac.validation import STACValidationError
@@ -500,7 +500,7 @@ class CatalogTest(unittest.TestCase):
                               bbox=item.bbox,
                               datetime=datetime.utcnow(),
                               properties={})
-            label_item.ext.enable(Extensions.LABEL)
+            label_item.ext.enable(_OldExtensionShortIDs.LABEL)
             label_ext = label_item.ext.label
             label_ext.apply(
                 label_description='labels',
@@ -910,7 +910,7 @@ class FullCopyTest(unittest.TestCase):
                               bbox=RANDOM_BBOX,
                               datetime=datetime.utcnow(),
                               properties={},
-                              stac_extensions=[Extensions.LABEL])
+                              stac_extensions=[_OldExtensionShortIDs.LABEL])
             label_ext = label_item.ext.label
             label_ext.apply(
                 label_description='labels',

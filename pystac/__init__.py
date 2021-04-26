@@ -24,7 +24,6 @@ class STACTypeError(Exception):
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
 from pystac.stac_io import STAC_IO  # type:ignore
-from pystac.extensions import Extensions  # type:ignore
 from pystac.stac_object import (STACObject, STACObjectType)  # type:ignore
 from pystac.media_type import MediaType  # type:ignore
 from pystac.link import (Link, HIERARCHICAL_LINKS)  # type:ignore
@@ -39,7 +38,7 @@ from pystac.item import (Item, Asset, CommonMetadata)  # type:ignore
 
 import pystac.validation
 
-import pystac.extensions.base
+import pystac.extensions.hooks
 import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.pointcloud
@@ -53,21 +52,8 @@ import pystac.extensions.version
 import pystac.extensions.view
 import pystac.extensions.file
 
-STAC_EXTENSIONS: pystac.extensions.base.RegisteredSTACExtensions = pystac.extensions.base.RegisteredSTACExtensions(
-    [
-        pystac.extensions.eo.EO_EXTENSION_DEFINITION,
-        pystac.extensions.label.LABEL_EXTENSION_DEFINITION,
-        pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_DEFINITION,
-        pystac.extensions.projection.PROJECTION_EXTENSION_DEFINITION,
-        pystac.extensions.sar.SAR_EXTENSION_DEFINITION,
-        pystac.extensions.sat.SAT_EXTENSION_DEFINITION,
-        pystac.extensions.scientific.SCIENTIFIC_EXTENSION_DEFINITION,
-        pystac.extensions.single_file_stac.SFS_EXTENSION_DEFINITION,
-        pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_DEFINITION,
-        pystac.extensions.version.VERSION_EXTENSION_DEFINITION,
-        pystac.extensions.view.VIEW_EXTENSION_DEFINITION,
-        pystac.extensions.file.FILE_EXTENSION_DEFINITION
-    ])
+EXTENSION_HOOKS: pystac.extensions.hooks.RegisteredExtensionHooks = pystac.extensions.hooks.RegisteredExtensionHooks(
+    [pystac.extensions.eo.EO_EXTENSION_HOOKS, pystac.extensions.label.LABEL_EXTENSION_HOOKS])
 
 
 def read_file(href: str) -> STACObject:

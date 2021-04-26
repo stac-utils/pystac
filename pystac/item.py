@@ -1006,7 +1006,7 @@ class Item(STACObject):
         return clone
 
     def _object_links(self) -> List[str]:
-        return ['collection'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
+        return ['collection'] + (ps.EXTENSION_HOOKS.get_extended_object_links(self))
 
     @classmethod
     def from_dict(cls,

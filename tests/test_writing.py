@@ -46,7 +46,7 @@ class STACWritingTest(unittest.TestCase):
         def validate_item_link_type(href: str, link_type: str, should_include_self: bool):
             item_dict = STAC_IO.read_json(href)
             item = ps.Item.from_file(href)
-            rel_links = HIERARCHICAL_LINKS + ps.STAC_EXTENSIONS.get_extended_object_links(item)
+            rel_links = HIERARCHICAL_LINKS + ps.EXTENSION_HOOKS.get_extended_object_links(item)
             for link in item.get_links():
                 if not link.rel == 'self':
                     if link_type == 'RELATIVE' and link.rel in rel_links:

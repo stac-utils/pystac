@@ -1,10 +1,9 @@
 from typing import Any, Dict, List, Optional
-from pystac import Extensions
+
 from pystac.item import Asset, Item
-from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 
 
-class ProjectionItemExt(ItemExtension):
+class ProjectionItemExt():
     """ProjectionItemExt is the extension of an Item in the Projection Extension.
     The Projection extension adds projection information to STAC Items.
 
@@ -19,11 +18,6 @@ class ProjectionItemExt(ItemExtension):
         the item's stac_extensions.
     """
     def __init__(self, item: Item) -> None:
-        if item.stac_extensions is None:
-            item.stac_extensions = [str(Extensions.PROJECTION)]
-        elif str(Extensions.PROJECTION) not in item.stac_extensions:
-            item.stac_extensions.append(str(Extensions.PROJECTION))
-
         self.item = item
 
     def apply(self,
@@ -416,7 +410,3 @@ class ProjectionItemExt(ItemExtension):
     @classmethod
     def from_item(cls, item: Item) -> "ProjectionItemExt":
         return cls(item)
-
-
-PROJECTION_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
-    Extensions.PROJECTION, [ExtendedObject(Item, ProjectionItemExt)])

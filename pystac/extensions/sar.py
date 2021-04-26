@@ -6,9 +6,8 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 import enum
 from typing import List, Optional
 
-import pystac
-from pystac import Extensions, STACError
-from pystac.extensions import base
+import pystac as ps
+from pystac import STACError
 
 # Required
 INSTRUMENT_MODE: str = 'sar:instrument_mode'
@@ -52,7 +51,7 @@ class ObservationDirection(enum.Enum):
 
 
 # TODO: Fix to work with Assets
-class SarItemExt(base.ItemExtension):
+class SarItemExt():
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
     Args:
@@ -65,9 +64,9 @@ class SarItemExt(base.ItemExtension):
         Using SarItemExt to directly wrap an item will add the 'sar'
         extension ID to the item's stac_extensions.
     """
-    item: pystac.Item
+    item: ps.Item
 
-    def __init__(self, an_item: pystac.Item) -> None:
+    def __init__(self, an_item: ps.Item) -> None:
         self.item = an_item
 
     def apply(self,
@@ -138,7 +137,7 @@ class SarItemExt(base.ItemExtension):
             self.observation_direction = observation_direction
 
     @classmethod
-    def from_item(cls, an_item: pystac.Item) -> "SarItemExt":
+    def from_item(cls, an_item: ps.Item) -> "SarItemExt":
         return cls(an_item)
 
     @classmethod
@@ -196,7 +195,7 @@ class SarItemExt(base.ItemExtension):
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
         if not isinstance(values, list):
-            raise pystac.STACError(f'polarizations must be a list. Invalid "{values}"')
+            raise ps.STACError(f'polarizations must be a list. Invalid "{values}"')
         self.item.properties[POLARIZATIONS] = [v.value for v in values]
 
     @property
@@ -335,9 +334,3 @@ class SarItemExt(base.ItemExtension):
     @observation_direction.setter
     def observation_direction(self, v: ObservationDirection) -> None:
         self.item.properties[OBSERVATION_DIRECTION] = v.value
-
-
-SAR_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
-    Extensions.SAR, [
-        base.ExtendedObject(pystac.Item, SarItemExt),
-    ])

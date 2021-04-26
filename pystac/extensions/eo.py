@@ -1,7 +1,19 @@
-from typing import Any, Dict, List, Optional, Tuple, cast
-from pystac import Extensions
-from pystac.item import Asset, Item
-from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
+import re
+from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, Union, cast
+
+import pystac as ps
+from pystac.extensions.base import EnableExtensionMixin, ExtensionException, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.utils import map_opt
+
+
+T = TypeVar('T', contravariant=True, bound=Union[ps.Item, ps.Asset])
+
+SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+
+BANDS_PROP = "eo:bands"
+CLOUD_COVER_PROP = "eo:cloud_cover"
 
 
 class Band:
@@ -206,7 +218,7 @@ class Band:
         return None
 
 
-class EOItemExt(ItemExtension):
+class EOExtension(Generic[T], PropertiesExtension):
     """EOItemExt is the extension of the Item in the eo extension which
     represents a snapshot of the earth for a single date and time.
 
@@ -220,14 +232,6 @@ class EOItemExt(ItemExtension):
         Using EOItemExt to directly wrap an item will add the 'eo' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item: Item) -> None:
-        if item.stac_extensions is None:
-            item.stac_extensions = [str(Extensions.EO)]
-        elif str(Extensions.EO) not in item.stac_extensions:
-            item.stac_extensions.append(str(Extensions.EO))
-
-        self.item = item
-
     def apply(self, bands: List[Band], cloud_cover: Optional[float] = None) -> None:
         """Applies label extension properties to the extended Item.
 
@@ -244,53 +248,16 @@ class EOItemExt(ItemExtension):
     def bands(self) -> Optional[List[Band]]:
         """Get or sets a list of :class:`~pystac.Band` objects that represent
             the available bands.
-
-        Returns:
-            List[Band]
         """
-        return self.get_bands()
+        return self._get_bands()
+
+    def _get_bands(self) -> Optional[List[Band]]:
+        return map_opt(lambda bands: [Band(b) for b in bands],
+                       self._get_property(BANDS_PROP, List[Dict[str, Any]]))
 
     @bands.setter
-    def bands(self, v: List[Band]) -> None:
-        self.set_bands(v)
-
-    def get_bands(self, asset: Optional[Asset] = None) -> Optional[List[Band]]:
-        """Gets an Item or an Asset bands.
-
-        If an Asset is supplied and the bands property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value or
-        all the asset's eo bands
-
-        Returns:
-            List[Band]
-        """
-        bands: Optional[List[Dict[str, Any]]] = None
-        if asset is not None and 'eo:bands' in asset.properties:
-            bands = asset.properties.get('eo:bands')
-        else:
-            bands = self.item.properties.get('eo:bands')
-
-        # get assets with eo:bands even if not in item
-        if asset is None and bands is None:
-            asset_bands: List[Dict[str, Any]] = []
-            for _, value in self.item.get_assets().items():
-                if 'eo:bands' in value.properties:
-                    asset_bands.extend(cast(List[Dict[str, Any]], value.properties.get('eo:bands')))
-            if any(asset_bands):
-                bands = asset_bands
-
-        if bands is not None:
-            return [Band(b) for b in bands]
-        return None
-
-    def set_bands(self, bands: List[Band], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset bands.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        band_dicts = [b.to_dict() for b in bands]
-        self._set_property('eo:bands', band_dicts, asset)
+    def bands(self, v: Optional[List[Band]]) -> None:
+        self._set_property(BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v))
 
     @property
     def cloud_cover(self) -> Optional[float]:
@@ -300,45 +267,144 @@ class EOItemExt(ItemExtension):
         Returns:
             float or None
         """
-        return self.get_cloud_cover()
+        return self._get_property(CLOUD_COVER_PROP, float)
 
     @cloud_cover.setter
     def cloud_cover(self, v: Optional[float]) -> None:
-        self.set_cloud_cover(v)
+        self._set_property(CLOUD_COVER_PROP, v)
 
-    def get_cloud_cover(self, asset: Optional[Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset cloud_cover.
 
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
+class ItemEOExtension(EnableExtensionMixin[ps.Item], EOExtension[ps.Item]):
+    schema_uri = SCHEMA_URI
 
-        Returns:
-            float
+    def __init__(self, item: ps.Item):
+        self.obj = item
+        self.properties = item.properties
+
+    def _get_bands(self) -> Optional[List[Band]]:
+        """Get or sets a list of :class:`~pystac.Band` objects that represent
+            the available bands.
         """
-        if asset is None or 'eo:cloud_cover' not in asset.properties:
-            return self.item.properties.get('eo:cloud_cover')
-        else:
-            return asset.properties.get('eo:cloud_cover')
+        bands = self._get_property(BANDS_PROP, List[Dict[str, Any]])
 
-    def set_cloud_cover(self, cloud_cover: Optional[float], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset cloud_cover.
+        # get assets with eo:bands even if not in item
+        if bands is None:
+            asset_bands: List[Dict[str, Any]] = []
+            for _, value in self.obj.get_assets().items():
+                if BANDS_PROP in value.properties:
+                    asset_bands.extend(cast(List[Dict[str, Any]], value.properties.get(BANDS_PROP)))
+            if any(asset_bands):
+                bands = asset_bands
 
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('eo:cloud_cover', cloud_cover, asset)
+        if bands is not None:
+            return [Band(b) for b in bands]
+        return None
 
     def __repr__(self) -> str:
-        return '<EOItemExt Item id={}>'.format(self.item.id)
-
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
-
-    @classmethod
-    def from_item(cls, item: Item) -> "EOItemExt":
-        return cls(item)
+        return '<ItemEOExtension Item id={}>'.format(self.obj.id)
 
 
-EO_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
-    Extensions.EO, [ExtendedObject(Item, EOItemExt)])
+class AssetEOExtension(EOExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner:
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssetEOExtension Item id={}>'.format(self.asset_href)
+
+
+def eo_ext(obj: Union[ps.Item, ps.Asset]) -> EOExtension[T]:
+    if isinstance(obj, ps.Item):
+        return ItemEOExtension(obj)
+    elif isinstance(obj, ps.Asset):
+        return AssetEOExtension(obj)
+    else:
+        raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
+
+class EOExtensionHooks(ExtensionHooks):
+    schema_uri = SCHEMA_URI
+
+    def migrate(self, d: Dict[str, Any], version: STACVersionID,
+                info: STACJSONDescription) -> None:
+        added_extensions: Set[str] = set([])
+        if version < '0.5':
+            if 'eo:crs' in d['properties']:
+                # Try to pull out the EPSG code.
+                # Otherwise, just leave it alone.
+                wkt = d['properties']['eo:crs']
+                matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
+                if len(matches) > 0:
+                    epsg_code = matches[-1].group(1)
+                    d['properties'].pop('eo:crs')
+                    d['properties']['eo:epsg'] = int(epsg_code)
+
+        if version < '0.6':
+            # Change eo:bands from a dict to a list. eo:bands on an asset
+            # is an index instead of a dict key. eo:bands is in properties.
+            bands_dict = d['eo:bands']
+            keys_to_indices: Dict[str, int] = {}
+            bands: List[Dict[str, Any]] = []
+            for i, (k, band) in enumerate(bands_dict.items()):
+                keys_to_indices[k] = i
+                bands.append(band)
+
+            d.pop('eo:bands')
+            d['properties']['eo:bands'] = bands
+            for k, asset in d['assets'].items():
+                if 'eo:bands' in asset:
+                    asset_band_indices: List[int] = []
+                    for bk in asset['eo:bands']:
+                        asset_band_indices.append(keys_to_indices[bk])
+                    asset['eo:bands'] = sorted(asset_band_indices)
+
+        if version < '0.9':
+            # Some eo fields became common_metadata
+            if 'eo:platform' in d['properties'] and 'platform' not in d['properties']:
+                d['properties']['platform'] = d['properties']['eo:platform']
+                del d['properties']['eo:platform']
+
+            if 'eo:instrument' in d['properties'] and 'instruments' not in d['properties']:
+                d['properties']['instruments'] = [d['properties']['eo:instrument']]
+                del d['properties']['eo:instrument']
+
+            if 'eo:constellation' in d['properties'] and 'constellation' not in d['properties']:
+                d['properties']['constellation'] = d['properties']['eo:constellation']
+                del d['properties']['eo:constellation']
+
+            # Some eo fields became view extension fields
+            eo_to_view_fields = [
+                'off_nadir', 'azimuth', 'incidence_angle', 'sun_azimuth', 'sun_elevation'
+            ]
+
+            view_enabled = 'view' in d['stac_extensions']
+            for field in eo_to_view_fields:
+                if 'eo:{}'.format(field) in d['properties']:
+                    if not view_enabled:
+                        added_extensions.add('view')
+                        view_enabled = True
+                    if not 'view:{}'.format(field) in d['properties']:
+                        d['properties']['view:{}'.format(field)] = \
+                            d['properties']['eo:{}'.format(field)]
+                        del d['properties']['eo:{}'.format(field)]
+
+        if version < '1.0.0-beta.1' and info.object_type == ps.STACObjectType.ITEM:
+            # gsd moved from eo to common metadata
+            if 'eo:gsd' in d['properties']:
+                d['properties']['gsd'] = d['properties']['eo:gsd']
+                del d['properties']['eo:gsd']
+
+            # The way bands were declared in assets changed.
+            # In 1.0.0-beta.1 they are inlined into assets as
+            # opposed to having indices back into a property-level array.
+            if 'eo:bands' in d['properties']:
+                bands = d['properties']['eo:bands']
+                for asset in d['assets'].values():
+                    if 'eo:bands' in asset:
+                        new_bands: List[Dict[str, Any]] = []
+                        for band_index in asset['eo:bands']:
+                            new_bands.append(bands[band_index])
+                        asset['eo:bands'] = new_bands
+
+EO_EXTENSION_HOOKS: ExtensionHooks = EOExtensionHooks()

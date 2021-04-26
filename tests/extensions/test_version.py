@@ -18,7 +18,7 @@ def make_item(year: int) -> pystac.Item:
     item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
-    item.ext.enable(pystac.Extensions.VERSION)
+    item.ext.enable(pystac._OldExtensionShortIDs.VERSION)
 
     return item
 
@@ -30,10 +30,10 @@ class VersionItemExtTest(unittest.TestCase):
         super().setUp()
         self.item = make_item(2011)
 
-        self.item.ext.enable(pystac.Extensions.VERSION)
+        self.item.ext.enable(pystac._OldExtensionShortIDs.VERSION)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.VERSION], self.item.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.VERSION], self.item.stac_extensions)
 
     def test_add_version(self):
         self.item.ext.version.apply(self.version)
@@ -117,8 +117,8 @@ class VersionItemExtTest(unittest.TestCase):
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Item
-        item1.ext.enable(pystac.Extensions.VERSION)
-        item2.ext.enable(pystac.Extensions.VERSION)
+        item1.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+        item2.ext.enable(pystac._OldExtensionShortIDs.VERSION)
 
         item1.ext.version.apply(version='2.0', predecessor=item2)
         item2.ext.version.apply(version='1.0', successor=item1, latest=item1)
@@ -206,7 +206,7 @@ def make_collection(year: int) -> pystac.Collection:
     collection = pystac.Collection(asset_id, 'desc', extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
-    collection.ext.enable(pystac.Extensions.VERSION)
+    collection.ext.enable(pystac._OldExtensionShortIDs.VERSION)
 
     return collection
 
@@ -219,7 +219,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         self.collection = make_collection(2011)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.VERSION], self.collection.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.VERSION], self.collection.stac_extensions)
 
     def test_add_version(self):
         self.collection.ext.version.apply(self.version)
@@ -303,8 +303,8 @@ class VersionCollectionExtTest(unittest.TestCase):
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Collection
-        col1.ext.enable(pystac.Extensions.VERSION)
-        col2.ext.enable(pystac.Extensions.VERSION)
+        col1.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+        col2.ext.enable(pystac._OldExtensionShortIDs.VERSION)
 
         col1.ext.version.apply(version='2.0', predecessor=col2)
         col2.ext.version.apply(version='1.0', successor=col1, latest=col1)

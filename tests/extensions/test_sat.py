@@ -13,7 +13,7 @@ def make_item() -> pystac.Item:
     start = datetime.datetime(2018, 1, 2)
     item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
 
-    item.ext.enable(pystac.Extensions.SAT)
+    item.ext.enable(pystac._OldExtensionShortIDs.SAT)
     return item
 
 
@@ -23,7 +23,7 @@ class SatTest(unittest.TestCase):
         self.item = make_item()
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.SAT], self.item.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.SAT], self.item.stac_extensions)
 
     def test_no_args_fails(self):
         with self.assertRaises(pystac.STACError):

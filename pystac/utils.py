@@ -1,6 +1,6 @@
 import os
 import posixpath
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 from urllib.parse import (urlparse, ParseResult as URLParseResult)
 from datetime import datetime, timezone
 import dateutil.parser
@@ -202,3 +202,31 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     bbox = [lats[0], lons[0], lats[-1], lons[-1]]
 
     return bbox
+
+
+T = TypeVar('T')
+U = TypeVar('U')
+
+
+def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
+    """Maps the value of an option to another value, returning
+    None if the input option is None.
+    """
+    return v if v is None else fn(v)
+
+
+def get_opt(option: Optional[T]) -> T:
+    """ Retrieves the value of the Optional type.
+
+    If the Optional is None, this will raise a value error.
+    Use this to get a propertly typed value from an optional
+    in contexts where you can be certain the value is not None.
+    If there is potential for a non-None value, it's best to handle
+    the None case of the optional instead of using this method.
+
+    Returns:
+        The value of type T wrapped by the Optional[T]
+    """
+    if option is None:
+        raise ValueError("Cannot get value from None")
+    return option

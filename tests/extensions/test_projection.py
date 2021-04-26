@@ -3,7 +3,7 @@ import unittest
 from copy import deepcopy
 
 import pystac
-from pystac import (Item, Extensions)
+from pystac import (Item, _OldExtensionShortIDs)
 from pystac.extensions import ExtensionError
 from pystac.validation import STACValidationError
 from tests.utils import (TestCases, test_to_from_dict)
@@ -83,7 +83,7 @@ class ProjectionTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.proj
 
-        item.ext.enable(Extensions.PROJECTION)
+        item.ext.enable(_OldExtensionShortIDs.PROJECTION)
         item.ext.projection.apply(
             4326,
             wkt2=WKT2,

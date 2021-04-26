@@ -1,11 +1,9 @@
-import pystac
-from pystac import Extensions
-from pystac.item import Asset, Item
-from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
 from typing import List, Optional
 
+import pystac as ps
 
-class ViewItemExt(ItemExtension):
+
+class ViewItemExt():
     """ViewItemExt is the extension of the Item in the View Geometry Extension.
     View Geometry adds metadata related to angles of sensors and other radiance angles
     that affect the view of resulting data. It will often be combined with other extensions that
@@ -21,12 +19,7 @@ class ViewItemExt(ItemExtension):
         Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item: Item) -> None:
-        if item.stac_extensions is None:
-            item.stac_extensions = [str(Extensions.VIEW)]
-        elif str(Extensions.VIEW) not in item.stac_extensions:
-            item.stac_extensions.append(str(Extensions.VIEW))
-
+    def __init__(self, item: ps.Item) -> None:
         self.item = item
 
     def apply(self,
@@ -53,7 +46,7 @@ class ViewItemExt(ItemExtension):
         """
         if (off_nadir is None and incidence_angle is None and azimuth is None
                 and sun_azimuth is None and sun_elevation is None):
-            raise pystac.STACError(
+            raise ps.STACError(
                 'Must provide at least one of: off_nadir, incidence_angle, azimuth, sun_azimuth, sun_elevation'  # noqa: E501
             )
         if off_nadir:
@@ -81,7 +74,7 @@ class ViewItemExt(ItemExtension):
     def off_nadir(self, v: Optional[float]) -> None:
         self.set_off_nadir(v)
 
-    def get_off_nadir(self, asset: Optional[Asset] = None) -> Optional[float]:
+    def get_off_nadir(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset off_nadir.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -95,7 +88,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:off_nadir')
 
-    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[Asset] = None) -> None:
+    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[ps.Asset] = None) -> None:
         """Set an Item or an Asset off_nadir.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -118,7 +111,7 @@ class ViewItemExt(ItemExtension):
     def incidence_angle(self, v: Optional[float]) -> None:
         self.set_incidence_angle(v)
 
-    def get_incidence_angle(self, asset: Optional[Asset] = None) -> Optional[float]:
+    def get_incidence_angle(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset incidence_angle.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -134,7 +127,7 @@ class ViewItemExt(ItemExtension):
 
     def set_incidence_angle(self,
                             incidence_angle: Optional[float],
-                            asset: Optional[Asset] = None) -> None:
+                            asset: Optional[ps.Asset] = None) -> None:
         """Set an Item or an Asset incidence_angle.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -157,7 +150,7 @@ class ViewItemExt(ItemExtension):
     def azimuth(self, v: Optional[float]) -> None:
         self.set_azimuth(v)
 
-    def get_azimuth(self, asset: Optional[Asset] = None) -> Optional[float]:
+    def get_azimuth(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset azimuth.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -171,7 +164,7 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:azimuth')
 
-    def set_azimuth(self, azimuth: Optional[float], asset: Optional[Asset] = None) -> None:
+    def set_azimuth(self, azimuth: Optional[float], asset: Optional[ps.Asset] = None) -> None:
         """Set an Item or an Asset azimuth.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -193,7 +186,7 @@ class ViewItemExt(ItemExtension):
     def sun_azimuth(self, v: Optional[float]) -> None:
         self.set_sun_azimuth(v)
 
-    def get_sun_azimuth(self, asset: Optional[Asset] = None) -> Optional[float]:
+    def get_sun_azimuth(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset sun_azimuth.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -207,7 +200,9 @@ class ViewItemExt(ItemExtension):
         else:
             return asset.properties.get('view:sun_azimuth')
 
-    def set_sun_azimuth(self, sun_azimuth: Optional[float], asset: Optional[Asset] = None) -> None:
+    def set_sun_azimuth(self,
+                        sun_azimuth: Optional[float],
+                        asset: Optional[ps.Asset] = None) -> None:
         """Set an Item or an Asset sun_azimuth.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -229,7 +224,7 @@ class ViewItemExt(ItemExtension):
     def sun_elevation(self, v: Optional[float]) -> None:
         self.set_sun_elevation(v)
 
-    def get_sun_elevation(self, asset: Optional[Asset] = None) -> Optional[float]:
+    def get_sun_elevation(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset sun_elevation.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -245,7 +240,7 @@ class ViewItemExt(ItemExtension):
 
     def set_sun_elevation(self,
                           sun_elevation: Optional[float],
-                          asset: Optional[Asset] = None) -> None:
+                          asset: Optional[ps.Asset] = None) -> None:
         """Set an Item or an Asset sun_elevation.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -258,9 +253,5 @@ class ViewItemExt(ItemExtension):
         return []
 
     @classmethod
-    def from_item(cls, item: Item) -> "ViewItemExt":
+    def from_item(cls, item: ps.Item) -> "ViewItemExt":
         return cls(item)
-
-
-VIEW_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
-    Extensions.VIEW, [ExtendedObject(Item, ViewItemExt)])

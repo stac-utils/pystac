@@ -7,11 +7,11 @@ from pystac import STACError
 from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
-from pystac.extensions import ExtensionError
+#from pystac.extensions import ExtensionError
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
-    from pystac.extensions.base import STACObjectExtension as STACObjectExtension_Type
+    #from pystac.extensions.base import STACObjectExtension as STACObjectExtension_Type
 
 
 class STACObjectType(str, Enum):
@@ -356,22 +356,22 @@ class STACObject(ABC):
 
         return clone
 
-    @property
-    def ext(self) -> "ExtensionIndex":
-        """Access extensions for this STACObject.
+    # @property
+    # def ext(self) -> "ExtensionIndex":
+    #     """Access extensions for this STACObject.
 
-        Example:
-            This example shows accessing a Item's EO extension functionality
-            that gets the band information for an asset::
+    #     Example:
+    #         This example shows accessing a Item's EO extension functionality
+    #         that gets the band information for an asset::
 
-                item = pystac.read_file("eo_item.json")
-                bands = item.ext.eo.get_asset_bands(item.assets["image"])
+    #             item = pystac.read_file("eo_item.json")
+    #             bands = item.ext.eo.get_asset_bands(item.assets["image"])
 
-        Returns:
-            ExtensionIndex: The object that can be used to access extension information
-            and functionality.
-        """
-        return ExtensionIndex(self)
+    #     Returns:
+    #         ExtensionIndex: The object that can be used to access extension information
+    #         and functionality.
+    #     """
+    #     return ExtensionIndex(self)
 
     def resolve_links(self) -> None:
         """Ensure all STACObjects linked to by this STACObject are
@@ -475,73 +475,73 @@ class STACObject(ABC):
         pass
 
 
-class ExtensionIndex:
-    """Defines methods for accessing extension functionality.
+# class ExtensionIndex:
+#     """Defines methods for accessing extension functionality.
 
-    To access a specific extension, use the __getitem__ on this class with the
-    extension ID::
+#     To access a specific extension, use the __getitem__ on this class with the
+#     extension ID::
 
-        # Access the "bands" property on the eo extension.
-        item.ext['eo'].bands
-    """
-    def __init__(self, stac_object: STACObject) -> None:
-        self.stac_object = stac_object
+#         # Access the "bands" property on the eo extension.
+#         item.ext['eo'].bands
+#     """
+#     def __init__(self, stac_object: STACObject) -> None:
+#         self.stac_object = stac_object
 
-    def __getitem__(self, extension_id: str) -> "STACObjectExtension_Type":
-        """Gets the extension object for the given extension.
+#     def __getitem__(self, extension_id: str) -> "STACObjectExtension_Type":
+#         """Gets the extension object for the given extension.
 
-        Returns:
-            CatalogExtension or CollectionExtension or ItemExtension: The extension object
-            through which you can access the extension functionality for the extension represented
-            by the extension_id.
-        """
-        # Check to make sure this is a registered extension.
-        if not ps.STAC_EXTENSIONS.is_registered_extension(extension_id):
-            raise ExtensionError("'{}' is not an extension "
-                                 "registered with PySTAC".format(extension_id))
+#         Returns:
+#             CatalogExtension or CollectionExtension or ItemExtension: The extension object
+#             through which you can access the extension functionality for the extension represented
+#             by the extension_id.
+#         """
+#         # Check to make sure this is a registered extension.
+#         if not ps.STAC_EXTENSIONS.is_registered_extension(extension_id):
+#             raise ExtensionError("'{}' is not an extension "
+#                                  "registered with PySTAC".format(extension_id))
 
-        if not self.implements(extension_id):
-            raise ExtensionError("{} does not implement the {} extension. "
-                                 "Use the 'ext.enable' method to enable this extension "
-                                 "first.".format(self.stac_object, extension_id))
+#         if not self.implements(extension_id):
+#             raise ExtensionError("{} does not implement the {} extension. "
+#                                  "Use the 'ext.enable' method to enable this extension "
+#                                  "first.".format(self.stac_object, extension_id))
 
-        return ps.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
+#         return ps.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
 
-    def __getattr__(self, extension_id: str) -> "STACObjectExtension_Type":
-        """Gets an extension based on a dynamic attribute.
+#     def __getattr__(self, extension_id: str) -> "STACObjectExtension_Type":
+#         """Gets an extension based on a dynamic attribute.
 
-        This takes the attribute name and passes it to __getitem__.
+#         This takes the attribute name and passes it to __getitem__.
 
-        This allows the following two lines to be equivalent::
+#         This allows the following two lines to be equivalent::
 
-            item.ext["label"].label_properties
-            item.ext.label.label_properties
-        """
-        if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
-            return self.__getattribute__(extension_id)
-        return self[extension_id]
+#             item.ext["label"].label_properties
+#             item.ext.label.label_properties
+#         """
+#         if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
+#             return self.__getattribute__(extension_id)
+#         return self[extension_id]
 
-    def enable(self, extension_id: str) -> None:
-        """Enables a stac extension for the given object. If the object already
-        enables the extension, no action is taken. If it does not, the extension ID is
-        added to the object's stac_extension property.
+#     def enable(self, extension_id: str) -> None:
+#         """Enables a stac extension for the given object. If the object already
+#         enables the extension, no action is taken. If it does not, the extension ID is
+#         added to the object's stac_extension property.
 
-        Args:
-            extension_id (str): The extension ID representing the extension
-            the object should implement
+#         Args:
+#             extension_id (str): The extension ID representing the extension
+#             the object should implement
 
-        """
-        ps.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
+#         """
+#         ps.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
 
-    def implements(self, extension_id: str) -> bool:
-        """Returns true if the associated object implements the given extension.
+#     def implements(self, extension_id: str) -> bool:
+#         """Returns true if the associated object implements the given extension.
 
-        Args:
-            extension_id (str): The extension ID to check
+#         Args:
+#             extension_id (str): The extension ID to check
 
-        Returns:
-            [bool]: True if the object implements the extensions - i.e. if
-                the extension ID is in the "stac_extensions" property.
-        """
-        return (self.stac_object.stac_extensions is not None
-                and extension_id in self.stac_object.stac_extensions)
+#         Returns:
+#             [bool]: True if the object implements the extensions - i.e. if
+#                 the extension ID is in the "stac_extensions" property.
+#         """
+#         return (self.stac_object.stac_extensions is not None
+#                 and extension_id in self.stac_object.stac_extensions)

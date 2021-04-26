@@ -3,7 +3,7 @@ import unittest
 # from copy import deepcopy
 
 import pystac
-from pystac import (Item, Extensions)
+from pystac import (Item, _OldExtensionShortIDs)
 from pystac.extensions import ExtensionError
 from pystac.extensions.pointcloud import PointcloudSchema, PointcloudStatistic
 from tests.utils import (TestCases, test_to_from_dict)
@@ -26,7 +26,7 @@ class PointcloudTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.pointcloud
 
-        item.ext.enable(Extensions.POINTCLOUD)
+        item.ext.enable(_OldExtensionShortIDs.POINTCLOUD)
         item.ext.pointcloud.apply(1000, 'lidar', 'laszip',
                                   [PointcloudSchema({
                                       'name': 'X',

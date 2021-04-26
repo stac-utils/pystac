@@ -108,7 +108,7 @@ class Link:
         if href and is_absolute_href(href) and self.owner and self.owner.get_root():
             root = self.owner.get_root()
             rel_links = HIERARCHICAL_LINKS + \
-                ps.STAC_EXTENSIONS.get_extended_object_links(self.owner)
+                ps.EXTENSION_HOOKS.get_extended_object_links(self.owner)
             # if a hierarchical link with an owner and root, and relative catalog
             if root and root.is_relative() and self.rel in rel_links:
                 owner_href = self.owner.get_self_href()

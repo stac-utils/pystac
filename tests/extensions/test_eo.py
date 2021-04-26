@@ -1,9 +1,10 @@
 import json
 import unittest
 
-import pystac
+import pystac as ps
 from pystac import Item
-from pystac.extensions.eo import Band
+from pystac.utils import get_opt
+from pystac.extensions.eo import eo_ext, Band
 from tests.utils import (TestCases, test_to_from_dict)
 
 
@@ -20,17 +21,18 @@ class EOTest(unittest.TestCase):
         test_to_from_dict(self, Item, item_dict)
 
     def test_validate_eo(self):
-        item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = pystac.read_file(self.BANDS_IN_ITEM_URI)
+        item = ps.read_file(self.LANDSAT_EXAMPLE_URI)
+        item2 = ps.read_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
     def test_bands(self):
-        eo_item = pystac.read_file(self.BANDS_IN_ITEM_URI)
+        item = ps.Item.from_file(self.BANDS_IN_ITEM_URI)
 
         # Get
-        self.assertIn("eo:bands", eo_item.properties)
-        bands = eo_item.ext.eo.bands
+        self.assertIn("eo:bands", item.properties)
+        bands = eo_ext(item).bands
+        assert bands is not None
         self.assertEqual(list(map(lambda x: x.name, bands)), ['band1', 'band2', 'band3', 'band4'])
 
         # Set
@@ -40,41 +42,41 @@ class EOTest(unittest.TestCase):
             Band.create(name="blue", description=Band.band_description("blue")),
         ]
 
-        eo_item.ext.eo.bands = new_bands
+        eo_ext(item).bands = new_bands
         self.assertEqual('Common name: red, Range: 0.6 to 0.7',
-                         eo_item.properties['eo:bands'][0]['description'])
-        self.assertEqual(len(eo_item.ext.eo.bands), 3)
-        eo_item.validate()
+                         item.properties['eo:bands'][0]['description'])
+        self.assertEqual(len(eo_ext(item).bands or []), 3)
+        item.validate()
 
     def test_asset_bands(self):
-        eo_item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
+        item = ps.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
 
-        b1_asset = eo_item.assets['B1']
-        asset_bands = eo_item.ext.eo.get_bands(b1_asset)
-        self.assertIsNot(None, asset_bands)
+        b1_asset = item.assets['B1']
+        asset_bands = eo_ext(b1_asset).bands
+        assert asset_bands is not None
         self.assertEqual(len(asset_bands), 1)
         self.assertEqual(asset_bands[0].name, 'B1')
 
-        index_asset = eo_item.assets['index']
-        asset_bands = eo_item.ext.eo.get_bands(index_asset)
+        index_asset = item.assets['index']
+        asset_bands = eo_ext(index_asset).bands
         self.assertIs(None, asset_bands)
 
         # No asset specified
-        asset_bands = eo_item.ext.eo.get_bands()
-        self.assertIsNot(None, asset_bands)
+        item_bands = eo_ext(item).bands
+        self.assertIsNot(None, item_bands)
 
         # Set
-        b2_asset = eo_item.assets['B2']
-        self.assertEqual(eo_item.ext.eo.get_bands(b2_asset)[0].name, "B2")
-        eo_item.ext.eo.set_bands(eo_item.ext.eo.get_bands(b1_asset), b2_asset)
+        b2_asset = item.assets['B2']
+        self.assertEqual(get_opt(eo_ext(b2_asset).bands)[0].name, "B2")
+        eo_ext(b2_asset).bands = eo_ext(b1_asset).bands
 
-        new_b2_asset_bands = eo_item.ext.eo.get_bands(eo_item.assets['B2'])
+        new_b2_asset_bands = eo_ext(item.assets['B2']).bands
 
-        self.assertEqual(new_b2_asset_bands[0].name, 'B1')
+        self.assertEqual(get_opt(new_b2_asset_bands)[0].name, 'B1')
 
-        eo_item.validate()
+        item.validate()
 
         # Check adding a new asset
         new_bands = [
@@ -82,39 +84,39 @@ class EOTest(unittest.TestCase):
             Band.create(name="green", description=Band.band_description("green")),
             Band.create(name="blue", description=Band.band_description("blue")),
         ]
-        asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
-        eo_item.ext.eo.set_bands(new_bands, asset)
-        eo_item.add_asset("test", asset)
+        asset = ps.Asset(href="some/path.tif", media_type=ps.MediaType.GEOTIFF)
+        eo_ext(asset).bands = new_bands
+        item.add_asset("test", asset)
 
-        self.assertEqual(len(eo_item.assets["test"].properties["eo:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
 
     def test_cloud_cover(self):
-        item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
+        item = ps.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
         self.assertIn("eo:cloud_cover", item.properties)
-        cloud_cover = item.ext.eo.cloud_cover
+        cloud_cover = eo_ext(item).cloud_cover
         self.assertEqual(cloud_cover, 78)
 
         # Set
-        item.ext.eo.cloud_cover = 50
+        eo_ext(item).cloud_cover = 50
         self.assertEqual(item.properties['eo:cloud_cover'], 50)
 
         # Get from Asset
         b2_asset = item.assets['B2']
-        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset), item.ext.eo.get_cloud_cover())
+        self.assertEqual(eo_ext(b2_asset).cloud_cover, eo_ext(item).cloud_cover)
 
         b3_asset = item.assets['B3']
-        self.assertEqual(item.ext.eo.get_cloud_cover(b3_asset), 20)
+        self.assertEqual(eo_ext(b3_asset).cloud_cover, 20)
 
         # Set on Asset
-        item.ext.eo.set_cloud_cover(10, b2_asset)
-        self.assertEqual(item.ext.eo.get_cloud_cover(b2_asset), 10)
+        eo_ext(b2_asset).cloud_cover = 10
+        self.assertEqual(eo_ext(b2_asset).cloud_cover, 10)
 
         item.validate()
 
     def test_read_pre_09_fields_into_common_metadata(self):
-        eo_item = pystac.read_file(
+        eo_item = ps.Item.from_file(
             TestCases.get_path('data-files/examples/0.8.1/item-spec/examples/'
                                'landsat8-sample.json'))
 
@@ -122,17 +124,17 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
 
     def test_reads_asset_bands_in_pre_1_0_version(self):
-        eo_item = pystac.read_file(
+        item = ps.Item.from_file(
             TestCases.get_path('data-files/examples/0.9.0/item-spec/examples/'
                                'landsat8-sample.json'))
 
-        bands = eo_item.ext.eo.get_bands(eo_item.assets['B9'])
+        bands = eo_ext(item.assets['B9']).bands
 
-        self.assertEqual(len(bands), 1)
-        self.assertEqual(bands[0].common_name, 'cirrus')
+        self.assertEqual(len(bands or []), 1)
+        self.assertEqual(get_opt(bands)[0].common_name, 'cirrus')
 
     def test_reads_gsd_in_pre_1_0_version(self):
-        eo_item = pystac.read_file(
+        eo_item = ps.Item.from_file(
             TestCases.get_path('data-files/examples/0.9.0/item-spec/examples/'
                                'landsat8-sample.json'))
 

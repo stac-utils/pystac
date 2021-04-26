@@ -1,14 +1,14 @@
 """STAC Model classes for Label extension.
 """
 from enum import Enum
-from pystac.media_type import MediaType
 from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
-from pystac import STACError
-from pystac.extensions import Extensions
-from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
-from pystac.item import (Item, Asset)
-from pystac.link import Link
+import pystac as ps
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.extensions.base import EnableExtensionMixin
+from pystac.extensions.hooks import ExtensionHooks
+
+SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
 
 class LabelType(str, Enum):
@@ -71,13 +71,13 @@ class LabelClasses:
         """
         result = self.properties.get('classes')
         if result is None:
-            raise STACError(f'LabelClasses does not contain classes property: {self.properties}')
+            raise ps.STACError(f'LabelClasses does not contain classes property: {self.properties}')
         return result
 
     @classes.setter
     def classes(self, v: Union[List[str], List[int], List[float]]) -> None:
         if not type(v) is list:
-            raise STACError("classes must be a list! Invalid input: {}".format(v))
+            raise ps.STACError("classes must be a list! Invalid input: {}".format(v))
 
         self.properties['classes'] = v
 
@@ -146,7 +146,7 @@ class LabelCount:
         """
         result = self.properties.get('name')
         if result is None:
-            raise STACError(f"Label count has no name property: {self.properties}")
+            raise ps.STACError(f"Label count has no name property: {self.properties}")
         return result
 
     @name.setter
@@ -162,7 +162,7 @@ class LabelCount:
         """
         result = self.properties.get('count')
         if result is None:
-            raise STACError(f"Label count has no count property: {self.properties}")
+            raise ps.STACError(f"Label count has no count property: {self.properties}")
         return result
 
     @count.setter
@@ -217,7 +217,7 @@ class LabelStatistics:
         """
         result = self.properties.get('name')
         if result is None:
-            raise STACError(f"Label statistics has no name property: {self.properties}")
+            raise ps.STACError(f"Label statistics has no name property: {self.properties}")
         return result
 
     @name.setter
@@ -233,7 +233,7 @@ class LabelStatistics:
         """
         result = self.properties.get('value')
         if result is None:
-            raise STACError(f"Label statistics has no value property: {self.properties}")
+            raise ps.STACError(f"Label statistics has no value property: {self.properties}")
         return result
 
     @value.setter
@@ -332,7 +332,7 @@ class LabelOverview:
             self.properties.pop('counts', None)
         else:
             if not isinstance(v, list):
-                raise STACError("counts must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("counts must be a list! Invalid input: {}".format(v))
 
             self.properties['counts'] = [c.to_dict() for c in v]
 
@@ -356,7 +356,7 @@ class LabelOverview:
             self.properties.pop('statistics', None)
         else:
             if not isinstance(v, list):
-                raise STACError("statistics must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("statistics must be a list! Invalid input: {}".format(v))
 
             self.properties['statistics'] = [s.to_dict() for s in v]
 
@@ -403,7 +403,7 @@ class LabelOverview:
         return self.properties
 
 
-class LabelItemExt(ItemExtension):
+class ItemLabelExtension(EnableExtensionMixin[ps.Item]):
     """A LabelItemExt is the extension of the Item in the label extension which
     represents a polygon, set of polygons, or raster data defining
     labels and label metadata and should be part of a Collection.
@@ -422,13 +422,9 @@ class LabelItemExt(ItemExtension):
         the item's stac_extensions.
     """ # noqa E501
 
-    def __init__(self, item: Item) -> None:
-        if item.stac_extensions is None:
-            item.stac_extensions = [str(Extensions.LABEL)]
-        elif str(Extensions.LABEL) not in item.stac_extensions:
-            item.stac_extensions.append(str(Extensions.LABEL))
-
-        self.item = item
+    def __init__(self, item: ps.Item) -> None:
+        self.obj = item
+        self.schema_uri = SCHEMA_URI
 
     def apply(self,
               label_description: str,
@@ -476,31 +472,31 @@ class LabelItemExt(ItemExtension):
         Returns:
             str
         """
-        result = self.item.properties.get('label:description')
+        result = self.obj.properties.get('label:description')
         if result is None:
-            raise STACError(f"label:description not set for item {self.item.id}")
+            raise ps.STACError(f"label:description not set for item {self.obj.id}")
         return result
 
     @label_description.setter
     def label_description(self, v: str) -> None:
-        self.item.properties['label:description'] = v
+        self.obj.properties['label:description'] = v
 
     @property
     def label_type(self) -> LabelType:
         """Gets or sets an ENUM of either vector label type or raster label type.
         """
-        result = self.item.properties.get('label:type')
+        result = self.obj.properties.get('label:type')
         if result is None:
-            raise STACError(f"label:type is not set for item {self.item.id}")
+            raise ps.STACError(f"label:type is not set for item {self.obj.id}")
         return LabelType(result)
 
     @label_type.setter
     def label_type(self, v: LabelType) -> None:
         if v not in LabelType.ALL:
-            raise STACError("label_type must be one of "
-                            "{}. Invalid input: {}".format(LabelType.ALL, v))
+            raise ps.STACError("label_type must be one of "
+                               "{}. Invalid input: {}".format(LabelType.ALL, v))
 
-        self.item.properties['label:type'] = v
+        self.obj.properties['label:type'] = v
 
     @property
     def label_properties(self) -> Optional[List[str]]:
@@ -514,15 +510,15 @@ class LabelItemExt(ItemExtension):
         Returns:
             List[str] or None
         """
-        return self.item.properties.get('label:properties')
+        return self.obj.properties.get('label:properties')
 
     @label_properties.setter
     def label_properties(self, v: Optional[List[str]]) -> None:
         if v is not None:
             if not isinstance(v, list):
-                raise STACError("label_properties must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("label_properties must be a list! Invalid input: {}".format(v))
 
-        self.item.properties['label:properties'] = v
+        self.obj.properties['label:properties'] = v
 
     @property
     def label_classes(self) -> Optional[List[LabelClasses]]:
@@ -534,7 +530,7 @@ class LabelItemExt(ItemExtension):
         Returns:
             List[LabelClasses] or None
         """
-        label_classes = self.item.properties.get('label:classes')
+        label_classes = self.obj.properties.get('label:classes')
         if label_classes is not None:
             return [LabelClasses(classes) for classes in label_classes]
         else:
@@ -543,13 +539,13 @@ class LabelItemExt(ItemExtension):
     @label_classes.setter
     def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
         if v is None:
-            self.item.properties.pop('label:classes', None)
+            self.obj.properties.pop('label:classes', None)
         else:
             if not isinstance(v, list):
-                raise STACError("label_classes must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("label_classes must be a list! Invalid input: {}".format(v))
 
             classes = [x.to_dict() for x in v]
-            self.item.properties['label:classes'] = classes
+            self.obj.properties['label:classes'] = classes
 
     @property
     def label_tasks(self) -> Optional[List[str]]:
@@ -559,17 +555,17 @@ class LabelItemExt(ItemExtension):
         Returns:
             List[str] or None
         """
-        return self.item.properties.get('label:tasks')
+        return self.obj.properties.get('label:tasks')
 
     @label_tasks.setter
     def label_tasks(self, v: Optional[List[str]]) -> None:
         if v is None:
-            self.item.properties.pop('label:tasks', None)
+            self.obj.properties.pop('label:tasks', None)
         else:
             if not isinstance(v, list):
-                raise STACError("label_tasks must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("label_tasks must be a list! Invalid input: {}".format(v))
 
-            self.item.properties['label:tasks'] = v
+            self.obj.properties['label:tasks'] = v
 
     @property
     def label_methods(self) -> Optional[List[str]]:
@@ -579,17 +575,17 @@ class LabelItemExt(ItemExtension):
         Returns:
             List[str] or None
         """
-        return self.item.properties.get('label:methods')
+        return self.obj.properties.get('label:methods')
 
     @label_methods.setter
     def label_methods(self, v: Optional[List[str]]) -> None:
         if v is None:
-            self.item.properties.pop('label:methods', None)
+            self.obj.properties.pop('label:methods', None)
         else:
             if not isinstance(v, list):
-                raise STACError("label_methods must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("label_methods must be a list! Invalid input: {}".format(v))
 
-            self.item.properties['label:methods'] = v
+            self.obj.properties['label:methods'] = v
 
     @property
     def label_overviews(self) -> Optional[List[LabelOverview]]:
@@ -600,7 +596,7 @@ class LabelItemExt(ItemExtension):
         Returns:
             List[LabelOverview] or None
         """
-        overviews = self.item.properties.get('label:overviews')
+        overviews = self.obj.properties.get('label:overviews')
         if overviews is not None:
             return [LabelOverview(overview) for overview in overviews]
         else:
@@ -609,19 +605,19 @@ class LabelItemExt(ItemExtension):
     @label_overviews.setter
     def label_overviews(self, v: Optional[List[LabelOverview]]) -> None:
         if v is None:
-            self.item.properties.pop('label:overviews', None)
+            self.obj.properties.pop('label:overviews', None)
         else:
             if not isinstance(v, list):
-                raise STACError("label_overviews must be a list! Invalid input: {}".format(v))
+                raise ps.STACError("label_overviews must be a list! Invalid input: {}".format(v))
 
             overviews = [x.to_dict() for x in v]
-            self.item.properties['label:overviews'] = overviews
+            self.obj.properties['label:overviews'] = overviews
 
     def __repr__(self) -> str:
-        return '<LabelItemExt Item id={}>'.format(self.item.id)
+        return '<LabelItemExt Item id={}>'.format(self.obj.id)
 
     def add_source(self,
-                   source_item: Item,
+                   source_item: ps.Item,
                    title: Optional[str] = None,
                    assets: Optional[List[str]] = None) -> None:
         """Adds a link to a source item.
@@ -635,14 +631,14 @@ class LabelItemExt(ItemExtension):
         properties = None
         if assets is not None:
             properties = {'label:assets': assets}
-        link = Link('source',
-                    source_item,
-                    title=title,
-                    media_type='application/json',
-                    properties=properties)
-        self.item.add_link(link)
+        link = ps.Link('source',
+                       source_item,
+                       title=title,
+                       media_type='application/json',
+                       properties=properties)
+        self.obj.add_link(link)
 
-    def get_sources(self) -> Iterable[Item]:
+    def get_sources(self) -> Iterable[ps.Item]:
         """Gets any source items that describe the source imagery used to generate
         this LabelItem.
 
@@ -650,7 +646,7 @@ class LabelItemExt(ItemExtension):
             Generator[Items]: A possibly empty list of source imagery items. Determined by
             links of this LabelItem that have ``rel=='source'``.
         """
-        return map(lambda x: cast(Item, x), self.item.get_stac_objects('source'))
+        return map(lambda x: cast(ps.Item, x), self.obj.get_stac_objects('source'))
 
     def add_labels(self,
                    href: str,
@@ -669,8 +665,9 @@ class LabelItemExt(ItemExtension):
                 object JSON.
         """
 
-        self.item.add_asset(
-            "labels", Asset(href=href, title=title, media_type=media_type, properties=properties))
+        self.obj.add_asset(
+            "labels", ps.Asset(href=href, title=title, media_type=media_type,
+                               properties=properties))
 
     def add_geojson_labels(self,
                            href: str,
@@ -685,16 +682,41 @@ class LabelItemExt(ItemExtension):
                 extensions as a way to serialize and deserialize properties on asset
                 object JSON.
         """
-        self.add_labels(href, title=title, properties=properties, media_type=MediaType.GEOJSON)
+        self.add_labels(href, title=title, properties=properties, media_type=ps.MediaType.GEOJSON)
 
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return ['source']
-
-    @classmethod
-    def from_item(cls, item: Item) -> "LabelItemExt":
-        return cls(item)
+def label_ext(item: ps.Item) -> ItemLabelExtension:
+    return ItemLabelExtension(item)
 
 
-LABEL_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
-    Extensions.LABEL, [ExtendedObject(Item, LabelItemExt)])
+class LabelExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+
+    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
+        if isinstance(so, ps.Item):
+            return ['source']
+        return None
+
+    def migrate(self, d: Dict[str, Any], version: STACVersionID,
+                   info: STACJSONDescription) -> None:
+        if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
+            props = d['properties']
+            # Migrate 0.8.0-rc1 non-pluralized forms
+            # As it's a common mistake, convert for any pre-1.0.0 version.
+            if 'label:property' in props and 'label:properties' not in props:
+                props['label:properties'] = props['label:property']
+                del props['label:property']
+
+            if 'label:task' in props and 'label:tasks' not in props:
+                props['label:tasks'] = props['label:task']
+                del props['label:task']
+
+            if 'label:overview' in props and 'label:overviews' not in props:
+                props['label:overviews'] = props['label:overview']
+                del props['label:overview']
+
+            if 'label:method' in props and 'label:methods' not in props:
+                props['label:methods'] = props['label:method']
+                del props['label:method']
+
+
+LABEL_EXTENSION_HOOKS: ExtensionHooks = LabelExtensionHooks()

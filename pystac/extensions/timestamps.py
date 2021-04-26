@@ -1,14 +1,12 @@
 from datetime import datetime as Datetime
 from typing import List, Optional
 
-import pystac
-from pystac import Extensions
-from pystac.extensions.base import (ExtendedObject, ExtensionDefinition, ItemExtension)
+import pystac as ps
 from pystac.item import Asset, Item
 from pystac.utils import datetime_to_str, str_to_datetime
 
 
-class TimestampsItemExt(ItemExtension):
+class TimestampsItemExt():
     """TimestampsItemExt is the extension of an Item in that
     allows to specify additional timestamps for assets and metadata.
 
@@ -23,11 +21,6 @@ class TimestampsItemExt(ItemExtension):
         extension ID to the item's stac_extensions.
     """
     def __init__(self, item: Item) -> None:
-        if item.stac_extensions is None:
-            item.stac_extensions = [str(Extensions.TIMESTAMPS)]
-        elif str(Extensions.TIMESTAMPS) not in item.stac_extensions:
-            item.stac_extensions.append(str(Extensions.TIMESTAMPS))
-
         self.item = item
 
     @classmethod
@@ -53,7 +46,7 @@ class TimestampsItemExt(ItemExtension):
                 was unpublished.
         """
         if published is None and expires is None and unpublished is None:
-            raise pystac.STACError("timestamps extension needs at least one property value.")
+            raise ps.STACError("timestamps extension needs at least one property value.")
 
         self.published = published
         self.expires = expires
@@ -195,7 +188,3 @@ class TimestampsItemExt(ItemExtension):
         Otherwise sets the Item's value.
         """
         self._timestamp_setter(unpublished, 'unpublished', asset)
-
-
-TIMESTAMPS_EXTENSION_DEFINITION: ExtensionDefinition = ExtensionDefinition(
-    Extensions.TIMESTAMPS, [ExtendedObject(Item, TimestampsItemExt)])

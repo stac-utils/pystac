@@ -4,8 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 import pystac as ps
 from pystac.version import STACVersion
-from pystac.extensions import Extensions
-from pystac.serialization.identify import (STACJSONDescription, STACVersionID, STACVersionRange)
+from pystac.serialization.identify import (STACJSONDescription, STACVersionID, STACVersionRange, OldExtensionShortIDs)
 
 
 def _migrate_links(d: Dict[str, Any], version: STACVersionID) -> None:
@@ -19,7 +18,7 @@ def _migrate_catalog(d: Dict[str, Any], version: STACVersionID, info: STACJSONDe
     _migrate_links(d, version)
 
     if version < '0.8':
-        d['stac_extensions'] = info.common_extensions + info.custom_extensions
+        d['stac_extensions'] = info.extensions
 
 
 def _migrate_collection(d: Dict[str, Any], version: STACVersionID,
@@ -31,13 +30,13 @@ def _migrate_item(d: Dict[str, Any], version: STACVersionID, info: STACJSONDescr
     _migrate_links(d, version)
 
     if version < '0.8':
-        d['stac_extensions'] = info.common_extensions + info.custom_extensions
+        d['stac_extensions'] = info.extensions
 
 
 def _migrate_itemcollection(d: Dict[str, Any], version: STACVersionID,
                             info: STACJSONDescription) -> None:
     if version < '0.9.0':
-        d['stac_extensions'] = info.common_extensions + info.custom_extensions
+        d['stac_extensions'] = info.extensions
 
 
 # Extensions
@@ -231,21 +230,6 @@ def _get_object_migrations(
     }
 
 
-def _get_extension_migrations(
-) -> Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]:
-    return {
-        Extensions.CHECKSUM: _migrate_checksum,
-        Extensions.DATACUBE: _migrate_datacube,
-        Extensions.EO: _migrate_eo,
-        Extensions.ITEM_ASSETS: _migrate_item_assets,
-        Extensions.LABEL: _migrate_label,
-        Extensions.POINTCLOUD: _migrate_pointcloud,
-        Extensions.SAR: _migrate_sar,
-        Extensions.SCIENTIFIC: _migrate_scientific,
-        Extensions.SINGLE_FILE_STAC: _migrate_single_file_stac
-    }
-
-
 def _get_removed_extension_migrations(
 ) -> Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]:
     return {
@@ -256,12 +240,13 @@ def _get_removed_extension_migrations(
     }
 
 
+# TODO: Item Assets
 def _get_extension_renames() -> Dict[str, str]:
     return {'asset': 'item-assets'}
 
 
 def migrate_to_latest(json_dict: Dict[str, Any],
-                      info: STACJSONDescription) -> Tuple[Dict[str, Any], STACJSONDescription]:
+                      info: STACJSONDescription) -> Dict[str, Any]:
     """Migrates the STAC JSON to the latest version
 
     Args:
@@ -278,43 +263,17 @@ def migrate_to_latest(json_dict: Dict[str, Any],
     version = info.version_range.latest_valid_version()
 
     object_migrations = _get_object_migrations()
-    extension_migrations = _get_extension_migrations()
-    extension_renames = _get_extension_renames()
     removed_extension_migrations = _get_removed_extension_migrations()
 
     if version != STACVersion.DEFAULT_STAC_VERSION:
         object_migrations[info.object_type](result, version, info)
+        ps.EXTENSION_HOOKS.migrate(result, version, info)
 
-        extensions_to_add = set([])
-        for ext in info.common_extensions:
-            if ext in extension_renames:
-                result['stac_extensions'].remove(ext)
-                ext = extension_renames[ext]
-                extensions_to_add.add(ext)
-
-            if ext in extension_migrations:
-                added_extensions = extension_migrations[ext](result, version, info)
-                if added_extensions:
-                    extensions_to_add |= added_extensions
-
+        for ext in (result['stac_extensions'] or []):
             if ext in removed_extension_migrations:
                 removed_extension_migrations[ext](result, version, info)
                 result['stac_extensions'].remove(ext)
 
-        for ext in extensions_to_add:
-            result['stac_extensions'].append(ext)
-
-        migrated_extensions = set(info.common_extensions)
-        migrated_extensions = migrated_extensions | set(extensions_to_add)
-        migrated_extensions = migrated_extensions - set(removed_extension_migrations.keys())
-        migrated_extensions = migrated_extensions - set(extension_renames.keys())
-        common_extensions = list(migrated_extensions)
-    else:
-        common_extensions = info.common_extensions
-
     result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
 
-    return result, STACJSONDescription(
-        info.object_type,
-        STACVersionRange(STACVersion.DEFAULT_STAC_VERSION, STACVersion.DEFAULT_STAC_VERSION),
-        common_extensions, info.custom_extensions)
+    return result

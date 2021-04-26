@@ -11,9 +11,7 @@ import copy
 from typing import Any, Dict, List, Optional
 from urllib import parse
 
-import pystac
-from pystac import Extensions
-from pystac.extensions import base
+import pystac as ps
 
 # STAC fields strings.
 PREFIX: str = 'sci:'
@@ -53,11 +51,11 @@ class Publication:
     def from_dict(d: Dict[str, str]) -> "Publication":
         return Publication(d['doi'], d['citation'])
 
-    def get_link(self) -> pystac.Link:
-        return pystac.Link(CITE_AS, doi_to_url(self.doi))
+    def get_link(self) -> ps.Link:
+        return ps.Link(CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], doi: str) -> None:
+def remove_link(links: List[ps.Link], doi: str) -> None:
     url = doi_to_url(doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
@@ -67,7 +65,7 @@ def remove_link(links: List[pystac.Link], doi: str) -> None:
             break
 
 
-class ScientificItemExt(base.ItemExtension):
+class ScientificItemExt():
     """ScientificItemExt extends Item to add citations and DOIs to a STAC Item.
 
     Args:
@@ -80,9 +78,9 @@ class ScientificItemExt(base.ItemExtension):
         Using ScientificItemExt to directly wrap an item will add the 'scientific'
         extension ID to the item's stac_extensions.
     """
-    item: pystac.Item
+    item: ps.Item
 
-    def __init__(self, an_item: pystac.Item) -> None:
+    def __init__(self, an_item: ps.Item) -> None:
         self.item = an_item
 
     def apply(self,
@@ -105,7 +103,7 @@ class ScientificItemExt(base.ItemExtension):
             self.publications = publications
 
     @classmethod
-    def from_item(cls, an_item: pystac.Item) -> "ScientificItemExt":
+    def from_item(cls, an_item: ps.Item) -> "ScientificItemExt":
         return cls(an_item)
 
     @classmethod
@@ -131,7 +129,7 @@ class ScientificItemExt(base.ItemExtension):
         if v is not None:
             self.item.properties[DOI] = v
             url = doi_to_url(v)
-            self.item.add_link(pystac.Link(CITE_AS, url))
+            self.item.add_link(ps.Link(CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
@@ -197,7 +195,7 @@ class ScientificItemExt(base.ItemExtension):
             del self.item.properties[PUBLICATIONS]
 
 
-class ScientificCollectionExt(base.CollectionExtension):
+class ScientificCollectionExt():
     """ScientificCollectionExt extends Collection to add citations and DOIs to a STAC Collection.
 
     Args:
@@ -210,9 +208,9 @@ class ScientificCollectionExt(base.CollectionExtension):
         Using ScientificCollectionExt to directly wrap a collection will add the 'scientific'
         extension ID to the collection's stac_extensions.
     """
-    collection: pystac.Collection
+    collection: ps.Collection
 
-    def __init__(self, a_collection: pystac.Collection):
+    def __init__(self, a_collection: ps.Collection):
         self.collection = a_collection
 
     def apply(self,
@@ -235,7 +233,7 @@ class ScientificCollectionExt(base.CollectionExtension):
             self.publications = publications
 
     @classmethod
-    def from_collection(cls, a_collection: pystac.Collection) -> "ScientificCollectionExt":
+    def from_collection(cls, a_collection: ps.Collection) -> "ScientificCollectionExt":
         return cls(a_collection)
 
     @classmethod
@@ -260,7 +258,7 @@ class ScientificCollectionExt(base.CollectionExtension):
         if v is not None:
             self.collection.extra_fields[DOI] = v
             url = doi_to_url(v)
-            self.collection.add_link(pystac.Link(CITE_AS, url))
+            self.collection.add_link(ps.Link(CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
@@ -322,10 +320,3 @@ class ScientificCollectionExt(base.CollectionExtension):
 
         if not self.collection.extra_fields[PUBLICATIONS]:
             del self.collection.extra_fields[PUBLICATIONS]
-
-
-SCIENTIFIC_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
-    Extensions.SCIENTIFIC, [
-        base.ExtendedObject(pystac.Item, ScientificItemExt),
-        base.ExtendedObject(pystac.Collection, ScientificCollectionExt)
-    ])

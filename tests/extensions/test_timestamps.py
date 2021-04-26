@@ -3,7 +3,7 @@ import pystac
 import unittest
 from datetime import datetime
 
-from pystac import (Extensions, Item)
+from pystac import (_OldExtensionShortIDs, Item)
 from pystac.extensions import ExtensionError
 from pystac.utils import (str_to_datetime, datetime_to_str)
 from tests.utils import (TestCases, test_to_from_dict)
@@ -26,8 +26,8 @@ class TimestampsTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.timestamps
 
-        item.ext.enable(Extensions.TIMESTAMPS)
-        self.assertIn(Extensions.TIMESTAMPS, item.stac_extensions)
+        item.ext.enable(_OldExtensionShortIDs.TIMESTAMPS)
+        self.assertIn(_OldExtensionShortIDs.TIMESTAMPS, item.stac_extensions)
         item.ext.timestamps.apply(published=str_to_datetime("2020-01-03T06:45:55Z"),
                                   expires=str_to_datetime("2020-02-03T06:45:55Z"),
                                   unpublished=str_to_datetime("2020-03-03T06:45:55Z"))

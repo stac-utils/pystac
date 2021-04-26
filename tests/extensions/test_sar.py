@@ -13,7 +13,7 @@ def make_item() -> pystac.Item:
     start = datetime.datetime(2020, 11, 7)
     item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
 
-    item.ext.enable(pystac.Extensions.SAR)
+    item.ext.enable(pystac._OldExtensionShortIDs.SAR)
     return item
 
 
@@ -21,10 +21,10 @@ class SarItemExtTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.item = make_item()
-        self.item.ext.enable(pystac.Extensions.SAR)
+        self.item.ext.enable(pystac._OldExtensionShortIDs.SAR)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.SAR], self.item.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.SAR], self.item.stac_extensions)
 
     def test_required(self):
         mode: str = 'Nonesense mode'

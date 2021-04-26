@@ -704,7 +704,7 @@ class Catalog(STACObject):
             item.validate()
 
     def _object_links(self) -> List[str]:
-        return ['child', 'item'] + (ps.STAC_EXTENSIONS.get_extended_object_links(self))
+        return ['child', 'item'] + (ps.EXTENSION_HOOKS.get_extended_object_links(self) or [])
 
     def map_items(
             self, item_mapper: Callable[["Item_Type"], Union["Item_Type",

@@ -62,9 +62,9 @@ class TestItemExt(ItemExtension):
 
 class ExtensionsTest(unittest.TestCase):
     def test_can_add_custom_extension(self):
-        prev_extensions = pystac.STAC_EXTENSIONS.get_registered_extensions()
+        prev_extensions = pystac.EXTENSION_HOOKS.get_registered_extensions()
 
-        pystac.STAC_EXTENSIONS.add_extension(
+        pystac.EXTENSION_HOOKS.add_extension_hooks(
             ExtensionDefinition("test", [
                 ExtendedObject(Catalog, TestCatalogExt),
                 ExtendedObject(Collection, TestCollectionExt),
@@ -85,10 +85,10 @@ class ExtensionsTest(unittest.TestCase):
             self.assertEqual(item.ext.test.asset_keys, set(item.assets))
 
         finally:
-            pystac.STAC_EXTENSIONS.remove_extension("test")
+            pystac.EXTENSION_HOOKS.remove_extension("test")
 
-        self.assertFalse(pystac.STAC_EXTENSIONS.is_registered_extension("test"))
-        self.assertEqual(pystac.STAC_EXTENSIONS.get_registered_extensions(), prev_extensions)
+        self.assertFalse(pystac.EXTENSION_HOOKS.is_registered_extension("test"))
+        self.assertEqual(pystac.EXTENSION_HOOKS.get_registered_extensions(), prev_extensions)
 
     def test_getattribute_overload(self):
         catalog = Catalog(id='test', description='test')

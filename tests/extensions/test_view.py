@@ -3,7 +3,7 @@ import unittest
 
 import pystac
 from pystac.extensions import ExtensionError
-from pystac import (Item, Extensions)
+from pystac import (Item, _OldExtensionShortIDs)
 from tests.utils import (TestCases, test_to_from_dict)
 
 
@@ -22,7 +22,7 @@ class ViewTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.view
 
-        item.ext.enable(Extensions.VIEW)
+        item.ext.enable(_OldExtensionShortIDs.VIEW)
         item.ext.view.apply(off_nadir=1.0,
                             incidence_angle=2.0,
                             azimuth=3.0,
@@ -34,7 +34,7 @@ class ViewTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.view
 
-        item.ext.enable(Extensions.VIEW)
+        item.ext.enable(_OldExtensionShortIDs.VIEW)
         item.ext.view.apply(off_nadir=1.0)
 
     @unittest.expectedFailure
@@ -43,7 +43,7 @@ class ViewTest(unittest.TestCase):
         with self.assertRaises(ExtensionError):
             item.ext.view
 
-        item.ext.enable(Extensions.VIEW)
+        item.ext.enable(_OldExtensionShortIDs.VIEW)
         item.ext.view.apply(
             off_nadir=None,
             incidence_angle=None,

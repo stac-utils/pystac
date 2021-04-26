@@ -7,8 +7,6 @@ import enum
 from typing import List, Optional
 
 import pystac
-from pystac import Extensions
-from pystac.extensions import base
 
 ORBIT_STATE: str = 'sat:orbit_state'
 RELATIVE_ORBIT: str = 'sat:relative_orbit'
@@ -20,7 +18,7 @@ class OrbitState(enum.Enum):
     GEOSTATIONARY = 'geostationary'
 
 
-class SatItemExt(base.ItemExtension):
+class SatItemExt():
     """SatItemExt extends Item to add sat properties to a STAC Item.
 
     Args:
@@ -108,9 +106,3 @@ class SatItemExt(base.ItemExtension):
             raise pystac.STACError(f'relative_orbit must be >= 0.  Found {v}.')
 
         self.item.properties[RELATIVE_ORBIT] = v
-
-
-SAT_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
-    Extensions.SAT, [
-        base.ExtendedObject(pystac.Item, SatItemExt),
-    ])

@@ -32,7 +32,7 @@ def make_item() -> pystac.Item:
     item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % 2011)
 
-    item.ext.enable(pystac.Extensions.SCIENTIFIC)
+    item.ext.enable(pystac._OldExtensionShortIDs.SCIENTIFIC)
     return item
 
 
@@ -40,10 +40,10 @@ class ScientificItemExtTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.item = make_item()
-        self.item.ext.enable(pystac.Extensions.SCIENTIFIC)
+        self.item.ext.enable(pystac._OldExtensionShortIDs.SCIENTIFIC)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.SCIENTIFIC], self.item.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.SCIENTIFIC], self.item.stac_extensions)
 
     def test_doi(self):
         self.item.ext.scientific.apply(DOI)
@@ -182,7 +182,7 @@ def make_collection() -> pystac.Collection:
     collection = pystac.Collection(asset_id, 'desc', extent)
     collection.set_self_href(URL_TEMPLATE % 2019)
 
-    collection.ext.enable(pystac.Extensions.SCIENTIFIC)
+    collection.ext.enable(pystac._OldExtensionShortIDs.SCIENTIFIC)
     return collection
 
 
@@ -190,10 +190,10 @@ class ScientificCollectionExtTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.collection = make_collection()
-        self.collection.ext.enable(pystac.Extensions.SCIENTIFIC)
+        self.collection.ext.enable(pystac._OldExtensionShortIDs.SCIENTIFIC)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac.Extensions.SCIENTIFIC], self.collection.stac_extensions)
+        self.assertEqual([pystac._OldExtensionShortIDs.SCIENTIFIC], self.collection.stac_extensions)
 
     def test_doi(self):
         self.collection.ext.scientific.apply(DOI)

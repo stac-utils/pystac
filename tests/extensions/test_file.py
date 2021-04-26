@@ -1,9 +1,9 @@
 import json
 import unittest
 
-import pystac
-from pystac import Item
+import pystac as ps
 from tests.utils import (TestCases, test_to_from_dict)
+from pystac.extensions import file_ext
 from pystac.extensions.file import FileDataType
 
 
@@ -16,61 +16,61 @@ class FileTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.FILE_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, Item, item_dict)
+        test_to_from_dict(self, ps.Item, item_dict)
 
     def test_validate_file(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
         item.validate()
 
     def test_asset_size(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(146484, item.ext.file.get_size(asset))
+        self.assertEqual(146484, file_ext(asset).size)
 
         # Set
         new_size = 1
-        item.ext.file.set_size(new_size, asset)
-        self.assertEqual(new_size, item.ext.file.get_size(asset))
+        file_ext(asset).size = new_size
+        self.assertEqual(new_size, file_ext(asset).size)
         item.validate()
 
     def test_asset_checksum(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
         self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c",
-                         item.ext.file.get_checksum(asset))
+                         file_ext(asset).checksum)
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
-        item.ext.file.set_checksum(new_checksum, asset)
-        self.assertEqual(new_checksum, item.ext.file.get_checksum(asset))
+        file_ext(asset).checksum = new_checksum
+        self.assertEqual(new_checksum, file_ext(asset).checksum)
         item.validate()
 
     def test_asset_data_type(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(FileDataType.UINT8, item.ext.file.get_data_type(asset))
+        self.assertEqual(FileDataType.UINT8, file_ext(asset).data_type)
 
         # Set
         new_data_type = FileDataType.UINT16
-        item.ext.file.set_data_type(new_data_type, asset)
-        self.assertEqual(new_data_type, item.ext.file.get_data_type(asset))
+        file_ext(asset).data_type = new_data_type
+        self.assertEqual(new_data_type, file_ext(asset).data_type)
         item.validate()
 
     def test_asset_nodata(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual([], item.ext.file.get_nodata(asset))
+        self.assertEqual([], file_ext(asset).nodata)
 
         # Set
         new_nodata = [-1]
-        item.ext.file.set_nodata(new_nodata, asset)
-        self.assertEqual(new_nodata, item.ext.file.get_nodata(asset))
+        file_ext(asset).nodata = new_nodata
+        self.assertEqual(new_nodata, file_ext(asset).nodata)
         item.validate()

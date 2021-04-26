@@ -1,5 +1,4 @@
 # flake8: noqa
-from enum import Enum
 
 
 class ExtensionError(Exception):
@@ -7,26 +6,6 @@ class ExtensionError(Exception):
     """
     pass
 
-
-class Extensions(str, Enum):
-    """Enumerates the IDs of common extensions."""
-    def __str__(self) -> str:
-        return str(self.value)
-
-    CHECKSUM = 'checksum'
-    COLLECTION_ASSETS = 'collection-assets'
-    DATACUBE = 'datacube'
-    EO = 'eo'
-    ITEM_ASSETS = 'item-assets'
-    LABEL = 'label'
-    POINTCLOUD = 'pointcloud'
-    PROJECTION = 'projection'
-    SAR = 'sar'
-    SAT = 'sat'
-    SCIENTIFIC = 'scientific'
-    SINGLE_FILE_STAC = 'single-file-stac'
-    TILED_ASSETS = 'tiled-assets'
-    TIMESTAMPS = 'timestamps'
-    VERSION = 'version'
-    VIEW = 'view'
-    FILE = 'file'
+from pystac.extensions.eo import eo_ext  # type:ignore
+from pystac.extensions.file import file_ext  # type:ignore
+from pystac.extensions.label import label_ext  # type:ignore

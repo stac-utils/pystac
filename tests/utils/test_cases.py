@@ -4,7 +4,7 @@ import csv
 from typing import Any, Dict, List
 
 from pystac import (Catalog, Collection, Item, Asset, Extent, TemporalExtent, SpatialExtent,
-                    MediaType, Extensions)
+                    MediaType)
 from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
 
 TEST_LABEL_CATALOG = {
@@ -133,7 +133,7 @@ class TestCases:
                           datetime=datetime.utcnow(),
                           properties={})
 
-        label_item.ext.enable(Extensions.LABEL)
+        label_item.ext.enable("label")
         label_item.ext.label.apply(
             label_description='ML Labels',
             label_type='vector',

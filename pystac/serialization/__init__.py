@@ -40,7 +40,7 @@ def stac_object_from_dict(d: Dict[str, Any],
 
     info = identify_stac_object(d)
 
-    d, info = migrate_to_latest(d, info)
+    d = migrate_to_latest(d, info)
 
     if info.object_type == ps.STACObjectType.CATALOG:
         return ps.Catalog.from_dict(d, href=href, root=root, migrate=False)

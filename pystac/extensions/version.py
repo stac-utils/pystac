@@ -5,11 +5,13 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
 Note that the version/schema.json does not know about the links.
 """
 
+from pystac.extensions.hooks import ExtensionHooks
 from typing import List, Optional, cast
 
 import pystac as ps
-from pystac import Extensions, STACError
-from pystac.extensions import base
+from pystac import STACError
+
+VERSION_EXT_SCHEMA = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 
 # STAC fields - These are unusual for an extension in that they do not have
 # a prefix.  e.g. nothing like "ver:"
@@ -25,7 +27,7 @@ SUCCESSOR: str = 'successor-version'
 MEDIA_TYPE: str = 'application/json'
 
 
-class VersionItemExt(base.ItemExtension):
+class VersionItemExt():
     """VersionItemExt extends Item to add version and deprecated properties
     along with links to the latest, predecessor, and successor Items.
 
@@ -165,7 +167,7 @@ class VersionItemExt(base.ItemExtension):
         return [LATEST, PREDECESSOR, SUCCESSOR]
 
 
-class VersionCollectionExt(base.CollectionExtension):
+class VersionCollectionExt():
     """VersionCollectionExt extends Collection to add version and deprecated properties
     along with links to the latest, predecessor, and successor Collections.
 
@@ -305,8 +307,13 @@ class VersionCollectionExt(base.CollectionExtension):
             self.successor = successor
 
 
-VERSION_EXTENSION_DEFINITION: base.ExtensionDefinition = base.ExtensionDefinition(
-    Extensions.VERSION, [
-        base.ExtendedObject(ps.Item, VersionItemExt),
-        base.ExtendedObject(ps.Collection, VersionCollectionExt)
-    ])
+class VersionExtensionHooks(ExtensionHooks):
+    extension_schema = VERSION_EXT_SCHEMA
+
+    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
+        if isinstance(so, ps.Collection) or isinstance(so, ps.Item):
+            return [LATEST, PREDECESSOR, SUCCESSOR]
+        return None
+
+
+VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()
