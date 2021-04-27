@@ -102,6 +102,10 @@ class EOExtensionHooks(ExtensionHooks):
                             new_bands.append(bands[band_index])
                         asset['eo:bands'] = new_bands
 
+        # Update stac_extension entry
+        if 'stac_extensions' in d and 'eo' in d['stac_extensions']:
+            d['stac_extensions'].remove('eo')
+            d['stac_extensions'].append(SCHEMA_URI)
 
 class Band:
     """Represents Band information attached to an Item that implements the eo extension.
