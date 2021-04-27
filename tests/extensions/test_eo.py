@@ -1,16 +1,18 @@
 import json
+from pystac.collection import RangeSummary
 import unittest
 
 import pystac as ps
 from pystac import Item
 from pystac.utils import get_opt
-from pystac.extensions.eo import eo_ext, Band
+from pystac.extensions.eo import eo_ext, Band, eo_summaries
 from tests.utils import (TestCases, test_to_from_dict)
 
 
 class EOTest(unittest.TestCase):
     LANDSAT_EXAMPLE_URI = TestCases.get_path('data-files/eo/eo-landsat-example.json')
     BANDS_IN_ITEM_URI = TestCases.get_path('data-files/eo/sample-bands-in-item-properties.json')
+    EO_COLLECTION_URI = TestCases.get_path('data-files/eo/eo-collection.json')
 
     def setUp(self):
         self.maxDiff = None
@@ -114,6 +116,28 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_ext(b2_asset).cloud_cover, 10)
 
         item.validate()
+
+    def test_summaries(self):
+        col = ps.Collection.from_file(self.EO_COLLECTION_URI)
+
+        # Get
+
+        cloud_cover_summaries = eo_summaries(col).cloud_cover
+        self.assertEqual(cloud_cover_summaries.minimum, 0.0)
+        self.assertEqual(cloud_cover_summaries.maximum, 80.0)
+
+        bands = eo_summaries(col).bands
+        assert bands is not None
+        self.assertEqual(len(bands), 11)
+
+        # Set
+
+        eo_summaries(col).cloud_cover = RangeSummary(1.0, 2.0)
+        eo_summaries(col).bands = [Band.create(name='test')]
+
+        col_dict = col.to_dict()
+        self.assertEqual(len(col_dict['summaries']['eo:bands']), 1)
+        self.assertEqual(col_dict['summaries']['eo:cloud_cover']['minimum'], 1.0)
 
     def test_read_pre_09_fields_into_common_metadata(self):
         eo_item = ps.Item.from_file(

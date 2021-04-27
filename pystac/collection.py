@@ -1,12 +1,13 @@
 from copy import (copy, deepcopy)
 from datetime import datetime as Datetime
-from typing import Any, Dict, Iterable, List, Optional, TYPE_CHECKING, Tuple, Union, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type, TypeVar, Union, cast
 
 import dateutil.parser
 from dateutil import tz
 
 import pystac as ps
 from pystac import (STACObjectType, CatalogType)
+from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
@@ -14,6 +15,8 @@ from pystac.utils import datetime_to_str
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
+
+T = TypeVar('T')
 
 
 class SpatialExtent:
@@ -371,6 +374,83 @@ class Provider:
                         url=d.get('url'))
 
 
+class RangeSummary(Generic[T]):
+    def __init__(self, minimum: T, maximum: T):
+        self.minimum = minimum
+        self.maximum = maximum
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {'minimum': self.minimum, 'maximum': self.maximum}
+
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
+        minimum: Optional[T] = d.get('minimum')
+        if minimum is None:
+            raise ps.RequiredValueMissing("Range summary does not have 'minimum' property")
+        maximum: Optional[T] = d.get("maximum")
+        if maximum is None:
+            raise ps.RequiredValueMissing("Range summary does not have 'maximum' property")
+        return cls(minimum=minimum, maximum=maximum)
+
+
+class Summaries:
+    def __init__(self, summaries: Dict[str, Any]) -> None:
+        self._summaries = summaries
+
+        self.lists: Dict[str, List[Any]] = {}
+        self.ranges: Dict[str, RangeSummary[Any]] = {}
+        self.schemas: Dict[str, Dict[str, Any]] = {}
+        self.other: Dict[str, Any] = {}
+
+        for prop_key, summary in summaries.items():
+            self.add(prop_key, summary)
+
+    def get_list(self, prop: str, typ: Type[T]) -> Optional[List[T]]:
+        return self.lists.get(prop)
+
+    def get_range(self, prop: str, typ: Type[T]) -> Optional[RangeSummary[T]]:
+        return self.ranges.get(prop)
+
+    def get_schema(self, prop: str) -> Optional[Dict[str, Any]]:
+        return self.schemas.get(prop)
+
+    def add(self, prop_key: str, summary: Union[List[Any], RangeSummary[Any], Dict[str,
+                                                                                   Any]]) -> None:
+        if isinstance(summary, list):
+            self.lists[prop_key] = summary
+        elif isinstance(summary, dict):
+            if 'minimum' in summary:
+                self.ranges[prop_key] = RangeSummary[Any].from_dict(cast(Dict[str, Any], summary))
+            else:
+                self.schemas[prop_key] = summary
+        elif isinstance(summary, RangeSummary):
+            self.ranges[prop_key] = summary
+        else:
+            self.other[prop_key] = summary
+
+    def remove(self, prop_key: str) -> None:
+        self.lists.pop(prop_key, None)
+        self.ranges.pop(prop_key, None)
+        self.schemas.pop(prop_key, None)
+        self.other.pop(prop_key, None)
+
+    def is_empty(self):
+        return not (any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            **self.lists,
+            **{k: v.to_dict()
+               for k, v in self.ranges.items()},
+            **self.schemas,
+            **self.other
+        }
+
+    @classmethod
+    def empty(cls) -> "Summaries":
+        return Summaries({})
+
+
 class Collection(Catalog):
     """A Collection extends the Catalog spec with additional metadata that helps
     enable discovery.
@@ -394,7 +474,6 @@ class Collection(Catalog):
             Defaults to 'proprietary'.
         keywords (List[str]): Optional list of keywords describing the collection.
         providers (List[Provider]): Optional list of providers of this Collection.
-        properties (dict): Optional dict of common fields across referenced items.
         summaries (dict): An optional map of property summaries,
             either a set of values or statistics such as a range.
         extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
@@ -409,7 +488,7 @@ class Collection(Catalog):
         stac_extensions (List[str]): Optional list of extensions the Collection implements.
         keywords (List[str] or None): Optional list of keywords describing the collection.
         providers (List[Provider] or None): Optional list of providers of this Collection.
-        properties (dict or None): Optional dict of common fields across referenced items.
+        assets (Optional[Dict[str, Asset]]): Optional map of Assets
         summaries (dict or None): An optional map of property summaries,
             either a set of values or statistics such as a range.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
@@ -434,7 +513,7 @@ class Collection(Catalog):
                  license: str = 'proprietary',
                  keywords: Optional[List[str]] = None,
                  providers: Optional[List[Provider]] = None,
-                 summaries: Optional[Dict[str, Any]] = None):
+                 summaries: Optional[Summaries] = None):
         super().__init__(id, description, title, stac_extensions, extra_fields, href, catalog_type
                          or CatalogType.ABSOLUTE_PUBLISHED)
         self.extent = extent
@@ -443,7 +522,9 @@ class Collection(Catalog):
         self.stac_extensions: List[str] = stac_extensions or []
         self.keywords = keywords
         self.providers = providers
-        self.summaries = summaries
+        self.summaries = summaries or Summaries.empty()
+
+        self.assets: Dict[str, Asset] = {}
 
     def __repr__(self) -> str:
         return '<Collection id={}>'.format(self.id)
@@ -465,8 +546,10 @@ class Collection(Catalog):
             d['keywords'] = self.keywords
         if self.providers is not None:
             d['providers'] = list(map(lambda x: x.to_dict(), self.providers))
-        if self.summaries is not None:
-            d['summaries'] = self.summaries
+        if not self.summaries.is_empty():
+            d['summaries'] = self.summaries.to_dict()
+        if any(self.assets):
+            d['assets'] = {k: v.to_dict() for k, v in self.assets.items() }
 
         return d
 
@@ -524,6 +607,10 @@ class Collection(Catalog):
         if providers is not None:
             providers = list(map(lambda x: Provider.from_dict(x), providers))
         summaries = d.get('summaries')
+        if summaries is not None:
+            summaries = Summaries(summaries)
+
+        assets: Optional[Dict[str, Any]] = d.get('assets', None)
         links = d.pop('links')
 
         d.pop('stac_version')
@@ -549,7 +636,29 @@ class Collection(Catalog):
             if link['rel'] != 'self' or href is None:
                 collection.add_link(Link.from_dict(link))
 
+        if assets is not None:
+            for asset_key, asset_dict in assets:
+                collection.add_asset(asset_key, Asset(asset_dict))
+
         return collection
+
+    def get_assets(self) -> Dict[str, Asset]:
+        """Get this item's assets.
+
+        Returns:
+            Dict[str, Asset]: A copy of the dictionary of this item's assets.
+        """
+        return dict(self.assets.items())
+
+    def add_asset(self, key: str, asset: Asset) -> None:
+        """Adds an Asset to this item.
+
+        Args:
+            key (str): The unique key of this asset.
+            asset (Asset): The Asset to add.
+        """
+        asset.set_owner(self)
+        self.assets[key] = asset
 
     def update_extent_from_items(self) -> None:
         """

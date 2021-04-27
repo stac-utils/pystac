@@ -4,22 +4,7 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 
-
-class STACError(Exception):
-    """A STACError is raised for errors relating to STAC, e.g. for
-    invalid formats or trying to operate on a STAC that does not have
-    the required information available.
-    """
-    pass
-
-
-class STACTypeError(Exception):
-    """A STACTypeError is raised when encountering a representation of
-    a STAC entity that is not correct for the context; for example, if
-    a Catalog JSON was read in as an Item.
-    """
-    pass
-
+from pystac.errors import (STACError, STACTypeError, RequiredValueMissing)  # type:ignore
 
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
@@ -33,10 +18,13 @@ from pystac.collection import (
     Extent,  # type:ignore
     SpatialExtent,  # type:ignore
     TemporalExtent,  # type:ignore
-    Provider)  # type:ignore
+    Provider,  # type:ignore
+    Summaries,  # type:ignore
+    RangeSummary)  # type:ignore
 from pystac.item import (Item, Asset, CommonMetadata)  # type:ignore
 
 import pystac.validation
+from pystac.validation import STACValidationError  # type:ignore
 
 import pystac.extensions.hooks
 import pystac.extensions.eo

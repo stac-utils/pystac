@@ -183,7 +183,7 @@ class JsonSchemaSTACValidator(STACValidator):
            str: URI for the JSON schema that was validated against, or None if
                no validation occurred.
         """
-        schema_uri = self.schema_uri_map.get_core_schema_uri(stac_object_type, stac_version)
+        schema_uri = self.schema_uri_map.get_object_schema_uri(stac_object_type, stac_version)
 
         if schema_uri is None:
             return None
@@ -218,8 +218,7 @@ class JsonSchemaSTACValidator(STACValidator):
            str: URI for the JSON schema that was validated against, or None if
                no validation occurred.
         """
-        schema_uri = self.schema_uri_map.get_extension_schema_uri(extension_id, stac_object_type,
-                                                                  stac_version)
+        schema_uri = extension_id
 
         if schema_uri is None:
             return None

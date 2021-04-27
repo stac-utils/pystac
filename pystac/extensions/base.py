@@ -1,5 +1,5 @@
-from abc import ABC
-from typing import Generic, Iterable, Optional, Dict, Any, Type, TypeVar
+from abc import ABC, abstractmethod
+from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
 
 import pystac as ps
 
@@ -8,7 +8,20 @@ class ExtensionException(Exception):
     pass
 
 
+class SummariesExtension:
+    def __init__(self, collection: ps.Collection) -> None:
+        self.summaries = collection.summaries
+
+    def _set_summary(self, prop_key: str, v: Optional[Union[List[Any], ps.RangeSummary[Any],
+                                                   Dict[str, Any]]]) -> None:
+        if v is None:
+            self.summaries.remove(prop_key)
+        else:
+            self.summaries.add(prop_key, v)
+
+
 P = TypeVar('P')
+
 
 class PropertiesExtension(ABC):
     properties: Dict[str, Any]
@@ -35,23 +48,26 @@ class PropertiesExtension(ABC):
 S = TypeVar('S', bound=ps.STACObject)
 
 
-class EnableExtensionMixin(Generic[S]):
-    obj: S
-    schema_uri: str
+class ExtensionManagementMixin(Generic[S], ABC):
+    @classmethod
+    @abstractmethod
+    def get_schema_uri(cls) -> str:
+        pass
 
-    def add_extension(self) -> None:
-        if self.obj.stac_extensions is None:
-            self.obj.stac_extensions = [self.schema_uri]
+    @classmethod
+    def add_to(cls, obj: S) -> None:
+        if obj.stac_extensions is None:
+            obj.stac_extensions = [cls.get_schema_uri()]
         else:
-            self.obj.stac_extensions.append(self.schema_uri)
+            obj.stac_extensions.append(cls.get_schema_uri())
 
-    def remove_extension(self) -> None:
-        if self.obj.stac_extensions is not None:
-            self.obj.stac_extensions = [
-                uri for uri in self.obj.stac_extensions if uri != self.schema_uri
+    @classmethod
+    def remove_from(cls, obj: S) -> None:
+        if obj.stac_extensions is not None:
+            obj.stac_extensions = [
+                uri for uri in obj.stac_extensions if uri != cls.get_schema_uri()
             ]
 
-    @property
-    def has_extension(self) -> bool:
-        return (self.obj.stac_extensions is not None
-                and self.schema_uri in self.obj.stac_extensions)
+    @classmethod
+    def has_extension(cls, obj: S) -> bool:
+        return (obj.stac_extensions is not None and cls.get_schema_uri() in obj.stac_extensions)

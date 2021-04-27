@@ -2,6 +2,8 @@ from typing import List, Optional
 
 import pystac as ps
 
+SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+
 
 class ViewItemExt():
     """ViewItemExt is the extension of the Item in the View Geometry Extension.

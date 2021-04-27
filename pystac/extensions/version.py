@@ -308,7 +308,7 @@ class VersionCollectionExt():
 
 
 class VersionExtensionHooks(ExtensionHooks):
-    extension_schema = VERSION_EXT_SCHEMA
+    schema_uri = VERSION_EXT_SCHEMA
 
     def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
         if isinstance(so, ps.Collection) or isinstance(so, ps.Item):

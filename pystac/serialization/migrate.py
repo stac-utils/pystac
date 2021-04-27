@@ -1,10 +1,14 @@
-import re
+from functools import lru_cache
 from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, TYPE_CHECKING, Tuple
 
 import pystac as ps
 from pystac.version import STACVersion
-from pystac.serialization.identify import (STACJSONDescription, STACVersionID, STACVersionRange, OldExtensionShortIDs)
+from pystac.serialization.identify import (OldExtensionShortIDs, STACJSONDescription, STACVersionID,
+                                           STACVersionRange)
+
+if TYPE_CHECKING:
+    from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
 def _migrate_links(d: Dict[str, Any], version: STACVersionID) -> None:
@@ -42,6 +46,176 @@ def _migrate_itemcollection(d: Dict[str, Any], version: STACVersionID,
 # Extensions
 
 
+class OldExtensionSchemaUriMap:
+    """Ties old extension IDs to schemas hosted by https://schemas.stacspec.org.
+
+    For STAC Versions 0.9.0 or earlier this will use the schemas hosted on the
+    radiantearth/stac-spec GitHub repo.
+    """
+
+    # BASE_URIS contains a list of tuples, the first element is a version range and the
+    # second being the base URI for schemas for that range. The schema URI of a STAC
+    # for a particular version uses the base URI associated with the version range which
+    # contains it. If the version it outside of any VersionRange, there is no URI for the
+    # schema.
+    @classmethod
+    @lru_cache()
+    def get_base_uris(cls) -> List[Tuple[STACVersionRange, Callable[[STACVersionID], str]]]:
+        return [(STACVersionRange(min_version='1.0.0-beta.1'),
+                 lambda version: 'https://schemas.stacspec.org/v{}'.format(version)),
+                (STACVersionRange(min_version='0.8.0', max_version='0.9.0'), lambda version:
+                 'https://raw.githubusercontent.com/radiantearth/stac-spec/v{}'.format(version))]
+
+    # DEFAULT_SCHEMA_MAP contains a structure that matches extension schema URIs
+    # based on the stac object type, extension ID and the stac version.
+    # Uris are contained in a tuple whose first element represents the URI of the latest
+    # version, so that a search through version ranges is avoided if the STAC being validated
+    # is the latest version. If it's a previous version, the stac_version that matches
+    # the listed version range is used, or else the URI from the latest version is used if
+    # there are no overrides for previous versions.
+    @classmethod
+    @lru_cache()
+    def get_schema_map(cls) -> Dict[str, Any]:
+        return {
+            OldExtensionShortIDs.CHECKSUM: ({
+                ps.STACObjectType.CATALOG:
+                'extensions/checksum/json-schema/schema.json',
+                ps.STACObjectType.COLLECTION:
+                'extensions/checksum/json-schema/schema.json',
+                ps.STACObjectType.ITEM:
+                'extensions/checksum/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.COLLECTION_ASSETS: ({
+                ps.STACObjectType.COLLECTION:
+                'extensions/collection-assets/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.DATACUBE: ({
+                ps.STACObjectType.COLLECTION:
+                'extensions/datacube/json-schema/schema.json',
+                ps.STACObjectType.ITEM:
+                'extensions/datacube/json-schema/schema.json'
+            }, [(STACVersionRange(min_version='0.5.0', max_version='0.9.0'), {
+                ps.STACObjectType.COLLECTION: None,
+                ps.STACObjectType.ITEM: None
+            })]),
+            OldExtensionShortIDs.EO: ({
+                ps.STACObjectType.ITEM:
+                'extensions/eo/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.ITEM_ASSETS: ({
+                ps.STACObjectType.COLLECTION:
+                'extensions/item-assets/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.LABEL: ({
+                ps.STACObjectType.ITEM:
+                'extensions/label/json-schema/schema.json'
+            }, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.8.1'), {
+                ps.STACObjectType.ITEM: 'extensions/label/schema.json'
+            })]),
+            OldExtensionShortIDs.POINTCLOUD: (
+                {
+                    # Poincloud schema was broken in 1.0.0-beta.2 and prior;
+                    # Use this schema version (corresponding to 1.0.0-rc.1)
+                    # to allow for proper validation
+                    ps.STACObjectType.ITEM:
+                    'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json'
+                },
+                None),
+            OldExtensionShortIDs.PROJECTION: ({
+                ps.STACObjectType.ITEM:
+                'extensions/projection/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.SAR: ({
+                ps.STACObjectType.ITEM:
+                'extensions/sar/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.SAT: ({
+                ps.STACObjectType.ITEM:
+                'extensions/sat/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.SCIENTIFIC: ({
+                ps.STACObjectType.ITEM:
+                'extensions/scientific/json-schema/schema.json',
+                ps.STACObjectType.COLLECTION:
+                'extensions/scientific/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.SINGLE_FILE_STAC: ({
+                ps.STACObjectType.CATALOG:
+                'extensions/single-file-stac/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.TILED_ASSETS: ({
+                ps.STACObjectType.CATALOG:
+                'extensions/tiled-assets/json-schema/schema.json',
+                ps.STACObjectType.COLLECTION:
+                'extensions/tiled-assets/json-schema/schema.json',
+                ps.STACObjectType.ITEM:
+                'extensions/tiled-assets/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.TIMESTAMPS: ({
+                ps.STACObjectType.ITEM:
+                'extensions/timestamps/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.VERSION: ({
+                ps.STACObjectType.ITEM:
+                'extensions/version/json-schema/schema.json',
+                ps.STACObjectType.COLLECTION:
+                'extensions/version/json-schema/schema.json'
+            }, None),
+            OldExtensionShortIDs.VIEW: ({
+                ps.STACObjectType.ITEM:
+                'extensions/view/json-schema/schema.json'
+            }, None),
+
+            # Removed or renamed extensions.
+            'dtr': (None, None),  # Invalid schema
+            'asset': (None, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.9.0'), {
+                ps.STACObjectType.COLLECTION:
+                'extensions/asset/json-schema/schema.json'
+            })]),
+        }
+
+    @classmethod
+    def _append_base_uri_if_needed(cls, uri: str, stac_version: STACVersionID) -> Optional[str]:
+        # Only append the base URI if it's not already an absolute URI
+        if '://' not in uri:
+            base_uri = None
+            for version_range, f in cls.get_base_uris():
+                if version_range.contains(stac_version):
+                    base_uri = f(stac_version)
+                    return '{}/{}'.format(base_uri, uri)
+
+            # No JSON Schema for the old extension
+            return None
+        else:
+            return uri
+
+    @classmethod
+    def get_extension_schema_uri(cls, extension_id: str, object_type: "STACObjectType_Type",
+                                 stac_version: STACVersionID) -> Optional[str]:
+        uri = None
+
+        is_latest = stac_version == ps.get_stac_version()
+
+        ext_map = cls.get_schema_map()
+        if extension_id in ext_map:
+            if ext_map[extension_id][0] and \
+               object_type in ext_map[extension_id][0]:
+                uri = ext_map[extension_id][0][object_type]
+
+            if not is_latest:
+                if ext_map[extension_id][1]:
+                    for version_range, ext_uris in ext_map[extension_id][1]:
+                        if version_range.contains(stac_version):
+                            if object_type in ext_uris:
+                                uri = ext_uris[object_type]
+                                break
+
+        if uri is None:
+            return uri
+        else:
+            return cls._append_base_uri_if_needed(uri, stac_version)
+
+
 def _migrate_item_assets(d: Dict[str, Any], version: STACVersionID,
                          info: STACJSONDescription) -> Optional[Set[str]]:
     if version < '1.0.0-beta.2':
@@ -73,139 +247,6 @@ def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
         if 'dtr:end_datetime' in d['properties'] and 'end_datetime' not in d['properties']:
             d['properties']['end_datetime'] = d['properties']['dtr:end_datetime']
             del d['properties']['dtr:end_datetime']
-
-    return None
-
-
-def _migrate_eo(d: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> Optional[Set[str]]:
-    added_extensions: Set[str] = set([])
-    if version < '0.5':
-        if 'eo:crs' in d['properties']:
-            # Try to pull out the EPSG code.
-            # Otherwise, just leave it alone.
-            wkt = d['properties']['eo:crs']
-            matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
-            if len(matches) > 0:
-                epsg_code = matches[-1].group(1)
-                d['properties'].pop('eo:crs')
-                d['properties']['eo:epsg'] = int(epsg_code)
-
-    if version < '0.6':
-        # Change eo:bands from a dict to a list. eo:bands on an asset
-        # is an index instead of a dict key. eo:bands is in properties.
-        bands_dict = d['eo:bands']
-        keys_to_indices: Dict[str, int] = {}
-        bands: List[Dict[str, Any]] = []
-        for i, (k, band) in enumerate(bands_dict.items()):
-            keys_to_indices[k] = i
-            bands.append(band)
-
-        d.pop('eo:bands')
-        d['properties']['eo:bands'] = bands
-        for k, asset in d['assets'].items():
-            if 'eo:bands' in asset:
-                asset_band_indices: List[int] = []
-                for bk in asset['eo:bands']:
-                    asset_band_indices.append(keys_to_indices[bk])
-                asset['eo:bands'] = sorted(asset_band_indices)
-
-    if version < '0.9':
-        # Some eo fields became common_metadata
-        if 'eo:platform' in d['properties'] and 'platform' not in d['properties']:
-            d['properties']['platform'] = d['properties']['eo:platform']
-            del d['properties']['eo:platform']
-
-        if 'eo:instrument' in d['properties'] and 'instruments' not in d['properties']:
-            d['properties']['instruments'] = [d['properties']['eo:instrument']]
-            del d['properties']['eo:instrument']
-
-        if 'eo:constellation' in d['properties'] and 'constellation' not in d['properties']:
-            d['properties']['constellation'] = d['properties']['eo:constellation']
-            del d['properties']['eo:constellation']
-
-        # Some eo fields became view extension fields
-        eo_to_view_fields = [
-            'off_nadir', 'azimuth', 'incidence_angle', 'sun_azimuth', 'sun_elevation'
-        ]
-
-        view_enabled = 'view' in d['stac_extensions']
-        for field in eo_to_view_fields:
-            if 'eo:{}'.format(field) in d['properties']:
-                if not view_enabled:
-                    added_extensions.add('view')
-                    view_enabled = True
-                if not 'view:{}'.format(field) in d['properties']:
-                    d['properties']['view:{}'.format(field)] = \
-                        d['properties']['eo:{}'.format(field)]
-                    del d['properties']['eo:{}'.format(field)]
-
-    if version < '1.0.0-beta.1' and info.object_type == ps.STACObjectType.ITEM:
-        # gsd moved from eo to common metadata
-        if 'eo:gsd' in d['properties']:
-            d['properties']['gsd'] = d['properties']['eo:gsd']
-            del d['properties']['eo:gsd']
-
-        # The way bands were declared in assets changed.
-        # In 1.0.0-beta.1 they are inlined into assets as
-        # opposed to having indices back into a property-level array.
-        if 'eo:bands' in d['properties']:
-            bands = d['properties']['eo:bands']
-            for asset in d['assets'].values():
-                if 'eo:bands' in asset:
-                    new_bands: List[Dict[str, Any]] = []
-                    for band_index in asset['eo:bands']:
-                        new_bands.append(bands[band_index])
-                    asset['eo:bands'] = new_bands
-
-    return added_extensions
-
-
-def _migrate_label(d: Dict[str, Any], version: STACVersionID,
-                   info: STACJSONDescription) -> Optional[Set[str]]:
-    if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
-        props = d['properties']
-        # Migrate 0.8.0-rc1 non-pluralized forms
-        # As it's a common mistake, convert for any pre-1.0.0 version.
-        if 'label:property' in props and 'label:properties' not in props:
-            props['label:properties'] = props['label:property']
-            del props['label:property']
-
-        if 'label:task' in props and 'label:tasks' not in props:
-            props['label:tasks'] = props['label:task']
-            del props['label:task']
-
-        if 'label:overview' in props and 'label:overviews' not in props:
-            props['label:overviews'] = props['label:overview']
-            del props['label:overview']
-
-        if 'label:method' in props and 'label:methods' not in props:
-            props['label:methods'] = props['label:method']
-            del props['label:method']
-
-    return None
-
-
-def _migrate_pointcloud(d: Dict[str, Any], version: STACVersionID,
-                        info: STACJSONDescription) -> Optional[Set[str]]:
-    return None
-
-
-def _migrate_sar(d: Dict[str, Any], version: STACVersionID,
-                 info: STACJSONDescription) -> Optional[Set[str]]:
-    if version < '0.9':
-        # Some sar fields became common_metadata
-        if 'sar:platform' in d['properties'] and 'platform' not in d['properties']:
-            d['properties']['platform'] = d['properties']['sar:platform']
-            del d['properties']['sar:platform']
-
-        if 'sar:instrument' in d['properties'] and 'instruments' not in d['properties']:
-            d['properties']['instruments'] = [d['properties']['sar:instrument']]
-            del d['properties']['sar:instrument']
-
-        if 'sar:constellation' in d['properties'] and 'constellation' not in d['properties']:
-            d['properties']['constellation'] = d['properties']['sar:constellation']
-            del d['properties']['sar:constellation']
 
     return None
 
@@ -245,8 +286,7 @@ def _get_extension_renames() -> Dict[str, str]:
     return {'asset': 'item-assets'}
 
 
-def migrate_to_latest(json_dict: Dict[str, Any],
-                      info: STACJSONDescription) -> Dict[str, Any]:
+def migrate_to_latest(json_dict: Dict[str, Any], info: STACJSONDescription) -> Dict[str, Any]:
     """Migrates the STAC JSON to the latest version
 
     Args:
@@ -269,10 +309,21 @@ def migrate_to_latest(json_dict: Dict[str, Any],
         object_migrations[info.object_type](result, version, info)
         ps.EXTENSION_HOOKS.migrate(result, version, info)
 
-        for ext in (result['stac_extensions'] or []):
+        for ext in (result.get('stac_extensions') or []):
             if ext in removed_extension_migrations:
                 removed_extension_migrations[ext](result, version, info)
                 result['stac_extensions'].remove(ext)
+            else:
+                # Ensure old ID's are moved to schemas
+                # May need a better way to differentiate
+                # old ID's from schemas, but going with
+                # the file extension for now.
+                if not ext.lower().endswith('.json'):
+                    result['stac_extensions'].remove(ext)
+                    uri = OldExtensionSchemaUriMap.get_extension_schema_uri(
+                        ext, info.object_type, version)
+                    if uri is not None:
+                        result['stac_extensions'].append(uri)
 
     result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
 

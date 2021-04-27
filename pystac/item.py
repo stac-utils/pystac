@@ -7,6 +7,7 @@ import dateutil.parser
 
 import pystac as ps
 from pystac import (STACError, STACObjectType)
+from pystac.asset import Asset
 from pystac.link import Link
 from pystac.stac_object import STACObject
 from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
@@ -66,7 +67,7 @@ class CommonMetadata:
     def start_datetime(self, v: Optional[Datetime]) -> None:
         self.set_start_datetime(v)
 
-    def get_start_datetime(self, asset: Optional["Asset"] = None) -> Optional[Datetime]:
+    def get_start_datetime(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Gets an Item or an Asset start_datetime.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -87,7 +88,7 @@ class CommonMetadata:
 
     def set_start_datetime(self,
                            start_datetime: Optional[Datetime],
-                           asset: Optional["Asset"] = None) -> None:
+                           asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset start_datetime.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -116,7 +117,7 @@ class CommonMetadata:
     def end_datetime(self, v: Optional[Datetime]) -> None:
         self.set_end_datetime(v)
 
-    def get_end_datetime(self, asset: Optional["Asset"] = None) -> Optional[Datetime]:
+    def get_end_datetime(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Gets an Item or an Asset end_datetime.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -137,7 +138,7 @@ class CommonMetadata:
 
     def set_end_datetime(self,
                          end_datetime: Optional[Datetime],
-                         asset: Optional["Asset"] = None) -> None:
+                         asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset end_datetime.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -164,7 +165,7 @@ class CommonMetadata:
     def license(self, v: Optional[str]) -> None:
         self.set_license(v)
 
-    def get_license(self, asset: Optional["Asset"] = None) -> Optional[str]:
+    def get_license(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset license.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -178,7 +179,7 @@ class CommonMetadata:
         else:
             return asset.properties.get('license')
 
-    def set_license(self, license: Optional[str], asset: Optional["Asset"] = None) -> None:
+    def set_license(self, license: Optional[str], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset license.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -205,7 +206,7 @@ class CommonMetadata:
     def providers(self, v: Optional[List[Provider]]) -> None:
         self.set_providers(v)
 
-    def get_providers(self, asset: Optional["Asset"] = None) -> Optional[List[Provider]]:
+    def get_providers(self, asset: Optional[Asset] = None) -> Optional[List[Provider]]:
         """Gets an Item or an Asset providers.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -226,7 +227,7 @@ class CommonMetadata:
 
     def set_providers(self,
                       providers: Optional[List[Provider]],
-                      asset: Optional["Asset"] = None) -> None:
+                      asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset providers.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -260,7 +261,7 @@ class CommonMetadata:
     def platform(self, v: Optional[str]) -> None:
         self.set_platform(v)
 
-    def get_platform(self, asset: Optional["Asset"] = None) -> Optional[str]:
+    def get_platform(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset platform.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -274,7 +275,7 @@ class CommonMetadata:
         else:
             return asset.properties.get('platform')
 
-    def set_platform(self, platform: Optional[str], asset: Optional["Asset"] = None) -> None:
+    def set_platform(self, platform: Optional[str], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset platform.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -298,7 +299,7 @@ class CommonMetadata:
     def instruments(self, v: Optional[List[str]]) -> None:
         self.set_instruments(v)
 
-    def get_instruments(self, asset: Optional["Asset"] = None) -> Optional[List[str]]:
+    def get_instruments(self, asset: Optional[Asset] = None) -> Optional[List[str]]:
         """Gets an Item or an Asset instruments.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -314,7 +315,7 @@ class CommonMetadata:
 
     def set_instruments(self,
                         instruments: Optional[List[str]],
-                        asset: Optional["Asset"] = None) -> None:
+                        asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset instruments.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -338,7 +339,7 @@ class CommonMetadata:
     def constellation(self, v: Optional[str]) -> None:
         self.set_constellation(v)
 
-    def get_constellation(self, asset: Optional["Asset"] = None) -> Optional[str]:
+    def get_constellation(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset constellation.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -354,7 +355,7 @@ class CommonMetadata:
 
     def set_constellation(self,
                           constellation: Optional[str],
-                          asset: Optional["Asset"] = None) -> None:
+                          asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset constellation.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -378,7 +379,7 @@ class CommonMetadata:
     def mission(self, v: Optional[str]) -> None:
         self.set_mission(v)
 
-    def get_mission(self, asset: Optional["Asset"] = None) -> Optional[str]:
+    def get_mission(self, asset: Optional[Asset] = None) -> Optional[str]:
         """Gets an Item or an Asset mission.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -392,7 +393,7 @@ class CommonMetadata:
         else:
             return asset.properties.get('mission')
 
-    def set_mission(self, mission: Optional[str], asset: Optional["Asset"] = None) -> None:
+    def set_mission(self, mission: Optional[str], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset mission.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -416,7 +417,7 @@ class CommonMetadata:
     def gsd(self, v: Optional[float]) -> None:
         self.set_gsd(v)
 
-    def get_gsd(self, asset: Optional["Asset"] = None) -> Optional[float]:
+    def get_gsd(self, asset: Optional[Asset] = None) -> Optional[float]:
         """Gets an Item or an Asset gsd.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -430,7 +431,7 @@ class CommonMetadata:
         else:
             return asset.properties.get('gsd')
 
-    def set_gsd(self, gsd: Optional[float], asset: Optional["Asset"] = None) -> None:
+    def set_gsd(self, gsd: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset gsd.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -457,7 +458,7 @@ class CommonMetadata:
     def created(self, v: Optional[Datetime]) -> None:
         self.set_created(v)
 
-    def get_created(self, asset: Optional["Asset"] = None) -> Optional[Datetime]:
+    def get_created(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Gets an Item or an Asset created time.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -483,7 +484,7 @@ class CommonMetadata:
 
         return created
 
-    def set_created(self, created: Optional[Datetime], asset: Optional["Asset"] = None) -> None:
+    def set_created(self, created: Optional[Datetime], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset created time.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -518,7 +519,7 @@ class CommonMetadata:
     def updated(self, v: Optional[Datetime]) -> None:
         self.set_updated(v)
 
-    def get_updated(self, asset: Optional["Asset"] = None) -> Optional[Datetime]:
+    def get_updated(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Gets an Item or an Asset updated time.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -544,7 +545,7 @@ class CommonMetadata:
 
         return updated
 
-    def set_updated(self, updated: Optional[Datetime], asset: Optional["Asset"] = None) -> None:
+    def set_updated(self, updated: Optional[Datetime], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset updated time.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -554,153 +555,6 @@ class CommonMetadata:
             self.properties['updated'] = None if updated is None else datetime_to_str(updated)
         else:
             asset.properties['updated'] = None if updated is None else datetime_to_str(updated)
-
-
-class Asset:
-    """An object that contains a link to data associated with the Item that can be
-    downloaded or streamed.
-
-    Args:
-        href (str): Link to the asset object. Relative and absolute links are both allowed.
-        title (str): Optional displayed title for clients and users.
-        description (str): A description of the Asset providing additional details, such as
-            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
-            text representation.
-        media_type (str): Optional description of the media type. Registered Media Types
-            are preferred. See :class:`~pystac.MediaType` for common media types.
-        roles ([str]): Optional, Semantic roles (i.e. thumbnail, overview, data, metadata)
-            of the asset.
-        properties (dict): Optional, additional properties for this asset. This is used by
-            extensions as a way to serialize and deserialize properties on asset
-            object JSON.
-
-    Attributes:
-        href (str): Link to the asset object. Relative and absolute links are both allowed.
-        title (str): Optional displayed title for clients and users.
-        description (str): A description of the Asset providing additional details, such as
-            how it was processed or created. CommonMark 0.29 syntax MAY be used for rich
-            text representation.
-        media_type (str): Optional description of the media type. Registered Media Types
-            are preferred. See :class:`~pystac.MediaType` for common media types.
-        properties (dict): Optional, additional properties for this asset. This is used by
-            extensions as a way to serialize and deserialize properties on asset
-            object JSON.
-        owner (Item or None): The Item this asset belongs to.
-    """
-    def __init__(self,
-                 href: str,
-                 title: Optional[str] = None,
-                 description: Optional[str] = None,
-                 media_type: Optional[str] = None,
-                 roles: Optional[List[str]] = None,
-                 properties: Optional[Dict[str, Any]] = None) -> None:
-        self.href = href
-        self.title = title
-        self.description = description
-        self.media_type = media_type
-        self.roles = roles
-
-        if properties is not None:
-            self.properties = properties
-        else:
-            self.properties = {}
-
-        # The Item which owns this Asset.
-        self.owner: Optional[Item] = None
-
-    def set_owner(self, item: "Item") -> None:
-        """Sets the owning item of this Asset.
-
-        The owning item will be used to resolve relative HREFs of this asset.
-
-        Args:
-            item (Item): The Item that owns this asset.
-        """
-        self.owner = item
-
-    def get_absolute_href(self) -> Optional[str]:
-        """Gets the absolute href for this asset, if possible.
-
-        If this Asset has no associated Item, this will return whatever the
-        href is (as it cannot determine the absolute path, if the asset
-        href is relative).
-
-        Returns:
-            str: The absolute HREF of this asset, or a relative HREF is an absolute HREF
-            cannot be determined.
-        """
-        if not is_absolute_href(self.href):
-            if self.owner is not None:
-                return make_absolute_href(self.href, self.owner.get_self_href())
-
-        return self.href
-
-    def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this Asset.
-
-        Returns:
-            dict: A serialization of the Asset that can be written out as JSON.
-        """
-
-        d: Dict[str, Any] = {'href': self.href}
-
-        if self.media_type is not None:
-            d['type'] = self.media_type
-
-        if self.title is not None:
-            d['title'] = self.title
-
-        if self.description is not None:
-            d['description'] = self.description
-
-        if self.properties is not None and len(self.properties) > 0:
-            for k, v in self.properties.items():
-                d[k] = v
-
-        if self.roles is not None:
-            d['roles'] = self.roles
-
-        return d
-
-    def clone(self) -> "Asset":
-        """Clones this asset.
-
-        Returns:
-            Asset: The clone of this asset.
-        """
-        return Asset(href=self.href,
-                     title=self.title,
-                     description=self.description,
-                     media_type=self.media_type,
-                     roles=self.roles,
-                     properties=self.properties)
-
-    def __repr__(self) -> str:
-        return '<Asset href={}>'.format(self.href)
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Asset":
-        """Constructs an Asset from a dict.
-
-        Returns:
-            Asset: The Asset deserialized from the JSON dict.
-        """
-        d = copy(d)
-        href = d.pop('href')
-        media_type = d.pop('type', None)
-        title = d.pop('title', None)
-        description = d.pop('description', None)
-        roles = d.pop('roles', None)
-        properties = None
-        if any(d):
-            properties = d
-
-        return Asset(href=href,
-                     media_type=media_type,
-                     title=title,
-                     description=description,
-                     roles=roles,
-                     properties=properties)
 
 
 class Item(STACObject):
@@ -867,7 +721,7 @@ class Item(STACObject):
         """
         return dict(self.assets.items())
 
-    def add_asset(self, key: str, asset: Asset) -> "Item":
+    def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.
 
         Args:
@@ -876,7 +730,6 @@ class Item(STACObject):
         """
         asset.set_owner(self)
         self.assets[key] = asset
-        return self
 
     def make_asset_hrefs_relative(self) -> "Item":
         """Modify each asset's HREF to be relative to this item's self HREF.
@@ -958,7 +811,7 @@ class Item(STACObject):
         if not include_self_link:
             links = [x for x in links if x.rel != 'self']
 
-        assets = dict(map(lambda x: (x[0], x[1].to_dict()), self.assets.items()))
+        assets = {k: v.to_dict() for k, v in self.assets.items() }
 
         if self.datetime is not None:
             self.properties['datetime'] = datetime_to_str(self.datetime)

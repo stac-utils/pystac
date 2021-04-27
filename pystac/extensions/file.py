@@ -1,11 +1,11 @@
 import enum
-from typing import Any, Generic, List, Optional, TypeVar, Union
+from typing import Any, Generic, List, Optional, TypeVar
 
 import pystac as ps
-from pystac.extensions.base import EnableExtensionMixin, ExtensionException, PropertiesExtension
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.utils import map_opt
 
-T = TypeVar('T', contravariant=True, bound=Union[ps.Item, ps.Asset])
+T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
 
 SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 
@@ -37,7 +37,7 @@ class FileDataType(str, enum.Enum):
     OTHER = "other"
 
 
-class FileExtension(Generic[T], PropertiesExtension):
+class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """FileItemExt is the extension of the Item in the file extension which
     adds file related details such as checksum, data type and size for assets.
 
@@ -118,33 +118,77 @@ class FileExtension(Generic[T], PropertiesExtension):
     def checksum(self, v: Optional[str]) -> None:
         self._set_property(CHECKSUM_PROP, v)
 
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-class ItemFileExtension(EnableExtensionMixin[ps.Item], FileExtension[ps.Item]):
-    schema_uri = SCHEMA_URI
 
+class ItemFileExtension(FileExtension[ps.Item]):
     def __init__(self, item: ps.Item):
-        self.obj = item
+        self.item = item
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemFileExtension Item id={}>'.format(self.obj.id)
+        return '<ItemFileExtension Item id={}>'.format(self.item.id)
 
 
 class AssetFileExtension(FileExtension[ps.Asset]):
     def __init__(self, asset: ps.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner:
+        if asset.owner and isinstance(asset.owner, ps.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
         return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
 
 
-def file_ext(obj: Union[ps.Item, ps.Asset]) -> FileExtension[T]:
+class SummariesFileExtension(SummariesExtension):
+    @property
+    def data_type(self) -> Optional[List[FileDataType]]:
+        """Get or sets the data_type of the file.
+
+        Returns:
+            FileDataType
+        """
+        return map_opt(lambda x: [FileDataType(t) for t in x],
+                       self.summaries.get_list(DATA_TYPE_PROP, str))
+
+    @data_type.setter
+    def data_type(self, v: Optional[List[FileDataType]]) -> None:
+        self._set_summary(DATA_TYPE_PROP, map_opt(lambda x: [str(t) for t in x], v))
+
+    @property
+    def size(self) -> Optional[ps.RangeSummary[int]]:
+        """Get or sets the size in bytes of the file
+
+        Returns:
+            int or None
+        """
+        return self.summaries.get_range(SIZE_PROP, int)
+
+    @size.setter
+    def size(self, v: Optional[ps.RangeSummary[int]]) -> None:
+        self._set_summary(SIZE_PROP, v)
+
+    @property
+    def nodata(self) -> Optional[List[Any]]:
+        """Get or sets the list of no data values"""
+        return self.summaries.get_list(NODATA_PROP, List[Any])
+
+    @nodata.setter
+    def nodata(self, v: Optional[List[Any]]) -> None:
+        self._set_summary(NODATA_PROP, v)
+
+
+def file_ext(obj: T) -> FileExtension[T]:
     if isinstance(obj, ps.Item):
         return ItemFileExtension(obj)
     elif isinstance(obj, ps.Asset):
         return AssetFileExtension(obj)
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+
+def file_summaries(obj: ps.Collection) -> SummariesFileExtension:
+    return SummariesFileExtension(obj)

@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pystac as ps
 from pystac.serialization import STACVersionRange
-from pystac.serialization.identify import OldExtensionShortIDs
 from pystac.stac_object import STACObjectType
 
 
@@ -14,26 +13,11 @@ class SchemaUriMap(ABC):
         pass
 
     @abstractmethod
-    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
+    def get_object_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
         """Get the schema URI for the given object type and stac version.
 
         Args:
             object_type (STACObjectType): STAC object type. One of :class:`~pystac.STACObjectType`
-            stac_version (str): The STAC version of the schema to return.
-
-        Returns:
-            str: The URI of the schema, or None if not found.
-        """
-        pass
-
-    @abstractmethod
-    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
-                                 stac_version: str) -> Optional[str]:
-        """Get the extension's schema URI for the given object type, stac version.
-
-        Args:
-            extension_id (str): The Extension ID of the extension of the schema.
-            object_type (str): STAC object type. One of :class:`~pystac.STACObjectType`
             stac_version (str): The STAC version of the schema to return.
 
         Returns:
@@ -68,107 +52,14 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # is the latest version. If it's a previous version, the stac_version that matches
     # the listed version range is used, or else the URI from the latest version is used if
     # there are no overrides for previous versions.
-    DEFAULT_SCHEMA_MAP: Dict[str, Dict[str, Any]] = {
-        'core': {
-            STACObjectType.CATALOG: ('catalog-spec/json-schema/catalog.json', None),
-            STACObjectType.COLLECTION: ('collection-spec/json-schema/collection.json', None),
-            STACObjectType.ITEM: ('item-spec/json-schema/item.json', None),
-            STACObjectType.ITEMCOLLECTION: (None, [
-                STACVersionRange(min_version='v0.8.0-rc1', max_version='0.9.0'),
-                'item-spec/json-schema/itemcollection.json'
-            ])
-        },
-        'extension': {
-            OldExtensionShortIDs.CHECKSUM: ({
-                STACObjectType.CATALOG:
-                'extensions/checksum/json-schema/schema.json',
-                STACObjectType.COLLECTION:
-                'extensions/checksum/json-schema/schema.json',
-                STACObjectType.ITEM:
-                'extensions/checksum/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.COLLECTION_ASSETS: ({
-                STACObjectType.COLLECTION:
-                'extensions/collection-assets/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.DATACUBE: ({
-                STACObjectType.COLLECTION:
-                'extensions/datacube/json-schema/schema.json',
-                STACObjectType.ITEM:
-                'extensions/datacube/json-schema/schema.json'
-            }, [(STACVersionRange(min_version='0.5.0', max_version='0.9.0'), {
-                STACObjectType.COLLECTION: None,
-                STACObjectType.ITEM: None
-            })]),
-            OldExtensionShortIDs.EO: ({
-                STACObjectType.ITEM: 'extensions/eo/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.ITEM_ASSETS: ({
-                STACObjectType.COLLECTION:
-                'extensions/item-assets/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.LABEL: ({
-                STACObjectType.ITEM:
-                'extensions/label/json-schema/schema.json'
-            }, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.8.1'), {
-                STACObjectType.ITEM: 'extensions/label/schema.json'
-            })]),
-            OldExtensionShortIDs.POINTCLOUD: (
-                {
-                    STACObjectType.ITEM: None  # 'extensions/pointcloud/json-schema/schema.json'
-                },
-                None),
-            OldExtensionShortIDs.PROJECTION: ({
-                STACObjectType.ITEM:
-                'extensions/projection/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.SAR: ({
-                STACObjectType.ITEM:
-                'extensions/sar/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.SAT: ({
-                STACObjectType.ITEM:
-                'extensions/sat/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.SCIENTIFIC: ({
-                STACObjectType.ITEM:
-                'extensions/scientific/json-schema/schema.json',
-                STACObjectType.COLLECTION:
-                'extensions/scientific/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.SINGLE_FILE_STAC: ({
-                STACObjectType.CATALOG:
-                'extensions/single-file-stac/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.TILED_ASSETS: ({
-                STACObjectType.CATALOG:
-                'extensions/tiled-assets/json-schema/schema.json',
-                STACObjectType.COLLECTION:
-                'extensions/tiled-assets/json-schema/schema.json',
-                STACObjectType.ITEM:
-                'extensions/tiled-assets/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.TIMESTAMPS: ({
-                STACObjectType.ITEM:
-                'extensions/timestamps/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.VERSION: ({
-                STACObjectType.ITEM:
-                'extensions/version/json-schema/schema.json',
-                STACObjectType.COLLECTION:
-                'extensions/version/json-schema/schema.json'
-            }, None),
-            OldExtensionShortIDs.VIEW: ({
-                STACObjectType.ITEM:
-                'extensions/view/json-schema/schema.json'
-            }, None),
-
-            # Removed or renamed extensions.
-            'dtr': (None, None),  # Invalid schema
-            'asset': (None, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.9.0'), {
-                STACObjectType.COLLECTION: 'extensions/asset/json-schema/schema.json'
-            })]),
-        }
+    DEFAULT_SCHEMA_MAP: Dict[str, Any] = {
+        STACObjectType.CATALOG: ('catalog-spec/json-schema/catalog.json', None),
+        STACObjectType.COLLECTION: ('collection-spec/json-schema/collection.json', None),
+        STACObjectType.ITEM: ('item-spec/json-schema/item.json', None),
+        STACObjectType.ITEMCOLLECTION: (None, [
+            STACVersionRange(min_version='v0.8.0-rc1', max_version='0.9.0'),
+            'item-spec/json-schema/itemcollection.json'
+        ])
     }
 
     @classmethod
@@ -186,44 +77,19 @@ class DefaultSchemaUriMap(SchemaUriMap):
         else:
             return uri
 
-    def get_core_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
+    def get_object_schema_uri(self, object_type: STACObjectType, stac_version: str) -> Optional[str]:
         uri = None
         is_latest = stac_version == ps.get_stac_version()
 
-        if object_type not in self.DEFAULT_SCHEMA_MAP['core']:
+        if object_type not in self.DEFAULT_SCHEMA_MAP:
             raise KeyError('Unknown STAC object type {}'.format(object_type))
 
-        uri = self.DEFAULT_SCHEMA_MAP['core'][object_type][0]
+        uri = self.DEFAULT_SCHEMA_MAP[object_type][0]
         if not is_latest:
-            if self.DEFAULT_SCHEMA_MAP['core'][object_type][1]:
-                for version_range, range_uri in self.DEFAULT_SCHEMA_MAP['core'][object_type][1]:
+            if self.DEFAULT_SCHEMA_MAP[object_type][1]:
+                for version_range, range_uri in self.DEFAULT_SCHEMA_MAP[object_type][1]:
                     if version_range.contains(stac_version):
                         uri = range_uri
                         break
 
         return self._append_base_uri_if_needed(uri, stac_version)
-
-    def get_extension_schema_uri(self, extension_id: str, object_type: STACObjectType,
-                                 stac_version: str) -> Optional[str]:
-        uri = None
-
-        is_latest = stac_version == ps.get_stac_version()
-
-        ext_map = self.DEFAULT_SCHEMA_MAP['extension']
-        if extension_id in ext_map:
-            if ext_map[extension_id][0] and \
-               object_type in ext_map[extension_id][0]:
-                uri = ext_map[extension_id][0][object_type]
-
-            if not is_latest:
-                if ext_map[extension_id][1]:
-                    for version_range, ext_uris in ext_map[extension_id][1]:
-                        if version_range.contains(stac_version):
-                            if object_type in ext_uris:
-                                uri = ext_uris[object_type]
-                                break
-
-        if uri is None:
-            return uri
-        else:
-            return self._append_base_uri_if_needed(uri, stac_version)

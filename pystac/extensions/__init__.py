@@ -9,3 +9,4 @@ class ExtensionError(Exception):
 from pystac.extensions.eo import eo_ext  # type:ignore
 from pystac.extensions.file import file_ext  # type:ignore
 from pystac.extensions.label import label_ext  # type:ignore
+from pystac.extensions.pointcloud import pointcloud_ext  # type:ignore

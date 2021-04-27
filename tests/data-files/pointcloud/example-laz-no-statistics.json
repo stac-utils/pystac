@@ -1,7 +1,7 @@
 {
-    "stac_version": "1.0.0-beta.2",
+    "stac_version": "1.0.0-rc.2",
     "stac_extensions": [
-        "pointcloud"
+        "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
     ],
     "assets": {},
     "bbox": [

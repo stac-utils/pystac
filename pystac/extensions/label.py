@@ -1,14 +1,44 @@
 """STAC Model classes for Label extension.
 """
 from enum import Enum
+from pystac.extensions.base import ExtensionManagementMixin
 from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
 import pystac as ps
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions.base import EnableExtensionMixin
 from pystac.extensions.hooks import ExtensionHooks
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+
+
+class LabelExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+
+    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
+        if isinstance(so, ps.Item):
+            return ['source']
+        return None
+
+    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+        if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
+            props = d['properties']
+            # Migrate 0.8.0-rc1 non-pluralized forms
+            # As it's a common mistake, convert for any pre-1.0.0 version.
+            if 'label:property' in props and 'label:properties' not in props:
+                props['label:properties'] = props['label:property']
+                del props['label:property']
+
+            if 'label:task' in props and 'label:tasks' not in props:
+                props['label:tasks'] = props['label:task']
+                del props['label:task']
+
+            if 'label:overview' in props and 'label:overviews' not in props:
+                props['label:overviews'] = props['label:overview']
+                del props['label:overview']
+
+            if 'label:method' in props and 'label:methods' not in props:
+                props['label:methods'] = props['label:method']
+                del props['label:method']
 
 
 class LabelType(str, Enum):
@@ -403,7 +433,7 @@ class LabelOverview:
         return self.properties
 
 
-class ItemLabelExtension(EnableExtensionMixin[ps.Item]):
+class LabelExtension(ExtensionManagementMixin[ps.Item]):
     """A LabelItemExt is the extension of the Item in the label extension which
     represents a polygon, set of polygons, or raster data defining
     labels and label metadata and should be part of a Collection.
@@ -445,7 +475,7 @@ class ItemLabelExtension(EnableExtensionMixin[ps.Item]):
                 Feature of the label asset's FeatureCollection that contains the classes
                 (keywords from label:classes if the property defines classes).
                 If labels are rasters, this should be None.
-            label_classes (List[LabelClass]): Optional, but required if ussing categorical data.
+            label_classes (List[LabelClass]): Optional, but required if using categorical data.
                 A list of LabelClasses defining the list of possible class names for each
                 label:properties. (e.g., tree, building, car, hippo)
             label_tasks (List[str]): Recommended to be a subset of 'regression', 'classification',
@@ -684,39 +714,13 @@ class ItemLabelExtension(EnableExtensionMixin[ps.Item]):
         """
         self.add_labels(href, title=title, properties=properties, media_type=ps.MediaType.GEOJSON)
 
-def label_ext(item: ps.Item) -> ItemLabelExtension:
-    return ItemLabelExtension(item)
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
 
-class LabelExtensionHooks(ExtensionHooks):
-    schema_uri: str = SCHEMA_URI
-
-    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
-        if isinstance(so, ps.Item):
-            return ['source']
-        return None
-
-    def migrate(self, d: Dict[str, Any], version: STACVersionID,
-                   info: STACJSONDescription) -> None:
-        if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
-            props = d['properties']
-            # Migrate 0.8.0-rc1 non-pluralized forms
-            # As it's a common mistake, convert for any pre-1.0.0 version.
-            if 'label:property' in props and 'label:properties' not in props:
-                props['label:properties'] = props['label:property']
-                del props['label:property']
-
-            if 'label:task' in props and 'label:tasks' not in props:
-                props['label:tasks'] = props['label:task']
-                del props['label:task']
-
-            if 'label:overview' in props and 'label:overviews' not in props:
-                props['label:overviews'] = props['label:overview']
-                del props['label:overview']
-
-            if 'label:method' in props and 'label:methods' not in props:
-                props['label:methods'] = props['label:method']
-                del props['label:method']
+def label_ext(item: ps.Item) -> LabelExtension:
+    return LabelExtension(item)
 
 
 LABEL_EXTENSION_HOOKS: ExtensionHooks = LabelExtensionHooks()

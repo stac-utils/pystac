@@ -1,12 +1,20 @@
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 
 import pystac as ps
-from pystac.extensions.base import EnableExtensionMixin
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.utils import map_opt
 
-
-T = TypeVar('T', contravariant=True, bound=Union[ps.Item, ps.Asset])
+T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
 
 SCHEMA_URI = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
+
+COUNT_PROP = 'pc:count'
+TYPE_PROP = "pc:type"
+ENCODING_PROP = 'pc:encoding'
+SCHEMAS_PROP = 'pc:schemas'
+DENSITY_PROP = 'pc:density'
+STATISTICS_PROP = 'pc:statistics'
+
 
 class PointcloudSchema:
     """Defines a schema for dimension of a pointcloud (e.g., name, size, type)
@@ -190,7 +198,8 @@ class PointcloudStatistic:
         """
         result = self.properties.get('name')
         if result is None:
-            raise ps.STACError(f"Pointcloud statistics does not have name property: {self.properties}")
+            raise ps.STACError(
+                f"Pointcloud statistics does not have name property: {self.properties}")
         return result
 
     @name.setter
@@ -324,7 +333,7 @@ class PointcloudStatistic:
         return self.properties
 
 
-class PointcloudExtension(Generic[T]):
+class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """PointcloudItemExt is the extension of an Item in the PointCloud Extension.
     The Pointclout extension adds pointcloud information to STAC Items.
 
@@ -335,9 +344,6 @@ class PointcloudExtension(Generic[T]):
         item (Item): The Item that is being extended.
 
     """
-    def __init__(self, item: ps.Item) -> None:
-        self.item = item
-
     def apply(self,
               count: int,
               type: str,
@@ -376,38 +382,14 @@ class PointcloudExtension(Generic[T]):
         Returns:
             int
         """
-        return self.get_count()
+        result = self._get_property(COUNT_PROP, int)
+        if result is None:
+            raise ps.RequiredValueMissing(f'No {COUNT_PROP} found')
+        return result
 
     @count.setter
     def count(self, v: int) -> None:
-        self.set_count(v)
-
-    def get_count(self, asset: Optional[ps.Asset] = None) -> int:
-        """Gets an Item or an Asset count.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            int
-        """
-        if asset is None or 'pc:count' not in asset.properties:
-            result = self.item.properties.get('pc:count')
-        else:
-            result = asset.properties.get('pc:count')
-
-        if result is None:
-            raise ps.STACError(f"pc:count not found on point cloud item with ID {self.item.id}")
-
-        return result
-
-    def set_count(self, count: int, asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset count.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('pc:count', count, asset)
+        self._set_property(COUNT_PROP, v, pop_if_none=False)
 
     @property
     def type(self) -> str:
@@ -416,38 +398,14 @@ class PointcloudExtension(Generic[T]):
         Returns:
             str
         """
-        return self.get_type()
+        result = self._get_property(TYPE_PROP, str)
+        if result is None:
+            raise ps.RequiredValueMissing(f'No {TYPE_PROP} found')
+        return result
 
     @type.setter
     def type(self, v: str) -> None:
-        self.set_type(v)
-
-    def get_type(self, asset: Optional[ps.Asset] = None) -> str:
-        """Gets an Item or an Asset type.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            str
-        """
-        if asset is None or 'pc:type' not in asset.properties:
-            result = self.item.properties.get('pc:type')
-        else:
-            result = asset.properties.get('pc:type')
-
-        if result is None:
-            raise ps.STACError(f"pc:type not found on point cloud item with ID {self.item.id}")
-
-        return result
-
-    def set_type(self, type: str, asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset type.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('pc:type', type, asset)
+        self._set_property(TYPE_PROP, v, pop_if_none=False)
 
     @property
     def encoding(self) -> str:
@@ -459,38 +417,14 @@ class PointcloudExtension(Generic[T]):
         Returns:
             str
         """
-        return self.get_encoding()
+        result = self._get_property(ENCODING_PROP, str)
+        if result is None:
+            raise ps.RequiredValueMissing(f'No {ENCODING_PROP} found')
+        return result
 
     @encoding.setter
     def encoding(self, v: str) -> None:
-        self.set_encoding(v)
-
-    def get_encoding(self, asset: Optional[ps.Asset] = None) -> str:
-        """Gets an Item or an Asset encoding.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            str
-        """
-        if asset is None or 'pc:encoding' not in asset.properties:
-            result = self.item.properties.get('pc:encoding')
-        else:
-            result = asset.properties.get('pc:encoding')
-
-        if result is None:
-            raise ps.STACError(f"pc:encoding not found on point cloud item with ID {self.item.id}")
-
-        return result
-
-    def set_encoding(self, encoding: str, asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset encoding.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('pc:encoding', encoding, asset)
+        self._set_property(ENCODING_PROP, v, pop_if_none=False)
 
     @property
     def schemas(self) -> List[PointcloudSchema]:
@@ -503,39 +437,14 @@ class PointcloudExtension(Generic[T]):
         Returns:
             List[PointcloudSchema]
         """
-        return self.get_schemas()
+        result = self._get_property(SCHEMAS_PROP, List[Dict[str, Any]])
+        if result is None:
+            raise ps.RequiredValueMissing(f'No {SCHEMAS_PROP} found')
+        return [PointcloudSchema(s) for s in result]
 
     @schemas.setter
     def schemas(self, v: List[PointcloudSchema]) -> None:
-        self.set_schemas(v)
-
-    def get_schemas(self, asset: Optional[ps.Asset] = None) -> List[PointcloudSchema]:
-        """Gets an Item or an Asset projection geometry.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            List[PointcloudSchema]
-        """
-        if asset is None or 'pc:schemas' not in asset.properties:
-            schemas = self.item.properties.get('pc:schemas')
-        else:
-            schemas = asset.properties.get('pc:schemas')
-
-        if schemas is None:
-            return []
-        else:
-            return [PointcloudSchema(s) for s in schemas]
-
-    def set_schemas(self, schemas: List[PointcloudSchema], asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset schema
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        dicts = [s.to_dict() for s in schemas]
-        self._set_property('pc:schemas', dicts, asset)
+        self._set_property(SCHEMAS_PROP, [x.to_dict() for x in v], pop_if_none=False)
 
     @property
     def density(self) -> Optional[float]:
@@ -546,33 +455,11 @@ class PointcloudExtension(Generic[T]):
         Returns:
             int
         """
-        return self.get_density()
+        return self._get_property(DENSITY_PROP, float)
 
     @density.setter
     def density(self, v: Optional[float]) -> None:
-        self.set_density(v)
-
-    def get_density(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset density.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            int
-        """
-        if asset is None or 'pc:density' not in asset.properties:
-            return self.item.properties.get('pc:density')
-        else:
-            return asset.properties.get('pc:density')
-
-    def set_density(self, density: Optional[float], asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset density property.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('pc:density', density, asset)
+        self._set_property(DENSITY_PROP, v)
 
     @property
     def statistics(self) -> Optional[List[PointcloudStatistic]]:
@@ -584,47 +471,41 @@ class PointcloudExtension(Generic[T]):
 
             item.ext.pointcloud.statistics = [{ 'name': 'red', 'min': 0, 'max': 255 }]
         """
-        return self.get_statistics()
+        result = self._get_property(STATISTICS_PROP, List[Dict[str, Any]])
+        return map_opt(lambda stats: [PointcloudStatistic(s) for s in stats], result)
 
     @statistics.setter
     def statistics(self, v: Optional[List[PointcloudStatistic]]) -> None:
-        self.set_statistics(v)
-
-    def get_statistics(self, asset: Optional[ps.Asset] = None) -> Optional[List[PointcloudStatistic]]:
-        """Gets an Item or an Asset centroid.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            List[PointCloudStatistics] or None
-        """
-        if asset is None or 'pc:statistics' not in asset.properties:
-            stats = self.item.properties.get('pc:statistics')
-            if stats:
-                return [PointcloudStatistic(s) for s in stats]
-            else:
-                return None
-        else:
-            return [PointcloudStatistic.create(s) for s in asset.properties['pc:statistics']]
-
-    def set_statistics(self,
-                       statistics: Optional[List[PointcloudStatistic]],
-                       asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset centroid.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        if statistics is not None:
-            self._set_property('pc:statistics', [s.to_dict() for s in statistics], asset)
-        else:
-            self._set_property('pc:statistics', None, asset)
+        set_value = map_opt(lambda stats: [s.to_dict() for s in stats], v)
+        self._set_property(STATISTICS_PROP, set_value)
 
     @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-    @classmethod
-    def from_item(cls, item: ps.Item) -> "ItemPointcloudExtension":
-        return cls(item)
+class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+
+
+class AssetFileExtension(PointcloudExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, ps.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+
+def pointcloud_ext(obj: T) -> PointcloudExtension[T]:
+    if isinstance(obj, ps.Item):
+        return ItemPointcloudExtension(obj)
+    elif isinstance(obj, ps.Asset):
+        return AssetFileExtension(obj)
+    else:
+        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
