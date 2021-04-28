@@ -6,7 +6,7 @@ from tests.utils import TestCases
 
 
 def create_catalog(suffix, include_href=True):
-    return pystac.Catalog(
+    return ps.Catalog(
         id='test {}'.format(suffix),
         description='test desc {}'.format(suffix),
         href=('http://example.com/catalog_{}.json'.format(suffix) if include_href else None))

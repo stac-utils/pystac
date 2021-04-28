@@ -10,15 +10,15 @@ from tests.utils import TestCases
 URL_TEMPLATE: str = 'http://example.com/catalog/%s.json'
 
 
-def make_item(year: int) -> pystac.Item:
+def make_item(year: int) -> ps.Item:
     """Create basic test items that are only slightly different."""
     asset_id = f'USGS/GAP/CONUS/{year}'
     start = datetime.datetime(year, 1, 2)
 
-    item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
-    item.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+    item.ext.enable(ps._OldExtensionShortIDs.VERSION)
 
     return item
 
@@ -30,10 +30,10 @@ class VersionItemExtTest(unittest.TestCase):
         super().setUp()
         self.item = make_item(2011)
 
-        self.item.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+        self.item.ext.enable(ps._OldExtensionShortIDs.VERSION)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac._OldExtensionShortIDs.VERSION], self.item.stac_extensions)
+        self.assertEqual([ps._OldExtensionShortIDs.VERSION], self.item.stac_extensions)
 
     def test_add_version(self):
         self.item.ext.version.apply(self.version)
@@ -97,7 +97,7 @@ class VersionItemExtTest(unittest.TestCase):
         self.item.validate()
 
     def test_fail_validate(self):
-        with self.assertRaises(pystac.validation.STACValidationError):
+        with self.assertRaises(ps.validation.STACValidationError):
             self.item.validate()
 
     def test_all_links(self):
@@ -117,8 +117,8 @@ class VersionItemExtTest(unittest.TestCase):
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Item
-        item1.ext.enable(pystac._OldExtensionShortIDs.VERSION)
-        item2.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+        item1.ext.enable(ps._OldExtensionShortIDs.VERSION)
+        item2.ext.enable(ps._OldExtensionShortIDs.VERSION)
 
         item1.ext.version.apply(version='2.0', predecessor=item2)
         item2.ext.version.apply(version='1.0', successor=item1, latest=item1)
@@ -194,19 +194,19 @@ class VersionItemExtTest(unittest.TestCase):
         self.assertEqual(expected_href, links[0].get_href())
 
 
-def make_collection(year: int) -> pystac.Collection:
+def make_collection(year: int) -> ps.Collection:
     asset_id = f'my/collection/of/things/{year}'
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180, -90, 180, 90]]
-    spatial_extent = pystac.SpatialExtent(bboxes)
-    temporal_extent = pystac.TemporalExtent([[start, end]])
-    extent = pystac.Extent(spatial_extent, temporal_extent)
+    spatial_extent = ps.SpatialExtent(bboxes)
+    temporal_extent = ps.TemporalExtent([[start, end]])
+    extent = ps.Extent(spatial_extent, temporal_extent)
 
-    collection = pystac.Collection(asset_id, 'desc', extent)
+    collection = ps.Collection(asset_id, 'desc', extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
-    collection.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+    collection.ext.enable(ps._OldExtensionShortIDs.VERSION)
 
     return collection
 
@@ -219,7 +219,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         self.collection = make_collection(2011)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac._OldExtensionShortIDs.VERSION], self.collection.stac_extensions)
+        self.assertEqual([ps._OldExtensionShortIDs.VERSION], self.collection.stac_extensions)
 
     def test_add_version(self):
         self.collection.ext.version.apply(self.version)
@@ -283,7 +283,7 @@ class VersionCollectionExtTest(unittest.TestCase):
         self.collection.validate()
 
     def test_fail_validate(self):
-        with self.assertRaises(pystac.validation.STACValidationError):
+        with self.assertRaises(ps.validation.STACValidationError):
             self.collection.validate()
 
     def test_validate_all(self):
@@ -303,8 +303,8 @@ class VersionCollectionExtTest(unittest.TestCase):
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Collection
-        col1.ext.enable(pystac._OldExtensionShortIDs.VERSION)
-        col2.ext.enable(pystac._OldExtensionShortIDs.VERSION)
+        col1.ext.enable(ps._OldExtensionShortIDs.VERSION)
+        col2.ext.enable(ps._OldExtensionShortIDs.VERSION)
 
         col1.ext.version.apply(version='2.0', predecessor=col2)
         col2.ext.version.apply(version='1.0', successor=col1, latest=col1)

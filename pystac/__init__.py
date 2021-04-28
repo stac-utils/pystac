@@ -30,13 +30,8 @@ import pystac.extensions.hooks
 import pystac.extensions.eo
 import pystac.extensions.label
 import pystac.extensions.sar
-import pystac.extensions.sat
-import pystac.extensions.scientific
-import pystac.extensions.single_file_stac
-import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
-import pystac.extensions.file
 
 EXTENSION_HOOKS: pystac.extensions.hooks.RegisteredExtensionHooks = pystac.extensions.hooks.RegisteredExtensionHooks(
     [

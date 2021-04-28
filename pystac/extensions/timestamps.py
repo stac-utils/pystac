@@ -1,36 +1,23 @@
 from datetime import datetime as Datetime
-from typing import List, Optional
+from typing import Generic, Optional, TypeVar
 
 import pystac as ps
-from pystac.item import Asset, Item
-from pystac.utils import datetime_to_str, str_to_datetime
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.utils import datetime_to_str, map_opt, str_to_datetime
+
+T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+
+SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
+
+PUBLISHED_PROP = "published"
+EXPIRES_PROP = "expires"
+UNPUBLISHED_PROP = "unpublished"
 
 
-class TimestampsItemExt():
+class TimestampsExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """TimestampsItemExt is the extension of an Item in that
     allows to specify additional timestamps for assets and metadata.
-
-    Args:
-        item (Item): The item to be extended.
-
-    Attributes:
-        item (Item): The Item that is being extended.
-
-    Note:
-        Using TimestampsItemExt to directly wrap an item will add the 'timestamps'
-        extension ID to the item's stac_extensions.
     """
-    def __init__(self, item: Item) -> None:
-        self.item = item
-
-    @classmethod
-    def from_item(cls, item: Item) -> "TimestampsItemExt":
-        return cls(item)
-
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
-
     def apply(self,
               published: Optional[Datetime] = None,
               expires: Optional[Datetime] = None,
@@ -45,34 +32,9 @@ class TimestampsItemExt():
             unpublished (datetime or None): Date and time the corresponding data
                 was unpublished.
         """
-        if published is None and expires is None and unpublished is None:
-            raise ps.STACError("timestamps extension needs at least one property value.")
-
         self.published = published
         self.expires = expires
         self.unpublished = unpublished
-
-    def _timestamp_getter(self, key: str, asset: Optional[Asset] = None) -> Optional[Datetime]:
-        if asset is not None and key in asset.properties:
-            timestamp_str = asset.properties.get(key)
-        else:
-            timestamp_str = self.item.properties.get(key)
-
-        timestamp = None
-        if timestamp_str is not None:
-            timestamp = str_to_datetime(timestamp_str)
-
-        return timestamp
-
-    def _timestamp_setter(self,
-                          timestamp: Optional[Datetime],
-                          key: str,
-                          asset: Optional[Asset] = None) -> None:
-        if timestamp is not None:
-            value: Optional[str] = datetime_to_str(timestamp)
-        else:
-            value = None
-        self._set_property(key, value, asset)
 
     @property
     def published(self) -> Optional[Datetime]:
@@ -80,20 +42,7 @@ class TimestampsItemExt():
             the date and time that the corresponding data
             was published the first time.
 
-        Returns:
-            datetime
-        """
-        return self.get_published()
-
-    @published.setter
-    def published(self, v: Optional[Datetime]) -> None:
-        self.set_published(v)
-
-    def get_published(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
-        """Get an Item or Asset published datetime
-
-        If an Asset is supplied and the published property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Published'
+        'Published'
         has a different meaning depending on where it is used. If available in
         the asset properties, it refers to the timestamps valid for the actual data linked
         to the Asset Object. If it comes from the Item properties, it's referencing to
@@ -102,15 +51,11 @@ class TimestampsItemExt():
         Returns:
             datetime
         """
-        return self._timestamp_getter('published', asset)
+        return map_opt(str_to_datetime, self._get_property(PUBLISHED_PROP, str))
 
-    def set_published(self, published: Optional[Datetime], asset: Optional[Asset] = None) -> None:
-        """Set an Item or asset published datetime
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(published, 'published', asset)
+    @published.setter
+    def published(self, v: Optional[Datetime]) -> None:
+        self._set_property(PUBLISHED_PROP, map_opt(datetime_to_str, v))
 
     @property
     def expires(self) -> Optional[Datetime]:
@@ -118,20 +63,7 @@ class TimestampsItemExt():
             the date and time the corresponding data
             expires (is not valid any longer).
 
-        Returns:
-            datetime
-        """
-        return self.get_expires()
-
-    @expires.setter
-    def expires(self, v: Optional[Datetime]) -> None:
-        self.set_expires(v)
-
-    def get_expires(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
-        """Get an Item or Asset expires datetime
-
-        If an Asset is supplied and the expires property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
+        'Unpublished'
         has a different meaning depending on where it is used. If available in
         the asset properties, it refers to the timestamps valid for the actual data linked
         to the Asset Object. If it comes from the Item properties, it's referencing to
@@ -140,35 +72,18 @@ class TimestampsItemExt():
         Returns:
             datetime
         """
-        return self._timestamp_getter('expires', asset)
+        return map_opt(str_to_datetime, self._get_property(EXPIRES_PROP, str))
 
-    def set_expires(self, expires: Optional[Datetime], asset: Optional[Asset] = None) -> None:
-        """Set an Item or asset expires datetime
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(expires, 'expires', asset)
+    @expires.setter
+    def expires(self, v: Optional[Datetime]) -> None:
+        self._set_property(EXPIRES_PROP, map_opt(datetime_to_str, v))
 
     @property
     def unpublished(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
         the Date and time the corresponding data was unpublished.
 
-        Returns:
-            datetime
-        """
-        return self.get_unpublished()
-
-    @unpublished.setter
-    def unpublished(self, v: Optional[Datetime]) -> None:
-        self.set_unpublished(v)
-
-    def get_unpublished(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
-        """Get an Item or Asset unpublished datetime
-
-        If an Asset is supplied and the unpublished property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
+        'Unpublished'
         has a different meaning depending on where it is used. If available in
         the asset properties, it refers to the timestamps valid for the actual data linked
         to the Asset Object. If it comes from the Item properties, it's referencing to
@@ -177,14 +92,40 @@ class TimestampsItemExt():
         Returns:
             datetime
         """
-        return self._timestamp_getter('unpublished', asset)
+        return map_opt(str_to_datetime, self._get_property(UNPUBLISHED_PROP, str))
 
-    def set_unpublished(self,
-                        unpublished: Optional[Datetime],
-                        asset: Optional[Asset] = None) -> None:
-        """Set an Item or asset unpublished datetime
+    @unpublished.setter
+    def unpublished(self, v: Optional[Datetime]) -> None:
+        self._set_property(UNPUBLISHED_PROP, map_opt(datetime_to_str, v))
 
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(unpublished, 'unpublished', asset)
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
+
+class ItemTimestampsExtension(TimestampsExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return '<ItemtimestampsExtension Item id={}>'.format(self.item.id)
+
+
+class AssetTimestampsExtension(TimestampsExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, ps.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssettimestampsExtension Asset href={}>'.format(self.asset_href)
+
+
+def timestamps_ext(obj: T) -> TimestampsExtension[T]:
+    if isinstance(obj, ps.Item):
+        return ItemTimestampsExtension(obj)
+    elif isinstance(obj, ps.Asset):
+        return AssetTimestampsExtension(obj)
+    else:
+        raise ExtensionException(f"File extension does not apply to type {type(obj)}")

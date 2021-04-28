@@ -89,12 +89,9 @@ class ScientificExtension(Generic[T], PropertiesExtension,
             publications (List[Publication]): Optional list of relevant publications
                 referencing and describing the data.
         """
-        if doi:
-            self.doi = doi
-        if citation:
-            self.citation = citation
-        if publications:
-            self.publications = publications
+        self.doi = doi
+        self.citation = citation
+        self.publications = publications
 
     @property
     def doi(self) -> Optional[str]:
@@ -142,7 +139,10 @@ class ScientificExtension(Generic[T], PropertiesExtension,
 
     @publications.setter
     def publications(self, v: Optional[List[Publication]]) -> None:
-        self._set_property(PUBLICATIONS, map_opt(lambda pubs: [pub.to_dict() for pub in v], v))
+        self._set_property(PUBLICATIONS, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v))
+        if v is not None:
+            for pub in v:
+                self.obj.add_link(pub.get_link())
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:

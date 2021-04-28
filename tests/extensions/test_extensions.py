@@ -62,9 +62,9 @@ class TestItemExt(ItemExtension):
 
 class ExtensionsTest(unittest.TestCase):
     def test_can_add_custom_extension(self):
-        prev_extensions = pystac.EXTENSION_HOOKS.get_registered_extensions()
+        prev_extensions = ps.EXTENSION_HOOKS.get_registered_extensions()
 
-        pystac.EXTENSION_HOOKS.add_extension_hooks(
+        ps.EXTENSION_HOOKS.add_extension_hooks(
             ExtensionDefinition("test", [
                 ExtendedObject(Catalog, TestCatalogExt),
                 ExtendedObject(Collection, TestCollectionExt),
@@ -85,10 +85,10 @@ class ExtensionsTest(unittest.TestCase):
             self.assertEqual(item.ext.test.asset_keys, set(item.assets))
 
         finally:
-            pystac.EXTENSION_HOOKS.remove_extension("test")
+            ps.EXTENSION_HOOKS.remove_extension("test")
 
-        self.assertFalse(pystac.EXTENSION_HOOKS.is_registered_extension("test"))
-        self.assertEqual(pystac.EXTENSION_HOOKS.get_registered_extensions(), prev_extensions)
+        self.assertFalse(ps.EXTENSION_HOOKS.is_registered_extension("test"))
+        self.assertEqual(ps.EXTENSION_HOOKS.get_registered_extensions(), prev_extensions)
 
     def test_getattribute_overload(self):
         catalog = Catalog(id='test', description='test')
@@ -97,4 +97,4 @@ class ExtensionsTest(unittest.TestCase):
         self.assertRaises(ExtensionError, catalog.ext.__getattr__, 'eo')
         catalog.ext.enable('single-file-stac')
         self.assertTrue(catalog.ext.__getattr__('single-file-stac'),
-                        pystac.extensions.single_file_stac.SingleFileSTACCatalogExt)
+                        ps.extensions.single_file_stac.SingleFileSTACCatalogExt)

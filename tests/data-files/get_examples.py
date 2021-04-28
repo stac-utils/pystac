@@ -22,7 +22,7 @@ def remove_bad_collection(js):
             if rel is not None and rel == 'collection':
                 href = link['href']
                 try:
-                    json.loads(pystac.STAC_IO.read_text(href))
+                    json.loads(ps.STAC_IO.read_text(href))
                     filtered_links.append(link)
                 except (HTTPError, FileNotFoundError, json.decoder.JSONDecodeError):
                     print('===REMOVING UNREADABLE COLLECTION AT {}'.format(href))
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     stac_repo = 'https://github.com/radiantearth/stac-spec'
-    stac_spec_tag = 'v{}'.format(pystac.get_stac_version())
+    stac_spec_tag = 'v{}'.format(ps.get_stac_version())
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'examples'))
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
                             example_version = js.get('stac_version')
                         if example_version is not None and \
                            example_version > args.previous_version:
-                            relpath = '{}/{}'.format(pystac.get_stac_version(),
+                            relpath = '{}/{}'.format(ps.get_stac_version(),
                                                      path.replace('{}/'.format(tmp_dir), ''))
                             target_path = os.path.join(examples_dir, relpath)
 

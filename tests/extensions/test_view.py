@@ -53,11 +53,11 @@ class ViewTest(unittest.TestCase):
         )
 
     def test_validate_view(self):
-        item = pystac.read_file(self.example_uri)
+        item = ps.read_file(self.example_uri)
         item.validate()
 
     def test_off_nadir(self):
-        view_item = pystac.read_file(self.example_uri)
+        view_item = ps.read_file(self.example_uri)
 
         # Get
         self.assertIn("view:off_nadir", view_item.properties)
@@ -86,7 +86,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_incidence_angle(self):
-        view_item = pystac.read_file(self.example_uri)
+        view_item = ps.read_file(self.example_uri)
 
         # Get
         self.assertIn("view:incidence_angle", view_item.properties)
@@ -115,7 +115,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_azimuth(self):
-        view_item = pystac.read_file(self.example_uri)
+        view_item = ps.read_file(self.example_uri)
 
         # Get
         self.assertIn("view:azimuth", view_item.properties)
@@ -144,7 +144,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_azimuth(self):
-        view_item = pystac.read_file(self.example_uri)
+        view_item = ps.read_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_azimuth", view_item.properties)
@@ -173,7 +173,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_elevation(self):
-        view_item = pystac.read_file(self.example_uri)
+        view_item = ps.read_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_elevation", view_item.properties)
