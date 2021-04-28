@@ -1,3 +1,6 @@
+import os
+import json
+import numbers
 from collections import abc
 from datetime import datetime
 import dateutil.parser
@@ -7,6 +10,16 @@ from pystac import (STACObjectType, CatalogType)
 from pystac.catalog import Catalog
 from pystac.link import Link
 from pystac.utils import datetime_to_str
+
+
+fieldsfilename = os.path.join(os.path.dirname(__file__),
+                              "resources", "fields-normalized.json")
+with open(fieldsfilename) as f:
+    jsonfields = json.load(f)
+summaryfields = {}
+for name, desc in jsonfields["metadata"].items():
+    if desc.get("summary", True):
+        summaryfields[name] = {"mergeArrays": desc.get("mergeArrays", False)}
 
 
 class Collection(Catalog):
@@ -88,9 +101,43 @@ class Collection(Catalog):
     def __repr__(self):
         return '<Collection id={}>'.format(self.id)
 
-    def add_item(self, item, title=None):
+    def create_summary(self):
+        """Creates a summary from current items
+        It will remove the content of the previous collection summary, in case it exists
+        """
+        self.summaries = {}
+        for item in self.get_items():
+            self.update_summary_with_item(item)
+
+    def update_summary_with_item(self, item):
+        if self.summaries is None:
+            self.summaries = {}
+        for k, v in item.properties.items():
+            if k in summaryfields:
+                if isinstance(v, list):
+                    if k not in self.summaries:
+                        self.summaries[k] = []
+                    if summaryfields[k]["mergeArrays"]:
+                        self.summaries[k] = list(set(self.summaries[k]) | set(v))
+                    else:
+                        if v not in self.summaries[k]:
+                            self.summaries[k].append(v)
+                elif isinstance(v, numbers.Number):
+                    if k not in self.summaries:
+                        self.summaries[k] = {"min": v, "max": v}
+                    else:
+                        self.summaries[k] = {"min": min([v, self.summaries[k]["min"]]),
+                                             "max": max([v, self.summaries[k]["max"]])}
+                else:
+                    if k not in self.summaries:
+                        self.summaries[k] = []
+                    if v not in self.summaries[k]:
+                        self.summaries[k].append(v)
+
+    def add_item(self, item, title=None, update_summary=True):
         super(Collection, self).add_item(item, title)
         item.set_collection(self)
+        self.update_summary_with_item(item)
 
     def to_dict(self, include_self_link=True):
         d = super(Collection, self).to_dict(include_self_link)

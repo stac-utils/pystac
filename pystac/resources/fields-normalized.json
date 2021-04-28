@@ -1,0 +1,885 @@
+{
+    "extensions": {
+        "card4l": {
+            "label": "CARD4L",
+            "explain": "CEOS Analysis Ready Data for Land"
+        },
+        "cube": {
+            "label": "Data Cube"
+        },
+        "eo": {
+            "label": "Electro-Optical"
+        },
+        "file": {
+            "label": "File"
+        },
+        "label": {
+            "label": "Labels / ML"
+        },
+        "pc": {
+            "label": "Point Cloud"
+        },
+        "processing": {
+            "label": "Processing"
+        },
+        "proj": {
+            "label": "Projection"
+        },
+        "sar": {
+            "label": "SAR",
+            "explain": "Synthetic Aperture Radar"
+        },
+        "sat": {
+            "label": "Satellite"
+        },
+        "sci": {
+            "label": "Scientific"
+        },
+        "tiles": {
+            "label": "Tiled Assets"
+        },
+        "view": {
+            "label": "View Geometry"
+        },
+        "gee": {
+            "label": "Google Earth Engine"
+        },
+        "landsat": {
+            "label": "Landsat"
+        },
+        "pl": {
+            "label": "Planet Labs Inc."
+        },
+        "sentinel": {
+            "label": "Copernicus Sentinel"
+        },
+        "cbers": {
+            "label": "CBERS",
+            "explain": "China-Brazil Earth Resources Satellite Program"
+        }
+    },
+    "metadata": {
+        "datetime": {
+            "label": "Acquired",
+            "format": "Timestamp",
+            "summary": false
+        },
+        "title": {
+            "label": "Title",
+            "summary": false
+        },
+        "description": {
+            "label": "Description",
+            "format": "CommonMark",
+            "summary": false
+        },
+        "start_datetime": {
+            "label": "First Acquisition",
+            "format": "Timestamp",
+            "summary": false
+        },
+        "end_datetime": {
+            "label": "Last Acquisition",
+            "format": "Timestamp",
+            "summary": false
+        },
+        "created": {
+            "label": "Created",
+            "format": "Timestamp"
+        },
+        "updated": {
+            "label": "Updated",
+            "format": "Timestamp"
+        },
+        "published": {
+            "label": "Published",
+            "format": "Timestamp"
+        },
+        "expires": {
+            "label": "Expires",
+            "format": "Timestamp"
+        },
+        "unpublished": {
+            "label": "Unpublished",
+            "format": "Timestamp"
+        },
+        "license": {
+            "label": "License",
+            "format": "License",
+            "summary": false
+        },
+        "providers": {
+            "label": "Providers",
+            "format": "Providers",
+            "summary": false
+        },
+        "platform": {
+            "label": "Platform"
+        },
+        "instruments": {
+            "label": "Instruments",
+            "format": "CSV",
+            "mergeArrays": true
+        },
+        "constellation": {
+            "label": "Constellation"
+        },
+        "mission": {
+            "label": "Mission"
+        },
+        "gsd": {
+            "label": "GSD",
+            "explain": "Ground Sample Distance",
+            "unit": "m"
+        },
+        "version": {
+            "label": "Version",
+            "summary": false
+        },
+        "deprecated": {
+            "label": "Deprecated",
+            "summary": false
+        },
+        "cube:dimensions": {
+            "label": "Dimensions",
+            "summary": false,
+            "listWithKeys": true,
+            "items": {
+                "type": {
+                    "label": "Type",
+                    "order": 0
+                },
+                "axis": {
+                    "label": "Axis",
+                    "order": 1
+                },
+                "description": {
+                    "label": "Description",
+                    "format": "CommonMark",
+                    "order": 2
+                },
+                "extent": {
+                    "label": "Extent",
+                    "format": "Extent",
+                    "order": 3
+                },
+                "values": {
+                    "label": "Values",
+                    "order": 4
+                },
+                "step": {
+                    "label": "Step",
+                    "order": 5
+                },
+                "reference_system": {
+                    "label": "Ref. Sys.",
+                    "explain": "Coordinate / Temporal / Other Reference System",
+                    "order": 6
+                }
+            },
+            "itemOrder": [
+                "type",
+                "axis",
+                "description",
+                "extent",
+                "values",
+                "step",
+                "reference_system"
+            ]
+        },
+        "eo:bands": {
+            "label": "Spectral Bands",
+            "mergeArrays": true,
+            "items": {
+                "name": {
+                    "label": "Name",
+                    "sortable": true,
+                    "id": true,
+                    "order": 0
+                },
+                "common_name": {
+                    "label": "Common Name",
+                    "sortable": true,
+                    "order": 1
+                },
+                "description": {
+                    "label": "Description",
+                    "format": "CommonMark",
+                    "order": 2
+                },
+                "center_wavelength": {
+                    "label": "Wavelength",
+                    "explain": "Center Wavelength",
+                    "unit": "μm",
+                    "sortable": true,
+                    "order": 5
+                },
+                "full_width_half_max": {
+                    "label": "FWHM",
+                    "explain": "Full Width Half Max",
+                    "unit": "μm",
+                    "sortable": true,
+                    "order": 6
+                },
+                "gsd": {
+                    "alias": "gsd",
+                    "sortable": true,
+                    "order": 3,
+                    "label": "GSD",
+                    "explain": "Ground Sample Distance",
+                    "unit": "m"
+                },
+                "cloud_cover": {
+                    "alias": "eo:cloud_cover",
+                    "sortable": true,
+                    "order": 4,
+                    "label": "Cloud Cover",
+                    "unit": "%"
+                }
+            },
+            "itemOrder": [
+                "name",
+                "common_name",
+                "description",
+                "gsd",
+                "cloud_cover",
+                "center_wavelength",
+                "full_width_half_max"
+            ]
+        },
+        "eo:cloud_cover": {
+            "label": "Cloud Cover",
+            "unit": "%"
+        },
+        "file:bits_per_sample": {
+            "label": "Bits per Sample"
+        },
+        "file:byte_order": {
+            "label": "Byte Order"
+        },
+        "file:checksum": {
+            "label": "Checksum",
+            "format": "Checksum",
+            "custom": true,
+            "summary": false
+        },
+        "file:data_type": {
+            "label": "Data Type of Values",
+            "format": "FileDataType"
+        },
+        "file:header_size": {
+            "label": "Header Size",
+            "format": "FileSize",
+            "summary": false
+        },
+        "file:nodata": {
+            "label": "No-data Values",
+            "format": "CSV",
+            "summary": false
+        },
+        "file:size": {
+            "label": "Size",
+            "format": "FileSize",
+            "summary": false
+        },
+        "file:unit": {
+            "label": "Unit of Values"
+        },
+        "file:values": {
+            "label": "Map of Values",
+            "summary": false,
+            "items": {
+                "values": {
+                    "label": "Value(s)",
+                    "format": "CSV",
+                    "order": 1
+                },
+                "summary": {
+                    "label": "Summary",
+                    "order": 0
+                }
+            },
+            "itemOrder": [
+                "summary",
+                "values"
+            ]
+        },
+        "label:properties": {
+            "label": "Properties",
+            "summary": false,
+            "null": "raster data"
+        },
+        "label:classes": {
+            "label": "Classes",
+            "mergeArrays": true,
+            "items": {
+                "name": {
+                    "label": "Name",
+                    "null": "raster-formatted",
+                    "sortable": true,
+                    "id": true
+                },
+                "classes": {
+                    "label": "Classes"
+                }
+            },
+            "itemOrder": [
+                "name",
+                "classes"
+            ]
+        },
+        "label:description": {
+            "label": "Description",
+            "format": "CommonMark",
+            "summary": false
+        },
+        "label:type": {
+            "label": "Type"
+        },
+        "label:tasks": {
+            "label": "Tasks",
+            "mergeArrays": true
+        },
+        "label:methods": {
+            "label": "Methods",
+            "mergeArrays": true
+        },
+        "label:overviews": {
+            "label": "Overviews",
+            "summary": false,
+            "items": {
+                "property_key": {
+                    "label": "Property Key",
+                    "id": true
+                },
+                "counts": {
+                    "label": "Counts",
+                    "custom": true
+                },
+                "statistics": {
+                    "label": "Statistics",
+                    "custom": true
+                }
+            },
+            "itemOrder": [
+                "property_key",
+                "counts",
+                "statistics"
+            ]
+        },
+        "pc:count": {
+            "label": "Points",
+            "explain": "Number of Points"
+        },
+        "pc:type": {
+            "label": "Type"
+        },
+        "pc:encoding": {
+            "label": "Format"
+        },
+        "pc:schemas": {
+            "label": "Schemas",
+            "items": {
+                "name": {
+                    "label": "Name",
+                    "sortable": true,
+                    "id": true
+                },
+                "size": {
+                    "label": "Size",
+                    "unit": "bytes",
+                    "sortable": true
+                },
+                "type": {
+                    "label": "Type",
+                    "sortable": true
+                }
+            },
+            "itemOrder": [
+                "name",
+                "size",
+                "type"
+            ]
+        },
+        "pc:density": {
+            "label": "Density"
+        },
+        "pc:statistics": {
+            "label": "Statistics",
+            "summary": false,
+            "items": {
+                "name": {
+                    "label": "Name",
+                    "id": true
+                },
+                "position": {
+                    "label": "Position"
+                },
+                "average": {
+                    "label": "Average"
+                },
+                "count": {
+                    "label": "Count"
+                },
+                "maximum": {
+                    "label": "Max."
+                },
+                "minimum": {
+                    "label": "Min."
+                },
+                "stddev": {
+                    "label": "Std. Dev.",
+                    "explain": "Standard Deviation"
+                },
+                "variance": {
+                    "label": "Variance"
+                }
+            },
+            "itemOrder": [
+                "name",
+                "average",
+                "count",
+                "maximum",
+                "minimum",
+                "position",
+                "stddev",
+                "variance"
+            ]
+        },
+        "processing:lineage": {
+            "label": "Lineage",
+            "format": "CommonMark",
+            "summary": false
+        },
+        "processing:level": {
+            "label": "Level"
+        },
+        "processing:facility": {
+            "label": "Facility"
+        },
+        "processing:software": {
+            "label": "Software",
+            "format": "Software",
+            "summary": false
+        },
+        "proj:epsg": {
+            "label": "EPSG Code",
+            "format": "EPSG"
+        },
+        "proj:wkt2": {
+            "label": "WKT2",
+            "explain": "Well-Known Text, version 2",
+            "format": "WKT2",
+            "summary": false
+        },
+        "proj:projjson": {
+            "label": "PROJJSON",
+            "custom": true,
+            "summary": false
+        },
+        "proj:geometry": {
+            "label": "Footprint",
+            "custom": true,
+            "summary": false
+        },
+        "proj:bbox": {
+            "label": "Bounding Box",
+            "custom": true,
+            "summary": false
+        },
+        "proj:centroid": {
+            "label": "Centroid",
+            "custom": true,
+            "summary": false
+        },
+        "proj:shape": {
+            "label": "Shape",
+            "custom": true,
+            "summary": false
+        },
+        "proj:transform": {
+            "label": "Transform",
+            "custom": true,
+            "summary": false
+        },
+        "sar:instrument_mode": {
+            "label": "Instrument Mode"
+        },
+        "sar:frequency_band": {
+            "label": "Frequency Band"
+        },
+        "sar:center_frequency": {
+            "label": "Center Frequency",
+            "unit": "GHz"
+        },
+        "sar:polarizations": {
+            "label": "Polarizations",
+            "format": "CSV",
+            "mergeArrays": true
+        },
+        "sar:product_type": {
+            "label": "Product Type"
+        },
+        "sar:resolution_range": {
+            "label": "Range Resolution",
+            "unit": "m"
+        },
+        "sar:resolution_azimuth": {
+            "label": "Azimuth Resolution",
+            "unit": "m"
+        },
+        "sar:pixel_spacing_range": {
+            "label": "Range Pixel Spacing",
+            "unit": "m"
+        },
+        "sar:pixel_spacing_azimuth": {
+            "label": "Aziumth Pixel Spacing",
+            "unit": "m"
+        },
+        "sar:looks_range": {
+            "label": "Range Looks"
+        },
+        "sar:looks_azimuth": {
+            "label": "Azimuth Looks"
+        },
+        "sar:looks_equivalent_number": {
+            "label": "ENL",
+            "explain": "Equivalent Number of Looks"
+        },
+        "sar:observation_direction": {
+            "label": "Observation Direction"
+        },
+        "sat:platform_international_designator": {
+            "label": "Int. Designator",
+            "explain": "International Designator for the platform, also known as COSPAR ID and NSSDCA ID."
+        },
+        "sat:orbit_state": {
+            "label": "Orbit State"
+        },
+        "sat:absolute_orbit": {
+            "label": "Abs. Orbit Number",
+            "explain": "Absolute Orbit Number"
+        },
+        "sat:relative_orbit": {
+            "label": "Rel. Orbit Number",
+            "explain": "Relative Orbit Number"
+        },
+        "sat:anx_datetime": {
+            "label": "ANX time",
+            "explain": "Ascending Node Crossing time"
+        },
+        "sci:doi": {
+            "label": "DOI",
+            "format": "DOI"
+        },
+        "sci:citation": {
+            "label": "Citation",
+            "summary": false
+        },
+        "sci:publications": {
+            "label": "Publications",
+            "summary": false,
+            "items": {
+                "citation": {
+                    "label": "Publication",
+                    "sortable": true,
+                    "order": 0
+                },
+                "doi": {
+                    "label": "DOI",
+                    "format": "DOI",
+                    "sortable": true,
+                    "order": 1
+                }
+            },
+            "itemOrder": [
+                "citation",
+                "doi"
+            ]
+        },
+        "tiles:tile_matrix_sets": {
+            "label": "Tile Matrix Sets",
+            "custom": true,
+            "summary": false
+        },
+        "tiles:tile_matrix_set_links": {
+            "label": "Tile Matrix Set Links",
+            "custom": true,
+            "summary": false
+        },
+        "view:off_nadir": {
+            "label": "Off-Nadir Angle",
+            "unit": "º"
+        },
+        "view:incidence_angle": {
+            "label": "Incidence Angle",
+            "unit": "º"
+        },
+        "view:azimuth": {
+            "label": "Viewing Azimuth",
+            "unit": "º"
+        },
+        "view:sun_azimuth": {
+            "label": "Sun Azimuth",
+            "unit": "º"
+        },
+        "view:sun_elevation": {
+            "label": "Sun Elevation",
+            "unit": "º"
+        },
+        "pl:anomalous_pixels": {
+            "label": "Anomalous Pixels",
+            "unit": "px"
+        },
+        "pl:cloud_percent": {
+            "label": "Cloud Cover",
+            "unit": "%"
+        },
+        "pl:clear_confidence_percent": {
+            "label": "Cloud Free Confidence",
+            "unit": "%"
+        },
+        "pl:clear_percent": {
+            "label": "Cloud Free",
+            "unit": "%"
+        },
+        "pl:heavy_haze_percent": {
+            "label": "Heavy Haze Cover",
+            "unit": "%"
+        },
+        "pl:light_haze_percent": {
+            "label": "Light Haze Cover",
+            "unit": "%"
+        },
+        "pl:shadow_percent": {
+            "label": "Shadow Cover",
+            "unit": "%"
+        },
+        "pl:snow_ice_percent": {
+            "label": "Snow/Ice Cover",
+            "unit": "%"
+        },
+        "pl:visible_confidence_percent": {
+            "label": "Visible Confidence",
+            "unit": "%"
+        },
+        "pl:visible_percent": {
+            "label": "Visible",
+            "unit": "%"
+        },
+        "pl:columns": {
+            "label": "Columns"
+        },
+        "pl:rows": {
+            "label": "Rows"
+        },
+        "pl:epsg_code": {
+            "alias": "proj:epsg",
+            "label": "EPSG Code",
+            "format": "EPSG"
+        },
+        "pl:ground_control": {
+            "label": "Ground Control"
+        },
+        "pl:ground_control_ratio": {
+            "label": "Ground Control Ratio"
+        },
+        "pl:instrument": {
+            "alias": "instruments",
+            "label": "Instruments",
+            "format": "CSV",
+            "mergeArrays": true
+        },
+        "pl:item_type": {
+            "label": "Source Type"
+        },
+        "pl:origin_x": {
+            "label": "X Origin"
+        },
+        "pl:origin_y": {
+            "label": "Y Origin"
+        },
+        "pl:pixel_resolution": {
+            "label": "Pixel Resolution",
+            "unit": "m"
+        },
+        "pl:provider": {
+            "label": "Provider",
+            "summary": false
+        },
+        "pl:published": {
+            "alias": "published",
+            "label": "Published",
+            "format": "Timestamp"
+        },
+        "pl:quality_category": {
+            "label": "Quality Category"
+        },
+        "pl:satellite_id": {
+            "label": "Satellite ID"
+        },
+        "pl:satellite_azimuth": {
+            "label": "Satellite Azimuth",
+            "unit": "º"
+        },
+        "pl:strip_id": {
+            "label": "Strip ID"
+        },
+        "pl:updated": {
+            "alias": "updated",
+            "label": "Updated",
+            "format": "Timestamp"
+        },
+        "pl:usable_data": {
+            "label": "Usable Data"
+        },
+        "pl:view_angle": {
+            "label": "View Angle",
+            "unit": "º"
+        },
+        "gee:type": {
+            "label": "Type"
+        },
+        "gee:cadence": {
+            "label": "Cadence"
+        },
+        "gee:schema": {
+            "label": "Variables",
+            "listWithKeys": true,
+            "items": {
+                "description": {
+                    "label": "Description"
+                },
+                "type": {
+                    "label": "Data Type"
+                }
+            },
+            "summary": false,
+            "itemOrder": [
+                "type",
+                "description"
+            ]
+        },
+        "gee:terms_of_use": {
+            "label": "Terms of Use",
+            "format": "CommonMark",
+            "summary": false
+        },
+        "gee:visualizations": {
+            "label": "Visualizations",
+            "custom": true,
+            "summary": false
+        },
+        "landsat:scene_id": {
+            "label": "Scene ID"
+        },
+        "landsat:collection_category": {
+            "label": "Collection Category"
+        },
+        "landsat:collection_number": {
+            "label": "Collection Number"
+        },
+        "landsat:wrs_type": {
+            "label": "WRS Type",
+            "explain": "Worldwide Reference System Type"
+        },
+        "landsat:wrs_path": {
+            "label": "WRS Path",
+            "explain": "Worldwide Reference System Path"
+        },
+        "landsat:wrs_row": {
+            "label": "WRS Row",
+            "explain": "Worldwide Reference System Row"
+        },
+        "landsat:cloud_cover_land": {
+            "label": "Land Cloud Cover",
+            "unit": "%"
+        },
+        "sentinel:utm_zone": {
+            "label": "UTM zone"
+        },
+        "sentinel:latitude_band": {
+            "label": "Latitude band"
+        },
+        "sentinel:grid_square": {
+            "label": "Grid square"
+        },
+        "sentinel:sequence": {
+            "label": "Sequence"
+        },
+        "sentinel:product_id": {
+            "label": "Product ID",
+            "summary": false
+        },
+        "sentinel:data_coverage": {
+            "label": "Data Coverage",
+            "unit": "%"
+        },
+        "sentinel:valid_cloud_cover": {
+            "label": "Valid Cloud Cover"
+        },
+        "cbers:data_type": {
+            "label": "Data type"
+        },
+        "cbers:path": {
+            "label": "Path"
+        },
+        "cbers:row": {
+            "label": "Row"
+        },
+        "card4l:specification": {
+            "label": "Specification"
+        },
+        "card4l:specification_version": {
+            "label": "Specification Version"
+        },
+        "card4l:orbit_mean_altitude": {
+            "label": "Platform altitude",
+            "unit": "m"
+        },
+        "card4l:incidence_angle_near_range": {
+            "label": "Incidence Angle (near)",
+            "unit": "º"
+        },
+        "card4l:incidence_angle_far_range": {
+            "label": "Incidence Angle (far)",
+            "unit": "º"
+        },
+        "card4l:noise_equivalent_intensity": {
+            "label": "Noise Equivalent Intensity",
+            "unit": "dB"
+        },
+        "card4l:mean_faraday_rotation_angle": {
+            "label": "Mean Faraday Rotation",
+            "unit": "º"
+        },
+        "card4l:speckle_filtering": {
+            "label": "Speckle Filtering",
+            "custom": true,
+            "summary": false,
+            "null": "not applied"
+        },
+        "card4l:relative_rtc_accuracy": {
+            "label": "Rel. RTC Accuracy",
+            "explain": "Relative accuracy of the Radiometric Terrain Correction",
+            "unit": "dB"
+        },
+        "card4l:absolute_rtc_accuracy": {
+            "label": "Abs. RTC Accuracy",
+            "explain": "Absolute accuracy of the Radiometric Terrain Correction",
+            "unit": "dB"
+        },
+        "card4l:northern_geometric_accuracy": {
+            "label": "Northern Geometric Accuracy",
+            "unit": "m"
+        },
+        "card4l:eastern_geometric_accuracy": {
+            "label": "Eastern Geometric Accuracy",
+            "unit": "m"
+        },
+        "card4l:ellipsoidal_height": {
+            "label": "Ellipsoidal Height",
+            "unit": "m"
+        }
+    }
+}
