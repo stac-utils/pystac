@@ -107,6 +107,7 @@ class EOExtensionHooks(ExtensionHooks):
             d['stac_extensions'].remove('eo')
             d['stac_extensions'].append(SCHEMA_URI)
 
+
 class Band:
     """Represents Band information attached to an Item that implements the eo extension.
 

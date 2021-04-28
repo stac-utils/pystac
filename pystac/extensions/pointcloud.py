@@ -492,7 +492,7 @@ class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
         return '<ItemFileExtension Item id={}>'.format(self.item.id)
 
 
-class AssetFileExtension(PointcloudExtension[ps.Asset]):
+class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
     def __init__(self, asset: ps.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -506,6 +506,6 @@ def pointcloud_ext(obj: T) -> PointcloudExtension[T]:
     if isinstance(obj, ps.Item):
         return ItemPointcloudExtension(obj)
     elif isinstance(obj, ps.Asset):
-        return AssetFileExtension(obj)
+        return AssetPointcloudExtension(obj)
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")

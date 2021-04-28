@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 
 import pystac as ps
 from pystac import (Catalog, Item, CatalogType, STAC_IO)
-from pystac.extensions import label_ext
+from pystac.extensions.label import label_ext
 import pystac.validation
 from tests.utils import (TestCases, test_to_from_dict)
 

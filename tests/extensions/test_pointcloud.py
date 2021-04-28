@@ -4,7 +4,7 @@ import unittest
 # from copy import deepcopy
 
 import pystac as ps
-from pystac.extensions import pointcloud_ext
+from pystac.extensions.pointcloud import pointcloud_ext
 from pystac.extensions.pointcloud import PointcloudExtension, PointcloudSchema, PointcloudStatistic
 from tests.utils import (TestCases, test_to_from_dict)
 

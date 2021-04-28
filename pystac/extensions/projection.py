@@ -1,9 +1,23 @@
-from typing import Any, Dict, List, Optional
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 
-from pystac.item import Asset, Item
+import pystac as ps
+
+T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+
+SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+
+EPSG_PROP = 'proj:epsg'
+WKT2_PROP = 'proj:wkt2'
+PROJJSON_PROP = 'proj:projjson'
+GEOM_PROP = 'proj:geometry'
+BBOX_PROP = 'proj:bbox'
+CENTROID_PROP = 'proj:centroid'
+SHAPE_PROP = 'proj:shape'
+TRANSFORM_PROP = 'proj:transform'
 
 
-class ProjectionItemExt():
+class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """ProjectionItemExt is the extension of an Item in the Projection Extension.
     The Projection extension adds projection information to STAC Items.
 
@@ -17,7 +31,7 @@ class ProjectionItemExt():
         Using ProjectionItemExt to directly wrap an item will add the 'proj' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item: Item) -> None:
+    def __init__(self, item: ps.Item) -> None:
         self.item = item
 
     def apply(self,
@@ -72,33 +86,11 @@ class ProjectionItemExt():
         Returns:
             int
         """
-        return self.get_epsg()
+        return self._get_property(EPSG_PROP, int)
 
     @epsg.setter
     def epsg(self, v: Optional[int]) -> None:
-        self.set_epsg(v)
-
-    def get_epsg(self, asset: Optional[Asset] = None) -> Optional[int]:
-        """Gets an Item or an Asset epsg.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            int
-        """
-        if asset is None or 'proj:epsg' not in asset.properties:
-            return self.item.properties.get('proj:epsg')
-        else:
-            return asset.properties.get('proj:epsg')
-
-    def set_epsg(self, epsg: Optional[int], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset epsg.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:epsg', epsg, asset, pop_if_none=False)
+        self._set_property(EPSG_PROP, v, pop_if_none=False)
 
     @property
     def wkt2(self) -> Optional[str]:
@@ -113,33 +105,11 @@ class ProjectionItemExt():
         Returns:
             str
         """
-        return self.get_wkt2()
+        return self._get_property(WKT2_PROP, str)
 
     @wkt2.setter
     def wkt2(self, v: Optional[str]) -> None:
-        self.set_wkt2(v)
-
-    def get_wkt2(self, asset: Optional[Asset] = None) -> Optional[str]:
-        """Gets an Item or an Asset wkt2.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            str
-        """
-        if asset is None or 'proj:wkt2' not in asset.properties:
-            return self.item.properties.get('proj:wkt2')
-        else:
-            return asset.properties.get('proj:wkt2')
-
-    def set_wkt2(self, wkt2: Optional[str], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset wkt2.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:wkt2', wkt2, asset)
+        self._set_property(WKT2_PROP, v)
 
     @property
     def projjson(self) -> Optional[Dict[str, Any]]:
@@ -157,35 +127,11 @@ class ProjectionItemExt():
         Returns:
             dict
         """
-        return self.get_projjson()
+        return self._get_property(PROJJSON_PROP, Dict[str, Any])
 
     @projjson.setter
     def projjson(self, v: Optional[Dict[str, Any]]) -> None:
-        self.set_projjson(v)
-
-    def get_projjson(self, asset: Optional[Asset] = None) -> Optional[Dict[str, Any]]:
-        """Gets an Item or an Asset projjson.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            dict
-        """
-        if asset is None or 'proj:projjson' not in asset.properties:
-            return self.item.properties.get('proj:projjson')
-        else:
-            return asset.properties.get('proj:projjson')
-
-    def set_projjson(self,
-                     projjson: Optional[Dict[str, Any]],
-                     asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset projjson.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:projjson', projjson, asset)
+        self._set_property(PROJJSON_PROP, v)
 
     @property
     def geometry(self) -> Optional[Dict[str, Any]]:
@@ -201,35 +147,11 @@ class ProjectionItemExt():
         Returns:
             dict
         """
-        return self.get_geometry()
+        return self._get_property(GEOM_PROP, Dict[str, Any])
 
     @geometry.setter
     def geometry(self, v: Optional[Dict[str, Any]]) -> None:
-        self.set_geometry(v)
-
-    def get_geometry(self, asset: Optional[Asset] = None) -> Optional[Dict[str, Any]]:
-        """Gets an Item or an Asset projection geometry.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            dict
-        """
-        if asset is None or 'proj:geometry' not in asset.properties:
-            return self.item.properties.get('proj:geometry')
-        else:
-            return asset.properties.get('proj:geometry')
-
-    def set_geometry(self,
-                     geometry: Optional[Dict[str, Any]],
-                     asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset projection geometry.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:geometry', geometry, asset)
+        self._set_property(GEOM_PROP, v)
 
     @property
     def bbox(self) -> Optional[List[float]]:
@@ -246,33 +168,12 @@ class ProjectionItemExt():
         Returns:
             List[float]
         """
-        return self.get_bbox()
+        return self._get_property(BBOX_PROP, List[float])
 
     @bbox.setter
     def bbox(self, v: Optional[List[float]]) -> None:
-        self.set_bbox(v)
+        self._set_property(BBOX_PROP, v)
 
-    def get_bbox(self, asset: Optional[Asset] = None) -> Optional[List[float]]:
-        """Gets an Item or an Asset projection bbox.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            List[float]
-        """
-        if asset is None or 'proj:bbox' not in asset.properties:
-            return self.item.properties.get('proj:bbox')
-        else:
-            return asset.properties.get('proj:bbox')
-
-    def set_bbox(self, bbox: Optional[List[float]], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset projection bbox.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:bbox', bbox, asset)
 
     @property
     def centroid(self) -> Optional[Dict[str, float]]:
@@ -288,35 +189,11 @@ class ProjectionItemExt():
         Returns:
             dict
         """
-        return self.get_centroid()
+        return self._get_property(CENTROID_PROP, Dict[str, float])
 
     @centroid.setter
     def centroid(self, v: Optional[Dict[str, float]]) -> None:
-        self.set_centroid(v)
-
-    def get_centroid(self, asset: Optional[Asset] = None) -> Optional[Dict[str, float]]:
-        """Gets an Item or an Asset centroid.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            dict
-        """
-        if asset is None or 'proj:centroid' not in asset.properties:
-            return self.item.properties.get('proj:centroid')
-        else:
-            return asset.properties.get('proj:centroid')
-
-    def set_centroid(self,
-                     centroid: Optional[Dict[str, float]],
-                     asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset centroid.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:centroid', centroid, asset)
+        self._set_property(CENTROID_PROP, v)
 
     @property
     def shape(self) -> Optional[List[int]]:
@@ -330,33 +207,11 @@ class ProjectionItemExt():
         Returns:
             List[int]
         """
-        return self.get_shape()
+        return self._get_property(SHAPE_PROP, List[int])
 
     @shape.setter
     def shape(self, v: Optional[List[int]]) -> None:
-        self.set_shape(v)
-
-    def get_shape(self, asset: Optional[Asset] = None) -> Optional[List[int]]:
-        """Gets an Item or an Asset shape.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            List[int]
-        """
-        if asset is None or 'proj:shape' not in asset.properties:
-            return self.item.properties.get('proj:shape')
-        else:
-            return asset.properties.get('proj:shape')
-
-    def set_shape(self, shape: Optional[List[int]], asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset shape.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:shape', shape, asset)
+        self._set_property(SHAPE_PROP, v)
 
     @property
     def transform(self) -> Optional[List[float]]:
@@ -373,40 +228,39 @@ class ProjectionItemExt():
         Returns:
             List[float]
         """  # noqa: E501
-        return self.get_transform()
+        return self._get_property(TRANSFORM_PROP, List[float])
 
     @transform.setter
     def transform(self, v: Optional[List[float]]) -> None:
-        self.set_transform(v)
-
-    def get_transform(self, asset: Optional[Asset] = None) -> Optional[List[float]]:
-        """Gets an Item or an Asset transform.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            List[float]
-        """
-        if asset is None or 'proj:transform' not in asset.properties:
-            return self.item.properties.get('proj:transform')
-        else:
-            return asset.properties.get('proj:transform')
-
-    def set_transform(self,
-                      transform: Optional[List[float]],
-                      asset: Optional[Asset] = None) -> None:
-        """Set an Item or an Asset transform.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('proj:transform', transform, asset)
+        self._set_property(TRANSFORM_PROP, v)
 
     @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-    @classmethod
-    def from_item(cls, item: Item) -> "ProjectionItemExt":
-        return cls(item)
+class ItemProjectionExtension(ProjectionExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+
+
+class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, ps.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+
+def projection_ext(obj: T) -> ProjectionExtension[T]:
+    if isinstance(obj, ps.Item):
+        return ItemProjectionExtension(obj)
+    elif isinstance(obj, ps.Asset):
+        return AssetProjectionExtension(obj)
+    else:
+        raise ExtensionException(f"File extension does not apply to type {type(obj)}")

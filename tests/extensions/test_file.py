@@ -3,8 +3,7 @@ import unittest
 
 import pystac as ps
 from tests.utils import (TestCases, test_to_from_dict)
-from pystac.extensions import file_ext
-from pystac.extensions.file import FileDataType
+from pystac.extensions.file import file_ext, FileDataType
 
 
 class FileTest(unittest.TestCase):

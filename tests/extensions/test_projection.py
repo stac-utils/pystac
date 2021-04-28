@@ -1,11 +1,12 @@
 import json
+from typing import Any, Dict
 import unittest
 from copy import deepcopy
 
-import pystac
-from pystac import (Item, _OldExtensionShortIDs)
-from pystac.extensions import ExtensionError
+import pystac as ps
 from pystac.validation import STACValidationError
+from pystac.extensions.projection import ProjectionExtension, projection_ext
+from pystac.utils import get_opt
 from tests.utils import (TestCases, test_to_from_dict)
 
 WKT2 = """
@@ -76,15 +77,14 @@ class ProjectionTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, Item, d)
+        test_to_from_dict(self, ps.Item, d)
 
     def test_apply(self):
-        item = next(TestCases.test_case_2().get_all_items())
-        with self.assertRaises(ExtensionError):
-            item.ext.proj
+        item = next(iter(TestCases.test_case_2().get_all_items()))
+        self.assertFalse(ProjectionExtension.has_extension(item))
 
-        item.ext.enable(_OldExtensionShortIDs.PROJECTION)
-        item.ext.projection.apply(
+        ProjectionExtension.add_to(item)
+        projection_ext(item).apply(
             4326,
             wkt2=WKT2,
             projjson=PROJJSON,
@@ -98,268 +98,268 @@ class ProjectionTest(unittest.TestCase):
             transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0])
 
     def test_partial_apply(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
-        proj_item.ext.projection.apply(epsg=1111)
+        projection_ext(proj_item).apply(epsg=1111)
 
-        self.assertEqual(proj_item.ext.projection.epsg, 1111)
+        self.assertEqual(projection_ext(proj_item).epsg, 1111)
         proj_item.validate()
 
     def test_validate_proj(self):
-        item = pystac.read_file(self.example_uri)
+        item = ps.Item.from_file(self.example_uri)
         item.validate()
 
     def test_epsg(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:epsg", proj_item.properties)
-        proj_epsg = proj_item.ext.projection.epsg
+        proj_epsg = projection_ext(proj_item).epsg
         self.assertEqual(proj_epsg, proj_item.properties['proj:epsg'])
 
         # Set
-        proj_item.ext.projection.epsg = proj_epsg + 100
+        projection_ext(proj_item).epsg = proj_epsg + 100
         self.assertEqual(proj_epsg + 100, proj_item.properties['proj:epsg'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_epsg(asset_no_prop),
-                         proj_item.ext.projection.get_epsg())
-        self.assertEqual(proj_item.ext.projection.get_epsg(asset_prop), 9999)
+        self.assertEqual(projection_ext(asset_no_prop).epsg,
+                         projection_ext(proj_item).epsg)
+        self.assertEqual(projection_ext(asset_prop).epsg, 9999)
 
         # Set to Asset
-        proj_item.ext.projection.set_epsg(8888, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_epsg(asset_no_prop),
-                            proj_item.ext.projection.get_epsg())
-        self.assertEqual(proj_item.ext.projection.get_epsg(asset_no_prop), 8888)
+        projection_ext(asset_no_prop).epsg = 8888
+        self.assertNotEqual(projection_ext(asset_no_prop).epsg,
+                            projection_ext(proj_item).epsg)
+        self.assertEqual(projection_ext(asset_no_prop).epsg, 8888)
 
         # Validate
         proj_item.validate
 
     def test_wkt2(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:wkt2", proj_item.properties)
-        proj_wkt2 = proj_item.ext.projection.wkt2
+        proj_wkt2 = projection_ext(proj_item).wkt2
         self.assertEqual(proj_wkt2, proj_item.properties['proj:wkt2'])
 
         # Set
-        proj_item.ext.projection.wkt2 = WKT2
+        projection_ext(proj_item).wkt2 = WKT2
         self.assertEqual(WKT2, proj_item.properties['proj:wkt2'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_wkt2(asset_no_prop),
-                         proj_item.ext.projection.get_wkt2())
-        self.assertTrue('TEST_TEXT' in proj_item.ext.projection.get_wkt2(asset_prop))
+        self.assertEqual(projection_ext(asset_no_prop).wkt2,
+                         projection_ext(proj_item).wkt2)
+        self.assertTrue('TEST_TEXT' in get_opt(projection_ext(asset_prop).wkt2))
 
         # Set to Asset
         asset_value = "TEST TEXT 2"
-        proj_item.ext.projection.set_wkt2(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_wkt2(asset_no_prop),
-                            proj_item.ext.projection.get_wkt2())
-        self.assertEqual(proj_item.ext.projection.get_wkt2(asset_no_prop), asset_value)
+        projection_ext(asset_no_prop).wkt2 = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).wkt2,
+                            projection_ext(proj_item).wkt2)
+        self.assertEqual(projection_ext(asset_no_prop).wkt2, asset_value)
 
         # Validate
         proj_item.validate()
 
     def test_projjson(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:projjson", proj_item.properties)
-        proj_projjson = proj_item.ext.projection.projjson
+        proj_projjson = projection_ext(proj_item).projjson
         self.assertEqual(proj_projjson, proj_item.properties['proj:projjson'])
 
         # Set
-        proj_item.ext.projection.projjson = PROJJSON
+        projection_ext(proj_item).projjson = PROJJSON
         self.assertEqual(PROJJSON, proj_item.properties['proj:projjson'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_projjson(asset_no_prop),
-                         proj_item.ext.projection.get_projjson())
-        self.assertEqual(proj_item.ext.projection.get_projjson(asset_prop)['id']['code'], 9999)
+        self.assertEqual(projection_ext(asset_no_prop).projjson,
+                         projection_ext(proj_item).projjson)
+        self.assertEqual(projection_ext(asset_prop).projjson['id']['code'], 9999)
 
         # Set to Asset
         asset_value = deepcopy(PROJJSON)
         asset_value['id']['code'] = 7777
-        proj_item.ext.projection.set_projjson(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_projjson(asset_no_prop),
-                            proj_item.ext.projection.get_projjson())
-        self.assertEqual(proj_item.ext.projection.get_projjson(asset_no_prop)['id']['code'], 7777)
+        projection_ext(asset_no_prop).projjson = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).projjson,
+                            projection_ext(proj_item).projjson)
+        self.assertEqual(projection_ext(asset_no_prop).projjson['id']['code'], 7777)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad projjson fails validation
         with self.assertRaises(STACValidationError):
-            proj_item.ext.projection.projjson = {"bad": "data"}
+            projection_ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
     def test_geometry(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:geometry", proj_item.properties)
-        proj_geometry = proj_item.ext.projection.geometry
+        proj_geometry = projection_ext(proj_item).geometry
         self.assertEqual(proj_geometry, proj_item.properties['proj:geometry'])
 
         # Set
-        proj_item.ext.projection.geometry = proj_item.geometry
+        projection_ext(proj_item).geometry = proj_item.geometry
         self.assertEqual(proj_item.geometry, proj_item.properties['proj:geometry'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_geometry(asset_no_prop),
-                         proj_item.ext.projection.get_geometry())
+        self.assertEqual(projection_ext(asset_no_prop).geometry,
+                         projection_ext(proj_item).geometry)
         self.assertEqual(
-            proj_item.ext.projection.get_geometry(asset_prop)['coordinates'][0][0], [0.0, 0.0])
+            projection_ext(asset_prop).geometry['coordinates'][0][0], [0.0, 0.0])
 
         # Set to Asset
-        asset_value = {'invalid': 'geom'}
-        proj_item.ext.projection.set_geometry(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_geometry(asset_no_prop),
-                            proj_item.ext.projection.get_geometry())
-        self.assertEqual(proj_item.ext.projection.get_geometry(asset_no_prop), asset_value)
+        asset_value: Dict[str, Any] = {'type': 'Point', 'coordinates': [1.0, 2.0]}
+        projection_ext(asset_no_prop).geometry = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).geometry,
+                            projection_ext(proj_item).geometry)
+        self.assertEqual(projection_ext(asset_no_prop).geometry, asset_value)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad geometry fails validation
         with self.assertRaises(STACValidationError):
-            proj_item.ext.projection.geometry = {"bad": "data"}
+            projection_ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
     def test_bbox(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:bbox", proj_item.properties)
-        proj_bbox = proj_item.ext.projection.bbox
+        proj_bbox = projection_ext(proj_item).bbox
         self.assertEqual(proj_bbox, proj_item.properties['proj:bbox'])
 
         # Set
-        proj_item.ext.projection.bbox = [1.0, 2.0, 3.0, 4.0]
+        projection_ext(proj_item).bbox = [1.0, 2.0, 3.0, 4.0]
         self.assertEqual(proj_item.properties['proj:bbox'], [1.0, 2.0, 3.0, 4.0])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_bbox(asset_no_prop),
-                         proj_item.ext.projection.get_bbox())
-        self.assertEqual(proj_item.ext.projection.get_bbox(asset_prop), [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(projection_ext(asset_no_prop).bbox,
+                         projection_ext(proj_item).bbox)
+        self.assertEqual(projection_ext(asset_prop).bbox, [1.0, 2.0, 3.0, 4.0])
 
         # Set to Asset
         asset_value = [10.0, 20.0, 30.0, 40.0]
-        proj_item.ext.projection.set_bbox(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_bbox(asset_no_prop),
-                            proj_item.ext.projection.get_bbox())
-        self.assertEqual(proj_item.ext.projection.get_bbox(asset_no_prop), asset_value)
+        projection_ext(asset_no_prop).bbox = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).bbox,
+                            projection_ext(proj_item).bbox)
+        self.assertEqual(projection_ext(asset_no_prop).bbox, asset_value)
 
         # Validate
         proj_item.validate()
 
     def test_centroid(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:centroid", proj_item.properties)
-        proj_centroid = proj_item.ext.projection.centroid
+        proj_centroid = projection_ext(proj_item).centroid
         self.assertEqual(proj_centroid, proj_item.properties['proj:centroid'])
 
         # Set
         new_val = {'lat': 2.0, 'lon': 3.0}
-        proj_item.ext.projection.centroid = new_val
+        projection_ext(proj_item).centroid = new_val
         self.assertEqual(proj_item.properties['proj:centroid'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_centroid(asset_no_prop),
-                         proj_item.ext.projection.get_centroid())
-        self.assertEqual(proj_item.ext.projection.get_centroid(asset_prop), {
+        self.assertEqual(projection_ext(asset_no_prop).centroid,
+                         projection_ext(proj_item).centroid)
+        self.assertEqual(projection_ext(asset_prop).centroid, {
             "lat": 0.5,
             "lon": 0.3
         })
 
         # Set to Asset
         asset_value = {"lat": 1.5, "lon": 1.3}
-        proj_item.ext.projection.set_centroid(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_centroid(asset_no_prop),
-                            proj_item.ext.projection.get_centroid())
-        self.assertEqual(proj_item.ext.projection.get_centroid(asset_no_prop), asset_value)
+        projection_ext(asset_no_prop).centroid  = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).centroid,
+                            projection_ext(proj_item).centroid)
+        self.assertEqual(projection_ext(asset_no_prop).centroid, asset_value)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad centroid fails validation
         with self.assertRaises(STACValidationError):
-            proj_item.ext.projection.centroid = {'lat': 2.0, 'lng': 3.0}
+            projection_ext(proj_item).centroid = {'lat': 2.0, 'lng': 3.0}
             proj_item.validate()
 
     def test_shape(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:shape", proj_item.properties)
-        proj_shape = proj_item.ext.projection.shape
+        proj_shape = projection_ext(proj_item).shape
         self.assertEqual(proj_shape, proj_item.properties['proj:shape'])
 
         # Set
         new_val = [100, 200]
-        proj_item.ext.projection.shape = new_val
+        projection_ext(proj_item).shape = new_val
         self.assertEqual(proj_item.properties['proj:shape'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_shape(asset_no_prop),
-                         proj_item.ext.projection.get_shape())
-        self.assertEqual(proj_item.ext.projection.get_shape(asset_prop), [16781, 16621])
+        self.assertEqual(projection_ext(asset_no_prop).shape,
+                         projection_ext(proj_item).shape)
+        self.assertEqual(projection_ext(asset_prop).shape, [16781, 16621])
 
         # Set to Asset
         asset_value = [1, 2]
-        proj_item.ext.projection.set_shape(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_shape(asset_no_prop),
-                            proj_item.ext.projection.get_shape())
-        self.assertEqual(proj_item.ext.projection.get_shape(asset_no_prop), asset_value)
+        projection_ext(asset_no_prop).shape = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).shape,
+                            projection_ext(proj_item).shape)
+        self.assertEqual(projection_ext(asset_no_prop).shape, asset_value)
 
         # Validate
         proj_item.validate()
 
     def test_transform(self):
-        proj_item = pystac.read_file(self.example_uri)
+        proj_item = ps.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:transform", proj_item.properties)
-        proj_transform = proj_item.ext.projection.transform
+        proj_transform = projection_ext(proj_item).transform
         self.assertEqual(proj_transform, proj_item.properties['proj:transform'])
 
         # Set
         new_val = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-        proj_item.ext.projection.transform = new_val
+        projection_ext(proj_item).transform = new_val
         self.assertEqual(proj_item.properties['proj:transform'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(proj_item.ext.projection.get_transform(asset_no_prop),
-                         proj_item.ext.projection.get_transform())
-        self.assertEqual(proj_item.ext.projection.get_transform(asset_prop),
+        self.assertEqual(projection_ext(asset_no_prop).transform,
+                         projection_ext(proj_item).transform)
+        self.assertEqual(projection_ext(asset_prop).transform,
                          [15.0, 0.0, 224992.5, 0.0, -15.0, 6790207.5, 0.0, 0.0, 1.0])
 
         # Set to Asset
         asset_value = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0]
-        proj_item.ext.projection.set_transform(asset_value, asset_no_prop)
-        self.assertNotEqual(proj_item.ext.projection.get_transform(asset_no_prop),
-                            proj_item.ext.projection.get_transform())
-        self.assertEqual(proj_item.ext.projection.get_transform(asset_no_prop), asset_value)
+        projection_ext(asset_no_prop).transform = asset_value
+        self.assertNotEqual(projection_ext(asset_no_prop).transform,
+                            projection_ext(proj_item).transform)
+        self.assertEqual(projection_ext(asset_no_prop).transform, asset_value)
 
         # Validate
         proj_item.validate()

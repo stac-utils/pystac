@@ -29,8 +29,6 @@ from pystac.validation import STACValidationError  # type:ignore
 import pystac.extensions.hooks
 import pystac.extensions.eo
 import pystac.extensions.label
-import pystac.extensions.pointcloud
-import pystac.extensions.projection
 import pystac.extensions.sar
 import pystac.extensions.sat
 import pystac.extensions.scientific
@@ -41,7 +39,10 @@ import pystac.extensions.view
 import pystac.extensions.file
 
 EXTENSION_HOOKS: pystac.extensions.hooks.RegisteredExtensionHooks = pystac.extensions.hooks.RegisteredExtensionHooks(
-    [pystac.extensions.eo.EO_EXTENSION_HOOKS, pystac.extensions.label.LABEL_EXTENSION_HOOKS])
+    [
+        pystac.extensions.eo.EO_EXTENSION_HOOKS, pystac.extensions.label.LABEL_EXTENSION_HOOKS,
+        pystac.extensions.sar.SAR_EXTENSION_HOOKS
+    ])
 
 
 def read_file(href: str) -> STACObject:

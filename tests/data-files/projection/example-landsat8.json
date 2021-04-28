@@ -1,8 +1,8 @@
 {
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.2",
   "stac_extensions": [
-    "eo",
-    "projection"
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
   ],
   "id": "LC81530252014153LGN00",
   "type": "Feature",
@@ -60,7 +60,6 @@
       "eo:bands": [
         {
           "name": "B8",
-          "common_name": "panchromatic",
           "center_wavelength": 0.59,
           "full_width_half_max": 0.18
         }

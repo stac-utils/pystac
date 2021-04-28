@@ -4,16 +4,17 @@ import datetime
 from typing import List
 import unittest
 
-import pystac
+import pystac as ps
 from pystac.extensions import sar
+from pystac.extensions.sar import sar_ext, SarExtension
 
 
-def make_item() -> pystac.Item:
+def make_item() -> ps.Item:
     asset_id = 'my/items/2011'
     start = datetime.datetime(2020, 11, 7)
-    item = pystac.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
 
-    item.ext.enable(pystac._OldExtensionShortIDs.SAR)
+    SarExtension.add_to(item)
     return item
 
 
@@ -21,27 +22,26 @@ class SarItemExtTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.item = make_item()
-        self.item.ext.enable(pystac._OldExtensionShortIDs.SAR)
 
     def test_stac_extensions(self):
-        self.assertEqual([pystac._OldExtensionShortIDs.SAR], self.item.stac_extensions)
+        self.assertTrue(SarExtension.has_extension(self.item))
 
     def test_required(self):
         mode: str = 'Nonesense mode'
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         polarizations: List[sar.Polarization] = [sar.Polarization.HV, sar.Polarization.VH]
         product_type: str = 'Some product'
-        self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type)
-        self.assertEqual(mode, self.item.ext.sar.instrument_mode)
+        sar_ext(self.item).apply(mode, frequency_band, polarizations, product_type)
+        self.assertEqual(mode, sar_ext(self.item).instrument_mode)
         self.assertIn(sar.INSTRUMENT_MODE, self.item.properties)
 
-        self.assertEqual(frequency_band, self.item.ext.sar.frequency_band)
+        self.assertEqual(frequency_band, sar_ext(self.item).frequency_band)
         self.assertIn(sar.FREQUENCY_BAND, self.item.properties)
 
-        self.assertEqual(polarizations, self.item.ext.sar.polarizations)
+        self.assertEqual(polarizations, sar_ext(self.item).polarizations)
         self.assertIn(sar.POLARIZATIONS, self.item.properties)
 
-        self.assertEqual(product_type, self.item.ext.sar.product_type)
+        self.assertEqual(product_type, sar_ext(self.item).product_type)
         self.assertIn(sar.PRODUCT_TYPE, self.item.properties)
 
         self.item.validate()
@@ -61,36 +61,36 @@ class SarItemExtTest(unittest.TestCase):
         looks_equivalent_number: float = 9.1
         observation_direction: sar.ObservationDirection = sar.ObservationDirection.LEFT
 
-        self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type, center_frequency,
-                                resolution_range, resolution_azimuth, pixel_spacing_range,
-                                pixel_spacing_azimuth, looks_range, looks_azimuth,
-                                looks_equivalent_number, observation_direction)
+        sar_ext(self.item).apply(mode, frequency_band, polarizations, product_type,
+                                 center_frequency, resolution_range, resolution_azimuth,
+                                 pixel_spacing_range, pixel_spacing_azimuth, looks_range,
+                                 looks_azimuth, looks_equivalent_number, observation_direction)
 
-        self.assertEqual(center_frequency, self.item.ext.sar.center_frequency)
+        self.assertEqual(center_frequency, sar_ext(self.item).center_frequency)
         self.assertIn(sar.CENTER_FREQUENCY, self.item.properties)
 
-        self.assertEqual(resolution_range, self.item.ext.sar.resolution_range)
+        self.assertEqual(resolution_range, sar_ext(self.item).resolution_range)
         self.assertIn(sar.RESOLUTION_RANGE, self.item.properties)
 
-        self.assertEqual(resolution_azimuth, self.item.ext.sar.resolution_azimuth)
+        self.assertEqual(resolution_azimuth, sar_ext(self.item).resolution_azimuth)
         self.assertIn(sar.RESOLUTION_AZIMUTH, self.item.properties)
 
-        self.assertEqual(pixel_spacing_range, self.item.ext.sar.pixel_spacing_range)
+        self.assertEqual(pixel_spacing_range, sar_ext(self.item).pixel_spacing_range)
         self.assertIn(sar.PIXEL_SPACING_RANGE, self.item.properties)
 
-        self.assertEqual(pixel_spacing_azimuth, self.item.ext.sar.pixel_spacing_azimuth)
+        self.assertEqual(pixel_spacing_azimuth, sar_ext(self.item).pixel_spacing_azimuth)
         self.assertIn(sar.PIXEL_SPACING_AZIMUTH, self.item.properties)
 
-        self.assertEqual(looks_range, self.item.ext.sar.looks_range)
+        self.assertEqual(looks_range, sar_ext(self.item).looks_range)
         self.assertIn(sar.LOOKS_RANGE, self.item.properties)
 
-        self.assertEqual(looks_azimuth, self.item.ext.sar.looks_azimuth)
+        self.assertEqual(looks_azimuth, sar_ext(self.item).looks_azimuth)
         self.assertIn(sar.LOOKS_AZIMUTH, self.item.properties)
 
-        self.assertEqual(looks_equivalent_number, self.item.ext.sar.looks_equivalent_number)
+        self.assertEqual(looks_equivalent_number, sar_ext(self.item).looks_equivalent_number)
         self.assertIn(sar.LOOKS_EQUIVALENT_NUMBER, self.item.properties)
 
-        self.assertEqual(observation_direction, self.item.ext.sar.observation_direction)
+        self.assertEqual(observation_direction, sar_ext(self.item).observation_direction)
         self.assertIn(sar.OBSERVATION_DIRECTION, self.item.properties)
 
         self.item.validate()
@@ -101,8 +101,8 @@ class SarItemExtTest(unittest.TestCase):
         # Skip type hint as we are passing in an incorrect polarization.
         polarizations = sar.Polarization.HV
         product_type: str = 'Some product'
-        with self.assertRaises(pystac.STACError):
-            self.item.ext.sar.apply(mode, frequency_band, polarizations, product_type)
+        with self.assertRaises(ps.STACError):
+            sar_ext(self.item).apply(mode, frequency_band, polarizations, product_type)  #  type:ignore
 
 
 if __name__ == '__main__':

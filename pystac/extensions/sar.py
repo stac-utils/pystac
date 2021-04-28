@@ -4,10 +4,18 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 """
 
 import enum
-from typing import List, Optional
+from typing import Any, Dict, Generic, List, Optional, TypeVar
 
 import pystac as ps
-from pystac import STACError
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin
+from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import map_opt
+
+T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+
+SCHEMA_URI = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
 
 # Required
 INSTRUMENT_MODE: str = 'sar:instrument_mode'
@@ -25,6 +33,29 @@ LOOKS_RANGE: str = 'sar:looks_range'
 LOOKS_AZIMUTH: str = 'sar:looks_azimuth'
 LOOKS_EQUIVALENT_NUMBER: str = 'sar:looks_equivalent_number'
 OBSERVATION_DIRECTION: str = 'sar:observation_direction'
+
+class SarExtensionHooks(ExtensionHooks):
+    schema_uri = SCHEMA_URI
+
+    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+        if version < '0.9':
+            # Some sar fields became common_metadata
+            if 'sar:platform' in d['properties'] and 'platform' not in d['properties']:
+                d['properties']['platform'] = d['properties']['sar:platform']
+                del d['properties']['sar:platform']
+
+            if 'sar:instrument' in d['properties'] and 'instruments' not in d['properties']:
+                d['properties']['instruments'] = [d['properties']['sar:instrument']]
+                del d['properties']['sar:instrument']
+
+            if 'sar:constellation' in d['properties'] and 'constellation' not in d['properties']:
+                d['properties']['constellation'] = d['properties']['sar:constellation']
+                del d['properties']['sar:constellation']
+
+        # Update stac_extension entry
+        if 'stac_extensions' in d and 'sar' in d['stac_extensions']:
+            d['stac_extensions'].remove('sar')
+            d['stac_extensions'].append(SCHEMA_URI)
 
 
 class FrequencyBand(str, enum.Enum):
@@ -50,8 +81,7 @@ class ObservationDirection(enum.Enum):
     RIGHT = 'right'
 
 
-# TODO: Fix to work with Assets
-class SarItemExt():
+class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[ps.Item]):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
     Args:
@@ -64,11 +94,6 @@ class SarItemExt():
         Using SarItemExt to directly wrap an item will add the 'sar'
         extension ID to the item's stac_extensions.
     """
-    item: ps.Item
-
-    def __init__(self, an_item: ps.Item) -> None:
-        self.item = an_item
-
     def apply(self,
               instrument_mode: str,
               frequency_band: FrequencyBand,
@@ -136,14 +161,6 @@ class SarItemExt():
         if observation_direction:
             self.observation_direction = observation_direction
 
-    @classmethod
-    def from_item(cls, an_item: ps.Item) -> "SarItemExt":
-        return cls(an_item)
-
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
-
     @property
     def instrument_mode(self) -> str:
         """Get or sets an instrument mode string for the item.
@@ -151,15 +168,14 @@ class SarItemExt():
         Returns:
             str
         """
-        result = self.item.properties.get(INSTRUMENT_MODE)
+        result = self._get_property(INSTRUMENT_MODE, str)
         if result is None:
-            raise STACError(f"Item with sar extension does not have property {INSTRUMENT_MODE}, "
-                            f"id {self.item.id}")
+            raise ps.STACError(f"Property {INSTRUMENT_MODE} does not exist")
         return result
 
     @instrument_mode.setter
     def instrument_mode(self, v: str) -> None:
-        self.item.properties[INSTRUMENT_MODE] = v
+        self._set_property(INSTRUMENT_MODE, v, pop_if_none=False)
 
     @property
     def frequency_band(self) -> FrequencyBand:
@@ -168,15 +184,14 @@ class SarItemExt():
         Returns:
             FrequencyBand
         """
-        result = self.item.properties.get(FREQUENCY_BAND)
+        result = self._get_property(FREQUENCY_BAND, str)
         if result is None:
-            raise STACError(f"Item with sar extension does not have property {FREQUENCY_BAND}, "
-                            f"id {self.item.id}")
+            raise ps.STACError(f"Property {FREQUENCY_BAND} does not exist")
         return FrequencyBand(result)
 
     @frequency_band.setter
     def frequency_band(self, v: FrequencyBand) -> None:
-        self.item.properties[FREQUENCY_BAND] = v.value
+        self._set_property(FREQUENCY_BAND, v.value, pop_if_none=False)
 
     @property
     def polarizations(self) -> List[Polarization]:
@@ -185,18 +200,16 @@ class SarItemExt():
         Returns:
             List[Polarization]
         """
-        result = self.item.properties.get(POLARIZATIONS)
+        result = self._get_property(POLARIZATIONS, List[str])
         if result is None:
-            raise STACError(
-                f"Item with sar extension does not have property {POLARIZATIONS}, id {self.item.id}"
-            )
+            raise ps.STACError(f"Property {POLARIZATIONS} does not exist")
         return [Polarization(v) for v in result]
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
         if not isinstance(values, list):
             raise ps.STACError(f'polarizations must be a list. Invalid "{values}"')
-        self.item.properties[POLARIZATIONS] = [v.value for v in values]
+        self._set_property(POLARIZATIONS, [v.value for v in values], pop_if_none=False)
 
     @property
     def product_type(self) -> str:
@@ -205,132 +218,130 @@ class SarItemExt():
         Returns:
             str
         """
-        result = self.item.properties.get(PRODUCT_TYPE)
+        result = self._get_property(PRODUCT_TYPE, str)
         if result is None:
-            raise STACError(
-                f"Item with sar extension does not have property {PRODUCT_TYPE}, id {self.item.id}")
+            raise ps.STACError(f"Property {PRODUCT_TYPE} does not exist")
         return result
 
     @product_type.setter
     def product_type(self, v: str) -> None:
-        self.item.properties[PRODUCT_TYPE] = v
+        self._set_property(PRODUCT_TYPE, v, pop_if_none=False)
 
     @property
     def center_frequency(self) -> Optional[float]:
-        """Get or sets a center frequency for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(CENTER_FREQUENCY)
+        """Get or sets a center frequency for the item."""
+        return self._get_property(CENTER_FREQUENCY, float)
 
     @center_frequency.setter
-    def center_frequency(self, v: float) -> None:
-        self.item.properties[CENTER_FREQUENCY] = v
+    def center_frequency(self, v: Optional[float]) -> None:
+        self._set_property(CENTER_FREQUENCY, v)
 
     @property
     def resolution_range(self) -> Optional[float]:
-        """Get or sets a resolution range for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(RESOLUTION_RANGE)
+        """Get or sets a resolution range for the item."""
+        return self._get_property(RESOLUTION_RANGE, float)
 
     @resolution_range.setter
-    def resolution_range(self, v: float) -> None:
-        self.item.properties[RESOLUTION_RANGE] = v
+    def resolution_range(self, v: Optional[float]) -> None:
+        self._set_property(RESOLUTION_RANGE, v)
 
     @property
     def resolution_azimuth(self) -> Optional[float]:
-        """Get or sets a resolution azimuth for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(RESOLUTION_AZIMUTH)
+        """Get or sets a resolution azimuth for the item."""
+        return self._get_property(RESOLUTION_AZIMUTH, float)
 
     @resolution_azimuth.setter
-    def resolution_azimuth(self, v: float) -> None:
-        self.item.properties[RESOLUTION_AZIMUTH] = v
+    def resolution_azimuth(self, v: Optional[float]) -> None:
+        self._set_property(RESOLUTION_AZIMUTH, v)
 
     @property
     def pixel_spacing_range(self) -> Optional[float]:
-        """Get or sets a pixel spacing range for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(PIXEL_SPACING_RANGE)
+        """Get or sets a pixel spacing range for the item."""
+        return self._get_property(PIXEL_SPACING_RANGE, float)
 
     @pixel_spacing_range.setter
-    def pixel_spacing_range(self, v: float) -> None:
-        self.item.properties[PIXEL_SPACING_RANGE] = v
+    def pixel_spacing_range(self, v: Optional[float]) -> None:
+        self._set_property(PIXEL_SPACING_RANGE, v)
 
     @property
     def pixel_spacing_azimuth(self) -> Optional[float]:
-        """Get or sets a pixel spacing azimuth for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(PIXEL_SPACING_AZIMUTH)
+        """Get or sets a pixel spacing azimuth for the item."""
+        return self._get_property(PIXEL_SPACING_AZIMUTH, float)
 
     @pixel_spacing_azimuth.setter
-    def pixel_spacing_azimuth(self, v: float) -> None:
-        self.item.properties[PIXEL_SPACING_AZIMUTH] = v
+    def pixel_spacing_azimuth(self, v: Optional[float]) -> None:
+        self._set_property(PIXEL_SPACING_AZIMUTH, v)
 
     @property
     def looks_range(self) -> Optional[int]:
-        """Get or sets a looks range for the item.
-
-        Returns:
-            int
-        """
-        return self.item.properties.get(LOOKS_RANGE)
+        """Get or sets a looks range for the item."""
+        return self._get_property(LOOKS_RANGE, int)
 
     @looks_range.setter
-    def looks_range(self, v: int) -> None:
-        self.item.properties[LOOKS_RANGE] = v
+    def looks_range(self, v: Optional[int]) -> None:
+        self._set_property(LOOKS_RANGE, v)
 
     @property
     def looks_azimuth(self) -> Optional[int]:
-        """Get or sets a looks azimuth for the item.
-
-        Returns:
-            int
-        """
-        return self.item.properties.get(LOOKS_AZIMUTH)
+        """Get or sets a looks azimuth for the item."""
+        return self._get_property(LOOKS_AZIMUTH, int)
 
     @looks_azimuth.setter
-    def looks_azimuth(self, v: int) -> None:
-        self.item.properties[LOOKS_AZIMUTH] = v
+    def looks_azimuth(self, v: Optional[int]) -> None:
+        self._set_property(LOOKS_AZIMUTH, v)
 
     @property
     def looks_equivalent_number(self) -> Optional[float]:
-        """Get or sets a looks equivalent number for the item.
-
-        Returns:
-            float
-        """
-        return self.item.properties.get(LOOKS_EQUIVALENT_NUMBER)
+        """Get or sets a looks equivalent number for the item."""
+        return self._get_property(LOOKS_EQUIVALENT_NUMBER, float)
 
     @looks_equivalent_number.setter
-    def looks_equivalent_number(self, v: float) -> None:
-        self.item.properties[LOOKS_EQUIVALENT_NUMBER] = v
+    def looks_equivalent_number(self, v: Optional[float]) -> None:
+        self._set_property(LOOKS_EQUIVALENT_NUMBER, v)
 
     @property
     def observation_direction(self) -> Optional[ObservationDirection]:
-        """Get or sets an observation direction for the item.
-
-        Returns:
-            ObservationDirection
-        """
-        result = self.item.properties.get(OBSERVATION_DIRECTION)
+        """Get or sets an observation direction for the item."""
+        result = self._get_property(OBSERVATION_DIRECTION, str)
         if result is None:
             return None
         return ObservationDirection(result)
 
     @observation_direction.setter
-    def observation_direction(self, v: ObservationDirection) -> None:
-        self.item.properties[OBSERVATION_DIRECTION] = v.value
+    def observation_direction(self, v: Optional[ObservationDirection]) -> None:
+        self._set_property(OBSERVATION_DIRECTION, map_opt(lambda x: x.value, v))
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
+
+
+class ItemSarExtension(SarExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+
+
+class AssetSarExtension(SarExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, ps.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+
+
+def sar_ext(obj: T) -> SarExtension[T]:
+    if isinstance(obj, ps.Item):
+        return ItemSarExtension(obj)
+    elif isinstance(obj, ps.Asset):
+        return AssetSarExtension(obj)
+    else:
+        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+SAR_EXTENSION_HOOKS: ExtensionHooks = SarExtensionHooks()
