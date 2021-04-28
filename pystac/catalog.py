@@ -389,6 +389,7 @@ class Catalog(STACObject):
             links = filter(lambda l: l.rel != 'self', links)
 
         d = {
+            'type': self.STAC_OBJECT_TYPE.value.title(),
             'id': self.id,
             'stac_version': pystac.get_stac_version(),
             'description': self.description,
