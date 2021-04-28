@@ -397,6 +397,7 @@ class Catalog(STACObject):
             links = [x for x in links if x.rel != 'self']
 
         d: Dict[str, Any] = {
+            'type': self.STAC_OBJECT_TYPE.value.title(),
             'id': self.id,
             'stac_version': ps.get_stac_version(),
             'description': self.description,

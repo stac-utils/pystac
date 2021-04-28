@@ -285,18 +285,25 @@ def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectType_Type
     """
     object_type = None
 
-    # Identify pre-1.0 ITEMCOLLECTION (since removed)
-    if 'type' in json_dict and 'assets' not in json_dict:
-        if 'stac_version' in json_dict and cast(str, json_dict['stac_version']).startswith('0'):
-            if json_dict['type'] == 'FeatureCollection':
-                object_type = ps.STACObjectType.ITEMCOLLECTION
+    if 'type' in json_dict:  # Try to identify using 'type' property
+        for t in ps.STACObjectType:
+            if json_dict['type'].lower() == t.value.lower():
+                object_type = t
+                break
 
-    if 'extent' in json_dict:
-        object_type = ps.STACObjectType.COLLECTION
-    elif 'assets' in json_dict:
-        object_type = ps.STACObjectType.ITEM
-    else:
-        object_type = ps.STACObjectType.CATALOG
+    if object_type is None:  # Use old-approach based on other properties
+        # Identify pre-1.0 ITEMCOLLECTION (since removed)
+        if 'type' in json_dict and 'assets' not in json_dict:
+            if 'stac_version' in json_dict and json_dict['stac_version'].startswith('0'):
+                if json_dict['type'] == 'FeatureCollection':
+                    object_type = ps.STACObjectType.ITEMCOLLECTION
+
+        if 'extent' in json_dict:
+            object_type = ps.STACObjectType.COLLECTION
+        elif 'assets' in json_dict:
+            object_type = ps.STACObjectType.ITEM
+        else:
+            object_type = ps.STACObjectType.CATALOG
 
     return object_type
 
