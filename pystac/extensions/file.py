@@ -1,5 +1,6 @@
 import enum
-from typing import Any, Generic, List, Optional, Set, TypeVar, cast
+from pystac.serialization.identify import OldExtensionShortIDs, STACJSONDescription, STACVersionID
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
@@ -187,6 +188,40 @@ class FileExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(['file'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
+                info: STACJSONDescription) -> None:
+        # The checksum field was previously it's own extension.
+        old_checksum: Optional[Dict[str, str]] = None
+        if info.version_range.latest_valid_version() < 'v1.0.0-rc.2':
+            if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
+                old_item_checksum = obj['properties'].get('checksum:multihash')
+                if old_item_checksum is not None:
+                    if old_checksum is None:
+                        old_checksum = {}
+                    old_checksum['__item__'] = old_item_checksum
+                for asset_key, asset in obj['assets'].items():
+                    old_asset_checksum = asset.get('checksum:multihash')
+                    if old_asset_checksum is not None:
+                        if old_checksum is None:
+                            old_checksum = {}
+                        old_checksum[asset_key] = old_asset_checksum
+
+                try:
+                    obj['stac_extensions'].remove(OldExtensionShortIDs.CHECKSUM.value)
+                except ValueError:
+                    pass
+
+        super().migrate(obj, version, info)
+
+        if old_checksum is not None:
+            if SCHEMA_URI not in obj['stac_extensions']:
+                obj['stac_extensions'].append(SCHEMA_URI)
+            for key in old_checksum:
+                if key == '__item__':
+                    obj['properties'][CHECKSUM_PROP] = old_checksum[key]
+                else:
+                    obj['assets'][key][CHECKSUM_PROP] = old_checksum[key]
+
 
 def file_ext(obj: T) -> FileExtension[T]:
     if isinstance(obj, ps.Item):
@@ -199,5 +234,6 @@ def file_ext(obj: T) -> FileExtension[T]:
 
 def file_summaries(obj: ps.Collection) -> SummariesFileExtension:
     return SummariesFileExtension(obj)
+
 
 FILE_EXTENSION_HOOKS = FileExtensionHooks()

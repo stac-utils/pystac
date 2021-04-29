@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class OldExtensionShortIDs(Enum):
     """Enumerates the IDs of common extensions."""
-    CHECKSUM = 'checksum'  # REMOVED
+    CHECKSUM = 'checksum'
     COLLECTION_ASSETS = 'collection-assets'  # REMOVED
     DATACUBE = 'datacube'  # TODO
     EO = 'eo'

@@ -114,7 +114,7 @@ class OldExtensionSchemaUriMap:
             })]),
             OldExtensionShortIDs.POINTCLOUD.value: (
                 {
-                    # Poincloud schema was broken in 1.0.0-beta.2 and prior;
+                    # Pointcloud schema was broken in 1.0.0-beta.2 and prior;
                     # Use this schema version (corresponding to 1.0.0-rc.1)
                     # to allow for proper validation
                     ps.STACObjectType.ITEM:
@@ -253,6 +253,12 @@ def _get_object_migrations(
 
 def _get_removed_extension_migrations(
 ) -> Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]:
+    """Handles removed extensions.
+
+    This does not handle renamed extension or extensions that were absorbed
+    by other extensions; for instance the FileExtensions handles the migration of
+    the since replaced 'checksum' extension.
+    """
     return {
         # Removed in 0.9.0
         'dtr': _migrate_datetime_range,

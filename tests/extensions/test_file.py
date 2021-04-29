@@ -3,7 +3,7 @@ import unittest
 
 import pystac as ps
 from tests.utils import (TestCases, test_to_from_dict)
-from pystac.extensions.file import file_ext, FileDataType
+from pystac.extensions.file import FileExtension, file_ext, FileDataType
 
 
 class FileTest(unittest.TestCase):
@@ -39,8 +39,7 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c",
-                         file_ext(asset).checksum)
+        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c", file_ext(asset).checksum)
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
@@ -73,3 +72,12 @@ class FileTest(unittest.TestCase):
         file_ext(asset).nodata = new_nodata
         self.assertEqual(new_nodata, file_ext(asset).nodata)
         item.validate()
+
+    def test_migrates_old_checksum(self):
+        example_path = TestCases.get_path(
+            'data-files/examples/1.0.0-beta.2/extensions/checksum/examples/sentinel1.json')
+        item = ps.Item.from_file(example_path)
+
+        self.assertTrue(FileExtension.has_extension(item))
+        self.assertEqual(
+            file_ext(item.assets['noises']).checksum, "90e40210a30d1711e81a4b11ef67b28744321659")
