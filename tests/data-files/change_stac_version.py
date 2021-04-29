@@ -24,7 +24,7 @@ def migrate(path: str) -> None:
         if not cur_ver == TARGET_VERSION:
             print('  - Migrating {} from {} to {}...'.format(
                 path, cur_ver, TARGET_VERSION))
-            obj = ps.read_dict(stac_json)
+            obj = ps.read_dict(stac_json, href=path)
             migrated = obj.to_dict()
             with open(path, 'w') as f:
                 json.dump(migrated, f, indent=2)
