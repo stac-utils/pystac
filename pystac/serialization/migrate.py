@@ -260,7 +260,13 @@ def _get_removed_extension_migrations(
     the since replaced 'checksum' extension.
     """
     return {
-        # Removed in 0.9.0
+        # -- Removed in 1.0
+
+        # assets in collections became a core property
+        OldExtensionShortIDs.COLLECTION_ASSETS.value: lambda a, b, c: None,
+
+        # -- Removed in 0.9.0
+
         'dtr': _migrate_datetime_range,
         'datetime-range': _migrate_datetime_range,
         'commons': lambda a, b, c: None  # No changes needed, just remove the extension_id
