@@ -8,7 +8,7 @@ from pystac.utils import map_opt
 
 T = TypeVar('T', ps.Item, ps.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
 
 DATA_TYPE_PROP = 'file:data_type'
 SIZE_PROP = "file:size"

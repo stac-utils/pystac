@@ -1,6 +1,6 @@
 # flake8: noqa
 
-from tests.utils.test_cases import (TestCases, RANDOM_GEOM, RANDOM_BBOX, RANDOM_EXTENT)
+from tests.utils.test_cases import (TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, ARBITRARY_EXTENT)
 
 from copy import deepcopy
 from datetime import datetime

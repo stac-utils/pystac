@@ -260,7 +260,7 @@ class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['projection'])
+    prev_extension_ids: Set[str] = set(['proj', 'projection'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 def projection_ext(obj: T) -> ProjectionExtension[T]:

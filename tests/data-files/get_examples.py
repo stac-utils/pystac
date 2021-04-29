@@ -7,20 +7,21 @@ import argparse
 import json
 from tempfile import TemporaryDirectory
 from subprocess import call
+from typing import Any, Dict, List
 from urllib.error import HTTPError
 
-import pystac
-from pystac.serialization import identify_stac_object, STACObjectType
+import pystac as ps
+from pystac.serialization import identify_stac_object
 
 
-def remove_bad_collection(js):
-    links = js.get('links')
+def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
+    links: List[Dict[str, Any]] = js.get('links')
     if links is not None:
-        filtered_links = []
+        filtered_links: List[Dict[str, Any]] = []
         for link in links:
             rel = link.get('rel')
             if rel is not None and rel == 'collection':
-                href = link['href']
+                href: str = link['href']
                 try:
                     json.loads(ps.STAC_IO.read_text(href))
                     filtered_links.append(link)
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     with TemporaryDirectory() as tmp_dir:
         call(['git', 'clone', '--depth', '1', '--branch', stac_spec_tag, stac_repo, tmp_dir])
 
-        example_dirs = []
+        example_dirs: List[str] = []
         for root, _, _ in os.walk(tmp_dir):
             example_dirs.append(os.path.join(root))
 
@@ -62,7 +63,7 @@ if __name__ == '__main__':
                         path = os.path.join(root, fname)
                         with open(path) as f:
                             try:
-                                js = json.loads(f.read())
+                                js: Dict[str, Any] = json.loads(f.read())
                             except json.decoder.JSONDecodeError:
                                 # Account for bad examples that can't be parsed.
                                 js = {}
@@ -79,7 +80,7 @@ if __name__ == '__main__':
 
                             # Handle the case where there are collection links that
                             # don't exist.
-                            if info.object_type == STACObjectType.ITEM:
+                            if info.object_type == ps.STACObjectType.ITEM:
                                 js = remove_bad_collection(js)
 
                             d = os.path.dirname(target_path)
@@ -90,9 +91,9 @@ if __name__ == '__main__':
                                 f.write(json.dumps(js, indent=4))
 
                             # Add info to the new example-info.csv lines
-                            line_info = [
+                            line_info: List[str] = [
                                 relpath, info.object_type, example_version,
-                                '|'.join(info.common_extensions), '|'.join(info.custom_extensions)
+                                '|'.join(info.extensions)
                             ]
                             line = '"{}"'.format('","'.join(line_info))
                             example_csv_lines.add(line)

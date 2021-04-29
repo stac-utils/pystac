@@ -18,8 +18,8 @@ class MigrateTest(unittest.TestCase):
     def test_migrate(self):
         collection_cache = CollectionCache()
         for example in self.examples:
-            with self.subTest(example['path']):
-                path = example['path']
+            with self.subTest(example.path):
+                path = example.path
 
                 d = STAC_IO.read_json(path)
                 if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
@@ -34,6 +34,10 @@ class MigrateTest(unittest.TestCase):
                 self.assertEqual(migrated_info.object_type, info.object_type)
                 self.assertEqual(migrated_info.version_range.latest_valid_version(),
                                  ps.get_stac_version())
+
+                # Ensure all stac_extensions are schema URIs
+                for e_id in migrated_d['stac_extensions']:
+                    self.assertTrue(e_id.endswith('.json'), f"{e_id} is not a JSON schema URI")
 
                 # Test that PySTAC can read it without errors.
                 if info.object_type != ps.STACObjectType.ITEMCOLLECTION:

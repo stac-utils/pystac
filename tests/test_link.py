@@ -2,7 +2,7 @@ import datetime
 import unittest
 
 import pystac as ps
-from tests.utils.test_cases import RANDOM_EXTENT
+from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
 
@@ -118,13 +118,13 @@ class StaticLinkTest(unittest.TestCase):
                 ps.Link.from_dict(d)
 
     def test_collection(self):
-        c = ps.Collection('collection id', 'desc', extent=RANDOM_EXTENT)
+        c = ps.Collection('collection id', 'desc', extent=ARBITRARY_EXTENT)
         link = ps.Link.collection(c)
         expected = {'rel': 'collection', 'href': None, 'type': 'application/json'}
         self.assertEqual(expected, link.to_dict())
 
     def test_child(self):
-        c = ps.Collection('collection id', 'desc', extent=RANDOM_EXTENT)
+        c = ps.Collection('collection id', 'desc', extent=ARBITRARY_EXTENT)
         link = ps.Link.child(c)
         expected = {'rel': 'child', 'href': None, 'type': 'application/json'}
         self.assertEqual(expected, link.to_dict())

@@ -633,7 +633,7 @@ class Collection(Catalog):
                 collection.add_link(Link.from_dict(link))
 
         if assets is not None:
-            for asset_key, asset_dict in assets:
+            for asset_key, asset_dict in assets.items():
                 collection.add_asset(asset_key, Asset(asset_dict))
 
         return collection

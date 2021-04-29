@@ -1,8 +1,10 @@
+from dataclasses import dataclass
 import os
 from datetime import datetime
 import csv
 from typing import Any, Dict, List
 
+import pystac as ps
 from pystac import (Catalog, Collection, Item, Asset, Extent, TemporalExtent, SpatialExtent,
                     MediaType)
 from pystac.extensions.label import (LabelExtension, LabelOverview, LabelClasses, LabelCount,
@@ -35,7 +37,7 @@ TEST_LABEL_CATALOG = {
     }
 }
 
-RANDOM_GEOM: Dict[str, Any] = {
+ARBITRARY_GEOM: Dict[str, Any] = {
     "type":
     "Polygon",
     "coordinates": [[[-2.5048828125, 3.8916575492899987], [-1.9610595703125, 3.8916575492899987],
@@ -43,13 +45,21 @@ RANDOM_GEOM: Dict[str, Any] = {
                      [-2.5048828125, 3.8916575492899987]]]
 }
 
-RANDOM_BBOX: List[float] = [
-    RANDOM_GEOM['coordinates'][0][0][0], RANDOM_GEOM['coordinates'][0][0][1],
-    RANDOM_GEOM['coordinates'][0][1][0], RANDOM_GEOM['coordinates'][0][1][1]
+ARBITRARY_BBOX: List[float] = [
+    ARBITRARY_GEOM['coordinates'][0][0][0], ARBITRARY_GEOM['coordinates'][0][0][1],
+    ARBITRARY_GEOM['coordinates'][0][1][0], ARBITRARY_GEOM['coordinates'][0][1][1]
 ]
 
-RANDOM_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(RANDOM_GEOM['coordinates']),
-                       temporal=TemporalExtent.from_now())  # noqa: E126
+ARBITRARY_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM['coordinates']),
+                          temporal=TemporalExtent.from_now())  # noqa: E126
+
+@dataclass
+class ExampleInfo:
+    path: str
+    object_type: ps.STACObjectType
+    stac_version: str
+    extensions: List[str]
+    valid: bool
 
 
 class TestCases:
@@ -58,8 +68,8 @@ class TestCases:
         return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', rel_path))
 
     @staticmethod
-    def get_examples_info() -> List[Dict[str, Any]]:
-        examples = []
+    def get_examples_info() -> List[ExampleInfo]:
+        examples: List[ExampleInfo] = []
 
         info_path = TestCases.get_path('data-files/examples/example-info.csv')
         with open(TestCases.get_path('data-files/examples/example-info.csv')) as f:
@@ -67,27 +77,24 @@ class TestCases:
                 path = os.path.abspath(os.path.join(os.path.dirname(info_path), row[0]))
                 object_type = row[1]
                 stac_version = row[2]
-                common_extensions = []
+                extensions: List[str] = []
                 if row[3]:
-                    common_extensions = row[3].split('|')
-                custom_extensions = []
-                if row[4]:
-                    custom_extensions = row[4].split('|')
+                    extensions = row[3].split('|')
 
                 valid = True
-                if len(row) > 5:
+                if len(row) > 4:
                     # The 5th column will be "INVALID" if the example
                     # shouldn't pass validation
-                    valid = row[5] != 'INVALID'
+                    valid = row[4] != 'INVALID'
 
-                examples.append({
-                    'path': path,
-                    'object_type': object_type,
-                    'stac_version': stac_version,
-                    'common_extensions': common_extensions,
-                    'custom_extensions': custom_extensions,
-                    'valid': valid
-                })
+                examples.append(
+                    ExampleInfo(
+                    path=path,
+                    object_type=ps.STACObjectType(object_type),
+                    stac_version=stac_version,
+                    extensions=extensions,
+                    valid=valid
+                ))
         return examples
 
     @staticmethod
@@ -115,8 +122,8 @@ class TestCases:
         root_cat = Catalog(id='test3', description='test case 3 catalog', title='test case 3 title')
 
         image_item = Item(id='imagery-item',
-                          geometry=RANDOM_GEOM,
-                          bbox=RANDOM_BBOX,
+                          geometry=ARBITRARY_GEOM,
+                          bbox=ARBITRARY_BBOX,
                           datetime=datetime.utcnow(),
                           properties={})
 
@@ -129,8 +136,8 @@ class TestCases:
         ]
 
         label_item = Item(id='label-items',
-                          geometry=RANDOM_GEOM,
-                          bbox=RANDOM_BBOX,
+                          geometry=ARBITRARY_GEOM,
+                          bbox=ARBITRARY_BBOX,
                           datetime=datetime.utcnow(),
                           properties={})
 

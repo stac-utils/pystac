@@ -35,10 +35,10 @@ class ValidateTest(unittest.TestCase):
 
     def test_validate_examples(self):
         for example in TestCases.get_examples_info():
-            with self.subTest(example['path']):
-                stac_version = example['stac_version']
-                path = example['path']
-                valid = example['valid']
+            with self.subTest(example.path):
+                stac_version = example.stac_version
+                path = example.path
+                valid = example.valid
 
                 if stac_version < '0.8':
                     with open(path) as f:
@@ -52,7 +52,7 @@ class ValidateTest(unittest.TestCase):
 
                         # Check if common properties need to be merged
                         if stac_version < '1.0':
-                            if example['object_type'] == ps.STACObjectType.ITEM:
+                            if example.object_type == ps.STACObjectType.ITEM:
                                 collection_cache = CollectionCache()
                                 merge_common_properties(stac_json, collection_cache, path)
 

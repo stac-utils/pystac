@@ -10,14 +10,14 @@ from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.utils import datetime_to_str
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX)
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
 
 class CollectionTest(unittest.TestCase):
     def test_spatial_extent_from_coordinates(self):
-        extent = SpatialExtent.from_coordinates(RANDOM_GEOM['coordinates'])
+        extent = SpatialExtent.from_coordinates(ARBITRARY_GEOM['coordinates'])
 
         self.assertEqual(len(extent.bboxes), 1)
         bbox = extent.bboxes[0]
@@ -101,14 +101,14 @@ class CollectionTest(unittest.TestCase):
         collection = base_collection.clone()
 
         item1 = Item(id='test-item-1',
-                     geometry=RANDOM_GEOM,
+                     geometry=ARBITRARY_GEOM,
                      bbox=[-180, -90, 180, 90],
                      datetime=TEST_DATETIME,
                      properties={'key': 'one'},
                      stac_extensions=['eo', 'commons'])
 
         item2 = Item(id='test-item-1',
-                     geometry=RANDOM_GEOM,
+                     geometry=ARBITRARY_GEOM,
                      bbox=[-180, -90, 180, 90],
                      datetime=None,
                      properties={
@@ -138,7 +138,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_supplying_href_in_init_does_not_fail(self):
         test_href = "http://example.com/collection.json"
-        spatial_extent = SpatialExtent(bboxes=[RANDOM_BBOX])
+        spatial_extent = SpatialExtent(bboxes=[ARBITRARY_BBOX])
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
         collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
@@ -164,7 +164,7 @@ class ExtentTest(unittest.TestCase):
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
         # Pass in a single BBOX
-        spatial_extent = SpatialExtent(bboxes=RANDOM_BBOX)
+        spatial_extent = SpatialExtent(bboxes=ARBITRARY_BBOX)
 
         collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
 
@@ -177,13 +177,13 @@ class ExtentTest(unittest.TestCase):
 
     def test_from_items(self):
         item1 = Item(id='test-item-1',
-                     geometry=RANDOM_GEOM,
+                     geometry=ARBITRARY_GEOM,
                      bbox=[-10, -20, 0, -10],
                      datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
                      properties={})
 
         item2 = Item(id='test-item-2',
-                     geometry=RANDOM_GEOM,
+                     geometry=ARBITRARY_GEOM,
                      bbox=[0, -9, 10, 1],
                      datetime=None,
                      properties={
@@ -194,7 +194,7 @@ class ExtentTest(unittest.TestCase):
                      })
 
         item3 = Item(id='test-item-2',
-                     geometry=RANDOM_GEOM,
+                     geometry=ARBITRARY_GEOM,
                      bbox=[-5, -20, 5, 0],
                      datetime=None,
                      properties={

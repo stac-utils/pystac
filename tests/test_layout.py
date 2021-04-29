@@ -7,7 +7,7 @@ import unittest
 import pystac as ps
 from pystac.layout import (LayoutTemplate, CustomLayoutStrategy, TemplateLayoutStrategy,
                            BestPracticesLayoutStrategy, TemplateError)
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX)
+from tests.utils import (TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX)
 
 
 class LayoutTemplateTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate('${year}/${month}/${day}/${date}/item.json')
 
-        item = ps.Item('test', geometry=RANDOM_GEOM, bbox=RANDOM_BBOX, datetime=dt, properties={})
+        item = ps.Item('test', geometry=ARBITRARY_GEOM, bbox=ARBITRARY_BBOX, datetime=dt, properties={})
 
         parts = template.get_template_values(item)
 
@@ -44,8 +44,8 @@ class LayoutTemplateTest(unittest.TestCase):
         template = LayoutTemplate('${year}/${month}/${day}/${date}/item.json')
 
         item = ps.Item('test',
-                       geometry=RANDOM_GEOM,
-                       bbox=RANDOM_BBOX,
+                       geometry=ARBITRARY_GEOM,
+                       bbox=ARBITRARY_BBOX,
                        datetime=None,
                        properties={
                            'start_datetime': dt.isoformat(),
@@ -96,8 +96,8 @@ class LayoutTemplateTest(unittest.TestCase):
         template = LayoutTemplate('${test.prop}/${ext:extra.test.prop}/item.json')
 
         item = ps.Item('test',
-                       geometry=RANDOM_GEOM,
-                       bbox=RANDOM_BBOX,
+                       geometry=ARBITRARY_GEOM,
+                       bbox=ARBITRARY_BBOX,
                        datetime=dt,
                        properties={'test': {
                            'prop': 4326
@@ -125,8 +125,8 @@ class LayoutTemplateTest(unittest.TestCase):
         template = LayoutTemplate('${ext:prop}/item.json')
 
         item = ps.Item('test',
-                       geometry=RANDOM_GEOM,
-                       bbox=RANDOM_BBOX,
+                       geometry=ARBITRARY_GEOM,
+                       bbox=ARBITRARY_BBOX,
                        datetime=dt,
                        properties={'ext:prop': 1})
 

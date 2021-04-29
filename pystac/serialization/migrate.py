@@ -22,7 +22,7 @@ def _migrate_catalog(d: Dict[str, Any], version: STACVersionID, info: STACJSONDe
     _migrate_links(d, version)
 
     if version < '0.8':
-        d['stac_extensions'] = info.extensions
+        d['stac_extensions'] = list(info.extensions)
 
 
 def _migrate_collection(d: Dict[str, Any], version: STACVersionID,
@@ -34,13 +34,13 @@ def _migrate_item(d: Dict[str, Any], version: STACVersionID, info: STACJSONDescr
     _migrate_links(d, version)
 
     if version < '0.8':
-        d['stac_extensions'] = info.extensions
+        d['stac_extensions'] = list(info.extensions)
 
 
 def _migrate_itemcollection(d: Dict[str, Any], version: STACVersionID,
                             info: STACJSONDescription) -> None:
     if version < '0.9.0':
-        d['stac_extensions'] = info.extensions
+        d['stac_extensions'] = list(info.extensions)
 
 
 # Extensions
@@ -77,7 +77,7 @@ class OldExtensionSchemaUriMap:
     @lru_cache()
     def get_schema_map(cls) -> Dict[str, Any]:
         return {
-            OldExtensionShortIDs.CHECKSUM: ({
+            OldExtensionShortIDs.CHECKSUM.value: ({
                 ps.STACObjectType.CATALOG:
                 'extensions/checksum/json-schema/schema.json',
                 ps.STACObjectType.COLLECTION:
@@ -85,11 +85,11 @@ class OldExtensionSchemaUriMap:
                 ps.STACObjectType.ITEM:
                 'extensions/checksum/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.COLLECTION_ASSETS: ({
+            OldExtensionShortIDs.COLLECTION_ASSETS.value: ({
                 ps.STACObjectType.COLLECTION:
                 'extensions/collection-assets/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.DATACUBE: ({
+            OldExtensionShortIDs.DATACUBE.value: ({
                 ps.STACObjectType.COLLECTION:
                 'extensions/datacube/json-schema/schema.json',
                 ps.STACObjectType.ITEM:
@@ -98,21 +98,21 @@ class OldExtensionSchemaUriMap:
                 ps.STACObjectType.COLLECTION: None,
                 ps.STACObjectType.ITEM: None
             })]),
-            OldExtensionShortIDs.EO: ({
+            OldExtensionShortIDs.EO.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/eo/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.ITEM_ASSETS: ({
+            OldExtensionShortIDs.ITEM_ASSETS.value: ({
                 ps.STACObjectType.COLLECTION:
                 'extensions/item-assets/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.LABEL: ({
+            OldExtensionShortIDs.LABEL.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/label/json-schema/schema.json'
             }, [(STACVersionRange(min_version='0.8.0-rc1', max_version='0.8.1'), {
                 ps.STACObjectType.ITEM: 'extensions/label/schema.json'
             })]),
-            OldExtensionShortIDs.POINTCLOUD: (
+            OldExtensionShortIDs.POINTCLOUD.value: (
                 {
                     # Poincloud schema was broken in 1.0.0-beta.2 and prior;
                     # Use this schema version (corresponding to 1.0.0-rc.1)
@@ -121,29 +121,29 @@ class OldExtensionSchemaUriMap:
                     'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json'
                 },
                 None),
-            OldExtensionShortIDs.PROJECTION: ({
+            OldExtensionShortIDs.PROJECTION.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/projection/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.SAR: ({
+            OldExtensionShortIDs.SAR.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/sar/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.SAT: ({
+            OldExtensionShortIDs.SAT.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/sat/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.SCIENTIFIC: ({
+            OldExtensionShortIDs.SCIENTIFIC.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/scientific/json-schema/schema.json',
                 ps.STACObjectType.COLLECTION:
                 'extensions/scientific/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.SINGLE_FILE_STAC: ({
+            OldExtensionShortIDs.SINGLE_FILE_STAC.value: ({
                 ps.STACObjectType.CATALOG:
                 'extensions/single-file-stac/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.TILED_ASSETS: ({
+            OldExtensionShortIDs.TILED_ASSETS.value: ({
                 ps.STACObjectType.CATALOG:
                 'extensions/tiled-assets/json-schema/schema.json',
                 ps.STACObjectType.COLLECTION:
@@ -151,17 +151,17 @@ class OldExtensionSchemaUriMap:
                 ps.STACObjectType.ITEM:
                 'extensions/tiled-assets/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.TIMESTAMPS: ({
+            OldExtensionShortIDs.TIMESTAMPS.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/timestamps/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.VERSION: ({
+            OldExtensionShortIDs.VERSION.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/version/json-schema/schema.json',
                 ps.STACObjectType.COLLECTION:
                 'extensions/version/json-schema/schema.json'
             }, None),
-            OldExtensionShortIDs.VIEW: ({
+            OldExtensionShortIDs.VIEW.value: ({
                 ps.STACObjectType.ITEM:
                 'extensions/view/json-schema/schema.json'
             }, None),
@@ -287,23 +287,16 @@ def migrate_to_latest(json_dict: Dict[str, Any], info: STACJSONDescription) -> D
 
     if version != STACVersion.DEFAULT_STAC_VERSION:
         object_migrations[info.object_type](result, version, info)
+        if 'stac_extensions' not in result:
+            # Force stac_extensions property, as it makes
+            # downstream migration less complex
+            result['stac_extensions'] = []
         ps.EXTENSION_HOOKS.migrate(result, version, info)
 
-        for ext in (result.get('stac_extensions') or []):
+        for ext in result['stac_extensions'][:]:
             if ext in removed_extension_migrations:
                 removed_extension_migrations[ext](result, version, info)
                 result['stac_extensions'].remove(ext)
-            else:
-                # Ensure old ID's are moved to schemas
-                # May need a better way to differentiate
-                # old ID's from schemas, but going with
-                # the file extension for now.
-                if not ext.lower().endswith('.json'):
-                    result['stac_extensions'].remove(ext)
-                    uri = OldExtensionSchemaUriMap.get_extension_schema_uri(
-                        ext, info.object_type, version)
-                    if uri is not None:
-                        result['stac_extensions'].append(uri)
 
     result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
 

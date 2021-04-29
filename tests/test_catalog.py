@@ -11,7 +11,7 @@ from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, HI
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType, label_ext
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
-from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
+from tests.utils import (TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, MockStacIO)
 
 
 class CatalogTypeTest(unittest.TestCase):
@@ -82,8 +82,8 @@ class CatalogTest(unittest.TestCase):
         subcat = Catalog(id='subcat', description='test')
         catalog.add_child(subcat)
         item = Item(id='test-item',
-                    geometry=RANDOM_GEOM,
-                    bbox=RANDOM_BBOX,
+                    geometry=ARBITRARY_GEOM,
+                    bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
                     properties={'key': 'one'})
         subcat.add_item(item)
@@ -94,8 +94,8 @@ class CatalogTest(unittest.TestCase):
 
         subcat.clear_items()
         item = Item(id='test-item',
-                    geometry=RANDOM_GEOM,
-                    bbox=RANDOM_BBOX,
+                    geometry=ARBITRARY_GEOM,
+                    bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
                     properties={'key': 'two'})
         subcat.add_item(item)
@@ -106,8 +106,8 @@ class CatalogTest(unittest.TestCase):
 
         subcat.remove_item('test-item')
         item = Item(id='test-item',
-                    geometry=RANDOM_GEOM,
-                    bbox=RANDOM_BBOX,
+                    geometry=ARBITRARY_GEOM,
+                    bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
                     properties={'key': 'three'})
         subcat.add_item(item)
@@ -343,15 +343,15 @@ class CatalogTest(unittest.TestCase):
         properties = dict(property1='A', property2=1)
         catalog.add_item(
             Item(id='item1',
-                 geometry=RANDOM_GEOM,
-                 bbox=RANDOM_BBOX,
+                 geometry=ARBITRARY_GEOM,
+                 bbox=ARBITRARY_BBOX,
                  datetime=datetime.utcnow(),
                  properties=properties))
         catalog.generate_subcatalogs('${property1}/${property2}')
         catalog.add_item(
             Item(id='item2',
-                 geometry=RANDOM_GEOM,
-                 bbox=RANDOM_BBOX,
+                 geometry=ARBITRARY_GEOM,
+                 bbox=ARBITRARY_BBOX,
                  datetime=datetime.utcnow(),
                  properties=properties))
         catalog.generate_subcatalogs('${property1}/${property2}')
@@ -372,8 +372,8 @@ class CatalogTest(unittest.TestCase):
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(id='item{}'.format(ni),
-                     geometry=RANDOM_GEOM,
-                     bbox=RANDOM_BBOX,
+                     geometry=ARBITRARY_GEOM,
+                     bbox=ARBITRARY_BBOX,
                      datetime=datetime.utcnow(),
                      properties=properties))
         result = catalog.generate_subcatalogs('${property1}/${property2}/${property3}')
@@ -394,8 +394,8 @@ class CatalogTest(unittest.TestCase):
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(id='item{}'.format(ni),
-                     geometry=RANDOM_GEOM,
-                     bbox=RANDOM_BBOX,
+                     geometry=ARBITRARY_GEOM,
+                     bbox=ARBITRARY_BBOX,
                      datetime=datetime.utcnow(),
                      properties=properties))
         result = catalog.generate_subcatalogs('${property1}/${property2}')
@@ -470,8 +470,8 @@ class CatalogTest(unittest.TestCase):
     def test_map_items_multiple_2(self):
         catalog = Catalog(id='test-1', description='Test1')
         item1 = Item(id='item1',
-                     geometry=RANDOM_GEOM,
-                     bbox=RANDOM_BBOX,
+                     geometry=ARBITRARY_GEOM,
+                     bbox=ARBITRARY_BBOX,
                      datetime=datetime.utcnow(),
                      properties={})
         item1.add_asset('ortho', Asset(href='/some/ortho.tif'))
@@ -479,8 +479,8 @@ class CatalogTest(unittest.TestCase):
         kitten = Catalog(id='test-kitten', description='A cuter version of catalog')
         catalog.add_child(kitten)
         item2 = Item(id='item2',
-                     geometry=RANDOM_GEOM,
-                     bbox=RANDOM_BBOX,
+                     geometry=ARBITRARY_GEOM,
+                     bbox=ARBITRARY_BBOX,
                      datetime=datetime.utcnow(),
                      properties={})
         item2.add_asset('ortho', Asset(href='/some/other/ortho.tif'))
@@ -878,8 +878,8 @@ class FullCopyTest(unittest.TestCase):
             cat = Catalog(id='test', description='test catalog')
 
             item = Item(id='test_item',
-                        geometry=RANDOM_GEOM,
-                        bbox=RANDOM_BBOX,
+                        geometry=ARBITRARY_GEOM,
+                        bbox=ARBITRARY_BBOX,
                         datetime=datetime.utcnow(),
                         properties={})
 
@@ -896,8 +896,8 @@ class FullCopyTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             cat = Catalog(id='test', description='test catalog')
             image_item = Item(id='Imagery',
-                              geometry=RANDOM_GEOM,
-                              bbox=RANDOM_BBOX,
+                              geometry=ARBITRARY_GEOM,
+                              bbox=ARBITRARY_BBOX,
                               datetime=datetime.utcnow(),
                               properties={})
             for key in ['ortho', 'dsm']:
@@ -905,8 +905,8 @@ class FullCopyTest(unittest.TestCase):
                     key, Asset(href='some/{}.tif'.format(key), media_type=MediaType.GEOTIFF))
 
             label_item = Item(id='Labels',
-                              geometry=RANDOM_GEOM,
-                              bbox=RANDOM_BBOX,
+                              geometry=ARBITRARY_GEOM,
+                              bbox=ARBITRARY_BBOX,
                               datetime=datetime.utcnow(),
                               properties={})
             LabelExtension.add_to(label_item)

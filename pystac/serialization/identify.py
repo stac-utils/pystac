@@ -9,24 +9,21 @@ if TYPE_CHECKING:
     from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
-class OldExtensionShortIDs(str, Enum):
+class OldExtensionShortIDs(Enum):
     """Enumerates the IDs of common extensions."""
-    def __str__(self) -> str:
-        return str(self.value)
-
-    CHECKSUM = 'checksum'
-    COLLECTION_ASSETS = 'collection-assets'
-    DATACUBE = 'datacube'
+    CHECKSUM = 'checksum'  # REMOVED
+    COLLECTION_ASSETS = 'collection-assets'  # REMOVED
+    DATACUBE = 'datacube'  # TODO
     EO = 'eo'
-    ITEM_ASSETS = 'item-assets'
+    ITEM_ASSETS = 'item-assets'  # TODO
     LABEL = 'label'
     POINTCLOUD = 'pointcloud'
     PROJECTION = 'projection'
     SAR = 'sar'
     SAT = 'sat'
     SCIENTIFIC = 'scientific'
-    SINGLE_FILE_STAC = 'single-file-stac'
-    TILED_ASSETS = 'tiled-assets'
+    SINGLE_FILE_STAC = 'single-file-stac'  # TODO
+    TILED_ASSETS = 'tiled-assets'  # Removed (Unpublished)
     TIMESTAMPS = 'timestamps'
     VERSION = 'version'
     VIEW = 'view'
@@ -163,7 +160,7 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
     Returns a list of stac_extensions. May mutate the version_range to update
     min or max version.
     """
-    stac_extensions = set([])
+    stac_extensions: Set[str] = set([])
 
     # assets (collection assets)
 
@@ -184,21 +181,21 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
 
             if any(prop.startswith('checksum:') for prop in link_props):
                 found_checksum = True
-                stac_extensions.add(OldExtensionShortIDs.CHECKSUM)
+                stac_extensions.add(OldExtensionShortIDs.CHECKSUM.value)
         if not found_checksum:
             if 'assets' in d:
                 for asset in d['assets'].values():
                     asset_props = cast(Dict[str, Any], asset).keys()
                     if any(prop.startswith('checksum:') for prop in asset_props):
                         found_checksum = True
-                        stac_extensions.add(OldExtensionShortIDs.CHECKSUM)
+                        stac_extensions.add(OldExtensionShortIDs.CHECKSUM.value)
         if found_checksum:
             version_range.set_min(STACVersionID('0.6.2'))
 
     # datacube
     if object_type == ps.STACObjectType.ITEM:
         if any(k.startswith('cube:') for k in cast(Dict[str, Any], d['properties'])):
-            stac_extensions.add(OldExtensionShortIDs.DATACUBE)
+            stac_extensions.add(OldExtensionShortIDs.DATACUBE.value)
             version_range.set_min(STACVersionID('0.6.1'))
 
     # datetime-range (old extension)
@@ -210,7 +207,7 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
     # eo
     if object_type == ps.STACObjectType.ITEM:
         if any(k.startswith('eo:') for k in cast(Dict[str, Any], d['properties'])):
-            stac_extensions.add(OldExtensionShortIDs.EO)
+            stac_extensions.add(OldExtensionShortIDs.EO.value)
             if 'eo:epsg' in d['properties']:
                 if d['properties']['eo:epsg'] is None:
                     version_range.set_min(STACVersionID('0.6.1'))
@@ -219,19 +216,19 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
             if 'eo:constellation' in d['properties']:
                 version_range.set_min(STACVersionID('0.6.0'))
         if 'eo:bands' in d:
-            stac_extensions.add(OldExtensionShortIDs.EO)
+            stac_extensions.add(OldExtensionShortIDs.EO.value)
             version_range.set_max(STACVersionID('0.5.2'))
 
     # pointcloud
     if object_type == ps.STACObjectType.ITEM:
         if any(k.startswith('pc:') for k in cast(Dict[str, Any], d['properties'])):
-            stac_extensions.add(OldExtensionShortIDs.POINTCLOUD)
+            stac_extensions.add(OldExtensionShortIDs.POINTCLOUD.value)
             version_range.set_min(STACVersionID('0.6.2'))
 
     # sar
     if object_type == ps.STACObjectType.ITEM:
         if any(k.startswith('sar:') for k in cast(Dict[str, Any], d['properties'])):
-            stac_extensions.add(OldExtensionShortIDs.SAR)
+            stac_extensions.add(OldExtensionShortIDs.SAR.value)
             version_range.set_min(STACVersionID('0.6.2'))
             if version_range.contains('0.6.2'):
                 for prop in [
@@ -260,13 +257,13 @@ def _identify_stac_extensions(object_type: str, d: Dict[str, Any],
         if 'properties' in d:
             prop_keys = cast(Dict[str, Any], d['properties']).keys()
             if any(k.startswith('sci:') for k in prop_keys):
-                stac_extensions.add(OldExtensionShortIDs.SCIENTIFIC)
+                stac_extensions.add(OldExtensionShortIDs.SCIENTIFIC.value)
                 version_range.set_min(STACVersionID('0.6.0'))
 
     # Single File STAC
     if object_type == ps.STACObjectType.ITEMCOLLECTION:
         if 'collections' in d:
-            stac_extensions.add(OldExtensionShortIDs.SINGLE_FILE_STAC)
+            stac_extensions.add(OldExtensionShortIDs.SINGLE_FILE_STAC.value)
             version_range.set_min(STACVersionID('0.8.0'))
             if 'stac_extensions' not in d:
                 version_range.set_max(STACVersionID('0.8.1'))

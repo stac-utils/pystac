@@ -18,8 +18,8 @@ class IdentifyTest(unittest.TestCase):
     def test_identify(self):
         collection_cache = CollectionCache()
         for example in self.examples:
-            with self.subTest(example['path']):
-                path = example['path']
+            with self.subTest(example.path):
+                path = example.path
                 d = STAC_IO.read_json(path)
                 if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
                     try:
@@ -36,14 +36,11 @@ class IdentifyTest(unittest.TestCase):
 
                 msg = 'Failed {}:'.format(path)
 
-                self.assertEqual(actual.object_type, example['object_type'], msg=msg)
-                version_contained_in_range = actual.version_range.contains(example['stac_version'])
+                self.assertEqual(actual.object_type, example.object_type, msg=msg)
+                version_contained_in_range = actual.version_range.contains(example.stac_version)
                 self.assertTrue(version_contained_in_range, msg=msg)
                 self.assertEqual(set(actual.extensions),
-                                 set(example['common_extensions']),
-                                 msg=msg)
-                self.assertEqual(set(actual.extensions),
-                                 set(example['custom_extensions']),
+                                 set(example.extensions),
                                  msg=msg)
 
 

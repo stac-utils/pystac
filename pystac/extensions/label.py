@@ -703,9 +703,9 @@ class LabelExtensionHooks(ExtensionHooks):
             return ['source']
         return None
 
-    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
         if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
-            props = d['properties']
+            props = obj['properties']
             # Migrate 0.8.0-rc1 non-pluralized forms
             # As it's a common mistake, convert for any pre-1.0.0 version.
             if 'label:property' in props and 'label:properties' not in props:
@@ -723,6 +723,8 @@ class LabelExtensionHooks(ExtensionHooks):
             if 'label:method' in props and 'label:methods' not in props:
                 props['label:methods'] = props['label:method']
                 del props['label:method']
+
+        super().migrate(obj, version, info)
 
 
 def label_ext(item: ps.Item) -> LabelExtension:

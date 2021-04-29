@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import lru_cache
 from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING
 
 import pystac as ps
@@ -32,8 +33,10 @@ class ExtensionHooks(ABC):
         """A set of STACObjectType for which migration logic will be applied."""
         pass
 
-    _stac_object_type_str: Optional[Set[str]] = None
-    """Translation of stac_object_types to strings, cached as a class attribute"""
+    @lru_cache()
+    def _get_stac_object_types(self) -> Set[str]:
+        """Translation of stac_object_types to strings, cached"""
+        return set([x.value for x in self.stac_object_types])
 
     def get_object_links(self, obj: "STACObject_Type") -> Optional[List[str]]:
         return None
@@ -47,17 +50,12 @@ class ExtensionHooks(ABC):
         manipulate the obj dict. Remember to call super() in order to change out
         the old 'stac_extension' entry with the latest schema URI.
         """
-        if self._stac_object_type_str is None:
-            self._stac_object_type_str = set([x.value for x in self.stac_object_types])
-        if not info.object_type in self._stac_object_type_str:
-            return
-
         # Migrate schema versions
         for prev_id in self.prev_extension_ids:
             if prev_id in info.extensions:
                 try:
                     i = obj['stac_extensions'].index(prev_id)
-                    obj['stac_extension'][i] = self.schema_uri
+                    obj['stac_extensions'][i] = self.schema_uri
                 except ValueError:
                     obj['stac_extensions'].append(self.schema_uri)
                 break
@@ -92,4 +90,5 @@ class RegisteredExtensionHooks:
     def migrate(self, obj: Dict[str, Any], version: STACVersionID,
                     info: STACJSONDescription) -> None:
         for hooks in self.hooks.values():
-            hooks.migrate(obj, version, info)
+            if info.object_type in hooks._get_stac_object_types():
+                hooks.migrate(obj, version, info)
