@@ -2,43 +2,13 @@
 """
 from enum import Enum
 from pystac.extensions.base import ExtensionManagementMixin
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Set, Union, cast
 
 import pystac as ps
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.hooks import ExtensionHooks
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
-
-
-class LabelExtensionHooks(ExtensionHooks):
-    schema_uri: str = SCHEMA_URI
-
-    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
-        if isinstance(so, ps.Item):
-            return ['source']
-        return None
-
-    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
-        if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
-            props = d['properties']
-            # Migrate 0.8.0-rc1 non-pluralized forms
-            # As it's a common mistake, convert for any pre-1.0.0 version.
-            if 'label:property' in props and 'label:properties' not in props:
-                props['label:properties'] = props['label:property']
-                del props['label:property']
-
-            if 'label:task' in props and 'label:tasks' not in props:
-                props['label:tasks'] = props['label:task']
-                del props['label:task']
-
-            if 'label:overview' in props and 'label:overviews' not in props:
-                props['label:overviews'] = props['label:overview']
-                del props['label:overview']
-
-            if 'label:method' in props and 'label:methods' not in props:
-                props['label:methods'] = props['label:method']
-                del props['label:method']
 
 
 class LabelType(str, Enum):
@@ -718,9 +688,45 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @classmethod
+    def ext(cls, obj: ps.Item) -> "LabelExtension":
+        return cls(obj)
+
+
+class LabelExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['label'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
+        if isinstance(so, ps.Item):
+            return ['source']
+        return None
+
+    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+        if info.object_type == ps.STACObjectType.ITEM and version < '1.0.0':
+            props = d['properties']
+            # Migrate 0.8.0-rc1 non-pluralized forms
+            # As it's a common mistake, convert for any pre-1.0.0 version.
+            if 'label:property' in props and 'label:properties' not in props:
+                props['label:properties'] = props['label:property']
+                del props['label:property']
+
+            if 'label:task' in props and 'label:tasks' not in props:
+                props['label:tasks'] = props['label:task']
+                del props['label:task']
+
+            if 'label:overview' in props and 'label:overviews' not in props:
+                props['label:overviews'] = props['label:overview']
+                del props['label:overview']
+
+            if 'label:method' in props and 'label:methods' not in props:
+                props['label:methods'] = props['label:method']
+                del props['label:method']
+
 
 def label_ext(item: ps.Item) -> LabelExtension:
-    return LabelExtension(item)
+    return LabelExtension.ext(item)
 
 
 LABEL_EXTENSION_HOOKS: ExtensionHooks = LabelExtensionHooks()

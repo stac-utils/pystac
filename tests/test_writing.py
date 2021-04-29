@@ -28,7 +28,7 @@ class STACWritingTest(unittest.TestCase):
 
     def validate_file(self, path: str, object_type: str):
         d = STAC_IO.read_json(path)
-        return validate_dict(d, object_type)
+        return validate_dict(d, ps.STACObjectType(object_type))
 
     def validate_link_types(self, root_href: str, catalog_type: ps.CatalogType):
         def validate_asset_href_type(item: ps.Item, item_href: str):

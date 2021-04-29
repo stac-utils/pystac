@@ -7,9 +7,8 @@ from datetime import datetime
 from collections import defaultdict
 
 import pystac as ps
-from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, _OldExtensionShortIDs,
-                    HIERARCHICAL_LINKS)
-from pystac.extensions.label import LabelClasses
+from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, HIERARCHICAL_LINKS)
+from pystac.extensions.label import LabelClasses, LabelExtension, LabelType, label_ext
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, RANDOM_GEOM, RANDOM_BBOX, MockStacIO)
@@ -291,7 +290,8 @@ class CatalogTest(unittest.TestCase):
         catalog = TestCases.test_case_1()
         catalog.normalize_hrefs('http://example.com')
         item = catalog.get_item('area-1-1-labels', recursive=True)
-        source = next(item.ext.label.get_sources())
+        assert item is not None
+        source = next(iter(label_ext(item).get_sources()))
         self.assertEqual(
             source.get_self_href(),
             "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
@@ -487,7 +487,7 @@ class CatalogTest(unittest.TestCase):
         kitten.add_item(item2)
 
         def modify_item_title(item: ps.Item) -> ps.Item:
-            item.title = 'Some new title'
+            item.properties['title'] = 'Some title'
             return item
 
         def create_label_item(item: ps.Item) -> List[ps.Item]:
@@ -500,11 +500,10 @@ class CatalogTest(unittest.TestCase):
                               bbox=item.bbox,
                               datetime=datetime.utcnow(),
                               properties={})
-            label_item.ext.enable(_OldExtensionShortIDs.LABEL)
-            label_ext = label_item.ext.label
-            label_ext.apply(
+            LabelExtension(label_item).add_to(label_item)
+            label_ext(label_item).apply(
                 label_description='labels',
-                label_type='vector',
+                label_type=LabelType.VECTOR,
                 label_properties=['label'],
                 label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
                 label_tasks=['classification'])
@@ -788,7 +787,7 @@ class CatalogTest(unittest.TestCase):
                     # Iterate over items to make sure they are read
                     self.assertNotEqual(list(items), None)
 
-                call_uris = [
+                call_uris: List[Any] = [
                     call[0][0] for call in mock_io.read_text_method.call_args_list
                     if call[0][0] in expected_collection_reads
                 ]
@@ -909,12 +908,11 @@ class FullCopyTest(unittest.TestCase):
                               geometry=RANDOM_GEOM,
                               bbox=RANDOM_BBOX,
                               datetime=datetime.utcnow(),
-                              properties={},
-                              stac_extensions=[_OldExtensionShortIDs.LABEL])
-            label_ext = label_item.ext.label
-            label_ext.apply(
+                              properties={})
+            LabelExtension.add_to(label_item)
+            label_ext(label_item).apply(
                 label_description='labels',
-                label_type='vector',
+                label_type=LabelType.VECTOR,
                 label_properties=['label'],
                 label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
                 label_tasks=['classification'])
@@ -959,4 +957,5 @@ class FullCopyTest(unittest.TestCase):
             item = cat2.get_item('cf73ec1a-d790-4b59-b077-e101738571ed', recursive=True)
 
             href = item.assets['cf73ec1a-d790-4b59-b077-e101738571ed'].get_absolute_href()
+            assert href is not None
             self.assertTrue(os.path.exists(href))

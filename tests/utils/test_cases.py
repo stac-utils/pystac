@@ -5,7 +5,8 @@ from typing import Any, Dict, List
 
 from pystac import (Catalog, Collection, Item, Asset, Extent, TemporalExtent, SpatialExtent,
                     MediaType)
-from pystac.extensions.label import (LabelOverview, LabelClasses, LabelCount)
+from pystac.extensions.label import (LabelExtension, LabelOverview, LabelClasses, LabelCount,
+                                     LabelType)
 
 TEST_LABEL_CATALOG = {
     'country-1': {
@@ -133,16 +134,16 @@ class TestCases:
                           datetime=datetime.utcnow(),
                           properties={})
 
-        label_item.ext.enable("label")
-        label_item.ext.label.apply(
-            label_description='ML Labels',
-            label_type='vector',
-            label_properties=['label'],
-            label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
-            label_tasks=['classification'],
-            label_methods=['manual'],
-            label_overviews=overviews)
-        label_item.ext.label.add_source(image_item, assets=['ortho'])
+        LabelExtension.add_to(label_item)
+        label_ext = LabelExtension.ext(label_item)
+        label_ext.apply(label_description='ML Labels',
+                        label_type=LabelType.VECTOR,
+                        label_properties=['label'],
+                        label_classes=[LabelClasses.create(classes=['one', 'two'], name='label')],
+                        label_tasks=['classification'],
+                        label_methods=['manual'],
+                        label_overviews=overviews)
+        label_ext.add_source(image_item, assets=['ortho'])
 
         root_cat.add_item(image_item)
         root_cat.add_item(label_item)

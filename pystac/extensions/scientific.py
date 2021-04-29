@@ -8,14 +8,15 @@ https://doi.org/10.1000/182
 """
 
 import copy
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 from urllib import parse
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Collection, ps.Item, contravariant=True)
+T = TypeVar('T', ps.Collection, ps.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
 
@@ -198,10 +199,19 @@ class ItemScientificExtension(ScientificExtension[ps.Item]):
         return '<ItemScientificExtension Item id={}>'.format(self.item.id)
 
 
+class ScientificExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['scientific'])
+    stac_object_types: Set[ps.STACObjectType] = set(
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+
+
 def scientific_ext(obj: T) -> ScientificExtension[T]:
     if isinstance(obj, ps.Collection):
-        return CollectionScientificExtension(obj)
+        return cast(ScientificExtension[T], CollectionScientificExtension(obj))
     if isinstance(obj, ps.Item):
-        return ItemScientificExtension(obj)
+        return cast(ScientificExtension[T], ItemScientificExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+SCIENTIFIC_EXTENSION_HOOKS = ScientificExtensionHooks()

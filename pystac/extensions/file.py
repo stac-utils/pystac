@@ -1,11 +1,12 @@
 import enum
-from typing import Any, Generic, List, Optional, TypeVar
+from typing import Any, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 
@@ -181,14 +182,22 @@ class SummariesFileExtension(SummariesExtension):
         self._set_summary(NODATA_PROP, v)
 
 
+class FileExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['file'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+
 def file_ext(obj: T) -> FileExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemFileExtension(obj)
+        return cast(FileExtension[T], ItemFileExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetFileExtension(obj)
+        return cast(FileExtension[T], AssetFileExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 
 def file_summaries(obj: ps.Collection) -> SummariesFileExtension:
     return SummariesFileExtension(obj)
+
+FILE_EXTENSION_HOOKS = FileExtensionHooks()

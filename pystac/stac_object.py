@@ -164,7 +164,7 @@ class STACObject(ABC):
         else:
             return None
 
-    def set_self_href(self, href: str) -> None:
+    def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
 

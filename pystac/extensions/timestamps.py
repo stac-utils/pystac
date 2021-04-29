@@ -1,11 +1,12 @@
 from datetime import datetime as Datetime
-from typing import Generic, Optional, TypeVar
+from pystac.extensions.hooks import ExtensionHooks
+from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
 
@@ -102,6 +103,7 @@ class TimestampsExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+
 class ItemTimestampsExtension(TimestampsExtension[ps.Item]):
     def __init__(self, item: ps.Item):
         self.item = item
@@ -122,10 +124,19 @@ class AssetTimestampsExtension(TimestampsExtension[ps.Asset]):
         return '<AssettimestampsExtension Asset href={}>'.format(self.asset_href)
 
 
+class TimestampsExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['timestamps'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+
 def timestamps_ext(obj: T) -> TimestampsExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemTimestampsExtension(obj)
+        return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetTimestampsExtension(obj)
+        return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+
+TIMESTAMPS_EXTENSION_HOOKS = TimestampsExtensionHooks()

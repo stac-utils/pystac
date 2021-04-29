@@ -1,13 +1,15 @@
 from datetime import datetime
 import json
 import os
+from typing import Any, Dict
+from pystac.utils import get_opt
 import shutil
 import unittest
 from tempfile import TemporaryDirectory
 
 import jsonschema
 
-import pystac
+import pystac as ps
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
@@ -42,7 +44,7 @@ class ValidateTest(unittest.TestCase):
                     with open(path) as f:
                         stac_json = json.load(f)
 
-                    self.assertEqual(len(ps.validation.validate_dict(stac_json)), 0)
+                    self.assertEqual(len(pystac.validation.validate_dict(stac_json)), 0)
                 else:
                     with self.subTest(path):
                         with open(path) as f:
@@ -55,11 +57,11 @@ class ValidateTest(unittest.TestCase):
                                 merge_common_properties(stac_json, collection_cache, path)
 
                         if valid:
-                            ps.validation.validate_dict(stac_json)
+                            pystac.validation.validate_dict(stac_json)
                         else:
                             with self.assertRaises(STACValidationError):
                                 try:
-                                    ps.validation.validate_dict(stac_json)
+                                    pystac.validation.validate_dict(stac_json)
                                 except STACValidationError as e:
                                     self.assertIsInstance(e.source, jsonschema.ValidationError)
                                     raise e
@@ -76,15 +78,15 @@ class ValidateTest(unittest.TestCase):
             try:
                 item.validate()
             except STACValidationError as e:
-                self.assertTrue(item.get_self_href() in str(e))
+                self.assertTrue(get_opt(item.get_self_href()) in str(e))
                 raise e
 
     def test_validate_all(self):
         for test_case in TestCases.all_test_catalogs():
-            catalog_href = TestCases.test_case_7().get_self_href()
+            catalog_href = get_opt(TestCases.test_case_7().get_self_href())
             stac_dict = ps.STAC_IO.read_json(catalog_href)
 
-            ps.validation.validate_all(stac_dict, catalog_href)
+            pystac.validation.validate_all(stac_dict, catalog_href)
 
         # Modify a 0.8.1 collection in a catalog to be invalid with a since-renamed extension
         # and make sure it catches the validation error.
@@ -92,13 +94,13 @@ class ValidateTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             dst_dir = os.path.join(tmp_dir, 'catalog')
             # Copy test case 7 to the temporary directory
-            catalog_href = TestCases.test_case_7().get_self_href()
+            catalog_href = get_opt(TestCases.test_case_7().get_self_href())
             shutil.copytree(os.path.dirname(catalog_href), dst_dir)
 
             new_cat_href = os.path.join(dst_dir, 'catalog.json')
 
             # Make sure it's valid before modification
-            ps.validation.validate_all(ps.STAC_IO.read_json(new_cat_href), new_cat_href)
+            pystac.validation.validate_all(ps.STAC_IO.read_json(new_cat_href), new_cat_href)
 
             # Modify a contained collection to add an extension for which the
             # collection is invalid.
@@ -111,7 +113,7 @@ class ValidateTest(unittest.TestCase):
             stac_dict = ps.STAC_IO.read_json(new_cat_href)
 
             with self.assertRaises(STACValidationError):
-                ps.validation.validate_all(stac_dict, new_cat_href)
+                pystac.validation.validate_all(stac_dict, new_cat_href)
 
     def test_validates_geojson_with_tuple_coordinates(self):
         """This unit tests guards against a bug where if a geometry
@@ -119,7 +121,7 @@ class ValidateTest(unittest.TestCase):
         which can be produced by shapely, then the geometry still passses
         validation.
         """
-        geom = {
+        geom: Dict[str, Any] = {
             'type':
             'Polygon',
             # Last , is required to ensure tuple creation.

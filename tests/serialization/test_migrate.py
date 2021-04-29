@@ -1,3 +1,4 @@
+from pystac.extensions.view import ViewExtension, view_ext
 import unittest
 
 import pystac as ps
@@ -26,15 +27,13 @@ class MigrateTest(unittest.TestCase):
 
                 info = identify_stac_object(d)
 
-                migrated_d, info = migrate_to_latest(d, info)
+                migrated_d = migrate_to_latest(d, info)
 
                 migrated_info = identify_stac_object(migrated_d)
 
                 self.assertEqual(migrated_info.object_type, info.object_type)
                 self.assertEqual(migrated_info.version_range.latest_valid_version(),
                                  ps.get_stac_version())
-                self.assertEqual(set(migrated_info.common_extensions), set(info.common_extensions))
-                self.assertEqual(set(migrated_info.custom_extensions), set(info.custom_extensions))
 
                 # Test that PySTAC can read it without errors.
                 if info.object_type != ps.STACObjectType.ITEMCOLLECTION:
@@ -52,10 +51,10 @@ class MigrateTest(unittest.TestCase):
         item = ps.Item.from_file(
             TestCases.get_path('data-files/examples/0.8.1/item-spec/'
                                'examples/planet-sample.json'))
-        self.assertTrue('view' in item.stac_extensions)
-        self.assertEqual(item.ext.view.sun_azimuth, 101.8)
-        self.assertEqual(item.ext.view.sun_elevation, 58.8)
-        self.assertEqual(item.ext.view.off_nadir, 1)
+        self.assertTrue(ViewExtension.has_extension(item))
+        self.assertEqual(view_ext(item).sun_azimuth, 101.8)
+        self.assertEqual(view_ext(item).sun_elevation, 58.8)
+        self.assertEqual(view_ext(item).off_nadir, 1)
 
     def test_migrates_renamed_extension(self):
         collection = ps.Collection.from_file(

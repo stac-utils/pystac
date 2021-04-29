@@ -1,9 +1,10 @@
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
 
@@ -244,7 +245,7 @@ class ItemProjectionExtension(ProjectionExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+        return '<ItemProjectionExtension Item id={}>'.format(self.item.id)
 
 
 class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
@@ -255,12 +256,19 @@ class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+        return '<AssetProjectionExtension Asset href={}>'.format(self.asset_href)
+
+class ProjectionExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['projection'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 def projection_ext(obj: T) -> ProjectionExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemProjectionExtension(obj)
+        return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetProjectionExtension(obj)
+        return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+PROJECTION_EXTENSION_HOOKS = ProjectionExtensionHooks()

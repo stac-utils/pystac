@@ -1,6 +1,6 @@
 from enum import Enum
 from functools import total_ordering
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union, cast
+from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING, Union, cast
 
 import pystac as ps
 from pystac.version import STACVersion
@@ -145,7 +145,7 @@ class STACJSONDescription:
             object implements
     """
     def __init__(self, object_type: "STACObjectType_Type", version_range: STACVersionRange,
-                 extensions: List[str]) -> None:
+                 extensions: Set[str]) -> None:
         self.object_type = object_type
         self.version_range = version_range
         self.extensions = extensions
@@ -374,4 +374,4 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
                               json_dict['links'])):
                 version_range.set_min(STACVersionID('0.7.0'))
 
-    return STACJSONDescription(object_type, version_range, stac_extensions)
+    return STACJSONDescription(object_type, version_range, set(stac_extensions))

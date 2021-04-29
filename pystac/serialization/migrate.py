@@ -226,16 +226,6 @@ def _migrate_item_assets(d: Dict[str, Any], version: STACVersionID,
     return None
 
 
-def _migrate_checksum(d: Dict[str, Any], version: STACVersionID,
-                      info: STACJSONDescription) -> Optional[Set[str]]:
-    return None
-
-
-def _migrate_datacube(d: Dict[str, Any], version: STACVersionID,
-                      info: STACJSONDescription) -> Optional[Set[str]]:
-    return None
-
-
 def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
                             info: STACJSONDescription) -> Optional[Set[str]]:
     if version < '0.9':
@@ -248,16 +238,6 @@ def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
             d['properties']['end_datetime'] = d['properties']['dtr:end_datetime']
             del d['properties']['dtr:end_datetime']
 
-    return None
-
-
-def _migrate_scientific(d: Dict[str, Any], version: STACVersionID,
-                        info: STACJSONDescription) -> Optional[Set[str]]:
-    return None
-
-
-def _migrate_single_file_stac(d: Dict[str, Any], version: STACVersionID,
-                              info: STACJSONDescription) -> Optional[Set[str]]:
     return None
 
 

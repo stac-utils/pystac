@@ -1,7 +1,7 @@
 import os
 import unittest
 
-import pystac
+import pystac as ps
 from tests.utils import TestCases
 
 
@@ -30,7 +30,4 @@ class VersionTest(unittest.TestCase):
             d = cat.to_dict()
             self.assertEqual(d['stac_version'], override_version)
         finally:
-            if version == ps.version.STACVersion.DEFAULT_STAC_VERSION:
-                ps.set_stac_version(None)
-            else:
-                ps.set_stac_version(version)
+            ps.set_stac_version(version)

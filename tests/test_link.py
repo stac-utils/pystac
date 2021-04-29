@@ -1,7 +1,8 @@
 import datetime
 import unittest
 
-import pystac
+import pystac as ps
+from tests.utils.test_cases import RANDOM_EXTENT
 
 TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
 
@@ -44,8 +45,6 @@ class LinkTest(unittest.TestCase):
 
         # Try the modification methods.
         self.assertIsNone(link.owner)
-        link.set_owner(1)  # A junk value.
-        self.assertEqual(1, link.owner)
         link.set_owner(None)
         self.assertIsNone(link.owner)
 
@@ -119,13 +118,13 @@ class StaticLinkTest(unittest.TestCase):
                 ps.Link.from_dict(d)
 
     def test_collection(self):
-        c = ps.Collection('collection id', 'desc', extent=None)
+        c = ps.Collection('collection id', 'desc', extent=RANDOM_EXTENT)
         link = ps.Link.collection(c)
         expected = {'rel': 'collection', 'href': None, 'type': 'application/json'}
         self.assertEqual(expected, link.to_dict())
 
     def test_child(self):
-        c = ps.Collection('collection id', 'desc', extent=None)
+        c = ps.Collection('collection id', 'desc', extent=RANDOM_EXTENT)
         link = ps.Link.child(c)
         expected = {'rel': 'child', 'href': None, 'type': 'application/json'}
         self.assertEqual(expected, link.to_dict())

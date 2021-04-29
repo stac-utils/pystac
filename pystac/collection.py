@@ -11,7 +11,7 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
-from pystac.utils import datetime_to_str
+from pystac.utils import datetime_to_str, get_required
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
@@ -384,12 +384,8 @@ class RangeSummary(Generic[T]):
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
-        minimum: Optional[T] = d.get('minimum')
-        if minimum is None:
-            raise ps.RequiredValueMissing("Range summary does not have 'minimum' property")
-        maximum: Optional[T] = d.get("maximum")
-        if maximum is None:
-            raise ps.RequiredValueMissing("Range summary does not have 'maximum' property")
+        minimum: Optional[T] = get_required(d.get('minimum'), 'RangeSummary', 'minimum')
+        maximum: Optional[T] = get_required(d.get("maximum"), 'RangeSummary', 'maximum')
         return cls(minimum=minimum, maximum=maximum)
 
 

@@ -4,7 +4,7 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 
-from pystac.errors import (STACError, STACTypeError, RequiredValueMissing)  # type:ignore
+from pystac.errors import (STACError, STACTypeError, RequiredPropertyMissing)  # type:ignore
 
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
@@ -28,15 +28,30 @@ from pystac.validation import STACValidationError  # type:ignore
 
 import pystac.extensions.hooks
 import pystac.extensions.eo
+import pystac.extensions.file
 import pystac.extensions.label
+import pystac.extensions.pointcloud
+import pystac.extensions.projection
 import pystac.extensions.sar
+import pystac.extensions.sat
+import pystac.extensions.scientific
+import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
 
-EXTENSION_HOOKS: pystac.extensions.hooks.RegisteredExtensionHooks = pystac.extensions.hooks.RegisteredExtensionHooks(
+EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [
-        pystac.extensions.eo.EO_EXTENSION_HOOKS, pystac.extensions.label.LABEL_EXTENSION_HOOKS,
-        pystac.extensions.sar.SAR_EXTENSION_HOOKS
+        pystac.extensions.eo.EO_EXTENSION_HOOKS,
+        pystac.extensions.file.FILE_EXTENSION_HOOKS,
+        pystac.extensions.label.LABEL_EXTENSION_HOOKS,
+        pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
+        pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
+        pystac.extensions.sar.SAR_EXTENSION_HOOKS,
+        pystac.extensions.sat.SAT_EXTENSION_HOOKS,
+        pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
+        pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_HOOKS,
+        pystac.extensions.version.VERSION_EXTENSION_HOOKS,
+        pystac.extensions.view.VIEW_EXTENSION_HOOKS
     ])
 
 

@@ -37,7 +37,7 @@ def make_item() -> ps.Item:
     return item
 
 
-class ScientificItemExtTest(unittest.TestCase):
+class ItemScientificExtensionTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.item = make_item()
@@ -186,7 +186,7 @@ def make_collection() -> ps.Collection:
     return collection
 
 
-class ScientificCollectionExtTest(unittest.TestCase):
+class CollectionScientificExtensionTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.collection = make_collection()

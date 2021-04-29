@@ -1,5 +1,6 @@
 import os
 import posixpath
+from pystac.errors import RequiredPropertyMissing
 from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 from urllib.parse import (urlparse, ParseResult as URLParseResult)
 from datetime import datetime, timezone
@@ -229,4 +230,13 @@ def get_opt(option: Optional[T]) -> T:
     """
     if option is None:
         raise ValueError("Cannot get value from None")
+    return option
+
+def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
+    """ Retrieves an optional value that comes from a required property.
+    If the option is None, throws an RequiredPropertyError with
+    the given obj and property
+    """
+    if option is None:
+        raise RequiredPropertyMissing(obj, prop)
     return option

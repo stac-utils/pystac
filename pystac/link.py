@@ -69,11 +69,11 @@ class Link:
         self.properties = properties
         self.owner: Optional["STACObject_Type"] = None
 
-    def set_owner(self, owner: "STACObject_Type") -> "Link":
+    def set_owner(self, owner: Optional["STACObject_Type"]) -> "Link":
         """Sets the owner of this link.
 
         Args:
-            owner (STACObject): The owner of this link.
+            owner: The owner of this link. Pass None to clear.
         """
         self.owner = owner
         return self

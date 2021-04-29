@@ -1,31 +1,66 @@
 from abc import ABC, abstractmethod
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from typing import Any, Dict, Iterable, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING
 
+import pystac as ps
 from pystac.extensions import ExtensionError
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
 
 
 class ExtensionHooks(ABC):
-    """
-
-    Args:
-        extension_schema_uri: The Schema URI that is used to validate the extension,
-            but also act as the ID for the extension.
-    """
     @property
     @abstractmethod
     def schema_uri(self) -> str:
+        """The schema_uri for the current version of this extension"""
         pass
+
+    @property
+    @abstractmethod
+    def prev_extension_ids(self) -> List[str]:
+        """A list of previous extension IDs (schema URIs or old short ids)
+        that should be migrated to the latest schema URI in the 'stac_extensions'
+        property. Override with a class attribute so that the list of previous
+        IDs is only created once.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def stac_object_types(self) -> Set[ps.STACObjectType]:
+        """A set of STACObjectType for which migration logic will be applied."""
+        pass
+
+    _stac_object_type_str: Optional[Set[str]] = None
+    """Translation of stac_object_types to strings, cached as a class attribute"""
 
     def get_object_links(self, obj: "STACObject_Type") -> Optional[List[str]]:
         return None
 
     def migrate(self, obj: Dict[str, Any], version: STACVersionID,
                       info: STACJSONDescription) -> None:
-        pass
+        """Migrate a STAC Object in dict format from a previous version.
+        The base implementation will update the stac_extensions to the latest
+        schema ID. This method will only be called for STAC objects that have been
+        identified as a previous version of STAC. Implementations should directly
+        manipulate the obj dict. Remember to call super() in order to change out
+        the old 'stac_extension' entry with the latest schema URI.
+        """
+        if self._stac_object_type_str is None:
+            self._stac_object_type_str = set([x.value for x in self.stac_object_types])
+        if not info.object_type in self._stac_object_type_str:
+            return
+
+        # Migrate schema versions
+        for prev_id in self.prev_extension_ids:
+            if prev_id in info.extensions:
+                try:
+                    i = obj['stac_extensions'].index(prev_id)
+                    obj['stac_extension'][i] = self.schema_uri
+                except ValueError:
+                    obj['stac_extensions'].append(self.schema_uri)
+                break
 
 class RegisteredExtensionHooks:
     def __init__(self, hooks: Iterable[ExtensionHooks]):
@@ -37,6 +72,10 @@ class RegisteredExtensionHooks:
             raise ExtensionError("ExtensionDefinition with id '{}' already exists.".format(e_id))
 
         self.hooks[e_id] = hooks
+
+    def remove_extension_hooks(self, extension_id: str) -> None:
+        if extension_id in self.hooks:
+            del self.hooks[extension_id]
 
     def get_extended_object_links(self, obj: "STACObject_Type") -> List[str]:
         result: Optional[List[str]] = None

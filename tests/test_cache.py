@@ -1,11 +1,13 @@
+from typing import Any, Dict
+from pystac.utils import get_opt
 import unittest
 
-import pystac
+import pystac as ps
 from pystac.cache import (ResolvedObjectCache, ResolvedObjectCollectionCache)
 from tests.utils import TestCases
 
 
-def create_catalog(suffix, include_href=True):
+def create_catalog(suffix: Any, include_href: bool = True) -> ps.Catalog:
     return ps.Catalog(
         id='test {}'.format(suffix),
         description='test desc {}'.format(suffix),
@@ -44,10 +46,13 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         identical_cat1 = create_catalog(1, include_href=False)
         identical_cat2 = create_catalog(2)
 
-        cached_ids_1 = {cat1.id: cat1}
-        cached_hrefs_1 = {cat2.get_self_href(): cat2}
-        cached_ids_2 = {cat3.id: cat3, cat1.id: identical_cat1}
-        cached_hrefs_2 = {cat4.get_self_href(): cat4, cat2.get_self_href(): identical_cat2}
+        cached_ids_1: Dict[str, Any] = {cat1.id: cat1}
+        cached_hrefs_1: Dict[str, Any] = {get_opt(cat2.get_self_href()): cat2}
+        cached_ids_2: Dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
+        cached_hrefs_2: Dict[str, Any] = {
+            get_opt(cat4.get_self_href()): cat4,
+            get_opt(cat2.get_self_href()): identical_cat2
+        }
         cache1 = ResolvedObjectCollectionCache(ResolvedObjectCache(),
                                                cached_ids=cached_ids_1,
                                                cached_hrefs=cached_hrefs_1)
@@ -61,12 +66,13 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         self.assertIs(merged.get_by_id(cat1.id), cat1)
         self.assertEqual(set(merged.cached_hrefs.keys()),
                          set([cat.get_self_href() for cat in [cat2, cat4]]))
-        self.assertIs(merged.get_by_href(cat2.get_self_href()), cat2)
+        self.assertIs(merged.get_by_href(get_opt(cat2.get_self_href())), cat2)
 
     def test_cache(self):
         cache = ResolvedObjectCache().as_collection_cache()
         collection = TestCases.test_case_8()
         collection_json = collection.to_dict()
         cache.cache(collection_json, collection.get_self_href())
-
-        self.assertEqual(cache.get_by_id(collection.id)['id'], collection.id)
+        cached = cache.get_by_id(collection.id)
+        assert isinstance(cached, dict)
+        self.assertEqual(cached['id'], collection.id)

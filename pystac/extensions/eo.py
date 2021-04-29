@@ -1,111 +1,20 @@
 from pystac.collection import RangeSummary
 import re
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions import view
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.utils import map_opt
+from pystac.utils import get_required, map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 
 BANDS_PROP = "eo:bands"
 CLOUD_COVER_PROP = "eo:cloud_cover"
-
-
-class EOExtensionHooks(ExtensionHooks):
-    schema_uri = SCHEMA_URI
-
-    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
-        if not 'properties' in d:
-            return
-
-        if version < '0.5':
-            if 'eo:crs' in d['properties']:
-                # Try to pull out the EPSG code.
-                # Otherwise, just leave it alone.
-                wkt = d['properties']['eo:crs']
-                matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
-                if len(matches) > 0:
-                    epsg_code = matches[-1].group(1)
-                    d['properties'].pop('eo:crs')
-                    d['properties']['eo:epsg'] = int(epsg_code)
-
-        if version < '0.6':
-            # Change eo:bands from a dict to a list. eo:bands on an asset
-            # is an index instead of a dict key. eo:bands is in properties.
-            bands_dict = d['eo:bands']
-            keys_to_indices: Dict[str, int] = {}
-            bands: List[Dict[str, Any]] = []
-            for i, (k, band) in enumerate(bands_dict.items()):
-                keys_to_indices[k] = i
-                bands.append(band)
-
-            d.pop('eo:bands')
-            d['properties']['eo:bands'] = bands
-            for k, asset in d['assets'].items():
-                if 'eo:bands' in asset:
-                    asset_band_indices: List[int] = []
-                    for bk in asset['eo:bands']:
-                        asset_band_indices.append(keys_to_indices[bk])
-                    asset['eo:bands'] = sorted(asset_band_indices)
-
-        if version < '0.9':
-            # Some eo fields became common_metadata
-            if 'eo:platform' in d['properties'] and 'platform' not in d['properties']:
-                d['properties']['platform'] = d['properties']['eo:platform']
-                del d['properties']['eo:platform']
-
-            if 'eo:instrument' in d['properties'] and 'instruments' not in d['properties']:
-                d['properties']['instruments'] = [d['properties']['eo:instrument']]
-                del d['properties']['eo:instrument']
-
-            if 'eo:constellation' in d['properties'] and 'constellation' not in d['properties']:
-                d['properties']['constellation'] = d['properties']['eo:constellation']
-                del d['properties']['eo:constellation']
-
-            # Some eo fields became view extension fields
-            eo_to_view_fields = [
-                'off_nadir', 'azimuth', 'incidence_angle', 'sun_azimuth', 'sun_elevation'
-            ]
-
-            for field in eo_to_view_fields:
-                if 'eo:{}'.format(field) in d['properties']:
-                    if 'stac_extensions' not in d:
-                        d['stac_extensions'] = []
-                    if not view.SCHEMA_URI in d['stac_extensions']:
-                        d['stac_extensions'].append(view.SCHEMA_URI)
-                    if not 'view:{}'.format(field) in d['properties']:
-                        d['properties']['view:{}'.format(field)] = \
-                            d['properties']['eo:{}'.format(field)]
-                        del d['properties']['eo:{}'.format(field)]
-
-        if version < '1.0.0-beta.1' and info.object_type == ps.STACObjectType.ITEM:
-            # gsd moved from eo to common metadata
-            if 'eo:gsd' in d['properties']:
-                d['properties']['gsd'] = d['properties']['eo:gsd']
-                del d['properties']['eo:gsd']
-
-            # The way bands were declared in assets changed.
-            # In 1.0.0-beta.1 they are inlined into assets as
-            # opposed to having indices back into a property-level array.
-            if 'eo:bands' in d['properties']:
-                bands = d['properties']['eo:bands']
-                for asset in d['assets'].values():
-                    if 'eo:bands' in asset:
-                        new_bands: List[Dict[str, Any]] = []
-                        for band_index in asset['eo:bands']:
-                            new_bands.append(bands[band_index])
-                        asset['eo:bands'] = new_bands
-
-        # Update stac_extension entry
-        if 'stac_extensions' in d and 'eo' in d['stac_extensions']:
-            d['stac_extensions'].remove('eo')
-            d['stac_extensions'].append(SCHEMA_URI)
 
 
 class Band:
@@ -176,7 +85,7 @@ class Band:
         Returns:
             str
         """
-        return self.properties['name']
+        return  get_required(self.properties['name'], self, 'name')
 
     @name.setter
     def name(self, v: str) -> None:
@@ -431,12 +340,98 @@ class SummariesEOExtension(SummariesExtension):
     def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:
         self._set_summary(CLOUD_COVER_PROP, v)
 
+class EOExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['eo'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+        if version < '0.5':
+            if 'eo:crs' in obj['properties']:
+                # Try to pull out the EPSG code.
+                # Otherwise, just leave it alone.
+                wkt = obj['properties']['eo:crs']
+                matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
+                if len(matches) > 0:
+                    epsg_code = matches[-1].group(1)
+                    obj['properties'].pop('eo:crs')
+                    obj['properties']['eo:epsg'] = int(epsg_code)
+
+        if version < '0.6':
+            # Change eo:bands from a dict to a list. eo:bands on an asset
+            # is an index instead of a dict key. eo:bands is in properties.
+            bands_dict = obj['eo:bands']
+            keys_to_indices: Dict[str, int] = {}
+            bands: List[Dict[str, Any]] = []
+            for i, (k, band) in enumerate(bands_dict.items()):
+                keys_to_indices[k] = i
+                bands.append(band)
+
+            obj.pop('eo:bands')
+            obj['properties']['eo:bands'] = bands
+            for k, asset in obj['assets'].items():
+                if 'eo:bands' in asset:
+                    asset_band_indices: List[int] = []
+                    for bk in asset['eo:bands']:
+                        asset_band_indices.append(keys_to_indices[bk])
+                    asset['eo:bands'] = sorted(asset_band_indices)
+
+        if version < '0.9':
+            # Some eo fields became common_metadata
+            if 'eo:platform' in obj['properties'] and 'platform' not in obj['properties']:
+                obj['properties']['platform'] = obj['properties']['eo:platform']
+                del obj['properties']['eo:platform']
+
+            if 'eo:instrument' in obj['properties'] and 'instruments' not in obj['properties']:
+                obj['properties']['instruments'] = [obj['properties']['eo:instrument']]
+                del obj['properties']['eo:instrument']
+
+            if 'eo:constellation' in obj['properties'] and 'constellation' not in obj['properties']:
+                obj['properties']['constellation'] = obj['properties']['eo:constellation']
+                del obj['properties']['eo:constellation']
+
+            # Some eo fields became view extension fields
+            eo_to_view_fields = [
+                'off_nadir', 'azimuth', 'incidence_angle', 'sun_azimuth', 'sun_elevation'
+            ]
+
+            for field in eo_to_view_fields:
+                if 'eo:{}'.format(field) in obj['properties']:
+                    if 'stac_extensions' not in obj:
+                        obj['stac_extensions'] = []
+                    if not view.SCHEMA_URI in obj['stac_extensions']:
+                        obj['stac_extensions'].append(view.SCHEMA_URI)
+                    if not 'view:{}'.format(field) in obj['properties']:
+                        obj['properties']['view:{}'.format(field)] = \
+                            obj['properties']['eo:{}'.format(field)]
+                        del obj['properties']['eo:{}'.format(field)]
+
+        if version < '1.0.0-beta.1' and info.object_type == ps.STACObjectType.ITEM:
+            # gsd moved from eo to common metadata
+            if 'eo:gsd' in obj['properties']:
+                obj['properties']['gsd'] = obj['properties']['eo:gsd']
+                del obj['properties']['eo:gsd']
+
+            # The way bands were declared in assets changed.
+            # In 1.0.0-beta.1 they are inlined into assets as
+            # opposed to having indices back into a property-level array.
+            if 'eo:bands' in obj['properties']:
+                bands = obj['properties']['eo:bands']
+                for asset in obj['assets'].values():
+                    if 'eo:bands' in asset:
+                        new_bands: List[Dict[str, Any]] = []
+                        for band_index in asset['eo:bands']:
+                            new_bands.append(bands[band_index])
+                        asset['eo:bands'] = new_bands
+
+        super().migrate(obj, version, info)
+
 
 def eo_ext(obj: T) -> EOExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemEOExtension(obj)
+        return cast(EOExtension[T], ItemEOExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetEOExtension(obj)
+        return cast(EOExtension[T], AssetEOExtension(obj))
     else:
         raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
 

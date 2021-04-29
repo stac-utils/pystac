@@ -5,13 +5,17 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
 Note that the version/schema.json does not know about the links.
 """
 
-from pystac.extensions.hooks import ExtensionHooks
-from typing import List, Optional, cast
+from pystac.utils import get_required, map_opt
+from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac as ps
-from pystac import STACError
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
 
-VERSION_EXT_SCHEMA = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
+T = TypeVar('T', ps.Collection, ps.Item)
+
+# TODO: Modify this to released version with the fix.
+SCHEMA_URI = "https://raw.githubusercontent.com/lossyrob/version/fix/rde/schema-id/json-schema/schema.json"
 
 # STAC fields - These are unusual for an extension in that they do not have
 # a prefix.  e.g. nothing like "ver:"
@@ -27,7 +31,8 @@ SUCCESSOR: str = 'successor-version'
 MEDIA_TYPE: str = 'application/json'
 
 
-class VersionItemExt():
+class VersionExtension(Generic[T], PropertiesExtension,
+                       ExtensionManagementMixin[Union[ps.Collection, ps.Item]]):
     """VersionItemExt extends Item to add version and deprecated properties
     along with links to the latest, predecessor, and successor Items.
 
@@ -41,17 +46,17 @@ class VersionItemExt():
         Using VersionItemExt to directly wrap an item will add the 'version'
         extension ID to the item's stac_extensions.
     """
-    item: ps.Item
+    obj: ps.STACObject
 
-    def __init__(self, an_item: ps.Item) -> None:
-        self.item = an_item
+    def __init__(self, obj: ps.STACObject) -> None:
+        self.obj = obj
 
     def apply(self,
               version: str,
               deprecated: Optional[bool] = None,
-              latest: Optional[ps.Item] = None,
-              predecessor: Optional[ps.Item] = None,
-              successor: Optional[ps.Item] = None) -> None:
+              latest: Optional[T] = None,
+              predecessor: Optional[T] = None,
+              successor: Optional[T] = None) -> None:
         """Applies version extension properties to the extended Item.
 
         Args:
@@ -80,240 +85,101 @@ class VersionItemExt():
         Returns:
             str
         """
-        result = self.item.properties.get(VERSION)
-        if result is None:
-            raise STACError(f"Item {self.item.id} has version extension but no version property")
-        return result
+        return get_required(self._get_property(VERSION, str), self, VERSION)
 
     @version.setter
     def version(self, v: str) -> None:
-        self.item.properties[VERSION] = v
+        self._set_property(VERSION, v, pop_if_none=False)
 
     @property
-    def deprecated(self) -> bool:
-        """Get or sets is the item is deprecated.
-
-        Returns:
-            bool
-        """
-        return bool(self.item.properties.get(DEPRECATED))
+    def deprecated(self) -> Optional[bool]:
+        """Get or sets is the item is deprecated."""
+        return self._get_property(DEPRECATED, bool)
 
     @deprecated.setter
-    def deprecated(self, v: bool) -> None:
-        if not isinstance(v, bool):
-            raise ps.STACError(DEPRECATED + ' must be a bool')
-        self.item.properties[DEPRECATED] = v
+    def deprecated(self, v: Optional[bool]) -> None:
+        self._set_property(DEPRECATED, v)
 
     @property
-    def latest(self) -> Optional[ps.Item]:
-        """Get or sets the most recent item.
-
-        Returns:
-            Item or None
-        """
-        result = next(iter(self.item.get_stac_objects(LATEST)), None)
-        if result is None:
-            return None
-        return cast(ps.Item, result)
+    def latest(self) -> Optional[T]:
+        """Get or sets the most recent version."""
+        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(LATEST)), None))
 
     @latest.setter
-    def latest(self, source_item: ps.Item) -> None:
-        self.item.clear_links(LATEST)
-        if source_item:
-            self.item.add_link(ps.Link(LATEST, source_item, MEDIA_TYPE))
+    def latest(self, item: Optional[T]) -> None:
+        self.obj.clear_links(LATEST)
+        if item is not None:
+            self.obj.add_link(ps.Link(LATEST, item, MEDIA_TYPE))
 
     @property
-    def predecessor(self) -> Optional[ps.Item]:
-        """Get or sets the previous item.
-
-        Returns:
-            Item or None
-        """
-        result = next(iter(self.item.get_stac_objects(PREDECESSOR)), None)
-        if result is None:
-            return None
-        return cast(ps.Item, result)
+    def predecessor(self) -> Optional[T]:
+        """Get or sets the previous item."""
+        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(PREDECESSOR)),
+                                                  None))
 
     @predecessor.setter
-    def predecessor(self, source_item: ps.Item) -> None:
-        self.item.clear_links(PREDECESSOR)
-        if source_item:
-            self.item.add_link(ps.Link(PREDECESSOR, source_item, MEDIA_TYPE))
+    def predecessor(self, item: Optional[T]) -> None:
+        self.obj.clear_links(PREDECESSOR)
+        if item is not None:
+            self.obj.add_link(ps.Link(PREDECESSOR, item, MEDIA_TYPE))
 
     @property
-    def successor(self) -> Optional[ps.Item]:
-        """Get or sets the next item.
-
-        Returns:
-            Item or None
-        """
-        result = next(iter(self.item.get_stac_objects(SUCCESSOR)), None)
-        if result is None:
-            return None
-        return cast(ps.Item, result)
+    def successor(self) -> Optional[T]:
+        """Get or sets the next item."""
+        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(SUCCESSOR)), None))
 
     @successor.setter
-    def successor(self, source_item: ps.Item) -> None:
-        self.item.clear_links(SUCCESSOR)
-        if source_item:
-            self.item.add_link(ps.Link(SUCCESSOR, source_item, MEDIA_TYPE))
+    def successor(self, item: Optional[T]) -> None:
+        self.obj.clear_links(SUCCESSOR)
+        if item is not None:
+            self.obj.add_link(ps.Link(SUCCESSOR, item, MEDIA_TYPE))
 
     @classmethod
-    def from_item(cls, an_item: ps.Item) -> "VersionItemExt":
-        return cls(an_item)
-
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return [LATEST, PREDECESSOR, SUCCESSOR]
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
 
-class VersionCollectionExt():
-    """VersionCollectionExt extends Collection to add version and deprecated properties
-    along with links to the latest, predecessor, and successor Collections.
+class CollectionVersionExtension(VersionExtension[ps.Collection]):
+    def __init__(self, collection: ps.Collection):
+        self.collection = collection
+        self.properties = collection.extra_fields
+        self.links = collection.links
+        super().__init__(self.collection)
 
-    Args:
-        a_collection (Collection): The collection to be extended.
+    def __repr__(self) -> str:
+        return '<CollectionVersionExtension Item id={}>'.format(self.collection.id)
 
-    Attributes:
-        collection (Collection): The collection that is being extended.
 
-    Note:
-        Using VersionCollectionExt to directly wrap a collection will add the
-        'version' extension ID to the collections's stac_extensions.
-    """
-    collection: ps.Collection
+class ItemVersionExtension(VersionExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+        self.links = item.links
+        super().__init__(self.item)
 
-    def __init__(self, a_collection: ps.Collection) -> None:
-        self.collection = a_collection
-
-    @property
-    def version(self) -> str:
-        """Get or sets a version string of the collection.
-
-        Returns:
-            str
-        """
-        result = self.collection.extra_fields.get(VERSION)
-        if result is None:
-            raise STACError(f"Collection {self.collection.id} does not have property {VERSION}")
-        return result
-
-    @version.setter
-    def version(self, v: str) -> None:
-        self.collection.extra_fields[VERSION] = v
-
-    @property
-    def deprecated(self) -> bool:
-        """Get or sets is the collection is deprecated.
-
-        Returns:
-            bool
-        """
-        return bool(self.collection.extra_fields.get(DEPRECATED))
-
-    @deprecated.setter
-    def deprecated(self, v: bool) -> None:
-        if not isinstance(v, bool):
-            raise ps.STACError(DEPRECATED + ' must be a bool')
-        self.collection.extra_fields[DEPRECATED] = v
-
-    @property
-    def latest(self) -> Optional[ps.Collection]:
-        """Get or sets the most recent collection.
-
-        Returns:
-            Collection or None
-        """
-        result = next(iter(self.collection.get_stac_objects(LATEST)), None)
-        if result is None:
-            return None
-        return cast(ps.Collection, result)
-
-    @latest.setter
-    def latest(self, source_collection: ps.Collection) -> None:
-        self.collection.clear_links(LATEST)
-        if source_collection:
-            self.collection.add_link(ps.Link(LATEST, source_collection, MEDIA_TYPE))
-
-    @property
-    def predecessor(self) -> Optional[ps.Collection]:
-        """Get or sets the previous collection.
-
-        Returns:
-            Collection or None
-        """
-        result = next(iter(self.collection.get_stac_objects(PREDECESSOR)), None)
-        if result is None:
-            return None
-        return cast(ps.Collection, result)
-
-    @predecessor.setter
-    def predecessor(self, source_collection: ps.Collection) -> None:
-        self.collection.clear_links(PREDECESSOR)
-        if source_collection:
-            self.collection.add_link(ps.Link(PREDECESSOR, source_collection, MEDIA_TYPE))
-
-    @property
-    def successor(self) -> Optional[ps.Collection]:
-        """Get or sets the next collection.
-
-        Returns:
-            Collection or None
-        """
-        result = next(iter(self.collection.get_stac_objects(SUCCESSOR)), None)
-        if result is None:
-            return None
-        return cast(ps.Collection, result)
-
-    @successor.setter
-    def successor(self, source_collection: ps.Collection) -> None:
-        self.collection.clear_links(SUCCESSOR)
-        if source_collection:
-            self.collection.add_link(ps.Link(SUCCESSOR, source_collection, MEDIA_TYPE))
-
-    @classmethod
-    def from_collection(cls, a_collection: ps.Collection) -> "VersionCollectionExt":
-        return cls(a_collection)
-
-    @classmethod
-    def _object_links(cls) -> List[str]:
-        return [LATEST, PREDECESSOR, SUCCESSOR]
-
-    def apply(self,
-              version: str,
-              deprecated: Optional[bool] = None,
-              latest: Optional[ps.Collection] = None,
-              predecessor: Optional[ps.Collection] = None,
-              successor: Optional[ps.Collection] = None) -> None:
-        """Applies version extension properties to the extended Collection.
-
-        Args:
-            version (str): The version string for the collection.
-            deprecated (bool): Optional flag set to True if an Collection is
-                deprecated with the potential to be removed.  Defaults to false
-                if not present.
-            latest (Collection): Collection with the latest (e.g., current) version.
-            predecessor (Collection): Collection with the previous version.
-            successor (Collection): Collection with the next most recent version.
-        """
-        self.version = version
-        if deprecated is not None:
-            self.deprecated = deprecated
-        if latest:
-            self.latest = latest
-        if predecessor:
-            self.predecessor = predecessor
-        if successor:
-            self.successor = successor
+    def __repr__(self) -> str:
+        return '<ItemVersionExtension Item id={}>'.format(self.item.id)
 
 
 class VersionExtensionHooks(ExtensionHooks):
-    schema_uri = VERSION_EXT_SCHEMA
+    schema_uri = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['version'])
+    stac_object_types: Set[ps.STACObjectType] = set(
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
 
     def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
         if isinstance(so, ps.Collection) or isinstance(so, ps.Item):
             return [LATEST, PREDECESSOR, SUCCESSOR]
         return None
+
+
+def version_ext(obj: T) -> VersionExtension[T]:
+    if isinstance(obj, ps.Collection):
+        return cast(VersionExtension[T], CollectionVersionExtension(obj))
+    if isinstance(obj, ps.Item):
+        return cast(VersionExtension[T], ItemVersionExtension(obj))
+    else:
+        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 
 VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()

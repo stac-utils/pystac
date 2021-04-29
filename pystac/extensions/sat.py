@@ -4,13 +4,14 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sat
 """
 
 import enum
-from typing import Generic, Optional, TypeVar
+from pystac.extensions.hooks import ExtensionHooks
+from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
@@ -106,10 +107,18 @@ class AssetSatExtension(SatExtension[ps.Asset]):
         return '<AssetSatExtension Asset href={}>'.format(self.asset_href)
 
 
+class SatExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['sat'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+
 def sat_ext(obj: T) -> SatExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemSatExtension(obj)
+        return cast(SatExtension[T], ItemSatExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetSatExtension(obj)
+        return cast(SatExtension[T], AssetSatExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+SAT_EXTENSION_HOOKS = SatExtensionHooks()

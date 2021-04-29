@@ -1,10 +1,11 @@
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from pystac.extensions.hooks import ExtensionHooks
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 
@@ -384,7 +385,7 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         """
         result = self._get_property(COUNT_PROP, int)
         if result is None:
-            raise ps.RequiredValueMissing(f'No {COUNT_PROP} found')
+            raise ps.RequiredPropertyMissing(self, COUNT_PROP)
         return result
 
     @count.setter
@@ -400,7 +401,7 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         """
         result = self._get_property(TYPE_PROP, str)
         if result is None:
-            raise ps.RequiredValueMissing(f'No {TYPE_PROP} found')
+            raise ps.RequiredPropertyMissing(self, TYPE_PROP)
         return result
 
     @type.setter
@@ -419,7 +420,7 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         """
         result = self._get_property(ENCODING_PROP, str)
         if result is None:
-            raise ps.RequiredValueMissing(f'No {ENCODING_PROP} found')
+            raise ps.RequiredPropertyMissing(self, ENCODING_PROP)
         return result
 
     @encoding.setter
@@ -439,7 +440,7 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         """
         result = self._get_property(SCHEMAS_PROP, List[Dict[str, Any]])
         if result is None:
-            raise ps.RequiredValueMissing(f'No {SCHEMAS_PROP} found')
+            raise ps.RequiredPropertyMissing(self, SCHEMAS_PROP)
         return [PointcloudSchema(s) for s in result]
 
     @schemas.setter
@@ -483,13 +484,14 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+
 class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
     def __init__(self, item: ps.Item):
         self.item = item
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+        return '<ItemPointcloudExtension Item id={}>'.format(self.item.id)
 
 
 class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
@@ -498,14 +500,26 @@ class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
         self.properties = asset.properties
         if asset.owner and isinstance(asset.owner, ps.Item):
             self.additional_read_properties = [asset.owner.properties]
+            self.repr_id = f"href={asset.href} item.id={asset.owner.id}"
+        else:
+            self.repr_id = f"href={asset.href}"
 
     def __repr__(self) -> str:
-        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+        return f'<AssetPointcloudExtension Asset {self.repr_id}>'
+
+
+class PointcloudExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['pointcloud'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
 
 def pointcloud_ext(obj: T) -> PointcloudExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemPointcloudExtension(obj)
+        return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetPointcloudExtension(obj)
+        return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()

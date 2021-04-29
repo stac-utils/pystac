@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil import tz
 
 import pystac as ps
+from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import (Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType)
 from pystac.utils import datetime_to_str
@@ -28,7 +29,7 @@ class CollectionTest(unittest.TestCase):
         cat = TestCases.test_case_5()
         item = next(iter(cat.get_all_items()))
 
-        self.assertTrue(item.ext.implements('eo'))
+        self.assertTrue(EOExtension.has_extension(item))
 
     def test_save_uses_previous_catalog_type(self):
         collection = TestCases.test_case_8()

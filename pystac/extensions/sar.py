@@ -4,16 +4,16 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 """
 
 import enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import map_opt
+from pystac.utils import get_required, map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset, contravariant=True)
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
 
@@ -33,29 +33,6 @@ LOOKS_RANGE: str = 'sar:looks_range'
 LOOKS_AZIMUTH: str = 'sar:looks_azimuth'
 LOOKS_EQUIVALENT_NUMBER: str = 'sar:looks_equivalent_number'
 OBSERVATION_DIRECTION: str = 'sar:observation_direction'
-
-class SarExtensionHooks(ExtensionHooks):
-    schema_uri = SCHEMA_URI
-
-    def migrate(self, d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
-        if version < '0.9':
-            # Some sar fields became common_metadata
-            if 'sar:platform' in d['properties'] and 'platform' not in d['properties']:
-                d['properties']['platform'] = d['properties']['sar:platform']
-                del d['properties']['sar:platform']
-
-            if 'sar:instrument' in d['properties'] and 'instruments' not in d['properties']:
-                d['properties']['instruments'] = [d['properties']['sar:instrument']]
-                del d['properties']['sar:instrument']
-
-            if 'sar:constellation' in d['properties'] and 'constellation' not in d['properties']:
-                d['properties']['constellation'] = d['properties']['sar:constellation']
-                del d['properties']['sar:constellation']
-
-        # Update stac_extension entry
-        if 'stac_extensions' in d and 'sar' in d['stac_extensions']:
-            d['stac_extensions'].remove('sar')
-            d['stac_extensions'].append(SCHEMA_URI)
 
 
 class FrequencyBand(str, enum.Enum):
@@ -168,10 +145,7 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             str
         """
-        result = self._get_property(INSTRUMENT_MODE, str)
-        if result is None:
-            raise ps.STACError(f"Property {INSTRUMENT_MODE} does not exist")
-        return result
+        return get_required(self._get_property(INSTRUMENT_MODE, str), self, INSTRUMENT_MODE)
 
     @instrument_mode.setter
     def instrument_mode(self, v: str) -> None:
@@ -184,10 +158,9 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             FrequencyBand
         """
-        result = self._get_property(FREQUENCY_BAND, str)
-        if result is None:
-            raise ps.STACError(f"Property {FREQUENCY_BAND} does not exist")
-        return FrequencyBand(result)
+        return get_required(
+            map_opt(lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND, str)), self,
+            FREQUENCY_BAND)
 
     @frequency_band.setter
     def frequency_band(self, v: FrequencyBand) -> None:
@@ -200,10 +173,12 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             List[Polarization]
         """
-        result = self._get_property(POLARIZATIONS, List[str])
-        if result is None:
-            raise ps.STACError(f"Property {POLARIZATIONS} does not exist")
-        return [Polarization(v) for v in result]
+        return get_required(
+            map_opt(lambda values: [Polarization(v) for v in values],
+            self._get_property(POLARIZATIONS, List[str])),
+            self,
+            POLARIZATIONS
+        )
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
@@ -218,10 +193,11 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             str
         """
-        result = self._get_property(PRODUCT_TYPE, str)
-        if result is None:
-            raise ps.STACError(f"Property {PRODUCT_TYPE} does not exist")
-        return result
+        return get_required(
+            self._get_property(POLARIZATIONS, str),
+            self,
+            POLARIZATIONS
+        )
 
     @product_type.setter
     def product_type(self, v: str) -> None:
@@ -322,7 +298,7 @@ class ItemSarExtension(SarExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+        return '<ItemSarExtension Item id={}>'.format(self.item.id)
 
 
 class AssetSarExtension(SarExtension[ps.Asset]):
@@ -333,15 +309,38 @@ class AssetSarExtension(SarExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+        return '<AssetSarExtension Asset href={}>'.format(self.asset_href)
+
+class SarExtensionHooks(ExtensionHooks):
+    schema_uri = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['sar'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+        if version < '0.9':
+            # Some sar fields became common_metadata
+            if 'sar:platform' in obj['properties'] and 'platform' not in obj['properties']:
+                obj['properties']['platform'] = obj['properties']['sar:platform']
+                del obj['properties']['sar:platform']
+
+            if 'sar:instrument' in obj['properties'] and 'instruments' not in obj['properties']:
+                obj['properties']['instruments'] = [obj['properties']['sar:instrument']]
+                del obj['properties']['sar:instrument']
+
+            if 'sar:constellation' in obj['properties'] and 'constellation' not in obj['properties']:
+                obj['properties']['constellation'] = obj['properties']['sar:constellation']
+                del obj['properties']['sar:constellation']
+
+        super().migrate(obj, version, info)
 
 
 def sar_ext(obj: T) -> SarExtension[T]:
     if isinstance(obj, ps.Item):
-        return ItemSarExtension(obj)
+        return cast(SarExtension[T], ItemSarExtension(obj))
     elif isinstance(obj, ps.Asset):
-        return AssetSarExtension(obj)
+        return cast(SarExtension[T], AssetSarExtension(obj))
     else:
         raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 SAR_EXTENSION_HOOKS: ExtensionHooks = SarExtensionHooks()

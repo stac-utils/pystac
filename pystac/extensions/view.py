@@ -1,11 +1,20 @@
-from typing import List, Optional
+from pystac.extensions.hooks import ExtensionHooks
+from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac as ps
+from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+
+T = TypeVar('T', ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
 
+OFF_NADIR_PROP = 'view:off_nadir'
+INCIDENCE_ANGLE_PROP = 'view:incidence_angle'
+AZIMUTH_PROP = 'view:azimuth'
+SUN_AZIMUTH_PROP = 'view:sun_azimuth'
+SUN_ELEVATION_PROP = 'view:sun_elevation'
 
-class ViewItemExt():
+class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """ViewItemExt is the extension of the Item in the View Geometry Extension.
     View Geometry adds metadata related to angles of sensors and other radiance angles
     that affect the view of resulting data. It will often be combined with other extensions that
@@ -21,9 +30,6 @@ class ViewItemExt():
         Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item: ps.Item) -> None:
-        self.item = item
-
     def apply(self,
               off_nadir: Optional[float] = None,
               incidence_angle: Optional[float] = None,
@@ -46,21 +52,11 @@ class ViewItemExt():
             sun_elevation (float): Sun elevation angle. The angle from the tangent of the scene
                 center point to the sun. Measured from the horizon in degrees (0-90).
         """
-        if (off_nadir is None and incidence_angle is None and azimuth is None
-                and sun_azimuth is None and sun_elevation is None):
-            raise ps.STACError(
-                'Must provide at least one of: off_nadir, incidence_angle, azimuth, sun_azimuth, sun_elevation'  # noqa: E501
-            )
-        if off_nadir:
-            self.off_nadir = off_nadir
-        if incidence_angle:
-            self.incidence_angle = incidence_angle
-        if azimuth:
-            self.azimuth = azimuth
-        if sun_azimuth:
-            self.sun_azimuth = sun_azimuth
-        if sun_elevation:
-            self.sun_elevation = sun_elevation
+        self.off_nadir = off_nadir
+        self.incidence_angle = incidence_angle
+        self.azimuth = azimuth
+        self.sun_azimuth = sun_azimuth
+        self.sun_elevation = sun_elevation
 
     @property
     def off_nadir(self) -> Optional[float]:
@@ -70,33 +66,11 @@ class ViewItemExt():
         Returns:
             float
         """
-        return self.get_off_nadir()
+        return self._get_property(OFF_NADIR_PROP, float)
 
     @off_nadir.setter
     def off_nadir(self, v: Optional[float]) -> None:
-        self.set_off_nadir(v)
-
-    def get_off_nadir(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset off_nadir.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'view:off_nadir' not in asset.properties:
-            return self.item.properties.get('view:off_nadir')
-        else:
-            return asset.properties.get('view:off_nadir')
-
-    def set_off_nadir(self, off_nadir: Optional[float], asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset off_nadir.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('view:off_nadir', off_nadir, asset)
+        self._set_property(OFF_NADIR_PROP, v)
 
     @property
     def incidence_angle(self) -> Optional[float]:
@@ -107,35 +81,11 @@ class ViewItemExt():
         Returns:
             float
         """
-        return self.get_incidence_angle()
+        return self._get_property(INCIDENCE_ANGLE_PROP, float)
 
     @incidence_angle.setter
     def incidence_angle(self, v: Optional[float]) -> None:
-        self.set_incidence_angle(v)
-
-    def get_incidence_angle(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset incidence_angle.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'view:incidence_angle' not in asset.properties:
-            return self.item.properties.get('view:incidence_angle')
-        else:
-            return asset.properties.get('view:incidence_angle')
-
-    def set_incidence_angle(self,
-                            incidence_angle: Optional[float],
-                            asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset incidence_angle.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('view:incidence_angle', incidence_angle, asset)
+        self._set_property(INCIDENCE_ANGLE_PROP, v)
 
     @property
     def azimuth(self) -> Optional[float]:
@@ -146,33 +96,11 @@ class ViewItemExt():
         Returns:
             float
         """
-        return self.get_azimuth()
+        return self._get_property(AZIMUTH_PROP, float)
 
     @azimuth.setter
     def azimuth(self, v: Optional[float]) -> None:
-        self.set_azimuth(v)
-
-    def get_azimuth(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset azimuth.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'view:azimuth' not in asset.properties:
-            return self.item.properties.get('view:azimuth')
-        else:
-            return asset.properties.get('view:azimuth')
-
-    def set_azimuth(self, azimuth: Optional[float], asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset azimuth.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('view:azimuth', azimuth, asset)
+        self._set_property(AZIMUTH_PROP, v)
 
     @property
     def sun_azimuth(self) -> Optional[float]:
@@ -182,35 +110,11 @@ class ViewItemExt():
         Returns:
             float
         """
-        return self.get_sun_azimuth()
+        return self._get_property(SUN_AZIMUTH_PROP, float)
 
     @sun_azimuth.setter
     def sun_azimuth(self, v: Optional[float]) -> None:
-        self.set_sun_azimuth(v)
-
-    def get_sun_azimuth(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset sun_azimuth.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'view:sun_azimuth' not in asset.properties:
-            return self.item.properties.get('view:sun_azimuth')
-        else:
-            return asset.properties.get('view:sun_azimuth')
-
-    def set_sun_azimuth(self,
-                        sun_azimuth: Optional[float],
-                        asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset sun_azimuth.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('view:sun_azimuth', sun_azimuth, asset)
+        self._set_property(SUN_AZIMUTH_PROP, v)
 
     @property
     def sun_elevation(self) -> Optional[float]:
@@ -220,40 +124,47 @@ class ViewItemExt():
         Returns:
             float
         """
-        return self.get_sun_elevation()
+        return self._get_property(SUN_ELEVATION_PROP, float)
 
     @sun_elevation.setter
     def sun_elevation(self, v: Optional[float]) -> None:
-        self.set_sun_elevation(v)
-
-    def get_sun_elevation(self, asset: Optional[ps.Asset] = None) -> Optional[float]:
-        """Gets an Item or an Asset sun_elevation.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'view:sun_elevation' not in asset.properties:
-            return self.item.properties.get('view:sun_elevation')
-        else:
-            return asset.properties.get('view:sun_elevation')
-
-    def set_sun_elevation(self,
-                          sun_elevation: Optional[float],
-                          asset: Optional[ps.Asset] = None) -> None:
-        """Set an Item or an Asset sun_elevation.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('view:sun_elevation', sun_elevation, asset)
+        self._set_property(SUN_ELEVATION_PROP, v)
 
     @classmethod
-    def _object_links(cls) -> List[str]:
-        return []
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-    @classmethod
-    def from_item(cls, item: ps.Item) -> "ViewItemExt":
-        return cls(item)
+
+class ItemViewExtension(ViewExtension[ps.Item]):
+    def __init__(self, item: ps.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return '<ItemViewExtension Item id={}>'.format(self.item.id)
+
+
+class AssetViewExtension(ViewExtension[ps.Asset]):
+    def __init__(self, asset: ps.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, ps.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return '<AssetViewExtension Asset href={}>'.format(self.asset_href)
+
+class ViewExtensionHooks(ExtensionHooks):
+    schema_uri = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(['view'])
+    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+
+def view_ext(obj: T) -> ViewExtension[T]:
+    if isinstance(obj, ps.Item):
+        return cast(ViewExtension[T], ItemViewExtension(obj))
+    elif isinstance(obj, ps.Asset):
+        return cast(ViewExtension[T], AssetViewExtension(obj))
+    else:
+        raise ExtensionException(f"View extension does not apply to type {type(obj)}")
+
+VIEW_EXTENSION_HOOKS = ViewExtensionHooks()
