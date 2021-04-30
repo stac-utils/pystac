@@ -1,12 +1,13 @@
 """Tests creating a custom extension"""
 
+from pystac.collection import RangeSummary
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
 
 import pystac as ps
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions import ExtensionError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
 
@@ -44,6 +45,23 @@ class CustomExtension(Generic[T], PropertiesExtension,
     def get_schema_uri(cls) -> str:
         return super().get_schema_uri()
 
+    @staticmethod
+    def custom_ext(obj: T) -> "CustomExtension[T]":
+        if isinstance(obj, ps.Asset):
+            return cast(CustomExtension[T], AssetCustomExtension(obj))
+        if isinstance(obj, ps.Item):
+            return cast(CustomExtension[T], ItemCustomExtension(obj))
+        if isinstance(obj, ps.Collection):
+            return cast(CustomExtension[T], CollectionCustomExtension(obj))
+        if isinstance(obj, ps.Catalog):
+            return cast(CustomExtension[T], CatalogCustomExtension(obj))
+
+        raise ExtensionError(f'Custom extension does not apply to {type(obj)}')
+
+    @staticmethod
+    def summaries(obj: ps.Collection) -> "SummariesCustomExtension":
+        return SummariesCustomExtension(obj)
+
 
 class CatalogCustomExtension(CustomExtension[ps.Catalog]):
     def __init__(self, catalog: ps.Catalog) -> None:
@@ -77,6 +95,15 @@ class AssetCustomExtension(CustomExtension[ps.Asset]):
                 self.additional_read_properties = [asset.owner.extra_fields]
         super().__init__(None)
 
+class SummariesCustomExtension(SummariesExtension):
+    @property
+    def test_prop(self) -> Optional[RangeSummary[str]]:
+        return self.summaries.get_range(TEST_PROP, str)
+
+    @test_prop.setter
+    def test_prop(self, v: Optional[RangeSummary[str]]) -> None:
+        self._set_summary(TEST_PROP, v)
+
 
 class CustomExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
@@ -92,19 +119,6 @@ class CustomExtensionHooks(ExtensionHooks):
             if 'test:old-prop-name' in obj['properties']:
                 obj['properties'][TEST_PROP] = obj['properties']['test:old-prop-name']
         super().migrate(obj, version, info)
-
-
-def custom_ext(obj: T) -> CustomExtension[T]:
-    if isinstance(obj, ps.Asset):
-        return cast(CustomExtension[T], AssetCustomExtension(obj))
-    if isinstance(obj, ps.Item):
-        return cast(CustomExtension[T], ItemCustomExtension(obj))
-    if isinstance(obj, ps.Collection):
-        return cast(CustomExtension[T], CollectionCustomExtension(obj))
-    if isinstance(obj, ps.Catalog):
-        return cast(CustomExtension[T], CatalogCustomExtension(obj))
-
-    raise ExtensionError(f'Custom extension does not apply to {type(obj)}')
 
 
 class CustomExtensionTest(unittest.TestCase):

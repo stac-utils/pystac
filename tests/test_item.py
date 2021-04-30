@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import json
+from typing import Any, Dict, List
 import unittest
 from tempfile import TemporaryDirectory
 
@@ -36,7 +37,7 @@ class ItemTest(unittest.TestCase):
                          'http://cool-sat.com/catalog/products/analytic.json')
         self.assertEqual(len(item.assets['thumbnail'].properties), 0)
 
-    def test_set_self_href_doesnt_break_asset_hrefs(self):
+    def test_set_self_href_does_not_break_asset_hrefs(self):
         cat = TestCases.test_case_2()
         for item in cat.get_all_items():
             for asset in item.assets.values():
@@ -207,7 +208,7 @@ class CommonMetadataTest(unittest.TestCase):
             'data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json')
         self.ITEM_2 = Item.from_file(self.URI_2)
 
-        self.EXAMPLE_CM_DICT = {
+        self.EXAMPLE_CM_DICT: Dict[str, Any] = {
             'start_datetime':
             '2020-05-21T16:42:24.896Z',
             'platform':
@@ -295,14 +296,14 @@ class CommonMetadataTest(unittest.TestCase):
     def test_common_metadata_providers(self):
         x = self.ITEM_2.clone()
 
-        providers_dict_list = [{
+        providers_dict_list: List[Dict[str, Any]] = [{
             "name": "CoolSat",
             "roles": ["producer", "licensor"],
             "url": "https://cool-sat.com/"
         }]
         providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
 
-        example_providers_dict_list = [{
+        example_providers_dict_list: List[Dict[str, Any]] = [{
             "name": "ExampleProvider_1",
             "roles": ["example_role_1", "example_role_2"],
             "url": "https://exampleprovider1.com/"
@@ -472,7 +473,7 @@ class CommonMetadataTest(unittest.TestCase):
         item = ps.Item.from_file(TestCases.get_path('data-files/item/sample-item-asset-properties.json'))
         cm = item.common_metadata
 
-        item_value = cm.providers
+        item_value = get_opt(cm.providers)
         a2_known_value = [
             ps.Provider(name="USGS",
                         url="https://landsat.usgs.gov/",
@@ -480,8 +481,8 @@ class CommonMetadataTest(unittest.TestCase):
         ]
 
         # Get
-        a1_value = cm.get_providers(item.assets['analytic'])
-        a2_value = cm.get_providers(item.assets['thumbnail'])
+        a1_value: List[Provider] = get_opt(cm.get_providers(item.assets['analytic']))
+        a2_value: List[Provider] = get_opt(cm.get_providers(item.assets['thumbnail']))
         self.assertEqual(a1_value[0].to_dict(), item_value[0].to_dict())
         self.assertNotEqual(a2_value[0].to_dict(), item_value[0].to_dict())
         self.assertEqual(a2_value[0].to_dict(), a2_known_value[0].to_dict())
@@ -489,9 +490,9 @@ class CommonMetadataTest(unittest.TestCase):
         # Set
         set_value = [ps.Provider(name="John Snow", url="https://cholera.com/", roles=["producer"])]
         cm.set_providers(set_value, item.assets['analytic'])
-        new_a1_value = cm.get_providers(item.assets['analytic'])
+        new_a1_value: List[Provider] = get_opt(cm.get_providers(item.assets['analytic']))
         self.assertEqual(new_a1_value[0].to_dict(), set_value[0].to_dict())
-        self.assertEqual(cm.providers[0].to_dict(), item_value[0].to_dict())
+        self.assertEqual(get_opt(cm.providers)[0].to_dict(), item_value[0].to_dict())
 
     def test_asset_platform(self):
         item = ps.Item.from_file(TestCases.get_path('data-files/item/sample-item-asset-properties.json'))

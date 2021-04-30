@@ -85,7 +85,7 @@ class Band:
         Returns:
             str
         """
-        return  get_required(self.properties['name'], self, 'name')
+        return get_required(self.properties['name'], self, 'name')
 
     @name.setter
     def name(self, v: str) -> None:
@@ -278,6 +278,19 @@ class EOExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.I
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "EOExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(EOExtension[T], ItemEOExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(EOExtension[T], AssetEOExtension(obj))
+        else:
+            raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
+
+    @staticmethod
+    def summaries(obj: ps.Collection) -> "SummariesEOExtension":
+        return SummariesEOExtension(obj)
+
 
 class ItemEOExtension(EOExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -340,12 +353,14 @@ class SummariesEOExtension(SummariesExtension):
     def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:
         self._set_summary(CLOUD_COVER_PROP, v)
 
+
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['eo'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
+                info: STACJSONDescription) -> None:
         if version < '0.5':
             if 'eo:crs' in obj['properties']:
                 # Try to pull out the EPSG code.
@@ -425,19 +440,6 @@ class EOExtensionHooks(ExtensionHooks):
                         asset['eo:bands'] = new_bands
 
         super().migrate(obj, version, info)
-
-
-def eo_ext(obj: T) -> EOExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(EOExtension[T], ItemEOExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(EOExtension[T], AssetEOExtension(obj))
-    else:
-        raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
-
-
-def eo_summaries(obj: ps.Collection) -> SummariesEOExtension:
-    return SummariesEOExtension(obj)
 
 
 EO_EXTENSION_HOOKS: ExtensionHooks = EOExtensionHooks()

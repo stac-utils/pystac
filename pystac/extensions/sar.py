@@ -175,10 +175,7 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         """
         return get_required(
             map_opt(lambda values: [Polarization(v) for v in values],
-            self._get_property(POLARIZATIONS, List[str])),
-            self,
-            POLARIZATIONS
-        )
+                    self._get_property(POLARIZATIONS, List[str])), self, POLARIZATIONS)
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
@@ -193,11 +190,7 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             str
         """
-        return get_required(
-            self._get_property(POLARIZATIONS, str),
-            self,
-            POLARIZATIONS
-        )
+        return get_required(self._get_property(POLARIZATIONS, str), self, POLARIZATIONS)
 
     @product_type.setter
     def product_type(self, v: str) -> None:
@@ -291,6 +284,15 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "SarExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(SarExtension[T], ItemSarExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(SarExtension[T], AssetSarExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class ItemSarExtension(SarExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -311,12 +313,14 @@ class AssetSarExtension(SarExtension[ps.Asset]):
     def __repr__(self) -> str:
         return '<AssetSarExtension Asset href={}>'.format(self.asset_href)
 
+
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['sar'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
+                info: STACJSONDescription) -> None:
         if version < '0.9':
             # Some sar fields became common_metadata
             if 'sar:platform' in obj['properties'] and 'platform' not in obj['properties']:
@@ -332,15 +336,6 @@ class SarExtensionHooks(ExtensionHooks):
                 del obj['properties']['sar:constellation']
 
         super().migrate(obj, version, info)
-
-
-def sar_ext(obj: T) -> SarExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(SarExtension[T], ItemSarExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(SarExtension[T], AssetSarExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 
 SAR_EXTENSION_HOOKS: ExtensionHooks = SarExtensionHooks()

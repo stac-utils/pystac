@@ -176,6 +176,15 @@ class ScientificExtension(Generic[T], PropertiesExtension,
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "ScientificExtension[T]":
+        if isinstance(obj, ps.Collection):
+            return cast(ScientificExtension[T], CollectionScientificExtension(obj))
+        if isinstance(obj, ps.Item):
+            return cast(ScientificExtension[T], ItemScientificExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class CollectionScientificExtension(ScientificExtension[ps.Collection]):
     def __init__(self, collection: ps.Collection):
@@ -205,13 +214,5 @@ class ScientificExtensionHooks(ExtensionHooks):
     stac_object_types: Set[ps.STACObjectType] = set(
         [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
 
-
-def scientific_ext(obj: T) -> ScientificExtension[T]:
-    if isinstance(obj, ps.Collection):
-        return cast(ScientificExtension[T], CollectionScientificExtension(obj))
-    if isinstance(obj, ps.Item):
-        return cast(ScientificExtension[T], ItemScientificExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 SCIENTIFIC_EXTENSION_HOOKS = ScientificExtensionHooks()

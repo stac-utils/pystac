@@ -90,7 +90,7 @@ def validate_dict(stac_dict: Dict[str, Any],
     if extensions is None:
         if info is None:
             info = identify_stac_object(stac_dict)
-        extensions = info.common_extensions
+        extensions = list(info.extensions)
 
     return RegisteredValidator.get_validator().validate(stac_dict, stac_object_type, stac_version,
                                                         extensions, href)
@@ -118,7 +118,7 @@ def validate_all(stac_dict: Dict[str, Any], href: str) -> None:
     validate_dict(stac_dict,
                   stac_object_type=info.object_type,
                   stac_version=str(info.version_range.latest_valid_version()),
-                  extensions=info.common_extensions,
+                  extensions=list(info.extensions),
                   href=href)
 
     if info.object_type != ps.STACObjectType.ITEM:

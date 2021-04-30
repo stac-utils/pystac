@@ -14,6 +14,7 @@ AZIMUTH_PROP = 'view:azimuth'
 SUN_AZIMUTH_PROP = 'view:sun_azimuth'
 SUN_ELEVATION_PROP = 'view:sun_elevation'
 
+
 class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
     """ViewItemExt is the extension of the Item in the View Geometry Extension.
     View Geometry adds metadata related to angles of sensors and other radiance angles
@@ -134,6 +135,15 @@ class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "ViewExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(ViewExtension[T], ItemViewExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(ViewExtension[T], AssetViewExtension(obj))
+        else:
+            raise ExtensionException(f"View extension does not apply to type {type(obj)}")
+
 
 class ItemViewExtension(ViewExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -154,17 +164,11 @@ class AssetViewExtension(ViewExtension[ps.Asset]):
     def __repr__(self) -> str:
         return '<AssetViewExtension Asset href={}>'.format(self.asset_href)
 
+
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['view'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-def view_ext(obj: T) -> ViewExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(ViewExtension[T], ItemViewExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(ViewExtension[T], AssetViewExtension(obj))
-    else:
-        raise ExtensionException(f"View extension does not apply to type {type(obj)}")
 
 VIEW_EXTENSION_HOOKS = ViewExtensionHooks()

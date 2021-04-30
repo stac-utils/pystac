@@ -124,6 +124,19 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "FileExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(FileExtension[T], ItemFileExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(FileExtension[T], AssetFileExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
+    @staticmethod
+    def summaries(obj: ps.Collection) -> "SummariesFileExtension":
+        return SummariesFileExtension(obj)
+
 
 class ItemFileExtension(FileExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -221,19 +234,6 @@ class FileExtensionHooks(ExtensionHooks):
                     obj['properties'][CHECKSUM_PROP] = old_checksum[key]
                 else:
                     obj['assets'][key][CHECKSUM_PROP] = old_checksum[key]
-
-
-def file_ext(obj: T) -> FileExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(FileExtension[T], ItemFileExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(FileExtension[T], AssetFileExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
-
-
-def file_summaries(obj: ps.Collection) -> SummariesFileExtension:
-    return SummariesFileExtension(obj)
 
 
 FILE_EXTENSION_HOOKS = FileExtensionHooks()

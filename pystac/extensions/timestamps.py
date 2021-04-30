@@ -103,6 +103,15 @@ class TimestampsExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "TimestampsExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class ItemTimestampsExtension(TimestampsExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -128,15 +137,6 @@ class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['timestamps'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
-
-
-def timestamps_ext(obj: T) -> TimestampsExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 
 TIMESTAMPS_EXTENSION_HOOKS = TimestampsExtensionHooks()

@@ -1,4 +1,4 @@
-from pystac.extensions.view import ViewExtension, view_ext
+from pystac.extensions.view import ViewExtension
 import unittest
 
 import pystac as ps
@@ -18,6 +18,8 @@ class MigrateTest(unittest.TestCase):
     def test_migrate(self):
         collection_cache = CollectionCache()
         for example in self.examples:
+            if example.path != "/home/rob/proj/stac/pystac/tests/data-files/examples/0.9.0/collection-spec/examples/landsat-collection.json":
+                continue
             with self.subTest(example.path):
                 path = example.path
 
@@ -56,9 +58,10 @@ class MigrateTest(unittest.TestCase):
             TestCases.get_path('data-files/examples/0.8.1/item-spec/'
                                'examples/planet-sample.json'))
         self.assertTrue(ViewExtension.has_extension(item))
-        self.assertEqual(view_ext(item).sun_azimuth, 101.8)
-        self.assertEqual(view_ext(item).sun_elevation, 58.8)
-        self.assertEqual(view_ext(item).off_nadir, 1)
+        view_ext = ViewExtension.ext(item)
+        self.assertEqual(view_ext.sun_azimuth, 101.8)
+        self.assertEqual(view_ext.sun_elevation, 58.8)
+        self.assertEqual(view_ext.off_nadir, 1)
 
     def test_migrates_renamed_extension(self):
         collection = ps.Collection.from_file(

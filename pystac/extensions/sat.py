@@ -86,6 +86,15 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "SatExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(SatExtension[T], ItemSatExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(SatExtension[T], AssetSatExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class ItemSatExtension(SatExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -112,13 +121,5 @@ class SatExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(['sat'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-
-def sat_ext(obj: T) -> SatExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(SatExtension[T], ItemSatExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(SatExtension[T], AssetSatExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 SAT_EXTENSION_HOOKS = SatExtensionHooks()

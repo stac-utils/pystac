@@ -239,6 +239,15 @@ class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "ProjectionExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 class ItemProjectionExtension(ProjectionExtension[ps.Item]):
     def __init__(self, item: ps.Item):
         self.item = item
@@ -263,12 +272,5 @@ class ProjectionExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(['proj', 'projection'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-def projection_ext(obj: T) -> ProjectionExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 PROJECTION_EXTENSION_HOOKS = ProjectionExtensionHooks()

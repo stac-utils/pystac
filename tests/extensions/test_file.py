@@ -3,7 +3,7 @@ import unittest
 
 import pystac as ps
 from tests.utils import (TestCases, test_to_from_dict)
-from pystac.extensions.file import FileExtension, file_ext, FileDataType
+from pystac.extensions.file import FileExtension, FileDataType
 
 
 class FileTest(unittest.TestCase):
@@ -26,12 +26,12 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(146484, file_ext(asset).size)
+        self.assertEqual(146484, FileExtension.ext(asset).size)
 
         # Set
         new_size = 1
-        file_ext(asset).size = new_size
-        self.assertEqual(new_size, file_ext(asset).size)
+        FileExtension.ext(asset).size = new_size
+        self.assertEqual(new_size, FileExtension.ext(asset).size)
         item.validate()
 
     def test_asset_checksum(self):
@@ -39,12 +39,12 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c", file_ext(asset).checksum)
+        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c", FileExtension.ext(asset).checksum)
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
-        file_ext(asset).checksum = new_checksum
-        self.assertEqual(new_checksum, file_ext(asset).checksum)
+        FileExtension.ext(asset).checksum = new_checksum
+        self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
         item.validate()
 
     def test_asset_data_type(self):
@@ -52,12 +52,12 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(FileDataType.UINT8, file_ext(asset).data_type)
+        self.assertEqual(FileDataType.UINT8, FileExtension.ext(asset).data_type)
 
         # Set
         new_data_type = FileDataType.UINT16
-        file_ext(asset).data_type = new_data_type
-        self.assertEqual(new_data_type, file_ext(asset).data_type)
+        FileExtension.ext(asset).data_type = new_data_type
+        self.assertEqual(new_data_type, FileExtension.ext(asset).data_type)
         item.validate()
 
     def test_asset_nodata(self):
@@ -65,12 +65,12 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual([], file_ext(asset).nodata)
+        self.assertEqual([], FileExtension.ext(asset).nodata)
 
         # Set
         new_nodata = [-1]
-        file_ext(asset).nodata = new_nodata
-        self.assertEqual(new_nodata, file_ext(asset).nodata)
+        FileExtension.ext(asset).nodata = new_nodata
+        self.assertEqual(new_nodata, FileExtension.ext(asset).nodata)
         item.validate()
 
     def test_migrates_old_checksum(self):
@@ -80,4 +80,4 @@ class FileTest(unittest.TestCase):
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(
-            file_ext(item.assets['noises']).checksum, "90e40210a30d1711e81a4b11ef67b28744321659")
+            FileExtension.ext(item.assets['noises']).checksum, "90e40210a30d1711e81a4b11ef67b28744321659")

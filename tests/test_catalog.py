@@ -8,7 +8,7 @@ from collections import defaultdict
 
 import pystac as ps
 from pystac import (Catalog, Collection, CatalogType, Item, Asset, MediaType, HIERARCHICAL_LINKS)
-from pystac.extensions.label import LabelClasses, LabelExtension, LabelType, label_ext
+from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
 from tests.utils import (TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, MockStacIO)
@@ -291,7 +291,7 @@ class CatalogTest(unittest.TestCase):
         catalog.normalize_hrefs('http://example.com')
         item = catalog.get_item('area-1-1-labels', recursive=True)
         assert item is not None
-        source = next(iter(label_ext(item).get_sources()))
+        source = next(iter(LabelExtension.ext(item).get_sources()))
         self.assertEqual(
             source.get_self_href(),
             "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json")
@@ -501,7 +501,8 @@ class CatalogTest(unittest.TestCase):
                               datetime=datetime.utcnow(),
                               properties={})
             LabelExtension(label_item).add_to(label_item)
-            label_ext(label_item).apply(
+            label_ext = LabelExtension.ext(label_item)
+            label_ext.apply(
                 label_description='labels',
                 label_type=LabelType.VECTOR,
                 label_properties=['label'],
@@ -910,7 +911,8 @@ class FullCopyTest(unittest.TestCase):
                               datetime=datetime.utcnow(),
                               properties={})
             LabelExtension.add_to(label_item)
-            label_ext(label_item).apply(
+            label_ext = LabelExtension.ext(label_item)
+            label_ext.apply(
                 label_description='labels',
                 label_type=LabelType.VECTOR,
                 label_properties=['label'],

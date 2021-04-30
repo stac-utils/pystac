@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import pystac as ps
 from pystac.validation import STACValidationError
-from pystac.extensions.projection import ProjectionExtension, projection_ext
+from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.utils import (TestCases, test_to_from_dict)
 
@@ -84,7 +84,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertFalse(ProjectionExtension.has_extension(item))
 
         ProjectionExtension.add_to(item)
-        projection_ext(item).apply(
+        ProjectionExtension.ext(item).apply(
             4326,
             wkt2=WKT2,
             projjson=PROJJSON,
@@ -100,9 +100,9 @@ class ProjectionTest(unittest.TestCase):
     def test_partial_apply(self):
         proj_item = ps.Item.from_file(self.example_uri)
 
-        projection_ext(proj_item).apply(epsg=1111)
+        ProjectionExtension.ext(proj_item).apply(epsg=1111)
 
-        self.assertEqual(projection_ext(proj_item).epsg, 1111)
+        self.assertEqual(ProjectionExtension.ext(proj_item).epsg, 1111)
         proj_item.validate()
 
     def test_validate_proj(self):
@@ -114,25 +114,25 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:epsg", proj_item.properties)
-        proj_epsg = projection_ext(proj_item).epsg
+        proj_epsg = ProjectionExtension.ext(proj_item).epsg
         self.assertEqual(proj_epsg, proj_item.properties['proj:epsg'])
 
         # Set
-        projection_ext(proj_item).epsg = proj_epsg + 100
+        ProjectionExtension.ext(proj_item).epsg = proj_epsg + 100
         self.assertEqual(proj_epsg + 100, proj_item.properties['proj:epsg'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).epsg,
-                         projection_ext(proj_item).epsg)
-        self.assertEqual(projection_ext(asset_prop).epsg, 9999)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).epsg,
+                         ProjectionExtension.ext(proj_item).epsg)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).epsg, 9999)
 
         # Set to Asset
-        projection_ext(asset_no_prop).epsg = 8888
-        self.assertNotEqual(projection_ext(asset_no_prop).epsg,
-                            projection_ext(proj_item).epsg)
-        self.assertEqual(projection_ext(asset_no_prop).epsg, 8888)
+        ProjectionExtension.ext(asset_no_prop).epsg = 8888
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).epsg,
+                            ProjectionExtension.ext(proj_item).epsg)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).epsg, 8888)
 
         # Validate
         proj_item.validate
@@ -142,26 +142,26 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:wkt2", proj_item.properties)
-        proj_wkt2 = projection_ext(proj_item).wkt2
+        proj_wkt2 = ProjectionExtension.ext(proj_item).wkt2
         self.assertEqual(proj_wkt2, proj_item.properties['proj:wkt2'])
 
         # Set
-        projection_ext(proj_item).wkt2 = WKT2
+        ProjectionExtension.ext(proj_item).wkt2 = WKT2
         self.assertEqual(WKT2, proj_item.properties['proj:wkt2'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).wkt2,
-                         projection_ext(proj_item).wkt2)
-        self.assertTrue('TEST_TEXT' in get_opt(projection_ext(asset_prop).wkt2))
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).wkt2,
+                         ProjectionExtension.ext(proj_item).wkt2)
+        self.assertTrue('TEST_TEXT' in get_opt(ProjectionExtension.ext(asset_prop).wkt2))
 
         # Set to Asset
         asset_value = "TEST TEXT 2"
-        projection_ext(asset_no_prop).wkt2 = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).wkt2,
-                            projection_ext(proj_item).wkt2)
-        self.assertEqual(projection_ext(asset_no_prop).wkt2, asset_value)
+        ProjectionExtension.ext(asset_no_prop).wkt2 = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).wkt2,
+                            ProjectionExtension.ext(proj_item).wkt2)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).wkt2, asset_value)
 
         # Validate
         proj_item.validate()
@@ -171,34 +171,34 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:projjson", proj_item.properties)
-        proj_projjson = projection_ext(proj_item).projjson
+        proj_projjson = ProjectionExtension.ext(proj_item).projjson
         self.assertEqual(proj_projjson, proj_item.properties['proj:projjson'])
 
         # Set
-        projection_ext(proj_item).projjson = PROJJSON
+        ProjectionExtension.ext(proj_item).projjson = PROJJSON
         self.assertEqual(PROJJSON, proj_item.properties['proj:projjson'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).projjson,
-                         projection_ext(proj_item).projjson)
-        self.assertEqual(projection_ext(asset_prop).projjson['id']['code'], 9999)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).projjson,
+                         ProjectionExtension.ext(proj_item).projjson)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).projjson['id']['code'], 9999)
 
         # Set to Asset
         asset_value = deepcopy(PROJJSON)
         asset_value['id']['code'] = 7777
-        projection_ext(asset_no_prop).projjson = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).projjson,
-                            projection_ext(proj_item).projjson)
-        self.assertEqual(projection_ext(asset_no_prop).projjson['id']['code'], 7777)
+        ProjectionExtension.ext(asset_no_prop).projjson = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).projjson,
+                            ProjectionExtension.ext(proj_item).projjson)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).projjson['id']['code'], 7777)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad projjson fails validation
         with self.assertRaises(STACValidationError):
-            projection_ext(proj_item).projjson = {"bad": "data"}
+            ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
     def test_geometry(self):
@@ -206,34 +206,34 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:geometry", proj_item.properties)
-        proj_geometry = projection_ext(proj_item).geometry
+        proj_geometry = ProjectionExtension.ext(proj_item).geometry
         self.assertEqual(proj_geometry, proj_item.properties['proj:geometry'])
 
         # Set
-        projection_ext(proj_item).geometry = proj_item.geometry
+        ProjectionExtension.ext(proj_item).geometry = proj_item.geometry
         self.assertEqual(proj_item.geometry, proj_item.properties['proj:geometry'])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).geometry,
-                         projection_ext(proj_item).geometry)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).geometry,
+                         ProjectionExtension.ext(proj_item).geometry)
         self.assertEqual(
-            projection_ext(asset_prop).geometry['coordinates'][0][0], [0.0, 0.0])
+            ProjectionExtension.ext(asset_prop).geometry['coordinates'][0][0], [0.0, 0.0])
 
         # Set to Asset
         asset_value: Dict[str, Any] = {'type': 'Point', 'coordinates': [1.0, 2.0]}
-        projection_ext(asset_no_prop).geometry = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).geometry,
-                            projection_ext(proj_item).geometry)
-        self.assertEqual(projection_ext(asset_no_prop).geometry, asset_value)
+        ProjectionExtension.ext(asset_no_prop).geometry = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).geometry,
+                            ProjectionExtension.ext(proj_item).geometry)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).geometry, asset_value)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad geometry fails validation
         with self.assertRaises(STACValidationError):
-            projection_ext(proj_item).geometry = {"bad": "data"}
+            ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
     def test_bbox(self):
@@ -241,26 +241,26 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:bbox", proj_item.properties)
-        proj_bbox = projection_ext(proj_item).bbox
+        proj_bbox = ProjectionExtension.ext(proj_item).bbox
         self.assertEqual(proj_bbox, proj_item.properties['proj:bbox'])
 
         # Set
-        projection_ext(proj_item).bbox = [1.0, 2.0, 3.0, 4.0]
+        ProjectionExtension.ext(proj_item).bbox = [1.0, 2.0, 3.0, 4.0]
         self.assertEqual(proj_item.properties['proj:bbox'], [1.0, 2.0, 3.0, 4.0])
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).bbox,
-                         projection_ext(proj_item).bbox)
-        self.assertEqual(projection_ext(asset_prop).bbox, [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).bbox,
+                         ProjectionExtension.ext(proj_item).bbox)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).bbox, [1.0, 2.0, 3.0, 4.0])
 
         # Set to Asset
         asset_value = [10.0, 20.0, 30.0, 40.0]
-        projection_ext(asset_no_prop).bbox = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).bbox,
-                            projection_ext(proj_item).bbox)
-        self.assertEqual(projection_ext(asset_no_prop).bbox, asset_value)
+        ProjectionExtension.ext(asset_no_prop).bbox = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).bbox,
+                            ProjectionExtension.ext(proj_item).bbox)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).bbox, asset_value)
 
         # Validate
         proj_item.validate()
@@ -270,37 +270,37 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:centroid", proj_item.properties)
-        proj_centroid = projection_ext(proj_item).centroid
+        proj_centroid = ProjectionExtension.ext(proj_item).centroid
         self.assertEqual(proj_centroid, proj_item.properties['proj:centroid'])
 
         # Set
         new_val = {'lat': 2.0, 'lon': 3.0}
-        projection_ext(proj_item).centroid = new_val
+        ProjectionExtension.ext(proj_item).centroid = new_val
         self.assertEqual(proj_item.properties['proj:centroid'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).centroid,
-                         projection_ext(proj_item).centroid)
-        self.assertEqual(projection_ext(asset_prop).centroid, {
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).centroid,
+                         ProjectionExtension.ext(proj_item).centroid)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).centroid, {
             "lat": 0.5,
             "lon": 0.3
         })
 
         # Set to Asset
         asset_value = {"lat": 1.5, "lon": 1.3}
-        projection_ext(asset_no_prop).centroid  = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).centroid,
-                            projection_ext(proj_item).centroid)
-        self.assertEqual(projection_ext(asset_no_prop).centroid, asset_value)
+        ProjectionExtension.ext(asset_no_prop).centroid  = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).centroid,
+                            ProjectionExtension.ext(proj_item).centroid)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).centroid, asset_value)
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad centroid fails validation
         with self.assertRaises(STACValidationError):
-            projection_ext(proj_item).centroid = {'lat': 2.0, 'lng': 3.0}
+            ProjectionExtension.ext(proj_item).centroid = {'lat': 2.0, 'lng': 3.0}
             proj_item.validate()
 
     def test_shape(self):
@@ -308,27 +308,27 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:shape", proj_item.properties)
-        proj_shape = projection_ext(proj_item).shape
+        proj_shape = ProjectionExtension.ext(proj_item).shape
         self.assertEqual(proj_shape, proj_item.properties['proj:shape'])
 
         # Set
         new_val = [100, 200]
-        projection_ext(proj_item).shape = new_val
+        ProjectionExtension.ext(proj_item).shape = new_val
         self.assertEqual(proj_item.properties['proj:shape'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).shape,
-                         projection_ext(proj_item).shape)
-        self.assertEqual(projection_ext(asset_prop).shape, [16781, 16621])
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).shape,
+                         ProjectionExtension.ext(proj_item).shape)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).shape, [16781, 16621])
 
         # Set to Asset
         asset_value = [1, 2]
-        projection_ext(asset_no_prop).shape = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).shape,
-                            projection_ext(proj_item).shape)
-        self.assertEqual(projection_ext(asset_no_prop).shape, asset_value)
+        ProjectionExtension.ext(asset_no_prop).shape = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).shape,
+                            ProjectionExtension.ext(proj_item).shape)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).shape, asset_value)
 
         # Validate
         proj_item.validate()
@@ -338,28 +338,28 @@ class ProjectionTest(unittest.TestCase):
 
         # Get
         self.assertIn("proj:transform", proj_item.properties)
-        proj_transform = projection_ext(proj_item).transform
+        proj_transform = ProjectionExtension.ext(proj_item).transform
         self.assertEqual(proj_transform, proj_item.properties['proj:transform'])
 
         # Set
         new_val = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-        projection_ext(proj_item).transform = new_val
+        ProjectionExtension.ext(proj_item).transform = new_val
         self.assertEqual(proj_item.properties['proj:transform'], new_val)
 
         # Get from Asset
         asset_no_prop = proj_item.assets['B1']
         asset_prop = proj_item.assets['B8']
-        self.assertEqual(projection_ext(asset_no_prop).transform,
-                         projection_ext(proj_item).transform)
-        self.assertEqual(projection_ext(asset_prop).transform,
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).transform,
+                         ProjectionExtension.ext(proj_item).transform)
+        self.assertEqual(ProjectionExtension.ext(asset_prop).transform,
                          [15.0, 0.0, 224992.5, 0.0, -15.0, 6790207.5, 0.0, 0.0, 1.0])
 
         # Set to Asset
         asset_value = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0]
-        projection_ext(asset_no_prop).transform = asset_value
-        self.assertNotEqual(projection_ext(asset_no_prop).transform,
-                            projection_ext(proj_item).transform)
-        self.assertEqual(projection_ext(asset_no_prop).transform, asset_value)
+        ProjectionExtension.ext(asset_no_prop).transform = asset_value
+        self.assertNotEqual(ProjectionExtension.ext(asset_no_prop).transform,
+                            ProjectionExtension.ext(proj_item).transform)
+        self.assertEqual(ProjectionExtension.ext(asset_no_prop).transform, asset_value)
 
         # Validate
         proj_item.validate()

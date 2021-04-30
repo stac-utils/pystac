@@ -180,11 +180,11 @@ class TestCases:
     def test_case_7():
         """Test case 4 as STAC version 0.8.1"""
         return Catalog.from_file(
-            TestCases.get_path('data-files/catalogs/label_catalog_0_8_1/catalog.json'))
+            TestCases.get_path('data-files/catalogs/label_catalog-v0.8.1/catalog.json'))
 
     @staticmethod
     def test_case_8() -> Collection:
         """Planet disaster data example catalog, 1.0.0-beta.2"""
         return Collection.from_file(
             TestCases.get_path('data-files/catalogs/'
-                               'planet-example-1.0.0-beta.2/collection.json'))
+                               'planet-example-v1.0.0-beta.2/collection.json'))

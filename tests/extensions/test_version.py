@@ -6,7 +6,7 @@ import unittest
 
 import pystac as ps
 from pystac.extensions import version
-from pystac.extensions.version import version_ext, VersionExtension
+from pystac.extensions.version import VersionExtension
 from tests.utils import TestCases
 
 URL_TEMPLATE: str = 'http://example.com/catalog/%s.json'
@@ -36,35 +36,35 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertTrue(VersionExtension.has_extension(self.item))
 
     def test_add_version(self):
-        version_ext(self.item).apply(self.version)
-        self.assertEqual(self.version, version_ext(self.item).version)
+        VersionExtension.ext(self.item).apply(self.version)
+        self.assertEqual(self.version, VersionExtension.ext(self.item).version)
         self.assertNotIn(version.DEPRECATED, self.item.properties)
-        self.assertFalse(version_ext(self.item).deprecated)
+        self.assertFalse(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
     def test_version_in_properties(self):
-        version_ext(self.item).apply(self.version, deprecated=True)
+        VersionExtension.ext(self.item).apply(self.version, deprecated=True)
         self.assertIn(version.VERSION, self.item.properties)
         self.assertIn(version.DEPRECATED, self.item.properties)
         self.item.validate()
 
     def test_add_not_deprecated_version(self):
-        version_ext(self.item).apply(self.version, deprecated=False)
+        VersionExtension.ext(self.item).apply(self.version, deprecated=False)
         self.assertIn(version.DEPRECATED, self.item.properties)
-        self.assertFalse(version_ext(self.item).deprecated)
+        self.assertFalse(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
     def test_add_deprecated_version(self):
-        version_ext(self.item).apply(self.version, deprecated=True)
+        VersionExtension.ext(self.item).apply(self.version, deprecated=True)
         self.assertIn(version.DEPRECATED, self.item.properties)
-        self.assertTrue(version_ext(self.item).deprecated)
+        self.assertTrue(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
     def test_latest(self):
         year = 2013
         latest = make_item(year)
-        version_ext(self.item).apply(self.version, latest=latest)
-        latest_result = version_ext(self.item).latest
+        VersionExtension.ext(self.item).apply(self.version, latest=latest)
+        latest_result = VersionExtension.ext(self.item).latest
         self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
@@ -75,8 +75,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
     def test_predecessor(self):
         year = 2010
         predecessor = make_item(year)
-        version_ext(self.item).apply(self.version, predecessor=predecessor)
-        predecessor_result = version_ext(self.item).predecessor
+        VersionExtension.ext(self.item).apply(self.version, predecessor=predecessor)
+        predecessor_result = VersionExtension.ext(self.item).predecessor
         self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
@@ -87,8 +87,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
     def test_successor(self):
         year = 2012
         successor = make_item(year)
-        version_ext(self.item).apply(self.version, successor=successor)
-        successor_result = version_ext(self.item).successor
+        VersionExtension.ext(self.item).apply(self.version, successor=successor)
+        successor_result = VersionExtension.ext(self.item).successor
         self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
@@ -105,7 +105,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        version_ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
         self.item.validate()
 
     def test_full_copy(self):
@@ -123,8 +123,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         VersionExtension.add_to(item1)
         VersionExtension.add_to(item2)
 
-        version_ext(item1).apply(version='2.0', predecessor=item2)
-        version_ext(item2).apply(version='1.0', successor=item1, latest=item1)
+        VersionExtension.ext(item1).apply(version='2.0', predecessor=item2)
+        VersionExtension.ext(item2).apply(version='1.0', successor=item1, latest=item1)
 
         # Make a full copy of the catalog
         cat_copy = cat.full_copy()
@@ -148,34 +148,34 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        version_ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
 
-        version_ext(self.item).latest = None
+        VersionExtension.ext(self.item).latest = None
         links = self.item.get_links(version.LATEST)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.item).latest)
+        self.assertIsNone(VersionExtension.ext(self.item).latest)
 
-        version_ext(self.item).predecessor = None
+        VersionExtension.ext(self.item).predecessor = None
         links = self.item.get_links(version.PREDECESSOR)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.item).predecessor)
+        self.assertIsNone(VersionExtension.ext(self.item).predecessor)
 
-        version_ext(self.item).successor = None
+        VersionExtension.ext(self.item).successor = None
         links = self.item.get_links(version.SUCCESSOR)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.item).successor)
+        self.assertIsNone(VersionExtension.ext(self.item).successor)
 
     def test_multiple_link_setting(self):
         deprecated = False
         latest1 = make_item(2013)
         predecessor1 = make_item(2010)
         successor1 = make_item(2012)
-        version_ext(self.item).apply(self.version, deprecated, latest1, predecessor1, successor1)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest1, predecessor1, successor1)
 
         year = 2015
         latest2 = make_item(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.item).latest = latest2
+        VersionExtension.ext(self.item).latest = latest2
         links = self.item.get_links(version.LATEST)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
@@ -183,7 +183,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         year = 2009
         predecessor2 = make_item(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.item).predecessor = predecessor2
+        VersionExtension.ext(self.item).predecessor = predecessor2
         links = self.item.get_links(version.PREDECESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
@@ -191,7 +191,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         year = 2014
         successor2 = make_item(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.item).successor = successor2
+        VersionExtension.ext(self.item).successor = successor2
         links = self.item.get_links(version.SUCCESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
@@ -225,35 +225,35 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertTrue(VersionExtension.has_extension(self.collection))
 
     def test_add_version(self):
-        version_ext(self.collection).apply(self.version)
-        self.assertEqual(self.version, version_ext(self.collection).version)
+        VersionExtension.ext(self.collection).apply(self.version)
+        self.assertEqual(self.version, VersionExtension.ext(self.collection).version)
         self.assertNotIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertFalse(version_ext(self.collection).deprecated)
+        self.assertFalse(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
     def test_version_deprecated(self):
-        version_ext(self.collection).apply(self.version, deprecated=True)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
         self.assertIn(version.VERSION, self.collection.extra_fields)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.collection.validate()
 
     def test_add_not_deprecated_version(self):
-        version_ext(self.collection).apply(self.version, deprecated=False)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated=False)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertFalse(version_ext(self.collection).deprecated)
+        self.assertFalse(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
     def test_add_deprecated_version(self):
-        version_ext(self.collection).apply(self.version, deprecated=True)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertTrue(version_ext(self.collection).deprecated)
+        self.assertTrue(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
     def test_latest(self):
         year = 2013
         latest = make_collection(year)
-        version_ext(self.collection).apply(self.version, latest=latest)
-        latest_result = version_ext(self.collection).latest
+        VersionExtension.ext(self.collection).apply(self.version, latest=latest)
+        latest_result = VersionExtension.ext(self.collection).latest
         self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
@@ -264,8 +264,8 @@ class CollectionVersionExtensionTest(unittest.TestCase):
     def test_predecessor(self):
         year = 2010
         predecessor = make_collection(year)
-        version_ext(self.collection).apply(self.version, predecessor=predecessor)
-        predecessor_result = version_ext(self.collection).predecessor
+        VersionExtension.ext(self.collection).apply(self.version, predecessor=predecessor)
+        predecessor_result = VersionExtension.ext(self.collection).predecessor
         self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
@@ -276,8 +276,8 @@ class CollectionVersionExtensionTest(unittest.TestCase):
     def test_successor(self):
         year = 2012
         successor = make_collection(year)
-        version_ext(self.collection).apply(self.version, successor=successor)
-        successor_result = version_ext(self.collection).successor
+        VersionExtension.ext(self.collection).apply(self.version, successor=successor)
+        successor_result = VersionExtension.ext(self.collection).successor
         self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
@@ -294,7 +294,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        version_ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
         self.collection.validate()
 
     def test_full_copy(self):
@@ -311,8 +311,8 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         VersionExtension.add_to(col1)
         VersionExtension.add_to(col2)
 
-        version_ext(col1).apply(version='2.0', predecessor=col2)
-        version_ext(col2).apply(version='1.0', successor=col1, latest=col1)
+        VersionExtension.ext(col1).apply(version='2.0', predecessor=col2)
+        VersionExtension.ext(col2).apply(version='1.0', successor=col1, latest=col1)
 
         # Make a full copy of the catalog
         cat_copy = cat.full_copy()
@@ -336,35 +336,35 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        version_ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
 
-        version_ext(self.collection).latest = None
+        VersionExtension.ext(self.collection).latest = None
         links = self.collection.get_links(version.LATEST)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.collection).latest)
+        self.assertIsNone(VersionExtension.ext(self.collection).latest)
 
-        version_ext(self.collection).predecessor = None
+        VersionExtension.ext(self.collection).predecessor = None
         links = self.collection.get_links(version.PREDECESSOR)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.collection).predecessor)
+        self.assertIsNone(VersionExtension.ext(self.collection).predecessor)
 
-        version_ext(self.collection).successor = None
+        VersionExtension.ext(self.collection).successor = None
         links = self.collection.get_links(version.SUCCESSOR)
         self.assertEqual(0, len(links))
-        self.assertIsNone(version_ext(self.collection).successor)
+        self.assertIsNone(VersionExtension.ext(self.collection).successor)
 
     def test_multiple_link_setting(self):
         deprecated = False
         latest1 = make_collection(2013)
         predecessor1 = make_collection(2010)
         successor1 = make_collection(2012)
-        version_ext(self.collection).apply(self.version, deprecated, latest1, predecessor1,
+        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest1, predecessor1,
                                           successor1)
 
         year = 2015
         latest2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.collection).latest = latest2
+        VersionExtension.ext(self.collection).latest = latest2
         links = self.collection.get_links(version.LATEST)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
@@ -372,7 +372,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         year = 2009
         predecessor2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.collection).predecessor = predecessor2
+        VersionExtension.ext(self.collection).predecessor = predecessor2
         links = self.collection.get_links(version.PREDECESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
@@ -380,7 +380,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         year = 2014
         successor2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
-        version_ext(self.collection).successor = successor2
+        VersionExtension.ext(self.collection).successor = successor2
         links = self.collection.get_links(version.SUCCESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())

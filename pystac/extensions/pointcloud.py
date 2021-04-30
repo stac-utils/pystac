@@ -484,6 +484,15 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "PointcloudExtension[T]":
+        if isinstance(obj, ps.Item):
+            return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
+        elif isinstance(obj, ps.Asset):
+            return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
     def __init__(self, item: ps.Item):
@@ -512,14 +521,5 @@ class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['pointcloud'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
-
-
-def pointcloud_ext(obj: T) -> PointcloudExtension[T]:
-    if isinstance(obj, ps.Item):
-        return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
-    elif isinstance(obj, ps.Asset):
-        return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()

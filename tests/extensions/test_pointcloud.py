@@ -4,7 +4,6 @@ import unittest
 # from copy import deepcopy
 
 import pystac as ps
-from pystac.extensions.pointcloud import pointcloud_ext
 from pystac.extensions.pointcloud import PointcloudExtension, PointcloudSchema, PointcloudStatistic
 from tests.utils import (TestCases, test_to_from_dict)
 
@@ -27,7 +26,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertFalse(PointcloudExtension.has_extension(item))
 
         PointcloudExtension.add_to(item)
-        pointcloud_ext(item).apply(1000, 'lidar', 'laszip',
+        PointcloudExtension.ext(item).apply(1000, 'lidar', 'laszip',
                                    [PointcloudSchema({
                                        'name': 'X',
                                        'size': 8,
@@ -44,11 +43,11 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:count", pc_item.properties)
-        pc_count = pointcloud_ext(pc_item).count
+        pc_count = PointcloudExtension.ext(pc_item).count
         self.assertEqual(pc_count, pc_item.properties['pc:count'])
 
         # Set
-        pointcloud_ext(pc_item).count = pc_count + 100
+        PointcloudExtension.ext(pc_item).count = pc_count + 100
         self.assertEqual(pc_count + 100, pc_item.properties['pc:count'])
 
         # Validate
@@ -58,7 +57,7 @@ class PointcloudTest(unittest.TestCase):
         # Ensure setting bad count fails validation
 
         with self.assertRaises(ps.STACValidationError):
-           pointcloud_ext(pc_item).count = 'not_an_int'  # type:ignore
+           PointcloudExtension.ext(pc_item).count = 'not_an_int'  # type:ignore
            pc_item.validate()
 
     def test_type(self):
@@ -66,11 +65,11 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:type", pc_item.properties)
-        pc_type = pointcloud_ext(pc_item).type
+        pc_type = PointcloudExtension.ext(pc_item).type
         self.assertEqual(pc_type, pc_item.properties['pc:type'])
 
         # Set
-        pointcloud_ext(pc_item).type = 'sonar'
+        PointcloudExtension.ext(pc_item).type = 'sonar'
         self.assertEqual('sonar', pc_item.properties['pc:type'])
 
         # Validate
@@ -81,11 +80,11 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:encoding", pc_item.properties)
-        pc_encoding = pointcloud_ext(pc_item).encoding
+        pc_encoding = PointcloudExtension.ext(pc_item).encoding
         self.assertEqual(pc_encoding, pc_item.properties['pc:encoding'])
 
         # Set
-        pointcloud_ext(pc_item).encoding = 'binary'
+        PointcloudExtension.ext(pc_item).encoding = 'binary'
         self.assertEqual('binary', pc_item.properties['pc:encoding'])
 
         # Validate
@@ -96,12 +95,12 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:schemas", pc_item.properties)
-        pc_schemas = [s.to_dict() for s in pointcloud_ext(pc_item).schemas]
+        pc_schemas = [s.to_dict() for s in PointcloudExtension.ext(pc_item).schemas]
         self.assertEqual(pc_schemas, pc_item.properties['pc:schemas'])
 
         # Set
         schema = [PointcloudSchema({'name': 'X', 'size': 8, 'type': 'floating'})]
-        pointcloud_ext(pc_item).schemas = schema
+        PointcloudExtension.ext(pc_item).schemas = schema
         self.assertEqual([s.to_dict() for s in schema], pc_item.properties['pc:schemas'])
 
         # Validate
@@ -112,7 +111,7 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
-        pc_statistics = [s.to_dict() for s in pointcloud_ext(pc_item).statistics]
+        pc_statistics = [s.to_dict() for s in PointcloudExtension.ext(pc_item).statistics]
         self.assertEqual(pc_statistics, pc_item.properties['pc:statistics'])
 
         # Set
@@ -128,7 +127,7 @@ class PointcloudTest(unittest.TestCase):
                 "variance": 1
             })
         ]
-        pointcloud_ext(pc_item).statistics = stats
+        PointcloudExtension.ext(pc_item).statistics = stats
         self.assertEqual([s.to_dict() for s in stats], pc_item.properties['pc:statistics'])
 
         # Validate
@@ -138,11 +137,11 @@ class PointcloudTest(unittest.TestCase):
         pc_item = ps.Item.from_file(self.example_uri)
         # Get
         self.assertIn("pc:density", pc_item.properties)
-        pc_density = pointcloud_ext(pc_item).density
+        pc_density = PointcloudExtension.ext(pc_item).density
         self.assertEqual(pc_density, pc_item.properties['pc:density'])
         # Set
         density = 100
-        pointcloud_ext(pc_item).density = density
+        PointcloudExtension.ext(pc_item).density = density
         self.assertEqual(density, pc_item.properties['pc:density'])
         # Validate
         pc_item.validate
@@ -190,4 +189,4 @@ class PointcloudTest(unittest.TestCase):
 
     def test_statistics_accessor_when_no_stats(self):
         pc_item = ps.Item.from_file(self.example_uri_no_statistics)
-        self.assertEqual(pointcloud_ext(pc_item).statistics, None)
+        self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)

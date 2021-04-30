@@ -137,6 +137,15 @@ class VersionExtension(Generic[T], PropertiesExtension,
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+    @staticmethod
+    def ext(obj: T) -> "VersionExtension[T]":
+        if isinstance(obj, ps.Collection):
+            return cast(VersionExtension[T], CollectionVersionExtension(obj))
+        if isinstance(obj, ps.Item):
+            return cast(VersionExtension[T], ItemVersionExtension(obj))
+        else:
+            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+
 
 class CollectionVersionExtension(VersionExtension[ps.Collection]):
     def __init__(self, collection: ps.Collection):
@@ -170,15 +179,6 @@ class VersionExtensionHooks(ExtensionHooks):
         if isinstance(so, ps.Collection) or isinstance(so, ps.Item):
             return [LATEST, PREDECESSOR, SUCCESSOR]
         return None
-
-
-def version_ext(obj: T) -> VersionExtension[T]:
-    if isinstance(obj, ps.Collection):
-        return cast(VersionExtension[T], CollectionVersionExtension(obj))
-    if isinstance(obj, ps.Item):
-        return cast(VersionExtension[T], ItemVersionExtension(obj))
-    else:
-        raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
 
 VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()
