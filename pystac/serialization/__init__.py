@@ -27,8 +27,7 @@ def stac_object_from_dict(d: Dict[str, Any],
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
 
-    Note: This is used internally in STAC_IO to deserialize STAC Objects.
-    It is in the top level __init__ in order to avoid circular dependencies.
+    Note: This is used internally in StacIO instances to deserialize STAC Objects.
     """
     if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
         collection_cache = None

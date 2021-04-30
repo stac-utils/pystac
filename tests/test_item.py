@@ -170,7 +170,7 @@ class ItemTest(unittest.TestCase):
             item_dict['bbox']
 
     def test_0_9_item_with_no_extensions_does_not_read_collection_data(self):
-        item_json = ps.STAC_IO.read_json(
+        item_json = ps.StacIO.default().read_json(
             TestCases.get_path('data-files/examples/hand-0.9.0/010100/010100.json'))
         assert item_json.get('stac_extensions') is None
         assert item_json.get('stac_version') == '0.9.0'

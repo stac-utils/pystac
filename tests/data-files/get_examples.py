@@ -23,7 +23,7 @@ def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
             if rel is not None and rel == 'collection':
                 href: str = link['href']
                 try:
-                    json.loads(ps.STAC_IO.read_text(href))
+                    json.loads(ps.StacIO.default().read_text(href))
                     filtered_links.append(link)
                 except (HTTPError, FileNotFoundError, json.decoder.JSONDecodeError):
                     print('===REMOVING UNREADABLE COLLECTION AT {}'.format(href))

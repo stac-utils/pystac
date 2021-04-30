@@ -12,3 +12,6 @@ sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-napoleon==0.7
 nbsphinx==0.7.1
 coverage==5.2.*
+
+# optional dependencies
+orjson==3.5.2

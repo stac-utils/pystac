@@ -1,40 +1,20 @@
+from typing import Any, Union
 from unittest.mock import Mock
 
-from pystac.stac_io import STAC_IO
+import pystac as ps
 
 
-class MockStacIO:
+class MockStacIO(ps.StacIO):
     """Creates a mock that records STAC_IO calls for testing and allows
     clients to replace STAC_IO functionality, all within a context scope.
     """
-    def __init__(self, read_text_method=None, write_text_method=None):
-        self.read_text_method = read_text_method
-        self.write_text_method = write_text_method
+    def __init__(self):
+        self.mock = Mock()
 
-    def __enter__(self):
-        mock = Mock()
-        self.old_read_text_method = STAC_IO.read_text_method
-        self.old_write_text_method = STAC_IO.write_text_method
+    def read_text(self, source: Union[str, ps.Link], *args: Any, **kwargs: Any) -> str:
+        self.mock.read_text(source)
+        return ps.StacIO.default().read_text(source)
 
-        def read_text_method(uri):
-            mock.read_text_method(uri)
-            if self.read_text_method:
-                return self.read_text_method(uri)
-            else:
-                return self.old_read_text_method(uri)
-
-        def write_text_method(uri, txt):
-            mock.write_text_method(uri, txt)
-            if self.write_text_method:
-                return self.write_text_method(uri, txt)
-            else:
-                return self.old_write_text_method(uri, txt)
-
-        STAC_IO.read_text_method = read_text_method
-        STAC_IO.write_text_method = write_text_method
-
-        return mock
-
-    def __exit__(self, type, value, traceback):
-        STAC_IO.read_text_method = self.old_read_text_method
-        STAC_IO.write_text_method = self.old_write_text_method
+    def write_text(self, dest: Union[str, ps.Link], txt: str, *args: Any, **kwargs: Any) -> None:
+        self.mock.write_text(dest, txt)
+        ps.StacIO.default().write_text(dest, txt)

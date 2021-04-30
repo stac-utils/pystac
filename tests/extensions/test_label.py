@@ -4,7 +4,7 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac as ps
-from pystac import (Catalog, Item, CatalogType, STAC_IO)
+from pystac import (Catalog, Item, CatalogType)
 from pystac.extensions.label import (LabelExtension, LabelClasses, LabelCount, LabelOverview,
                                      LabelStatistics, LabelType)
 import pystac.validation
@@ -38,7 +38,7 @@ class LabelTest(unittest.TestCase):
         label_example_2.validate()
 
     def test_from_file_pre_081(self):
-        d = STAC_IO.read_json(self.label_example_1_uri)
+        d = ps.StacIO.default().read_json(self.label_example_1_uri)
 
         d['stac_version'] = '0.8.0-rc1'
         d['properties']['label:property'] = d['properties']['label:properties']

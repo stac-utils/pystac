@@ -111,7 +111,7 @@ def validate_dict(stac_dict: Dict[str, Any],
                                                         extensions, href)
 
 
-def validate_all(stac_dict: Dict[str, Any], href: str) -> None:
+def validate_all(stac_dict: Dict[str, Any], href: str, stac_io: Optional[ps.StacIO] = None) -> None:
     """Validate STAC JSON and all contained catalogs, collections and items.
 
     If this stac_dict represents a catalog or collection, this method will
@@ -122,11 +122,16 @@ def validate_all(stac_dict: Dict[str, Any], href: str) -> None:
         stac_dict (dict): Dictionary that is the STAC json of the object.
         href (str): HREF of the STAC object being validated. Used for error
             reporting and resolving relative links.
+        stac_io: Optional StacIO instance to use for reading hrefs. If None,
+            the StacIO.default() instance is used.
 
     Raises:
         STACValidationError: This will raise a STACValidationError if this or any contained
             catalog, collection or item has a validation error.
     """
+    if stac_io is None:
+        stac_io = ps.StacIO.default()
+
     info = identify_stac_object(stac_dict)
 
     # Validate this object
@@ -148,7 +153,7 @@ def validate_all(stac_dict: Dict[str, Any], href: str) -> None:
                 if rel in ['item', 'child']:
                     link_href = make_absolute_href(cast(str, link.get('href')), start_href=href)
                     if link_href is not None:
-                        d = ps.STAC_IO.read_json(link_href)
+                        d = stac_io.read_json(link_href)
                         validate_all(d, link_href)
 
 

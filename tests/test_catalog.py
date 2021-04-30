@@ -19,7 +19,7 @@ class CatalogTypeTest(unittest.TestCase):
         cat = TestCases.test_case_1()
         with TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
-            cat_json = ps.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+            cat_json = ps.StacIO.default().read_json(os.path.join(tmp_dir, 'catalog.json'))
 
         catalog_type = CatalogType.determine_type(cat_json)
         self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
@@ -28,13 +28,13 @@ class CatalogTypeTest(unittest.TestCase):
         cat = TestCases.test_case_2()
         with TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
-            cat_json = ps.STAC_IO.read_json(os.path.join(tmp_dir, 'catalog.json'))
+            cat_json = ps.StacIO.default().read_json(os.path.join(tmp_dir, 'catalog.json'))
 
         catalog_type = CatalogType.determine_type(cat_json)
         self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
 
     def test_determine_type_for_self_contained(self):
-        cat_json = ps.STAC_IO.read_json(
+        cat_json = ps.StacIO.default().read_json(
             TestCases.get_path('data-files/catalogs/test-case-1/catalog.json'))
         catalog_type = CatalogType.determine_type(cat_json)
         self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
@@ -778,26 +778,26 @@ class CatalogTest(unittest.TestCase):
 
     def test_collections_cache_correctly(self):
         catalogs = TestCases.all_test_catalogs()
+        mock_io = MockStacIO()
         for cat in catalogs:
-            with MockStacIO() as mock_io:
-                expected_collection_reads = set([])
-                for root, _, items in cat.walk():
-                    if isinstance(root, Collection) and root != cat:
-                        expected_collection_reads.add(root.get_self_href())
+            cat._stac_io = mock_io
+            expected_collection_reads = set([])
+            for root, _, items in cat.walk():
+                if isinstance(root, Collection) and root != cat:
+                    expected_collection_reads.add(root.get_self_href())
 
-                    # Iterate over items to make sure they are read
-                    self.assertNotEqual(list(items), None)
+                # Iterate over items to make sure they are read
+                self.assertNotEqual(list(items), None)
 
-                call_uris: List[Any] = [
-                    call[0][0] for call in mock_io.read_text_method.call_args_list
-                    if call[0][0] in expected_collection_reads
-                ]
+            call_uris: List[Any] = [
+                call[0][0] for call in mock_io.mock.read_text.call_args_list
+                if call[0][0] in expected_collection_reads
+            ]
 
-                for collection_uri in expected_collection_reads:
-                    calls = len([x for x in call_uris if x == collection_uri])
-                    self.assertEqual(
-                        calls, 1,
-                        '{} was read {} times instead of once!'.format(collection_uri, calls))
+            for collection_uri in expected_collection_reads:
+                calls = len([x for x in call_uris if x == collection_uri])
+                self.assertEqual(
+                    calls, 1, '{} was read {} times instead of once!'.format(collection_uri, calls))
 
     def test_reading_iterating_and_writing_works_as_expected(self):
         """ Test case to cover issue #88 """

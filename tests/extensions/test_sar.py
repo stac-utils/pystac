@@ -31,6 +31,7 @@ class SarItemExtTest(unittest.TestCase):
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         polarizations: List[sar.Polarization] = [sar.Polarization.HV, sar.Polarization.VH]
         product_type: str = 'Some product'
+
         SarExtension.ext(self.item).apply(mode, frequency_band, polarizations, product_type)
         self.assertEqual(mode, SarExtension.ext(self.item).instrument_mode)
         self.assertIn(sar.INSTRUMENT_MODE, self.item.properties)

@@ -4,7 +4,7 @@ import json
 from pystac.stac_object import STACObjectType
 from typing import Any, Dict, List, Optional, Tuple
 
-from pystac import STAC_IO
+import pystac as ps
 from pystac.validation import STACValidationError
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
@@ -134,7 +134,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
         if schema_uri not in self.schema_cache:
-            s = json.loads(STAC_IO.read_text(schema_uri))
+            s = json.loads(ps.StacIO.default().read_text(schema_uri))
             self.schema_cache[schema_uri] = s
 
         schema = self.schema_cache[schema_uri]

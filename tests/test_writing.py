@@ -2,7 +2,7 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac as ps
-from pystac import (STAC_IO, Collection, CatalogType, HIERARCHICAL_LINKS)
+from pystac import (Collection, CatalogType, HIERARCHICAL_LINKS)
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict
 
@@ -27,7 +27,7 @@ class STACWritingTest(unittest.TestCase):
         return validated_count
 
     def validate_file(self, path: str, object_type: str):
-        d = STAC_IO.read_json(path)
+        d = ps.StacIO.default().read_json(path)
         return validate_dict(d, ps.STACObjectType(object_type))
 
     def validate_link_types(self, root_href: str, catalog_type: ps.CatalogType):
@@ -44,7 +44,7 @@ class STACWritingTest(unittest.TestCase):
                         self.assertTrue(is_valid)
 
         def validate_item_link_type(href: str, link_type: str, should_include_self: bool):
-            item_dict = STAC_IO.read_json(href)
+            item_dict = ps.StacIO.default().read_json(href)
             item = ps.Item.from_file(href)
             rel_links = HIERARCHICAL_LINKS + ps.EXTENSION_HOOKS.get_extended_object_links(item)
             for link in item.get_links():
@@ -60,7 +60,7 @@ class STACWritingTest(unittest.TestCase):
             self.assertEqual('self' in rels, should_include_self)
 
         def validate_catalog_link_type(href: str, link_type: str, should_include_self: bool):
-            cat_dict = STAC_IO.read_json(href)
+            cat_dict = ps.StacIO.default().read_json(href)
             cat = ps.Catalog.from_file(href)
 
             rels = set([link['rel'] for link in cat_dict['links']])

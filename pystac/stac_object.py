@@ -5,7 +5,6 @@ from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING
 import pystac as ps
 from pystac import STACError
 from pystac.link import Link
-from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
 
 if TYPE_CHECKING:
@@ -278,14 +277,21 @@ class STACObject(ABC):
                 link.resolve_stac_object(root=self.get_root())
                 yield cast("STACObject", link.target)
 
-    def save_object(self, include_self_link: bool = True, dest_href: Optional[str] = None) -> None:
+    def save_object(self,
+                    include_self_link: bool = True,
+                    dest_href: Optional[str] = None,
+                    stac_io: Optional[ps.StacIO] = None) -> None:
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
-          include_self_link (bool): If this is true, include the 'self' link with this object.
-              Otherwise, leave out the self link.
-          dest_href (str): Optional HREF to save the file to. If None, the object will be saved
-              to the object's self href.
+            include_self_link (bool): If this is true, include the 'self' link with this object.
+                Otherwise, leave out the self link.
+            dest_href (str): Optional HREF to save the file to. If None, the object will be saved
+                to the object's self href.
+            stac_io: Optional instance of StacIO to use. If not provided, will use the
+                instance set on the object's root if available, otherwise will use the
+                default instance.
+
 
         Raises:
             :class:`~pystac.STACError`: If no self href is set, this error will be raised.
@@ -295,6 +301,16 @@ class STACObject(ABC):
             STAC best practices document
             <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
         """
+        if stac_io is None:
+            root = self.get_root()
+            if root is not None:
+                root_stac_io = root._stac_io
+                if root_stac_io is not None:
+                    stac_io = root_stac_io
+
+            if stac_io is None:
+                stac_io = ps.StacIO.default()
+
         if dest_href is None:
             self_href = self.get_self_href()
             if self_href is None:
@@ -302,7 +318,7 @@ class STACObject(ABC):
                     'Self HREF must be set before saving without an explicit dest_href.')
             dest_href = self_href
 
-        STAC_IO.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
+        stac_io.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
     def full_copy(self,
                   root: Optional["Catalog_Type"] = None,
@@ -420,21 +436,26 @@ class STACObject(ABC):
         pass
 
     @classmethod
-    def from_file(cls, href: str) -> "STACObject":
+    def from_file(cls, href: str, stac_io: Optional[ps.StacIO] = None) -> "STACObject":
         """Reads a STACObject implementation from a file.
 
         Args:
             href (str): The HREF to read the object from.
+            stac_io: Optional instance of StacIO to use. If not provided, will use the
+                default instance.
 
         Returns:
             The specific STACObject implementation class that is represented
             by the JSON read from the file located at HREF.
         """
+        if stac_io is None:
+            stac_io = ps.StacIO.default()
+
         if not is_absolute_href(href):
             href = make_absolute_href(href)
-        d = STAC_IO.read_json(href)
+        d = stac_io.read_json(href)
 
-        o = STAC_IO.stac_object_from_dict(d, href, None)
+        o = stac_io.stac_object_from_dict(d, href, None)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -471,75 +492,3 @@ class STACObject(ABC):
             STACObject: The STACObject parsed from this dict.
         """
         pass
-
-
-# class ExtensionIndex:
-#     """Defines methods for accessing extension functionality.
-
-#     To access a specific extension, use the __getitem__ on this class with the
-#     extension ID::
-
-#         # Access the "bands" property on the eo extension.
-#         item.ext['eo'].bands
-#     """
-#     def __init__(self, stac_object: STACObject) -> None:
-#         self.stac_object = stac_object
-
-#     def __getitem__(self, extension_id: str) -> "STACObjectExtension_Type":
-#         """Gets the extension object for the given extension.
-
-#         Returns:
-#             CatalogExtension or CollectionExtension or ItemExtension: The extension object
-#             through which you can access the extension functionality for the extension represented
-#             by the extension_id.
-#         """
-#         # Check to make sure this is a registered extension.
-#         if not ps.STAC_EXTENSIONS.is_registered_extension(extension_id):
-#             raise ExtensionError("'{}' is not an extension "
-#                                  "registered with PySTAC".format(extension_id))
-
-#         if not self.implements(extension_id):
-#             raise ExtensionError("{} does not implement the {} extension. "
-#                                  "Use the 'ext.enable' method to enable this extension "
-#                                  "first.".format(self.stac_object, extension_id))
-
-#         return ps.STAC_EXTENSIONS.extend_object(extension_id, self.stac_object)
-
-#     def __getattr__(self, extension_id: str) -> "STACObjectExtension_Type":
-#         """Gets an extension based on a dynamic attribute.
-
-#         This takes the attribute name and passes it to __getitem__.
-
-#         This allows the following two lines to be equivalent::
-
-#             item.ext["label"].label_properties
-#             item.ext.label.label_properties
-#         """
-#         if extension_id.startswith('__') and hasattr(ExtensionIndex, extension_id):
-#             return self.__getattribute__(extension_id)
-#         return self[extension_id]
-
-#     def enable(self, extension_id: str) -> None:
-#         """Enables a stac extension for the given object. If the object already
-#         enables the extension, no action is taken. If it does not, the extension ID is
-#         added to the object's stac_extension property.
-
-#         Args:
-#             extension_id (str): The extension ID representing the extension
-#             the object should implement
-
-#         """
-#         ps.STAC_EXTENSIONS.enable_extension(extension_id, self.stac_object)
-
-#     def implements(self, extension_id: str) -> bool:
-#         """Returns true if the associated object implements the given extension.
-
-#         Args:
-#             extension_id (str): The extension ID to check
-
-#         Returns:
-#             [bool]: True if the object implements the extensions - i.e. if
-#                 the extension ID is in the "stac_extensions" property.
-#         """
-#         return (self.stac_object.stac_extensions is not None
-#                 and extension_id in self.stac_object.stac_extensions)

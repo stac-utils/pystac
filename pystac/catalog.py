@@ -110,6 +110,12 @@ class Catalog(STACObject):
 
     STAC_OBJECT_TYPE = ps.STACObjectType.CATALOG
 
+    _stac_io: Optional[ps.StacIO] = None
+    """Optional instance of StacIO that will be used by default
+    for any IO operations on objects contained by this catalog.
+    Set while reading in a catalog. This is set when a catalog
+    is read by a StacIO instance."""
+
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in a canonical format."""
     def __init__(self,

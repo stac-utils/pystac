@@ -3,7 +3,6 @@ from pystac.extensions.view import ViewExtension
 import unittest
 
 import pystac as ps
-from pystac import (STAC_IO, STACObject)
 from pystac.cache import CollectionCache
 from pystac.serialization import (identify_stac_object, identify_stac_object_type,
                                   merge_common_properties, migrate_to_latest)
@@ -22,7 +21,7 @@ class MigrateTest(unittest.TestCase):
             with self.subTest(example.path):
                 path = example.path
 
-                d = STAC_IO.read_json(path)
+                d = ps.StacIO.default().read_json(path)
                 if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
                     merge_common_properties(d, json_href=path, collection_cache=collection_cache)
 
@@ -42,7 +41,7 @@ class MigrateTest(unittest.TestCase):
 
                 # Test that PySTAC can read it without errors.
                 if info.object_type != ps.STACObjectType.ITEMCOLLECTION:
-                    self.assertIsInstance(ps.read_dict(migrated_d, href=path), STACObject)
+                    self.assertIsInstance(ps.read_dict(migrated_d, href=path), ps.STACObject)
 
     def test_migrates_removed_extension(self):
         item = ps.Item.from_file(

@@ -7,7 +7,7 @@ from pystac.errors import (STACError, STACTypeError, RequiredPropertyMissing)  #
 
 from typing import Any, Dict, Optional
 from pystac.version import (__version__, get_stac_version, set_stac_version)  # type:ignore
-from pystac.stac_io import STAC_IO  # type:ignore
+from pystac.stac_io import StacIO  # type:ignore
 from pystac.stac_object import (STACObject, STACObjectType)  # type:ignore
 from pystac.media_type import MediaType  # type:ignore
 from pystac.link import (Link, HIERARCHICAL_LINKS)  # type:ignore
@@ -99,7 +99,8 @@ def write_file(obj: STACObject,
 
 def read_dict(d: Dict[str, Any],
               href: Optional[str] = None,
-              root: Optional[Catalog] = None) -> STACObject:
+              root: Optional[Catalog] = None,
+              stac_io: Optional[StacIO] = None) -> STACObject:
     """Reads a STAC object from a dict representing the serialized JSON version of the
     STAC object.
 
@@ -115,5 +116,9 @@ def read_dict(d: Dict[str, Any],
         root (Catalog or Collection): Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
+        stac_io: Optional StacIO instance to use for reading. If None, the
+            default instance will be used.
     """
-    return STAC_IO.stac_object_from_dict(d, href, root)
+    if stac_io is None:
+        stac_io = StacIO.default()
+    return stac_io.stac_object_from_dict(d, href, root)

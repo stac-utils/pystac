@@ -2,7 +2,6 @@ from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union, cast
 
 import pystac as ps
-from pystac.stac_io import STAC_IO
 from pystac.utils import (make_absolute_href, make_relative_href, is_absolute_href)
 
 if TYPE_CHECKING:
@@ -176,11 +175,22 @@ class Link:
                 target_href = make_absolute_href(target_href, start_href)
             obj = None
 
+            stac_io: Optional[ps.StacIO] = None
+
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
+                stac_io = root._stac_io
 
             if obj is None:
-                obj = STAC_IO.read_stac_object(target_href, root=root)
+
+                if stac_io is None:
+                    if self.owner is not None:
+                        if isinstance(self.owner, ps.Catalog):
+                            stac_io = self.owner._stac_io
+                    if stac_io is None:
+                        stac_io = ps.StacIO.default()
+
+                obj = stac_io.read_stac_object(target_href, root=root)
                 obj.set_self_href(target_href)
                 if root is not None:
                     obj = root._resolved_objects.get_or_cache(obj)

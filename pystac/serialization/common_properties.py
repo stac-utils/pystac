@@ -11,6 +11,8 @@ def merge_common_properties(item_dict: Dict[str, Any],
                             json_href: Optional[str] = None) -> bool:
     """Merges Collection properties into an Item.
 
+    Note: This is only applicable to reading old STAC versions (pre 1.0.0-beta.1).
+
     Args:
         item_dict (dict): JSON dict of the Item which properties should be merged
             into.
@@ -70,7 +72,7 @@ def merge_common_properties(item_dict: Dict[str, Any],
                     collection = collection_cache.get_by_href(collection_href)
 
                 if collection is None:
-                    collection = ps.STAC_IO.read_json(collection_href)
+                    collection = ps.StacIO.default().read_json(collection_href)
 
     if collection is not None:
         collection_id = None

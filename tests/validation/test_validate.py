@@ -84,7 +84,7 @@ class ValidateTest(unittest.TestCase):
         for test_case in TestCases.all_test_catalogs():
             catalog_href = test_case.get_self_href()
             if catalog_href is not None:
-                stac_dict = ps.STAC_IO.read_json(catalog_href)
+                stac_dict = ps.StacIO.default().read_json(catalog_href)
 
                 pystac.validation.validate_all(stac_dict, catalog_href)
 
@@ -100,7 +100,8 @@ class ValidateTest(unittest.TestCase):
             new_cat_href = os.path.join(dst_dir, 'catalog.json')
 
             # Make sure it's valid before modification
-            pystac.validation.validate_all(ps.STAC_IO.read_json(new_cat_href), new_cat_href)
+            pystac.validation.validate_all(ps.StacIO.default().read_json(new_cat_href),
+                                           new_cat_href)
 
             # Modify a contained collection to add an extension for which the
             # collection is invalid.
@@ -110,7 +111,7 @@ class ValidateTest(unittest.TestCase):
             with open(os.path.join(dst_dir, 'acc/collection.json'), 'w') as f:
                 json.dump(col, f)
 
-            stac_dict = ps.STAC_IO.read_json(new_cat_href)
+            stac_dict = ps.StacIO.default().read_json(new_cat_href)
 
             with self.assertRaises(STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
