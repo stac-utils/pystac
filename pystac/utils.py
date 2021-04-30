@@ -220,7 +220,7 @@ def get_opt(option: Optional[T]) -> T:
     """ Retrieves the value of the Optional type.
 
     If the Optional is None, this will raise a value error.
-    Use this to get a propertly typed value from an optional
+    Use this to get a properly typed value from an optional
     in contexts where you can be certain the value is not None.
     If there is potential for a non-None value, it's best to handle
     the None case of the optional instead of using this method.

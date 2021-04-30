@@ -7,11 +7,9 @@ from pystac import STACError
 from pystac.link import Link
 from pystac.stac_io import STAC_IO
 from pystac.utils import (is_absolute_href, make_absolute_href)
-#from pystac.extensions import ExtensionError
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
-    #from pystac.extensions.base import STACObjectExtension as STACObjectExtension_Type
 
 
 class STACObjectType(str, Enum):

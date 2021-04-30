@@ -29,9 +29,6 @@ class RequiredPropertyMissing(Exception):
             error message, or be a string that describes the object.
         prop: The property that is missing
     """
-    def __init__(self,
-                 obj: Union[str, Any],
-                 prop: str,
-                 msg: Optional[str] = None) -> None:
+    def __init__(self, obj: Union[str, Any], prop: str, msg: Optional[str] = None) -> None:
         msg = msg or f"{repr(obj)} does not have required property {prop}"
         super().__init__(msg)

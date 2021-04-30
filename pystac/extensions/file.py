@@ -1,9 +1,10 @@
 import enum
-from pystac.serialization.identify import OldExtensionShortIDs, STACJSONDescription, STACVersionID
+from pystac.serialization.identify import (OldExtensionShortIDs, STACJSONDescription, STACVersionID)
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
+from pystac.extensions.base import (ExtensionException, ExtensionManagementMixin,
+                                    PropertiesExtension, SummariesExtension)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 

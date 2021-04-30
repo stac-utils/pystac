@@ -331,7 +331,8 @@ class SarExtensionHooks(ExtensionHooks):
                 obj['properties']['instruments'] = [obj['properties']['sar:instrument']]
                 del obj['properties']['sar:instrument']
 
-            if 'sar:constellation' in obj['properties'] and 'constellation' not in obj['properties']:
+            if ('sar:constellation' in obj['properties']
+                    and 'constellation' not in obj['properties']):
                 obj['properties']['constellation'] = obj['properties']['sar:constellation']
                 del obj['properties']['sar:constellation']
 

@@ -114,7 +114,7 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
 
     def migrate(self, obj: Dict[str, Any], version: STACVersionID,
                 info: STACJSONDescription) -> None:
-        # Handel that the "item-assets" extension had the id of "assets", before
+        # Handle that the "item-assets" extension had the id of "assets", before
         # collection assets (since removed) took over the ID of "assets"
         if version < '1.0.0-beta.1' and 'asset' in info.extensions:
             if 'assets' in obj:

@@ -22,8 +22,7 @@ def migrate(path: str) -> None:
 
     if 'stac_version' in stac_json:
         cur_ver = stac_json['stac_version']
-        #if not cur_ver == TARGET_VERSION:
-        if True:
+        if not cur_ver == TARGET_VERSION:
             print('  - Migrating {} from {} to {}...'.format(path, cur_ver, TARGET_VERSION))
             obj = ps.read_dict(stac_json, href=path)
             migrated = obj.to_dict(include_self_link=False)

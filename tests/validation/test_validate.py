@@ -34,8 +34,6 @@ class ValidateTest(unittest.TestCase):
 
     def test_validate_examples(self):
         for example in TestCases.get_examples_info():
-            #if example.path != "/home/rob/proj/stac/pystac/tests/data-files/examples/landsat-0.6.0/156/029/2015-01-01/LC81560292015001LGN00.json":
-            #    continue
             with self.subTest(example.path):
                 stac_version = example.stac_version
                 path = example.path

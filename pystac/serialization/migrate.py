@@ -81,7 +81,7 @@ def _get_object_migrations(
 
 def _get_removed_extension_migrations(
 ) -> Dict[str, Tuple[Optional[List["STACObjectType_Type"]], Optional[Callable[
-    [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]]]:
+    [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]]]:  # noqa
     """Handles removed extensions.
 
     This does not handle renamed extension or extensions that were absorbed

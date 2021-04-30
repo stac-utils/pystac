@@ -1,6 +1,7 @@
 from copy import (copy, deepcopy)
 from datetime import datetime as Datetime
-from typing import Any, Dict, Generic, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type, TypeVar, Union, cast
+from typing import (Any, Dict, Generic, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type,
+                    TypeVar, Union, cast)
 
 import dateutil.parser
 from dateutil import tz

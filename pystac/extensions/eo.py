@@ -3,7 +3,8 @@ import re
 from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension, SummariesExtension
+from pystac.extensions.base import (ExtensionException, ExtensionManagementMixin,
+                                    PropertiesExtension, SummariesExtension)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions import view
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -414,7 +415,7 @@ class EOExtensionHooks(ExtensionHooks):
                 if 'eo:{}'.format(field) in obj['properties']:
                     if 'stac_extensions' not in obj:
                         obj['stac_extensions'] = []
-                    if not view.SCHEMA_URI in obj['stac_extensions']:
+                    if view.SCHEMA_URI not in obj['stac_extensions']:
                         obj['stac_extensions'].append(view.SCHEMA_URI)
                     if not 'view:{}'.format(field) in obj['properties']:
                         obj['properties']['view:{}'.format(field)] = \
