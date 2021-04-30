@@ -1,6 +1,7 @@
 import logging
 import sys
 
+
 def setup_logging(level: int) -> None:
     for package in ["pystac", "tests"]:
         logger = logging.getLogger(package)
@@ -12,5 +13,6 @@ def setup_logging(level: int) -> None:
         ch.setLevel(level)
         ch.setFormatter(formatter)
         logger.addHandler(ch)
+
 
 setup_logging(logging.INFO)

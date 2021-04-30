@@ -62,9 +62,10 @@ class SarItemExtTest(unittest.TestCase):
         observation_direction: sar.ObservationDirection = sar.ObservationDirection.LEFT
 
         SarExtension.ext(self.item).apply(mode, frequency_band, polarizations, product_type,
-                                 center_frequency, resolution_range, resolution_azimuth,
-                                 pixel_spacing_range, pixel_spacing_azimuth, looks_range,
-                                 looks_azimuth, looks_equivalent_number, observation_direction)
+                                          center_frequency, resolution_range, resolution_azimuth,
+                                          pixel_spacing_range, pixel_spacing_azimuth, looks_range,
+                                          looks_azimuth, looks_equivalent_number,
+                                          observation_direction)
 
         self.assertEqual(center_frequency, SarExtension.ext(self.item).center_frequency)
         self.assertIn(sar.CENTER_FREQUENCY, self.item.properties)
@@ -87,7 +88,8 @@ class SarItemExtTest(unittest.TestCase):
         self.assertEqual(looks_azimuth, SarExtension.ext(self.item).looks_azimuth)
         self.assertIn(sar.LOOKS_AZIMUTH, self.item.properties)
 
-        self.assertEqual(looks_equivalent_number, SarExtension.ext(self.item).looks_equivalent_number)
+        self.assertEqual(looks_equivalent_number,
+                         SarExtension.ext(self.item).looks_equivalent_number)
         self.assertIn(sar.LOOKS_EQUIVALENT_NUMBER, self.item.properties)
 
         self.assertEqual(observation_direction, SarExtension.ext(self.item).observation_direction)
@@ -102,7 +104,8 @@ class SarItemExtTest(unittest.TestCase):
         polarizations = sar.Polarization.HV
         product_type: str = 'Some product'
         with self.assertRaises(ps.STACError):
-            SarExtension.ext(self.item).apply(mode, frequency_band, polarizations, product_type)  #  type:ignore
+            SarExtension.ext(self.item).apply(mode, frequency_band, polarizations,
+                                              product_type)  #  type:ignore
 
 
 if __name__ == '__main__':

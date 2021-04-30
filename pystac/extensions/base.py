@@ -13,7 +13,7 @@ class SummariesExtension:
         self.summaries = collection.summaries
 
     def _set_summary(self, prop_key: str, v: Optional[Union[List[Any], ps.RangeSummary[Any],
-                                                   Dict[str, Any]]]) -> None:
+                                                            Dict[str, Any]]]) -> None:
         if v is None:
             self.summaries.remove(prop_key)
         else:
@@ -27,7 +27,7 @@ class PropertiesExtension(ABC):
     properties: Dict[str, Any]
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
 
-    def _get_property(self, prop_name: str, typ: Type[P] = Any) -> Optional[P]:
+    def _get_property(self, prop_name: str, typ: Type[P] = Type[Any]) -> Optional[P]:
         result: Optional[typ] = self.properties.get(prop_name)
         if result is not None:
             return result

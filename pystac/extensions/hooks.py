@@ -42,7 +42,7 @@ class ExtensionHooks(ABC):
         return None
 
     def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                      info: STACJSONDescription) -> None:
+                info: STACJSONDescription) -> None:
         """Migrate a STAC Object in dict format from a previous version.
         The base implementation will update the stac_extensions to the latest
         schema ID. This method will only be called for STAC objects that have been
@@ -59,6 +59,7 @@ class ExtensionHooks(ABC):
                 except ValueError:
                     obj['stac_extensions'].append(self.schema_uri)
                 break
+
 
 class RegisteredExtensionHooks:
     def __init__(self, hooks: Iterable[ExtensionHooks]):
@@ -88,7 +89,7 @@ class RegisteredExtensionHooks:
         return result or []
 
     def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                    info: STACJSONDescription) -> None:
+                info: STACJSONDescription) -> None:
         for hooks in self.hooks.values():
             if info.object_type in hooks._get_stac_object_types():
                 hooks.migrate(obj, version, info)

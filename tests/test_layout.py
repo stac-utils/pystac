@@ -20,7 +20,11 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate('${year}/${month}/${day}/${date}/item.json')
 
-        item = ps.Item('test', geometry=ARBITRARY_GEOM, bbox=ARBITRARY_BBOX, datetime=dt, properties={})
+        item = ps.Item('test',
+                       geometry=ARBITRARY_GEOM,
+                       bbox=ARBITRARY_BBOX,
+                       datetime=dt,
+                       properties={})
 
         parts = template.get_template_values(item)
 

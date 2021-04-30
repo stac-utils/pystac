@@ -105,7 +105,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor,
+                                              successor)
         self.item.validate()
 
     def test_full_copy(self):
@@ -148,7 +149,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor,
+                                              successor)
 
         VersionExtension.ext(self.item).latest = None
         links = self.item.get_links(version.LATEST)
@@ -170,7 +172,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest1 = make_item(2013)
         predecessor1 = make_item(2010)
         successor1 = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest1, predecessor1, successor1)
+        VersionExtension.ext(self.item).apply(self.version, deprecated, latest1, predecessor1,
+                                              successor1)
 
         year = 2015
         latest2 = make_item(year)
@@ -294,7 +297,8 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor,
+                                                    successor)
         self.collection.validate()
 
     def test_full_copy(self):
@@ -336,7 +340,8 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor, successor)
+        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor,
+                                                    successor)
 
         VersionExtension.ext(self.collection).latest = None
         links = self.collection.get_links(version.LATEST)
@@ -359,7 +364,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         predecessor1 = make_collection(2010)
         successor1 = make_collection(2012)
         VersionExtension.ext(self.collection).apply(self.version, deprecated, latest1, predecessor1,
-                                          successor1)
+                                                    successor1)
 
         year = 2015
         latest2 = make_collection(year)

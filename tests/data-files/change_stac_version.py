@@ -11,6 +11,7 @@ import pystac as ps
 
 TARGET_VERSION = ps.get_stac_version()
 
+
 def migrate(path: str) -> None:
     try:
         with open(path) as f:
@@ -23,19 +24,16 @@ def migrate(path: str) -> None:
         cur_ver = stac_json['stac_version']
         #if not cur_ver == TARGET_VERSION:
         if True:
-            print('  - Migrating {} from {} to {}...'.format(
-                path, cur_ver, TARGET_VERSION))
+            print('  - Migrating {} from {} to {}...'.format(path, cur_ver, TARGET_VERSION))
             obj = ps.read_dict(stac_json, href=path)
             migrated = obj.to_dict(include_self_link=False)
             with open(path, 'w') as f:
-               json.dump(migrated, f, indent=2)
+                json.dump(migrated, f, indent=2)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--file',
-                        metavar='FILE',
-                        help='Only migrate this specific file.')
+    parser.add_argument('--file', metavar='FILE', help='Only migrate this specific file.')
 
     args = parser.parse_args()
 

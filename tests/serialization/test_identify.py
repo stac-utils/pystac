@@ -39,9 +39,7 @@ class IdentifyTest(unittest.TestCase):
                 self.assertEqual(actual.object_type, example.object_type, msg=msg)
                 version_contained_in_range = actual.version_range.contains(example.stac_version)
                 self.assertTrue(version_contained_in_range, msg=msg)
-                self.assertEqual(set(actual.extensions),
-                                 set(example.extensions),
-                                 msg=msg)
+                self.assertEqual(set(actual.extensions), set(example.extensions), msg=msg)
 
 
 class VersionTest(unittest.TestCase):

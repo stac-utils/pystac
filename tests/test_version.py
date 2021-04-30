@@ -17,7 +17,6 @@ class VersionTest(unittest.TestCase):
             os.environ['PYSTAC_STAC_VERSION_OVERRIDE'] = self._prev_env_version
         ps.set_stac_version(None)
 
-
     def test_override_stac_version_with_environ(self):
 
         override_version = '1.0.0-gamma.2'

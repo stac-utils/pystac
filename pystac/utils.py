@@ -232,6 +232,7 @@ def get_opt(option: Optional[T]) -> T:
         raise ValueError("Cannot get value from None")
     return option
 
+
 def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
     """ Retrieves an optional value that comes from a required property.
     If the option is None, throws an RequiredPropertyError with

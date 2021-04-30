@@ -356,7 +356,6 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         # code translates the short name IDs used pre-1.0.0-RC1 to the
         # relevant extension schema uri identifier.
 
-
     if not version_range.is_single_version():
         # Final Checks
 

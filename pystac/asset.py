@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from pystac.collection import Collection as Collection_Type
     from pystac.item import Item as Item_Type
 
+
 class Asset:
     """An object that contains a link to data associated with an Item or Collection that
     can be downloaded or streamed.

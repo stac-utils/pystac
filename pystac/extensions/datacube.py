@@ -194,7 +194,6 @@ class VerticalSpatialDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
-
 class TemporalDimension(Dimension):
     @property
     def extent(self) -> Optional[List[Optional[str]]]:
@@ -324,6 +323,7 @@ class DatacubeExtension(Generic[T], PropertiesExtension,
         else:
             raise ExtensionException(f"Datacube extension does not apply to type {type(obj)}")
 
+
 class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
     def __init__(self, collection: ps.Collection):
         self.collection = collection
@@ -332,6 +332,7 @@ class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
     def __repr__(self) -> str:
         return '<CollectionDatacubeExtension Item id={}>'.format(self.collection.id)
 
+
 class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
     def __init__(self, item: ps.Item):
         self.item = item
@@ -339,6 +340,7 @@ class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
 
     def __repr__(self) -> str:
         return '<ItemDatacubeExtension Item id={}>'.format(self.item.id)
+
 
 class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
     def __init__(self, asset: ps.Asset):
@@ -350,9 +352,12 @@ class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
     def __repr__(self) -> str:
         return '<AssetDatacubeExtension Item id={}>'.format(self.asset_href)
 
+
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['datacube'])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+    stac_object_types: Set[ps.STACObjectType] = set(
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+
 
 DATACUBE_EXTENSION_HOOKS = DatacubeExtensionHooks()

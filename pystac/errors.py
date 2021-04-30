@@ -16,6 +16,7 @@ class STACTypeError(Exception):
     """
     pass
 
+
 class RequiredPropertyMissing(Exception):
     """ This error is raised when a required value was expected
     to be there but was missing or None. This will happen, for example,
@@ -31,8 +32,6 @@ class RequiredPropertyMissing(Exception):
     def __init__(self,
                  obj: Union[str, Any],
                  prop: str,
-                 msg: Optional[str] = None,
-                 *args: Any,
-                 **kwargs: Any) -> None:
+                 msg: Optional[str] = None) -> None:
         msg = msg or f"{repr(obj)} does not have required property {prop}"
-        super().__init__(msg, *args, **kwargs)
+        super().__init__(msg)

@@ -522,4 +522,5 @@ class PointcloudExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(['pointcloud'])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
+
 POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()

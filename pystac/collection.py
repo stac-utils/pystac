@@ -545,7 +545,7 @@ class Collection(Catalog):
         if not self.summaries.is_empty():
             d['summaries'] = self.summaries.to_dict()
         if any(self.assets):
-            d['assets'] = {k: v.to_dict() for k, v in self.assets.items() }
+            d['assets'] = {k: v.to_dict() for k, v in self.assets.items()}
 
         return d
 

@@ -27,8 +27,8 @@ class TimestampsTest(unittest.TestCase):
         TimestampsExtension.add_to(item)
         self.assertTrue(TimestampsExtension.has_extension(item))
         TimestampsExtension.ext(item).apply(published=str_to_datetime("2020-01-03T06:45:55Z"),
-                                   expires=str_to_datetime("2020-02-03T06:45:55Z"),
-                                   unpublished=str_to_datetime("2020-03-03T06:45:55Z"))
+                                            expires=str_to_datetime("2020-02-03T06:45:55Z"),
+                                            unpublished=str_to_datetime("2020-03-03T06:45:55Z"))
 
         for d in [
                 TimestampsExtension.ext(item).published,
@@ -72,16 +72,18 @@ class TimestampsTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = timestamps_item.assets['red']
         asset_prop = timestamps_item.assets['blue']
-        self.assertEqual(TimestampsExtension.ext(asset_no_prop).expires,
-                         TimestampsExtension.ext(timestamps_item).expires)
-        self.assertEqual(TimestampsExtension.ext(asset_prop).expires,
-                         str_to_datetime("2018-12-02T00:00:00Z"))
+        self.assertEqual(
+            TimestampsExtension.ext(asset_no_prop).expires,
+            TimestampsExtension.ext(timestamps_item).expires)
+        self.assertEqual(
+            TimestampsExtension.ext(asset_prop).expires, str_to_datetime("2018-12-02T00:00:00Z"))
 
         # # Set to Asset
         asset_value = str_to_datetime("2019-02-02T00:00:00Z")
-        TimestampsExtension.ext(asset_no_prop).expires =asset_value
-        self.assertNotEqual(TimestampsExtension.ext(asset_no_prop).expires,
-                            TimestampsExtension.ext(timestamps_item).expires)
+        TimestampsExtension.ext(asset_no_prop).expires = asset_value
+        self.assertNotEqual(
+            TimestampsExtension.ext(asset_no_prop).expires,
+            TimestampsExtension.ext(timestamps_item).expires)
         self.assertEqual(TimestampsExtension.ext(asset_no_prop).expires, asset_value)
 
         # Validate
@@ -104,16 +106,18 @@ class TimestampsTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = timestamps_item.assets['red']
         asset_prop = timestamps_item.assets['blue']
-        self.assertEqual(TimestampsExtension.ext(asset_no_prop).published,
-                         TimestampsExtension.ext(timestamps_item).published)
-        self.assertEqual(TimestampsExtension.ext(asset_prop).published,
-                         str_to_datetime("2018-11-02T00:00:00Z"))
+        self.assertEqual(
+            TimestampsExtension.ext(asset_no_prop).published,
+            TimestampsExtension.ext(timestamps_item).published)
+        self.assertEqual(
+            TimestampsExtension.ext(asset_prop).published, str_to_datetime("2018-11-02T00:00:00Z"))
 
         # # Set to Asset
         asset_value = str_to_datetime("2019-02-02T00:00:00Z")
         TimestampsExtension.ext(asset_no_prop).published = asset_value
-        self.assertNotEqual(TimestampsExtension.ext(asset_no_prop).published,
-                            TimestampsExtension.ext(timestamps_item).published)
+        self.assertNotEqual(
+            TimestampsExtension.ext(asset_no_prop).published,
+            TimestampsExtension.ext(timestamps_item).published)
         self.assertEqual(TimestampsExtension.ext(asset_no_prop).published, asset_value)
 
         # Validate
@@ -134,16 +138,19 @@ class TimestampsTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = timestamps_item.assets['red']
         asset_prop = timestamps_item.assets['blue']
-        self.assertEqual(TimestampsExtension.ext(asset_no_prop).unpublished,
-                         TimestampsExtension.ext(timestamps_item).unpublished)
-        self.assertEqual(TimestampsExtension.ext(asset_prop).unpublished,
-                         str_to_datetime("2019-01-02T00:00:00Z"))
+        self.assertEqual(
+            TimestampsExtension.ext(asset_no_prop).unpublished,
+            TimestampsExtension.ext(timestamps_item).unpublished)
+        self.assertEqual(
+            TimestampsExtension.ext(asset_prop).unpublished,
+            str_to_datetime("2019-01-02T00:00:00Z"))
 
         # Set to Asset
         asset_value = str_to_datetime("2019-02-02T00:00:00Z")
         TimestampsExtension.ext(asset_no_prop).unpublished = asset_value
-        self.assertNotEqual(TimestampsExtension.ext(asset_no_prop).unpublished,
-                            TimestampsExtension.ext(timestamps_item).unpublished)
+        self.assertNotEqual(
+            TimestampsExtension.ext(asset_no_prop).unpublished,
+            TimestampsExtension.ext(timestamps_item).unpublished)
         self.assertEqual(TimestampsExtension.ext(asset_no_prop).unpublished, asset_value)
 
         # Validate

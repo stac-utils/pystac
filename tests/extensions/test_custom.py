@@ -10,7 +10,6 @@ from pystac.extensions import ExtensionError
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
-
 T = TypeVar('T', ps.Catalog, ps.Collection, ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://example.com/v2.0/custom-schema.json"
@@ -95,6 +94,7 @@ class AssetCustomExtension(CustomExtension[ps.Asset]):
                 self.additional_read_properties = [asset.owner.extra_fields]
         super().__init__(None)
 
+
 class SummariesCustomExtension(SummariesExtension):
     @property
     def test_prop(self) -> Optional[RangeSummary[str]]:
@@ -114,7 +114,8 @@ class CustomExtensionHooks(ExtensionHooks):
     def get_object_links(self, obj: ps.STACObject) -> Optional[List[str]]:
         return [TEST_LINK_REL]
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
+                info: STACJSONDescription) -> None:
         if version < "1.0.0-rc2" and info.object_type == ps.STACObjectType.ITEM:
             if 'test:old-prop-name' in obj['properties']:
                 obj['properties'][TEST_PROP] = obj['properties']['test:old-prop-name']

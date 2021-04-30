@@ -39,7 +39,8 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c", FileExtension.ext(asset).checksum)
+        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c",
+                         FileExtension.ext(asset).checksum)
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
@@ -80,4 +81,5 @@ class FileTest(unittest.TestCase):
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(
-            FileExtension.ext(item.assets['noises']).checksum, "90e40210a30d1711e81a4b11ef67b28744321659")
+            FileExtension.ext(item.assets['noises']).checksum,
+            "90e40210a30d1711e81a4b11ef67b28744321659")

@@ -53,6 +53,7 @@ ARBITRARY_BBOX: List[float] = [
 ARBITRARY_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM['coordinates']),
                           temporal=TemporalExtent.from_now())  # noqa: E126
 
+
 @dataclass
 class ExampleInfo:
     path: str
@@ -88,13 +89,11 @@ class TestCases:
                     valid = row[4] != 'INVALID'
 
                 examples.append(
-                    ExampleInfo(
-                    path=path,
-                    object_type=ps.STACObjectType(object_type),
-                    stac_version=stac_version,
-                    extensions=extensions,
-                    valid=valid
-                ))
+                    ExampleInfo(path=path,
+                                object_type=ps.STACObjectType(object_type),
+                                stac_version=stac_version,
+                                extensions=extensions,
+                                valid=valid))
         return examples
 
     @staticmethod

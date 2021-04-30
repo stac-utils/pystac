@@ -106,6 +106,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
     def ext(cls, collection: ps.Collection) -> "ItemAssetsExtension":
         return cls(collection)
 
+
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(['asset', 'item-assets'])
@@ -121,5 +122,6 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
                 del obj['assets']
 
         super().migrate(obj, version, info)
+
 
 ITEM_ASSETS_EXTENSION_HOOKS = ItemAssetsExtensionHooks()

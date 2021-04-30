@@ -26,12 +26,13 @@ class PointcloudTest(unittest.TestCase):
         self.assertFalse(PointcloudExtension.has_extension(item))
 
         PointcloudExtension.add_to(item)
-        PointcloudExtension.ext(item).apply(1000, 'lidar', 'laszip',
-                                   [PointcloudSchema({
-                                       'name': 'X',
-                                       'size': 8,
-                                       'type': 'floating'
-                                   })])
+        PointcloudExtension.ext(item).apply(
+            1000, 'lidar', 'laszip',
+            [PointcloudSchema({
+                'name': 'X',
+                'size': 8,
+                'type': 'floating'
+            })])
         self.assertTrue(PointcloudExtension.has_extension(item))
 
     def test_validate_pointcloud(self):
@@ -57,8 +58,8 @@ class PointcloudTest(unittest.TestCase):
         # Ensure setting bad count fails validation
 
         with self.assertRaises(ps.STACValidationError):
-           PointcloudExtension.ext(pc_item).count = 'not_an_int'  # type:ignore
-           pc_item.validate()
+            PointcloudExtension.ext(pc_item).count = 'not_an_int'  # type:ignore
+            pc_item.validate()
 
     def test_type(self):
         pc_item = ps.Item.from_file(self.example_uri)

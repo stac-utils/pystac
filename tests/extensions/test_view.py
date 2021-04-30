@@ -22,10 +22,10 @@ class ViewTest(unittest.TestCase):
 
         ViewExtension.add_to(item)
         ViewExtension.ext(item).apply(off_nadir=1.0,
-                             incidence_angle=2.0,
-                             azimuth=3.0,
-                             sun_azimuth=4.0,
-                             sun_elevation=5.0)
+                                      incidence_angle=2.0,
+                                      azimuth=3.0,
+                                      sun_azimuth=4.0,
+                                      sun_elevation=5.0)
 
         self.assertEqual(ViewExtension.ext(item).off_nadir, 1.0)
         self.assertEqual(ViewExtension.ext(item).incidence_angle, 2.0)
@@ -53,15 +53,17 @@ class ViewTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = view_item.assets['blue']
         asset_prop = view_item.assets['red']
-        self.assertEqual(ViewExtension.ext(asset_no_prop).off_nadir,
-                         ViewExtension.ext(view_item).off_nadir)
+        self.assertEqual(
+            ViewExtension.ext(asset_no_prop).off_nadir,
+            ViewExtension.ext(view_item).off_nadir)
         self.assertEqual(ViewExtension.ext(asset_prop).off_nadir, 3.0)
 
         # Set to Asset
         asset_value = 13.0
         ViewExtension.ext(asset_no_prop).off_nadir = asset_value
-        self.assertNotEqual(ViewExtension.ext(asset_no_prop).off_nadir,
-                            ViewExtension.ext(view_item).off_nadir)
+        self.assertNotEqual(
+            ViewExtension.ext(asset_no_prop).off_nadir,
+            ViewExtension.ext(view_item).off_nadir)
         self.assertEqual(ViewExtension.ext(asset_no_prop).off_nadir, asset_value)
 
         # Validate
@@ -82,15 +84,17 @@ class ViewTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = view_item.assets['blue']
         asset_prop = view_item.assets['red']
-        self.assertEqual(ViewExtension.ext(asset_no_prop).incidence_angle,
-                         ViewExtension.ext(view_item).incidence_angle)
+        self.assertEqual(
+            ViewExtension.ext(asset_no_prop).incidence_angle,
+            ViewExtension.ext(view_item).incidence_angle)
         self.assertEqual(ViewExtension.ext(asset_prop).incidence_angle, 4.0)
 
         # Set to Asset
         asset_value = 14.0
         ViewExtension.ext(asset_no_prop).incidence_angle = asset_value
-        self.assertNotEqual(ViewExtension.ext(asset_no_prop).incidence_angle,
-                            ViewExtension.ext(view_item).incidence_angle)
+        self.assertNotEqual(
+            ViewExtension.ext(asset_no_prop).incidence_angle,
+            ViewExtension.ext(view_item).incidence_angle)
         self.assertEqual(ViewExtension.ext(asset_no_prop).incidence_angle, asset_value)
 
         # Validate
@@ -111,15 +115,17 @@ class ViewTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = view_item.assets['blue']
         asset_prop = view_item.assets['red']
-        self.assertEqual(ViewExtension.ext(asset_no_prop).azimuth,
-                         ViewExtension.ext(view_item).azimuth)
+        self.assertEqual(
+            ViewExtension.ext(asset_no_prop).azimuth,
+            ViewExtension.ext(view_item).azimuth)
         self.assertEqual(ViewExtension.ext(asset_prop).azimuth, 5.0)
 
         # Set to Asset
         asset_value = 15.0
         ViewExtension.ext(asset_no_prop).azimuth = asset_value
-        self.assertNotEqual(ViewExtension.ext(asset_no_prop).azimuth,
-                            ViewExtension.ext(view_item).azimuth)
+        self.assertNotEqual(
+            ViewExtension.ext(asset_no_prop).azimuth,
+            ViewExtension.ext(view_item).azimuth)
         self.assertEqual(ViewExtension.ext(asset_no_prop).azimuth, asset_value)
 
         # Validate
@@ -140,15 +146,17 @@ class ViewTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = view_item.assets['blue']
         asset_prop = view_item.assets['red']
-        self.assertEqual(ViewExtension.ext(asset_no_prop).sun_azimuth,
-                         ViewExtension.ext(view_item).sun_azimuth)
+        self.assertEqual(
+            ViewExtension.ext(asset_no_prop).sun_azimuth,
+            ViewExtension.ext(view_item).sun_azimuth)
         self.assertEqual(ViewExtension.ext(asset_prop).sun_azimuth, 1.0)
 
         # Set to Asset
         asset_value = 11.0
         ViewExtension.ext(asset_no_prop).sun_azimuth = asset_value
-        self.assertNotEqual(ViewExtension.ext(asset_no_prop).sun_azimuth,
-                            ViewExtension.ext(view_item).sun_azimuth)
+        self.assertNotEqual(
+            ViewExtension.ext(asset_no_prop).sun_azimuth,
+            ViewExtension.ext(view_item).sun_azimuth)
         self.assertEqual(ViewExtension.ext(asset_no_prop).sun_azimuth, asset_value)
 
         # Validate
@@ -169,15 +177,17 @@ class ViewTest(unittest.TestCase):
         # Get from Asset
         asset_no_prop = view_item.assets['blue']
         asset_prop = view_item.assets['red']
-        self.assertEqual(ViewExtension.ext(asset_no_prop).sun_elevation,
-                         ViewExtension.ext(view_item).sun_elevation)
+        self.assertEqual(
+            ViewExtension.ext(asset_no_prop).sun_elevation,
+            ViewExtension.ext(view_item).sun_elevation)
         self.assertEqual(ViewExtension.ext(asset_prop).sun_elevation, 2.0)
 
         # Set to Asset
         asset_value = 12.0
         ViewExtension.ext(asset_no_prop).sun_elevation = asset_value
-        self.assertNotEqual(ViewExtension.ext(asset_no_prop).sun_elevation,
-                            ViewExtension.ext(view_item).sun_elevation)
+        self.assertNotEqual(
+            ViewExtension.ext(asset_no_prop).sun_elevation,
+            ViewExtension.ext(view_item).sun_elevation)
         self.assertEqual(ViewExtension.ext(asset_no_prop).sun_elevation, asset_value)
 
         # Validate

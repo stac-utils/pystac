@@ -811,7 +811,7 @@ class Item(STACObject):
         if not include_self_link:
             links = [x for x in links if x.rel != 'self']
 
-        assets = {k: v.to_dict() for k, v in self.assets.items() }
+        assets = {k: v.to_dict() for k, v in self.assets.items()}
 
         if self.datetime is not None:
             self.properties['datetime'] = datetime_to_str(self.datetime)

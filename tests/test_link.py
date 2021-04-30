@@ -12,10 +12,10 @@ class LinkTest(unittest.TestCase):
 
     def setUp(self):
         self.item = ps.Item(id='test-item',
-                                geometry=None,
-                                bbox=None,
-                                datetime=TEST_DATETIME,
-                                properties={})
+                            geometry=None,
+                            bbox=None,
+                            datetime=TEST_DATETIME,
+                            properties={})
 
     def test_minimal(self):
         rel = 'my rel'

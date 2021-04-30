@@ -19,9 +19,8 @@ from tests.utils import TestCases
 
 class ValidateTest(unittest.TestCase):
     def test_validate_current_version(self):
-        catalog = ps.read_file(
-            TestCases.get_path('data-files/catalogs/test-case-1/'
-                               'catalog.json'))
+        catalog = ps.read_file(TestCases.get_path('data-files/catalogs/test-case-1/'
+                                                  'catalog.json'))
         catalog.validate()
 
         collection = ps.read_file(
@@ -133,10 +132,10 @@ class ValidateTest(unittest.TestCase):
         }
 
         item = ps.Item(id='test-item',
-                           geometry=geom,
-                           bbox=[-115.308, 36.126, -115.305, 36.129],
-                           datetime=datetime.utcnow(),
-                           properties={})
+                       geometry=geom,
+                       bbox=[-115.308, 36.126, -115.305, 36.129],
+                       datetime=datetime.utcnow(),
+                       properties={})
 
         # Should not raise.
         item.validate()

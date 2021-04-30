@@ -175,7 +175,6 @@ class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
     def bbox(self, v: Optional[List[float]]) -> None:
         self._set_property(BBOX_PROP, v)
 
-
     @property
     def centroid(self) -> Optional[Dict[str, float]]:
         """Get or sets coordinates representing the centroid of the item in the asset data CRS.
@@ -248,6 +247,7 @@ class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         else:
             raise ExtensionException(f"File extension does not apply to type {type(obj)}")
 
+
 class ItemProjectionExtension(ProjectionExtension[ps.Item]):
     def __init__(self, item: ps.Item):
         self.item = item
@@ -266,6 +266,7 @@ class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
 
     def __repr__(self) -> str:
         return '<AssetProjectionExtension Asset href={}>'.format(self.asset_href)
+
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
