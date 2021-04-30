@@ -18,7 +18,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         # Types
-        mypy pystac
+        scripts/pyright pystac tests
 
         # Lint
         flake8 pystac tests

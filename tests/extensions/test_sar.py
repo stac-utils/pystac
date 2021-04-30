@@ -104,8 +104,8 @@ class SarItemExtTest(unittest.TestCase):
         polarizations = sar.Polarization.HV
         product_type: str = 'Some product'
         with self.assertRaises(ps.STACError):
-            SarExtension.ext(self.item).apply(mode, frequency_band, polarizations,
-                                              product_type)  #  type:ignore
+            SarExtension.ext(self.item).apply(mode, frequency_band, polarizations, #  type:ignore
+                                              product_type)
 
 
 if __name__ == '__main__':
