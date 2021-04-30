@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import os
 from datetime import datetime
 import csv
@@ -54,13 +53,14 @@ ARBITRARY_EXTENT = Extent(spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM[
                           temporal=TemporalExtent.from_now())  # noqa: E126
 
 
-@dataclass
 class ExampleInfo:
-    path: str
-    object_type: ps.STACObjectType
-    stac_version: str
-    extensions: List[str]
-    valid: bool
+    def __init__(self, path: str, object_type: ps.STACObjectType, stac_version: str,
+                 extensions: List[str], valid: bool) -> None:
+        self.path = path
+        self.object_type = object_type
+        self.stac_version = stac_version
+        self.extensions = extensions
+        self.valid = valid
 
 
 class TestCases:
