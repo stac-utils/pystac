@@ -1,3 +1,4 @@
+from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.view import ViewExtension
 import unittest
 
@@ -18,8 +19,6 @@ class MigrateTest(unittest.TestCase):
     def test_migrate(self):
         collection_cache = CollectionCache()
         for example in self.examples:
-            if example.path != "/home/rob/proj/stac/pystac/tests/data-files/examples/0.9.0/collection-spec/examples/landsat-collection.json":
-                continue
             with self.subTest(example.path):
                 path = example.path
 
@@ -68,5 +67,5 @@ class MigrateTest(unittest.TestCase):
             TestCases.get_path('data-files/examples/0.9.0/extensions/asset/'
                                'examples/example-landsat8.json'))
 
-        self.assertIn('item-assets', collection.stac_extensions)
+        self.assertTrue(ItemAssetsExtension.has_extension(collection))
         self.assertIn('item_assets', collection.extra_fields)

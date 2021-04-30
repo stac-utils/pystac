@@ -26,7 +26,7 @@ class STACVersion:
         return cls.DEFAULT_STAC_VERSION
 
     @classmethod
-    def set_stac_version(cls, stac_version: str) -> None:
+    def set_stac_version(cls, stac_version: Optional[str]) -> None:
         cls._override_version = stac_version
 
 
@@ -44,7 +44,7 @@ def get_stac_version() -> str:
     return STACVersion.get_stac_version()
 
 
-def set_stac_version(stac_version: str) -> None:
+def set_stac_version(stac_version: Optional[str]) -> None:
     """Sets the STAC version that PySTAC should use.
 
     This is the version that will be set as the "stac_version" property
@@ -57,7 +57,8 @@ def set_stac_version(stac_version: str) -> None:
 
     Args:
         stac_version (str): The STAC version to use instead of the latest STAC version that
-            PySTAC supports (described in STACVersion.DEFAULT_STAC_VERSION)
+            PySTAC supports (described in STACVersion.DEFAULT_STAC_VERSION). If None,
+            clear to use the default for this version of PySTAC.
 
     Note:
         Setting the STAC version to something besides the default version will not effect

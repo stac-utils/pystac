@@ -1,5 +1,6 @@
-import json
 from abc import (ABC, abstractmethod)
+import logging
+import json
 from pystac.stac_object import STACObjectType
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -13,6 +14,8 @@ try:
     import jsonschema.exceptions
 except ImportError:
     jsonschema = None
+
+logger = logging.getLogger(__name__)
 
 
 class STACValidator(ABC):
@@ -230,3 +233,7 @@ class JsonSchemaSTACValidator(STACValidator):
             msg = self._get_error_message(schema_uri, stac_object_type, extension_id, href,
                                           stac_dict.get('id'))
             raise STACValidationError(msg, source=e) from e
+        except Exception as e:
+            logger.error(f"Exception while validating {stac_object_type} href: {href}")
+            logger.exception(e)
+            raise

@@ -190,7 +190,7 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             str
         """
-        return get_required(self._get_property(POLARIZATIONS, str), self, POLARIZATIONS)
+        return get_required(self._get_property(PRODUCT_TYPE, str), self, PRODUCT_TYPE)
 
     @product_type.setter
     def product_type(self, v: str) -> None:

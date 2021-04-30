@@ -11,4 +11,4 @@ class SchemaUriMapTest(unittest.TestCase):
 
         self.assertEqual(
             uri, 'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.0/'
-            'item/json-schema/schema.json')
+            'item-spec/json-schema/item.json')

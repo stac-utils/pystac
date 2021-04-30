@@ -2,7 +2,7 @@ import json
 import unittest
 
 import pystac as ps
-from pystac.extensions.view import ViewExtension,
+from pystac.extensions.view import ViewExtension
 from tests.utils import (TestCases, test_to_from_dict)
 
 

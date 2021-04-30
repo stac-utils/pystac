@@ -35,6 +35,8 @@ class ValidateTest(unittest.TestCase):
 
     def test_validate_examples(self):
         for example in TestCases.get_examples_info():
+            #if example.path != "/home/rob/proj/stac/pystac/tests/data-files/examples/landsat-0.6.0/156/029/2015-01-01/LC81560292015001LGN00.json":
+            #    continue
             with self.subTest(example.path):
                 stac_version = example.stac_version
                 path = example.path
@@ -83,10 +85,11 @@ class ValidateTest(unittest.TestCase):
 
     def test_validate_all(self):
         for test_case in TestCases.all_test_catalogs():
-            catalog_href = get_opt(TestCases.test_case_7().get_self_href())
-            stac_dict = ps.STAC_IO.read_json(catalog_href)
+            catalog_href = test_case.get_self_href()
+            if catalog_href is not None:
+                stac_dict = ps.STAC_IO.read_json(catalog_href)
 
-            pystac.validation.validate_all(stac_dict, catalog_href)
+                pystac.validation.validate_all(stac_dict, catalog_href)
 
         # Modify a 0.8.1 collection in a catalog to be invalid with a since-renamed extension
         # and make sure it catches the validation error.

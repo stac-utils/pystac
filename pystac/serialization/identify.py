@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class OldExtensionShortIDs(Enum):
     """Enumerates the IDs of common extensions."""
     CHECKSUM = 'checksum'
-    COLLECTION_ASSETS = 'collection-assets'  # REMOVED
+    COLLECTION_ASSETS = 'collection-assets'
     DATACUBE = 'datacube'  # TODO
     EO = 'eo'
     ITEM_ASSETS = 'item-assets'  # TODO
@@ -22,8 +22,8 @@ class OldExtensionShortIDs(Enum):
     SAR = 'sar'
     SAT = 'sat'
     SCIENTIFIC = 'scientific'
-    SINGLE_FILE_STAC = 'single-file-stac'  # TODO
-    TILED_ASSETS = 'tiled-assets'  # Removed (Unpublished)
+    SINGLE_FILE_STAC = 'single-file-stac'
+    TILED_ASSETS = 'tiled-assets'
     TIMESTAMPS = 'timestamps'
     VERSION = 'version'
     VIEW = 'view'

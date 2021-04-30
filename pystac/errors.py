@@ -16,7 +16,6 @@ class STACTypeError(Exception):
     """
     pass
 
-
 class RequiredPropertyMissing(Exception):
     """ This error is raised when a required value was expected
     to be there but was missing or None. This will happen, for example,

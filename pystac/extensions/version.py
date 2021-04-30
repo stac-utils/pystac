@@ -14,7 +14,7 @@ from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar('T', ps.Collection, ps.Item)
 
-SCHEMA_URI = "https://schemas.stacspec.org/v1.0.0-rc.2/catalog-spec/json-schema/catalog.json"
+SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 
 # STAC fields - These are unusual for an extension in that they do not have
 # a prefix.  e.g. nothing like "ver:"

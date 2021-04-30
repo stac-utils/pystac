@@ -2,7 +2,8 @@
 from typing import Dict, List, Any, Optional, cast, TYPE_CHECKING
 
 import pystac as ps
-from pystac.serialization.identify import identify_stac_object
+from pystac.serialization.identify import STACVersionID, identify_stac_object
+from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 from pystac.utils import make_absolute_href
 
 if TYPE_CHECKING:
@@ -91,6 +92,20 @@ def validate_dict(stac_dict: Dict[str, Any],
         if info is None:
             info = identify_stac_object(stac_dict)
         extensions = list(info.extensions)
+
+    stac_version_id = STACVersionID(stac_version)
+
+    # If the version is before 1.0.0-rc.1, substitute extension short IDs for
+    # their schemas.
+    if stac_version_id < "1.0.0-rc.1":
+
+        def _get_uri(ext: str) -> Optional[str]:
+            return OldExtensionSchemaUriMap.get_extension_schema_uri(
+                ext,
+                stac_object_type,  # type:ignore
+                stac_version_id)
+
+        extensions = [uri for uri in map(_get_uri, extensions) if uri is not None]
 
     return RegisteredValidator.get_validator().validate(stac_dict, stac_object_type, stac_version,
                                                         extensions, href)
