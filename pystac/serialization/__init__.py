@@ -5,7 +5,8 @@ import pystac as ps
 from pystac.serialization.identify import (
     STACVersionRange,  # type:ignore
     identify_stac_object,
-    identify_stac_object_type)
+    identify_stac_object_type,
+)
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.serialization.migrate import migrate_to_latest
 
@@ -14,9 +15,9 @@ if TYPE_CHECKING:
     from pystac.catalog import Catalog
 
 
-def stac_object_from_dict(d: Dict[str, Any],
-                          href: Optional[str] = None,
-                          root: Optional["Catalog"] = None) -> "STACObject":
+def stac_object_from_dict(
+    d: Dict[str, Any], href: Optional[str] = None, root: Optional["Catalog"] = None
+) -> "STACObject":
     """Determines how to deserialize a dictionary into a STAC object.
 
     Args:

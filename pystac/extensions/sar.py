@@ -13,52 +13,54 @@ from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
 
 # Required
-INSTRUMENT_MODE: str = 'sar:instrument_mode'
-FREQUENCY_BAND: str = 'sar:frequency_band'
-POLARIZATIONS: str = 'sar:polarizations'
-PRODUCT_TYPE: str = 'sar:product_type'
+INSTRUMENT_MODE: str = "sar:instrument_mode"
+FREQUENCY_BAND: str = "sar:frequency_band"
+POLARIZATIONS: str = "sar:polarizations"
+PRODUCT_TYPE: str = "sar:product_type"
 
 # Not required
-CENTER_FREQUENCY: str = 'sar:center_frequency'
-RESOLUTION_RANGE: str = 'sar:resolution_range'
-RESOLUTION_AZIMUTH: str = 'sar:resolution_azimuth'
-PIXEL_SPACING_RANGE: str = 'sar:pixel_spacing_range'
-PIXEL_SPACING_AZIMUTH: str = 'sar:pixel_spacing_azimuth'
-LOOKS_RANGE: str = 'sar:looks_range'
-LOOKS_AZIMUTH: str = 'sar:looks_azimuth'
-LOOKS_EQUIVALENT_NUMBER: str = 'sar:looks_equivalent_number'
-OBSERVATION_DIRECTION: str = 'sar:observation_direction'
+CENTER_FREQUENCY: str = "sar:center_frequency"
+RESOLUTION_RANGE: str = "sar:resolution_range"
+RESOLUTION_AZIMUTH: str = "sar:resolution_azimuth"
+PIXEL_SPACING_RANGE: str = "sar:pixel_spacing_range"
+PIXEL_SPACING_AZIMUTH: str = "sar:pixel_spacing_azimuth"
+LOOKS_RANGE: str = "sar:looks_range"
+LOOKS_AZIMUTH: str = "sar:looks_azimuth"
+LOOKS_EQUIVALENT_NUMBER: str = "sar:looks_equivalent_number"
+OBSERVATION_DIRECTION: str = "sar:observation_direction"
 
 
 class FrequencyBand(str, enum.Enum):
-    P = 'P'
-    L = 'L'
-    S = 'S'
-    C = 'C'
-    X = 'X'
-    KU = 'Ku'
-    K = 'K'
-    KA = 'Ka'
+    P = "P"
+    L = "L"
+    S = "S"
+    C = "C"
+    X = "X"
+    KU = "Ku"
+    K = "K"
+    KA = "Ka"
 
 
 class Polarization(enum.Enum):
-    HH = 'HH'
-    VV = 'VV'
-    HV = 'HV'
-    VH = 'VH'
+    HH = "HH"
+    VV = "VV"
+    HV = "HV"
+    VH = "VH"
 
 
 class ObservationDirection(enum.Enum):
-    LEFT = 'left'
-    RIGHT = 'right'
+    LEFT = "left"
+    RIGHT = "right"
 
 
-class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[ps.Item]):
+class SarExtension(
+    Generic[T], ProjectionExtension[T], ExtensionManagementMixin[ps.Item]
+):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
     Args:
@@ -71,20 +73,23 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Using SarItemExt to directly wrap an item will add the 'sar'
         extension ID to the item's stac_extensions.
     """
-    def apply(self,
-              instrument_mode: str,
-              frequency_band: FrequencyBand,
-              polarizations: List[Polarization],
-              product_type: str,
-              center_frequency: Optional[float] = None,
-              resolution_range: Optional[float] = None,
-              resolution_azimuth: Optional[float] = None,
-              pixel_spacing_range: Optional[float] = None,
-              pixel_spacing_azimuth: Optional[float] = None,
-              looks_range: Optional[int] = None,
-              looks_azimuth: Optional[int] = None,
-              looks_equivalent_number: Optional[float] = None,
-              observation_direction: Optional[ObservationDirection] = None) -> None:
+
+    def apply(
+        self,
+        instrument_mode: str,
+        frequency_band: FrequencyBand,
+        polarizations: List[Polarization],
+        product_type: str,
+        center_frequency: Optional[float] = None,
+        resolution_range: Optional[float] = None,
+        resolution_azimuth: Optional[float] = None,
+        pixel_spacing_range: Optional[float] = None,
+        pixel_spacing_azimuth: Optional[float] = None,
+        looks_range: Optional[int] = None,
+        looks_azimuth: Optional[int] = None,
+        looks_equivalent_number: Optional[float] = None,
+        observation_direction: Optional[ObservationDirection] = None,
+    ) -> None:
         """Applies sar extension properties to the extended Item.
 
         Args:
@@ -145,7 +150,9 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         Returns:
             str
         """
-        return get_required(self._get_property(INSTRUMENT_MODE, str), self, INSTRUMENT_MODE)
+        return get_required(
+            self._get_property(INSTRUMENT_MODE, str), self, INSTRUMENT_MODE
+        )
 
     @instrument_mode.setter
     def instrument_mode(self, v: str) -> None:
@@ -159,8 +166,12 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
             FrequencyBand
         """
         return get_required(
-            map_opt(lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND, str)), self,
-            FREQUENCY_BAND)
+            map_opt(
+                lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND, str)
+            ),
+            self,
+            FREQUENCY_BAND,
+        )
 
     @frequency_band.setter
     def frequency_band(self, v: FrequencyBand) -> None:
@@ -174,8 +185,13 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
             List[Polarization]
         """
         return get_required(
-            map_opt(lambda values: [Polarization(v) for v in values],
-                    self._get_property(POLARIZATIONS, List[str])), self, POLARIZATIONS)
+            map_opt(
+                lambda values: [Polarization(v) for v in values],
+                self._get_property(POLARIZATIONS, List[str]),
+            ),
+            self,
+            POLARIZATIONS,
+        )
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
@@ -291,7 +307,9 @@ class SarExtension(Generic[T], ProjectionExtension[T], ExtensionManagementMixin[
         elif isinstance(obj, ps.Asset):
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemSarExtension(SarExtension[ps.Item]):
@@ -300,7 +318,7 @@ class ItemSarExtension(SarExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemSarExtension Item id={}>'.format(self.item.id)
+        return "<ItemSarExtension Item id={}>".format(self.item.id)
 
 
 class AssetSarExtension(SarExtension[ps.Asset]):
@@ -311,30 +329,41 @@ class AssetSarExtension(SarExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetSarExtension Asset href={}>'.format(self.asset_href)
+        return "<AssetSarExtension Asset href={}>".format(self.asset_href)
 
 
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['sar'])
+    prev_extension_ids: Set[str] = set(["sar"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
-        if version < '0.9':
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        if version < "0.9":
             # Some sar fields became common_metadata
-            if 'sar:platform' in obj['properties'] and 'platform' not in obj['properties']:
-                obj['properties']['platform'] = obj['properties']['sar:platform']
-                del obj['properties']['sar:platform']
+            if (
+                "sar:platform" in obj["properties"]
+                and "platform" not in obj["properties"]
+            ):
+                obj["properties"]["platform"] = obj["properties"]["sar:platform"]
+                del obj["properties"]["sar:platform"]
 
-            if 'sar:instrument' in obj['properties'] and 'instruments' not in obj['properties']:
-                obj['properties']['instruments'] = [obj['properties']['sar:instrument']]
-                del obj['properties']['sar:instrument']
+            if (
+                "sar:instrument" in obj["properties"]
+                and "instruments" not in obj["properties"]
+            ):
+                obj["properties"]["instruments"] = [obj["properties"]["sar:instrument"]]
+                del obj["properties"]["sar:instrument"]
 
-            if ('sar:constellation' in obj['properties']
-                    and 'constellation' not in obj['properties']):
-                obj['properties']['constellation'] = obj['properties']['sar:constellation']
-                del obj['properties']['sar:constellation']
+            if (
+                "sar:constellation" in obj["properties"]
+                and "constellation" not in obj["properties"]
+            ):
+                obj["properties"]["constellation"] = obj["properties"][
+                    "sar:constellation"
+                ]
+                del obj["properties"]["sar:constellation"]
 
         super().migrate(obj, version, info)
 

@@ -7,10 +7,14 @@ import unittest
 import pystac as ps
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions import ExtensionError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension, SummariesExtension
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+    SummariesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 
-T = TypeVar('T', ps.Catalog, ps.Collection, ps.Item, ps.Asset)
+T = TypeVar("T", ps.Catalog, ps.Collection, ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://example.com/v2.0/custom-schema.json"
 
@@ -18,8 +22,11 @@ TEST_PROP = "test:prop"
 TEST_LINK_REL = "test-link"
 
 
-class CustomExtension(Generic[T], PropertiesExtension,
-                      ExtensionManagementMixin[Union[ps.Catalog, ps.Collection, ps.Item]]):
+class CustomExtension(
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[ps.Catalog, ps.Collection, ps.Item]],
+):
     def __init__(self, obj: Optional[ps.STACObject]) -> None:
         self.obj = obj
 
@@ -38,7 +45,7 @@ class CustomExtension(Generic[T], PropertiesExtension,
         if self.obj is not None:
             self.obj.add_link(ps.Link(TEST_LINK_REL, target))
         else:
-            raise ExtensionError(f'{self} does not support links')
+            raise ExtensionError(f"{self} does not support links")
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -55,7 +62,7 @@ class CustomExtension(Generic[T], PropertiesExtension,
         if isinstance(obj, ps.Catalog):
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
-        raise ExtensionError(f'Custom extension does not apply to {type(obj)}')
+        raise ExtensionError(f"Custom extension does not apply to {type(obj)}")
 
     @staticmethod
     def summaries(obj: ps.Collection) -> "SummariesCustomExtension":
@@ -107,18 +114,26 @@ class SummariesCustomExtension(SummariesExtension):
 
 class CustomExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['custom', 'https://example.com/v1.0/custom-schema.json'])
+    prev_extension_ids: Set[str] = set(
+        ["custom", "https://example.com/v1.0/custom-schema.json"]
+    )
     stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.CATALOG, ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+        [
+            ps.STACObjectType.CATALOG,
+            ps.STACObjectType.COLLECTION,
+            ps.STACObjectType.ITEM,
+        ]
+    )
 
     def get_object_links(self, obj: ps.STACObject) -> Optional[List[str]]:
         return [TEST_LINK_REL]
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
         if version < "1.0.0-rc2" and info.object_type == ps.STACObjectType.ITEM:
-            if 'test:old-prop-name' in obj['properties']:
-                obj['properties'][TEST_PROP] = obj['properties']['test:old-prop-name']
+            if "test:old-prop-name" in obj["properties"]:
+                obj["properties"][TEST_PROP] = obj["properties"]["test:old-prop-name"]
         super().migrate(obj, version, info)
 
 

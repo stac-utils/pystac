@@ -1,4 +1,4 @@
-from abc import (abstractmethod, ABC)
+from abc import abstractmethod, ABC
 from collections import OrderedDict
 import os
 from string import Formatter
@@ -17,6 +17,7 @@ class TemplateError(Exception):
     """Exception thrown when an error occurs during converting a template
     string into data for :class:`~pystac.layout.LayoutTemplate`
     """
+
     pass
 
 
@@ -71,7 +72,7 @@ class LayoutTemplate:
     """
 
     # Special template vars specific to Items
-    ITEM_TEMPLATE_VARS = ['date', 'year', 'month', 'day', 'collection']
+    ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
     def __init__(self, template: str, defaults: Dict[str, str] = None) -> None:
         self.template = template
@@ -82,12 +83,14 @@ class LayoutTemplate:
         for formatter_parse_result in Formatter().parse(template):
             v = formatter_parse_result[1]
             if v is not None:
-                if formatter_parse_result[2] != '':
-                    v = '{}:{}'.format(v, formatter_parse_result[2])
+                if formatter_parse_result[2] != "":
+                    v = "{}:{}".format(v, formatter_parse_result[2])
                 template_vars.append(v)
         self.template_vars = template_vars
 
-    def _get_template_value(self, stac_object: "STACObject_Type", template_var: str) -> Any:
+    def _get_template_value(
+        self, stac_object: "STACObject_Type", template_var: str
+    ) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
             if isinstance(stac_object, ps.Item):
                 # Datetime
@@ -95,35 +98,46 @@ class LayoutTemplate:
                 if dt is None:
                     dt = stac_object.common_metadata.start_datetime
                 if dt is None:
-                    raise TemplateError('Item {} does not have a datetime or '
-                                        'datetime range set; cannot template {} in {}'.format(
-                                            stac_object, template_var, self.template))
+                    raise TemplateError(
+                        "Item {} does not have a datetime or "
+                        "datetime range set; cannot template {} in {}".format(
+                            stac_object, template_var, self.template
+                        )
+                    )
 
-                if template_var == 'year':
+                if template_var == "year":
                     return dt.year
-                if template_var == 'month':
+                if template_var == "month":
                     return dt.month
-                if template_var == 'day':
+                if template_var == "day":
                     return dt.day
-                if template_var == 'date':
+                if template_var == "date":
                     return dt.date().isoformat()
 
                 # Collection
-                if template_var == 'collection':
+                if template_var == "collection":
                     if stac_object.collection_id is not None:
                         return stac_object.collection_id
                     raise TemplateError(
-                        'Item {} does not have a collection ID set; cannot template {} in {}'.
-                        format(stac_object, template_var, self.template))
+                        "Item {} does not have a collection ID set; cannot template {} in {}".format(
+                            stac_object, template_var, self.template
+                        )
+                    )
             else:
-                raise TemplateError('"{}" cannot be used to template non-Item {} in {}'.format(
-                    template_var, stac_object, self.template))
+                raise TemplateError(
+                    '"{}" cannot be used to template non-Item {} in {}'.format(
+                        template_var, stac_object, self.template
+                    )
+                )
 
         # Allow dot-notation properties for arbitrary object values.
-        props = template_var.split('.')
+        props = template_var.split(".")
         prop_source: Optional[Union[ps.STACObject, Dict[str, Any]]] = None
-        error = TemplateError('Cannot find property {} on {} for template {}'.format(
-            template_var, stac_object, self.template))
+        error = TemplateError(
+            "Cannot find property {} on {} for template {}".format(
+                template_var, stac_object, self.template
+            )
+        )
 
         try:
 
@@ -131,12 +145,16 @@ class LayoutTemplate:
                 prop_source = stac_object
 
             if prop_source is None and hasattr(stac_object, "properties"):
-                obj_props: Optional[Dict[str, Any]] = stac_object.properties  # type:ignore
+                obj_props: Optional[
+                    Dict[str, Any]
+                ] = stac_object.properties  # type:ignore
                 if obj_props is not None and props[0] in obj_props:
                     prop_source = obj_props
 
             if prop_source is None and hasattr(stac_object, "extra_fields"):
-                extra_fields: Optional[Dict[str, Any]] = stac_object.extra_fields  # type:ignore
+                extra_fields: Optional[
+                    Dict[str, Any]
+                ] = stac_object.extra_fields  # type:ignore
                 if extra_fields is not None and props[0] in extra_fields:
                     prop_source = extra_fields
 
@@ -144,7 +162,7 @@ class LayoutTemplate:
                 raise error
 
             v: Any = prop_source
-            for prop in template_var.split('.'):
+            for prop in template_var.split("."):
                 if type(v) is dict:
                     if prop not in v:
                         raise error
@@ -180,8 +198,9 @@ class LayoutTemplate:
                 derived from the stac object and there is no default,
                 this error will be raised.
         """
-        return OrderedDict([(k, self._get_template_value(stac_object, k))
-                            for k in self.template_vars])
+        return OrderedDict(
+            [(k, self._get_template_value(stac_object, k)) for k in self.template_vars]
+        )
 
     def substitute(self, stac_object: "STACObject_Type") -> str:
         """Substitutes the values derived from
@@ -206,16 +225,16 @@ class LayoutTemplate:
 
         s = self.template
         for key, value in parts.items():
-            s = s.replace('${' + '{}'.format(key) + '}', '{}'.format(value))
+            s = s.replace("${" + "{}".format(key) + "}", "{}".format(value))
         return s
 
 
 class HrefLayoutStrategy(ABC):
     """Base class for HREF Layout strategies."""
-    def get_href(self,
-                 stac_object: "STACObject_Type",
-                 parent_dir: str,
-                 is_root: bool = False) -> str:
+
+    def get_href(
+        self, stac_object: "STACObject_Type", parent_dir: str, is_root: bool = False
+    ) -> str:
         if isinstance(stac_object, ps.Item):
             return self.get_item_href(stac_object, parent_dir)
         elif isinstance(stac_object, ps.Collection):
@@ -223,14 +242,18 @@ class HrefLayoutStrategy(ABC):
         elif isinstance(stac_object, ps.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise ps.STACError('Unknown STAC object type {}'.format(stac_object))
+            raise ps.STACError("Unknown STAC object type {}".format(stac_object))
 
     @abstractmethod
-    def get_catalog_href(self, cat: "Catalog_Type", parent_dir: str, is_root: bool) -> str:
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
         pass
 
     @abstractmethod
-    def get_collection_href(self, col: "Collection_Type", parent_dir: str, is_root: bool) -> str:
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
         pass
 
     @abstractmethod
@@ -258,11 +281,14 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             use if a function is not provided for a stac object type. Defaults to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
-    def __init__(self,
-                 catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]] = None,
-                 collection_func: Optional[Callable[["Collection_Type", str, bool], str]] = None,
-                 item_func: Optional[Callable[["Item_Type", str], str]] = None,
-                 fallback_strategy: Optional[HrefLayoutStrategy] = None):
+
+    def __init__(
+        self,
+        catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]] = None,
+        collection_func: Optional[Callable[["Collection_Type", str, bool], str]] = None,
+        item_func: Optional[Callable[["Item_Type", str], str]] = None,
+        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+    ):
         self.item_func = item_func
         self.collection_func = collection_func
         self.catalog_func = catalog_func
@@ -270,14 +296,18 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
 
-    def get_catalog_href(self, cat: "Catalog_Type", parent_dir: str, is_root: bool) -> str:
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if self.catalog_func is not None:
             result = self.catalog_func(cat, parent_dir, is_root)
             if result is not None:
                 return result
         return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
 
-    def get_collection_href(self, col: "Collection_Type", parent_dir: str, is_root: bool) -> str:
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if self.collection_func is not None:
             result = self.collection_func(col, parent_dir, is_root)
             if result is not None:
@@ -316,37 +346,50 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             use if a template is not provided. Defaults to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
-    def __init__(self,
-                 catalog_template: Optional[str] = None,
-                 collection_template: Optional[str] = None,
-                 item_template: Optional[str] = None,
-                 fallback_strategy: Optional[HrefLayoutStrategy] = None):
-        self.catalog_template = LayoutTemplate(
-            catalog_template) if catalog_template is not None else None
-        self.collection_template = LayoutTemplate(
-            collection_template) if collection_template is not None else None
-        self.item_template = LayoutTemplate(item_template) if item_template is not None else None
+
+    def __init__(
+        self,
+        catalog_template: Optional[str] = None,
+        collection_template: Optional[str] = None,
+        item_template: Optional[str] = None,
+        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+    ):
+        self.catalog_template = (
+            LayoutTemplate(catalog_template) if catalog_template is not None else None
+        )
+        self.collection_template = (
+            LayoutTemplate(collection_template)
+            if collection_template is not None
+            else None
+        )
+        self.item_template = (
+            LayoutTemplate(item_template) if item_template is not None else None
+        )
 
         if fallback_strategy is None:
             fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
 
-    def get_catalog_href(self, cat: "Catalog_Type", parent_dir: str, is_root: bool) -> str:
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if is_root or self.catalog_template is None:
             return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
         else:
             template_path = self.catalog_template.substitute(cat)
-            if not template_path.endswith('.json'):
+            if not template_path.endswith(".json"):
                 template_path = os.path.join(template_path, cat.DEFAULT_FILE_NAME)
 
             return os.path.join(parent_dir, template_path)
 
-    def get_collection_href(self, col: "Collection_Type", parent_dir: str, is_root: bool) -> str:
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if is_root or self.collection_template is None:
             return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
         else:
             template_path = self.collection_template.substitute(col)
-            if not template_path.endswith('.json'):
+            if not template_path.endswith(".json"):
                 template_path = os.path.join(template_path, col.DEFAULT_FILE_NAME)
 
             return os.path.join(parent_dir, template_path)
@@ -356,8 +399,8 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             return self.fallback_strategy.get_item_href(item, parent_dir)
         else:
             template_path = self.item_template.substitute(item)
-            if not template_path.endswith('.json'):
-                template_path = os.path.join(template_path, '{}.json'.format(item.id))
+            if not template_path.endswith(".json"):
+                template_path = os.path.join(template_path, "{}.json".format(item.id))
 
             return os.path.join(parent_dir, template_path)
 
@@ -376,23 +419,28 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
 
     All paths are appended to the parent directory.
     """
-    def get_catalog_href(self, cat: "Catalog_Type", parent_dir: str, is_root: bool) -> str:
+
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if is_root:
             cat_root = parent_dir
         else:
-            cat_root = os.path.join(parent_dir, '{}'.format(cat.id))
+            cat_root = os.path.join(parent_dir, "{}".format(cat.id))
 
         return os.path.join(cat_root, cat.DEFAULT_FILE_NAME)
 
-    def get_collection_href(self, col: "Collection_Type", parent_dir: str, is_root: bool) -> str:
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
         if is_root:
             col_root = parent_dir
         else:
-            col_root = os.path.join(parent_dir, '{}'.format(col.id))
+            col_root = os.path.join(parent_dir, "{}".format(col.id))
 
         return os.path.join(col_root, col.DEFAULT_FILE_NAME)
 
     def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
-        item_root = os.path.join(parent_dir, '{}'.format(item.id))
+        item_root = os.path.join(parent_dir, "{}".format(item.id))
 
-        return os.path.join(item_root, '{}.json'.format(item.id))
+        return os.path.join(item_root, "{}.json".format(item.id))

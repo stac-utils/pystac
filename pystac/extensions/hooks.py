@@ -41,8 +41,9 @@ class ExtensionHooks(ABC):
     def get_object_links(self, obj: "STACObject_Type") -> Optional[List[str]]:
         return None
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
         """Migrate a STAC Object in dict format from a previous version.
         The base implementation will update the stac_extensions to the latest
         schema ID. This method will only be called for STAC objects that have been
@@ -54,10 +55,10 @@ class ExtensionHooks(ABC):
         for prev_id in self.prev_extension_ids:
             if prev_id in info.extensions:
                 try:
-                    i = obj['stac_extensions'].index(prev_id)
-                    obj['stac_extensions'][i] = self.schema_uri
+                    i = obj["stac_extensions"].index(prev_id)
+                    obj["stac_extensions"][i] = self.schema_uri
                 except ValueError:
-                    obj['stac_extensions'].append(self.schema_uri)
+                    obj["stac_extensions"].append(self.schema_uri)
                 break
 
 
@@ -68,7 +69,9 @@ class RegisteredExtensionHooks:
     def add_extension_hooks(self, hooks: ExtensionHooks) -> None:
         e_id = hooks.schema_uri
         if e_id in self.hooks:
-            raise ExtensionError("ExtensionDefinition with id '{}' already exists.".format(e_id))
+            raise ExtensionError(
+                "ExtensionDefinition with id '{}' already exists.".format(e_id)
+            )
 
         self.hooks[e_id] = hooks
 
@@ -88,8 +91,9 @@ class RegisteredExtensionHooks:
                         result.extend(ext_result)
         return result or []
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
         for hooks in self.hooks.values():
             if info.object_type in hooks._get_stac_object_types():
                 hooks.migrate(obj, version, info)

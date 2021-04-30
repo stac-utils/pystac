@@ -2,12 +2,12 @@ import json
 import unittest
 
 import pystac as ps
-from tests.utils import (TestCases, test_to_from_dict)
+from tests.utils import TestCases, test_to_from_dict
 from pystac.extensions.file import FileExtension, FileDataType
 
 
 class FileTest(unittest.TestCase):
-    FILE_EXAMPLE_URI = TestCases.get_path('data-files/file/file-example.json')
+    FILE_EXAMPLE_URI = TestCases.get_path("data-files/file/file-example.json")
 
     def setUp(self):
         self.maxDiff = None
@@ -39,8 +39,10 @@ class FileTest(unittest.TestCase):
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c",
-                         FileExtension.ext(asset).checksum)
+        self.assertEqual(
+            "90e40210f52acd32b09769d3b1871b420789456c",
+            FileExtension.ext(asset).checksum,
+        )
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
@@ -76,10 +78,12 @@ class FileTest(unittest.TestCase):
 
     def test_migrates_old_checksum(self):
         example_path = TestCases.get_path(
-            'data-files/examples/1.0.0-beta.2/extensions/checksum/examples/sentinel1.json')
+            "data-files/examples/1.0.0-beta.2/extensions/checksum/examples/sentinel1.json"
+        )
         item = ps.Item.from_file(example_path)
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(
-            FileExtension.ext(item.assets['noises']).checksum,
-            "90e40210a30d1711e81a4b11ef67b28744321659")
+            FileExtension.ext(item.assets["noises"]).checksum,
+            "90e40210a30d1711e81a4b11ef67b28744321659",
+        )

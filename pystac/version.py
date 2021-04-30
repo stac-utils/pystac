@@ -1,18 +1,18 @@
 import os
 from typing import Optional
 
-__version__ = '0.5.6'
+__version__ = "0.5.6"
 """Library version"""
 
 
 class STACVersion:
-    DEFAULT_STAC_VERSION = '1.0.0-rc.3'
+    DEFAULT_STAC_VERSION = "1.0.0-rc.3"
     """Latest STAC version supported by PySTAC"""
 
     # Version that holds a user-set STAC version to use.
     _override_version: Optional[str] = None
 
-    OVERRIDE_VERSION_ENV_VAR = 'PYSTAC_STAC_VERSION_OVERRIDE'
+    OVERRIDE_VERSION_ENV_VAR = "PYSTAC_STAC_VERSION_OVERRIDE"
 
     @classmethod
     def get_stac_version(cls) -> str:

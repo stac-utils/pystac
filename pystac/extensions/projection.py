@@ -1,24 +1,30 @@
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
 
-EPSG_PROP = 'proj:epsg'
-WKT2_PROP = 'proj:wkt2'
-PROJJSON_PROP = 'proj:projjson'
-GEOM_PROP = 'proj:geometry'
-BBOX_PROP = 'proj:bbox'
-CENTROID_PROP = 'proj:centroid'
-SHAPE_PROP = 'proj:shape'
-TRANSFORM_PROP = 'proj:transform'
+EPSG_PROP = "proj:epsg"
+WKT2_PROP = "proj:wkt2"
+PROJJSON_PROP = "proj:projjson"
+GEOM_PROP = "proj:geometry"
+BBOX_PROP = "proj:bbox"
+CENTROID_PROP = "proj:centroid"
+SHAPE_PROP = "proj:shape"
+TRANSFORM_PROP = "proj:transform"
 
 
-class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class ProjectionExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]
+):
     """ProjectionItemExt is the extension of an Item in the Projection Extension.
     The Projection extension adds projection information to STAC Items.
 
@@ -32,18 +38,21 @@ class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         Using ProjectionItemExt to directly wrap an item will add the 'proj' extension ID to
         the item's stac_extensions.
     """
+
     def __init__(self, item: ps.Item) -> None:
         self.item = item
 
-    def apply(self,
-              epsg: Optional[int],
-              wkt2: Optional[str] = None,
-              projjson: Optional[Dict[str, Any]] = None,
-              geometry: Optional[Dict[str, Any]] = None,
-              bbox: Optional[List[float]] = None,
-              centroid: Optional[Dict[str, float]] = None,
-              shape: Optional[List[int]] = None,
-              transform: Optional[List[float]] = None) -> None:
+    def apply(
+        self,
+        epsg: Optional[int],
+        wkt2: Optional[str] = None,
+        projjson: Optional[Dict[str, Any]] = None,
+        geometry: Optional[Dict[str, Any]] = None,
+        bbox: Optional[List[float]] = None,
+        centroid: Optional[Dict[str, float]] = None,
+        shape: Optional[List[int]] = None,
+        transform: Optional[List[float]] = None,
+    ) -> None:
         """Applies Projection extension properties to the extended Item.
 
         Args:
@@ -245,7 +254,9 @@ class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         elif isinstance(obj, ps.Asset):
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemProjectionExtension(ProjectionExtension[ps.Item]):
@@ -254,7 +265,7 @@ class ItemProjectionExtension(ProjectionExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemProjectionExtension Item id={}>'.format(self.item.id)
+        return "<ItemProjectionExtension Item id={}>".format(self.item.id)
 
 
 class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
@@ -265,12 +276,12 @@ class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetProjectionExtension Asset href={}>'.format(self.asset_href)
+        return "<AssetProjectionExtension Asset href={}>".format(self.asset_href)
 
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['proj', 'projection'])
+    prev_extension_ids: Set[str] = set(["proj", "projection"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 

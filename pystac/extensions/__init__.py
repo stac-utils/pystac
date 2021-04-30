@@ -2,6 +2,6 @@
 
 
 class ExtensionError(Exception):
-    """An error related to the construction of extensions.
-    """
+    """An error related to the construction of extensions."""
+
     pass

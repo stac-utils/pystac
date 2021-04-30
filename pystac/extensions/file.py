@@ -1,21 +1,29 @@
 import enum
-from pystac.serialization.identify import (OldExtensionShortIDs, STACJSONDescription, STACVersionID)
+from pystac.serialization.identify import (
+    OldExtensionShortIDs,
+    STACJSONDescription,
+    STACVersionID,
+)
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import (ExtensionException, ExtensionManagementMixin,
-                                    PropertiesExtension, SummariesExtension)
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+    SummariesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
 
-DATA_TYPE_PROP = 'file:data_type'
+DATA_TYPE_PROP = "file:data_type"
 SIZE_PROP = "file:size"
-NODATA_PROP = 'file:nodata'
-CHECKSUM_PROP = 'file:checksum'
+NODATA_PROP = "file:nodata"
+CHECKSUM_PROP = "file:checksum"
 
 
 class FileDataType(str, enum.Enum):
@@ -54,11 +62,14 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
         Using FileItemExt to directly wrap an item will add the 'file' extension ID to
         the item's stac_extensions.
     """
-    def apply(self,
-              data_type: Optional[FileDataType] = None,
-              size: Optional[int] = None,
-              nodata: Optional[List[Any]] = None,
-              checksum: Optional[str] = None) -> None:
+
+    def apply(
+        self,
+        data_type: Optional[FileDataType] = None,
+        size: Optional[int] = None,
+        nodata: Optional[List[Any]] = None,
+        checksum: Optional[str] = None,
+    ) -> None:
         """Applies file extension properties to the extended Item.
 
         Args:
@@ -80,7 +91,9 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
         Returns:
             FileDataType
         """
-        return map_opt(lambda s: FileDataType(s), self._get_property(DATA_TYPE_PROP, str))
+        return map_opt(
+            lambda s: FileDataType(s), self._get_property(DATA_TYPE_PROP, str)
+        )
 
     @data_type.setter
     def data_type(self, v: Optional[FileDataType]) -> None:
@@ -132,7 +145,9 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
         elif isinstance(obj, ps.Asset):
             return cast(FileExtension[T], AssetFileExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
     @staticmethod
     def summaries(obj: ps.Collection) -> "SummariesFileExtension":
@@ -145,7 +160,7 @@ class ItemFileExtension(FileExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemFileExtension Item id={}>'.format(self.item.id)
+        return "<ItemFileExtension Item id={}>".format(self.item.id)
 
 
 class AssetFileExtension(FileExtension[ps.Asset]):
@@ -156,7 +171,7 @@ class AssetFileExtension(FileExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetFileExtension Asset href={}>'.format(self.asset_href)
+        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
 
 
 class SummariesFileExtension(SummariesExtension):
@@ -167,8 +182,10 @@ class SummariesFileExtension(SummariesExtension):
         Returns:
             FileDataType
         """
-        return map_opt(lambda x: [FileDataType(t) for t in x],
-                       self.summaries.get_list(DATA_TYPE_PROP, str))
+        return map_opt(
+            lambda x: [FileDataType(t) for t in x],
+            self.summaries.get_list(DATA_TYPE_PROP, str),
+        )
 
     @data_type.setter
     def data_type(self, v: Optional[List[FileDataType]]) -> None:
@@ -199,42 +216,43 @@ class SummariesFileExtension(SummariesExtension):
 
 class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['file'])
+    prev_extension_ids: Set[str] = set(["file"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
         # The checksum field was previously it's own extension.
         old_checksum: Optional[Dict[str, str]] = None
-        if info.version_range.latest_valid_version() < 'v1.0.0-rc.2':
+        if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
             if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
-                old_item_checksum = obj['properties'].get('checksum:multihash')
+                old_item_checksum = obj["properties"].get("checksum:multihash")
                 if old_item_checksum is not None:
                     if old_checksum is None:
                         old_checksum = {}
-                    old_checksum['__item__'] = old_item_checksum
-                for asset_key, asset in obj['assets'].items():
-                    old_asset_checksum = asset.get('checksum:multihash')
+                    old_checksum["__item__"] = old_item_checksum
+                for asset_key, asset in obj["assets"].items():
+                    old_asset_checksum = asset.get("checksum:multihash")
                     if old_asset_checksum is not None:
                         if old_checksum is None:
                             old_checksum = {}
                         old_checksum[asset_key] = old_asset_checksum
 
                 try:
-                    obj['stac_extensions'].remove(OldExtensionShortIDs.CHECKSUM.value)
+                    obj["stac_extensions"].remove(OldExtensionShortIDs.CHECKSUM.value)
                 except ValueError:
                     pass
 
         super().migrate(obj, version, info)
 
         if old_checksum is not None:
-            if SCHEMA_URI not in obj['stac_extensions']:
-                obj['stac_extensions'].append(SCHEMA_URI)
+            if SCHEMA_URI not in obj["stac_extensions"]:
+                obj["stac_extensions"].append(SCHEMA_URI)
             for key in old_checksum:
-                if key == '__item__':
-                    obj['properties'][CHECKSUM_PROP] = old_checksum[key]
+                if key == "__item__":
+                    obj["properties"][CHECKSUM_PROP] = old_checksum[key]
                 else:
-                    obj['assets'][key][CHECKSUM_PROP] = old_checksum[key]
+                    obj["assets"][key][CHECKSUM_PROP] = old_checksum[key]
 
 
 FILE_EXTENSION_HOOKS = FileExtensionHooks()

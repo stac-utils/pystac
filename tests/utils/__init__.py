@@ -6,7 +6,8 @@ from tests.utils.test_cases import (
     TestCases,  # type:ignore
     ARBITRARY_GEOM,  # type:ignore
     ARBITRARY_BBOX,  # type:ignore
-    ARBITRARY_EXTENT)  # type:ignore
+    ARBITRARY_EXTENT,  # type:ignore
+)
 
 from copy import deepcopy
 from datetime import datetime
@@ -16,8 +17,11 @@ import pystac as ps
 from tests.utils.stac_io_mock import MockStacIO  #  type:ignore
 
 
-def test_to_from_dict(test_class: unittest.TestCase, stac_object_class: Type[ps.STACObject],
-                      d: Dict[str, Any]) -> None:
+def test_to_from_dict(
+    test_class: unittest.TestCase,
+    stac_object_class: Type[ps.STACObject],
+    d: Dict[str, Any],
+) -> None:
     def _parse_times(a_dict: Dict[str, Any]) -> None:
         for k, v in a_dict.items():
             if isinstance(v, dict):
@@ -27,7 +31,7 @@ def test_to_from_dict(test_class: unittest.TestCase, stac_object_class: Type[ps.
                     if isinstance(vv, dict):
                         _parse_times(vv)
             else:
-                if k == 'datetime':
+                if k == "datetime":
                     if not isinstance(v, datetime):
                         a_dict[k] = parse(v)
                         a_dict[k] = a_dict[k].replace(microsecond=0)

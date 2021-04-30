@@ -2,11 +2,15 @@ from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
-T = TypeVar('T', ps.Collection, ps.Item, ps.Asset)
+T = TypeVar("T", ps.Collection, ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
 
@@ -29,7 +33,9 @@ class Dimension(ABC):
 
     @property
     def dim_type(self) -> str:
-        return get_required(self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP)
+        return get_required(
+            self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
+        )
 
     @dim_type.setter
     def dim_type(self, v: str) -> None:
@@ -53,16 +59,16 @@ class Dimension(ABC):
     def from_dict(d: Dict[str, Any]) -> "Dimension":
         dim_type = d.get(DIM_TYPE_PROP)
         if dim_type is None:
-            raise ps.RequiredPropertyMissing('cube_dimension', DIM_TYPE_PROP)
-        if dim_type == 'spatial':
+            raise ps.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
+        if dim_type == "spatial":
             axis = d.get(DIM_AXIS_PROP)
             if axis is None:
-                raise ps.RequiredPropertyMissing('cube_dimension', DIM_AXIS_PROP)
-            if axis == 'z':
+                raise ps.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
+            if axis == "z":
                 return VerticalSpatialDimension(d)
             else:
                 return HorizontalSpatialDimension(d)
-        elif dim_type == 'temporal':
+        elif dim_type == "temporal":
             # The v1.0.0 spec says that AdditionalDimensions can have
             # type 'temporal', but it is unclear how to differentiate that
             # from a temporal dimension. Just key off of type for now.
@@ -75,7 +81,9 @@ class Dimension(ABC):
 class HorizontalSpatialDimension(Dimension):
     @property
     def axis(self) -> str:
-        return get_required(self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP)
+        return get_required(
+            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+        )
 
     @axis.setter
     def axis(self, v: str) -> None:
@@ -83,7 +91,9 @@ class HorizontalSpatialDimension(Dimension):
 
     @property
     def extent(self) -> List[float]:
-        return get_required(self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP)
+        return get_required(
+            self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
+        )
 
     @extent.setter
     def extent(self, v: List[float]) -> None:
@@ -129,7 +139,9 @@ class HorizontalSpatialDimension(Dimension):
 class VerticalSpatialDimension(Dimension):
     @property
     def axis(self) -> str:
-        return get_required(self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP)
+        return get_required(
+            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+        )
 
     @axis.setter
     def axis(self, v: str) -> None:
@@ -292,17 +304,24 @@ class AdditionalDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
-class DatacubeExtension(Generic[T], PropertiesExtension,
-                        ExtensionManagementMixin[Union[ps.Collection, ps.Item]]):
+class DatacubeExtension(
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+):
     def apply(self, dimensions: Dict[str, Dimension]) -> None:
         self.dimensions = dimensions
 
     @property
     def dimensions(self) -> Dict[str, Dimension]:
         return get_required(
-            map_opt(lambda d: {k: Dimension.from_dict(v)
-                               for k, v in d.items()},
-                    self._get_property(DIMENSIONS_PROP, Dict[str, Any])), self, DIMENSIONS_PROP)
+            map_opt(
+                lambda d: {k: Dimension.from_dict(v) for k, v in d.items()},
+                self._get_property(DIMENSIONS_PROP, Dict[str, Any]),
+            ),
+            self,
+            DIMENSIONS_PROP,
+        )
 
     @dimensions.setter
     def dimensions(self, v: Dict[str, Dimension]) -> None:
@@ -321,7 +340,9 @@ class DatacubeExtension(Generic[T], PropertiesExtension,
         elif isinstance(obj, ps.Asset):
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
-            raise ExtensionException(f"Datacube extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"Datacube extension does not apply to type {type(obj)}"
+            )
 
 
 class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
@@ -330,7 +351,7 @@ class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
         self.properties = collection.extra_fields
 
     def __repr__(self) -> str:
-        return '<CollectionDatacubeExtension Item id={}>'.format(self.collection.id)
+        return "<CollectionDatacubeExtension Item id={}>".format(self.collection.id)
 
 
 class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
@@ -339,7 +360,7 @@ class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemDatacubeExtension Item id={}>'.format(self.item.id)
+        return "<ItemDatacubeExtension Item id={}>".format(self.item.id)
 
 
 class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
@@ -350,14 +371,15 @@ class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetDatacubeExtension Item id={}>'.format(self.asset_href)
+        return "<AssetDatacubeExtension Item id={}>".format(self.asset_href)
 
 
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['datacube'])
+    prev_extension_ids: Set[str] = set(["datacube"])
     stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    )
 
 
 DATACUBE_EXTENSION_HOOKS = DatacubeExtensionHooks()

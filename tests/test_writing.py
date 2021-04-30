@@ -2,7 +2,7 @@ import unittest
 from tempfile import TemporaryDirectory
 
 import pystac as ps
-from pystac import (Collection, CatalogType, HIERARCHICAL_LINKS)
+from pystac import Collection, CatalogType, HIERARCHICAL_LINKS
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict
 
@@ -13,6 +13,7 @@ class STACWritingTest(unittest.TestCase):
     """Tests writing STACs, using JSON Schema validation,
     and ensure that links are correctly set to relative or absolute.
     """
+
     def validate_catalog(self, catalog: ps.Catalog):
         catalog.validate()
         validated_count = 1
@@ -43,45 +44,56 @@ class STACWritingTest(unittest.TestCase):
                     else:
                         self.assertTrue(is_valid)
 
-        def validate_item_link_type(href: str, link_type: str, should_include_self: bool):
+        def validate_item_link_type(
+            href: str, link_type: str, should_include_self: bool
+        ):
             item_dict = ps.StacIO.default().read_json(href)
             item = ps.Item.from_file(href)
-            rel_links = HIERARCHICAL_LINKS + ps.EXTENSION_HOOKS.get_extended_object_links(item)
+            rel_links = (
+                HIERARCHICAL_LINKS + ps.EXTENSION_HOOKS.get_extended_object_links(item)
+            )
             for link in item.get_links():
-                if not link.rel == 'self':
-                    if link_type == 'RELATIVE' and link.rel in rel_links:
+                if not link.rel == "self":
+                    if link_type == "RELATIVE" and link.rel in rel_links:
                         self.assertFalse(is_absolute_href(link.href))
                     else:
                         self.assertTrue(is_absolute_href(link.href))
 
             validate_asset_href_type(item, href)
 
-            rels = set([link['rel'] for link in item_dict['links']])
-            self.assertEqual('self' in rels, should_include_self)
+            rels = set([link["rel"] for link in item_dict["links"]])
+            self.assertEqual("self" in rels, should_include_self)
 
-        def validate_catalog_link_type(href: str, link_type: str, should_include_self: bool):
+        def validate_catalog_link_type(
+            href: str, link_type: str, should_include_self: bool
+        ):
             cat_dict = ps.StacIO.default().read_json(href)
             cat = ps.Catalog.from_file(href)
 
-            rels = set([link['rel'] for link in cat_dict['links']])
-            self.assertEqual('self' in rels, should_include_self)
+            rels = set([link["rel"] for link in cat_dict["links"]])
+            self.assertEqual("self" in rels, should_include_self)
 
             for child_link in cat.get_child_links():
                 child_href = make_absolute_href(child_link.href, href)
-                validate_catalog_link_type(child_href, link_type,
-                                           catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
+                validate_catalog_link_type(
+                    child_href,
+                    link_type,
+                    catalog_type == CatalogType.ABSOLUTE_PUBLISHED,
+                )
 
             for item_link in cat.get_item_links():
                 item_href = make_absolute_href(item_link.href, href)
-                validate_item_link_type(item_href, link_type,
-                                        catalog_type == CatalogType.ABSOLUTE_PUBLISHED)
+                validate_item_link_type(
+                    item_href, link_type, catalog_type == CatalogType.ABSOLUTE_PUBLISHED
+                )
 
-        link_type = 'RELATIVE'
+        link_type = "RELATIVE"
         if catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
-            link_type = 'ABSOLUTE'
+            link_type = "ABSOLUTE"
 
         root_should_include_href = catalog_type in [
-            CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED
+            CatalogType.ABSOLUTE_PUBLISHED,
+            CatalogType.RELATIVE_PUBLISHED,
         ]
 
         validate_catalog_link_type(root_href, link_type, root_should_include_href)
@@ -110,9 +122,12 @@ class STACWritingTest(unittest.TestCase):
         for catalog in TestCases.all_test_catalogs():
             catalog = catalog.full_copy()
             ctypes = [
-                CatalogType.ABSOLUTE_PUBLISHED, CatalogType.RELATIVE_PUBLISHED,
-                CatalogType.SELF_CONTAINED
+                CatalogType.ABSOLUTE_PUBLISHED,
+                CatalogType.RELATIVE_PUBLISHED,
+                CatalogType.SELF_CONTAINED,
             ]
             for catalog_type in ctypes:
-                with self.subTest(title='Catalog {} [{}]'.format(catalog.id, catalog_type)):
+                with self.subTest(
+                    title="Catalog {} [{}]".format(catalog.id, catalog_type)
+                ):
                     self.do_test(catalog, catalog_type)

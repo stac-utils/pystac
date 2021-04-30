@@ -12,24 +12,28 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 from urllib import parse
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Collection, ps.Item)
+T = TypeVar("T", ps.Collection, ps.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
 
 # STAC fields strings.
-PREFIX: str = 'sci:'
-DOI: str = PREFIX + 'doi'
-CITATION: str = PREFIX + 'citation'
-PUBLICATIONS: str = PREFIX + 'publications'
+PREFIX: str = "sci:"
+DOI: str = PREFIX + "doi"
+CITATION: str = PREFIX + "citation"
+PUBLICATIONS: str = PREFIX + "publications"
 
 # Link type.
-CITE_AS: str = 'cite-as'
+CITE_AS: str = "cite-as"
 
-DOI_URL_BASE = 'https://doi.org/'
+DOI_URL_BASE = "https://doi.org/"
 
 
 def doi_to_url(doi: str) -> str:
@@ -38,6 +42,7 @@ def doi_to_url(doi: str) -> str:
 
 class Publication:
     """Helper for Publication entries."""
+
     def __init__(self, doi: str, citation: str) -> None:
         self.doi = doi
         self.citation = citation
@@ -49,14 +54,14 @@ class Publication:
         return self.doi == other.doi and self.citation == other.citation
 
     def __repr__(self) -> str:
-        return f'<Publication doi={self.doi} target={self.citation}>'
+        return f"<Publication doi={self.doi} target={self.citation}>"
 
     def to_dict(self) -> Dict[str, str]:
-        return copy.deepcopy({'doi': self.doi, 'citation': self.citation})
+        return copy.deepcopy({"doi": self.doi, "citation": self.citation})
 
     @staticmethod
     def from_dict(d: Dict[str, str]) -> "Publication":
-        return Publication(d['doi'], d['citation'])
+        return Publication(d["doi"], d["citation"])
 
     def get_link(self) -> ps.Link:
         return ps.Link(CITE_AS, doi_to_url(self.doi))
@@ -72,16 +77,22 @@ def remove_link(links: List[ps.Link], doi: str) -> None:
             break
 
 
-class ScientificExtension(Generic[T], PropertiesExtension,
-                          ExtensionManagementMixin[Union[ps.Collection, ps.Item]]):
+class ScientificExtension(
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+):
     """ScientificItemExt extends Item to add citations and DOIs to a STAC Item."""
+
     def __init__(self, obj: ps.STACObject) -> None:
         self.obj = obj
 
-    def apply(self,
-              doi: Optional[str] = None,
-              citation: Optional[str] = None,
-              publications: Optional[List[Publication]] = None) -> None:
+    def apply(
+        self,
+        doi: Optional[str] = None,
+        citation: Optional[str] = None,
+        publications: Optional[List[Publication]] = None,
+    ) -> None:
         """Applies scientific extension properties to the extended Item.
 
         Args:
@@ -135,12 +146,16 @@ class ScientificExtension(Generic[T], PropertiesExtension,
         Returns:
             List of Publication instances.
         """
-        return map_opt(lambda pubs: [Publication.from_dict(pub) for pub in pubs],
-                       self._get_property(PUBLICATIONS, List[Dict[str, Any]]))
+        return map_opt(
+            lambda pubs: [Publication.from_dict(pub) for pub in pubs],
+            self._get_property(PUBLICATIONS, List[Dict[str, Any]]),
+        )
 
     @publications.setter
     def publications(self, v: Optional[List[Publication]]) -> None:
-        self._set_property(PUBLICATIONS, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v))
+        self._set_property(
+            PUBLICATIONS, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v)
+        )
         if v is not None:
             for pub in v:
                 self.obj.add_link(pub.get_link())
@@ -183,7 +198,9 @@ class ScientificExtension(Generic[T], PropertiesExtension,
         if isinstance(obj, ps.Item):
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class CollectionScientificExtension(ScientificExtension[ps.Collection]):
@@ -194,7 +211,7 @@ class CollectionScientificExtension(ScientificExtension[ps.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return '<CollectionScientificExtension Item id={}>'.format(self.collection.id)
+        return "<CollectionScientificExtension Item id={}>".format(self.collection.id)
 
 
 class ItemScientificExtension(ScientificExtension[ps.Item]):
@@ -205,14 +222,15 @@ class ItemScientificExtension(ScientificExtension[ps.Item]):
         super().__init__(self.item)
 
     def __repr__(self) -> str:
-        return '<ItemScientificExtension Item id={}>'.format(self.item.id)
+        return "<ItemScientificExtension Item id={}>".format(self.item.id)
 
 
 class ScientificExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['scientific'])
+    prev_extension_ids: Set[str] = set(["scientific"])
     stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    )
 
 
 SCIENTIFIC_EXTENSION_HOOKS = ScientificExtensionHooks()

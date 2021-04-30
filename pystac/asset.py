@@ -40,13 +40,16 @@ class Asset:
             object JSON.
         owner: The Item or Collection this asset belongs to, or None if it has no owner.
     """
-    def __init__(self,
-                 href: str,
-                 title: Optional[str] = None,
-                 description: Optional[str] = None,
-                 media_type: Optional[str] = None,
-                 roles: Optional[List[str]] = None,
-                 properties: Optional[Dict[str, Any]] = None) -> None:
+
+    def __init__(
+        self,
+        href: str,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        media_type: Optional[str] = None,
+        roles: Optional[List[str]] = None,
+        properties: Optional[Dict[str, Any]] = None,
+    ) -> None:
         self.href = href
         self.title = title
         self.description = description
@@ -95,23 +98,23 @@ class Asset:
             dict: A serialization of the Asset that can be written out as JSON.
         """
 
-        d: Dict[str, Any] = {'href': self.href}
+        d: Dict[str, Any] = {"href": self.href}
 
         if self.media_type is not None:
-            d['type'] = self.media_type
+            d["type"] = self.media_type
 
         if self.title is not None:
-            d['title'] = self.title
+            d["title"] = self.title
 
         if self.description is not None:
-            d['description'] = self.description
+            d["description"] = self.description
 
         if self.properties is not None and len(self.properties) > 0:
             for k, v in self.properties.items():
                 d[k] = v
 
         if self.roles is not None:
-            d['roles'] = self.roles
+            d["roles"] = self.roles
 
         return d
 
@@ -121,15 +124,17 @@ class Asset:
         Returns:
             Asset: The clone of this asset.
         """
-        return Asset(href=self.href,
-                     title=self.title,
-                     description=self.description,
-                     media_type=self.media_type,
-                     roles=self.roles,
-                     properties=self.properties)
+        return Asset(
+            href=self.href,
+            title=self.title,
+            description=self.description,
+            media_type=self.media_type,
+            roles=self.roles,
+            properties=self.properties,
+        )
 
     def __repr__(self) -> str:
-        return '<Asset href={}>'.format(self.href)
+        return "<Asset href={}>".format(self.href)
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Asset":
@@ -139,18 +144,20 @@ class Asset:
             Asset: The Asset deserialized from the JSON dict.
         """
         d = copy(d)
-        href = d.pop('href')
-        media_type = d.pop('type', None)
-        title = d.pop('title', None)
-        description = d.pop('description', None)
-        roles = d.pop('roles', None)
+        href = d.pop("href")
+        media_type = d.pop("type", None)
+        title = d.pop("title", None)
+        description = d.pop("description", None)
+        roles = d.pop("roles", None)
         properties = None
         if any(d):
             properties = d
 
-        return Asset(href=href,
-                     media_type=media_type,
-                     title=title,
-                     description=description,
-                     roles=roles,
-                     properties=properties)
+        return Asset(
+            href=href,
+            media_type=media_type,
+            title=title,
+            description=description,
+            roles=roles,
+            properties=properties,
+        )

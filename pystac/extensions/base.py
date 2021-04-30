@@ -12,15 +12,18 @@ class SummariesExtension:
     def __init__(self, collection: ps.Collection) -> None:
         self.summaries = collection.summaries
 
-    def _set_summary(self, prop_key: str, v: Optional[Union[List[Any], ps.RangeSummary[Any],
-                                                            Dict[str, Any]]]) -> None:
+    def _set_summary(
+        self,
+        prop_key: str,
+        v: Optional[Union[List[Any], ps.RangeSummary[Any], Dict[str, Any]]],
+    ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
         else:
             self.summaries.add(prop_key, v)
 
 
-P = TypeVar('P')
+P = TypeVar("P")
 
 
 class PropertiesExtension(ABC):
@@ -38,14 +41,16 @@ class PropertiesExtension(ABC):
                     return result
         return None
 
-    def _set_property(self, prop_name: str, v: Optional[Any], pop_if_none: bool = True) -> None:
+    def _set_property(
+        self, prop_name: str, v: Optional[Any], pop_if_none: bool = True
+    ) -> None:
         if v is None and pop_if_none:
             self.properties.pop(prop_name, None)
         else:
             self.properties[prop_name] = v
 
 
-S = TypeVar('S', bound=ps.STACObject)
+S = TypeVar("S", bound=ps.STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
@@ -70,4 +75,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def has_extension(cls, obj: S) -> bool:
-        return (obj.stac_extensions is not None and cls.get_schema_uri() in obj.stac_extensions)
+        return (
+            obj.stac_extensions is not None
+            and cls.get_schema_uri() in obj.stac_extensions
+        )

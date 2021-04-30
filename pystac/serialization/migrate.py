@@ -3,85 +3,112 @@ from typing import Any, Callable, Dict, List, Optional, Set, TYPE_CHECKING, Tupl
 
 import pystac as ps
 from pystac.version import STACVersion
-from pystac.serialization.identify import (OldExtensionShortIDs, STACJSONDescription, STACVersionID)
+from pystac.serialization.identify import (
+    OldExtensionShortIDs,
+    STACJSONDescription,
+    STACVersionID,
+)
 
 if TYPE_CHECKING:
     from pystac import STACObjectType as STACObjectType_Type
 
 
 def _migrate_links(d: Dict[str, Any], version: STACVersionID) -> None:
-    if version < '0.6':
-        if 'links' in d:
-            if isinstance(d['links'], dict):
-                d['links'] = list(d['links'].values())
+    if version < "0.6":
+        if "links" in d:
+            if isinstance(d["links"], dict):
+                d["links"] = list(d["links"].values())
 
 
-def _migrate_catalog(d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+def _migrate_catalog(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
     _migrate_links(d, version)
 
-    if version < '0.8':
-        d['stac_extensions'] = list(info.extensions)
+    if version < "0.8":
+        d["stac_extensions"] = list(info.extensions)
 
 
-def _migrate_collection(d: Dict[str, Any], version: STACVersionID,
-                        info: STACJSONDescription) -> None:
+def _migrate_collection(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
     _migrate_catalog(d, version, info)
 
 
-def _migrate_item(d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription) -> None:
+def _migrate_item(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
     _migrate_links(d, version)
 
-    if version < '0.8':
-        d['stac_extensions'] = list(info.extensions)
+    if version < "0.8":
+        d["stac_extensions"] = list(info.extensions)
 
 
-def _migrate_itemcollection(d: Dict[str, Any], version: STACVersionID,
-                            info: STACJSONDescription) -> None:
-    if version < '0.9.0':
-        d['stac_extensions'] = list(info.extensions)
+def _migrate_itemcollection(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
+    if version < "0.9.0":
+        d["stac_extensions"] = list(info.extensions)
 
 
 # Extensions
 
 
-def _migrate_item_assets(d: Dict[str, Any], version: STACVersionID,
-                         info: STACJSONDescription) -> Optional[Set[str]]:
-    if version < '1.0.0-beta.2':
+def _migrate_item_assets(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> Optional[Set[str]]:
+    if version < "1.0.0-beta.2":
         if info.object_type == ps.STACObjectType.COLLECTION:
-            if 'assets' in d:
-                d['item_assets'] = d['assets']
-                del d['assets']
+            if "assets" in d:
+                d["item_assets"] = d["assets"]
+                del d["assets"]
     return None
 
 
-def _migrate_datetime_range(d: Dict[str, Any], version: STACVersionID,
-                            info: STACJSONDescription) -> Optional[Set[str]]:
-    if version < '0.9':
+def _migrate_datetime_range(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> Optional[Set[str]]:
+    if version < "0.9":
         # Datetime range was removed
-        if 'dtr:start_datetime' in d['properties'] and 'start_datetime' not in d['properties']:
-            d['properties']['start_datetime'] = d['properties']['dtr:start_datetime']
-            del d['properties']['dtr:start_datetime']
+        if (
+            "dtr:start_datetime" in d["properties"]
+            and "start_datetime" not in d["properties"]
+        ):
+            d["properties"]["start_datetime"] = d["properties"]["dtr:start_datetime"]
+            del d["properties"]["dtr:start_datetime"]
 
-        if 'dtr:end_datetime' in d['properties'] and 'end_datetime' not in d['properties']:
-            d['properties']['end_datetime'] = d['properties']['dtr:end_datetime']
-            del d['properties']['dtr:end_datetime']
+        if (
+            "dtr:end_datetime" in d["properties"]
+            and "end_datetime" not in d["properties"]
+        ):
+            d["properties"]["end_datetime"] = d["properties"]["dtr:end_datetime"]
+            del d["properties"]["dtr:end_datetime"]
 
     return None
 
 
-def _get_object_migrations(
-) -> Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]]:
+def _get_object_migrations() -> Dict[
+    str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]
+]:
     return {
         ps.STACObjectType.CATALOG: _migrate_catalog,
         ps.STACObjectType.COLLECTION: _migrate_collection,
         ps.STACObjectType.ITEM: _migrate_item,
-        ps.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection
+        ps.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection,
     }
 
 
-def _get_removed_extension_migrations(
-) -> Dict[str, Tuple[Optional[List["STACObjectType_Type"]], Optional[Callable[
-    [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]]]]]:  # noqa
+def _get_removed_extension_migrations() -> Dict[
+    str,
+    Tuple[
+        Optional[List["STACObjectType_Type"]],
+        Optional[
+            Callable[
+                [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]
+            ]
+        ],
+    ],
+]:  # noqa
     """Handles removed extensions.
 
     This does not handle renamed extension or extensions that were absorbed
@@ -95,10 +122,8 @@ def _get_removed_extension_migrations(
     """
     return {
         # -- Removed in 1.0
-
         # assets in collections became a core property
         OldExtensionShortIDs.COLLECTION_ASSETS.value: (None, None),
-
         # Extensions that were placed on Collections that applied to
         # the 'commons' properties of their Items, but since the commons
         # property merging has went away these extensions are removed
@@ -113,28 +138,27 @@ def _get_removed_extension_migrations(
         OldExtensionShortIDs.SAT.value: ([ps.STACObjectType.COLLECTION], None),
         OldExtensionShortIDs.TIMESTAMPS.value: ([ps.STACObjectType.COLLECTION], None),
         OldExtensionShortIDs.VIEW.value: ([ps.STACObjectType.COLLECTION], None),
-
         # tiled-assets was never a fully published extension;
         # remove reference to the pre-1.0 RC short ID
         OldExtensionShortIDs.TILED_ASSETS.value: (None, None),
-
         # Single File STAC is a removed concept; is being reworked as of
         # STAC 1.0.0-RC.3. Remove short ID from PySTAC as it's unsupported
         OldExtensionShortIDs.SINGLE_FILE_STAC.value: (None, None),
-
         # -- Removed in 0.9.0
-        'dtr': (None, _migrate_datetime_range),
-        'datetime-range': (None, _migrate_datetime_range),
-        'commons': (None, None)
+        "dtr": (None, _migrate_datetime_range),
+        "datetime-range": (None, _migrate_datetime_range),
+        "commons": (None, None),
     }
 
 
 # TODO: Item Assets
 def _get_extension_renames() -> Dict[str, str]:
-    return {'asset': 'item-assets'}
+    return {"asset": "item-assets"}
 
 
-def migrate_to_latest(json_dict: Dict[str, Any], info: STACJSONDescription) -> Dict[str, Any]:
+def migrate_to_latest(
+    json_dict: Dict[str, Any], info: STACJSONDescription
+) -> Dict[str, Any]:
     """Migrates the STAC JSON to the latest version
 
     Args:
@@ -155,20 +179,20 @@ def migrate_to_latest(json_dict: Dict[str, Any], info: STACJSONDescription) -> D
 
     if version != STACVersion.DEFAULT_STAC_VERSION:
         object_migrations[info.object_type](result, version, info)
-        if 'stac_extensions' not in result:
+        if "stac_extensions" not in result:
             # Force stac_extensions property, as it makes
             # downstream migration less complex
-            result['stac_extensions'] = []
+            result["stac_extensions"] = []
         ps.EXTENSION_HOOKS.migrate(result, version, info)
 
-        for ext in result['stac_extensions'][:]:
+        for ext in result["stac_extensions"][:]:
             if ext in removed_extension_migrations:
                 object_types, migration_fn = removed_extension_migrations[ext]
                 if object_types is None or info.object_type in object_types:
                     if migration_fn:
                         migration_fn(result, version, info)
-                    result['stac_extensions'].remove(ext)
+                    result["stac_extensions"].remove(ext)
 
-    result['stac_version'] = STACVersion.DEFAULT_STAC_VERSION
+    result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
 
     return result

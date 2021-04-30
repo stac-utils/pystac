@@ -9,12 +9,12 @@ from pystac.extensions import version
 from pystac.extensions.version import VersionExtension
 from tests.utils import TestCases
 
-URL_TEMPLATE: str = 'http://example.com/catalog/%s.json'
+URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
 
 
 def make_item(year: int) -> ps.Item:
     """Create basic test items that are only slightly different."""
-    asset_id = f'USGS/GAP/CONUS/{year}'
+    asset_id = f"USGS/GAP/CONUS/{year}"
     start = datetime.datetime(year, 1, 2)
 
     item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
@@ -26,7 +26,7 @@ def make_item(year: int) -> ps.Item:
 
 
 class ItemVersionExtensionTest(unittest.TestCase):
-    version: str = '1.2.3'
+    version: str = "1.2.3"
 
     def setUp(self):
         super().setUp()
@@ -105,16 +105,17 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor,
-                                              successor)
+        VersionExtension.ext(self.item).apply(
+            self.version, deprecated, latest, predecessor, successor
+        )
         self.item.validate()
 
     def test_full_copy(self):
         cat = TestCases.test_case_1()
 
         # Fetch two items from the catalog
-        item1 = cat.get_item('area-1-1-imagery', recursive=True)
-        item2 = cat.get_item('area-2-2-imagery', recursive=True)
+        item1 = cat.get_item("area-1-1-imagery", recursive=True)
+        item2 = cat.get_item("area-2-2-imagery", recursive=True)
 
         assert item1 is not None
         assert item2 is not None
@@ -124,15 +125,15 @@ class ItemVersionExtensionTest(unittest.TestCase):
         VersionExtension.add_to(item1)
         VersionExtension.add_to(item2)
 
-        VersionExtension.ext(item1).apply(version='2.0', predecessor=item2)
-        VersionExtension.ext(item2).apply(version='1.0', successor=item1, latest=item1)
+        VersionExtension.ext(item1).apply(version="2.0", predecessor=item2)
+        VersionExtension.ext(item2).apply(version="1.0", successor=item1, latest=item1)
 
         # Make a full copy of the catalog
         cat_copy = cat.full_copy()
 
         # Retrieve the copied version of the items
-        item1_copy = cat_copy.get_item('area-1-1-imagery', recursive=True)
-        item2_copy = cat_copy.get_item('area-2-2-imagery', recursive=True)
+        item1_copy = cat_copy.get_item("area-1-1-imagery", recursive=True)
+        item2_copy = cat_copy.get_item("area-2-2-imagery", recursive=True)
 
         # Check to see if the version links point to the instances of the
         # item objects as they should.
@@ -149,8 +150,9 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest = make_item(2013)
         predecessor = make_item(2010)
         successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest, predecessor,
-                                              successor)
+        VersionExtension.ext(self.item).apply(
+            self.version, deprecated, latest, predecessor, successor
+        )
 
         VersionExtension.ext(self.item).latest = None
         links = self.item.get_links(version.LATEST)
@@ -172,8 +174,9 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest1 = make_item(2013)
         predecessor1 = make_item(2010)
         successor1 = make_item(2012)
-        VersionExtension.ext(self.item).apply(self.version, deprecated, latest1, predecessor1,
-                                              successor1)
+        VersionExtension.ext(self.item).apply(
+            self.version, deprecated, latest1, predecessor1, successor1
+        )
 
         year = 2015
         latest2 = make_item(year)
@@ -201,7 +204,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
 
 def make_collection(year: int) -> ps.Collection:
-    asset_id = f'my/collection/of/things/{year}'
+    asset_id = f"my/collection/of/things/{year}"
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
@@ -209,7 +212,7 @@ def make_collection(year: int) -> ps.Collection:
     temporal_extent = ps.TemporalExtent([[start, end]])
     extent = ps.Extent(spatial_extent, temporal_extent)
 
-    collection = ps.Collection(asset_id, 'desc', extent)
+    collection = ps.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(collection)
@@ -218,7 +221,7 @@ def make_collection(year: int) -> ps.Collection:
 
 
 class CollectionVersionExtensionTest(unittest.TestCase):
-    version: str = '1.2.3'
+    version: str = "1.2.3"
 
     def setUp(self):
         super().setUp()
@@ -267,7 +270,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
     def test_predecessor(self):
         year = 2010
         predecessor = make_collection(year)
-        VersionExtension.ext(self.collection).apply(self.version, predecessor=predecessor)
+        VersionExtension.ext(self.collection).apply(
+            self.version, predecessor=predecessor
+        )
         predecessor_result = VersionExtension.ext(self.collection).predecessor
         self.assertIs(predecessor, predecessor_result)
 
@@ -297,17 +302,18 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor,
-                                                    successor)
+        VersionExtension.ext(self.collection).apply(
+            self.version, deprecated, latest, predecessor, successor
+        )
         self.collection.validate()
 
     def test_full_copy(self):
         cat = TestCases.test_case_1()
 
         # Fetch two collections from the catalog
-        col1 = cat.get_child('area-1-1', recursive=True)
+        col1 = cat.get_child("area-1-1", recursive=True)
         assert isinstance(col1, ps.Collection)
-        col2 = cat.get_child('area-2-2', recursive=True)
+        col2 = cat.get_child("area-2-2", recursive=True)
         assert isinstance(col2, ps.Collection)
 
         # Enable the version extension on each, and link them
@@ -315,15 +321,15 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         VersionExtension.add_to(col1)
         VersionExtension.add_to(col2)
 
-        VersionExtension.ext(col1).apply(version='2.0', predecessor=col2)
-        VersionExtension.ext(col2).apply(version='1.0', successor=col1, latest=col1)
+        VersionExtension.ext(col1).apply(version="2.0", predecessor=col2)
+        VersionExtension.ext(col2).apply(version="1.0", successor=col1, latest=col1)
 
         # Make a full copy of the catalog
         cat_copy = cat.full_copy()
 
         # Retrieve the copied version of the items
-        col1_copy = cat_copy.get_child('area-1-1', recursive=True)
-        col2_copy = cat_copy.get_child('area-2-2', recursive=True)
+        col1_copy = cat_copy.get_child("area-1-1", recursive=True)
+        col2_copy = cat_copy.get_child("area-2-2", recursive=True)
 
         # Check to see if the version links point to the instances of the
         # col objects as they should.
@@ -340,8 +346,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest = make_collection(2013)
         predecessor = make_collection(2010)
         successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest, predecessor,
-                                                    successor)
+        VersionExtension.ext(self.collection).apply(
+            self.version, deprecated, latest, predecessor, successor
+        )
 
         VersionExtension.ext(self.collection).latest = None
         links = self.collection.get_links(version.LATEST)
@@ -363,8 +370,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest1 = make_collection(2013)
         predecessor1 = make_collection(2010)
         successor1 = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(self.version, deprecated, latest1, predecessor1,
-                                                    successor1)
+        VersionExtension.ext(self.collection).apply(
+            self.version, deprecated, latest1, predecessor1, successor1
+        )
 
         year = 2015
         latest2 = make_collection(year)
@@ -391,5 +399,5 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, links[0].get_href())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

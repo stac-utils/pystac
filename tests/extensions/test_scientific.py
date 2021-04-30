@@ -7,28 +7,28 @@ import pystac as ps
 from pystac.extensions import scientific
 from pystac.extensions.scientific import ScientificExtension
 
-URL_TEMPLATE = 'http://example.com/catalog/%s.json'
+URL_TEMPLATE = "http://example.com/catalog/%s.json"
 
-DOI_BASE_URL = 'https://doi.org/'
+DOI_BASE_URL = "https://doi.org/"
 
-DOI = '10.5061/dryad.s2v81.2'
+DOI = "10.5061/dryad.s2v81.2"
 DOI_URL = DOI_BASE_URL + DOI
-CITATION = 'Some citation string'
+CITATION = "Some citation string"
 
-PUB1_DOI = '10.1234/first'
+PUB1_DOI = "10.1234/first"
 PUB1_DOI_URL = DOI_BASE_URL + PUB1_DOI
 
-PUB2_DOI = '10.2345/second'
+PUB2_DOI = "10.2345/second"
 PUB2_DOI_URL = DOI_BASE_URL + PUB2_DOI
 
 PUBLICATIONS = [
-    scientific.Publication(PUB1_DOI, 'First citation.'),
-    scientific.Publication(PUB2_DOI, 'Second citation.')
+    scientific.Publication(PUB1_DOI, "First citation."),
+    scientific.Publication(PUB2_DOI, "Second citation."),
 ]
 
 
 def make_item() -> ps.Item:
-    asset_id = 'USGS/GAP/CONUS/2011'
+    asset_id = "USGS/GAP/CONUS/2011"
     start = datetime.datetime(2011, 1, 2)
     item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % 2011)
@@ -77,7 +77,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
     def test_publications_one(self):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(publications=publications)
-        self.assertEqual([1], [int('1')])
+        self.assertEqual([1], [int("1")])
         self.assertEqual(publications, ScientificExtension.ext(self.item).publications)
         self.assertIn(scientific.PUBLICATIONS, self.item.properties)
 
@@ -122,7 +122,9 @@ class ItemScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[0])
-        self.assertEqual([PUBLICATIONS[1]], ScientificExtension.ext(self.item).publications)
+        self.assertEqual(
+            [PUBLICATIONS[1]], ScientificExtension.ext(self.item).publications
+        )
         links = self.item.get_links(scientific.CITE_AS)
         self.assertEqual(2, len(links))
         self.assertEqual(DOI_URL, links[0].target)
@@ -140,7 +142,9 @@ class ItemScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[1])
-        self.assertEqual([PUBLICATIONS[0]], ScientificExtension.ext(self.item).publications)
+        self.assertEqual(
+            [PUBLICATIONS[0]], ScientificExtension.ext(self.item).publications
+        )
         links = self.item.get_links(scientific.CITE_AS)
         self.assertEqual(2, len(links))
         self.assertEqual(PUB1_DOI_URL, links[1].target)
@@ -172,14 +176,14 @@ class ItemScientificExtensionTest(unittest.TestCase):
 
 
 def make_collection() -> ps.Collection:
-    asset_id = 'my/thing'
+    asset_id = "my/thing"
     start = datetime.datetime(2018, 8, 24)
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = ps.SpatialExtent(bboxes)
     temporal_extent = ps.TemporalExtent([[start, end]])
     extent = ps.Extent(spatial_extent, temporal_extent)
-    collection = ps.Collection(asset_id, 'desc', extent)
+    collection = ps.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % 2019)
 
     ScientificExtension.add_to(collection)
@@ -226,7 +230,9 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     def test_publications_one(self):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(publications=publications)
-        self.assertEqual(publications, ScientificExtension.ext(self.collection).publications)
+        self.assertEqual(
+            publications, ScientificExtension.ext(self.collection).publications
+        )
         self.assertIn(scientific.PUBLICATIONS, self.collection.extra_fields)
 
         links = self.collection.get_links(scientific.CITE_AS)
@@ -238,7 +244,9 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
     def test_publications(self):
         ScientificExtension.ext(self.collection).apply(publications=PUBLICATIONS)
-        self.assertEqual(PUBLICATIONS, ScientificExtension.ext(self.collection).publications)
+        self.assertEqual(
+            PUBLICATIONS, ScientificExtension.ext(self.collection).publications
+        )
         self.assertIn(scientific.PUBLICATIONS, self.collection.extra_fields)
 
         links = self.collection.get_links(scientific.CITE_AS)
@@ -272,7 +280,9 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[0])
-        self.assertEqual([PUBLICATIONS[1]], ScientificExtension.ext(self.collection).publications)
+        self.assertEqual(
+            [PUBLICATIONS[1]], ScientificExtension.ext(self.collection).publications
+        )
         links = self.collection.get_links(scientific.CITE_AS)
         self.assertEqual(2, len(links))
         self.assertEqual(DOI_URL, links[0].target)
@@ -290,7 +300,9 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[1])
-        self.assertEqual([PUBLICATIONS[0]], ScientificExtension.ext(self.collection).publications)
+        self.assertEqual(
+            [PUBLICATIONS[0]], ScientificExtension.ext(self.collection).publications
+        )
         links = self.collection.get_links(scientific.CITE_AS)
         self.assertEqual(2, len(links))
         self.assertEqual(PUB1_DOI_URL, links[1].target)
@@ -321,5 +333,5 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.collection.validate()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

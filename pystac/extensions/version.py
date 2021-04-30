@@ -9,29 +9,36 @@ from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 
-T = TypeVar('T', ps.Collection, ps.Item)
+T = TypeVar("T", ps.Collection, ps.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 
 # STAC fields - These are unusual for an extension in that they do not have
 # a prefix.  e.g. nothing like "ver:"
-VERSION: str = 'version'
-DEPRECATED: str = 'deprecated'
+VERSION: str = "version"
+DEPRECATED: str = "deprecated"
 
 # Link "rel" attribute values.
-LATEST: str = 'latest-version'
-PREDECESSOR: str = 'predecessor-version'
-SUCCESSOR: str = 'successor-version'
+LATEST: str = "latest-version"
+PREDECESSOR: str = "predecessor-version"
+SUCCESSOR: str = "successor-version"
 
 # Media type for links.
-MEDIA_TYPE: str = 'application/json'
+MEDIA_TYPE: str = "application/json"
 
 
-class VersionExtension(Generic[T], PropertiesExtension,
-                       ExtensionManagementMixin[Union[ps.Collection, ps.Item]]):
+class VersionExtension(
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+):
     """VersionItemExt extends Item to add version and deprecated properties
     along with links to the latest, predecessor, and successor Items.
 
@@ -45,17 +52,20 @@ class VersionExtension(Generic[T], PropertiesExtension,
         Using VersionItemExt to directly wrap an item will add the 'version'
         extension ID to the item's stac_extensions.
     """
+
     obj: ps.STACObject
 
     def __init__(self, obj: ps.STACObject) -> None:
         self.obj = obj
 
-    def apply(self,
-              version: str,
-              deprecated: Optional[bool] = None,
-              latest: Optional[T] = None,
-              predecessor: Optional[T] = None,
-              successor: Optional[T] = None) -> None:
+    def apply(
+        self,
+        version: str,
+        deprecated: Optional[bool] = None,
+        latest: Optional[T] = None,
+        predecessor: Optional[T] = None,
+        successor: Optional[T] = None,
+    ) -> None:
         """Applies version extension properties to the extended Item.
 
         Args:
@@ -102,7 +112,9 @@ class VersionExtension(Generic[T], PropertiesExtension,
     @property
     def latest(self) -> Optional[T]:
         """Get or sets the most recent version."""
-        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(LATEST)), None))
+        return map_opt(
+            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(LATEST)), None)
+        )
 
     @latest.setter
     def latest(self, item: Optional[T]) -> None:
@@ -113,8 +125,10 @@ class VersionExtension(Generic[T], PropertiesExtension,
     @property
     def predecessor(self) -> Optional[T]:
         """Get or sets the previous item."""
-        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(PREDECESSOR)),
-                                                  None))
+        return map_opt(
+            lambda x: cast(T, x),
+            next(iter(self.obj.get_stac_objects(PREDECESSOR)), None),
+        )
 
     @predecessor.setter
     def predecessor(self, item: Optional[T]) -> None:
@@ -125,7 +139,9 @@ class VersionExtension(Generic[T], PropertiesExtension,
     @property
     def successor(self) -> Optional[T]:
         """Get or sets the next item."""
-        return map_opt(lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(SUCCESSOR)), None))
+        return map_opt(
+            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(SUCCESSOR)), None)
+        )
 
     @successor.setter
     def successor(self, item: Optional[T]) -> None:
@@ -144,7 +160,9 @@ class VersionExtension(Generic[T], PropertiesExtension,
         if isinstance(obj, ps.Item):
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class CollectionVersionExtension(VersionExtension[ps.Collection]):
@@ -155,7 +173,7 @@ class CollectionVersionExtension(VersionExtension[ps.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return '<CollectionVersionExtension Item id={}>'.format(self.collection.id)
+        return "<CollectionVersionExtension Item id={}>".format(self.collection.id)
 
 
 class ItemVersionExtension(VersionExtension[ps.Item]):
@@ -166,14 +184,15 @@ class ItemVersionExtension(VersionExtension[ps.Item]):
         super().__init__(self.item)
 
     def __repr__(self) -> str:
-        return '<ItemVersionExtension Item id={}>'.format(self.item.id)
+        return "<ItemVersionExtension Item id={}>".format(self.item.id)
 
 
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['version'])
+    prev_extension_ids: Set[str] = set(["version"])
     stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM])
+        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    )
 
     def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
         if isinstance(so, ps.Collection) or isinstance(so, ps.Item):

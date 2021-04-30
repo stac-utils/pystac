@@ -8,21 +8,25 @@ from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
-ORBIT_STATE: str = 'sat:orbit_state'
-RELATIVE_ORBIT: str = 'sat:relative_orbit'
+ORBIT_STATE: str = "sat:orbit_state"
+RELATIVE_ORBIT: str = "sat:relative_orbit"
 
 
 class OrbitState(enum.Enum):
-    ASCENDING = 'ascending'
-    DESCENDING = 'descending'
-    GEOSTATIONARY = 'geostationary'
+    ASCENDING = "ascending"
+    DESCENDING = "descending"
+    GEOSTATIONARY = "geostationary"
 
 
 class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
@@ -38,9 +42,12 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
         Using SatItemExt to directly wrap an item will add the 'sat'
         extension ID to the item's stac_extensions.
     """
-    def apply(self,
-              orbit_state: Optional[OrbitState] = None,
-              relative_orbit: Optional[int] = None) -> None:
+
+    def apply(
+        self,
+        orbit_state: Optional[OrbitState] = None,
+        relative_orbit: Optional[int] = None,
+    ) -> None:
         """Applies ext extension properties to the extended Item.
 
         Must specify at least one of orbit_state or relative_orbit in order
@@ -93,7 +100,9 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
         elif isinstance(obj, ps.Asset):
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemSatExtension(SatExtension[ps.Item]):
@@ -102,7 +111,7 @@ class ItemSatExtension(SatExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemSatExtension Item id={}>'.format(self.item.id)
+        return "<ItemSatExtension Item id={}>".format(self.item.id)
 
 
 class AssetSatExtension(SatExtension[ps.Asset]):
@@ -113,12 +122,12 @@ class AssetSatExtension(SatExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetSatExtension Asset href={}>'.format(self.asset_href)
+        return "<AssetSatExtension Asset href={}>".format(self.asset_href)
 
 
 class SatExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['sat'])
+    prev_extension_ids: Set[str] = set(["sat"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 

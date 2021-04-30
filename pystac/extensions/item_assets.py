@@ -73,9 +73,18 @@ class AssetDefinition:
             roles=self.roles,
             properties={
                 k: v
-                for k, v in self.properties if k not in set(
-                    [ASSET_TITLE_PROP, ASSET_DESC_PROP, ASSET_TYPE_PROP, ASSET_ROLES_PROP])
-            })
+                for k, v in self.properties
+                if k
+                not in set(
+                    [
+                        ASSET_TITLE_PROP,
+                        ASSET_DESC_PROP,
+                        ASSET_TYPE_PROP,
+                        ASSET_ROLES_PROP,
+                    ]
+                )
+            },
+        )
 
 
 class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
@@ -84,15 +93,15 @@ class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
 
     @property
     def item_assets(self) -> Dict[str, AssetDefinition]:
-        result = get_required(self.collection.extra_fields.get(ITEM_ASSETS_PROP), self,
-                              ITEM_ASSETS_PROP)
+        result = get_required(
+            self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
+        )
         return {k: AssetDefinition(v) for k, v in result.items()}
 
     @item_assets.setter
     def item_assets(self, v: Dict[str, AssetDefinition]) -> None:
         self.collection.extra_fields[ITEM_ASSETS_PROP] = {
-            k: asset_def.properties
-            for k, asset_def in v.items()
+            k: asset_def.properties for k, asset_def in v.items()
         }
 
     def __repr__(self) -> str:
@@ -109,17 +118,18 @@ class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
 
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['asset', 'item-assets'])
+    prev_extension_ids: Set[str] = set(["asset", "item-assets"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.COLLECTION])
 
-    def migrate(self, obj: Dict[str, Any], version: STACVersionID,
-                info: STACJSONDescription) -> None:
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
         # Handle that the "item-assets" extension had the id of "assets", before
         # collection assets (since removed) took over the ID of "assets"
-        if version < '1.0.0-beta.1' and 'asset' in info.extensions:
-            if 'assets' in obj:
-                obj['item_assets'] = obj['assets']
-                del obj['assets']
+        if version < "1.0.0-beta.1" and "asset" in info.extensions:
+            if "assets" in obj:
+                obj["item_assets"] = obj["assets"]
+                del obj["assets"]
 
         super().migrate(obj, version, info)
 

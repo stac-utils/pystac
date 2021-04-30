@@ -1,13 +1,25 @@
-from copy import (copy, deepcopy)
+from copy import copy, deepcopy
 from datetime import datetime as Datetime
-from typing import (Any, Dict, Generic, Iterable, List, Optional, TYPE_CHECKING, Tuple, Type,
-                    TypeVar, Union, cast)
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    TYPE_CHECKING,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import dateutil.parser
 from dateutil import tz
 
 import pystac as ps
-from pystac import (STACObjectType, CatalogType)
+from pystac import STACObjectType, CatalogType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
@@ -17,7 +29,7 @@ from pystac.utils import datetime_to_str, get_required
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class SpatialExtent:
@@ -35,6 +47,7 @@ class SpatialExtent:
             array must be 2*n where n is the number of dimensions. For example, a
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
     """
+
     def __init__(self, bboxes: Union[List[List[float]], List[float]]) -> None:
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
@@ -49,7 +62,7 @@ class SpatialExtent:
         Returns:
             dict: A serialization of the SpatialExtent that can be written out as JSON.
         """
-        d = {'bbox': self.bboxes}
+        d = {"bbox": self.bboxes}
         return d
 
     def clone(self) -> "SpatialExtent":
@@ -67,7 +80,7 @@ class SpatialExtent:
         Returns:
             SpatialExtent: The SpatialExtent deserialized from the JSON dict.
         """
-        return SpatialExtent(bboxes=d['bbox'])
+        return SpatialExtent(bboxes=d["bbox"])
 
     @staticmethod
     def from_coordinates(coordinates: List[Any]) -> "SpatialExtent":
@@ -83,16 +96,19 @@ class SpatialExtent:
             SpatialExtent: A SpatialExtent with a single bbox that covers the
             given coordinates.
         """
+
         def process_coords(
             coord_lists: List[Any],
             xmin: Optional[float] = None,
             ymin: Optional[float] = None,
             xmax: Optional[float] = None,
-            ymax: Optional[float] = None
+            ymax: Optional[float] = None,
         ) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float]]:
             for coord in coord_lists:
                 if isinstance(coord[0], list):
-                    xmin, ymin, xmax, ymax = process_coords(coord, xmin, ymin, xmax, ymax)
+                    xmin, ymin, xmax, ymax = process_coords(
+                        coord, xmin, ymin, xmax, ymax
+                    )
                 else:
                     x, y = coord
                     if xmin is None or x < xmin:
@@ -108,7 +124,9 @@ class SpatialExtent:
         xmin, ymin, xmax, ymax = process_coords(coordinates)
 
         if xmin is None or ymin is None or xmax is None or ymax is None:
-            raise ValueError(f"Could not determine bounds from coordinate sequence {coordinates}")
+            raise ValueError(
+                f"Could not determine bounds from coordinate sequence {coordinates}"
+            )
 
         return SpatialExtent([[xmin, ymin, xmax, ymax]])
 
@@ -132,7 +150,10 @@ class TemporalExtent:
     Note:
         Datetimes are required to be in UTC.
     """
-    def __init__(self, intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]]):
+
+    def __init__(
+        self, intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]]
+    ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
@@ -160,7 +181,7 @@ class TemporalExtent:
 
             encoded_intervals.append([start, end])
 
-        d = {'interval': encoded_intervals}
+        d = {"interval": encoded_intervals}
         return d
 
     def clone(self) -> "TemporalExtent":
@@ -179,7 +200,7 @@ class TemporalExtent:
             TemporalExtent: The TemporalExtent deserialized from the JSON dict.
         """
         parsed_intervals: List[List[Optional[Datetime]]] = []
-        for i in d['interval']:
+        for i in d["interval"]:
             start = None
             end = None
 
@@ -199,7 +220,9 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The resulting TemporalExtent.
         """
-        return TemporalExtent(intervals=[[Datetime.utcnow().replace(microsecond=0), None]])
+        return TemporalExtent(
+            intervals=[[Datetime.utcnow().replace(microsecond=0), None]]
+        )
 
 
 class Extent:
@@ -213,6 +236,7 @@ class Extent:
         spatial (SpatialExtent): Potential spatial extent covered by the collection.
         temporal (TemporalExtent): Potential temporal extent covered by the collection.
     """
+
     def __init__(self, spatial: SpatialExtent, temporal: TemporalExtent):
         self.spatial = spatial
         self.temporal = temporal
@@ -223,7 +247,7 @@ class Extent:
         Returns:
             dict: A serialization of the Extent that can be written out as JSON.
         """
-        d = {'spatial': self.spatial.to_dict(), 'temporal': self.temporal.to_dict()}
+        d = {"spatial": self.spatial.to_dict(), "temporal": self.temporal.to_dict()}
 
         return d
 
@@ -244,21 +268,23 @@ class Extent:
         """
 
         # Handle pre-0.8 spatial extents
-        spatial_extent = d['spatial']
+        spatial_extent = d["spatial"]
         if isinstance(spatial_extent, list):
-            spatial_extent_dict: Dict[str, Any] = {'bbox': [spatial_extent]}
+            spatial_extent_dict: Dict[str, Any] = {"bbox": [spatial_extent]}
         else:
             spatial_extent_dict = spatial_extent
 
         # Handle pre-0.8 temporal extents
-        temporal_extent = d['temporal']
+        temporal_extent = d["temporal"]
         if isinstance(temporal_extent, list):
-            temporal_extent_dict: Dict[str, Any] = {'interval': [temporal_extent]}
+            temporal_extent_dict: Dict[str, Any] = {"interval": [temporal_extent]}
         else:
             temporal_extent_dict = temporal_extent
 
-        return Extent(SpatialExtent.from_dict(spatial_extent_dict),
-                      TemporalExtent.from_dict(temporal_extent_dict))
+        return Extent(
+            SpatialExtent.from_dict(spatial_extent_dict),
+            TemporalExtent.from_dict(temporal_extent_dict),
+        )
 
     @staticmethod
     def from_items(items: Iterable["Item_Type"]) -> "Extent":
@@ -271,8 +297,12 @@ class Extent:
             Extent: An Extent that spatially and temporally covers all of the
                 given items.
         """
-        bounds_values: List[List[float]] = [[float('inf')], [float('inf')], [float('-inf')],
-                                            [float('-inf')]]
+        bounds_values: List[List[float]] = [
+            [float("inf")],
+            [float("inf")],
+            [float("-inf")],
+            [float("-inf")],
+        ]
         datetimes: List[Datetime] = []
         starts: List[Datetime] = []
         ends: List[Datetime] = []
@@ -292,19 +322,31 @@ class Extent:
             start_timestamp = None
         else:
             start_timestamp = min(
-                [dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC) for dt in datetimes + starts])
+                [
+                    dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                    for dt in datetimes + starts
+                ]
+            )
         if not any(datetimes + ends):
             end_timestamp = None
         else:
             end_timestamp = max(
-                [dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC) for dt in datetimes + ends])
+                [
+                    dt if dt.tzinfo else dt.replace(tzinfo=tz.UTC)
+                    for dt in datetimes + ends
+                ]
+            )
 
-        spatial = SpatialExtent([[
-            min(bounds_values[0]),
-            min(bounds_values[1]),
-            max(bounds_values[2]),
-            max(bounds_values[3])
-        ]])
+        spatial = SpatialExtent(
+            [
+                [
+                    min(bounds_values[0]),
+                    min(bounds_values[1]),
+                    max(bounds_values[2]),
+                    max(bounds_values[3]),
+                ]
+            ]
+        )
         temporal = TemporalExtent([[start_timestamp, end_timestamp]])
 
         return Extent(spatial, temporal)
@@ -336,11 +378,14 @@ class Provider:
         url (str): Optional homepage on which the provider describes the dataset
             and publishes contact information.
     """
-    def __init__(self,
-                 name: str,
-                 description: Optional[str] = None,
-                 roles: Optional[List[str]] = None,
-                 url: Optional[str] = None):
+
+    def __init__(
+        self,
+        name: str,
+        description: Optional[str] = None,
+        roles: Optional[List[str]] = None,
+        url: Optional[str] = None,
+    ):
         self.name = name
         self.description = description
         self.roles = roles
@@ -352,13 +397,13 @@ class Provider:
         Returns:
             dict: A serialization of the Provider that can be written out as JSON.
         """
-        d: Dict[str, Any] = {'name': self.name}
+        d: Dict[str, Any] = {"name": self.name}
         if self.description is not None:
-            d['description'] = self.description
+            d["description"] = self.description
         if self.roles is not None:
-            d['roles'] = self.roles
+            d["roles"] = self.roles
         if self.url is not None:
-            d['url'] = self.url
+            d["url"] = self.url
 
         return d
 
@@ -369,10 +414,12 @@ class Provider:
         Returns:
             TemporalExtent: The Provider deserialized from the JSON dict.
         """
-        return Provider(name=d['name'],
-                        description=d.get('description'),
-                        roles=d.get('roles'),
-                        url=d.get('url'))
+        return Provider(
+            name=d["name"],
+            description=d.get("description"),
+            roles=d.get("roles"),
+            url=d.get("url"),
+        )
 
 
 class RangeSummary(Generic[T]):
@@ -381,12 +428,12 @@ class RangeSummary(Generic[T]):
         self.maximum = maximum
 
     def to_dict(self) -> Dict[str, Any]:
-        return {'minimum': self.minimum, 'maximum': self.maximum}
+        return {"minimum": self.minimum, "maximum": self.maximum}
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
-        minimum: Optional[T] = get_required(d.get('minimum'), 'RangeSummary', 'minimum')
-        maximum: Optional[T] = get_required(d.get("maximum"), 'RangeSummary', 'maximum')
+        minimum: Optional[T] = get_required(d.get("minimum"), "RangeSummary", "minimum")
+        maximum: Optional[T] = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
 
@@ -411,13 +458,18 @@ class Summaries:
     def get_schema(self, prop: str) -> Optional[Dict[str, Any]]:
         return self.schemas.get(prop)
 
-    def add(self, prop_key: str, summary: Union[List[Any], RangeSummary[Any], Dict[str,
-                                                                                   Any]]) -> None:
+    def add(
+        self,
+        prop_key: str,
+        summary: Union[List[Any], RangeSummary[Any], Dict[str, Any]],
+    ) -> None:
         if isinstance(summary, list):
             self.lists[prop_key] = summary
         elif isinstance(summary, dict):
-            if 'minimum' in summary:
-                self.ranges[prop_key] = RangeSummary[Any].from_dict(cast(Dict[str, Any], summary))
+            if "minimum" in summary:
+                self.ranges[prop_key] = RangeSummary[Any].from_dict(
+                    cast(Dict[str, Any], summary)
+                )
             else:
                 self.schemas[prop_key] = summary
         elif isinstance(summary, RangeSummary):
@@ -432,15 +484,16 @@ class Summaries:
         self.other.pop(prop_key, None)
 
     def is_empty(self):
-        return not (any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other))
+        return not (
+            any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             **self.lists,
-            **{k: v.to_dict()
-               for k, v in self.ranges.items()},
+            **{k: v.to_dict() for k, v in self.ranges.items()},
             **self.schemas,
-            **self.other
+            **self.other,
         }
 
     @classmethod
@@ -498,21 +551,31 @@ class Collection(Catalog):
 
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC object in a canonical format."""
-    def __init__(self,
-                 id: str,
-                 description: str,
-                 extent: Extent,
-                 title: Optional[str] = None,
-                 stac_extensions: Optional[List[str]] = None,
-                 href: Optional[str] = None,
-                 extra_fields: Optional[Dict[str, Any]] = None,
-                 catalog_type: Optional[CatalogType] = None,
-                 license: str = 'proprietary',
-                 keywords: Optional[List[str]] = None,
-                 providers: Optional[List[Provider]] = None,
-                 summaries: Optional[Summaries] = None):
-        super().__init__(id, description, title, stac_extensions, extra_fields, href, catalog_type
-                         or CatalogType.ABSOLUTE_PUBLISHED)
+
+    def __init__(
+        self,
+        id: str,
+        description: str,
+        extent: Extent,
+        title: Optional[str] = None,
+        stac_extensions: Optional[List[str]] = None,
+        href: Optional[str] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
+        catalog_type: Optional[CatalogType] = None,
+        license: str = "proprietary",
+        keywords: Optional[List[str]] = None,
+        providers: Optional[List[Provider]] = None,
+        summaries: Optional[Summaries] = None,
+    ):
+        super().__init__(
+            id,
+            description,
+            title,
+            stac_extensions,
+            extra_fields,
+            href,
+            catalog_type or CatalogType.ABSOLUTE_PUBLISHED,
+        )
         self.extent = extent
         self.license = license
 
@@ -524,49 +587,53 @@ class Collection(Catalog):
         self.assets: Dict[str, Asset] = {}
 
     def __repr__(self) -> str:
-        return '<Collection id={}>'.format(self.id)
+        return "<Collection id={}>".format(self.id)
 
-    def add_item(self,
-                 item: "Item_Type",
-                 title: Optional[str] = None,
-                 strategy: Optional[HrefLayoutStrategy] = None) -> None:
+    def add_item(
+        self,
+        item: "Item_Type",
+        title: Optional[str] = None,
+        strategy: Optional[HrefLayoutStrategy] = None,
+    ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         d = super().to_dict(include_self_link)
-        d['extent'] = self.extent.to_dict()
-        d['license'] = self.license
+        d["extent"] = self.extent.to_dict()
+        d["license"] = self.license
         if self.stac_extensions is not None:
-            d['stac_extensions'] = self.stac_extensions
+            d["stac_extensions"] = self.stac_extensions
         if self.keywords is not None:
-            d['keywords'] = self.keywords
+            d["keywords"] = self.keywords
         if self.providers is not None:
-            d['providers'] = list(map(lambda x: x.to_dict(), self.providers))
+            d["providers"] = list(map(lambda x: x.to_dict(), self.providers))
         if not self.summaries.is_empty():
-            d['summaries'] = self.summaries.to_dict()
+            d["summaries"] = self.summaries.to_dict()
         if any(self.assets):
-            d['assets'] = {k: v.to_dict() for k, v in self.assets.items()}
+            d["assets"] = {k: v.to_dict() for k, v in self.assets.items()}
 
         return d
 
     def clone(self) -> "Collection":
-        clone = Collection(id=self.id,
-                           description=self.description,
-                           extent=self.extent.clone(),
-                           title=self.title,
-                           stac_extensions=self.stac_extensions,
-                           extra_fields=self.extra_fields,
-                           catalog_type=self.catalog_type,
-                           license=self.license,
-                           keywords=self.keywords,
-                           providers=self.providers,
-                           summaries=self.summaries)
+        clone = Collection(
+            id=self.id,
+            description=self.description,
+            extent=self.extent.clone(),
+            title=self.title,
+            stac_extensions=self.stac_extensions,
+            extra_fields=self.extra_fields,
+            catalog_type=self.catalog_type,
+            license=self.license,
+            keywords=self.keywords,
+            providers=self.providers,
+            summaries=self.summaries,
+        )
 
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == 'root':
+            if link.rel == "root":
                 # Collection __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -579,11 +646,13 @@ class Collection(Catalog):
         return clone
 
     @classmethod
-    def from_dict(cls,
-                  d: Dict[str, Any],
-                  href: Optional[str] = None,
-                  root: Optional[Catalog] = None,
-                  migrate: bool = False) -> "Collection":
+    def from_dict(
+        cls,
+        d: Dict[str, Any],
+        href: Optional[str] = None,
+        root: Optional[Catalog] = None,
+        migrate: bool = False,
+    ) -> "Collection":
         if migrate:
             result = ps.read_dict(d, href=href, root=root)
             if not isinstance(result, Collection):
@@ -593,44 +662,46 @@ class Collection(Catalog):
         catalog_type = CatalogType.determine_type(d)
 
         d = deepcopy(d)
-        id = d.pop('id')
-        description = d.pop('description')
-        license = d.pop('license')
-        extent = Extent.from_dict(d.pop('extent'))
-        title = d.get('title')
-        stac_extensions = d.get('stac_extensions')
-        keywords = d.get('keywords')
-        providers = d.get('providers')
+        id = d.pop("id")
+        description = d.pop("description")
+        license = d.pop("license")
+        extent = Extent.from_dict(d.pop("extent"))
+        title = d.get("title")
+        stac_extensions = d.get("stac_extensions")
+        keywords = d.get("keywords")
+        providers = d.get("providers")
         if providers is not None:
             providers = list(map(lambda x: Provider.from_dict(x), providers))
-        summaries = d.get('summaries')
+        summaries = d.get("summaries")
         if summaries is not None:
             summaries = Summaries(summaries)
 
-        assets: Optional[Dict[str, Any]] = d.get('assets', None)
-        links = d.pop('links')
+        assets: Optional[Dict[str, Any]] = d.get("assets", None)
+        links = d.pop("links")
 
-        d.pop('stac_version')
+        d.pop("stac_version")
 
-        collection = Collection(id=id,
-                                description=description,
-                                extent=extent,
-                                title=title,
-                                stac_extensions=stac_extensions,
-                                extra_fields=d,
-                                license=license,
-                                keywords=keywords,
-                                providers=providers,
-                                summaries=summaries,
-                                href=href,
-                                catalog_type=catalog_type)
+        collection = Collection(
+            id=id,
+            description=description,
+            extent=extent,
+            title=title,
+            stac_extensions=stac_extensions,
+            extra_fields=d,
+            license=license,
+            keywords=keywords,
+            providers=providers,
+            summaries=summaries,
+            href=href,
+            catalog_type=catalog_type,
+        )
 
         for link in links:
-            if link['rel'] == 'root':
+            if link["rel"] == "root":
                 # Remove the link that's generated in Catalog's constructor.
-                collection.remove_links('root')
+                collection.remove_links("root")
 
-            if link['rel'] != 'self' or href is None:
+            if link["rel"] != "self" or href is None:
                 collection.add_link(Link.from_dict(link))
 
         if assets is not None:
@@ -663,9 +734,9 @@ class Collection(Catalog):
         """
         self.extent = Extent.from_items(self.get_all_items())
 
-    def full_copy(self,
-                  root: Optional["Catalog"] = None,
-                  parent: Optional["Catalog"] = None) -> "Collection":
+    def full_copy(
+        self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
+    ) -> "Collection":
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod

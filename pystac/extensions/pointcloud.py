@@ -2,19 +2,23 @@ from pystac.extensions.hooks import ExtensionHooks
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 from pystac.utils import map_opt
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 
-COUNT_PROP = 'pc:count'
+COUNT_PROP = "pc:count"
 TYPE_PROP = "pc:type"
-ENCODING_PROP = 'pc:encoding'
-SCHEMAS_PROP = 'pc:schemas'
-DENSITY_PROP = 'pc:density'
-STATISTICS_PROP = 'pc:statistics'
+ENCODING_PROP = "pc:encoding"
+SCHEMAS_PROP = "pc:schemas"
+DENSITY_PROP = "pc:density"
+STATISTICS_PROP = "pc:statistics"
 
 
 class PointcloudSchema:
@@ -22,6 +26,7 @@ class PointcloudSchema:
 
     Use PointCloudSchema.create to create a new instance of PointCloudSchema from properties.
     """
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -33,9 +38,9 @@ class PointcloudSchema:
            size (int): The size of the dimension in bytes. Whole bytes are supported.
            type (str): Dimension type. Valid values are `floating`, `unsigned`, and `signed`
         """
-        self.properties['name'] = name
-        self.properties['size'] = size
-        self.properties['type'] = type
+        self.properties["name"] = name
+        self.properties["size"] = size
+        self.properties["type"] = type
 
     @classmethod
     def create(cls, name: str, size: int, type: str) -> "PointcloudSchema":
@@ -60,9 +65,11 @@ class PointcloudSchema:
         Returns:
             int
         """
-        result = self.properties.get('size')
+        result = self.properties.get("size")
         if result is None:
-            raise ps.STACError(f"Pointcloud schema does not have size property: {self.properties}")
+            raise ps.STACError(
+                f"Pointcloud schema does not have size property: {self.properties}"
+            )
         return result
 
     @size.setter
@@ -70,7 +77,7 @@ class PointcloudSchema:
         if not isinstance(v, int):
             raise ps.STACError("size must be an int! Invalid input: {}".format(v))
 
-        self.properties['size'] = v
+        self.properties["size"] = v
 
     @property
     def name(self) -> str:
@@ -79,14 +86,16 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get('name')
+        result = self.properties.get("name")
         if result is None:
-            raise ps.STACError(f"Pointcloud schema does not have name property: {self.properties}")
+            raise ps.STACError(
+                f"Pointcloud schema does not have name property: {self.properties}"
+            )
         return result
 
     @name.setter
     def name(self, v: str) -> None:
-        self.properties['name'] = v
+        self.properties["name"] = v
 
     @property
     def type(self) -> str:
@@ -95,17 +104,21 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get('type')
+        result = self.properties.get("type")
         if result is None:
-            raise ps.STACError(f"Pointcloud schema has no type property: {self.properties}")
+            raise ps.STACError(
+                f"Pointcloud schema has no type property: {self.properties}"
+            )
         return result
 
     @type.setter
     def type(self, v: str) -> None:
-        self.properties['type'] = v
+        self.properties["type"] = v
 
     def __repr__(self) -> str:
-        return '<PointCloudSchema name={} size={} type={}>'.format(self.name, self.size, self.type)
+        return "<PointCloudSchema name={} size={} type={}>".format(
+            self.name, self.size, self.type
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this PointCloudSchema.
@@ -121,18 +134,21 @@ class PointcloudStatistic:
 
     Use PointcloudStatistic.create to create a new instance of LabelClasses from property values.
     """
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
-    def apply(self,
-              name: str,
-              position: Optional[int] = None,
-              average: Optional[float] = None,
-              count: Optional[int] = None,
-              maximum: Optional[float] = None,
-              minimum: Optional[float] = None,
-              stddev: Optional[float] = None,
-              variance: Optional[float] = None) -> None:
+    def apply(
+        self,
+        name: str,
+        position: Optional[int] = None,
+        average: Optional[float] = None,
+        count: Optional[int] = None,
+        maximum: Optional[float] = None,
+        minimum: Optional[float] = None,
+        stddev: Optional[float] = None,
+        variance: Optional[float] = None,
+    ) -> None:
         """Sets the properties for this PointcloudStatistic.
 
         Args:
@@ -145,25 +161,27 @@ class PointcloudStatistic:
             stddev (float): The standard deviation of the channel.
             variance (float): The variance of the channel.
         """
-        self.properties['name'] = name
-        self.properties['position'] = position
-        self.properties['average'] = average
-        self.properties['count'] = count
-        self.properties['maximum'] = maximum
-        self.properties['minimum'] = minimum
-        self.properties['stddev'] = stddev
-        self.properties['variance'] = variance
+        self.properties["name"] = name
+        self.properties["position"] = position
+        self.properties["average"] = average
+        self.properties["count"] = count
+        self.properties["maximum"] = maximum
+        self.properties["minimum"] = minimum
+        self.properties["stddev"] = stddev
+        self.properties["variance"] = variance
 
     @classmethod
-    def create(cls,
-               name: str,
-               position: Optional[int] = None,
-               average: Optional[float] = None,
-               count: Optional[int] = None,
-               maximum: Optional[float] = None,
-               minimum: Optional[float] = None,
-               stddev: Optional[float] = None,
-               variance: Optional[float] = None) -> "PointcloudStatistic":
+    def create(
+        cls,
+        name: str,
+        position: Optional[int] = None,
+        average: Optional[float] = None,
+        count: Optional[int] = None,
+        maximum: Optional[float] = None,
+        minimum: Optional[float] = None,
+        stddev: Optional[float] = None,
+        variance: Optional[float] = None,
+    ) -> "PointcloudStatistic":
         """Creates a new PointcloudStatistic class.
 
         Args:
@@ -180,14 +198,16 @@ class PointcloudStatistic:
             LabelClasses
         """
         c = cls({})
-        c.apply(name=name,
-                position=position,
-                average=average,
-                count=count,
-                maximum=maximum,
-                minimum=minimum,
-                stddev=stddev,
-                variance=variance)
+        c.apply(
+            name=name,
+            position=position,
+            average=average,
+            count=count,
+            maximum=maximum,
+            minimum=minimum,
+            stddev=stddev,
+            variance=variance,
+        )
         return c
 
     @property
@@ -197,18 +217,19 @@ class PointcloudStatistic:
         Returns:
             str
         """
-        result = self.properties.get('name')
+        result = self.properties.get("name")
         if result is None:
             raise ps.STACError(
-                f"Pointcloud statistics does not have name property: {self.properties}")
+                f"Pointcloud statistics does not have name property: {self.properties}"
+            )
         return result
 
     @name.setter
     def name(self, v: str) -> None:
         if v is not None:
-            self.properties['name'] = v
+            self.properties["name"] = v
         else:
-            self.properties.pop('name', None)
+            self.properties.pop("name", None)
 
     @property
     def position(self) -> Optional[int]:
@@ -217,14 +238,14 @@ class PointcloudStatistic:
         Returns:
             int
         """
-        return self.properties.get('position')
+        return self.properties.get("position")
 
     @position.setter
     def position(self, v: Optional[int]) -> None:
         if v is not None:
-            self.properties['position'] = v
+            self.properties["position"] = v
         else:
-            self.properties.pop('position', None)
+            self.properties.pop("position", None)
 
     @property
     def average(self) -> Optional[float]:
@@ -233,14 +254,14 @@ class PointcloudStatistic:
         Returns:
             float
         """
-        return self.properties.get('average')
+        return self.properties.get("average")
 
     @average.setter
     def average(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties['average'] = v
+            self.properties["average"] = v
         else:
-            self.properties.pop('average', None)
+            self.properties.pop("average", None)
 
     @property
     def count(self) -> Optional[int]:
@@ -249,14 +270,14 @@ class PointcloudStatistic:
         Returns:
             int
         """
-        return self.properties.get('count')
+        return self.properties.get("count")
 
     @count.setter
     def count(self, v: Optional[int]) -> None:
         if v is not None:
-            self.properties['count'] = v
+            self.properties["count"] = v
         else:
-            self.properties.pop('count', None)
+            self.properties.pop("count", None)
 
     @property
     def maximum(self) -> Optional[float]:
@@ -265,14 +286,14 @@ class PointcloudStatistic:
         Returns:
             float
         """
-        return self.properties.get('maximum')
+        return self.properties.get("maximum")
 
     @maximum.setter
     def maximum(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties['maximum'] = v
+            self.properties["maximum"] = v
         else:
-            self.properties.pop('maximum', None)
+            self.properties.pop("maximum", None)
 
     @property
     def minimum(self) -> Optional[float]:
@@ -281,14 +302,14 @@ class PointcloudStatistic:
         Returns:
             float
         """
-        return self.properties.get('minimum')
+        return self.properties.get("minimum")
 
     @minimum.setter
     def minimum(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties['minimum'] = v
+            self.properties["minimum"] = v
         else:
-            self.properties.pop('minimum', None)
+            self.properties.pop("minimum", None)
 
     @property
     def stddev(self) -> Optional[float]:
@@ -297,14 +318,14 @@ class PointcloudStatistic:
         Returns:
             float
         """
-        return self.properties.get('stddev')
+        return self.properties.get("stddev")
 
     @stddev.setter
     def stddev(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties['stddev'] = v
+            self.properties["stddev"] = v
         else:
-            self.properties.pop('stddev', None)
+            self.properties.pop("stddev", None)
 
     @property
     def variance(self) -> Optional[float]:
@@ -313,17 +334,17 @@ class PointcloudStatistic:
         Returns:
             float
         """
-        return self.properties.get('variance')
+        return self.properties.get("variance")
 
     @variance.setter
     def variance(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties['variance'] = v
+            self.properties["variance"] = v
         else:
-            self.properties.pop('variance', None)
+            self.properties.pop("variance", None)
 
     def __repr__(self) -> str:
-        return '<PointcloudStatistic statistics={}>'.format(str(self.properties))
+        return "<PointcloudStatistic statistics={}>".format(str(self.properties))
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this PointcloudStatistic.
@@ -334,7 +355,9 @@ class PointcloudStatistic:
         return self.properties
 
 
-class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class PointcloudExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]
+):
     """PointcloudItemExt is the extension of an Item in the PointCloud Extension.
     The Pointclout extension adds pointcloud information to STAC Items.
 
@@ -345,14 +368,17 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         item (Item): The Item that is being extended.
 
     """
-    def apply(self,
-              count: int,
-              type: str,
-              encoding: str,
-              schemas: List[PointcloudSchema],
-              density: Optional[float] = None,
-              statistics: Optional[List[PointcloudStatistic]] = None,
-              epsg: Optional[int] = None) -> None:  # TODO: Remove epsg per spec
+
+    def apply(
+        self,
+        count: int,
+        type: str,
+        encoding: str,
+        schemas: List[PointcloudSchema],
+        density: Optional[float] = None,
+        statistics: Optional[List[PointcloudStatistic]] = None,
+        epsg: Optional[int] = None,
+    ) -> None:  # TODO: Remove epsg per spec
         """Applies Pointcloud extension properties to the extended Item.
 
         Args:
@@ -491,7 +517,9 @@ class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMi
         elif isinstance(obj, ps.Asset):
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
-            raise ExtensionException(f"File extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
@@ -500,7 +528,7 @@ class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemPointcloudExtension Item id={}>'.format(self.item.id)
+        return "<ItemPointcloudExtension Item id={}>".format(self.item.id)
 
 
 class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
@@ -514,12 +542,12 @@ class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
             self.repr_id = f"href={asset.href}"
 
     def __repr__(self) -> str:
-        return f'<AssetPointcloudExtension Asset {self.repr_id}>'
+        return f"<AssetPointcloudExtension Asset {self.repr_id}>"
 
 
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['pointcloud'])
+    prev_extension_ids: Set[str] = set(["pointcloud"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 

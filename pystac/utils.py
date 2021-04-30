@@ -2,7 +2,7 @@ import os
 import posixpath
 from pystac.errors import RequiredPropertyMissing
 from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
-from urllib.parse import (urlparse, ParseResult as URLParseResult)
+from urllib.parse import urlparse, ParseResult as URLParseResult
 from datetime import datetime, timezone
 import dateutil.parser
 
@@ -18,13 +18,15 @@ def _urlparse(href: str) -> URLParseResult:
     This method will take this into account.
     """
     parsed = urlparse(href)
-    if parsed.scheme != '' and href.lower().startswith('{}:\\'.format(parsed.scheme)):
-        return URLParseResult(scheme='',
-                              netloc='',
-                              path='{}:{}'.format(parsed.scheme, parsed.path),
-                              params=parsed.params,
-                              query=parsed.query,
-                              fragment=parsed.fragment)
+    if parsed.scheme != "" and href.lower().startswith("{}:\\".format(parsed.scheme)):
+        return URLParseResult(
+            scheme="",
+            netloc="",
+            path="{}:{}".format(parsed.scheme, parsed.path),
+            params=parsed.params,
+            query=parsed.query,
+            fragment=parsed.fragment,
+        )
     else:
         return parsed
 
@@ -41,7 +43,9 @@ def _join(is_path: bool, *args: str) -> str:
         return posixpath.join(*args)
 
 
-def make_relative_href(source_href: str, start_href: str, start_is_dir: bool = False) -> str:
+def make_relative_href(
+    source_href: str, start_href: str, start_is_dir: bool = False
+) -> str:
     """Makes a given HREF relative to the given starting HREF.
 
     Args:
@@ -58,11 +62,13 @@ def make_relative_href(source_href: str, start_href: str, start_is_dir: bool = F
 
     parsed_source = _urlparse(source_href)
     parsed_start = _urlparse(start_href)
-    if not (parsed_source.scheme == parsed_start.scheme
-            and parsed_source.netloc == parsed_start.netloc):
+    if not (
+        parsed_source.scheme == parsed_start.scheme
+        and parsed_source.netloc == parsed_start.netloc
+    ):
         return source_href
 
-    is_path = parsed_start.scheme == ''
+    is_path = parsed_start.scheme == ""
 
     if start_is_dir:
         start_dir = parsed_start.path
@@ -70,16 +76,16 @@ def make_relative_href(source_href: str, start_href: str, start_is_dir: bool = F
         start_dir = _pathlib.dirname(parsed_start.path)
     relpath = _pathlib.relpath(parsed_source.path, start_dir)
     if not is_path:
-        relpath = relpath.replace('\\', '/')
-    if not relpath.startswith('.'):
-        relpath = _join(is_path, '.', relpath)
+        relpath = relpath.replace("\\", "/")
+    if not relpath.startswith("."):
+        relpath = _join(is_path, ".", relpath)
 
     return relpath
 
 
-def make_absolute_href(source_href: str,
-                       start_href: Optional[str] = None,
-                       start_is_dir: bool = False) -> str:
+def make_absolute_href(
+    source_href: str, start_href: Optional[str] = None, start_is_dir: bool = False
+) -> str:
     """Makes a given HREF absolute based on the given starting HREF.
 
     Args:
@@ -100,10 +106,10 @@ def make_absolute_href(source_href: str,
         start_is_dir = True
 
     parsed_source = _urlparse(source_href)
-    if parsed_source.scheme == '':
+    if parsed_source.scheme == "":
         if not _pathlib.isabs(parsed_source.path):
             parsed_start = _urlparse(start_href)
-            is_path = parsed_start.scheme == ''
+            is_path = parsed_start.scheme == ""
             if start_is_dir:
                 start_dir = parsed_start.path
             else:
@@ -116,11 +122,13 @@ def make_absolute_href(source_href: str,
             if not start_dir == _pathlib.abspath(start_dir):
                 abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
 
-            if parsed_start.scheme != '':
+            if parsed_start.scheme != "":
                 if not is_path:
-                    abs_path = abs_path.replace('\\', '/')
+                    abs_path = abs_path.replace("\\", "/")
 
-                return '{}://{}{}'.format(parsed_start.scheme, parsed_start.netloc, abs_path)
+                return "{}://{}{}".format(
+                    parsed_start.scheme, parsed_start.netloc, abs_path
+                )
             else:
                 return abs_path
         else:
@@ -139,7 +147,7 @@ def is_absolute_href(href: str) -> bool:
         bool: True if the given HREF is absolute, False if it is relative.
     """
     parsed = _urlparse(href)
-    return parsed.scheme != '' or _pathlib.isabs(parsed.path)
+    return parsed.scheme != "" or _pathlib.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime) -> str:
@@ -155,9 +163,9 @@ def datetime_to_str(dt: datetime) -> str:
         dt = dt.replace(tzinfo=timezone.utc)
 
     timestamp = dt.isoformat()
-    zulu = '+00:00'
+    zulu = "+00:00"
     if timestamp.endswith(zulu):
-        timestamp = '{}Z'.format(timestamp[:-len(zulu)])
+        timestamp = "{}Z".format(timestamp[: -len(zulu)])
 
     return timestamp
 
@@ -176,7 +184,7 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
         list: Bounding box of geojson geometry, formatted according to:
         https://tools.ietf.org/html/rfc7946#section-5
     """
-    coords = geometry['coordinates']
+    coords = geometry["coordinates"]
 
     lats: List[float] = []
     lons: List[float] = []
@@ -205,8 +213,8 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     return bbox
 
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
 
 def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
@@ -217,7 +225,7 @@ def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
 
 
 def get_opt(option: Optional[T]) -> T:
-    """ Retrieves the value of the Optional type.
+    """Retrieves the value of the Optional type.
 
     If the Optional is None, this will raise a value error.
     Use this to get a properly typed value from an optional
@@ -234,7 +242,7 @@ def get_opt(option: Optional[T]) -> T:
 
 
 def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
-    """ Retrieves an optional value that comes from a required property.
+    """Retrieves an optional value that comes from a required property.
     If the option is None, throws an RequiredPropertyError with
     the given obj and property
     """

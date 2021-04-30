@@ -2,17 +2,21 @@ from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac as ps
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.base import (
+    ExtensionException,
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
 
-T = TypeVar('T', ps.Item, ps.Asset)
+T = TypeVar("T", ps.Item, ps.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
 
-OFF_NADIR_PROP = 'view:off_nadir'
-INCIDENCE_ANGLE_PROP = 'view:incidence_angle'
-AZIMUTH_PROP = 'view:azimuth'
-SUN_AZIMUTH_PROP = 'view:sun_azimuth'
-SUN_ELEVATION_PROP = 'view:sun_elevation'
+OFF_NADIR_PROP = "view:off_nadir"
+INCIDENCE_ANGLE_PROP = "view:incidence_angle"
+AZIMUTH_PROP = "view:azimuth"
+SUN_AZIMUTH_PROP = "view:sun_azimuth"
+SUN_ELEVATION_PROP = "view:sun_elevation"
 
 
 class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
@@ -31,12 +35,15 @@ class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
         Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
         the item's stac_extensions.
     """
-    def apply(self,
-              off_nadir: Optional[float] = None,
-              incidence_angle: Optional[float] = None,
-              azimuth: Optional[float] = None,
-              sun_azimuth: Optional[float] = None,
-              sun_elevation: Optional[float] = None) -> None:
+
+    def apply(
+        self,
+        off_nadir: Optional[float] = None,
+        incidence_angle: Optional[float] = None,
+        azimuth: Optional[float] = None,
+        sun_azimuth: Optional[float] = None,
+        sun_elevation: Optional[float] = None,
+    ) -> None:
         """Applies View Geometry extension properties to the extended Item.
 
         Args:
@@ -142,7 +149,9 @@ class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
         elif isinstance(obj, ps.Asset):
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
-            raise ExtensionException(f"View extension does not apply to type {type(obj)}")
+            raise ExtensionException(
+                f"View extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemViewExtension(ViewExtension[ps.Item]):
@@ -151,7 +160,7 @@ class ItemViewExtension(ViewExtension[ps.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return '<ItemViewExtension Item id={}>'.format(self.item.id)
+        return "<ItemViewExtension Item id={}>".format(self.item.id)
 
 
 class AssetViewExtension(ViewExtension[ps.Asset]):
@@ -162,12 +171,12 @@ class AssetViewExtension(ViewExtension[ps.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return '<AssetViewExtension Asset href={}>'.format(self.asset_href)
+        return "<AssetViewExtension Asset href={}>".format(self.asset_href)
 
 
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(['view'])
+    prev_extension_ids: Set[str] = set(["view"])
     stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
 
 

@@ -3,15 +3,20 @@ from pystac.utils import get_opt
 import unittest
 
 import pystac as ps
-from pystac.cache import (ResolvedObjectCache, ResolvedObjectCollectionCache)
+from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
 from tests.utils import TestCases
 
 
 def create_catalog(suffix: Any, include_href: bool = True) -> ps.Catalog:
     return ps.Catalog(
-        id='test {}'.format(suffix),
-        description='test desc {}'.format(suffix),
-        href=('http://example.com/catalog_{}.json'.format(suffix) if include_href else None))
+        id="test {}".format(suffix),
+        description="test desc {}".format(suffix),
+        href=(
+            "http://example.com/catalog_{}.json".format(suffix)
+            if include_href
+            else None
+        ),
+    )
 
 
 class ResolvedObjectCacheTest(unittest.TestCase):
@@ -51,21 +56,27 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         cached_ids_2: Dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
         cached_hrefs_2: Dict[str, Any] = {
             get_opt(cat4.get_self_href()): cat4,
-            get_opt(cat2.get_self_href()): identical_cat2
+            get_opt(cat2.get_self_href()): identical_cat2,
         }
-        cache1 = ResolvedObjectCollectionCache(ResolvedObjectCache(),
-                                               cached_ids=cached_ids_1,
-                                               cached_hrefs=cached_hrefs_1)
-        cache2 = ResolvedObjectCollectionCache(ResolvedObjectCache(),
-                                               cached_ids=cached_ids_2,
-                                               cached_hrefs=cached_hrefs_2)
+        cache1 = ResolvedObjectCollectionCache(
+            ResolvedObjectCache(), cached_ids=cached_ids_1, cached_hrefs=cached_hrefs_1
+        )
+        cache2 = ResolvedObjectCollectionCache(
+            ResolvedObjectCache(), cached_ids=cached_ids_2, cached_hrefs=cached_hrefs_2
+        )
 
-        merged = ResolvedObjectCollectionCache.merge(ResolvedObjectCache(), cache1, cache2)
+        merged = ResolvedObjectCollectionCache.merge(
+            ResolvedObjectCache(), cache1, cache2
+        )
 
-        self.assertEqual(set(merged.cached_ids.keys()), set([cat.id for cat in [cat1, cat3]]))
+        self.assertEqual(
+            set(merged.cached_ids.keys()), set([cat.id for cat in [cat1, cat3]])
+        )
         self.assertIs(merged.get_by_id(cat1.id), cat1)
-        self.assertEqual(set(merged.cached_hrefs.keys()),
-                         set([cat.get_self_href() for cat in [cat2, cat4]]))
+        self.assertEqual(
+            set(merged.cached_hrefs.keys()),
+            set([cat.get_self_href() for cat in [cat2, cat4]]),
+        )
         self.assertIs(merged.get_by_href(get_opt(cat2.get_self_href())), cat2)
 
     def test_cache(self):
@@ -75,4 +86,4 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         cache.cache(collection_json, collection.get_self_href())
         cached = cache.get_by_id(collection.id)
         assert isinstance(cached, dict)
-        self.assertEqual(cached['id'], collection.id)
+        self.assertEqual(cached["id"], collection.id)

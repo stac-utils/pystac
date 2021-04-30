@@ -1,7 +1,17 @@
 from abc import ABC, abstractmethod
 import os
 import json
-from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    TYPE_CHECKING,
+    Tuple,
+    Type,
+    Union,
+)
 
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -26,7 +36,9 @@ class StacIO(ABC):
     _default_io: Optional[Type["StacIO"]] = None
 
     @abstractmethod
-    def read_text(self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any) -> str:
+    def read_text(
+        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+    ) -> str:
         """Read text from the given URI.
 
         The source to read from can be specified
@@ -44,8 +56,9 @@ class StacIO(ABC):
         raise NotImplementedError("read_text not implemented")
 
     @abstractmethod
-    def write_text(self, dest: Union[str, "Link_Type"], txt: str, *args: Any,
-                   **kwargs: Any) -> None:
+    def write_text(
+        self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
+    ) -> None:
         """Write the given text to a file at the given URI.
 
         The destination to write to from can be specified
@@ -64,16 +77,20 @@ class StacIO(ABC):
         else:
             return json.loads(self.read_text(txt))
 
-    def _json_dumps(self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]) -> str:
+    def _json_dumps(
+        self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]
+    ) -> str:
         if orjson is not None:
-            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2).decode('utf-8')
+            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2).decode("utf-8")
         else:
             return json.dumps(json_dict, indent=2)
 
-    def stac_object_from_dict(self,
-                              d: Dict[str, Any],
-                              href: Optional[str] = None,
-                              root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
+    def stac_object_from_dict(
+        self,
+        d: Dict[str, Any],
+        href: Optional[str] = None,
+        root: Optional["Catalog_Type"] = None,
+    ) -> "STACObject_Type":
         result = pystac.serialization.stac_object_from_dict(d, href, root)
         if isinstance(result, ps.Catalog):
             # Set the stac_io instance for usage by io operations
@@ -97,9 +114,9 @@ class StacIO(ABC):
         txt = self.read_text(source)
         return self._json_loads(txt, source)
 
-    def read_stac_object(self,
-                         source: Union[str, "Link_Type"],
-                         root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
+    def read_stac_object(
+        self, source: Union[str, "Link_Type"], root: Optional["Catalog_Type"] = None
+    ) -> "STACObject_Type":
         """Read a STACObject from a JSON file at the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -119,7 +136,9 @@ class StacIO(ABC):
         href = source if isinstance(source, str) else source.get_absolute_href()
         return self.stac_object_from_dict(d, href=href, root=root)
 
-    def save_json(self, dest: Union[str, "Link_Type"], json_dict: Dict[str, Any]) -> None:
+    def save_json(
+        self, dest: Union[str, "Link_Type"], json_dict: Dict[str, Any]
+    ) -> None:
         """Write a dict to the given URI as JSON.
 
         See :func:`StacIO.write_text <pystac.StacIO.write_text>` for usage of
@@ -146,7 +165,9 @@ class StacIO(ABC):
 
 
 class DefaultStacIO(StacIO):
-    def read_text(self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any) -> str:
+    def read_text(
+        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+    ) -> str:
         if isinstance(source, str):
             href = source
         else:
@@ -155,18 +176,19 @@ class DefaultStacIO(StacIO):
                 raise IOError(f"Could not get an absolute HREF from link {source}")
 
         parsed = urlparse(href)
-        if parsed.scheme != '':
+        if parsed.scheme != "":
             try:
                 with urlopen(href) as f:
-                    return f.read().decode('utf-8')
+                    return f.read().decode("utf-8")
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
             with open(href) as f:
                 return f.read()
 
-    def write_text(self, dest: Union[str, "Link_Type"], txt: str, *args: Any,
-                   **kwargs: Any) -> None:
+    def write_text(
+        self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
+    ) -> None:
         if isinstance(dest, str):
             href = dest
         else:
@@ -175,9 +197,9 @@ class DefaultStacIO(StacIO):
                 raise IOError(f"Could not get an absolute HREF from link {dest}")
 
         dirname = os.path.dirname(href)
-        if dirname != '' and not os.path.isdir(dirname):
+        if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
-        with open(href, 'w') as f:
+        with open(href, "w") as f:
             f.write(txt)
 
 
@@ -191,18 +213,30 @@ class DuplicateKeyReportingMixin(StacIO):
 
     See https://github.com/stac-utils/pystac/issues/313
     """
+
     def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
-        return json.loads(txt, object_pairs_hook=self.duplicate_object_names_report_builder(source))
+        return json.loads(
+            txt, object_pairs_hook=self.duplicate_object_names_report_builder(source)
+        )
 
     @staticmethod
     def duplicate_object_names_report_builder(
-            source: Union[str, "Link_Type"]) -> Callable[[List[Tuple[str, Any]]], Dict[str, Any]]:
-        def report_duplicate_object_names(object_pairs: List[Tuple[str, Any]]) -> Dict[str, Any]:
+        source: Union[str, "Link_Type"]
+    ) -> Callable[[List[Tuple[str, Any]]], Dict[str, Any]]:
+        def report_duplicate_object_names(
+            object_pairs: List[Tuple[str, Any]]
+        ) -> Dict[str, Any]:
             result: Dict[str, Any] = {}
             for key, value in object_pairs:
                 if key in result:
-                    url = source if isinstance(source, str) else source.get_absolute_href()
-                    raise DuplicateObjectKeyError(f"Found duplicate object name “{key}” in “{url}”")
+                    url = (
+                        source
+                        if isinstance(source, str)
+                        else source.get_absolute_href()
+                    )
+                    raise DuplicateObjectKeyError(
+                        f"Found duplicate object name “{key}” in “{url}”"
+                    )
                 else:
                     result[key] = value
             return result
@@ -218,6 +252,7 @@ class STAC_IO:
     Note: The static methods of this class are deprecated. Move to using
     instance methods of a specific instance of StacIO.
     """
+
     @staticmethod
     def read_text_method(uri: str) -> str:
         return StacIO.default().read_text(uri)
@@ -228,9 +263,11 @@ class STAC_IO:
         return StacIO.default().write_text(uri, txt)
 
     @staticmethod
-    def stac_object_from_dict(d: Dict[str, Any],
-                              href: Optional[str] = None,
-                              root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
+    def stac_object_from_dict(
+        d: Dict[str, Any],
+        href: Optional[str] = None,
+        root: Optional["Catalog_Type"] = None,
+    ) -> "STACObject_Type":
         return pystac.serialization.stac_object_from_dict(d, href, root)
 
     # This is set in __init__.py
@@ -290,7 +327,9 @@ class STAC_IO:
         return json.loads(STAC_IO.read_text(uri))
 
     @classmethod
-    def read_stac_object(cls, uri: str, root: Optional["Catalog_Type"] = None) -> "STACObject_Type":
+    def read_stac_object(
+        cls, uri: str, root: Optional["Catalog_Type"] = None
+    ) -> "STACObject_Type":
         """Read a STACObject from a JSON file at the given URI.
 
         Args:

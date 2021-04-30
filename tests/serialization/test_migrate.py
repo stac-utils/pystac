@@ -4,8 +4,12 @@ import unittest
 
 import pystac as ps
 from pystac.cache import CollectionCache
-from pystac.serialization import (identify_stac_object, identify_stac_object_type,
-                                  merge_common_properties, migrate_to_latest)
+from pystac.serialization import (
+    identify_stac_object,
+    identify_stac_object_type,
+    merge_common_properties,
+    migrate_to_latest,
+)
 from pystac.utils import str_to_datetime
 
 from tests.utils import TestCases
@@ -23,7 +27,9 @@ class MigrateTest(unittest.TestCase):
 
                 d = ps.StacIO.default().read_json(path)
                 if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
-                    merge_common_properties(d, json_href=path, collection_cache=collection_cache)
+                    merge_common_properties(
+                        d, json_href=path, collection_cache=collection_cache
+                    )
 
                 info = identify_stac_object(d)
 
@@ -32,29 +38,41 @@ class MigrateTest(unittest.TestCase):
                 migrated_info = identify_stac_object(migrated_d)
 
                 self.assertEqual(migrated_info.object_type, info.object_type)
-                self.assertEqual(migrated_info.version_range.latest_valid_version(),
-                                 ps.get_stac_version())
+                self.assertEqual(
+                    migrated_info.version_range.latest_valid_version(),
+                    ps.get_stac_version(),
+                )
 
                 # Ensure all stac_extensions are schema URIs
-                for e_id in migrated_d['stac_extensions']:
-                    self.assertTrue(e_id.endswith('.json'), f"{e_id} is not a JSON schema URI")
+                for e_id in migrated_d["stac_extensions"]:
+                    self.assertTrue(
+                        e_id.endswith(".json"), f"{e_id} is not a JSON schema URI"
+                    )
 
                 # Test that PySTAC can read it without errors.
                 if info.object_type != ps.STACObjectType.ITEMCOLLECTION:
-                    self.assertIsInstance(ps.read_dict(migrated_d, href=path), ps.STACObject)
+                    self.assertIsInstance(
+                        ps.read_dict(migrated_d, href=path), ps.STACObject
+                    )
 
     def test_migrates_removed_extension(self):
         item = ps.Item.from_file(
-            TestCases.get_path('data-files/examples/0.7.0/extensions/sar/'
-                               'examples/sentinel1.json'))
-        self.assertFalse('dtr' in item.stac_extensions)
-        self.assertEqual(item.common_metadata.start_datetime,
-                         str_to_datetime("2018-11-03T23:58:55.121559Z"))
+            TestCases.get_path(
+                "data-files/examples/0.7.0/extensions/sar/" "examples/sentinel1.json"
+            )
+        )
+        self.assertFalse("dtr" in item.stac_extensions)
+        self.assertEqual(
+            item.common_metadata.start_datetime,
+            str_to_datetime("2018-11-03T23:58:55.121559Z"),
+        )
 
     def test_migrates_added_extension(self):
         item = ps.Item.from_file(
-            TestCases.get_path('data-files/examples/0.8.1/item-spec/'
-                               'examples/planet-sample.json'))
+            TestCases.get_path(
+                "data-files/examples/0.8.1/item-spec/" "examples/planet-sample.json"
+            )
+        )
         self.assertTrue(ViewExtension.has_extension(item))
         view_ext = ViewExtension.ext(item)
         self.assertEqual(view_ext.sun_azimuth, 101.8)
@@ -63,8 +81,11 @@ class MigrateTest(unittest.TestCase):
 
     def test_migrates_renamed_extension(self):
         collection = ps.Collection.from_file(
-            TestCases.get_path('data-files/examples/0.9.0/extensions/asset/'
-                               'examples/example-landsat8.json'))
+            TestCases.get_path(
+                "data-files/examples/0.9.0/extensions/asset/"
+                "examples/example-landsat8.json"
+            )
+        )
 
         self.assertTrue(ItemAssetsExtension.has_extension(collection))
-        self.assertIn('item_assets', collection.extra_fields)
+        self.assertIn("item_assets", collection.extra_fields)

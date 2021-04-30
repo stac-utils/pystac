@@ -6,12 +6,17 @@ from typing import Any, Dict, List, Optional, Union, cast
 import dateutil.parser
 
 import pystac as ps
-from pystac import (STACError, STACObjectType)
+from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
 from pystac.stac_object import STACObject
-from pystac.utils import (is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str,
-                          str_to_datetime)
+from pystac.utils import (
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+    datetime_to_str,
+    str_to_datetime,
+)
 from pystac.collection import Collection, Provider
 
 
@@ -23,6 +28,7 @@ class CommonMetadata:
     Args:
         properties (dict): Dictionary of attributes that is the Item's properties
     """
+
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
 
@@ -34,11 +40,11 @@ class CommonMetadata:
         Returns:
             str: Human readable title describing the item
         """
-        return self.properties.get('title')
+        return self.properties.get("title")
 
     @title.setter
     def title(self, v: Optional[str]) -> None:
-        self.properties['title'] = v
+        self.properties["title"] = v
 
     @property
     def description(self) -> Optional[str]:
@@ -47,11 +53,11 @@ class CommonMetadata:
         Returns:
             str: Detailed description of the item
         """
-        return self.properties.get('description')
+        return self.properties.get("description")
 
     @description.setter
     def description(self, v: Optional[str]) -> None:
-        self.properties['description'] = v
+        self.properties["description"] = v
 
     # Date and Time Range
     @property
@@ -76,31 +82,32 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or 'start_datetime' not in asset.properties:
-            start_datetime = self.properties.get('start_datetime')
+        if asset is None or "start_datetime" not in asset.properties:
+            start_datetime = self.properties.get("start_datetime")
         else:
-            start_datetime = asset.properties.get('start_datetime')
+            start_datetime = asset.properties.get("start_datetime")
 
         if start_datetime:
             start_datetime = str_to_datetime(start_datetime)
 
         return start_datetime
 
-    def set_start_datetime(self,
-                           start_datetime: Optional[Datetime],
-                           asset: Optional[Asset] = None) -> None:
+    def set_start_datetime(
+        self, start_datetime: Optional[Datetime], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset start_datetime.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['start_datetime'] = None if start_datetime is None else datetime_to_str(
-                start_datetime)
+            self.properties["start_datetime"] = (
+                None if start_datetime is None else datetime_to_str(start_datetime)
+            )
         else:
-            asset.properties[
-                'start_datetime'] = None if start_datetime is None else datetime_to_str(
-                    start_datetime)
+            asset.properties["start_datetime"] = (
+                None if start_datetime is None else datetime_to_str(start_datetime)
+            )
 
     @property
     def end_datetime(self) -> Optional[Datetime]:
@@ -126,30 +133,32 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or 'end_datetime' not in asset.properties:
-            end_datetime = self.properties.get('end_datetime')
+        if asset is None or "end_datetime" not in asset.properties:
+            end_datetime = self.properties.get("end_datetime")
         else:
-            end_datetime = asset.properties.get('end_datetime')
+            end_datetime = asset.properties.get("end_datetime")
 
         if end_datetime:
             end_datetime = str_to_datetime(end_datetime)
 
         return end_datetime
 
-    def set_end_datetime(self,
-                         end_datetime: Optional[Datetime],
-                         asset: Optional[Asset] = None) -> None:
+    def set_end_datetime(
+        self, end_datetime: Optional[Datetime], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset end_datetime.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['end_datetime'] = None if end_datetime is None else datetime_to_str(
-                end_datetime)
+            self.properties["end_datetime"] = (
+                None if end_datetime is None else datetime_to_str(end_datetime)
+            )
         else:
-            asset.properties['end_datetime'] = None if end_datetime is None else datetime_to_str(
-                end_datetime)
+            asset.properties["end_datetime"] = (
+                None if end_datetime is None else datetime_to_str(end_datetime)
+            )
 
     # License
     @property
@@ -174,21 +183,23 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or 'license' not in asset.properties:
-            return self.properties.get('license')
+        if asset is None or "license" not in asset.properties:
+            return self.properties.get("license")
         else:
-            return asset.properties.get('license')
+            return asset.properties.get("license")
 
-    def set_license(self, license: Optional[str], asset: Optional[Asset] = None) -> None:
+    def set_license(
+        self, license: Optional[str], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset license.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['license'] = license
+            self.properties["license"] = license
         else:
-            asset.properties['license'] = license
+            asset.properties["license"] = license
 
     # Providers
     @property
@@ -215,19 +226,19 @@ class CommonMetadata:
         Returns:
             List[Provider]
         """
-        if asset is None or 'providers' not in asset.properties:
-            providers = self.properties.get('providers')
+        if asset is None or "providers" not in asset.properties:
+            providers = self.properties.get("providers")
         else:
-            providers = asset.properties.get('providers')
+            providers = asset.properties.get("providers")
 
         if providers is not None:
             providers = [Provider.from_dict(d) for d in providers]
 
         return providers
 
-    def set_providers(self,
-                      providers: Optional[List[Provider]],
-                      asset: Optional[Asset] = None) -> None:
+    def set_providers(
+        self, providers: Optional[List[Provider]], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset providers.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -235,16 +246,16 @@ class CommonMetadata:
         """
         if asset is None:
             if providers is None:
-                self.properties.pop('providers', None)
+                self.properties.pop("providers", None)
             else:
                 providers_dicts = [d.to_dict() for d in providers]
-                self.properties['providers'] = providers_dicts
+                self.properties["providers"] = providers_dicts
         else:
             if providers is None:
-                asset.properties.pop('providers', None)
+                asset.properties.pop("providers", None)
             else:
                 providers_dicts = [d.to_dict() for d in providers]
-                asset.properties['providers'] = providers_dicts
+                asset.properties["providers"] = providers_dicts
 
     # Instrument
     @property
@@ -270,21 +281,23 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or 'platform' not in asset.properties:
-            return self.properties.get('platform')
+        if asset is None or "platform" not in asset.properties:
+            return self.properties.get("platform")
         else:
-            return asset.properties.get('platform')
+            return asset.properties.get("platform")
 
-    def set_platform(self, platform: Optional[str], asset: Optional[Asset] = None) -> None:
+    def set_platform(
+        self, platform: Optional[str], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset platform.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['platform'] = platform
+            self.properties["platform"] = platform
         else:
-            asset.properties['platform'] = platform
+            asset.properties["platform"] = platform
 
     @property
     def instruments(self) -> Optional[List[str]]:
@@ -308,23 +321,23 @@ class CommonMetadata:
         Returns:
             Optional[List[str]]
         """
-        if asset is None or 'instruments' not in asset.properties:
-            return self.properties.get('instruments')
+        if asset is None or "instruments" not in asset.properties:
+            return self.properties.get("instruments")
         else:
-            return asset.properties.get('instruments')
+            return asset.properties.get("instruments")
 
-    def set_instruments(self,
-                        instruments: Optional[List[str]],
-                        asset: Optional[Asset] = None) -> None:
+    def set_instruments(
+        self, instruments: Optional[List[str]], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset instruments.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['instruments'] = instruments
+            self.properties["instruments"] = instruments
         else:
-            asset.properties['instruments'] = instruments
+            asset.properties["instruments"] = instruments
 
     @property
     def constellation(self) -> Optional[str]:
@@ -348,23 +361,23 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or 'constellation' not in asset.properties:
-            return self.properties.get('constellation')
+        if asset is None or "constellation" not in asset.properties:
+            return self.properties.get("constellation")
         else:
-            return asset.properties.get('constellation')
+            return asset.properties.get("constellation")
 
-    def set_constellation(self,
-                          constellation: Optional[str],
-                          asset: Optional[Asset] = None) -> None:
+    def set_constellation(
+        self, constellation: Optional[str], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset constellation.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['constellation'] = constellation
+            self.properties["constellation"] = constellation
         else:
-            asset.properties['constellation'] = constellation
+            asset.properties["constellation"] = constellation
 
     @property
     def mission(self) -> Optional[str]:
@@ -388,21 +401,23 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or 'mission' not in asset.properties:
-            return self.properties.get('mission')
+        if asset is None or "mission" not in asset.properties:
+            return self.properties.get("mission")
         else:
-            return asset.properties.get('mission')
+            return asset.properties.get("mission")
 
-    def set_mission(self, mission: Optional[str], asset: Optional[Asset] = None) -> None:
+    def set_mission(
+        self, mission: Optional[str], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset mission.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['mission'] = mission
+            self.properties["mission"] = mission
         else:
-            asset.properties['mission'] = mission
+            asset.properties["mission"] = mission
 
     @property
     def gsd(self) -> Optional[float]:
@@ -426,10 +441,10 @@ class CommonMetadata:
         Returns:
             float
         """
-        if asset is None or 'gsd' not in asset.properties:
-            return self.properties.get('gsd')
+        if asset is None or "gsd" not in asset.properties:
+            return self.properties.get("gsd")
         else:
-            return asset.properties.get('gsd')
+            return asset.properties.get("gsd")
 
     def set_gsd(self, gsd: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset gsd.
@@ -438,9 +453,9 @@ class CommonMetadata:
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['gsd'] = gsd
+            self.properties["gsd"] = gsd
         else:
-            asset.properties['gsd'] = gsd
+            asset.properties["gsd"] = gsd
 
     # Metadata
     @property
@@ -474,26 +489,32 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or 'created' not in asset.properties:
-            created = self.properties.get('created')
+        if asset is None or "created" not in asset.properties:
+            created = self.properties.get("created")
         else:
-            created = asset.properties.get('created')
+            created = asset.properties.get("created")
 
         if created:
             created = str_to_datetime(created)
 
         return created
 
-    def set_created(self, created: Optional[Datetime], asset: Optional[Asset] = None) -> None:
+    def set_created(
+        self, created: Optional[Datetime], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset created time.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['created'] = None if created is None else datetime_to_str(created)
+            self.properties["created"] = (
+                None if created is None else datetime_to_str(created)
+            )
         else:
-            asset.properties['created'] = None if created is None else datetime_to_str(created)
+            asset.properties["created"] = (
+                None if created is None else datetime_to_str(created)
+            )
 
     @property
     def updated(self) -> Optional[Datetime]:
@@ -535,26 +556,32 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or 'updated' not in asset.properties:
-            updated = self.properties.get('updated')
+        if asset is None or "updated" not in asset.properties:
+            updated = self.properties.get("updated")
         else:
-            updated = asset.properties.get('updated')
+            updated = asset.properties.get("updated")
 
         if updated:
             updated = str_to_datetime(updated)
 
         return updated
 
-    def set_updated(self, updated: Optional[Datetime], asset: Optional[Asset] = None) -> None:
+    def set_updated(
+        self, updated: Optional[Datetime], asset: Optional[Asset] = None
+    ) -> None:
         """Set an Item or an Asset updated time.
 
         If an Asset is supplied, sets the property on the Asset.
         Otherwise sets the Item's value.
         """
         if asset is None:
-            self.properties['updated'] = None if updated is None else datetime_to_str(updated)
+            self.properties["updated"] = (
+                None if updated is None else datetime_to_str(updated)
+            )
         else:
-            asset.properties['updated'] = None if updated is None else datetime_to_str(updated)
+            asset.properties["updated"] = (
+                None if updated is None else datetime_to_str(updated)
+            )
 
 
 class Item(STACObject):
@@ -606,16 +633,18 @@ class Item(STACObject):
 
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
-    def __init__(self,
-                 id: str,
-                 geometry: Optional[Dict[str, Any]],
-                 bbox: Optional[List[float]],
-                 datetime: Optional[Datetime],
-                 properties: Dict[str, Any],
-                 stac_extensions: Optional[List[str]] = None,
-                 href: Optional[str] = None,
-                 collection: Optional[Union[str, Collection]] = None,
-                 extra_fields: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        id: str,
+        geometry: Optional[Dict[str, Any]],
+        bbox: Optional[List[float]],
+        datetime: Optional[Datetime],
+        properties: Dict[str, Any],
+        stac_extensions: Optional[List[str]] = None,
+        href: Optional[str] = None,
+        collection: Optional[Union[str, Collection]] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(stac_extensions or [])
 
         self.id = id
@@ -631,12 +660,13 @@ class Item(STACObject):
 
         self.datetime: Optional[Datetime] = None
         if datetime is None:
-            if 'start_datetime' not in properties or \
-               'end_datetime' not in properties:
-                raise STACError('Invalid Item: If datetime is None, '
-                                'a start_datetime and end_datetime '
-                                'must be supplied in '
-                                'the properties.')
+            if "start_datetime" not in properties or "end_datetime" not in properties:
+                raise STACError(
+                    "Invalid Item: If datetime is None, "
+                    "a start_datetime and end_datetime "
+                    "must be supplied in "
+                    "the properties."
+                )
             self.datetime = None
         else:
             self.datetime = datetime
@@ -652,7 +682,7 @@ class Item(STACObject):
                 self.collection_id = collection
 
     def __repr__(self) -> str:
-        return '<Item id={}>'.format(self.id)
+        return "<Item id={}>".format(self.id)
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
@@ -693,10 +723,10 @@ class Item(STACObject):
         Returns:
             datetime or None
         """
-        if asset is None or 'datetime' not in asset.properties:
+        if asset is None or "datetime" not in asset.properties:
             return self.datetime
         else:
-            asset_dt = asset.properties.get('datetime')
+            asset_dt = asset.properties.get("datetime")
             if asset_dt is None:
                 return None
             else:
@@ -711,7 +741,7 @@ class Item(STACObject):
         if asset is None:
             self.datetime = datetime
         else:
-            asset.properties['datetime'] = datetime_to_str(datetime)
+            asset.properties["datetime"] = datetime_to_str(datetime)
 
     def get_assets(self) -> Dict[str, Asset]:
         """Get this item's assets.
@@ -745,8 +775,10 @@ class Item(STACObject):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError('Cannot make asset HREFs relative '
-                                        'if no self_href is set.')
+                        raise STACError(
+                            "Cannot make asset HREFs relative "
+                            "if no self_href is set."
+                        )
                 asset.href = make_relative_href(asset.href, self_href)
         return self
 
@@ -766,8 +798,10 @@ class Item(STACObject):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError('Cannot make relative asset HREFs absolute '
-                                        'if no self_href is set.')
+                        raise STACError(
+                            "Cannot make relative asset HREFs absolute "
+                            "if no self_href is set."
+                        )
                 asset.href = make_absolute_href(asset.href, self_href)
 
         return self
@@ -785,7 +819,7 @@ class Item(STACObject):
         Returns:
             Item: self
         """
-        self.remove_links('collection')
+        self.remove_links("collection")
         self.collection_id = None
         if collection is not None:
             self.add_link(Link.collection(collection))
@@ -800,7 +834,7 @@ class Item(STACObject):
             Collection or None: If this item belongs to a collection, returns
             a reference to the collection. Otherwise returns None.
         """
-        collection_link = self.get_single_link('collection')
+        collection_link = self.get_single_link("collection")
         if collection_link is None:
             return None
         else:
@@ -809,33 +843,33 @@ class Item(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != 'self']
+            links = [x for x in links if x.rel != "self"]
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
         if self.datetime is not None:
-            self.properties['datetime'] = datetime_to_str(self.datetime)
+            self.properties["datetime"] = datetime_to_str(self.datetime)
         else:
-            self.properties['datetime'] = None
+            self.properties["datetime"] = None
 
         d: Dict[str, Any] = {
-            'type': 'Feature',
-            'stac_version': ps.get_stac_version(),
-            'id': self.id,
-            'properties': self.properties,
-            'geometry': self.geometry,
-            'links': [link.to_dict() for link in links],
-            'assets': assets
+            "type": "Feature",
+            "stac_version": ps.get_stac_version(),
+            "id": self.id,
+            "properties": self.properties,
+            "geometry": self.geometry,
+            "links": [link.to_dict() for link in links],
+            "assets": assets,
         }
 
         if self.bbox is not None:
-            d['bbox'] = self.bbox
+            d["bbox"] = self.bbox
 
         if self.stac_extensions is not None:
-            d['stac_extensions'] = self.stac_extensions
+            d["stac_extensions"] = self.stac_extensions
 
         if self.collection_id:
-            d['collection'] = self.collection_id
+            d["collection"] = self.collection_id
 
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
@@ -843,13 +877,15 @@ class Item(STACObject):
         return d
 
     def clone(self) -> "Item":
-        clone = Item(id=self.id,
-                     geometry=deepcopy(self.geometry),
-                     bbox=copy(self.bbox),
-                     datetime=copy(self.datetime),
-                     properties=deepcopy(self.properties),
-                     stac_extensions=deepcopy(self.stac_extensions),
-                     collection=self.collection_id)
+        clone = Item(
+            id=self.id,
+            geometry=deepcopy(self.geometry),
+            bbox=copy(self.bbox),
+            datetime=copy(self.datetime),
+            properties=deepcopy(self.properties),
+            stac_extensions=deepcopy(self.stac_extensions),
+            collection=self.collection_id,
+        )
         for link in self.links:
             clone.add_link(link.clone())
 
@@ -859,14 +895,16 @@ class Item(STACObject):
         return clone
 
     def _object_links(self) -> List[str]:
-        return ['collection'] + (ps.EXTENSION_HOOKS.get_extended_object_links(self))
+        return ["collection"] + (ps.EXTENSION_HOOKS.get_extended_object_links(self))
 
     @classmethod
-    def from_dict(cls,
-                  d: Dict[str, Any],
-                  href: Optional[str] = None,
-                  root: Optional[Catalog] = None,
-                  migrate: bool = False) -> "Item":
+    def from_dict(
+        cls,
+        d: Dict[str, Any],
+        href: Optional[str] = None,
+        root: Optional[Catalog] = None,
+        migrate: bool = False,
+    ) -> "Item":
         if migrate:
             result = ps.read_dict(d, href=href, root=root)
             if not isinstance(result, Item):
@@ -874,34 +912,36 @@ class Item(STACObject):
             return result
 
         d = deepcopy(d)
-        id = d.pop('id')
-        geometry = d.pop('geometry')
-        properties = d.pop('properties')
-        bbox = d.pop('bbox', None)
-        stac_extensions = d.get('stac_extensions')
-        collection_id = d.pop('collection', None)
+        id = d.pop("id")
+        geometry = d.pop("geometry")
+        properties = d.pop("properties")
+        bbox = d.pop("bbox", None)
+        stac_extensions = d.get("stac_extensions")
+        collection_id = d.pop("collection", None)
 
-        datetime = properties.get('datetime')
+        datetime = properties.get("datetime")
         if datetime is not None:
             datetime = dateutil.parser.parse(datetime)
-        links = d.pop('links')
-        assets = d.pop('assets')
+        links = d.pop("links")
+        assets = d.pop("assets")
 
-        d.pop('type')
-        d.pop('stac_version')
+        d.pop("type")
+        d.pop("stac_version")
 
-        item = cls(id=id,
-                   geometry=geometry,
-                   bbox=bbox,
-                   datetime=datetime,
-                   properties=properties,
-                   stac_extensions=stac_extensions,
-                   collection=collection_id,
-                   extra_fields=d)
+        item = cls(
+            id=id,
+            geometry=geometry,
+            bbox=bbox,
+            datetime=datetime,
+            properties=properties,
+            stac_extensions=stac_extensions,
+            collection=collection_id,
+            extra_fields=d,
+        )
 
         has_self_link = False
         for link in links:
-            has_self_link |= link['rel'] == 'self'
+            has_self_link |= link["rel"] == "self"
             item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:
@@ -923,9 +963,9 @@ class Item(STACObject):
         """
         return CommonMetadata(self.properties)
 
-    def full_copy(self,
-                  root: Optional["Catalog"] = None,
-                  parent: Optional["Catalog"] = None) -> "Item":
+    def full_copy(
+        self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
+    ) -> "Item":
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
