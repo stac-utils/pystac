@@ -1,6 +1,6 @@
 """Implement the Satellite (SAT) Extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/sat
+https://github.com/stac-extensions/sat
 """
 
 import enum

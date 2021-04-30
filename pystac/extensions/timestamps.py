@@ -1,3 +1,7 @@
+"""Implement the timestamps extension.
+
+https://github.com/stac-extensions/timestamps
+"""
 import pystac
 from pystac import Extensions
 from pystac.extensions.base import (ExtendedObject, ExtensionDefinition, ItemExtension)

@@ -1,3 +1,7 @@
+"""Implement the Point Cloud extension.
+
+https://github.com/stac-extensions/pointcloud
+"""
 from pystac import Extensions, STACError
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)

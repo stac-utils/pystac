@@ -1,6 +1,6 @@
 """Implement the version extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
+https://github.com/stac-extensions/version
 
 Note that the version/schema.json does not know about the links.
 """

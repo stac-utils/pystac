@@ -1,3 +1,7 @@
+"""Implement the projection extension.
+
+https://github.com/stac-extensions/projection
+"""
 from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)

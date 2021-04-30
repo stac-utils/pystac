@@ -1,3 +1,7 @@
+"""Implement the View Geometry extension.
+
+https://github.com/stac-extensions/view
+"""
 import pystac
 from pystac import Extensions
 from pystac.item import Item
