@@ -1,6 +1,6 @@
 {
     "type": "Feature",
-    "stac_version": "1.0.0-beta.2",
+    "stac_version": "1.0.0-rc.3",
     "id": "2017831_195552_SS02",
     "properties": {
         "datetime": "2017-08-31T19:55:53.513448Z",
@@ -140,8 +140,8 @@
         29.834836581964858
     ],
     "stac_extensions": [
-        "eo",
-        "view"
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
     ],
     "collection": "planet-disaster-data"
 }

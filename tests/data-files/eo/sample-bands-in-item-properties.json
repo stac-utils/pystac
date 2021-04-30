@@ -1,24 +1,7 @@
 {
-  "stac_version": "1.0.0-rc.2",
-  "stac_extensions": [
-      "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
-      "https://stac-extensions.github.io/view/v1.0.0/schema.json"
-  ],
   "type": "Feature",
-  "id" : "CS3-20160503_132131_05",
-  "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
-  "geometry": {
-    "type": "Polygon",
-    "coordinates": [
-      [
-        [-122.308150179, 37.488035566],
-        [-122.597502109, 37.538869539],
-        [-122.576687533, 37.613537207],
-        [-122.288048600, 37.562818007],
-        [-122.308150179, 37.488035566]
-      ]
-    ]
-  },
+  "stac_version": "1.0.0-rc.3",
+  "id": "CS3-20160503_132131_05",
   "properties": {
     "datetime": "2016-05-03T13:22:30Z",
     "title": "A CS3 item",
@@ -39,7 +22,9 @@
     "eo:cloud_cover": 0.12,
     "view:off_nadir": 1.4,
     "platform": "coolsat2",
-    "instruments": ["cool_sensor_v1"],
+    "instruments": [
+      "cool_sensor_v1"
+    ],
     "eo:bands": [
       {
         "name": "band1"
@@ -58,16 +43,51 @@
     "gsd": 0.512,
     "cs:type": "scene",
     "cs:anomalous_pixels": 0.14,
-    "cs:earth_sun_distance": 1.0141560,
+    "cs:earth_sun_distance": 1.014156,
     "cs:sat_id": "CS3",
     "cs:product_level": "LV1B"
   },
-  "collection": "CS3",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -122.308150179,
+          37.488035566
+        ],
+        [
+          -122.597502109,
+          37.538869539
+        ],
+        [
+          -122.576687533,
+          37.613537207
+        ],
+        [
+          -122.2880486,
+          37.562818007
+        ],
+        [
+          -122.308150179,
+          37.488035566
+        ]
+      ]
+    ]
+  },
   "links": [
-    {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
-    {"rel": "parent", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"},
-    {"rel": "collection", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"},
-    {"rel": "alternate", "type": "text/html", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.html"}
+    {
+      "rel": "parent",
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"
+    },
+    {
+      "rel": "collection",
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"
+    },
+    {
+      "rel": "alternate",
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.html",
+      "type": "text/html"
+    }
   ],
   "assets": {
     "analytic": {
@@ -90,9 +110,11 @@
     },
     "thumbnail": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/thumbnail.png",
-      "title": "Thumbnail",
       "type": "image/png",
-      "roles": [ "thumbnail" ]
+      "title": "Thumbnail",
+      "roles": [
+        "thumbnail"
+      ]
     },
     "udm": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/UDM.tif",
@@ -100,14 +122,26 @@
     },
     "json-metadata": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/extended-metadata.json",
-      "title": "Extended Metadata",
       "type": "application/json",
-      "roles": [ "metadata" ]
+      "title": "Extended Metadata",
+      "roles": [
+        "metadata"
+      ]
     },
     "ephemeris": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/S3-20160503_132130_04.EPH",
       "title": "Satellite Ephemeris Metadata"
     }
-  }
-
+  },
+  "bbox": [
+    -122.59750209,
+    37.48803556,
+    -122.2880486,
+    37.613537207
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+  ],
+  "collection": "CS3"
 }

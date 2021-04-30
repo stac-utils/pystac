@@ -21,13 +21,14 @@ def migrate(path: str) -> None:
 
     if 'stac_version' in stac_json:
         cur_ver = stac_json['stac_version']
-        if not cur_ver == TARGET_VERSION:
+        #if not cur_ver == TARGET_VERSION:
+        if True:
             print('  - Migrating {} from {} to {}...'.format(
                 path, cur_ver, TARGET_VERSION))
             obj = ps.read_dict(stac_json, href=path)
-            migrated = obj.to_dict()
+            migrated = obj.to_dict(include_self_link=False)
             with open(path, 'w') as f:
-                json.dump(migrated, f, indent=2)
+               json.dump(migrated, f, indent=2)
 
 
 if __name__ == '__main__':

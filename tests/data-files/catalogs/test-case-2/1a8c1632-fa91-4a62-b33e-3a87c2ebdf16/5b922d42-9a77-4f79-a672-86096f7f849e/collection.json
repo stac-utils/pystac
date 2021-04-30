@@ -1,6 +1,7 @@
 {
+  "type": "Collection",
   "id": "5b922d42-9a77-4f79-a672-86096f7f849e",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.3",
   "description": "Label collection in layer 1a8c1632-fa91-4a62-b33e-3a87c2ebdf16",
   "links": [
     {
@@ -20,7 +21,12 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "title": "Label collection",
+  "keywords": [],
+  "version": "1",
+  "providers": [],
+  "properties": {},
   "extent": {
     "spatial": {
       "bbox": [
@@ -41,9 +47,5 @@
       ]
     }
   },
-  "license": "proprietary",
-  "keywords": [],
-  "version": "1",
-  "providers": [],
-  "properties": {}
+  "license": "proprietary"
 }

@@ -74,8 +74,5 @@
             ]
         }
     },
-    "license": "various",
-    "stac_extensions": [
-        "label"
-    ]
+    "license": "various"
 }

@@ -164,8 +164,5 @@
             ]
         }
     },
-    "license": "CC-BY-4.0",
-    "stac_extensions": [
-        "label"
-    ]
+    "license": "CC-BY-4.0"
 }

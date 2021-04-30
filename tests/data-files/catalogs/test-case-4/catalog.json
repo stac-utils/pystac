@@ -1,6 +1,7 @@
 {
+  "type": "Catalog",
   "id": "train_tier_1",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.3",
   "description": "Tier 1 training data and labels",
   "links": [
     {
@@ -43,5 +44,6 @@
       "href": "./catalog.json",
       "type": "application/json"
     }
-  ]
+  ],
+  "stac_extensions": []
 }

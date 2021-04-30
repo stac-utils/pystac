@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.2",
+  "stac_version": "1.0.0-rc.3",
   "id": "LC08_L1TP_107018_20181001",
   "properties": {
     "datetime": "2018-10-01T01:08:32.033000Z",
@@ -89,8 +89,8 @@
     60.63437
   ],
   "stac_extensions": [
-    "view",
-    "https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json"
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
   ],
   "collection": "landsat-8-l1"
 }

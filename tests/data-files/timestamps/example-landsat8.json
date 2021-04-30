@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.2",
+  "stac_version": "1.0.0-rc.3",
   "id": "LC08_L1TP_107018_20181001",
   "properties": {
     "datetime": "2018-10-01T01:08:32Z",
@@ -42,12 +42,7 @@
       ]
     ]
   },
-  "links": [
-    {
-      "rel": "self",
-      "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/search?id=LC08_L1TP_107018_20181001_20181001_01_RT"
-    }
-  ],
+  "links": [],
   "assets": {
     "blue": {
       "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B2.TIF",

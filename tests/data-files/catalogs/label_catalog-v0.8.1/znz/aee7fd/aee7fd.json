@@ -1,6 +1,6 @@
 {
     "type": "Feature",
-    "stac_version": "0.8.1",
+    "stac_version": "1.0.0-rc.3",
     "id": "aee7fd",
     "properties": {
         "area": "znz",
@@ -37,12 +37,6 @@
         ],
         "type": "Polygon"
     },
-    "bbox": [
-        39.31369530504979,
-        -5.933017366868187,
-        39.340814311389366,
-        -5.905835679883141
-    ],
     "links": [
         {
             "rel": "collection",
@@ -67,5 +61,12 @@
             "title": "GeoTIFF"
         }
     },
+    "bbox": [
+        39.31369530504979,
+        -5.933017366868187,
+        39.340814311389366,
+        -5.905835679883141
+    ],
+    "stac_extensions": [],
     "collection": "znz"
 }

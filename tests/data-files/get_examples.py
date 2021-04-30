@@ -7,7 +7,7 @@ import argparse
 import json
 from tempfile import TemporaryDirectory
 from subprocess import call
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError
 
 import pystac as ps
@@ -15,7 +15,7 @@ from pystac.serialization import identify_stac_object
 
 
 def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
-    links: List[Dict[str, Any]] = js.get('links')
+    links: Optional[List[Dict[str, Any]]] = js.get('links')
     if links is not None:
         filtered_links: List[Dict[str, Any]] = []
         for link in links:

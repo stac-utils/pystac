@@ -1,6 +1,6 @@
 {
     "type": "Feature",
-    "stac_version": "1.0.0-beta.2",
+    "stac_version": "1.0.0-rc.3",
     "id": "Houston-East-20170831-103f-100d-0f4f-RGB",
     "properties": {
         "datetime": "2017-08-31T17:24:57.555491Z",
@@ -13,7 +13,7 @@
         "view:sun_azimuth": 145.5,
         "view:sun_elevation": 64.9,
         "view:off_nadir": 0.2,
-        "proj:epsg_code": 32615,
+        "proj:epsg": 32615,
         "pl:ground_control": true
     },
     "geometry": {
@@ -84,9 +84,9 @@
         30.157560439570304
     ],
     "stac_extensions": [
-        "eo",
-        "view",
-        "proj"
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
     ],
     "collection": "planet-disaster-data"
 }

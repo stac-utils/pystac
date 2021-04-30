@@ -1,14 +1,22 @@
 {
-  "stac_version": "1.0.0-beta.2",
-  "stac_extensions": [],
   "type": "Feature",
+  "stac_version": "1.0.0-rc.3",
   "id": "CS3-20160503_132131_05",
-  "bbox": [
-    -122.59750209,
-    37.48803556,
-    -122.2880486,
-    37.613537207
-  ],
+  "properties": {
+    "datetime": "2016-05-03T13:22:30.040000Z",
+    "title": "A CS3 item",
+    "license": "PDDL-1.0",
+    "providers": [
+      {
+        "name": "CoolSat",
+        "roles": [
+          "producer",
+          "licensor"
+        ],
+        "url": "https://cool-sat.com/"
+      }
+    ]
+  },
   "geometry": {
     "type": "Polygon",
     "coordinates": [
@@ -36,22 +44,6 @@
       ]
     ]
   },
-  "properties": {
-    "datetime": "2016-05-03T13:22:30.040Z",
-    "title": "A CS3 item",
-    "license": "PDDL-1.0",
-    "providers": [
-      {
-        "name": "CoolSat",
-        "roles": [
-          "producer",
-          "licensor"
-        ],
-        "url": "https://cool-sat.com/"
-      }
-    ]
-  },
-  "collection": "CS3",
   "links": [
     {
       "rel": "self",
@@ -72,5 +64,13 @@
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/thumbnail.png",
       "title": "Thumbnail"
     }
-  }
+  },
+  "bbox": [
+    -122.59750209,
+    37.48803556,
+    -122.2880486,
+    37.613537207
+  ],
+  "stac_extensions": [],
+  "collection": "CS3"
 }
