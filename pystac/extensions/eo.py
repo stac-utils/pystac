@@ -44,14 +44,14 @@ class Band:
 
         Args:
             name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name (str): The name commonly used to refer to the band to make it easier
-                to search for bands across instruments. See the `list of accepted common names
-                <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name (str): The name commonly used to refer to the band to make it
+                easier to search for bands across instruments. See the `list of
+                accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
             description (str): Description to fully explain the band.
             center_wavelength (float): The center wavelength of the band, in micrometers (μm).
             full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
-        """
+        """  # noqa
         self.name = name
         self.common_name = common_name
         self.description = description
@@ -79,7 +79,7 @@ class Band:
             center_wavelength (float): The center wavelength of the band, in micrometers (μm).
             full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
-        """
+        """  # noqa
         b = cls({})
         b.apply(
             name=name,
@@ -111,7 +111,7 @@ class Band:
 
         Returns:
             Optional[str]
-        """
+        """  # noqa
         return self.properties.get("common_name")
 
     @common_name.setter
@@ -252,8 +252,9 @@ class EOExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.I
         Args:
             bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
                 the available bands.
-            cloud_cover (float or None): The estimate of cloud cover as a percentage (0-100) of the
-                entire scene. If not available the field should not be provided.
+            cloud_cover (float or None): The estimate of cloud cover as a percentage
+                (0-100) of the entire scene. If not available the field should not be
+                provided.
         """
         self.bands = bands
         self.cloud_cover = cloud_cover

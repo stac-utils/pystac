@@ -35,8 +35,8 @@ class ProjectionExtension(
         item (Item): The Item that is being extended.
 
     Note:
-        Using ProjectionItemExt to directly wrap an item will add the 'proj' extension ID to
-        the item's stac_extensions.
+        Using ProjectionItemExt to directly wrap an item will add the 'proj' extension
+        ID to the item's stac_extensions.
     """
 
     def __init__(self, item: ps.Item) -> None:
@@ -57,21 +57,23 @@ class ProjectionExtension(
 
         Args:
             epsg (int or None): REQUIRED. EPSG code of the datasource.
-            wkt2 (str or None): WKT2 string representing the Coordinate Reference System (CRS) that
-                the ``geometry`` and ``bbox`` fields represent
+            wkt2 (str or None): WKT2 string representing the Coordinate Reference
+                System (CRS) that the ``geometry`` and ``bbox`` fields represent
             projjson (dict or None): PROJJSON dict representing the
                 Coordinate Reference System (CRS) that the ``geometry`` and ``bbox``
                 fields represent
-            geometry (dict or None): GeoJSON Polygon dict that defines the footprint of this Item.
+            geometry (dict or None): GeoJSON Polygon dict that defines the footprint of
+                this Item.
             bbox (List[float] or None): Bounding box of the Item in the asset CRS in
                 2 or 3 dimensions.
             centroid (dict or None): A dict with members 'lat' and 'lon' that defines
                 coordinates representing the centroid of the item in the asset data CRS.
-                Coordinates are defined in latitude and longitude, even if the data coordinate
-                system may not use lat/long.
-            shape (List[int] or None): Number of pixels in Y and X directions for the default grid.
-            transform (List[float] or None): The affine transformation coefficients for the
-                default grid
+                Coordinates are defined in latitude and longitude, even if the data
+                coordinate system may not use lat/long.
+            shape (List[int] or None): Number of pixels in Y and X directions for the
+                default grid.
+            transform (List[float] or None): The affine transformation coefficients for
+                the default grid
         """
         self.epsg = epsg
         self.wkt2 = wkt2
@@ -86,12 +88,13 @@ class ProjectionExtension(
     def epsg(self) -> Optional[int]:
         """Get or sets the EPSG code of the datasource.
 
-        A Coordinate Reference System (CRS) is the data reference system (sometimes called a
-        'projection') used by the asset data, and can usually be referenced using an
-        `EPSG code <http://epsg.io/>`_.
-        If the asset data does not have a CRS, such as in the case of non-rectified imagery with
-        Ground Control Points, epsg should be set to None.
-        It should also be set to null if a CRS exists, but for which there is no valid EPSG code.
+        A Coordinate Reference System (CRS) is the data reference system (sometimes
+        called a 'projection') used by the asset data, and can usually be referenced
+        using an `EPSG code <http://epsg.io/>`_.
+        If the asset data does not have a CRS, such as in the case of non-rectified
+        imagery with Ground Control Points, epsg should be set to None.
+        It should also be set to null if a CRS exists, but for which there is no valid
+        EPSG code.
 
         Returns:
             int
@@ -107,10 +110,11 @@ class ProjectionExtension(
         """Get or sets the WKT2 string representing the Coordinate Reference System (CRS)
         that the proj:geometry and proj:bbox fields represent
 
-        This value is a `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
-        If the data does not have a CRS, such as in the case of non-rectified imagery with Ground
-        Control Points, wkt2 should be set to null. It should also be set to null if a CRS exists,
-        but for which a WKT2 string does not exist.
+        This value is a
+        `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
+        If the data does not have a CRS, such as in the case of non-rectified imagery
+        with Ground Control Points, wkt2 should be set to null. It should also be set
+        to null if a CRS exists, but for which a WKT2 string does not exist.
 
         Returns:
             str
@@ -126,10 +130,11 @@ class ProjectionExtension(
         """Get or sets the PROJJSON string representing the Coordinate Reference System (CRS)
         that the proj:geometry and proj:bbox fields represent
 
-        This value is a `PROJJSON object <https://proj.org/specifications/projjson.html>`_.
-        If the data does not have a CRS, such as in the case of non-rectified imagery with Ground
-        Control Points, projjson should be set to null. It should also be set to null if a
-        CRS exists, but for which a PROJJSON string does not exist.
+        This value is a
+        `PROJJSON object <https://proj.org/specifications/projjson.html>`_.
+        If the data does not have a CRS, such as in the case of non-rectified imagery
+        with Ground Control Points, projjson should be set to null. It should also be
+        set to null if a CRS exists, but for which a PROJJSON string does not exist.
 
         The schema for this object can be found
         `here <https://proj.org/schemas/v0.2/projjson.schema.json>`_.
@@ -149,10 +154,10 @@ class ProjectionExtension(
 
         This dict should be formatted according the Polygon object format specified in
         `RFC 7946, sections 3.1.6 <https://tools.ietf.org/html/rfc7946>`_,
-        except not necessarily in EPSG:4326 as required by RFC7946. Specified based on the
-        ``epsg``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
-        Ideally, this will be represented by a Polygon with five coordinates, as the item in
-        the asset data CRS should be a square aligned to the original CRS grid.
+        except not necessarily in EPSG:4326 as required by RFC7946. Specified based on
+        the ``epsg``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
+        Ideally, this will be represented by a Polygon with five coordinates, as the
+        item in the asset data CRS should be a square aligned to the original CRS grid.
 
         Returns:
             dict
@@ -168,12 +173,12 @@ class ProjectionExtension(
         """Get or sets the bounding box of the assets represented by this item in the asset
         data CRS.
 
-        Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``, ``projjson``
-        or ``wkt2`` properties. First two numbers are coordinates of the lower left corner,
-        followed by coordinates of upper right corner, e.g.,
+        Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``,
+        ``projjson`` or ``wkt2`` properties. First two numbers are coordinates of the
+        lower left corner, followed by coordinates of upper right corner, e.g.,
         [west, south, east, north], [xmin, ymin, xmax, ymax], [left, down, right, up],
-        or [west, south, lowest, east, north, highest]. The length of the array must be 2*n
-        where n is the number of dimensions.
+        or [west, south, lowest, east, north, highest]. The length of the array
+        must be 2*n where n is the number of dimensions.
 
         Returns:
             List[float]
@@ -188,8 +193,8 @@ class ProjectionExtension(
     def centroid(self) -> Optional[Dict[str, float]]:
         """Get or sets coordinates representing the centroid of the item in the asset data CRS.
 
-        Coordinates are defined in latitude and longitude, even if the data coordinate system
-        does not use lat/long.
+        Coordinates are defined in latitude and longitude, even if the data coordinate
+        system does not use lat/long.
 
         Exmample::
 
@@ -208,10 +213,10 @@ class ProjectionExtension(
     def shape(self) -> Optional[List[int]]:
         """Get or sets the number of pixels in Y and X directions for the default grid.
 
-        The shape is an array of integers that represents the number of pixels in the most
-        common pixel grid used by the item's assets. The number of pixels should be specified
-        in Y, X order. If the shape is defined in an item's properties it is used as the default
-        shape for all assets that don't have an overriding shape.
+        The shape is an array of integers that represents the number of pixels in the
+        most common pixel grid used by the item's assets. The number of pixels should
+        be specified in Y, X order. If the shape is defined in an item's properties it
+        is used as the default shape for all assets that don't have an overriding shape.
 
         Returns:
             List[int]

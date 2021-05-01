@@ -53,7 +53,8 @@ def make_relative_href(
         start_href (str): The HREF that the resulting HREF will be relative with
             respect to.
         start_is_dir (str): If True, the start_href is treated as a directory.
-            Otherwise, the start_href is considered to be a file HREF. Defaults to False.
+            Otherwise, the start_href is considered to be a file HREF.
+            Defaults to False.
 
     Returns:
         str: The relative HREF. If the source_href and start_href do not share a common
@@ -94,7 +95,8 @@ def make_absolute_href(
             relative paths, if source_href is a relative path. Defaults to the
             current working directory.
         start_is_dir (str): If True, the start_href is treated as a directory.
-            Otherwise, the start_href is considered to be a file HREF. Defaults to False.
+            Otherwise, the start_href is considered to be a file HREF.
+            Defaults to False.
 
     Returns:
         str: The absolute HREF. If the source_href is already an absolute href,

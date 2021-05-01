@@ -480,11 +480,11 @@ class CommonMetadata:
         returns the Asset's value. Otherwise returns the Item's value.
 
         Note:
-            ``created`` and ``updated`` have different meaning depending on where they are used.
-            If those fields are available in the Item `properties`, it's referencing to the
-            creation and update times of the metadata. Having those fields in the Item `assets`
-            refers to the creation and update times of the actual data linked to
-            in the Asset Object.
+            ``created`` and ``updated`` have different meaning depending on where they
+            are used. If those fields are available in the Item `properties`, it's
+            referencing to the creation and update times of the metadata. Having those
+            fields in the Item `assets` refers to the creation and update times of the
+            actual data linked to in the Asset Object.
 
         Returns:
             datetime
@@ -523,11 +523,11 @@ class CommonMetadata:
         the attribute as a string
 
         Note:
-            ``created`` and ``updated`` have different meaning depending on where they are used.
-            If those fields are available in the Item `properties`, it's referencing to the
-            creation and update times of the metadata. Having those fields in the Item `assets`
-            refers to the creation and update times of the actual data linked to
-            in the Asset Object.
+            ``created`` and ``updated`` have different meaning depending on where they
+            are used. If those fields are available in the Item `properties`, it's
+            referencing to the creation and update times of the metadata. Having those
+            fields in the Item `assets` refers to the creation and update times of the
+            actual data linked to in the Asset Object.
 
 
         Returns:
@@ -547,11 +547,11 @@ class CommonMetadata:
         returns the Asset's value. Otherwise returns the Item's value.
 
         Note:
-            ``created`` and ``updated`` have different meaning depending on where they are used.
-            If those fields are available in the Item `properties`, it's referencing to the
-            creation and update times of the metadata. Having those fields in the Item `assets`
-            refers to the creation and update times of the actual data linked to
-            in the Asset Object.
+            ``created`` and ``updated`` have different meaning depending on where they
+            are used. If those fields are available in the Item `properties`, it's
+            referencing to the creation and update times of the metadata. Having those
+            fields in the Item `assets` refers to the creation and update times of the
+            actual data linked to in the Asset Object.
 
         Returns:
             datetime
@@ -591,12 +591,13 @@ class Item(STACObject):
 
     Args:
         id (str): Provider identifier. Must be unique within the STAC.
-        geometry (dict): Defines the full footprint of the asset represented by this item,
-            formatted according to `RFC 7946, section 3.1 (GeoJSON)
-            <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float] or None):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array must be 2*n where n is the
-            number of dimensions. Could also be None in the case of a null geometry.
+        geometry (dict): Defines the full footprint of the asset represented by this
+            item, formatted according to
+            `RFC 7946, section 3.1 (GeoJSON) <https://tools.ietf.org/html/rfc7946>`_.
+        bbox (List[float] or None):  Bounding Box of the asset represented by this item
+            using either 2D or 3D geometries. The length of the array must be 2*n
+            where n is the number of dimensions. Could also be None in the case of a
+            null geometry.
         datetime (datetime or None): Datetime associated with this item. If None,
             a start_datetime and end_datetime must be supplied in the properties.
         properties (dict): A dictionary of additional metadata for the item.
@@ -605,30 +606,33 @@ class Item(STACObject):
             self link's HREF.
         collection (Collection or str): The Collection or Collection ID that this item
             belongs to.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
-            of the Item.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+            properties of the Item.
 
     Attributes:
         id (str): Provider identifier. Unique within the STAC.
-        geometry (dict): Defines the full footprint of the asset represented by this item,
-            formatted according to `RFC 7946, section 3.1 (GeoJSON)
-            <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float] or None):  Bounding Box of the asset represented by this item using
-            either 2D or 3D geometries. The length of the array is 2*n where n is the
-            number of dimensions. Could also be None in the case of a null geometry.
+        geometry (dict): Defines the full footprint of the asset represented by this
+            item, formatted according to
+            `RFC 7946, section 3.1 (GeoJSON) <https://tools.ietf.org/html/rfc7946>`_.
+        bbox (List[float] or None):  Bounding Box of the asset represented by this item
+            using either 2D or 3D geometries. The length of the array is 2*n where n
+            is the number of dimensions. Could also be None in the case of a null
+            geometry.
         datetime (datetime or None): Datetime associated with this item. If None,
             the start_datetime and end_datetime in the common_metadata
             will supply the datetime range of the Item.
         properties (dict): A dictionary of additional metadata for the item.
-        stac_extensions (List[str] or None): Optional list of extensions the Item implements.
+        stac_extensions (List[str] or None): Optional list of extensions the Item
+            implements.
         collection (Collection or None): Collection that this item is a part of.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
         assets (Dict[str, Asset]): Dictionary of asset objects that can be downloaded,
             each with a unique key.
-        collection_id (str or None): The Collection ID that this item belongs to, if any.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
-            of the Item.
+        collection_id (str or None): The Collection ID that this item belongs to, if
+            any.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+            properties of the Item.
     """
 
     STAC_OBJECT_TYPE = STACObjectType.ITEM

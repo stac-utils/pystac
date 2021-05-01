@@ -34,9 +34,10 @@ def get_stac_version() -> str:
     """Returns the STAC version PySTAC writes as the "stac_version" property for
     any object it serializes into JSON.
 
-    If a call to ``set_stac_version`` was made, this will return the value it was called with.
-    Next it will check the environment for a PYSTAC_STAC_VERSION_OVERRIDE variable. Otherwise
-    it will return the latest STAC version that this version of PySTAC supports.
+    If a call to ``set_stac_version`` was made, this will return the value it was
+    called with. Next it will check the environment for a PYSTAC_STAC_VERSION_OVERRIDE
+    variable. Otherwise it will return the latest STAC version that this version of
+    PySTAC supports.
 
     Returns:
         str: The STAC Version PySTAC is set up to use.
@@ -56,13 +57,14 @@ def set_stac_version(stac_version: Optional[str]) -> None:
     the version.
 
     Args:
-        stac_version (str): The STAC version to use instead of the latest STAC version that
-            PySTAC supports (described in STACVersion.DEFAULT_STAC_VERSION). If None,
-            clear to use the default for this version of PySTAC.
+        stac_version (str): The STAC version to use instead of the latest STAC version
+            that PySTAC supports (described in STACVersion.DEFAULT_STAC_VERSION).
+            If None, clear to use the default for this version of PySTAC.
 
     Note:
-        Setting the STAC version to something besides the default version will not effect
-        the format of STAC read or written; it will only override the ``stac_version`` property
-        of the objects being written. Setting this incorrectly can produce invalid STAC.
+        Setting the STAC version to something besides the default version will not
+        effect the format of STAC read or written; it will only override the
+        ``stac_version`` property of the objects being written. Setting this
+        incorrectly can produce invalid STAC.
     """
     STACVersion.set_stac_version(stac_version)

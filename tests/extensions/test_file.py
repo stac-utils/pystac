@@ -78,7 +78,8 @@ class FileTest(unittest.TestCase):
 
     def test_migrates_old_checksum(self):
         example_path = TestCases.get_path(
-            "data-files/examples/1.0.0-beta.2/extensions/checksum/examples/sentinel1.json"
+            "data-files/examples/1.0.0-beta.2/"
+            "extensions/checksum/examples/sentinel1.json"
         )
         item = ps.Item.from_file(example_path)
 

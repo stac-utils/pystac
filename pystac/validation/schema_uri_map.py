@@ -21,7 +21,8 @@ class SchemaUriMap(ABC):
         """Get the schema URI for the given object type and stac version.
 
         Args:
-            object_type (STACObjectType): STAC object type. One of :class:`~pystac.STACObjectType`
+            object_type (STACObjectType): STAC object type. One of
+                :class:`~pystac.STACObjectType`
             stac_version (str): The STAC version of the schema to return.
 
         Returns:
@@ -31,7 +32,7 @@ class SchemaUriMap(ABC):
 
 
 class DefaultSchemaUriMap(SchemaUriMap):
-    """Implementation of SchemaUriMap that uses schemas hosted by https://schemas.stacspec.org.
+    """Implementation of SchemaUriMap that uses schemas hosted by stacspec.org
 
     For STAC Versions 0.9.0 or earlier this will use the schemas hosted on the
     radiantearth/stac-spec GitHub repo.
@@ -40,8 +41,8 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # BASE_URIS contains a list of tuples, the first element is a version range and the
     # second being the base URI for schemas for that range. The schema URI of a STAC
     # for a particular version uses the base URI associated with the version range which
-    # contains it. If the version it outside of any VersionRange, there is no URI for the
-    # schema.
+    # contains it. If the version it outside of any VersionRange, there is no URI for
+    # the schema.
     BASE_URIS: List[Tuple[STACVersionRange, Callable[[str], str]]] = [
         (
             STACVersionRange(min_version="1.0.0-beta.1"),
@@ -49,19 +50,20 @@ class DefaultSchemaUriMap(SchemaUriMap):
         ),
         (
             STACVersionRange(min_version="0.8.0", max_version="0.9.0"),
-            lambda version: "https://raw.githubusercontent.com/radiantearth/stac-spec/v{}".format(
-                version
+            lambda version: (
+                f"https://raw.githubusercontent.com/radiantearth/stac-spec/v{version}"
             ),
         ),
     ]
 
-    # DEFAULT_SCHEMA_MAP contains a structure that matches 'core' or 'extension' schema URIs
-    # based on the stac object type and the stac version, using a similar technique as BASE_URIS.
-    # Uris are contained in a tuple whose first element represents the URI of the latest
-    # version, so that a search through version ranges is avoided if the STAC being validated
+    # DEFAULT_SCHEMA_MAP contains a structure that matches 'core' or 'extension' schema
+    # URIs based on the stac object type and the stac version, using a similar
+    # technique as BASE_URIS. Uris are contained in a tuple whose first element
+    # represents the URI of the latest version, so that a search through version
+    # ranges is avoided if the STAC being validated
     # is the latest version. If it's a previous version, the stac_version that matches
-    # the listed version range is used, or else the URI from the latest version is used if
-    # there are no overrides for previous versions.
+    # the listed version range is used, or else the URI from the latest version is used
+    # if there are no overrides for previous versions.
     DEFAULT_SCHEMA_MAP: Dict[str, Any] = {
         STACObjectType.CATALOG: ("catalog-spec/json-schema/catalog.json", None),
         STACObjectType.COLLECTION: (
@@ -123,8 +125,8 @@ class OldExtensionSchemaUriMap:
     # BASE_URIS contains a list of tuples, the first element is a version range and the
     # second being the base URI for schemas for that range. The schema URI of a STAC
     # for a particular version uses the base URI associated with the version range which
-    # contains it. If the version it outside of any VersionRange, there is no URI for the
-    # schema.
+    # contains it. If the version it outside of any VersionRange, there is no URI for
+    # the schema.
     @classmethod
     @lru_cache()
     def get_base_uris(
@@ -133,12 +135,13 @@ class OldExtensionSchemaUriMap:
         return [
             (
                 STACVersionRange(min_version="1.0.0-beta.1"),
-                lambda version: "https://schemas.stacspec.org/v{}".format(version),
+                lambda version: f"https://schemas.stacspec.org/v{version}",
             ),
             (
                 STACVersionRange(min_version="0.8.0", max_version="0.9.0"),
-                lambda version: "https://raw.githubusercontent.com/radiantearth/stac-spec/v{}".format(
-                    version
+                lambda version: (
+                    "https://raw.githubusercontent.com/"
+                    f"radiantearth/stac-spec/v{version}"
                 ),
             ),
         ]
@@ -146,32 +149,44 @@ class OldExtensionSchemaUriMap:
     # DEFAULT_SCHEMA_MAP contains a structure that matches extension schema URIs
     # based on the stac object type, extension ID and the stac version.
     # Uris are contained in a tuple whose first element represents the URI of the latest
-    # version, so that a search through version ranges is avoided if the STAC being validated
-    # is the latest version. If it's a previous version, the stac_version that matches
-    # the listed version range is used, or else the URI from the latest version is used if
-    # there are no overrides for previous versions.
+    # version, so that a search through version ranges is avoided if the STAC being
+    # validated is the latest version. If it's a previous version, the stac_version
+    # that matches the listed version range is used, or else the URI from the latest
+    # version is used if there are no overrides for previous versions.
     @classmethod
     @lru_cache()
     def get_schema_map(cls) -> Dict[str, Any]:
         return {
             OldExtensionShortIDs.CHECKSUM.value: (
                 {
-                    ps.STACObjectType.CATALOG: "extensions/checksum/json-schema/schema.json",
-                    ps.STACObjectType.COLLECTION: "extensions/checksum/json-schema/schema.json",
-                    ps.STACObjectType.ITEM: "extensions/checksum/json-schema/schema.json",
+                    ps.STACObjectType.CATALOG: (
+                        "extensions/checksum/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/checksum/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.ITEM: (
+                        "extensions/checksum/json-schema/schema.json"
+                    ),
                 },
                 None,
             ),
             OldExtensionShortIDs.COLLECTION_ASSETS.value: (
                 {
-                    ps.STACObjectType.COLLECTION: "extensions/collection-assets/json-schema/schema.json"
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/collection-assets/json-schema/schema.json"
+                    )
                 },
                 None,
             ),
             OldExtensionShortIDs.DATACUBE.value: (
                 {
-                    ps.STACObjectType.COLLECTION: "extensions/datacube/json-schema/schema.json",
-                    ps.STACObjectType.ITEM: "extensions/datacube/json-schema/schema.json",
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/datacube/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.ITEM: (
+                        "extensions/datacube/json-schema/schema.json"
+                    ),
                 },
                 [
                     (
@@ -189,7 +204,9 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.ITEM_ASSETS.value: (
                 {
-                    ps.STACObjectType.COLLECTION: "extensions/item-assets/json-schema/schema.json"
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/item-assets/json-schema/schema.json"
+                    )
                 },
                 None,
             ),
@@ -209,7 +226,9 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.PROJECTION.value: (
                 {
-                    ps.STACObjectType.ITEM: "extensions/projection/json-schema/schema.json"
+                    ps.STACObjectType.ITEM: (
+                        "extensions/projection/json-schema/schema.json"
+                    )
                 },
                 None,
             ),
@@ -223,35 +242,53 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.SCIENTIFIC.value: (
                 {
-                    ps.STACObjectType.ITEM: "extensions/scientific/json-schema/schema.json",
-                    ps.STACObjectType.COLLECTION: "extensions/scientific/json-schema/schema.json",
+                    ps.STACObjectType.ITEM: (
+                        "extensions/scientific/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/scientific/json-schema/schema.json"
+                    ),
                 },
                 None,
             ),
             OldExtensionShortIDs.SINGLE_FILE_STAC.value: (
                 {
-                    ps.STACObjectType.CATALOG: "extensions/single-file-stac/json-schema/schema.json"
+                    ps.STACObjectType.CATALOG: (
+                        "extensions/single-file-stac/json-schema/schema.json"
+                    )
                 },
                 None,
             ),
             OldExtensionShortIDs.TILED_ASSETS.value: (
                 {
-                    ps.STACObjectType.CATALOG: "extensions/tiled-assets/json-schema/schema.json",
-                    ps.STACObjectType.COLLECTION: "extensions/tiled-assets/json-schema/schema.json",
-                    ps.STACObjectType.ITEM: "extensions/tiled-assets/json-schema/schema.json",
+                    ps.STACObjectType.CATALOG: (
+                        "extensions/tiled-assets/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/tiled-assets/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.ITEM: (
+                        "extensions/tiled-assets/json-schema/schema.json"
+                    ),
                 },
                 None,
             ),
             OldExtensionShortIDs.TIMESTAMPS.value: (
                 {
-                    ps.STACObjectType.ITEM: "extensions/timestamps/json-schema/schema.json"
+                    ps.STACObjectType.ITEM: (
+                        "extensions/timestamps/json-schema/schema.json"
+                    )
                 },
                 None,
             ),
             OldExtensionShortIDs.VERSION.value: (
                 {
-                    ps.STACObjectType.ITEM: "extensions/version/json-schema/schema.json",
-                    ps.STACObjectType.COLLECTION: "extensions/version/json-schema/schema.json",
+                    ps.STACObjectType.ITEM: (
+                        "extensions/version/json-schema/schema.json"
+                    ),
+                    ps.STACObjectType.COLLECTION: (
+                        "extensions/version/json-schema/schema.json"
+                    ),
                 },
                 None,
             ),
@@ -267,7 +304,9 @@ class OldExtensionSchemaUriMap:
                     (
                         STACVersionRange(min_version="0.8.0-rc1", max_version="0.9.0"),
                         {
-                            ps.STACObjectType.COLLECTION: "extensions/asset/json-schema/schema.json"
+                            ps.STACObjectType.COLLECTION: (
+                                "extensions/asset/json-schema/schema.json"
+                            )
                         },
                     )
                 ],

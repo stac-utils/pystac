@@ -55,7 +55,8 @@ class ResolvedObjectCache:
             to the cached STACObject.
         hrefs_to_objects (Dict[str, STACObject]): STAC Object HREFs matched to
             their cached object.
-        ids_to_collections (Dict[str, Collection]): Map of collection IDs to collections.
+        ids_to_collections (Dict[str, Collection]): Map of collection IDs
+            to collections.
     """
 
     def __init__(
@@ -79,8 +80,8 @@ class ResolvedObjectCache:
                 against the cache.
 
         Returns:
-            STACObject: Either the cached object that has the same cache key as the given
-            object, or the given object.
+            STACObject: Either the cached object that has the same cache key as the
+            given object, or the given object.
         """
         key, is_href = get_cache_key(obj)
         if is_href:
@@ -100,11 +101,12 @@ class ResolvedObjectCache:
         """Get the cached object that has the same cache key as the given object.
 
         Args:
-            obj (STACObject): The given object who's cache key will be checked against the cache.
+            obj (STACObject): The given object who's cache key will be checked against
+                the cache.
 
         Returns:
-            STACObject or None: Either the cached object that has the same cache key as the given
-            object, or None
+            STACObject or None: Either the cached object that has the same cache key as
+            the given object, or None
         """
         key, is_href = get_cache_key(obj)
         if is_href:
@@ -226,8 +228,9 @@ class CollectionCache:
     """Cache of collections that can be used to avoid re-reading Collection
     JSON in :func:`pystac.serialization.merge_common_properties
     <pystac.serialization.common_properties.merge_common_properties>`.
-    The CollectionCache will contain collections as either as dicts or PySTAC Collections,
-    and will set Collection JSON that it reads in order to merge in common properties.
+    The CollectionCache will contain collections as either as dicts or PySTAC
+    Collections, and will set Collection JSON that it reads in order to merge
+    in common properties.
     """
 
     def __init__(

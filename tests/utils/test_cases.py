@@ -207,7 +207,7 @@ class TestCases:
         """Test case that is based on a local copy of the Tier 1 dataset from
         DrivenData's OpenCities AI Challenge.
         See: https://www.drivendata.org/competitions/60/building-segmentation-disaster-resilience
-        """
+        """  # noqa
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/test-case-4/catalog.json")
         )

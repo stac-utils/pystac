@@ -54,9 +54,9 @@ class TimestampsExtension(
 
         'Published'
         has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
 
         Returns:
             datetime
@@ -75,9 +75,9 @@ class TimestampsExtension(
 
         'Unpublished'
         has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
 
         Returns:
             datetime
@@ -95,9 +95,9 @@ class TimestampsExtension(
 
         'Unpublished'
         has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
 
         Returns:
             datetime

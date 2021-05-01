@@ -141,7 +141,8 @@ class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
     Attributes:
-        object_type (str): Describes the STAC object type. One of :class:`~pystac.STACObjectType`.
+        object_type (str): Describes the STAC object type. One of
+            :class:`~pystac.STACObjectType`.
         version_range (STACVersionRange): The STAC version range that describes what
             has been identified as potential valid versions of the stac object.
         extensions (List[str]): List of extension schema URIs for extensions this

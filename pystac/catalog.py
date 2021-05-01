@@ -107,8 +107,8 @@ class Catalog(STACObject):
             representation.
         title (str or None): Optional short descriptive one-line title for the catalog.
         stac_extensions (List[str]): Optional list of extensions the Catalog implements.
-        href (str or None): Optional HREF for this catalog, which be set as the catalog's
-            self link's HREF.
+        href (str or None): Optional HREF for this catalog, which be set as the
+            catalog's self link's HREF.
         catalog_type (str or None): Optional catalog type for this catalog. Must
             be one of the values in :class`~pystac.CatalogType`.
 
@@ -116,9 +116,10 @@ class Catalog(STACObject):
         id (str): Identifier for the catalog.
         description (str): Detailed multi-line description to fully explain the catalog.
         title (str or None): Optional short descriptive one-line title for the catalog.
-        stac_extensions (List[str] or None): Optional list of extensions the Catalog implements.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON properties
-            of the Catalog.
+        stac_extensions (List[str] or None): Optional list of extensions the Catalog
+            implements.
+        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+            properties of the Catalog.
         links (List[Link]): A list of :class:`~pystac.Link` objects representing
             all links associated with this Catalog.
         catalog_type (str): The catalog type. Defaults to ABSOLUTE_PUBLISHED
@@ -133,7 +134,9 @@ class Catalog(STACObject):
     is read by a StacIO instance."""
 
     DEFAULT_FILE_NAME = "catalog.json"
-    """Default file name that will be given to this STAC object in a canonical format."""
+    """Default file name that will be given to this STAC object in
+    a canonical format.
+    """
 
     def __init__(
         self,
@@ -195,8 +198,8 @@ class Catalog(STACObject):
         Args:
             child (Catalog or Collection): The child to add.
             title (str): Optional title to give to the :class:`~pystac.Link`
-            strategy (HrefLayoutStrategy): The layout strategy to use for setting the self
-                href of the child.
+            strategy (HrefLayoutStrategy): The layout strategy to use for setting the
+                self href of the child.
         """
 
         # Prevent typo confusion
@@ -277,8 +280,9 @@ class Catalog(STACObject):
 
         Args:
             id (str): The ID of the child to find.
-            recursive (bool): If True, search this catalog and all children for the item;
-                otherwise, only search the children of this catalog. Defaults to False.
+            recursive (bool): If True, search this catalog and all children for the
+                item; otherwise, only search the children of this catalog. Defaults
+                to False.
 
         Return:
             Item or None: The item with the given ID, or None if not found.
@@ -345,8 +349,9 @@ class Catalog(STACObject):
 
         Args:
             id (str): The ID of the item to find.
-            recursive (bool): If True, search this catalog and all children for the item;
-                otherwise, only search the items of this catalog. Defaults to False.
+            recursive (bool): If True, search this catalog and all children for the
+                item; otherwise, only search the items of this catalog. Defaults
+                to False.
 
         Return:
             Item or None: The item with the given ID, or None if not found.
@@ -501,13 +506,15 @@ class Catalog(STACObject):
         in sequence.
 
         Args:
-            root_href (str): The absolute HREF that all links will be normalized against.
+            root_href (str): The absolute HREF that all links will be normalized
+                against.
             catalog_type (str): The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
-                Defaults to the root catalog.catalog_type or the current catalog catalog_type
-                if there is no root catalog.
-            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
-                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
+                Defaults to the root catalog.catalog_type or the current catalog
+                catalog_type if there is no root catalog.
+            strategy (HrefLayoutStrategy): The layout strategy to use in setting the
+                HREFS for this catalog. Defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`
         """
         self.normalize_hrefs(root_href, strategy=strategy)
         self.save(catalog_type)
@@ -587,7 +594,9 @@ class Catalog(STACObject):
         **kwargs: Any,
     ) -> List["Catalog"]:
         """Walks through the catalog and generates subcatalogs
-        for items based on the template string. See :class:`~pystac.layout.LayoutTemplate`
+        for items based on the template string.
+
+        See :class:`~pystac.layout.LayoutTemplate`
         for details on the construction of template strings. This template string
         will be applied to the items, and subcatalogs will be created that separate
         and organize the items based on template values.
@@ -673,11 +682,11 @@ class Catalog(STACObject):
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
             all self links will be included, and hierarchical links be absolute URLs.
-            If the catalog type is ``CatalogType.RELATIVE_PUBLISHED``, this catalog's self
-            link will be included, but no child catalog will have self links, and
+            If the catalog type is ``CatalogType.RELATIVE_PUBLISHED``, this catalog's
+            self link will be included, but no child catalog will have self links, and
             hierarchical links will be relative URLs
-            If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will be
-            included and hierarchical links will be relative URLs.
+            If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will
+            be included and hierarchical links will be relative URLs.
         """
         root = self.get_root()
         if root is None:
@@ -699,7 +708,8 @@ class Catalog(STACObject):
                 )
 
         include_self_link = False
-        # include a self link if this is the root catalog or if ABSOLUTE_PUBLISHED catalog
+        # include a self link if this is the root catalog
+        # or if ABSOLUTE_PUBLISHED catalog
         if root.catalog_type == CatalogType.ABSOLUTE_PUBLISHED:
             include_self_link = True
         elif root.catalog_type != CatalogType.SELF_CONTAINED:
@@ -716,9 +726,9 @@ class Catalog(STACObject):
     ) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable["Item_Type"]]]:
         """Walks through children and items of catalogs.
 
-        For each catalog in the STAC's tree rooted at this catalog (including this catalog
-        itself), it yields a 3-tuple (root, subcatalogs, items). The root in that
-        3-tuple refers to the current catalog being walked, the subcatalogs are any
+        For each catalog in the STAC's tree rooted at this catalog (including this
+        catalog itself), it yields a 3-tuple (root, subcatalogs, items). The root in
+        that 3-tuple refers to the current catalog being walked, the subcatalogs are any
         catalogs or collections for which the root is a parent, and items represents
         any items that have the root as a parent.
 
@@ -764,9 +774,9 @@ class Catalog(STACObject):
         item_mapper function.
 
         Args:
-            item_mapper (Callable):   A function that takes in an item, and returns either
-                an item or list of items. The item that is passed into the item_mapper
-                is a copy, so the method can mutate it safely.
+            item_mapper (Callable):   A function that takes in an item, and returns
+                either an item or list of items. The item that is passed into the
+                item_mapper is a copy, so the method can mutate it safely.
 
         Returns:
             Catalog: A full copy of this catalog, with items manipulated according
@@ -810,10 +820,10 @@ class Catalog(STACObject):
         through the asset_mapper function.
 
         Args:
-            asset_mapper (Callable): A function that takes in an key and an Asset, and returns
-               either an Asset, a (key, Asset), or a dictionary of Assets with unique keys.
-               The Asset that is passed into the item_mapper is a copy, so the method can
-               mutate it safely.
+            asset_mapper (Callable): A function that takes in an key and an Asset, and
+                returns either an Asset, a (key, Asset), or a dictionary of Assets with
+                unique keys. The Asset that is passed into the item_mapper is a copy,
+                so the method can mutate it safely.
 
         Returns:
             Catalog: A full copy of this catalog, with assets manipulated according

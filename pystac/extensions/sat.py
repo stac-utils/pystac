@@ -54,10 +54,11 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
         for the sat extension to properties to be valid.
 
         Args:
-            orbit_state (OrbitState): Optional state of the orbit. Either ascending or descending
-                for polar orbiting satellites, or geostationary for geosynchronous satellites.
-            relative_orbit (int): Optional non-negative integer of the orbit number at the time
-                of acquisition.
+            orbit_state (OrbitState): Optional state of the orbit. Either ascending or
+                descending for polar orbiting satellites, or geostationary for
+                geosynchronous satellites.
+            relative_orbit (int): Optional non-negative integer of the orbit number at
+                the time of acquisition.
         """
 
         self.orbit_state = orbit_state

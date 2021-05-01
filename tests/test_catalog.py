@@ -84,7 +84,8 @@ class CatalogTest(unittest.TestCase):
     def test_read_remote(self):
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
         catalog_url = (
-            "https://raw.githubusercontent.com/lossyrob/stac-spec/0.9.0/pystac-upgrade-fixes"
+            "https://raw.githubusercontent.com/lossyrob/stac-spec/"
+            "0.9.0/pystac-upgrade-fixes"
             "/extensions/label/examples/multidataset/catalog.json"
         )
         cat = Catalog.from_file(catalog_url)
@@ -329,7 +330,8 @@ class CatalogTest(unittest.TestCase):
         source = next(iter(LabelExtension.ext(item).get_sources()))
         self.assertEqual(
             source.get_self_href(),
-            "http://example.com/country-1/area-1-1/area-1-1-imagery/area-1-1-imagery.json",
+            "http://example.com/country-1/area-1-1/"
+            "area-1-1-imagery/area-1-1-imagery.json",
         )
 
     def test_generate_subcatalogs_works_with_custom_properties(self):

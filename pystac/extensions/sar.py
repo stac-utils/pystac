@@ -93,32 +93,37 @@ class SarExtension(
         """Applies sar extension properties to the extended Item.
 
         Args:
-            instrument_mode (str): The name of the sensor acquisition mode that is commonly used.
-                This should be the short name, if available. For example, WV for "Wave mode."
-            frequency_band (FrequencyBand): The common name for the frequency band to make it easier
-                to search for bands across instruments. See section "Common Frequency Band Names"
-                for a list of accepted names.
+            instrument_mode (str): The name of the sensor acquisition mode that is
+                commonly used. This should be the short name, if available. For example,
+                WV for "Wave mode."
+            frequency_band (FrequencyBand): The common name for the frequency band to
+                make it easier to search for bands across instruments. See section
+                "Common Frequency Band Names" for a list of accepted names.
             polarizations (List[Polarization]): Any combination of polarizations.
             product_type (str): The product type, for example SSC, MGD, or SGC.
             center_frequency (float): Optional center frequency of the instrument in
                 gigahertz (GHz).
-            resolution_range (float): Optional range resolution, which is the maximum ability to
-                distinguish two adjacent targets perpendicular to the flight path, in meters (m).
-            resolution_azimuth (float): Optional azimuth resolution, which is the maximum ability
-                to distinguish two adjacent targets parallel to the flight path, in meters (m).
-            pixel_spacing_range (float): Optional range pixel spacing, which is the distance
-                between adjacent pixels perpendicular to the flight path, in meters (m). Strongly
-                RECOMMENDED to be specified for products of type GRD.
-            pixel_spacing_azimuth (float): Optional azimuth pixel spacing, which is the distance
-                between adjacent pixels parallel to the flight path, in meters (m). Strongly
-                RECOMMENDED to be specified for products of type GRD.
-            looks_range (int): Optional number of groups of signal samples (looks) perpendicular
-                to the flight path.
-            looks_azimuth (int): Optional number of groups of signal samples (looks) parallel
-                to the flight path.
+            resolution_range (float): Optional range resolution, which is the maximum
+                ability to distinguish two adjacent targets perpendicular to the flight
+                path, in meters (m).
+            resolution_azimuth (float): Optional azimuth resolution, which is the
+                maximum ability to distinguish two adjacent targets parallel to the
+                flight path, in meters (m).
+            pixel_spacing_range (float): Optional range pixel spacing, which is the
+                distance between adjacent pixels perpendicular to the flight path,
+                in meters (m). Strongly RECOMMENDED to be specified for
+                products of type GRD.
+            pixel_spacing_azimuth (float): Optional azimuth pixel spacing, which is the
+                distance between adjacent pixels parallel to the flight path, in
+                meters (m). Strongly RECOMMENDED to be specified for products of
+                type GRD.
+            looks_range (int): Optional number of groups of signal samples (looks)
+                perpendicular to the flight path.
+            looks_azimuth (int): Optional number of groups of signal samples (looks)
+                parallel to the flight path.
             looks_equivalent_number (float): Optional equivalent number of looks (ENL).
-            observation_direction (ObservationDirection): Optional Antenna pointing direction
-                relative to the flight trajectory of the satellite.
+            observation_direction (ObservationDirection): Optional Antenna pointing
+                direction relative to the flight trajectory of the satellite.
         """
         self.instrument_mode = instrument_mode
         self.frequency_band = frequency_band

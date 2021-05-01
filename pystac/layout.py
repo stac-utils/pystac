@@ -119,9 +119,8 @@ class LayoutTemplate:
                     if stac_object.collection_id is not None:
                         return stac_object.collection_id
                     raise TemplateError(
-                        "Item {} does not have a collection ID set; cannot template {} in {}".format(
-                            stac_object, template_var, self.template
-                        )
+                        f"Item {stac_object} does not have a collection ID set; "
+                        f"cannot template {template_var} in {self.template}"
                     )
             else:
                 raise TemplateError(

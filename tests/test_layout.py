@@ -160,7 +160,8 @@ class LayoutTemplateTest(unittest.TestCase):
     def test_docstring_examples(self):
         item = ps.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/1.0.0-beta.2/item-spec/examples/landsat8-sample.json"
+                "data-files/examples/1.0.0-beta.2/item-spec/"
+                "examples/landsat8-sample.json"
             )
         )
         item.common_metadata.license = "CC-BY-3.0"

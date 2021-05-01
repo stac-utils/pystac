@@ -165,7 +165,8 @@ class ScientificExtension(
         """Removes publications from the item.
 
         Args:
-            publication (Publication): The specific publication to remove of None to remove all.
+            publication (Publication): The specific publication to remove of None to
+            remove all.
         """
         if PUBLICATIONS not in self.properties:
             return

@@ -96,8 +96,8 @@ class ValidateTest(unittest.TestCase):
 
                 pystac.validation.validate_all(stac_dict, catalog_href)
 
-        # Modify a 0.8.1 collection in a catalog to be invalid with a since-renamed extension
-        # and make sure it catches the validation error.
+        # Modify a 0.8.1 collection in a catalog to be invalid with a
+        # since-renamed extension and make sure it catches the validation error.
 
         with TemporaryDirectory() as tmp_dir:
             dst_dir = os.path.join(tmp_dir, "catalog")

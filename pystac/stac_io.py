@@ -63,7 +63,8 @@ class StacIO(ABC):
 
         The destination to write to from can be specified
         as a string or a Link. If it's a string, it's the URL of the HREF from which to
-        read. When writing based on links links, PySTAC will pass in the entire link body.
+        read. When writing based on links links, PySTAC will pass in the entire
+        link body.
 
         Args:
             dest (str or pystac.Link): The destination to write to.

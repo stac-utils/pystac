@@ -27,7 +27,8 @@ class LabelType(str, Enum):
 class LabelClasses:
     """Defines the list of possible class names (e.g., tree, building, car, hippo)
 
-    Use LabelClasses.create to create a new instance of LabelClasses from property values.
+    Use LabelClasses.create to create a new instance of LabelClasses from
+    property values.
     """
 
     def __init__(self, properties: Dict[str, Any]):
@@ -41,9 +42,11 @@ class LabelClasses:
         """Sets the properties for this LabelClasses.
 
         Args:
-            classes (List[str] or List[int] or List[float]): The different possible class values.
-            name (str): The property key within the asset's each Feature corresponding to
-                class labels. If labels are raster-formatted, do not supply; required otherwise.
+            classes (List[str] or List[int] or List[float]): The different possible
+                class values.
+            name (str): The property key within the asset's each Feature corresponding
+                to class labels. If labels are raster-formatted, do not supply;
+                required otherwise.
         """
         self.classes = classes
         self.name = name
@@ -57,9 +60,11 @@ class LabelClasses:
         """Creates a new LabelClasses.
 
         Args:
-            classes (List[str] or List[int] or List[float]): The different possible class values.
-            name (str): The property key within the asset's each Feature corresponding to
-                class labels. If labels are raster-formatted, do not supply; required otherwise.
+            classes (List[str] or List[int] or List[float]): The different possible
+                class values.
+            name (str): The property key within the asset's each Feature corresponding
+                to class labels. If labels are raster-formatted, do not supply;
+                required otherwise.
 
         Returns:
             LabelClasses
@@ -260,7 +265,8 @@ class LabelStatistics:
         """Returns the dictionary representing the JSON of this LabelStatistics.
 
         Returns:
-            dict: The wrapped dict of the LabelStatistics that can be written out as JSON.
+            dict: The wrapped dict of the LabelStatistics that can be written out as
+            JSON.
         """
         return {"name": self.name, "value": self.value}
 
@@ -287,9 +293,9 @@ class LabelOverview:
         at least one is required.
 
         Args:
-            property_key (str): The property key within the asset corresponding to class labels
-                that these counts or statistics are referencing. If the label data is raster data,
-                this should be None.
+            property_key (str): The property key within the asset corresponding to
+                class labels that these counts or statistics are referencing. If the
+                label data is raster data, this should be None.
             counts: Optional list of LabelCounts containing counts
                 for categorical data.
             statistics: Optional list of statistics containing statistics for
@@ -312,7 +318,8 @@ class LabelOverview:
         at least one is required.
 
         Args:
-            property_key (str): The property key within the asset corresponding to class labels.
+            property_key (str): The property key within the asset corresponding to
+                class labels.
             counts: Optional list of LabelCounts containing counts for
                 categorical data.
             statistics: Optional list of Statistics containing statistics for
@@ -580,7 +587,8 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
     @property
     def label_tasks(self) -> Optional[List[str]]:
         """Get or set a list of tasks these labels apply to. Usually a subset of 'regression',
-            'classification', 'detection', or 'segmentation', but may be arbitrary values.
+            'classification', 'detection', or 'segmentation', but may be arbitrary
+            values.
 
         Returns:
             List[str] or None
@@ -601,8 +609,9 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
 
     @property
     def label_methods(self) -> Optional[List[str]]:
-        """Get or set a list of methods used for labeling. Usually a subset of 'automated' or 'manual',
-            but may be arbitrary values.
+        """Get or set a list of methods used for labeling.
+
+        Usually a subset of 'automated' or 'manual', but may be arbitrary values.
 
         Returns:
             List[str] or None
@@ -683,8 +692,8 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
         this LabelItem.
 
         Returns:
-            Generator[Items]: A possibly empty list of source imagery items. Determined by
-            links of this LabelItem that have ``rel=='source'``.
+            Generator[Items]: A possibly empty list of source imagery items. Determined
+            by links of this LabelItem that have ``rel=='source'``.
         """
         return map(lambda x: cast(ps.Item, x), self.obj.get_stac_objects("source"))
 
@@ -698,13 +707,15 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
         """Adds a label asset to this LabelItem.
 
         Args:
-            href (str): Link to the asset object. Relative and absolute links are both allowed.
+            href (str): Link to the asset object. Relative and absolute links are both
+                allowed.
             title (str): Optional displayed title for clients and users.
-            media_type (str): Optional description of the media type. Registered Media Types
-               are preferred. See :class:`~pystac.MediaType` for common media types.
-            properties (dict): Optional, additional properties for this asset. This is used by
-                extensions as a way to serialize and deserialize properties on asset
-                object JSON.
+            media_type (str): Optional description of the media type. Registered Media
+                Types are preferred. See :class:`~pystac.MediaType` for common
+                media types.
+            properties (dict): Optional, additional properties for this asset. This is
+                used by extensions as a way to serialize and deserialize properties on
+                asset object JSON.
         """
 
         self.obj.add_asset(
@@ -723,11 +734,12 @@ class LabelExtension(ExtensionManagementMixin[ps.Item]):
         """Adds a GeoJSON label asset to this LabelItem.
 
         Args:
-            href (str): Link to the asset object. Relative and absolute links are both allowed.
+            href (str): Link to the asset object. Relative and absolute links are both
+                allowed.
             title (str): Optional displayed title for clients and users.
-            properties (dict): Optional, additional properties for this asset. This is used by
-                extensions as a way to serialize and deserialize properties on asset
-                object JSON.
+            properties (dict): Optional, additional properties for this asset. This is
+                used by extensions as a way to serialize and deserialize properties on
+                asset object JSON.
         """
         self.add_labels(
             href, title=title, properties=properties, media_type=ps.MediaType.GEOJSON

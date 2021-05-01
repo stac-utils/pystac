@@ -40,8 +40,8 @@ class STACValidator(ABC):
 
         Args:
             stac_dict (dict): Dictionary that is the STAC json of the object.
-            stac_object_type (str): The stac object type of the object encoded in stac_dict.
-                One of :class:`~pystac.STACObjectType`.
+            stac_object_type (str): The stac object type of the object encoded
+                in stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             href (str): Optional HREF of the STAC object being validated.
         """
@@ -62,8 +62,8 @@ class STACValidator(ABC):
 
         Args:
             stac_dict (dict): Dictionary that is the STAC json of the object.
-            stac_object_type (str): The stac object type of the object encoded in stac_dict.
-                One of :class:`~pystac.STACObjectType`.
+            stac_object_type (str): The stac object type of the object encoded in
+                stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extension_id (str): The extension ID of the extension to validate against.
             href (str): Optional HREF of the STAC object being validated.
@@ -82,8 +82,8 @@ class STACValidator(ABC):
 
         Args:
             stac_dict (dict): Dictionary that is the STAC json of the object.
-            stac_object_type (str): The stac object type of the object encoded in stac_dict.
-                One of :class:`~pystac.STACObjectType`.
+            stac_object_type (str): The stac object type of the object encoded in
+                stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extensions (List[str]): Extension IDs for this stac object.
             href (str): Optional href of the STAC object being validated.
@@ -197,8 +197,8 @@ class JsonSchemaSTACValidator(STACValidator):
 
         Args:
             stac_dict (dict): Dictionary that is the STAC json of the object.
-            stac_object_type (str): The stac object type of the object encoded in stac_dict.
-                One of :class:`~pystac.STACObjectType`.
+            stac_object_type (str): The stac object type of the object encoded in
+                stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             href (str): Optional HREF of the STAC object being validated.
 
@@ -236,8 +236,8 @@ class JsonSchemaSTACValidator(STACValidator):
 
         Args:
             stac_dict (dict): Dictionary that is the STAC json of the object.
-            stac_object_type (str): The stac object type of the object encoded in stac_dict.
-                One of :class:`~pystac.STACObjectType`.
+            stac_object_type (str): The stac object type of the object encoded in
+                stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version (str): The version of STAC to validate the object against.
             extension_id (str): The extension ID to validate against.
             href (str): Optional HREF of the STAC object being validated.

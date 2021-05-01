@@ -35,8 +35,8 @@ class Link:
         media_type (str): Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         title (str): Optional title for this link.
-        properties (dict): Optional, additional properties for this link. This is used by
-            extensions as a way to serialize and deserialize properties on link
+        properties (dict): Optional, additional properties for this link. This is used
+            by extensions as a way to serialize and deserialize properties on link
             object JSON.
 
     Attributes:
@@ -44,15 +44,17 @@ class Link:
         target (str or STACObject): The target of the link. If the link is
             unresolved, or the link is to something that is not a STACObject,
             the target is an HREF. If resolved, the target is a STACObject.
-        media_type (str or None): Optional description of the media type. Registered Media Types
-            are preferred. See :class:`~pystac.MediaType` for common media types.
+        media_type (str or None): Optional description of the media type.
+            Registered Media Types are preferred. See
+            :class:`~pystac.MediaType` for common media types.
         title (str or None): Optional title for this link.
         properties (dict or None): Optional, additional properties for this link.
             This is used by extensions as a way to serialize and deserialize properties
             on link object JSON.
         owner (STACObject or None): The owner of this link. The link will use
-            its owner's root catalog :class:`~pystac.resolved_object_cache.ResolvedObjectCache`
-            to resolve objects, and will create absolute HREFs from relative HREFs against
+            its owner's root catalog
+            :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve
+            objects, and will create absolute HREFs from relative HREFs against
             the owner's self HREF.
     """
 

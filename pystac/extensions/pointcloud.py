@@ -24,7 +24,8 @@ STATISTICS_PROP = "pc:statistics"
 class PointcloudSchema:
     """Defines a schema for dimension of a pointcloud (e.g., name, size, type)
 
-    Use PointCloudSchema.create to create a new instance of PointCloudSchema from properties.
+    Use PointCloudSchema.create to create a new instance of PointCloudSchema from
+    properties.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -36,7 +37,8 @@ class PointcloudSchema:
         Args:
            name (str): The name of dimension.
            size (int): The size of the dimension in bytes. Whole bytes are supported.
-           type (str): Dimension type. Valid values are `floating`, `unsigned`, and `signed`
+           type (str): Dimension type. Valid values are `floating`, `unsigned`, and
+           `signed`
         """
         self.properties["name"] = name
         self.properties["size"] = size
@@ -49,7 +51,8 @@ class PointcloudSchema:
         Args:
            name (str): The name of dimension.
            size (int): The size of the dimension in bytes. Whole bytes are supported.
-           type (str): Dimension type. Valid values are `floating`, `unsigned`, and `signed`
+           type (str): Dimension type. Valid values are `floating`, `unsigned`, and
+           `signed`
 
         Returns:
               PointCloudSchema
@@ -124,7 +127,8 @@ class PointcloudSchema:
         """Returns the dictionary representing the JSON of this PointCloudSchema.
 
         Returns:
-            dict: The wrapped dict of the PointCloudSchema that can be written out as JSON.
+            dict: The wrapped dict of the PointCloudSchema that can be written out as
+            JSON.
         """
         return self.properties
 
@@ -132,7 +136,8 @@ class PointcloudSchema:
 class PointcloudStatistic:
     """Defines a single statistic for Pointcloud channel or dimension
 
-    Use PointcloudStatistic.create to create a new instance of LabelClasses from property values.
+    Use PointcloudStatistic.create to create a new instance of LabelClasses from
+    property values.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -350,7 +355,8 @@ class PointcloudStatistic:
         """Returns the dictionary representing the JSON of this PointcloudStatistic.
 
         Returns:
-            dict: The wrapped dict of the PointcloudStatistic that can be written out as JSON.
+            dict: The wrapped dict of the PointcloudStatistic that can be written out
+            as JSON.
         """
         return self.properties
 
@@ -387,11 +393,12 @@ class PointcloudExtension(
                 values might include lidar, eopc, radar, sonar, or otherThe type of file
                 or data format of the cloud.
             encoding (str): REQUIRED. Content encoding or format of the data.
-            schemas (List[PointcloudSchema]): REQUIRED. A sequential array of items that define the
+            schemas (List[PointcloudSchema]): REQUIRED. A sequential array of items
+            that define the
                 dimensions and their types.
             density (float or None): Number of points per square unit area.
-            statistics (List[int] or None): A sequential array of items mapping to pc:schemas
-                defines per-channel statistics.
+            statistics (List[int] or None): A sequential array of items mapping to
+                pc:schemas defines per-channel statistics.
             epsg (str): An EPSG code for the projected coordinates of the pointcloud.
         """
         self.count = count
@@ -492,7 +499,8 @@ class PointcloudExtension(
     def statistics(self) -> Optional[List[PointcloudStatistic]]:
         """Get or sets the statistics for each property of the dataset.
 
-        A sequential array of items mapping to pc:schemas defines per-channel statistics.
+        A sequential array of items mapping to pc:schemas defines per-channel
+        statistics.
 
         Example::
 

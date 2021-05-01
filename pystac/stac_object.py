@@ -134,8 +134,8 @@ class STACObject(ABC):
         :class:`~pystac.Link`.
 
         Raises:
-            ValueError: If the self_href is not set, this method will throw a ValueError.
-                Use get_self_href if there may not be an href set.
+            ValueError: If the self_href is not set, this method will throw
+                a ValueError. Use get_self_href if there may not be an href set.
         """
         result = self.get_self_href()
         if result is None:
@@ -293,17 +293,18 @@ class STACObject(ABC):
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
-            include_self_link (bool): If this is true, include the 'self' link with this object.
-                Otherwise, leave out the self link.
-            dest_href (str): Optional HREF to save the file to. If None, the object will be saved
-                to the object's self href.
+            include_self_link (bool): If this is true, include the 'self' link with
+                this object. Otherwise, leave out the self link.
+            dest_href (str): Optional HREF to save the file to. If None, the object
+                will be saved to the object's self href.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 instance set on the object's root if available, otherwise will use the
                 default instance.
 
 
         Raises:
-            :class:`~pystac.STACError`: If no self href is set, this error will be raised.
+            :class:`~pystac.STACError`: If no self href is set, this error will be
+            raised.
 
         Note:
             When to include a self link is described in the `Use of Links section of the
@@ -381,23 +382,6 @@ class STACObject(ABC):
                 link.target = target
 
         return clone
-
-    # @property
-    # def ext(self) -> "ExtensionIndex":
-    #     """Access extensions for this STACObject.
-
-    #     Example:
-    #         This example shows accessing a Item's EO extension functionality
-    #         that gets the band information for an asset::
-
-    #             item = pystac.read_file("eo_item.json")
-    #             bands = item.ext.eo.get_asset_bands(item.assets["image"])
-
-    #     Returns:
-    #         ExtensionIndex: The object that can be used to access extension information
-    #         and functionality.
-    #     """
-    #     return ExtensionIndex(self)
 
     def resolve_links(self) -> None:
         """Ensure all STACObjects linked to by this STACObject are

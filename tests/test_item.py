@@ -30,7 +30,10 @@ class ItemTest(unittest.TestCase):
         item = Item.from_dict(item_dict)
         self.assertEqual(
             item.get_self_href(),
-            "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json",
+            (
+                "http://cool-sat.com/catalog/CS3-20160503_132130_04/"
+                "CS3-20160503_132130_04.json"
+            ),
         )
 
         # test asset creation additional field(s)
