@@ -6,10 +6,9 @@ codespell==1.17.1
 ipython==7.16.1
 jsonschema==3.2.0
 pylint==1.9.1
-Sphinx==1.8.0
+Sphinx==3.5.4
 sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
-sphinxcontrib-napoleon==0.7
 nbsphinx==0.7.1
 coverage==5.2.*
 
