@@ -221,7 +221,7 @@ class Catalog(STACObject):
         self.add_link(Link.child(child, title=title))
 
     def add_children(self, children: Iterable["Catalog"]) -> None:
-        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`s.
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`\s.
         This method will set each child's parent to this object, and their root to
         this Catalog's root.
 
