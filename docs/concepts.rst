@@ -159,7 +159,7 @@ are relative to the linking object's file location. For example, if a catalog at
 then that link should resolve to the absolute path ``/some/location/item-id/item-id.json``.
 
 Links are set as absolute or relative HREFs at save time, as determine by the root catalog's catalog_type
-:attribute:`~pystac.Catalog.catalog_type`. This means that, even if the stored HREF of the link is absolute,
+:attr:`~pystac.Catalog.catalog_type`. This means that, even if the stored HREF of the link is absolute,
 if the root ``catalog_type=CatalogType.RELATIVE_PUBLISHED`` or ``catalog_type=CatalogType.SELF_CONTAINED``
 and subsequent serializing of the any links in the catalog will produce a relative link,
 based on the self link of the parent object.
@@ -396,7 +396,7 @@ Item Asset properties
 
 Properties that apply to Items can be found in two places: the Item's properties or in any of an Item's Assets. If the property is on an Asset, it applies only that specific asset. For example, gsd defined for an Item represents the best Ground Sample Distance (resolution) for the data within the Item. However, some assets may be lower resolution and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.
 
-See the STAC documentation on `Additional Fields for Assets <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/item-spec/item-spec.md#additional-fields-for-assets>`_ and the relevant `Best Practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#common-use-cases-of-additional-fields-for-assets>`_ for more information.
+See the STAC documentation on `Additional Fields for Assets <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/item-spec/item-spec.md#additional-fields-for-assets>`_ and the relevant `Best Practices <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md#common-use-cases-of-additional-fields-for-assets>`__ for more information.
 
 The implementation of this feature in PySTAC uses the method described here and is consistent across Item and ItemExtensions. The bare property names represent values for the Item only, but for each property where it is possible to set on both the Item or the Asset there is a ``get_`` and ``set_`` methods that optionally take an Asset. For the ``get_`` methods, if the property is found on the Asset, the Asset's value is used; otherwise the Item's value will be used. For the ``set_`` method, if an Asset is passed in the value will be applied to the Asset and not the Item.
 

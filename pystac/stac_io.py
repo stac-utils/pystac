@@ -286,7 +286,7 @@ class STAC_IO:
 
         Note:
             This method uses the :func:`STAC_IO.read_text_method
-            <pystac.STAC_IO.read_text_method>`. If you want to modify the behavior of
+            <STAC_IO.read_text_method>`. If you want to modify the behavior of
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
@@ -302,7 +302,7 @@ class STAC_IO:
 
         Note:
             This method uses the :func:`STAC_IO.write_text_method
-            <pystac.STAC_IO.write_text_method>`. If you want to modify the behavior of
+            <STAC_IO.write_text_method>`. If you want to modify the behavior of
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
@@ -321,7 +321,7 @@ class STAC_IO:
 
         Note:
             This method uses the :func:`STAC_IO.read_text_method
-            <pystac.STAC_IO.read_text_method>`. If you want to modify the behavior of
+            <STAC_IO.read_text_method>`. If you want to modify the behavior of
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
@@ -345,7 +345,7 @@ class STAC_IO:
 
         Note:
             This method uses the :func:`STAC_IO.read_text_method
-            <pystac.STAC_IO.read_text_method>`. If you want to modify the behavior of
+            <STAC_IO.read_text_method>`. If you want to modify the behavior of
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
@@ -362,7 +362,7 @@ class STAC_IO:
 
         Note:
             This method uses the :func:`STAC_IO.write_text_method
-            <pystac.STAC_IO.write_text_method>`. If you want to modify the behavior of
+            <STAC_IO.write_text_method>`. If you want to modify the behavior of
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
