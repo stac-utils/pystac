@@ -2,7 +2,7 @@ from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.view import ViewExtension
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.cache import CollectionCache
 from pystac.serialization import (
     identify_stac_object,
@@ -25,8 +25,8 @@ class MigrateTest(unittest.TestCase):
             with self.subTest(example.path):
                 path = example.path
 
-                d = ps.StacIO.default().read_json(path)
-                if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
+                d = pystac.StacIO.default().read_json(path)
+                if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
                     merge_common_properties(
                         d, json_href=path, collection_cache=collection_cache
                     )
@@ -40,7 +40,7 @@ class MigrateTest(unittest.TestCase):
                 self.assertEqual(migrated_info.object_type, info.object_type)
                 self.assertEqual(
                     migrated_info.version_range.latest_valid_version(),
-                    ps.get_stac_version(),
+                    pystac.get_stac_version(),
                 )
 
                 # Ensure all stac_extensions are schema URIs
@@ -50,13 +50,13 @@ class MigrateTest(unittest.TestCase):
                     )
 
                 # Test that PySTAC can read it without errors.
-                if info.object_type != ps.STACObjectType.ITEMCOLLECTION:
+                if info.object_type != pystac.STACObjectType.ITEMCOLLECTION:
                     self.assertIsInstance(
-                        ps.read_dict(migrated_d, href=path), ps.STACObject
+                        pystac.read_dict(migrated_d, href=path), pystac.STACObject
                     )
 
     def test_migrates_removed_extension(self):
-        item = ps.Item.from_file(
+        item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.7.0/extensions/sar/" "examples/sentinel1.json"
             )
@@ -68,7 +68,7 @@ class MigrateTest(unittest.TestCase):
         )
 
     def test_migrates_added_extension(self):
-        item = ps.Item.from_file(
+        item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/" "examples/planet-sample.json"
             )
@@ -80,7 +80,7 @@ class MigrateTest(unittest.TestCase):
         self.assertEqual(view_ext.off_nadir, 1)
 
     def test_migrates_renamed_extension(self):
-        collection = ps.Collection.from_file(
+        collection = pystac.Collection.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/extensions/asset/"
                 "examples/example-landsat8.json"

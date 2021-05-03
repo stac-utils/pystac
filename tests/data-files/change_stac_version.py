@@ -7,9 +7,9 @@ import re
 import argparse
 import json
 
-import pystac as ps
+import pystac
 
-TARGET_VERSION = ps.get_stac_version()
+TARGET_VERSION = pystac.get_stac_version()
 
 
 def migrate(path: str) -> None:
@@ -28,7 +28,7 @@ def migrate(path: str) -> None:
                     path, cur_ver, TARGET_VERSION
                 )
             )
-            obj = ps.read_dict(stac_json, href=path)
+            obj = pystac.read_dict(stac_json, href=path)
             migrated = obj.to_dict(include_self_link=False)
             with open(path, "w") as f:
                 json.dump(migrated, f, indent=2)

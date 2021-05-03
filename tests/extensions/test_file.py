@@ -1,7 +1,7 @@
 import json
 import unittest
 
-import pystac as ps
+import pystac
 from tests.utils import TestCases, test_to_from_dict
 from pystac.extensions.file import FileExtension, FileDataType
 
@@ -15,14 +15,14 @@ class FileTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.FILE_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, ps.Item, item_dict)
+        test_to_from_dict(self, pystac.Item, item_dict)
 
     def test_validate_file(self):
-        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         item.validate()
 
     def test_asset_size(self):
-        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -35,7 +35,7 @@ class FileTest(unittest.TestCase):
         item.validate()
 
     def test_asset_checksum(self):
-        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -51,7 +51,7 @@ class FileTest(unittest.TestCase):
         item.validate()
 
     def test_asset_data_type(self):
-        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -64,7 +64,7 @@ class FileTest(unittest.TestCase):
         item.validate()
 
     def test_asset_nodata(self):
-        item = ps.Item.from_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -81,7 +81,7 @@ class FileTest(unittest.TestCase):
             "data-files/examples/1.0.0-beta.2/"
             "extensions/checksum/examples/sentinel1.json"
         )
-        item = ps.Item.from_file(example_path)
+        item = pystac.Item.from_file(example_path)
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(

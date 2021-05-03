@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 import dateutil.parser
 
-import pystac as ps
+import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
@@ -858,7 +858,7 @@ class Item(STACObject):
 
         d: Dict[str, Any] = {
             "type": "Feature",
-            "stac_version": ps.get_stac_version(),
+            "stac_version": pystac.get_stac_version(),
             "id": self.id,
             "properties": self.properties,
             "geometry": self.geometry,
@@ -899,7 +899,7 @@ class Item(STACObject):
         return clone
 
     def _object_links(self) -> List[str]:
-        return ["collection"] + (ps.EXTENSION_HOOKS.get_extended_object_links(self))
+        return ["collection"] + (pystac.EXTENSION_HOOKS.get_extended_object_links(self))
 
     @classmethod
     def from_dict(
@@ -910,9 +910,9 @@ class Item(STACObject):
         migrate: bool = False,
     ) -> "Item":
         if migrate:
-            result = ps.read_dict(d, href=href, root=root)
+            result = pystac.read_dict(d, href=href, root=root)
             if not isinstance(result, Item):
-                raise ps.STACError(f"{result} is not a Catalog")
+                raise pystac.STACError(f"{result} is not a Catalog")
             return result
 
         d = deepcopy(d)
@@ -976,5 +976,5 @@ class Item(STACObject):
     def from_file(cls, href: str) -> "Item":
         result = super().from_file(href)
         if not isinstance(result, Item):
-            raise ps.STACTypeError(f"{result} is not a {Item}.")
+            raise pystac.STACTypeError(f"{result} is not a {Item}.")
         return result

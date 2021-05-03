@@ -2,13 +2,13 @@ from typing import Any, Dict
 from pystac.utils import get_opt
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
 from tests.utils import TestCases
 
 
-def create_catalog(suffix: Any, include_href: bool = True) -> ps.Catalog:
-    return ps.Catalog(
+def create_catalog(suffix: Any, include_href: bool = True) -> pystac.Catalog:
+    return pystac.Catalog(
         id="test {}".format(suffix),
         description="test desc {}".format(suffix),
         href=(

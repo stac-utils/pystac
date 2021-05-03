@@ -1,7 +1,7 @@
 import unittest
 from urllib.error import HTTPError
 
-import pystac as ps
+import pystac
 from pystac.cache import CollectionCache
 from pystac.serialization import (
     identify_stac_object,
@@ -22,8 +22,8 @@ class IdentifyTest(unittest.TestCase):
         for example in self.examples:
             with self.subTest(example.path):
                 path = example.path
-                d = ps.StacIO.default().read_json(path)
-                if identify_stac_object_type(d) == ps.STACObjectType.ITEM:
+                d = pystac.StacIO.default().read_json(path)
+                if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
                     try:
                         merge_common_properties(
                             d, json_href=path, collection_cache=collection_cache

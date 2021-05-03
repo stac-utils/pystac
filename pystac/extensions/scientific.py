@@ -11,7 +11,7 @@ import copy
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 from urllib import parse
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -20,7 +20,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar("T", ps.Collection, ps.Item)
+T = TypeVar("T", pystac.Collection, pystac.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
 
@@ -63,11 +63,11 @@ class Publication:
     def from_dict(d: Dict[str, str]) -> "Publication":
         return Publication(d["doi"], d["citation"])
 
-    def get_link(self) -> ps.Link:
-        return ps.Link(CITE_AS, doi_to_url(self.doi))
+    def get_link(self) -> pystac.Link:
+        return pystac.Link(CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[ps.Link], doi: str) -> None:
+def remove_link(links: List[pystac.Link], doi: str) -> None:
     url = doi_to_url(doi)
     for i, a_link in enumerate(links):
         if a_link.rel != CITE_AS:
@@ -80,11 +80,11 @@ def remove_link(links: List[ps.Link], doi: str) -> None:
 class ScientificExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
     """ScientificItemExt extends Item to add citations and DOIs to a STAC Item."""
 
-    def __init__(self, obj: ps.STACObject) -> None:
+    def __init__(self, obj: pystac.STACObject) -> None:
         self.obj = obj
 
     def apply(
@@ -124,7 +124,7 @@ class ScientificExtension(
         if v is not None:
             self.properties[DOI] = v
             url = doi_to_url(v)
-            self.obj.add_link(ps.Link(CITE_AS, url))
+            self.obj.add_link(pystac.Link(CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
@@ -194,9 +194,9 @@ class ScientificExtension(
 
     @staticmethod
     def ext(obj: T) -> "ScientificExtension[T]":
-        if isinstance(obj, ps.Collection):
+        if isinstance(obj, pystac.Collection):
             return cast(ScientificExtension[T], CollectionScientificExtension(obj))
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
             raise ExtensionException(
@@ -204,8 +204,8 @@ class ScientificExtension(
             )
 
 
-class CollectionScientificExtension(ScientificExtension[ps.Collection]):
-    def __init__(self, collection: ps.Collection):
+class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
+    def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
         self.links = collection.links
@@ -215,8 +215,8 @@ class CollectionScientificExtension(ScientificExtension[ps.Collection]):
         return "<CollectionScientificExtension Item id={}>".format(self.collection.id)
 
 
-class ItemScientificExtension(ScientificExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemScientificExtension(ScientificExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
         self.links = item.links
@@ -229,8 +229,8 @@ class ItemScientificExtension(ScientificExtension[ps.Item]):
 class ScientificExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["scientific"])
-    stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    stac_object_types: Set[pystac.STACObjectType] = set(
+        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
     )
 
 

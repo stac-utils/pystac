@@ -9,7 +9,7 @@ from tempfile import TemporaryDirectory
 
 import jsonschema
 
-import pystac as ps
+import pystac
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
@@ -19,12 +19,12 @@ from tests.utils import TestCases
 
 class ValidateTest(unittest.TestCase):
     def test_validate_current_version(self):
-        catalog = ps.read_file(
+        catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
         )
         catalog.validate()
 
-        collection = ps.read_file(
+        collection = pystac.read_file(
             TestCases.get_path(
                 "data-files/catalogs/test-case-1/"
                 "/country-1/area-1-1/"
@@ -33,7 +33,7 @@ class ValidateTest(unittest.TestCase):
         )
         collection.validate()
 
-        item = ps.read_file(TestCases.get_path("data-files/item/sample-item.json"))
+        item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
         item.validate()
 
     def test_validate_examples(self):
@@ -55,7 +55,7 @@ class ValidateTest(unittest.TestCase):
 
                         # Check if common properties need to be merged
                         if stac_version < "1.0":
-                            if example.object_type == ps.STACObjectType.ITEM:
+                            if example.object_type == pystac.STACObjectType.ITEM:
                                 collection_cache = CollectionCache()
                                 merge_common_properties(
                                     stac_json, collection_cache, path
@@ -92,7 +92,7 @@ class ValidateTest(unittest.TestCase):
         for test_case in TestCases.all_test_catalogs():
             catalog_href = test_case.get_self_href()
             if catalog_href is not None:
-                stac_dict = ps.StacIO.default().read_json(catalog_href)
+                stac_dict = pystac.StacIO.default().read_json(catalog_href)
 
                 pystac.validation.validate_all(stac_dict, catalog_href)
 
@@ -109,7 +109,7 @@ class ValidateTest(unittest.TestCase):
 
             # Make sure it's valid before modification
             pystac.validation.validate_all(
-                ps.StacIO.default().read_json(new_cat_href), new_cat_href
+                pystac.StacIO.default().read_json(new_cat_href), new_cat_href
             )
 
             # Modify a contained collection to add an extension for which the
@@ -120,7 +120,7 @@ class ValidateTest(unittest.TestCase):
             with open(os.path.join(dst_dir, "acc/collection.json"), "w") as f:
                 json.dump(col, f)
 
-            stac_dict = ps.StacIO.default().read_json(new_cat_href)
+            stac_dict = pystac.StacIO.default().read_json(new_cat_href)
 
             with self.assertRaises(STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
@@ -145,7 +145,7 @@ class ValidateTest(unittest.TestCase):
             ),
         }
 
-        item = ps.Item(
+        item = pystac.Item(
             id="test-item",
             geometry=geom,
             bbox=[-115.308, 36.126, -115.305, 36.129],

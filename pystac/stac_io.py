@@ -17,7 +17,7 @@ from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
-import pystac as ps
+import pystac
 import pystac.serialization
 
 # Use orjson if available
@@ -93,7 +93,7 @@ class StacIO(ABC):
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
         result = pystac.serialization.stac_object_from_dict(d, href, root)
-        if isinstance(result, ps.Catalog):
+        if isinstance(result, pystac.Catalog):
             # Set the stac_io instance for usage by io operations
             # where this catalog is the root.
             result._stac_io = self

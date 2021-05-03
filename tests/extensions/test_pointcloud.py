@@ -4,7 +4,7 @@ import unittest
 
 # from copy import deepcopy
 
-import pystac as ps
+import pystac
 from pystac.extensions.pointcloud import (
     PointcloudExtension,
     PointcloudSchema,
@@ -24,7 +24,7 @@ class PointcloudTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, ps.Item, d)
+        test_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self):
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -41,11 +41,11 @@ class PointcloudTest(unittest.TestCase):
         self.assertTrue(PointcloudExtension.has_extension(item))
 
     def test_validate_pointcloud(self):
-        item = ps.read_file(self.example_uri)
+        item = pystac.read_file(self.example_uri)
         item.validate()
 
     def test_count(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:count", pc_item.properties)
@@ -62,12 +62,12 @@ class PointcloudTest(unittest.TestCase):
         # Cannot test validation errors until the pointcloud schema.json syntax is fixed
         # Ensure setting bad count fails validation
 
-        with self.assertRaises(ps.STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
             pc_item.validate()
 
     def test_type(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:type", pc_item.properties)
@@ -82,7 +82,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate
 
     def test_encoding(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:encoding", pc_item.properties)
@@ -97,7 +97,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate
 
     def test_schemas(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:schemas", pc_item.properties)
@@ -115,7 +115,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate
 
     def test_statistics(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
@@ -148,7 +148,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate
 
     def test_density(self):
-        pc_item = ps.Item.from_file(self.example_uri)
+        pc_item = pystac.Item.from_file(self.example_uri)
         # Get
         self.assertIn("pc:density", pc_item.properties)
         pc_density = PointcloudExtension.ext(pc_item).density
@@ -202,5 +202,5 @@ class PointcloudTest(unittest.TestCase):
             self.assertEqual(getattr(stat, k), val)
 
     def test_statistics_accessor_when_no_stats(self):
-        pc_item = ps.Item.from_file(self.example_uri_no_statistics)
+        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)

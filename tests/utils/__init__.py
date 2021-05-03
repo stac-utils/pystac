@@ -13,13 +13,13 @@ from copy import deepcopy
 from datetime import datetime
 from dateutil.parser import parse
 
-import pystac as ps
+import pystac
 from tests.utils.stac_io_mock import MockStacIO  #  type:ignore
 
 
 def test_to_from_dict(
     test_class: unittest.TestCase,
-    stac_object_class: Type[ps.STACObject],
+    stac_object_class: Type[pystac.STACObject],
     d: Dict[str, Any],
 ) -> None:
     def _parse_times(a_dict: Dict[str, Any]) -> None:

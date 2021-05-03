@@ -3,7 +3,7 @@ import os
 import unittest
 from tempfile import TemporaryDirectory
 
-import pystac as ps
+import pystac
 from pystac import Catalog, Item, CatalogType
 from pystac.extensions.label import (
     LabelExtension,
@@ -48,7 +48,7 @@ class LabelTest(unittest.TestCase):
         label_example_2.validate()
 
     def test_from_file_pre_081(self):
-        d = ps.StacIO.default().read_json(self.label_example_1_uri)
+        d = pystac.StacIO.default().read_json(self.label_example_1_uri)
 
         d["stac_version"] = "0.8.0-rc1"
         d["properties"]["label:property"] = d["properties"]["label:properties"]
@@ -59,7 +59,7 @@ class LabelTest(unittest.TestCase):
         d["properties"].pop("label:methods")
         d["properties"]["label:task"] = d["properties"]["label:tasks"]
         d["properties"].pop("label:tasks")
-        label_example_1 = ps.Item.from_dict(d, migrate=True)
+        label_example_1 = pystac.Item.from_dict(d, migrate=True)
 
         self.assertEqual(len(LabelExtension.ext(label_example_1).label_tasks or []), 2)
 
@@ -78,7 +78,9 @@ class LabelTest(unittest.TestCase):
     def test_validate_label(self):
         with open(self.label_example_1_uri) as f:
             label_example_1_dict = json.load(f)
-        pystac.validation.validate_dict(label_example_1_dict, ps.STACObjectType.ITEM)
+        pystac.validation.validate_dict(
+            label_example_1_dict, pystac.STACObjectType.ITEM
+        )
 
         with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
@@ -100,7 +102,7 @@ class LabelTest(unittest.TestCase):
             self.assertEqual(item.assets[asset_key].owner, item)
 
     def test_label_description(self):
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:description", label_item.properties)
@@ -115,7 +117,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_type(self):
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:type", label_item.properties)
@@ -128,8 +130,8 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_properties(self):
-        label_item = ps.Item.from_file(self.label_example_1_uri)
-        label_item2 = ps.Item.from_file(self.label_example_2_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item2 = pystac.Item.from_file(self.label_example_2_uri)
 
         # Get
         self.assertIn("label:properties", label_item.properties)
@@ -145,7 +147,7 @@ class LabelTest(unittest.TestCase):
 
     def test_label_classes(self):
         # Get
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_classes = LabelExtension.ext(label_item).label_classes
 
         self.assertEqual(len(get_opt(label_classes)), 2)
@@ -170,7 +172,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_tasks(self):
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:tasks", label_item.properties)
@@ -183,7 +185,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_methods(self):
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:methods", label_item.properties)
@@ -199,11 +201,11 @@ class LabelTest(unittest.TestCase):
 
     def test_label_overviews(self):
         # Get
-        label_item = ps.Item.from_file(self.label_example_1_uri)
+        label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_ext = LabelExtension.ext(label_item)
         label_overviews = get_opt(label_ext.label_overviews)
 
-        label_item2 = ps.Item.from_file(self.label_example_2_uri)
+        label_item2 = pystac.Item.from_file(self.label_example_2_uri)
         label_ext2 = LabelExtension.ext(label_item2)
         label_overviews2 = get_opt(label_ext2.label_overviews)
 

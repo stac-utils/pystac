@@ -1,6 +1,6 @@
 from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
-import pystac as ps
+import pystac
 from pystac.cache import CollectionCache
 from pystac.serialization.identify import STACVersionID
 from pystac.utils import make_absolute_href
@@ -28,7 +28,7 @@ def merge_common_properties(
     """
     properties_merged = False
 
-    collection: Optional[Union[ps.Collection, Dict[str, Any]]] = None
+    collection: Optional[Union[pystac.Collection, Dict[str, Any]]] = None
     collection_id: Optional[str] = None
     collection_href: Optional[str] = None
 
@@ -79,12 +79,12 @@ def merge_common_properties(
                     collection = collection_cache.get_by_href(collection_href)
 
                 if collection is None:
-                    collection = ps.StacIO.default().read_json(collection_href)
+                    collection = pystac.StacIO.default().read_json(collection_href)
 
     if collection is not None:
         collection_id = None
         collection_props: Optional[Dict[str, Any]] = None
-        if isinstance(collection, ps.Collection):
+        if isinstance(collection, pystac.Collection):
             collection_id = collection.id
             collection_props = collection.extra_fields.get("properties")
         elif isinstance(collection, dict):

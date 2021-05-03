@@ -2,7 +2,7 @@ import json
 import unittest
 from datetime import datetime
 
-import pystac as ps
+import pystac
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
 from tests.utils import TestCases, test_to_from_dict
@@ -20,7 +20,7 @@ class TimestampsTest(unittest.TestCase):
         self.sample_datetime = str_to_datetime(self.sample_datetime_str)
 
     def test_to_from_dict(self):
-        test_to_from_dict(self, ps.Item, self.item_dict)
+        test_to_from_dict(self, pystac.Item, self.item_dict)
 
     def test_apply(self):
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -59,11 +59,11 @@ class TimestampsTest(unittest.TestCase):
             self.assertNotIn(p, item.properties)
 
     def test_validate_timestamps(self):
-        item = ps.read_file(self.example_uri)
+        item = pystac.read_file(self.example_uri)
         item.validate()
 
     def test_expires(self):
-        timestamps_item = ps.Item.from_file(self.example_uri)
+        timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("expires", timestamps_item.properties)
@@ -105,7 +105,7 @@ class TimestampsTest(unittest.TestCase):
         timestamps_item.validate()
 
     def test_published(self):
-        timestamps_item = ps.Item.from_file(self.example_uri)
+        timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("published", timestamps_item.properties)
@@ -147,7 +147,7 @@ class TimestampsTest(unittest.TestCase):
         timestamps_item.validate()
 
     def test_unpublished(self):
-        timestamps_item = ps.Item.from_file(self.example_uri)
+        timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertNotIn("unpublished", timestamps_item.properties)

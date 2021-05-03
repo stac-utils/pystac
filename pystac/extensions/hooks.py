@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING
 
-import pystac as ps
+import pystac
 from pystac.extensions import ExtensionError
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
@@ -29,7 +29,7 @@ class ExtensionHooks(ABC):
 
     @property
     @abstractmethod
-    def stac_object_types(self) -> Set[ps.STACObjectType]:
+    def stac_object_types(self) -> Set[pystac.STACObjectType]:
         """A set of STACObjectType for which migration logic will be applied."""
         pass
 

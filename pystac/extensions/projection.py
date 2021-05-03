@@ -6,9 +6,9 @@ from pystac.extensions.base import (
 )
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
 
@@ -23,7 +23,7 @@ TRANSFORM_PROP = "proj:transform"
 
 
 class ProjectionExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """ProjectionItemExt is the extension of an Item in the Projection Extension.
     The Projection extension adds projection information to STAC Items.
@@ -39,7 +39,7 @@ class ProjectionExtension(
         ID to the item's stac_extensions.
     """
 
-    def __init__(self, item: ps.Item) -> None:
+    def __init__(self, item: pystac.Item) -> None:
         self.item = item
 
     def apply(
@@ -254,9 +254,9 @@ class ProjectionExtension(
 
     @staticmethod
     def ext(obj: T) -> "ProjectionExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise ExtensionException(
@@ -264,8 +264,8 @@ class ProjectionExtension(
             )
 
 
-class ItemProjectionExtension(ProjectionExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -273,11 +273,11 @@ class ItemProjectionExtension(ProjectionExtension[ps.Item]):
         return "<ItemProjectionExtension Item id={}>".format(self.item.id)
 
 
-class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -287,7 +287,7 @@ class AssetProjectionExtension(ProjectionExtension[ps.Asset]):
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["proj", "projection"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
 PROJECTION_EXTENSION_HOOKS = ProjectionExtensionHooks()

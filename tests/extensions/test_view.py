@@ -1,7 +1,7 @@
 import json
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.extensions.view import ViewExtension
 from tests.utils import TestCases, test_to_from_dict
 
@@ -14,7 +14,7 @@ class ViewTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, ps.Item, d)
+        test_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self):
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -36,12 +36,12 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
 
     def test_validate_view(self):
-        item = ps.Item.from_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri)
         self.assertTrue(ViewExtension.has_extension(item))
         item.validate()
 
     def test_off_nadir(self):
-        view_item = ps.Item.from_file(self.example_uri)
+        view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:off_nadir", view_item.properties)
@@ -74,7 +74,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_incidence_angle(self):
-        view_item = ps.Item.from_file(self.example_uri)
+        view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:incidence_angle", view_item.properties)
@@ -111,7 +111,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_azimuth(self):
-        view_item = ps.Item.from_file(self.example_uri)
+        view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:azimuth", view_item.properties)
@@ -144,7 +144,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_azimuth(self):
-        view_item = ps.Item.from_file(self.example_uri)
+        view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_azimuth", view_item.properties)
@@ -179,7 +179,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_elevation(self):
-        view_item = ps.Item.from_file(self.example_uri)
+        view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_elevation", view_item.properties)

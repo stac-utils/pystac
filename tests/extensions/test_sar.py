@@ -4,15 +4,17 @@ import datetime
 from typing import List
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.extensions import sar
 from pystac.extensions.sar import SarExtension
 
 
-def make_item() -> ps.Item:
+def make_item() -> pystac.Item:
     asset_id = "my/items/2011"
     start = datetime.datetime(2020, 11, 7)
-    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = pystac.Item(
+        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
+    )
 
     SarExtension.add_to(item)
     return item
@@ -131,7 +133,7 @@ class SarItemExtTest(unittest.TestCase):
         # Skip type hint as we are passing in an incorrect polarization.
         polarizations = sar.Polarization.HV
         product_type: str = "Some product"
-        with self.assertRaises(ps.STACError):
+        with self.assertRaises(pystac.STACError):
             SarExtension.ext(self.item).apply(
                 mode,
                 frequency_band,

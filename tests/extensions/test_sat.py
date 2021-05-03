@@ -5,16 +5,18 @@ from typing import Any, Dict
 from pystac.validation import STACValidationError
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.extensions import sat
 from pystac.extensions.sat import SatExtension
 
 
-def make_item() -> ps.Item:
+def make_item() -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = "an/asset"
     start = datetime.datetime(2018, 1, 2)
-    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = pystac.Item(
+        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
+    )
 
     SatExtension.add_to(item)
     return item
@@ -91,7 +93,7 @@ class SatTest(unittest.TestCase):
             "assets": {},
             "stac_extensions": ["sat"],
         }
-        item = ps.Item.from_dict(d)
+        item = pystac.Item.from_dict(d)
         self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
         self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
 
@@ -103,7 +105,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(orbit_state.value, d["properties"][sat.ORBIT_STATE])
         self.assertEqual(relative_orbit, d["properties"][sat.RELATIVE_ORBIT])
 
-        item = ps.Item.from_dict(d)
+        item = pystac.Item.from_dict(d)
         self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
         self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
 

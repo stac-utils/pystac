@@ -6,7 +6,7 @@ from pystac.serialization.identify import (
 )
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -16,7 +16,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
 
@@ -48,7 +48,9 @@ class FileDataType(str, enum.Enum):
     OTHER = "other"
 
 
-class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class FileExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """FileItemExt is the extension of the Item in the file extension which
     adds file related details such as checksum, data type and size for assets.
 
@@ -140,9 +142,9 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
 
     @staticmethod
     def ext(obj: T) -> "FileExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(FileExtension[T], ItemFileExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(FileExtension[T], AssetFileExtension(obj))
         else:
             raise ExtensionException(
@@ -150,12 +152,12 @@ class FileExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
             )
 
     @staticmethod
-    def summaries(obj: ps.Collection) -> "SummariesFileExtension":
+    def summaries(obj: pystac.Collection) -> "SummariesFileExtension":
         return SummariesFileExtension(obj)
 
 
-class ItemFileExtension(FileExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemFileExtension(FileExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -163,11 +165,11 @@ class ItemFileExtension(FileExtension[ps.Item]):
         return "<ItemFileExtension Item id={}>".format(self.item.id)
 
 
-class AssetFileExtension(FileExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetFileExtension(FileExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -192,7 +194,7 @@ class SummariesFileExtension(SummariesExtension):
         self._set_summary(DATA_TYPE_PROP, map_opt(lambda x: [str(t) for t in x], v))
 
     @property
-    def size(self) -> Optional[ps.RangeSummary[int]]:
+    def size(self) -> Optional[pystac.RangeSummary[int]]:
         """Get or sets the size in bytes of the file
 
         Returns:
@@ -201,7 +203,7 @@ class SummariesFileExtension(SummariesExtension):
         return self.summaries.get_range(SIZE_PROP, int)
 
     @size.setter
-    def size(self, v: Optional[ps.RangeSummary[int]]) -> None:
+    def size(self, v: Optional[pystac.RangeSummary[int]]) -> None:
         self._set_summary(SIZE_PROP, v)
 
     @property
@@ -217,7 +219,7 @@ class SummariesFileExtension(SummariesExtension):
 class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["file"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING
 
-import pystac as ps
+import pystac
 from pystac import STACError
 from pystac.link import Link
 from pystac.utils import is_absolute_href, make_absolute_href
@@ -175,7 +175,7 @@ class STACObject(ABC):
         """
         root_link = self.get_root_link()
         if root_link is not None and root_link.is_resolved():
-            cast(ps.Catalog, root_link.target)._resolved_objects.remove(
+            cast(pystac.Catalog, root_link.target)._resolved_objects.remove(
                 cast(STACObject, self)
             )
 
@@ -184,7 +184,7 @@ class STACObject(ABC):
             self.add_link(Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
-            cast(ps.Catalog, root_link.target)._resolved_objects.cache(
+            cast(pystac.Catalog, root_link.target)._resolved_objects.cache(
                 cast(STACObject, self)
             )
 
@@ -202,8 +202,8 @@ class STACObject(ABC):
             if not root_link.is_resolved():
                 root_link.resolve_stac_object()
                 # Use set_root, so Catalogs can merge ResolvedObjectCache instances.
-                self.set_root(cast(ps.Catalog, root_link.target))
-            return cast(ps.Catalog, root_link.target)
+                self.set_root(cast(pystac.Catalog, root_link.target))
+            return cast(pystac.Catalog, root_link.target)
         else:
             return None
 
@@ -223,7 +223,7 @@ class STACObject(ABC):
         if root_link_index is not None:
             root_link = self.links[root_link_index]
             if root_link.is_resolved():
-                cast(ps.Catalog, root_link.target)._resolved_objects.remove(self)
+                cast(pystac.Catalog, root_link.target)._resolved_objects.remove(self)
 
         if root is None:
             self.remove_links("root")
@@ -248,7 +248,7 @@ class STACObject(ABC):
         """
         parent_link = self.get_single_link("parent")
         if parent_link:
-            return cast(ps.Catalog, parent_link.resolve_stac_object().target)
+            return cast(pystac.Catalog, parent_link.resolve_stac_object().target)
         else:
             return None
 
@@ -288,7 +288,7 @@ class STACObject(ABC):
         self,
         include_self_link: bool = True,
         dest_href: Optional[str] = None,
-        stac_io: Optional[ps.StacIO] = None,
+        stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
         """Saves this STAC Object to it's 'self' HREF.
 
@@ -319,7 +319,7 @@ class STACObject(ABC):
                     stac_io = root_stac_io
 
             if stac_io is None:
-                stac_io = ps.StacIO.default()
+                stac_io = pystac.StacIO.default()
 
         if dest_href is None:
             self_href = self.get_self_href()
@@ -351,10 +351,10 @@ class STACObject(ABC):
         """
         clone = self.clone()
 
-        if root is None and isinstance(clone, ps.Catalog):
+        if root is None and isinstance(clone, pystac.Catalog):
             root = clone
 
-        clone.set_root(cast(ps.Catalog, root))
+        clone.set_root(cast(pystac.Catalog, root))
         if parent:
             clone.set_parent(parent)
 
@@ -369,7 +369,9 @@ class STACObject(ABC):
                     target = cached_target
                 else:
                     target_parent = None
-                    if link.rel in ["child", "item"] and isinstance(clone, ps.Catalog):
+                    if link.rel in ["child", "item"] and isinstance(
+                        clone, pystac.Catalog
+                    ):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     if root is not None:
@@ -377,7 +379,7 @@ class STACObject(ABC):
                     target = copied_target
                 if link.rel in ["child", "item"]:
                     target.set_root(root)
-                    if isinstance(clone, ps.Catalog):
+                    if isinstance(clone, pystac.Catalog):
                         target.set_parent(clone)
                 link.target = target
 
@@ -432,7 +434,9 @@ class STACObject(ABC):
         pass
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[ps.StacIO] = None) -> "STACObject":
+    def from_file(
+        cls, href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> "STACObject":
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -445,7 +449,7 @@ class STACObject(ABC):
             by the JSON read from the file located at HREF.
         """
         if stac_io is None:
-            stac_io = ps.StacIO.default()
+            stac_io = pystac.StacIO.default()
 
         if not is_absolute_href(href):
             href = make_absolute_href(href)
@@ -462,7 +466,7 @@ class STACObject(ABC):
         if root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(cast(ps.Catalog, o))
+                    o.set_root(cast(pystac.Catalog, o))
         return o
 
     @classmethod

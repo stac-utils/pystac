@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Set, TYPE_CHECKING, Tuple
 
-import pystac as ps
+import pystac
 from pystac.version import STACVersion
 from pystac.serialization.identify import (
     OldExtensionShortIDs,
@@ -58,7 +58,7 @@ def _migrate_item_assets(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> Optional[Set[str]]:
     if version < "1.0.0-beta.2":
-        if info.object_type == ps.STACObjectType.COLLECTION:
+        if info.object_type == pystac.STACObjectType.COLLECTION:
             if "assets" in d:
                 d["item_assets"] = d["assets"]
                 del d["assets"]
@@ -91,10 +91,10 @@ def _get_object_migrations() -> Dict[
     str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]
 ]:
     return {
-        ps.STACObjectType.CATALOG: _migrate_catalog,
-        ps.STACObjectType.COLLECTION: _migrate_collection,
-        ps.STACObjectType.ITEM: _migrate_item,
-        ps.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection,
+        pystac.STACObjectType.CATALOG: _migrate_catalog,
+        pystac.STACObjectType.COLLECTION: _migrate_collection,
+        pystac.STACObjectType.ITEM: _migrate_item,
+        pystac.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection,
     }
 
 
@@ -129,15 +129,24 @@ def _get_removed_extension_migrations() -> Dict[
         # property merging has went away these extensions are removed
         # from the collection. Note that a migrated Collection may still
         # have a "properties" in extra_fields with the extension fields.
-        OldExtensionShortIDs.EO.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.FILE.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.LABEL.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.POINTCLOUD.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.PROJECTION.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.SAR.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.SAT.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.TIMESTAMPS.value: ([ps.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.VIEW.value: ([ps.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.EO.value: ([pystac.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.FILE.value: ([pystac.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.LABEL.value: ([pystac.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.POINTCLOUD.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        OldExtensionShortIDs.PROJECTION.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        OldExtensionShortIDs.SAR.value: ([pystac.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.SAT.value: ([pystac.STACObjectType.COLLECTION], None),
+        OldExtensionShortIDs.TIMESTAMPS.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        OldExtensionShortIDs.VIEW.value: ([pystac.STACObjectType.COLLECTION], None),
         # tiled-assets was never a fully published extension;
         # remove reference to the pre-1.0 RC short ID
         OldExtensionShortIDs.TILED_ASSETS.value: (None, None),
@@ -183,7 +192,7 @@ def migrate_to_latest(
             # Force stac_extensions property, as it makes
             # downstream migration less complex
             result["stac_extensions"] = []
-        ps.EXTENSION_HOOKS.migrate(result, version, info)
+        pystac.EXTENSION_HOOKS.migrate(result, version, info)
 
         for ext in result["stac_extensions"][:]:
             if ext in removed_extension_migrations:

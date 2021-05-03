@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 from datetime import datetime
 from dateutil import tz
 
-import pystac as ps
+import pystac
 from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType
@@ -33,14 +33,14 @@ class CollectionTest(unittest.TestCase):
 
     def test_save_uses_previous_catalog_type(self):
         collection = TestCases.test_case_8()
-        assert collection.STAC_OBJECT_TYPE == ps.STACObjectType.COLLECTION
+        assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
         with TemporaryDirectory() as tmp_dir:
             collection.normalize_hrefs(tmp_dir)
             href = collection.self_href
             collection.save()
 
-            collection2 = ps.Collection.from_file(href)
+            collection2 = pystac.Collection.from_file(href)
             self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_clone_uses_previous_catalog_type(self):
@@ -54,12 +54,12 @@ class CollectionTest(unittest.TestCase):
         col1 = cat1.get_child("country-1").get_child("area-1-1")
         col1.validate()
         self.assertIsInstance(col1, Collection)
-        validate_dict(col1.to_dict(), ps.STACObjectType.COLLECTION)
+        validate_dict(col1.to_dict(), pystac.STACObjectType.COLLECTION)
 
         multi_ext_uri = TestCases.get_path("data-files/collections/multi-extent.json")
         with open(multi_ext_uri) as f:
             multi_ext_dict = json.load(f)
-        validate_dict(multi_ext_dict, ps.STACObjectType.COLLECTION)
+        validate_dict(multi_ext_dict, pystac.STACObjectType.COLLECTION)
         self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
 
         multi_ext_col = Collection.from_file(multi_ext_uri)
@@ -88,7 +88,7 @@ class CollectionTest(unittest.TestCase):
             self.assertTrue("test" in col_json)
             self.assertEqual(col_json["test"], "extra")
 
-            read_col = ps.Collection.from_file(p)
+            read_col = pystac.Collection.from_file(p)
             self.assertTrue("test" in read_col.extra_fields)
             self.assertEqual(read_col.extra_fields["test"], "extra")
 
@@ -162,7 +162,7 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(collection.get_self_href(), test_href)
 
     def test_collection_with_href_caches_by_href(self):
-        collection = ps.Collection.from_file(
+        collection = pystac.Collection.from_file(
             TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
         )
         cache = collection._resolved_objects

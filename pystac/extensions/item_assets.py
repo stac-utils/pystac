@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional, Set
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -64,8 +64,8 @@ class AssetDefinition:
         else:
             self.properties[ASSET_ROLES_PROP] = v
 
-    def create_asset(self, href: str) -> ps.Asset:
-        return ps.Asset(
+    def create_asset(self, href: str) -> pystac.Asset:
+        return pystac.Asset(
             href=href,
             title=self.title,
             description=self.description,
@@ -87,8 +87,8 @@ class AssetDefinition:
         )
 
 
-class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
-    def __init__(self, collection: ps.Collection) -> None:
+class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+    def __init__(self, collection: pystac.Collection) -> None:
         self.collection = collection
 
     @property
@@ -112,14 +112,16 @@ class ItemAssetsExtension(ExtensionManagementMixin[ps.Collection]):
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, collection: ps.Collection) -> "ItemAssetsExtension":
+    def ext(cls, collection: pystac.Collection) -> "ItemAssetsExtension":
         return cls(collection)
 
 
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["asset", "item-assets"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.COLLECTION])
+    stac_object_types: Set[pystac.STACObjectType] = set(
+        [pystac.STACObjectType.COLLECTION]
+    )
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

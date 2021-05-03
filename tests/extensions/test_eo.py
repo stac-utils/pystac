@@ -1,7 +1,7 @@
 import json
 import unittest
 
-import pystac as ps
+import pystac
 from pystac import Item
 from pystac.collection import RangeSummary
 from pystac.utils import get_opt
@@ -25,13 +25,13 @@ class EOTest(unittest.TestCase):
         test_to_from_dict(self, Item, item_dict)
 
     def test_validate_eo(self):
-        item = ps.read_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = ps.read_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
+        item2 = pystac.read_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
     def test_bands(self):
-        item = ps.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
 
         # Get
         self.assertIn("eo:bands", item.properties)
@@ -57,7 +57,7 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_asset_bands(self):
-        item = ps.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
 
@@ -92,14 +92,14 @@ class EOTest(unittest.TestCase):
             Band.create(name="green", description=Band.band_description("green")),
             Band.create(name="blue", description=Band.band_description("blue")),
         ]
-        asset = ps.Asset(href="some/path.tif", media_type=ps.MediaType.GEOTIFF)
+        asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
         EOExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
         self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
 
     def test_cloud_cover(self):
-        item = ps.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
         self.assertIn("eo:cloud_cover", item.properties)
@@ -126,7 +126,7 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_summaries(self):
-        col = ps.Collection.from_file(self.EO_COLLECTION_URI)
+        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
         eo_summaries = EOExtension.summaries(col)
 
         # Get
@@ -149,7 +149,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
     def test_read_pre_09_fields_into_common_metadata(self):
-        eo_item = ps.Item.from_file(
+        eo_item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/examples/" "landsat8-sample.json"
             )
@@ -159,7 +159,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
 
     def test_reads_asset_bands_in_pre_1_0_version(self):
-        item = ps.Item.from_file(
+        item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
             )
@@ -171,7 +171,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(get_opt(bands)[0].common_name, "cirrus")
 
     def test_reads_gsd_in_pre_1_0_version(self):
-        eo_item = ps.Item.from_file(
+        eo_item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
             )

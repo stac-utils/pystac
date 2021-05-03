@@ -3,7 +3,7 @@
 import datetime
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.extensions import scientific
 from pystac.extensions.scientific import ScientificExtension
 
@@ -27,10 +27,12 @@ PUBLICATIONS = [
 ]
 
 
-def make_item() -> ps.Item:
+def make_item() -> pystac.Item:
     asset_id = "USGS/GAP/CONUS/2011"
     start = datetime.datetime(2011, 1, 2)
-    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = pystac.Item(
+        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
+    )
     item.set_self_href(URL_TEMPLATE % 2011)
 
     ScientificExtension.add_to(item)
@@ -175,15 +177,15 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.item.validate()
 
 
-def make_collection() -> ps.Collection:
+def make_collection() -> pystac.Collection:
     asset_id = "my/thing"
     start = datetime.datetime(2018, 8, 24)
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = ps.SpatialExtent(bboxes)
-    temporal_extent = ps.TemporalExtent([[start, end]])
-    extent = ps.Extent(spatial_extent, temporal_extent)
-    collection = ps.Collection(asset_id, "desc", extent)
+    spatial_extent = pystac.SpatialExtent(bboxes)
+    temporal_extent = pystac.TemporalExtent([[start, end]])
+    extent = pystac.Extent(spatial_extent, temporal_extent)
+    collection = pystac.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % 2019)
 
     ScientificExtension.add_to(collection)

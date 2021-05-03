@@ -1,7 +1,7 @@
 from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union, cast
 
-import pystac as ps
+import pystac
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
 
 if TYPE_CHECKING:
@@ -105,7 +105,7 @@ class Link:
         """
         # get the self href
         if self.is_resolved():
-            href = cast(ps.STACObject, self.target).get_self_href()
+            href = cast(pystac.STACObject, self.target).get_self_href()
         else:
             href = cast(Optional[str], self.target)
 
@@ -113,7 +113,7 @@ class Link:
             root = self.owner.get_root()
             rel_links = (
                 HIERARCHICAL_LINKS
-                + ps.EXTENSION_HOOKS.get_extended_object_links(self.owner)
+                + pystac.EXTENSION_HOOKS.get_extended_object_links(self.owner)
             )
             # if a hierarchical link with an owner and root, and relative catalog
             if root and root.is_relative() and self.rel in rel_links:
@@ -144,7 +144,7 @@ class Link:
             and has an unresolved target, this will return a relative HREF.
         """
         if self.is_resolved():
-            href = cast(ps.STACObject, self.target).get_self_href()
+            href = cast(pystac.STACObject, self.target).get_self_href()
         else:
             href = cast(Optional[str], self.target)
 
@@ -171,14 +171,14 @@ class Link:
             # If it's a relative link, base it off the parent.
             if not is_absolute_href(target_href):
                 if self.owner is None:
-                    raise ps.STACError(
+                    raise pystac.STACError(
                         "Relative path {} encountered "
                         "without owner or start_href.".format(target_href)
                     )
                 start_href = self.owner.get_self_href()
 
                 if start_href is None:
-                    raise ps.STACError(
+                    raise pystac.STACError(
                         "Relative path {} encountered "
                         'without owner "self" link set.'.format(target_href)
                     )
@@ -186,7 +186,7 @@ class Link:
                 target_href = make_absolute_href(target_href, start_href)
             obj = None
 
-            stac_io: Optional[ps.StacIO] = None
+            stac_io: Optional[pystac.StacIO] = None
 
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
@@ -196,10 +196,10 @@ class Link:
 
                 if stac_io is None:
                     if self.owner is not None:
-                        if isinstance(self.owner, ps.Catalog):
+                        if isinstance(self.owner, pystac.Catalog):
                             stac_io = self.owner._stac_io
                     if stac_io is None:
-                        stac_io = ps.StacIO.default()
+                        stac_io = pystac.StacIO.default()
 
                 obj = stac_io.read_stac_object(target_href, root=root)
                 obj.set_self_href(target_href)
@@ -214,7 +214,7 @@ class Link:
         if (
             self.owner
             and self.rel in ["child", "item"]
-            and isinstance(self.owner, ps.Catalog)
+            and isinstance(self.owner, pystac.Catalog)
         ):
             self.target.set_parent(self.owner)
 

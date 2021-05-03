@@ -3,7 +3,7 @@ from datetime import datetime
 import csv
 from typing import Any, Dict, List
 
-import pystac as ps
+import pystac
 from pystac import (
     Catalog,
     Collection,
@@ -79,7 +79,7 @@ class ExampleInfo:
     def __init__(
         self,
         path: str,
-        object_type: ps.STACObjectType,
+        object_type: pystac.STACObjectType,
         stac_version: str,
         extensions: List[str],
         valid: bool,
@@ -119,7 +119,7 @@ class TestCases:
                 examples.append(
                     ExampleInfo(
                         path=path,
-                        object_type=ps.STACObjectType(object_type),
+                        object_type=pystac.STACObjectType(object_type),
                         stac_version=stac_version,
                         extensions=extensions,
                         valid=valid,

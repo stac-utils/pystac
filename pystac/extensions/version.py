@@ -8,7 +8,7 @@ Note that the version/schema.json does not know about the links.
 from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -16,7 +16,7 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 
-T = TypeVar("T", ps.Collection, ps.Item)
+T = TypeVar("T", pystac.Collection, pystac.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 
@@ -37,7 +37,7 @@ MEDIA_TYPE: str = "application/json"
 class VersionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
     """VersionItemExt extends Item to add version and deprecated properties
     along with links to the latest, predecessor, and successor Items.
@@ -53,9 +53,9 @@ class VersionExtension(
         extension ID to the item's stac_extensions.
     """
 
-    obj: ps.STACObject
+    obj: pystac.STACObject
 
-    def __init__(self, obj: ps.STACObject) -> None:
+    def __init__(self, obj: pystac.STACObject) -> None:
         self.obj = obj
 
     def apply(
@@ -120,7 +120,7 @@ class VersionExtension(
     def latest(self, item: Optional[T]) -> None:
         self.obj.clear_links(LATEST)
         if item is not None:
-            self.obj.add_link(ps.Link(LATEST, item, MEDIA_TYPE))
+            self.obj.add_link(pystac.Link(LATEST, item, MEDIA_TYPE))
 
     @property
     def predecessor(self) -> Optional[T]:
@@ -134,7 +134,7 @@ class VersionExtension(
     def predecessor(self, item: Optional[T]) -> None:
         self.obj.clear_links(PREDECESSOR)
         if item is not None:
-            self.obj.add_link(ps.Link(PREDECESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(pystac.Link(PREDECESSOR, item, MEDIA_TYPE))
 
     @property
     def successor(self) -> Optional[T]:
@@ -147,7 +147,7 @@ class VersionExtension(
     def successor(self, item: Optional[T]) -> None:
         self.obj.clear_links(SUCCESSOR)
         if item is not None:
-            self.obj.add_link(ps.Link(SUCCESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(pystac.Link(SUCCESSOR, item, MEDIA_TYPE))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -155,9 +155,9 @@ class VersionExtension(
 
     @staticmethod
     def ext(obj: T) -> "VersionExtension[T]":
-        if isinstance(obj, ps.Collection):
+        if isinstance(obj, pystac.Collection):
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
             raise ExtensionException(
@@ -165,8 +165,8 @@ class VersionExtension(
             )
 
 
-class CollectionVersionExtension(VersionExtension[ps.Collection]):
-    def __init__(self, collection: ps.Collection):
+class CollectionVersionExtension(VersionExtension[pystac.Collection]):
+    def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
         self.links = collection.links
@@ -176,8 +176,8 @@ class CollectionVersionExtension(VersionExtension[ps.Collection]):
         return "<CollectionVersionExtension Item id={}>".format(self.collection.id)
 
 
-class ItemVersionExtension(VersionExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemVersionExtension(VersionExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
         self.links = item.links
@@ -190,12 +190,12 @@ class ItemVersionExtension(VersionExtension[ps.Item]):
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["version"])
-    stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    stac_object_types: Set[pystac.STACObjectType] = set(
+        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
     )
 
-    def get_object_links(self, so: ps.STACObject) -> Optional[List[str]]:
-        if isinstance(so, ps.Collection) or isinstance(so, ps.Item):
+    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
+        if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
             return [LATEST, PREDECESSOR, SUCCESSOR]
         return None
 

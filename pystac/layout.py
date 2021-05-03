@@ -4,7 +4,7 @@ import os
 from string import Formatter
 from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
-import pystac as ps
+import pystac
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -92,7 +92,7 @@ class LayoutTemplate:
         self, stac_object: "STACObject_Type", template_var: str
     ) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
-            if isinstance(stac_object, ps.Item):
+            if isinstance(stac_object, pystac.Item):
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
@@ -131,7 +131,7 @@ class LayoutTemplate:
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
-        prop_source: Optional[Union[ps.STACObject, Dict[str, Any]]] = None
+        prop_source: Optional[Union[pystac.STACObject, Dict[str, Any]]] = None
         error = TemplateError(
             "Cannot find property {} on {} for template {}".format(
                 template_var, stac_object, self.template
@@ -234,14 +234,14 @@ class HrefLayoutStrategy(ABC):
     def get_href(
         self, stac_object: "STACObject_Type", parent_dir: str, is_root: bool = False
     ) -> str:
-        if isinstance(stac_object, ps.Item):
+        if isinstance(stac_object, pystac.Item):
             return self.get_item_href(stac_object, parent_dir)
-        elif isinstance(stac_object, ps.Collection):
+        elif isinstance(stac_object, pystac.Collection):
             return self.get_collection_href(stac_object, parent_dir, is_root)
-        elif isinstance(stac_object, ps.Catalog):
+        elif isinstance(stac_object, pystac.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise ps.STACError("Unknown STAC object type {}".format(stac_object))
+            raise pystac.STACError("Unknown STAC object type {}".format(stac_object))
 
     @abstractmethod
     def get_catalog_href(

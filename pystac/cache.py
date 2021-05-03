@@ -2,7 +2,7 @@ from collections import ChainMap
 from copy import copy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, cast
 
-import pystac as ps
+import pystac
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -26,7 +26,7 @@ def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:
         return (href, True)
     else:
         ids: List[str] = []
-        obj: Optional[ps.STACObject] = stac_object
+        obj: Optional[pystac.STACObject] = stac_object
         while obj is not None:
             ids.append(obj.id)
             obj = obj.get_parent()
@@ -149,7 +149,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects[key] = obj
 
-        if isinstance(obj, ps.Collection):
+        if isinstance(obj, pystac.Collection):
             self.ids_to_collections[obj.id] = obj
 
     def remove(self, obj: "STACObject_Type") -> None:
@@ -165,7 +165,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects.pop(key, None)
 
-        if obj.STAC_OBJECT_TYPE == ps.STACObjectType.COLLECTION:
+        if obj.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
             self.id_keys_to_objects.pop(obj.id, None)
 
     def __contains__(self, obj: "STACObject_Type") -> bool:
@@ -260,7 +260,7 @@ class CollectionCache:
         href: Optional[str] = None,
     ) -> None:
         """Caches a collection JSON."""
-        if isinstance(collection, ps.Collection):
+        if isinstance(collection, pystac.Collection):
             self.cached_ids[collection.id] = collection
         else:
             self.cached_ids[collection["id"]] = collection
@@ -295,7 +295,7 @@ class ResolvedObjectCollectionCache(CollectionCache):
         if result is None:
             return super().get_by_href(href)
         else:
-            return cast(ps.Collection, result)
+            return cast(pystac.Collection, result)
 
     def contains_id(self, collection_id: str) -> bool:
         return self.resolved_object_cache.contains_collection_id(

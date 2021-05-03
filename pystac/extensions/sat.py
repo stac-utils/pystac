@@ -7,7 +7,7 @@ import enum
 from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -15,7 +15,7 @@ from pystac.extensions.base import (
 )
 from pystac.utils import map_opt
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
@@ -29,7 +29,9 @@ class OrbitState(enum.Enum):
     GEOSTATIONARY = "geostationary"
 
 
-class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class SatExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """SatItemExt extends Item to add sat properties to a STAC Item.
 
     Args:
@@ -96,9 +98,9 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
 
     @staticmethod
     def ext(obj: T) -> "SatExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(SatExtension[T], ItemSatExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:
             raise ExtensionException(
@@ -106,8 +108,8 @@ class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.
             )
 
 
-class ItemSatExtension(SatExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemSatExtension(SatExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -115,11 +117,11 @@ class ItemSatExtension(SatExtension[ps.Item]):
         return "<ItemSatExtension Item id={}>".format(self.item.id)
 
 
-class AssetSatExtension(SatExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetSatExtension(SatExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -129,7 +131,7 @@ class AssetSatExtension(SatExtension[ps.Asset]):
 class SatExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["sat"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
 SAT_EXTENSION_HOOKS = SatExtensionHooks()

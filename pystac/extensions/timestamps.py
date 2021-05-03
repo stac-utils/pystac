@@ -2,7 +2,7 @@ from datetime import datetime as Datetime
 from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -10,7 +10,7 @@ from pystac.extensions.base import (
 )
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
 
@@ -20,7 +20,7 @@ UNPUBLISHED_PROP = "unpublished"
 
 
 class TimestampsExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """TimestampsItemExt is the extension of an Item in that
     allows to specify additional timestamps for assets and metadata.
@@ -114,9 +114,9 @@ class TimestampsExtension(
 
     @staticmethod
     def ext(obj: T) -> "TimestampsExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise ExtensionException(
@@ -124,8 +124,8 @@ class TimestampsExtension(
             )
 
 
-class ItemTimestampsExtension(TimestampsExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -133,11 +133,11 @@ class ItemTimestampsExtension(TimestampsExtension[ps.Item]):
         return "<ItemtimestampsExtension Item id={}>".format(self.item.id)
 
 
-class AssetTimestampsExtension(TimestampsExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -147,7 +147,7 @@ class AssetTimestampsExtension(TimestampsExtension[ps.Asset]):
 class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["timestamps"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
 TIMESTAMPS_EXTENSION_HOOKS = TimestampsExtensionHooks()

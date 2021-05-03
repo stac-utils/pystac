@@ -1,7 +1,7 @@
 from pystac.extensions.hooks import ExtensionHooks
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -9,7 +9,7 @@ from pystac.extensions.base import (
 )
 from pystac.utils import map_opt
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 
@@ -70,7 +70,7 @@ class PointcloudSchema:
         """
         result = self.properties.get("size")
         if result is None:
-            raise ps.STACError(
+            raise pystac.STACError(
                 f"Pointcloud schema does not have size property: {self.properties}"
             )
         return result
@@ -78,7 +78,7 @@ class PointcloudSchema:
     @size.setter
     def size(self, v: int) -> None:
         if not isinstance(v, int):
-            raise ps.STACError("size must be an int! Invalid input: {}".format(v))
+            raise pystac.STACError("size must be an int! Invalid input: {}".format(v))
 
         self.properties["size"] = v
 
@@ -91,7 +91,7 @@ class PointcloudSchema:
         """
         result = self.properties.get("name")
         if result is None:
-            raise ps.STACError(
+            raise pystac.STACError(
                 f"Pointcloud schema does not have name property: {self.properties}"
             )
         return result
@@ -109,7 +109,7 @@ class PointcloudSchema:
         """
         result = self.properties.get("type")
         if result is None:
-            raise ps.STACError(
+            raise pystac.STACError(
                 f"Pointcloud schema has no type property: {self.properties}"
             )
         return result
@@ -159,10 +159,10 @@ class PointcloudStatistic:
         Args:
             name (str): REQUIRED. The name of the channel.
             position (int): Position of the channel in the schema.
-            average (float)	The average of the channel.
+            average (float): The average of the channel.
             count (int): The number of elements in the channel.
-            maximum	(float): The maximum value of the channel.
-            minimum	(float):	The minimum value of the channel.
+            maximum (float): The maximum value of the channel.
+            minimum (float): The minimum value of the channel.
             stddev (float): The standard deviation of the channel.
             variance (float): The variance of the channel.
         """
@@ -192,10 +192,10 @@ class PointcloudStatistic:
         Args:
             name (str): REQUIRED. The name of the channel.
             position (int): Position of the channel in the schema.
-            average (float)	The average of the channel.
+            average (float) The average of the channel.
             count (int): The number of elements in the channel.
-            maximum	(float): The maximum value of the channel.
-            minimum	(float):	The minimum value of the channel.
+            maximum (float): The maximum value of the channel.
+            minimum (float): The minimum value of the channel.
             stddev (float): The standard deviation of the channel.
             variance (float): The variance of the channel.
 
@@ -224,7 +224,7 @@ class PointcloudStatistic:
         """
         result = self.properties.get("name")
         if result is None:
-            raise ps.STACError(
+            raise pystac.STACError(
                 f"Pointcloud statistics does not have name property: {self.properties}"
             )
         return result
@@ -362,7 +362,7 @@ class PointcloudStatistic:
 
 
 class PointcloudExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """PointcloudItemExt is the extension of an Item in the PointCloud Extension.
     The Pointclout extension adds pointcloud information to STAC Items.
@@ -418,7 +418,7 @@ class PointcloudExtension(
         """
         result = self._get_property(COUNT_PROP, int)
         if result is None:
-            raise ps.RequiredPropertyMissing(self, COUNT_PROP)
+            raise pystac.RequiredPropertyMissing(self, COUNT_PROP)
         return result
 
     @count.setter
@@ -434,7 +434,7 @@ class PointcloudExtension(
         """
         result = self._get_property(TYPE_PROP, str)
         if result is None:
-            raise ps.RequiredPropertyMissing(self, TYPE_PROP)
+            raise pystac.RequiredPropertyMissing(self, TYPE_PROP)
         return result
 
     @type.setter
@@ -453,7 +453,7 @@ class PointcloudExtension(
         """
         result = self._get_property(ENCODING_PROP, str)
         if result is None:
-            raise ps.RequiredPropertyMissing(self, ENCODING_PROP)
+            raise pystac.RequiredPropertyMissing(self, ENCODING_PROP)
         return result
 
     @encoding.setter
@@ -473,7 +473,7 @@ class PointcloudExtension(
         """
         result = self._get_property(SCHEMAS_PROP, List[Dict[str, Any]])
         if result is None:
-            raise ps.RequiredPropertyMissing(self, SCHEMAS_PROP)
+            raise pystac.RequiredPropertyMissing(self, SCHEMAS_PROP)
         return [PointcloudSchema(s) for s in result]
 
     @schemas.setter
@@ -520,9 +520,9 @@ class PointcloudExtension(
 
     @staticmethod
     def ext(obj: T) -> "PointcloudExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise ExtensionException(
@@ -530,8 +530,8 @@ class PointcloudExtension(
             )
 
 
-class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -539,11 +539,11 @@ class ItemPointcloudExtension(PointcloudExtension[ps.Item]):
         return "<ItemPointcloudExtension Item id={}>".format(self.item.id)
 
 
-class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
             self.repr_id = f"href={asset.href} item.id={asset.owner.id}"
         else:
@@ -556,7 +556,7 @@ class AssetPointcloudExtension(PointcloudExtension[ps.Asset]):
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["pointcloud"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
 POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()

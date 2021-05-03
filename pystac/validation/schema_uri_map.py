@@ -3,7 +3,7 @@ from functools import lru_cache
 from pystac.serialization.identify import OldExtensionShortIDs, STACVersionID
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
-import pystac as ps
+import pystac
 from pystac.serialization import STACVersionRange
 from pystac.stac_object import STACObjectType
 
@@ -99,7 +99,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
         self, object_type: STACObjectType, stac_version: str
     ) -> Optional[str]:
         uri = None
-        is_latest = stac_version == ps.get_stac_version()
+        is_latest = stac_version == pystac.get_stac_version()
 
         if object_type not in self.DEFAULT_SCHEMA_MAP:
             raise KeyError("Unknown STAC object type {}".format(object_type))
@@ -159,13 +159,13 @@ class OldExtensionSchemaUriMap:
         return {
             OldExtensionShortIDs.CHECKSUM.value: (
                 {
-                    ps.STACObjectType.CATALOG: (
+                    pystac.STACObjectType.CATALOG: (
                         "extensions/checksum/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/checksum/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/checksum/json-schema/schema.json"
                     ),
                 },
@@ -173,7 +173,7 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.COLLECTION_ASSETS.value: (
                 {
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/collection-assets/json-schema/schema.json"
                     )
                 },
@@ -181,10 +181,10 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.DATACUBE.value: (
                 {
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/datacube/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/datacube/json-schema/schema.json"
                     ),
                 },
@@ -192,30 +192,34 @@ class OldExtensionSchemaUriMap:
                     (
                         STACVersionRange(min_version="0.5.0", max_version="0.9.0"),
                         {
-                            ps.STACObjectType.COLLECTION: None,
-                            ps.STACObjectType.ITEM: None,
+                            pystac.STACObjectType.COLLECTION: None,
+                            pystac.STACObjectType.ITEM: None,
                         },
                     )
                 ],
             ),
             OldExtensionShortIDs.EO.value: (
-                {ps.STACObjectType.ITEM: "extensions/eo/json-schema/schema.json"},
+                {pystac.STACObjectType.ITEM: "extensions/eo/json-schema/schema.json"},
                 None,
             ),
             OldExtensionShortIDs.ITEM_ASSETS.value: (
                 {
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/item-assets/json-schema/schema.json"
                     )
                 },
                 None,
             ),
             OldExtensionShortIDs.LABEL.value: (
-                {ps.STACObjectType.ITEM: "extensions/label/json-schema/schema.json"},
+                {
+                    pystac.STACObjectType.ITEM: (
+                        "extensions/label/json-schema/schema.json"
+                    )
+                },
                 [
                     (
                         STACVersionRange(min_version="0.8.0-rc1", max_version="0.8.1"),
-                        {ps.STACObjectType.ITEM: "extensions/label/schema.json"},
+                        {pystac.STACObjectType.ITEM: "extensions/label/schema.json"},
                     )
                 ],
             ),
@@ -226,26 +230,26 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.PROJECTION.value: (
                 {
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/projection/json-schema/schema.json"
                     )
                 },
                 None,
             ),
             OldExtensionShortIDs.SAR.value: (
-                {ps.STACObjectType.ITEM: "extensions/sar/json-schema/schema.json"},
+                {pystac.STACObjectType.ITEM: "extensions/sar/json-schema/schema.json"},
                 None,
             ),
             OldExtensionShortIDs.SAT.value: (
-                {ps.STACObjectType.ITEM: "extensions/sat/json-schema/schema.json"},
+                {pystac.STACObjectType.ITEM: "extensions/sat/json-schema/schema.json"},
                 None,
             ),
             OldExtensionShortIDs.SCIENTIFIC.value: (
                 {
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/scientific/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/scientific/json-schema/schema.json"
                     ),
                 },
@@ -253,7 +257,7 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.SINGLE_FILE_STAC.value: (
                 {
-                    ps.STACObjectType.CATALOG: (
+                    pystac.STACObjectType.CATALOG: (
                         "extensions/single-file-stac/json-schema/schema.json"
                     )
                 },
@@ -261,13 +265,13 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.TILED_ASSETS.value: (
                 {
-                    ps.STACObjectType.CATALOG: (
+                    pystac.STACObjectType.CATALOG: (
                         "extensions/tiled-assets/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/tiled-assets/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/tiled-assets/json-schema/schema.json"
                     ),
                 },
@@ -275,7 +279,7 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.TIMESTAMPS.value: (
                 {
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/timestamps/json-schema/schema.json"
                     )
                 },
@@ -283,17 +287,17 @@ class OldExtensionSchemaUriMap:
             ),
             OldExtensionShortIDs.VERSION.value: (
                 {
-                    ps.STACObjectType.ITEM: (
+                    pystac.STACObjectType.ITEM: (
                         "extensions/version/json-schema/schema.json"
                     ),
-                    ps.STACObjectType.COLLECTION: (
+                    pystac.STACObjectType.COLLECTION: (
                         "extensions/version/json-schema/schema.json"
                     ),
                 },
                 None,
             ),
             OldExtensionShortIDs.VIEW.value: (
-                {ps.STACObjectType.ITEM: "extensions/view/json-schema/schema.json"},
+                {pystac.STACObjectType.ITEM: "extensions/view/json-schema/schema.json"},
                 None,
             ),
             # Removed or renamed extensions.
@@ -304,7 +308,7 @@ class OldExtensionSchemaUriMap:
                     (
                         STACVersionRange(min_version="0.8.0-rc1", max_version="0.9.0"),
                         {
-                            ps.STACObjectType.COLLECTION: (
+                            pystac.STACObjectType.COLLECTION: (
                                 "extensions/asset/json-schema/schema.json"
                             )
                         },
@@ -336,7 +340,7 @@ class OldExtensionSchemaUriMap:
     ) -> Optional[str]:
         uri = None
 
-        is_latest = stac_version == ps.get_stac_version()
+        is_latest = stac_version == pystac.get_stac_version()
 
         ext_map = cls.get_schema_map()
         if extension_id in ext_map:

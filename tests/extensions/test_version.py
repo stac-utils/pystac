@@ -4,7 +4,7 @@ import datetime
 from pystac.validation import STACValidationError
 import unittest
 
-import pystac as ps
+import pystac
 from pystac.extensions import version
 from pystac.extensions.version import VersionExtension
 from tests.utils import TestCases
@@ -12,12 +12,14 @@ from tests.utils import TestCases
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
 
 
-def make_item(year: int) -> ps.Item:
+def make_item(year: int) -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = f"USGS/GAP/CONUS/{year}"
     start = datetime.datetime(year, 1, 2)
 
-    item = ps.Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
+    item = pystac.Item(
+        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
+    )
     item.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(item)
@@ -203,16 +205,16 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, links[0].get_href())
 
 
-def make_collection(year: int) -> ps.Collection:
+def make_collection(year: int) -> pystac.Collection:
     asset_id = f"my/collection/of/things/{year}"
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = ps.SpatialExtent(bboxes)
-    temporal_extent = ps.TemporalExtent([[start, end]])
-    extent = ps.Extent(spatial_extent, temporal_extent)
+    spatial_extent = pystac.SpatialExtent(bboxes)
+    temporal_extent = pystac.TemporalExtent([[start, end]])
+    extent = pystac.Extent(spatial_extent, temporal_extent)
 
-    collection = ps.Collection(asset_id, "desc", extent)
+    collection = pystac.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(collection)
@@ -312,9 +314,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
         # Fetch two collections from the catalog
         col1 = cat.get_child("area-1-1", recursive=True)
-        assert isinstance(col1, ps.Collection)
+        assert isinstance(col1, pystac.Collection)
         col2 = cat.get_child("area-2-2", recursive=True)
-        assert isinstance(col2, ps.Collection)
+        assert isinstance(col2, pystac.Collection)
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Collection

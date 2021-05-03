@@ -18,7 +18,7 @@ from typing import (
 import dateutil.parser
 from dateutil import tz
 
-import pystac as ps
+import pystac
 from pystac import STACObjectType, CatalogType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
@@ -663,9 +663,9 @@ class Collection(Catalog):
         migrate: bool = False,
     ) -> "Collection":
         if migrate:
-            result = ps.read_dict(d, href=href, root=root)
+            result = pystac.read_dict(d, href=href, root=root)
             if not isinstance(result, Collection):
-                raise ps.STACError(f"{result} is not a Catalog")
+                raise pystac.STACError(f"{result} is not a Catalog")
             return result
 
         catalog_type = CatalogType.determine_type(d)
@@ -752,5 +752,5 @@ class Collection(Catalog):
     def from_file(cls, href: str) -> "Collection":
         result = super().from_file(href)
         if not isinstance(result, Collection):
-            raise ps.STACTypeError(f"{result} is not a {Collection}.")
+            raise pystac.STACTypeError(f"{result} is not a {Collection}.")
         return result

@@ -2,7 +2,7 @@ from pystac.collection import RangeSummary
 import re
 from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -14,7 +14,7 @@ from pystac.extensions import view
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 
@@ -231,7 +231,9 @@ class Band:
         return None
 
 
-class EOExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class EOExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """EOItemExt is the extension of the Item in the eo extension which
     represents a snapshot of the earth for a single date and time.
 
@@ -298,20 +300,20 @@ class EOExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.I
 
     @staticmethod
     def ext(obj: T) -> "EOExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(EOExtension[T], ItemEOExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
             raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
 
     @staticmethod
-    def summaries(obj: ps.Collection) -> "SummariesEOExtension":
+    def summaries(obj: pystac.Collection) -> "SummariesEOExtension":
         return SummariesEOExtension(obj)
 
 
-class ItemEOExtension(EOExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemEOExtension(EOExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -340,11 +342,11 @@ class ItemEOExtension(EOExtension[ps.Item]):
         return "<ItemEOExtension Item id={}>".format(self.item.id)
 
 
-class AssetEOExtension(EOExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetEOExtension(EOExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -379,7 +381,7 @@ class SummariesEOExtension(SummariesExtension):
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["eo"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
@@ -460,7 +462,7 @@ class EOExtensionHooks(ExtensionHooks):
                         ]
                         del obj["properties"]["eo:{}".format(field)]
 
-        if version < "1.0.0-beta.1" and info.object_type == ps.STACObjectType.ITEM:
+        if version < "1.0.0-beta.1" and info.object_type == pystac.STACObjectType.ITEM:
             # gsd moved from eo to common metadata
             if "eo:gsd" in obj["properties"]:
                 obj["properties"]["gsd"] = obj["properties"]["eo:gsd"]

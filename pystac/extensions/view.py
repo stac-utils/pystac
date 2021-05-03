@@ -1,14 +1,14 @@
 from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
 
@@ -19,7 +19,9 @@ SUN_AZIMUTH_PROP = "view:sun_azimuth"
 SUN_ELEVATION_PROP = "view:sun_elevation"
 
 
-class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps.Item]):
+class ViewExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """ViewItemExt is the extension of the Item in the View Geometry Extension.
 
     View Geometry adds metadata related to angles of sensors and other radiance angles
@@ -153,9 +155,9 @@ class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
 
     @staticmethod
     def ext(obj: T) -> "ViewExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(ViewExtension[T], ItemViewExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise ExtensionException(
@@ -163,8 +165,8 @@ class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin[ps
             )
 
 
-class ItemViewExtension(ViewExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemViewExtension(ViewExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -172,11 +174,11 @@ class ItemViewExtension(ViewExtension[ps.Item]):
         return "<ItemViewExtension Item id={}>".format(self.item.id)
 
 
-class AssetViewExtension(ViewExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetViewExtension(ViewExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -186,7 +188,7 @@ class AssetViewExtension(ViewExtension[ps.Asset]):
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["view"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
 VIEW_EXTENSION_HOOKS = ViewExtensionHooks()

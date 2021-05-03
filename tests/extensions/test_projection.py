@@ -3,7 +3,7 @@ from typing import Any, Dict
 import unittest
 from copy import deepcopy
 
-import pystac as ps
+import pystac
 from pystac.validation import STACValidationError
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
@@ -81,7 +81,7 @@ class ProjectionTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, ps.Item, d)
+        test_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self):
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -100,7 +100,7 @@ class ProjectionTest(unittest.TestCase):
         )
 
     def test_partial_apply(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         ProjectionExtension.ext(proj_item).apply(epsg=1111)
 
@@ -108,11 +108,11 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
     def test_validate_proj(self):
-        item = ps.Item.from_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
     def test_epsg(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:epsg", proj_item.properties)
@@ -144,7 +144,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate
 
     def test_wkt2(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:wkt2", proj_item.properties)
@@ -179,7 +179,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
     def test_projjson(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:projjson", proj_item.properties)
@@ -222,7 +222,7 @@ class ProjectionTest(unittest.TestCase):
             proj_item.validate()
 
     def test_geometry(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:geometry", proj_item.properties)
@@ -263,7 +263,7 @@ class ProjectionTest(unittest.TestCase):
             proj_item.validate()
 
     def test_bbox(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:bbox", proj_item.properties)
@@ -296,7 +296,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
     def test_centroid(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:centroid", proj_item.properties)
@@ -337,7 +337,7 @@ class ProjectionTest(unittest.TestCase):
             proj_item.validate()
 
     def test_shape(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:shape", proj_item.properties)
@@ -371,7 +371,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
     def test_transform(self):
-        proj_item = ps.Item.from_file(self.example_uri)
+        proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("proj:transform", proj_item.properties)

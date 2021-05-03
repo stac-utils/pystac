@@ -1,7 +1,7 @@
 # flake8: noqa
 from typing import Dict, List, Any, Optional, cast, TYPE_CHECKING
 
-import pystac as ps
+import pystac
 from pystac.serialization.identify import STACVersionID, identify_stac_object
 from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 from pystac.utils import make_absolute_href
@@ -47,7 +47,7 @@ def validate(stac_object: "STACObject_Type") -> List[Any]:
     return validate_dict(
         stac_dict=stac_object.to_dict(),
         stac_object_type=stac_object.STAC_OBJECT_TYPE,
-        stac_version=ps.get_stac_version(),
+        stac_version=pystac.get_stac_version(),
         extensions=stac_object.stac_extensions,
         href=stac_object.get_self_href(),
     )
@@ -119,7 +119,7 @@ def validate_dict(
 
 
 def validate_all(
-    stac_dict: Dict[str, Any], href: str, stac_io: Optional[ps.StacIO] = None
+    stac_dict: Dict[str, Any], href: str, stac_io: Optional[pystac.StacIO] = None
 ) -> None:
     """Validate STAC JSON and all contained catalogs, collections and items.
 
@@ -139,7 +139,7 @@ def validate_all(
             catalog, collection or item has a validation error.
     """
     if stac_io is None:
-        stac_io = ps.StacIO.default()
+        stac_io = pystac.StacIO.default()
 
     info = identify_stac_object(stac_dict)
 
@@ -152,7 +152,7 @@ def validate_all(
         href=href,
     )
 
-    if info.object_type != ps.STACObjectType.ITEM:
+    if info.object_type != pystac.STACObjectType.ITEM:
         if "links" in stac_dict:
             # Account for 0.6 links
             if isinstance(stac_dict["links"], dict):

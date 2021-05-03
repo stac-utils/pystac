@@ -6,14 +6,14 @@ https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
 import enum
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
-import pystac as ps
+import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.base import ExtensionException, ExtensionManagementMixin
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
 
@@ -59,7 +59,7 @@ class ObservationDirection(enum.Enum):
 
 
 class SarExtension(
-    Generic[T], ProjectionExtension[T], ExtensionManagementMixin[ps.Item]
+    Generic[T], ProjectionExtension[T], ExtensionManagementMixin[pystac.Item]
 ):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
@@ -201,7 +201,7 @@ class SarExtension(
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
         if not isinstance(values, list):
-            raise ps.STACError(f'polarizations must be a list. Invalid "{values}"')
+            raise pystac.STACError(f'polarizations must be a list. Invalid "{values}"')
         self._set_property(POLARIZATIONS, [v.value for v in values], pop_if_none=False)
 
     @property
@@ -307,9 +307,9 @@ class SarExtension(
 
     @staticmethod
     def ext(obj: T) -> "SarExtension[T]":
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(SarExtension[T], ItemSarExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise ExtensionException(
@@ -317,8 +317,8 @@ class SarExtension(
             )
 
 
-class ItemSarExtension(SarExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemSarExtension(SarExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -326,11 +326,11 @@ class ItemSarExtension(SarExtension[ps.Item]):
         return "<ItemSarExtension Item id={}>".format(self.item.id)
 
 
-class AssetSarExtension(SarExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetSarExtension(SarExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -340,7 +340,7 @@ class AssetSarExtension(SarExtension[ps.Asset]):
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["sar"])
-    stac_object_types: Set[ps.STACObjectType] = set([ps.STACObjectType.ITEM])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

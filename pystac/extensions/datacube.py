@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
-import pystac as ps
+import pystac
 from pystac.extensions.base import (
     ExtensionException,
     ExtensionManagementMixin,
@@ -10,7 +10,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", ps.Collection, ps.Item, ps.Asset)
+T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
 
@@ -59,11 +59,11 @@ class Dimension(ABC):
     def from_dict(d: Dict[str, Any]) -> "Dimension":
         dim_type = d.get(DIM_TYPE_PROP)
         if dim_type is None:
-            raise ps.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
+            raise pystac.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
         if dim_type == "spatial":
             axis = d.get(DIM_AXIS_PROP)
             if axis is None:
-                raise ps.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
+                raise pystac.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
             if axis == "z":
                 return VerticalSpatialDimension(d)
             else:
@@ -307,7 +307,7 @@ class AdditionalDimension(Dimension):
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[ps.Collection, ps.Item]],
+    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
     def apply(self, dimensions: Dict[str, Dimension]) -> None:
         self.dimensions = dimensions
@@ -333,11 +333,11 @@ class DatacubeExtension(
 
     @staticmethod
     def ext(obj: T) -> "DatacubeExtension[T]":
-        if isinstance(obj, ps.Collection):
+        if isinstance(obj, pystac.Collection):
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
-        if isinstance(obj, ps.Item):
+        if isinstance(obj, pystac.Item):
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
-        elif isinstance(obj, ps.Asset):
+        elif isinstance(obj, pystac.Asset):
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise ExtensionException(
@@ -345,8 +345,8 @@ class DatacubeExtension(
             )
 
 
-class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
-    def __init__(self, collection: ps.Collection):
+class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
+    def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
 
@@ -354,8 +354,8 @@ class CollectionDatacubeExtension(DatacubeExtension[ps.Collection]):
         return "<CollectionDatacubeExtension Item id={}>".format(self.collection.id)
 
 
-class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
-    def __init__(self, item: ps.Item):
+class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
@@ -363,11 +363,11 @@ class ItemDatacubeExtension(DatacubeExtension[ps.Item]):
         return "<ItemDatacubeExtension Item id={}>".format(self.item.id)
 
 
-class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
-    def __init__(self, asset: ps.Asset):
+class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, ps.Item):
+        if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -377,8 +377,8 @@ class AssetDatacubeExtension(DatacubeExtension[ps.Asset]):
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: Set[str] = set(["datacube"])
-    stac_object_types: Set[ps.STACObjectType] = set(
-        [ps.STACObjectType.COLLECTION, ps.STACObjectType.ITEM]
+    stac_object_types: Set[pystac.STACObjectType] = set(
+        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
     )
 
 
