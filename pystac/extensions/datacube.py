@@ -3,7 +3,6 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -340,7 +339,7 @@ class DatacubeExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"Datacube extension does not apply to type {type(obj)}"
             )
 

@@ -4,7 +4,6 @@ from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -119,7 +118,7 @@ class TimestampsExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

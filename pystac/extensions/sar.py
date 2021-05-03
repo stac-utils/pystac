@@ -8,7 +8,7 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions.base import ExtensionException, ExtensionManagementMixin
+from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
@@ -312,7 +312,7 @@ class SarExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

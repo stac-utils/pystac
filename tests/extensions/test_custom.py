@@ -6,7 +6,6 @@ import unittest
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions import ExtensionError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -45,7 +44,7 @@ class CustomExtension(
         if self.obj is not None:
             self.obj.add_link(pystac.Link(TEST_LINK_REL, target))
         else:
-            raise ExtensionError(f"{self} does not support links")
+            raise pystac.ExtensionAlreadyExistsError(f"{self} does not support links")
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -62,7 +61,9 @@ class CustomExtension(
         if isinstance(obj, pystac.Catalog):
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
-        raise ExtensionError(f"Custom extension does not apply to {type(obj)}")
+        raise pystac.ExtensionTypeError(
+            f"Custom extension does not apply to {type(obj)}"
+        )
 
     @staticmethod
     def summaries(obj: pystac.Collection) -> "SummariesCustomExtension":

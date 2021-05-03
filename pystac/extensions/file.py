@@ -8,7 +8,6 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
@@ -147,7 +146,7 @@ class FileExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(FileExtension[T], AssetFileExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

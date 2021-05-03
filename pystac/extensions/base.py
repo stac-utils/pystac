@@ -4,10 +4,6 @@ from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, 
 import pystac
 
 
-class ExtensionException(Exception):
-    pass
-
-
 class SummariesExtension:
     def __init__(self, collection: pystac.Collection) -> None:
         self.summaries = collection.summaries

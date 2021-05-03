@@ -3,7 +3,6 @@ from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -160,7 +159,7 @@ class ViewExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"View extension does not apply to type {type(obj)}"
             )
 

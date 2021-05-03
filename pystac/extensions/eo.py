@@ -4,7 +4,6 @@ from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
@@ -305,7 +304,9 @@ class EOExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
-            raise ExtensionException(f"EO extension does not apply to type {type(obj)}")
+            raise pystac.ExtensionTypeError(
+                f"EO extension does not apply to type {type(obj)}"
+            )
 
     @staticmethod
     def summaries(obj: pystac.Collection) -> "SummariesEOExtension":

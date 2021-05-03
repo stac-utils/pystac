@@ -1,6 +1,5 @@
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -196,7 +195,7 @@ class ProjectionExtension(
         Coordinates are defined in latitude and longitude, even if the data coordinate
         system does not use lat/long.
 
-        Exmample::
+        Example::
 
             item.ext.proj.centroid = { 'lat': 0.0, 'lon': 0.0 }
 
@@ -259,7 +258,7 @@ class ProjectionExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

@@ -3,7 +3,6 @@ from functools import lru_cache
 from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING
 
 import pystac
-from pystac.extensions import ExtensionError
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
@@ -69,7 +68,7 @@ class RegisteredExtensionHooks:
     def add_extension_hooks(self, hooks: ExtensionHooks) -> None:
         e_id = hooks.schema_uri
         if e_id in self.hooks:
-            raise ExtensionError(
+            raise pystac.ExtensionAlreadyExistsError(
                 "ExtensionDefinition with id '{}' already exists.".format(e_id)
             )
 

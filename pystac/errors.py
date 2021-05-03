@@ -19,6 +19,22 @@ class STACTypeError(Exception):
     pass
 
 
+class ExtensionTypeError(Exception):
+    """An ExtensionTypeError is raised when an extension is used against
+    an object that the extension does not apply to
+    """
+
+    pass
+
+
+class ExtensionAlreadyExistsError(Exception):
+    """An ExtensionAlreadyExistsError is raised when extension hooks
+    are registered with PySTAC if there are already hooks registered
+    for an extension with the same ID."""
+
+    pass
+
+
 class RequiredPropertyMissing(Exception):
     """This error is raised when a required value was expected
     to be there but was missing or None. This will happen, for example,

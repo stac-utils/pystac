@@ -13,7 +13,6 @@ from urllib import parse
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -199,7 +198,7 @@ class ScientificExtension(
         if isinstance(obj, pystac.Item):
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

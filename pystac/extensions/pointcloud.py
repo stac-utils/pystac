@@ -3,7 +3,6 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -525,7 +524,7 @@ class PointcloudExtension(
         elif isinstance(obj, pystac.Asset):
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

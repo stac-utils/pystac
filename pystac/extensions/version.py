@@ -10,7 +10,6 @@ from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
-    ExtensionException,
     ExtensionManagementMixin,
     PropertiesExtension,
 )
@@ -160,7 +159,7 @@ class VersionExtension(
         if isinstance(obj, pystac.Item):
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
-            raise ExtensionException(
+            raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
 

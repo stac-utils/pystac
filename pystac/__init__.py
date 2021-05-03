@@ -6,6 +6,8 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 from pystac.errors import (
     STACError,  # type:ignore
     STACTypeError,  # type:ignore
+    ExtensionAlreadyExistsError,  # type:ignore
+    ExtensionTypeError,  # type:ignore
     RequiredPropertyMissing,  # type:ignore
 )
 
