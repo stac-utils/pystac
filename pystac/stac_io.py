@@ -12,6 +12,7 @@ from typing import (
     Type,
     Union,
 )
+import warnings
 
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -256,11 +257,21 @@ class STAC_IO:
 
     @staticmethod
     def read_text_method(uri: str) -> str:
+        warnings.warn(
+            "STAC_IO is deprecated. "
+            "Please use instances of StacIO (e.g. StacIO.default()).",
+            DeprecationWarning,
+        )
         return StacIO.default().read_text(uri)
 
     @staticmethod
     def write_text_method(uri: str, txt: str) -> None:
         """Default method for writing text."""
+        warnings.warn(
+            "STAC_IO is deprecated. "
+            "Please use instances of StacIO (e.g. StacIO.default()).",
+            DeprecationWarning,
+        )
         return StacIO.default().write_text(uri, txt)
 
     @staticmethod
@@ -269,6 +280,11 @@ class STAC_IO:
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
+        warnings.warn(
+            "STAC_IO is deprecated. "
+            "Please use instances of StacIO (e.g. StacIO.default()).",
+            DeprecationWarning,
+        )
         return pystac.serialization.stac_object_from_dict(d, href, root)
 
     # This is set in __init__.py
