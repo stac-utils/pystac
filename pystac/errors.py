@@ -53,3 +53,18 @@ class RequiredPropertyMissing(Exception):
     ) -> None:
         msg = msg or f"{repr(obj)} does not have required property {prop}"
         super().__init__(msg)
+
+
+class STACValidationError(Exception):
+    """Represents a validation error. Thrown by validation calls if the STAC JSON
+    is invalid.
+
+    Args:
+        source (object): Source of the exception. Type will be determined by the
+            validation implementation. For the default JsonSchemaValidator this will a
+            the ``jsonschema.ValidationError``.
+    """
+
+    def __init__(self, message: str, source: Optional[Any] = None):
+        super().__init__(message)
+        self.source = source

@@ -1,7 +1,6 @@
 """Tests for pystac.extensions.version."""
 
 import datetime
-from pystac.validation import STACValidationError
 import unittest
 
 import pystac
@@ -99,7 +98,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.item.validate()
 
     def test_fail_validate(self):
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
     def test_all_links(self):
@@ -296,7 +295,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.collection.validate()
 
     def test_fail_validate(self):
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             self.collection.validate()
 
     def test_validate_all(self):

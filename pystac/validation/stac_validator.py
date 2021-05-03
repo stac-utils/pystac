@@ -5,7 +5,6 @@ from pystac.stac_object import STACObjectType
 from typing import Any, Dict, List, Optional, Tuple
 
 import pystac
-from pystac.validation import STACValidationError
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
 try:
@@ -220,7 +219,7 @@ class JsonSchemaSTACValidator(STACValidator):
             msg = self._get_error_message(
                 schema_uri, stac_object_type, None, href, stac_dict.get("id")
             )
-            raise STACValidationError(msg, source=e) from e
+            raise pystac.STACValidationError(msg, source=e) from e
 
     def validate_extension(
         self,
@@ -258,7 +257,7 @@ class JsonSchemaSTACValidator(STACValidator):
             msg = self._get_error_message(
                 schema_uri, stac_object_type, extension_id, href, stac_dict.get("id")
             )
-            raise STACValidationError(msg, source=e) from e
+            raise pystac.STACValidationError(msg, source=e) from e
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)

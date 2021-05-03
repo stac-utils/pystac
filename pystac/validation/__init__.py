@@ -11,21 +11,6 @@ if TYPE_CHECKING:
     from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
-class STACValidationError(Exception):
-    """Represents a validation error. Thrown by validation calls if the STAC JSON
-    is invalid.
-
-    Args:
-        source (object): Source of the exception. Type will be determined by the
-            validation implementation. For the default JsonSchemaValidator this will a
-            the ``jsonschema.ValidationError``.
-    """
-
-    def __init__(self, message: str, source: Optional[Any] = None):
-        super().__init__(message)
-        self.source = source
-
-
 # Import after above class definition
 from pystac.validation.stac_validator import STACValidator, JsonSchemaSTACValidator
 

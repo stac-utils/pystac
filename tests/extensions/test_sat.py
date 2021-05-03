@@ -2,7 +2,6 @@
 
 import datetime
 from typing import Any, Dict
-from pystac.validation import STACValidationError
 import unittest
 
 import pystac
@@ -32,7 +31,7 @@ class SatTest(unittest.TestCase):
 
     def test_no_args_fails(self):
         SatExtension.ext(self.item).apply()
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
     def test_orbit_state(self):
@@ -54,7 +53,7 @@ class SatTest(unittest.TestCase):
     def test_relative_orbit_no_negative(self):
         negative_relative_orbit = -2
         SatExtension.ext(self.item).apply(None, negative_relative_orbit)
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
     def test_both(self):

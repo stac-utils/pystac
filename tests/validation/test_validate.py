@@ -13,7 +13,6 @@ import pystac
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
-from pystac.validation import STACValidationError
 from tests.utils import TestCases
 
 
@@ -64,10 +63,10 @@ class ValidateTest(unittest.TestCase):
                         if valid:
                             pystac.validation.validate_dict(stac_json)
                         else:
-                            with self.assertRaises(STACValidationError):
+                            with self.assertRaises(pystac.STACValidationError):
                                 try:
                                     pystac.validation.validate_dict(stac_json)
-                                except STACValidationError as e:
+                                except pystac.STACValidationError as e:
                                     self.assertIsInstance(
                                         e.source, jsonschema.ValidationError
                                     )
@@ -81,10 +80,10 @@ class ValidateTest(unittest.TestCase):
 
         item.geometry = {"type": "INVALID"}
 
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             try:
                 item.validate()
-            except STACValidationError as e:
+            except pystac.STACValidationError as e:
                 self.assertTrue(get_opt(item.get_self_href()) in str(e))
                 raise e
 
@@ -122,7 +121,7 @@ class ValidateTest(unittest.TestCase):
 
             stac_dict = pystac.StacIO.default().read_json(new_cat_href)
 
-            with self.assertRaises(STACValidationError):
+            with self.assertRaises(pystac.STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
 
     def test_validates_geojson_with_tuple_coordinates(self):

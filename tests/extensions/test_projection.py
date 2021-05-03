@@ -4,7 +4,6 @@ import unittest
 from copy import deepcopy
 
 import pystac
-from pystac.validation import STACValidationError
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.utils import TestCases, test_to_from_dict
@@ -217,7 +216,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
         # Ensure setting bad projjson fails validation
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
@@ -258,7 +257,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
         # Ensure setting bad geometry fails validation
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
@@ -332,7 +331,7 @@ class ProjectionTest(unittest.TestCase):
         proj_item.validate()
 
         # Ensure setting bad centroid fails validation
-        with self.assertRaises(STACValidationError):
+        with self.assertRaises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).centroid = {"lat": 2.0, "lng": 3.0}
             proj_item.validate()
 

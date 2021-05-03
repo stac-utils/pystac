@@ -17,7 +17,6 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.validation import STACValidationError
 from pystac.utils import is_absolute_href
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, MockStacIO
 
@@ -804,7 +803,7 @@ class CatalogTest(unittest.TestCase):
 
             cat2 = pystac.Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
 
-            with self.assertRaises(STACValidationError):
+            with self.assertRaises(pystac.STACValidationError):
                 cat2.validate_all()
 
     def test_set_hrefs_manually(self):

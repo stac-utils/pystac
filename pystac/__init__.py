@@ -9,6 +9,7 @@ from pystac.errors import (
     ExtensionAlreadyExistsError,  # type:ignore
     ExtensionTypeError,  # type:ignore
     RequiredPropertyMissing,  # type:ignore
+    STACValidationError,  #  type:ignore
 )
 
 from typing import Any, Dict, Optional
@@ -34,7 +35,6 @@ from pystac.collection import (
 from pystac.item import Item, Asset, CommonMetadata  # type:ignore
 
 import pystac.validation
-from pystac.validation import STACValidationError  # type:ignore
 
 import pystac.extensions.hooks
 import pystac.extensions.datacube
