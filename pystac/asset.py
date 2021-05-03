@@ -84,7 +84,7 @@ class Asset:
         href is relative).
 
         Returns:
-            str: The absolute HREF of this asset, or a relative HREF is an absolute HREF
+            str: The absolute HREF of this asset, or a relative HREF if an absolute HREF
             cannot be determined.
         """
         if not is_absolute_href(self.href):
