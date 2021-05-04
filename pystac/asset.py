@@ -79,19 +79,20 @@ class Asset:
     def get_absolute_href(self) -> Optional[str]:
         """Gets the absolute href for this asset, if possible.
 
-        If this Asset has no associated Item, this will return whatever the
-        href is (as it cannot determine the absolute path, if the asset
-        href is relative).
+        If this Asset has no associated Item, and the asset HREF is a relative path,
+            this method will return None.
 
         Returns:
-            str: The absolute HREF of this asset, or a relative HREF if an absolute HREF
-            cannot be determined.
+            str: The absolute HREF of this asset, or None if an absolute HREF could not
+                be determined.
         """
-        if not is_absolute_href(self.href):
+        if is_absolute_href(self.href):
+            return self.href
+        else:
             if self.owner is not None:
                 return make_absolute_href(self.href, self.owner.get_self_href())
-
-        return self.href
+            else:
+                return None
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Asset.
