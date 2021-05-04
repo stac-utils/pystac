@@ -749,8 +749,10 @@ class Collection(Catalog):
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str) -> "Collection":
-        result = super().from_file(href)
+    def from_file(
+        cls, href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> "Collection":
+        result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
             raise pystac.STACTypeError(f"{result} is not a {Collection}.")
         return result

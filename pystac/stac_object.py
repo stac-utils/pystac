@@ -453,9 +453,8 @@ class STACObject(ABC):
 
         if not is_absolute_href(href):
             href = make_absolute_href(href)
-        d = stac_io.read_json(href)
 
-        o = stac_io.stac_object_from_dict(d, href, None)
+        o = stac_io.read_stac_object(href)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:

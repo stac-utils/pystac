@@ -973,8 +973,8 @@ class Item(STACObject):
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str) -> "Item":
-        result = super().from_file(href)
+    def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> "Item":
+        result = super().from_file(href, stac_io)
         if not isinstance(result, Item):
             raise pystac.STACTypeError(f"{result} is not a {Item}.")
         return result

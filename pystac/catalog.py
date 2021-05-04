@@ -939,8 +939,8 @@ class Catalog(STACObject):
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str) -> "Catalog":
-        result = super().from_file(href)
+    def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> "Catalog":
+        result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
             raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
         return result
