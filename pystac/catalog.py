@@ -27,6 +27,7 @@ from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
     from pystac.item import Asset as Asset_Type, Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
 
 
 class CatalogType(str, Enum):
@@ -187,7 +188,7 @@ class Catalog(STACObject):
 
     def add_child(
         self,
-        child: "Catalog",
+        child: Union["Catalog", "Collection_Type"],
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
@@ -220,7 +221,9 @@ class Catalog(STACObject):
 
         self.add_link(Link.child(child, title=title))
 
-    def add_children(self, children: Iterable["Catalog"]) -> None:
+    def add_children(
+        self, children: Iterable[Union["Catalog", "Collection_Type"]]
+    ) -> None:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection` objects.
         This method will set each child's parent to this object, and their root to
         this Catalog's root.
@@ -275,7 +278,9 @@ class Catalog(STACObject):
         for item in items:
             self.add_item(item)
 
-    def get_child(self, id: str, recursive: bool = False) -> Optional["Catalog"]:
+    def get_child(
+        self, id: str, recursive: bool = False
+    ) -> Optional[Union["Catalog", "Collection_Type"]]:
         """Gets the child of this catalog with the given ID, if it exists.
 
         Args:
@@ -285,7 +290,8 @@ class Catalog(STACObject):
                 to False.
 
         Return:
-            Item or None: The item with the given ID, or None if not found.
+            Optional Catalog or Collection: The child with the given ID,
+            or None if not found.
         """
         if not recursive:
             return next((c for c in self.get_children() if c.id == id), None)
@@ -296,14 +302,17 @@ class Catalog(STACObject):
                     return child
             return None
 
-    def get_children(self) -> Iterable["Catalog"]:
+    def get_children(self) -> Iterable[Union["Catalog", "Collection_Type"]]:
         """Return all children of this catalog.
 
         Return:
-            Iterable[Catalog]: Generator of children who's parent
+            Iterable[Catalog or Collection]: Iterable of children who's parent
             is this catalog.
         """
-        return map(lambda x: cast(pystac.Catalog, x), self.get_stac_objects("child"))
+        return map(
+            lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
+            self.get_stac_objects("child"),
+        )
 
     def get_child_links(self) -> List[Link]:
         """Return all child links of this catalog.
