@@ -202,6 +202,10 @@ def migrate_to_latest(
                         migration_fn(result, version, info)
                     result["stac_extensions"].remove(ext)
 
-    result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
+        result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
+    else:
+        # Ensure stac_extensions property for consistency
+        if "stac_extensions" not in result:
+            result["stac_extensions"] = []
 
     return result
