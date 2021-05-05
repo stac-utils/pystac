@@ -1,8 +1,13 @@
-from pystac.collection import RangeSummary
+"""Implements the Electro-Optical (EO) extension.
+
+https://github.com/stac-extensions/eo
+"""
+
 import re
 from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
 import pystac
+from pystac.collection import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,

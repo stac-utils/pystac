@@ -1,9 +1,9 @@
+"""Implements the File extension.
+
+https://github.com/stac-extensions/file
+"""
+
 import enum
-from pystac.serialization.identify import (
-    OldExtensionShortIDs,
-    STACJSONDescription,
-    STACVersionID,
-)
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
@@ -13,6 +13,11 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import (
+    OldExtensionShortIDs,
+    STACJSONDescription,
+    STACVersionID,
+)
 from pystac.utils import map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

@@ -1,10 +1,9 @@
-"""Implement the Satellite (SAT) Extension.
+"""Implements the Satellite extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/sat
+https://github.com/stac-extensions/sat
 """
 
 import enum
-from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
@@ -12,6 +11,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

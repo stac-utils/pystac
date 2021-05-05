@@ -1,5 +1,8 @@
-"""STAC Model classes for Label extension.
+"""Implements the Label extension.
+
+https://github.com/stac-extensions/label
 """
+
 from enum import Enum
 from pystac.extensions.base import ExtensionManagementMixin
 from typing import Any, Dict, Iterable, List, Optional, Set, Union, cast

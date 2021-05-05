@@ -1,5 +1,9 @@
+"""Implements the Timestamps extension.
+
+https://github.com/stac-extensions/timestamps
+"""
+
 from datetime import datetime as Datetime
-from pystac.extensions.hooks import ExtensionHooks
 from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
@@ -7,6 +11,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

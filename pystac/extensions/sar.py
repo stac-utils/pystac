@@ -1,6 +1,6 @@
-"""Implement the STAC Synthetic-Aperture Radar (SAR) Extension.
+"""Implements the Synthetic-Aperture Radar (SAR) extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/sar
+https://github.com/stac-extensions/sar
 """
 
 import enum

@@ -1,8 +1,6 @@
-"""Implement the version extension.
+"""Implements the Version extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/version
-
-Note that the version/schema.json does not know about the links.
+https://github.com/stac-extensions/version
 """
 
 from pystac.utils import get_required, map_opt

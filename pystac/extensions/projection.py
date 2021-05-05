@@ -1,11 +1,16 @@
+"""Implements the Projection extension.
+
+https://github.com/stac-extensions/projection
+"""
+
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+
+import pystac
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
-
-import pystac
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

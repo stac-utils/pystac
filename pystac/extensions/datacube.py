@@ -1,3 +1,8 @@
+"""Implements the Datacube extension.
+
+https://github.com/stac-extensions/datacube
+"""
+
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 

@@ -1,3 +1,8 @@
+"""Implements the Item Assets Definition extension.
+
+https://github.com/stac-extensions/item-assets
+"""
+
 from typing import Any, Dict, List, Optional, Set
 
 import pystac

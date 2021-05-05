@@ -1,4 +1,8 @@
-from pystac.extensions.hooks import ExtensionHooks
+"""Implement the View Geometry extension.
+
+https://github.com/stac-extensions/view
+"""
+
 from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
@@ -6,6 +10,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

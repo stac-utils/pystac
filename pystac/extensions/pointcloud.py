@@ -1,4 +1,8 @@
-from pystac.extensions.hooks import ExtensionHooks
+"""Implements the Point Cloud extension.
+
+https://github.com/stac-extensions/pointcloud
+"""
+
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
@@ -6,6 +10,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
