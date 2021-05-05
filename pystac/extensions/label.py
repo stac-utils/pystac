@@ -1,4 +1,6 @@
 """STAC Model classes for Label extension.
+
+https://github.com/stac-extensions/label
 """
 from enum import Enum
 

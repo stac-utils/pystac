@@ -1,3 +1,8 @@
+"""Implement the Electro-Optical (EO) extension.
+
+https://github.com/stac-extensions/eo
+"""
+
 from pystac import Extensions
 from pystac.item import Item
 from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)

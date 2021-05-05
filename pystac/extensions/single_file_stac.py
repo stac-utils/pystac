@@ -1,3 +1,7 @@
+"""Implement the Single File STAC extension.
+
+https://github.com/stac-extensions/single-file-stac
+"""
 from pystac.catalog import Catalog
 
 import pystac

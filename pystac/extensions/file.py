@@ -1,3 +1,8 @@
+"""Implement the Label extension.
+
+https://github.com/stac-extensions/file
+
+"""
 import enum
 
 from pystac import Extensions

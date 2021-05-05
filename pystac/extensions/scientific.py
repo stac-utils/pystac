@@ -1,6 +1,6 @@
 """Implement the scientific extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/scientific
+https://github.com/stac-extensions/scientific
 
 For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
 
