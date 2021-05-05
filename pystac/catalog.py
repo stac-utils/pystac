@@ -17,7 +17,7 @@ class CatalogType(str, Enum):
 
     SELF_CONTAINED = 'SELF_CONTAINED'
     """A 'self-contained catalog' is one that is designed for portability.
-    Users may want to download a catalog from online and be able to use it on their
+    Users may want to download an online catalog from and be able to use it on their
     local computer, so all links need to be relative.
 
     See:
@@ -322,7 +322,7 @@ class Catalog(STACObject):
         """Return all items of this catalog.
 
         Return:
-            Generator[Item]: Generator of items who's parent is this catalog.
+            Generator[Item]: Generator of items whose parent is this catalog.
         """
         return self.get_stac_objects('item')
 
