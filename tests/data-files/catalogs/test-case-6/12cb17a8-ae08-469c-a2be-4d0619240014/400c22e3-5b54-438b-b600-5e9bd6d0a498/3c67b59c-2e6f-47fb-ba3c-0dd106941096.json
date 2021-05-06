@@ -1,10 +1,50 @@
 {
-  "id": "3c67b59c-2e6f-47fb-ba3c-0dd106941096",
-  "stac_version": "1.0.0-beta.2",
-  "stac_extensions": [
-    "label"
-  ],
   "type": "Feature",
+  "stac_version": "1.0.0-rc.3",
+  "id": "3c67b59c-2e6f-47fb-ba3c-0dd106941096",
+  "properties": {
+    "label:description": "Labels in layer",
+    "label:type": "vector",
+    "datetime": "2019-08-21T15:51:17.881000Z",
+    "label:method": [
+      "manual"
+    ],
+    "label:classes": [
+      {
+        "name": "Coverage",
+        "classes": [
+          "Obstructed",
+          "0-10%",
+          "11-50%",
+          "51-90%",
+          "91-100%"
+        ]
+      },
+      {
+        "name": "Data Quality",
+        "classes": [
+          "Bad",
+          "Good"
+        ]
+      },
+      {
+        "name": "Alignment",
+        "classes": [
+          "Obstructed/Unknown",
+          "< 90% overlap",
+          "\u2265 90% overlap"
+        ]
+      }
+    ],
+    "label:task": [
+      "classification"
+    ],
+    "label:property": [
+      "Coverage",
+      "Data Quality",
+      "Alignment"
+    ]
+  },
   "geometry": {
     "type": "Polygon",
     "coordinates": [
@@ -4002,37 +4042,31 @@
       ]
     ]
   },
-  "bbox": [
-    39.191417450329524,
-    -6.892441704534412,
-    39.34885007331245,
-    -6.729678190172387
-  ],
   "links": [
     {
-      "href": "./collection.json",
       "rel": "parent",
-      "type": "application/json",
-      "title": "Label Collection",
-      "label:assets": []
-    },
-    {
       "href": "./collection.json",
-      "rel": "collection",
       "type": "application/json",
       "title": "Label Collection",
       "label:assets": []
     },
     {
-      "href": "../../catalog.json",
+      "rel": "collection",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Label Collection",
+      "label:assets": []
+    },
+    {
       "rel": "root",
+      "href": "../../catalog.json",
       "type": "application/json",
       "title": "Root",
       "label:assets": []
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/3bfb5bd3-5740-4ed0-92c9-968cc532dbc5.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/3bfb5bd3-5740-4ed0-92c9-968cc532dbc5.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4040,8 +4074,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/41c57cea-50ba-495c-9ee7-17ddba837380.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/41c57cea-50ba-495c-9ee7-17ddba837380.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4049,8 +4083,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/4514bbc6-cd17-4c14-816d-1709dfc61079.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/4514bbc6-cd17-4c14-816d-1709dfc61079.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4058,8 +4092,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/52072b95-0275-4255-be5e-c567006f80cb.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/52072b95-0275-4255-be5e-c567006f80cb.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4067,8 +4101,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/84fe42c0-9d23-404a-bd0f-1406112cca8c.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/84fe42c0-9d23-404a-bd0f-1406112cca8c.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4076,8 +4110,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/884a939d-1d73-4351-9601-f9ee89a980b0.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/884a939d-1d73-4351-9601-f9ee89a980b0.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4085,8 +4119,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/a6bd2ff9-3805-40ab-96fa-b7f112b18973.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/a6bd2ff9-3805-40ab-96fa-b7f112b18973.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4094,8 +4128,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/e40bb30d-0295-42ed-ba04-6cf563b057f9.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/e40bb30d-0295-42ed-ba04-6cf563b057f9.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4103,8 +4137,8 @@
       ]
     },
     {
-      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/eb1124cc-3b45-4487-bc2c-4855ac877ad9.json",
       "rel": "source",
+      "href": "../9420e0fd-3731-40e8-93ff-5b6ad0067048/eb1124cc-3b45-4487-bc2c-4855ac877ad9.json",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "title": "Source image STAC item for the label item",
       "label:assets": [
@@ -4115,52 +4149,18 @@
   "assets": {
     "3c67b59c-2e6f-47fb-ba3c-0dd106941096": {
       "href": "./data.geojson",
-      "title": "Label Data Feature Collection",
-      "type": "application/geo+json"
+      "type": "application/geo+json",
+      "title": "Label Data Feature Collection"
     }
   },
-  "collection": "400c22e3-5b54-438b-b600-5e9bd6d0a498",
-  "properties": {
-    "label:description": "Labels in layer",
-    "label:type": "vector",
-    "datetime": "2019-08-21T15:51:17.881Z",
-    "label:method": [
-      "manual"
-    ],
-    "label:classes": [
-      {
-        "name": "Coverage",
-        "classes": [
-          "Obstructed",
-          "0-10%",
-          "11-50%",
-          "51-90%",
-          "91-100%"
-        ]
-      },
-      {
-        "name": "Data Quality",
-        "classes": [
-          "Bad",
-          "Good"
-        ]
-      },
-      {
-        "name": "Alignment",
-        "classes": [
-          "Obstructed/Unknown",
-          "< 90% overlap",
-          "\u2265 90% overlap"
-        ]
-      }
-    ],
-    "label:task": [
-      "classification"
-    ],
-    "label:property": [
-      "Coverage",
-      "Data Quality",
-      "Alignment"
-    ]
-  }
+  "bbox": [
+    39.191417450329524,
+    -6.892441704534412,
+    39.34885007331245,
+    -6.729678190172387
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
+  "collection": "400c22e3-5b54-438b-b600-5e9bd6d0a498"
 }

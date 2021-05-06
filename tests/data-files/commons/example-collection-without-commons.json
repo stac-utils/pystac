@@ -1,67 +1,62 @@
 {
-  "stac_version": "1.0.0-beta.2",
+  "type": "Collection",
+  "id": "collection-without",
+  "stac_version": "1.0.0-rc.3",
+  "description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
+  "links": [
+    {
+      "rel": "parent",
+      "href": "./example-collection-without-commons.json"
+    },
+    {
+      "rel": "root",
+      "href": "./example-collection-without-commons.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "item",
+      "href": "./example-item-without-commons.json"
+    }
+  ],
   "stac_extensions": [
     "view",
     "eo"
   ],
-  "id": "collection-without",
   "title": "Landsat 8 L1",
-  "description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
   "keywords": [
     "landsat"
   ],
-  "extent": {
-    "spatial": {
-      "bbox": [
-        [
-          -180,
-          -90,
-          180,
-          90
-        ]
-      ]
-    },
-    "temporal": {
-      "interval": [
-        [
-          "2013-06-01T00:00:00Z",
-          null
-        ]
-      ]
-    }
-  },
   "providers": [
     {
       "name": "USGS",
-      "url": "https://landsat.usgs.gov/",
       "roles": [
         "producer",
         "licensor"
-      ]
+      ],
+      "url": "https://landsat.usgs.gov/"
     },
     {
       "name": "Planet Labs",
-      "url": "https://github.com/landsat-pds/landsat_ingestor",
       "roles": [
         "processor"
-      ]
+      ],
+      "url": "https://github.com/landsat-pds/landsat_ingestor"
     },
     {
       "name": "AWS",
-      "url": "https://landsatonaws.com/",
       "roles": [
         "host"
-      ]
+      ],
+      "url": "https://landsatonaws.com/"
     },
     {
       "name": "Development Seed",
-      "url": "https://developmentseed.org/",
       "roles": [
         "processor"
-      ]
+      ],
+      "url": "https://developmentseed.org/"
     }
   ],
-  "license": "PDDL-1.0",
   "properties": {
     "platform": "landsat-8",
     "instruments": [
@@ -139,18 +134,25 @@
       }
     ]
   },
-  "links": [
-    {
-      "rel": "parent",
-      "href": "./example-collection-without-commons.json"
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -180,
+          -90,
+          180,
+          90
+        ]
+      ]
     },
-    {
-      "rel": "root",
-      "href": "./example-collection-without-commons.json"
-    },
-    {
-      "rel": "item",
-      "href": "./example-item-without-commons.json"
+    "temporal": {
+      "interval": [
+        [
+          "2013-06-01T00:00:00Z",
+          null
+        ]
+      ]
     }
-  ]
+  },
+  "license": "PDDL-1.0"
 }

@@ -1,0 +1,149 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-rc.3",
+    "id": "20170831_172754_101c",
+    "properties": {
+        "datetime": "2017-08-31T17:27:54.960530Z",
+        "instruments": [
+            "PS2"
+        ],
+        "platform": "101c",
+        "constellation": "planetscope",
+        "created": "2017-10-27T12:14:07Z",
+        "updated": "2017-12-07T07:37:28Z",
+        "gsd": 2.6,
+        "eo:cloud_cover": 2,
+        "view:sun_azimuth": 145.4,
+        "view:sun_elevation": 65.1,
+        "view:off_nadir": 0.2,
+        "proj:epsg": 32615,
+        "pl:anomalous_pixels": 0.01,
+        "pl:columns": 8307,
+        "pl:ground_control": true,
+        "pl:item_type": "PSScene4Band",
+        "pl:origin_x": 205503,
+        "pl:origin_y": 3280320,
+        "pl:pixel_resolution": 3,
+        "pl:quality_category": "test",
+        "pl:rows": 3918,
+        "pl:strip_id": "724553",
+        "pl:usable_data": 0
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -96.03352746458962,
+                    29.549057939888584
+                ],
+                [
+                    -96.03810006842333,
+                    29.569454227086553
+                ],
+                [
+                    -96.03730797076582,
+                    29.569591543553933
+                ],
+                [
+                    -96.04001623809913,
+                    29.581290775117473
+                ],
+                [
+                    -95.79781720037577,
+                    29.62330817060518
+                ],
+                [
+                    -95.78672161779234,
+                    29.575096137087073
+                ],
+                [
+                    -95.7821382652893,
+                    29.55447424651818
+                ],
+                [
+                    -96.0250376017418,
+                    29.512344359576105
+                ],
+                [
+                    -96.03352746458962,
+                    29.549057939888584
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "collection",
+            "href": "../../../collection.json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "thumbnail": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/20170831_172754_101c_thumb_large.png",
+            "type": "image/png",
+            "title": "Thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "analytic": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/20170831_172754_101c_3B_AnalyticMS.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "PSScene4Band Analytic GeoTIFF",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/analytic",
+            "roles": [
+                "data"
+            ]
+        },
+        "analytic_xml": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/20170831_172754_101c_3B_AnalyticMS_metadata.xml",
+            "type": "text/xml",
+            "title": "PSScene4Band XML Metadata",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/analytic_xml",
+            "roles": [
+                "metadata"
+            ]
+        },
+        "udm": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/20170831_172754_101c_3B_AnalyticMS_DN_udm.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "PSScene4Band Unusable Data Mask",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/udm",
+            "roles": [
+                "udm"
+            ]
+        },
+        "visual": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/20170831_172754_101c_3b_Visual.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "PSScene3Band Visual GeoTIFF",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/visual",
+            "roles": [
+                "visual"
+            ]
+        }
+    },
+    "bbox": [
+        -96.04001623809913,
+        29.512344359576105,
+        -95.7821382652893,
+        29.62330817060518
+    ],
+    "stac_extensions": [
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+    ],
+    "collection": "planet-disaster-data"
+}

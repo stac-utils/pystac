@@ -29,7 +29,8 @@ setup(
     include_package_data=False,
     install_requires=["python-dateutil>=2.7.0"],
     extras_require={
-        "validation": ["jsonschema==3.2.0"]
+        "validation": ["jsonschema>=3.0"],
+        "orjson": ["orjson>=3.5"]
     },
     license="Apache Software License 2.0",
     zip_safe=False,

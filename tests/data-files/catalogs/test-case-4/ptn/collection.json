@@ -1,6 +1,7 @@
 {
+  "type": "Collection",
   "id": "ptn",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.3",
   "description": "Tier 1 training data from ptn",
   "links": [
     {
@@ -34,6 +35,7 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "extent": {
     "spatial": {
       "bbox": [
@@ -54,8 +56,5 @@
       ]
     }
   },
-  "license": "various",
-  "stac_extensions": [
-    "label"
-  ]
+  "license": "various"
 }

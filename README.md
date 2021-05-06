@@ -114,6 +114,14 @@ To build and develop the documentation locally, make sure sphinx is available (w
 > make livehtml
 ```
 
+> Note: You will see some warnings along the lines of 
+> ```
+> WARNING: duplicate object description of pystac.Collection.id, 
+> other instance in api, use :noindex: for one of them
+> ``` 
+> for some of the
+> classes. This is expected due to [sphinx-doc/sphinx#8664](https://github.com/sphinx-doc/sphinx/issues/8664).
+
 Use 'make' without arguments to see a list of available commands.
 
 __Note__: `nbsphinx` requires that a local `pystac` is installed; use `pip install -e .`.

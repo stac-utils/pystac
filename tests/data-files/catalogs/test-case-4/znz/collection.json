@@ -1,6 +1,7 @@
 {
+  "type": "Collection",
   "id": "znz",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.3",
   "description": "Tier 1 training data from znz",
   "links": [
     {
@@ -144,6 +145,7 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "extent": {
     "spatial": {
       "bbox": [
@@ -164,8 +166,5 @@
       ]
     }
   },
-  "license": "CC-BY-4.0",
-  "stac_extensions": [
-    "label"
-  ]
+  "license": "CC-BY-4.0"
 }

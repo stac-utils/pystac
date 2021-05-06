@@ -4,11 +4,25 @@
 
 ### Added
 
+- Added type annotations across the library ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added assets to collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `item_assets` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `datacube` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added specific errors: `ExtensionAlreadyExistsError`, `ExtensionTypeError`, and `RequiredPropertyMissing`; moved custom exceptions to `pystac.errors` ([#309](https://github.com/stac-utils/pystac/pull/309))
+
 ### Fixed
 
 ### Changed
 
+- API change: The extension API changed significantly. See ([#309](https://github.com/stac-utils/pystac/pull/309)) for more details.
+- API change: Refactored the global STAC_IO object to an instance-specific `StacIO` implementation. STAC_IO is deprecated and will be removed next release. ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Asset.get_absolute_href returns None if no absolute href can be inferred (previously the relative href that was passed in was returned) ([#309](https://github.com/stac-utils/pystac/pull/309))
+
 ### Removed
+
+- Removed `properties` from Collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
+- Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
 
 ## [v0.5.6]
 

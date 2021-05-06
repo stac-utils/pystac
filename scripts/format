@@ -17,6 +17,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        yapf -ipr pystac tests
+        black pystac
+        black tests
     fi
 fi

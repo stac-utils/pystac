@@ -1,16 +1,39 @@
-"""Implement the Label extension.
+"""Implements the File extension.
 
 https://github.com/stac-extensions/file
-
 """
+
 import enum
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
-from pystac import Extensions
-from pystac.item import Item
-from pystac.extensions.base import (ItemExtension, ExtensionDefinition, ExtendedObject)
+import pystac
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+    SummariesExtension,
+)
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import (
+    OldExtensionShortIDs,
+    STACJSONDescription,
+    STACVersionID,
+)
+from pystac.utils import map_opt
+
+T = TypeVar("T", pystac.Item, pystac.Asset)
+
+SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
+
+DATA_TYPE_PROP = "file:data_type"
+SIZE_PROP = "file:size"
+NODATA_PROP = "file:nodata"
+CHECKSUM_PROP = "file:checksum"
 
 
-class FileDataType(enum.Enum):
+class FileDataType(str, enum.Enum):
+    def __str__(self) -> str:
+        return str(self.value)
+
     INT8 = "int8"
     INT16 = "int16"
     INT32 = "int32"
@@ -29,7 +52,9 @@ class FileDataType(enum.Enum):
     OTHER = "other"
 
 
-class FileItemExt(ItemExtension):
+class FileExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """FileItemExt is the extension of the Item in the file extension which
     adds file related details such as checksum, data type and size for assets.
 
@@ -43,15 +68,14 @@ class FileItemExt(ItemExtension):
         Using FileItemExt to directly wrap an item will add the 'file' extension ID to
         the item's stac_extensions.
     """
-    def __init__(self, item):
-        if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.FILE]
-        elif Extensions.FILE not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.FILE)
 
-        self.item = item
-
-    def apply(self, data_type=None, size=None, nodata=None, checksum=None):
+    def apply(
+        self,
+        data_type: Optional[FileDataType] = None,
+        size: Optional[int] = None,
+        nodata: Optional[List[Any]] = None,
+        checksum: Optional[str] = None,
+    ) -> None:
         """Applies file extension properties to the extended Item.
 
         Args:
@@ -66,167 +90,175 @@ class FileItemExt(ItemExtension):
         self.nodata = nodata
         self.checksum = checksum
 
-    def _set_property(self, key, value, asset):
-        target = self.item.properties if asset is None else asset.properties
-        if value is None:
-            target.pop(key, None)
-        else:
-            target[key] = value
-
     @property
-    def data_type(self):
+    def data_type(self) -> Optional[FileDataType]:
         """Get or sets the data_type of the file.
 
         Returns:
             FileDataType
         """
-        return self.get_data_type()
+        return map_opt(
+            lambda s: FileDataType(s), self._get_property(DATA_TYPE_PROP, str)
+        )
 
     @data_type.setter
-    def data_type(self, v):
-        self.set_data_type(v)
-
-    def get_data_type(self, asset=None):
-        """Gets an Item or an Asset data_type.
-
-        If an Asset is supplied and the data_type property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            FileDataType
-        """
-        if asset is not None and 'file:data_type' in asset.properties:
-            data_type = asset.properties.get('file:data_type')
-        else:
-            data_type = self.item.properties.get('file:data_type')
-
-        if data_type is not None:
-            return FileDataType(data_type)
-
-    def set_data_type(self, data_type, asset=None):
-        """Set an Item or an Asset data_type.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('file:data_type', data_type.value, asset)
+    def data_type(self, v: Optional[FileDataType]) -> None:
+        self._set_property(DATA_TYPE_PROP, str(v))
 
     @property
-    def size(self):
+    def size(self) -> Optional[int]:
         """Get or sets the size in bytes of the file
 
         Returns:
             int or None
         """
-        return self.get_size()
+        return self._get_property(SIZE_PROP, int)
 
     @size.setter
-    def size(self, v):
-        self.set_size(v)
-
-    def get_size(self, asset=None):
-        """Gets an Item or an Asset file size.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            float
-        """
-        if asset is None or 'file:size' not in asset.properties:
-            return self.item.properties.get('file:size')
-        else:
-            return asset.properties.get('file:size')
-
-    def set_size(self, size, asset=None):
-        """Set an Item or an Asset size.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('file:size', size, asset)
+    def size(self, v: Optional[int]) -> None:
+        self._set_property(SIZE_PROP, v)
 
     @property
-    def nodata(self):
-        """Get or sets the no data values
-
-        Returns:
-            int or None
-        """
-        return self.get_nodata()
+    def nodata(self) -> Optional[List[Any]]:
+        """Get or sets the no data values"""
+        return self._get_property(NODATA_PROP, List[Any])
 
     @nodata.setter
-    def nodata(self, v):
-        self.set_nodata(v)
-
-    def get_nodata(self, asset=None):
-        """Gets an Item or an Asset nodata values.
-
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
-
-        Returns:
-            list[object]
-        """
-        if asset is None or 'file:nodata' not in asset.properties:
-            return self.item.properties.get('file:nodata')
-        else:
-            return asset.properties.get('file:nodata')
-
-    def set_nodata(self, nodata, asset=None):
-        """Set an Item or an Asset nodata values.
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._set_property('file:nodata', nodata, asset)
+    def nodata(self, v: Optional[List[Any]]) -> None:
+        self._set_property(NODATA_PROP, v)
 
     @property
-    def checksum(self):
+    def checksum(self) -> Optional[str]:
         """Get or sets the checksum
 
         Returns:
             str or None
         """
-        return self.get_checksum()
+        return self._get_property(CHECKSUM_PROP, str)
 
     @checksum.setter
-    def checksum(self, v):
-        self.set_checksum(v)
+    def checksum(self, v: Optional[str]) -> None:
+        self._set_property(CHECKSUM_PROP, v)
 
-    def get_checksum(self, asset=None):
-        """Gets an Item or an Asset checksum.
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-        If an Asset is supplied and the Item property exists on the Asset,
-        returns the Asset's value. Otherwise returns the Item's value
+    @staticmethod
+    def ext(obj: T) -> "FileExtension[T]":
+        if isinstance(obj, pystac.Item):
+            return cast(FileExtension[T], ItemFileExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            return cast(FileExtension[T], AssetFileExtension(obj))
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File extension does not apply to type {type(obj)}"
+            )
+
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesFileExtension":
+        return SummariesFileExtension(obj)
+
+
+class ItemFileExtension(FileExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return "<ItemFileExtension Item id={}>".format(self.item.id)
+
+
+class AssetFileExtension(FileExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesFileExtension(SummariesExtension):
+    @property
+    def data_type(self) -> Optional[List[FileDataType]]:
+        """Get or sets the data_type of the file.
 
         Returns:
-            list[object]
+            FileDataType
         """
-        if asset is None or 'file:checksum' not in asset.properties:
-            return self.item.properties.get('file:checksum')
-        else:
-            return asset.properties.get('file:checksum')
+        return map_opt(
+            lambda x: [FileDataType(t) for t in x],
+            self.summaries.get_list(DATA_TYPE_PROP, str),
+        )
 
-    def set_checksum(self, checksum, asset=None):
-        """Set an Item or an Asset checksum.
+    @data_type.setter
+    def data_type(self, v: Optional[List[FileDataType]]) -> None:
+        self._set_summary(DATA_TYPE_PROP, map_opt(lambda x: [str(t) for t in x], v))
 
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
+    @property
+    def size(self) -> Optional[pystac.RangeSummary[int]]:
+        """Get or sets the size in bytes of the file
+
+        Returns:
+            int or None
         """
-        self._set_property('file:checksum', checksum, asset)
+        return self.summaries.get_range(SIZE_PROP, int)
 
-    def __repr__(self):
-        return '<FileItemExt Item id={}>'.format(self.item.id)
+    @size.setter
+    def size(self, v: Optional[pystac.RangeSummary[int]]) -> None:
+        self._set_summary(SIZE_PROP, v)
 
-    @classmethod
-    def _object_links(cls):
-        return []
+    @property
+    def nodata(self) -> Optional[List[Any]]:
+        """Get or sets the list of no data values"""
+        return self.summaries.get_list(NODATA_PROP, List[Any])
 
-    @classmethod
-    def from_item(cls, item):
-        return cls(item)
+    @nodata.setter
+    def nodata(self, v: Optional[List[Any]]) -> None:
+        self._set_summary(NODATA_PROP, v)
 
 
-FILE_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.FILE,
-                                                [ExtendedObject(Item, FileItemExt)])
+class FileExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(["file"])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+
+    def migrate(
+        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        # The checksum field was previously it's own extension.
+        old_checksum: Optional[Dict[str, str]] = None
+        if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
+            if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
+                old_item_checksum = obj["properties"].get("checksum:multihash")
+                if old_item_checksum is not None:
+                    if old_checksum is None:
+                        old_checksum = {}
+                    old_checksum["__item__"] = old_item_checksum
+                for asset_key, asset in obj["assets"].items():
+                    old_asset_checksum = asset.get("checksum:multihash")
+                    if old_asset_checksum is not None:
+                        if old_checksum is None:
+                            old_checksum = {}
+                        old_checksum[asset_key] = old_asset_checksum
+
+                try:
+                    obj["stac_extensions"].remove(OldExtensionShortIDs.CHECKSUM.value)
+                except ValueError:
+                    pass
+
+        super().migrate(obj, version, info)
+
+        if old_checksum is not None:
+            if SCHEMA_URI not in obj["stac_extensions"]:
+                obj["stac_extensions"].append(SCHEMA_URI)
+            for key in old_checksum:
+                if key == "__item__":
+                    obj["properties"][CHECKSUM_PROP] = old_checksum[key]
+                else:
+                    obj["assets"][key][CHECKSUM_PROP] = old_checksum[key]
+
+
+FILE_EXTENSION_HOOKS = FileExtensionHooks()

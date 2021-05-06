@@ -2,13 +2,12 @@ import json
 import unittest
 
 import pystac
-from pystac import Item
-from tests.utils import (TestCases, test_to_from_dict)
-from pystac.extensions.file import FileDataType
+from tests.utils import TestCases, test_to_from_dict
+from pystac.extensions.file import FileExtension, FileDataType
 
 
 class FileTest(unittest.TestCase):
-    FILE_EXAMPLE_URI = TestCases.get_path('data-files/file/file-example.json')
+    FILE_EXAMPLE_URI = TestCases.get_path("data-files/file/file-example.json")
 
     def setUp(self):
         self.maxDiff = None
@@ -16,61 +15,76 @@ class FileTest(unittest.TestCase):
     def test_to_from_dict(self):
         with open(self.FILE_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, Item, item_dict)
+        test_to_from_dict(self, pystac.Item, item_dict)
 
     def test_validate_file(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         item.validate()
 
     def test_asset_size(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(146484, item.ext.file.get_size(asset))
+        self.assertEqual(146484, FileExtension.ext(asset).size)
 
         # Set
         new_size = 1
-        item.ext.file.set_size(new_size, asset)
-        self.assertEqual(new_size, item.ext.file.get_size(asset))
+        FileExtension.ext(asset).size = new_size
+        self.assertEqual(new_size, FileExtension.ext(asset).size)
         item.validate()
 
     def test_asset_checksum(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual("90e40210f52acd32b09769d3b1871b420789456c",
-                         item.ext.file.get_checksum(asset))
+        self.assertEqual(
+            "90e40210f52acd32b09769d3b1871b420789456c",
+            FileExtension.ext(asset).checksum,
+        )
 
         # Set
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
-        item.ext.file.set_checksum(new_checksum, asset)
-        self.assertEqual(new_checksum, item.ext.file.get_checksum(asset))
+        FileExtension.ext(asset).checksum = new_checksum
+        self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
         item.validate()
 
     def test_asset_data_type(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual(FileDataType.UINT8, item.ext.file.get_data_type(asset))
+        self.assertEqual(FileDataType.UINT8, FileExtension.ext(asset).data_type)
 
         # Set
         new_data_type = FileDataType.UINT16
-        item.ext.file.set_data_type(new_data_type, asset)
-        self.assertEqual(new_data_type, item.ext.file.get_data_type(asset))
+        FileExtension.ext(asset).data_type = new_data_type
+        self.assertEqual(new_data_type, FileExtension.ext(asset).data_type)
         item.validate()
 
     def test_asset_nodata(self):
-        item = pystac.read_file(self.FILE_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
-        self.assertEqual([], item.ext.file.get_nodata(asset))
+        self.assertEqual([], FileExtension.ext(asset).nodata)
 
         # Set
         new_nodata = [-1]
-        item.ext.file.set_nodata(new_nodata, asset)
-        self.assertEqual(new_nodata, item.ext.file.get_nodata(asset))
+        FileExtension.ext(asset).nodata = new_nodata
+        self.assertEqual(new_nodata, FileExtension.ext(asset).nodata)
         item.validate()
+
+    def test_migrates_old_checksum(self):
+        example_path = TestCases.get_path(
+            "data-files/examples/1.0.0-beta.2/"
+            "extensions/checksum/examples/sentinel1.json"
+        )
+        item = pystac.Item.from_file(example_path)
+
+        self.assertTrue(FileExtension.has_extension(item))
+        self.assertEqual(
+            FileExtension.ext(item.assets["noises"]).checksum,
+            "90e40210a30d1711e81a4b11ef67b28744321659",
+        )

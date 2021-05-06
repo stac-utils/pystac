@@ -1,43 +1,45 @@
 {
-    "id": "test",
-    "stac_version": "1.0.0-beta.2",
-    "description": "test desc",
-    "links": [
-        {
-            "rel": "root",
-            "href": "../catalog.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "item",
-            "href": "./test-item-1/test-item-1.json",
-            "type": "application/json"
-        },
-        {
-            "rel": "parent",
-            "href": "../catalog.json",
-            "type": "application/json"
-        }
-    ],
-    "extent": {
-        "spatial": {
-            "bbox": [
-                [
-                    -2.5048828125,
-                    3.8916575492899987,
-                    -1.9610595703125,
-                    3.8916575492899987
-                ]
-            ]
-        },
-        "temporal": {
-            "interval": [
-                [
-                    "2020-03-14T16:32:00Z",
-                    null
-                ]
-            ]
-        }
+  "type": "Collection",
+  "id": "test",
+  "stac_version": "1.0.0-rc.3",
+  "description": "test desc",
+  "links": [
+    {
+      "rel": "root",
+      "href": "../catalog.json",
+      "type": "application/json"
     },
-    "license": "proprietary"
+    {
+      "rel": "item",
+      "href": "./test-item-1/test-item-1.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "../catalog.json",
+      "type": "application/json"
+    }
+  ],
+  "stac_extensions": [],
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -2.5048828125,
+          3.8916575492899987,
+          -1.9610595703125,
+          3.8916575492899987
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2020-03-14T16:32:00Z",
+          null
+        ]
+      ]
+    }
+  },
+  "license": "proprietary"
 }

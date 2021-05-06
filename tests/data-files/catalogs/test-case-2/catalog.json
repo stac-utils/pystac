@@ -1,6 +1,7 @@
 {
+  "type": "Catalog",
   "id": "01749366-9e25-4b42-a4d1-5aae9f8c9eec",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.3",
   "description": "Exported from Raster Foundry 2019-10-04 15:55:13.759",
   "links": [
     {
@@ -15,5 +16,6 @@
       "title": "Layer Collection"
     }
   ],
+  "stac_extensions": [],
   "title": "Test Case 2"
 }

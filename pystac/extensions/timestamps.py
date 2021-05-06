@@ -1,45 +1,41 @@
-"""Implement the timestamps extension.
+"""Implements the Timestamps extension.
 
 https://github.com/stac-extensions/timestamps
 """
+
+from datetime import datetime as Datetime
+from typing import Generic, Optional, Set, TypeVar, cast
+
 import pystac
-from pystac import Extensions
-from pystac.extensions.base import (ExtendedObject, ExtensionDefinition, ItemExtension)
-from pystac.item import Item
-from pystac.utils import datetime_to_str, str_to_datetime
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import datetime_to_str, map_opt, str_to_datetime
+
+T = TypeVar("T", pystac.Item, pystac.Asset)
+
+SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
+
+PUBLISHED_PROP = "published"
+EXPIRES_PROP = "expires"
+UNPUBLISHED_PROP = "unpublished"
 
 
-class TimestampsItemExt(ItemExtension):
+class TimestampsExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """TimestampsItemExt is the extension of an Item in that
     allows to specify additional timestamps for assets and metadata.
-
-    Args:
-        item (Item): The item to be extended.
-
-    Attributes:
-        item (Item): The Item that is being extended.
-
-    Note:
-        Using TimestampsItemExt to directly wrap an item will add the 'timestamps'
-        extension ID to the item's stac_extensions.
     """
-    def __init__(self, item):
-        if item.stac_extensions is None:
-            item.stac_extensions = [Extensions.TIMESTAMPS]
-        elif Extensions.TIMESTAMPS not in item.stac_extensions:
-            item.stac_extensions.append(Extensions.TIMESTAMPS)
 
-        self.item = item
-
-    @classmethod
-    def from_item(cls, item):
-        return cls(item)
-
-    @classmethod
-    def _object_links(cls):
-        return []
-
-    def apply(self, published=None, expires=None, unpublished=None):
+    def apply(
+        self,
+        published: Optional[Datetime] = None,
+        expires: Optional[Datetime] = None,
+        unpublished: Optional[Datetime] = None,
+    ) -> None:
         """Applies timestamps extension properties to the extended Item.
 
         Args:
@@ -50,143 +46,112 @@ class TimestampsItemExt(ItemExtension):
             unpublished (datetime or None): Date and time the corresponding data
                 was unpublished.
         """
-        if published is None and expires is None and unpublished is None:
-            raise pystac.STACError("timestamps extension needs at least one property value.")
-
         self.published = published
         self.expires = expires
         self.unpublished = unpublished
 
-    def _timestamp_getter(self, key, asset=None):
-        if asset is not None and key in asset.properties:
-            timestamp_str = asset.properties.get(key)
-        else:
-            timestamp_str = self.item.properties.get(key)
-
-        timestamp = None
-        if timestamp_str is not None:
-            timestamp = str_to_datetime(timestamp_str)
-
-        return timestamp
-
-    def _timestamp_setter(self, timestamp, key, asset=None):
-        if timestamp is not None:
-            timestamp = datetime_to_str(timestamp)
-        self._set_property(key, timestamp, asset)
-
     @property
-    def published(self):
+    def published(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
             the date and time that the corresponding data
             was published the first time.
 
+        'Published'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
+
         Returns:
             datetime
         """
-        return self.get_published()
+        return map_opt(str_to_datetime, self._get_property(PUBLISHED_PROP, str))
 
     @published.setter
-    def published(self, v):
-        self.set_published(v)
-
-    def get_published(self, asset=None):
-        """Get an Item or Asset published datetime
-
-        If an Asset is supplied and the published property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Published'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
-
-        Returns:
-            datetime
-        """
-        return self._timestamp_getter('published', asset)
-
-    def set_published(self, published, asset=None):
-        """Set an Item or asset published datetime
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(published, 'published', asset)
+    def published(self, v: Optional[Datetime]) -> None:
+        self._set_property(PUBLISHED_PROP, map_opt(datetime_to_str, v))
 
     @property
-    def expires(self):
+    def expires(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
             the date and time the corresponding data
             expires (is not valid any longer).
 
+        'Unpublished'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
+
         Returns:
             datetime
         """
-        return self.get_expires()
+        return map_opt(str_to_datetime, self._get_property(EXPIRES_PROP, str))
 
     @expires.setter
-    def expires(self, v):
-        self.set_expires(v)
-
-    def get_expires(self, asset=None):
-        """Get an Item or Asset expires datetime
-
-        If an Asset is supplied and the expires property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
-
-        Returns:
-            datetime
-        """
-        return self._timestamp_getter('expires', asset)
-
-    def set_expires(self, expires, asset=None):
-        """Set an Item or asset expires datetime
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(expires, 'expires', asset)
+    def expires(self, v: Optional[Datetime]) -> None:
+        self._set_property(EXPIRES_PROP, map_opt(datetime_to_str, v))
 
     @property
-    def unpublished(self):
+    def unpublished(self) -> Optional[Datetime]:
         """Get or sets a datetime objects that represent
         the Date and time the corresponding data was unpublished.
 
+        'Unpublished'
+        has a different meaning depending on where it is used. If available in
+        the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it's
+        referencing to the timestamp valid for the metadata.
+
         Returns:
             datetime
         """
-        return self.get_unpublished()
+        return map_opt(str_to_datetime, self._get_property(UNPUBLISHED_PROP, str))
 
     @unpublished.setter
-    def unpublished(self, v):
-        self.set_unpublished(v)
+    def unpublished(self, v: Optional[Datetime]) -> None:
+        self._set_property(UNPUBLISHED_PROP, map_opt(datetime_to_str, v))
 
-    def get_unpublished(self, asset=None):
-        """Get an Item or Asset unpublished datetime
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
 
-        If an Asset is supplied and the unpublished property exists on the Asset,
-        return the Asset's value. Otherwise return the Item's value. 'Unpublished'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data linked
-        to the Asset Object. If it comes from the Item properties, it's referencing to
-        the timestamp valid for the metadata.
-
-        Returns:
-            datetime
-        """
-        return self._timestamp_getter('unpublished', asset)
-
-    def set_unpublished(self, unpublished, asset=None):
-        """Set an Item or asset unpublished datetime
-
-        If an Asset is supplied, sets the property on the Asset.
-        Otherwise sets the Item's value.
-        """
-        self._timestamp_setter(unpublished, 'unpublished', asset)
+    @staticmethod
+    def ext(obj: T) -> "TimestampsExtension[T]":
+        if isinstance(obj, pystac.Item):
+            return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
-TIMESTAMPS_EXTENSION_DEFINITION = ExtensionDefinition(Extensions.TIMESTAMPS,
-                                                      [ExtendedObject(Item, TimestampsItemExt)])
+class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return "<ItemtimestampsExtension Item id={}>".format(self.item.id)
+
+
+class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return "<AssettimestampsExtension Asset href={}>".format(self.asset_href)
+
+
+class TimestampsExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(["timestamps"])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+
+
+TIMESTAMPS_EXTENSION_HOOKS = TimestampsExtensionHooks()

@@ -1,18 +1,22 @@
 {
-  "stac_version": "1.0.0-beta.2",
-  "stac_extensions": [
-    "sat",
-    "view"
-  ],
-  "id": "LC08_L1TP_107018_20181001",
-  "collection": "landsat-8-l1",
   "type": "Feature",
-  "bbox": [
-    148.13933,
-    59.51584,
-    152.52758,
-    60.63437
-  ],
+  "stac_version": "1.0.0-rc.3",
+  "id": "LC08_L1TP_107018_20181001",
+  "properties": {
+    "datetime": "2018-10-01T01:08:32.033000Z",
+    "view:sun_azimuth": 168.8989761,
+    "view:sun_elevation": 26.32596431,
+    "view:off_nadir": 0,
+    "view:incidence_angle": 0,
+    "view:azimuth": 23.4,
+    "platform": "landsat-8",
+    "instruments": [
+      "oli",
+      "tirs"
+    ],
+    "constellation": "landsat",
+    "sat:orbit_state": "ascending"
+  },
   "geometry": {
     "type": "Polygon",
     "coordinates": [
@@ -40,21 +44,12 @@
       ]
     ]
   },
-  "properties": {
-    "datetime": "2018-10-01T01:08:32.033Z",
-    "view:sun_azimuth": 168.8989761,
-    "view:sun_elevation": 26.32596431,
-    "view:off_nadir": 0,
-    "view:incidence_angle": 0,
-    "view:azimuth": 23.4,
-    "platform": "landsat-8",
-    "instruments": [
-      "oli",
-      "tirs"
-    ],
-    "constellation": "landsat",
-    "sat:orbit_state": "ascending"
-  },
+  "links": [
+    {
+      "rel": "collection",
+      "href": "http://landsat-stac.s3.amazonaws.com/landsat-8-l1/catalog.json"
+    }
+  ],
   "assets": {
     "blue": {
       "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B2.TIF",
@@ -78,8 +73,8 @@
     },
     "thumbnail": {
       "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_thumb_large.jpg",
-      "title": "Thumbnail image",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "title": "Thumbnail image"
     },
     "index": {
       "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/index.html",
@@ -87,10 +82,15 @@
       "title": "HTML index page"
     }
   },
-  "links": [
-    {
-      "rel": "collection",
-      "href": "http://landsat-stac.s3.amazonaws.com/landsat-8-l1/catalog.json"
-    }
-  ]
+  "bbox": [
+    148.13933,
+    59.51584,
+    152.52758,
+    60.63437
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
+  ],
+  "collection": "landsat-8-l1"
 }
