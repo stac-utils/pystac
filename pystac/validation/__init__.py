@@ -87,7 +87,7 @@ def validate_dict(
 
     # If the version is before 1.0.0-rc.1, substitute extension short IDs for
     # their schemas.
-    if stac_version_id < "1.0.0-rc.1":
+    if stac_version_id < "1.0.0-rc.2":
 
         def _get_uri(ext: str) -> Optional[str]:
             return OldExtensionSchemaUriMap.get_extension_schema_uri(
