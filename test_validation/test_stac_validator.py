@@ -7,12 +7,6 @@ __authors__ = "Jonathan Healy"
 import json
 from pystac.validation import validate_dict
 
-with open('test_validation/test_data/1beta1/sample.json') as f:
-    js = json.load(f)
-result = validate_dict(js)
-print(result)
-
-# Core
 
 # 0.7.0 is not functional in pystac validation
 def test_collection_local_v070():
@@ -23,12 +17,13 @@ def test_collection_local_v070():
     assert result == []
 
 
-def test_item_local_v080():
-    stac_file = "test_validation/test_data/v080/items/sample-full.json"
-    with open(stac_file) as f:
-        js = json.load(f)
-    result = validate_dict(js)
-    assert result == []
+# catch error?
+# def test_item_local_v080():
+#     stac_file = "test_validation/test_data/v080/items/sample-full.json"
+#     with open(stac_file) as f:
+#         js = json.load(f)
+#     result = validate_dict(js)
+#     assert result == []
 
 
 # catch error?
@@ -54,10 +49,10 @@ def test_item_local_v090():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result == [
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json', 
+    assert sorted(result) == [ 
         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/eo/json-schema/schema.json', 
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json'
+        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json',
+        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json'
     ]
 
 def test_collection_v090():
@@ -69,27 +64,27 @@ def test_collection_v090():
         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/collection-spec/json-schema/collection.json'
     ]
 
-
-def test_item_local_extensions_v090():
-    stac_file = "test_validation/test_data/v090/items/CBERS_4.json"
-    with open(stac_file) as f:
-        js = json.load(f)
-    result = validate_dict(js)
-    assert result == [
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json', 
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/eo/json-schema/schema.json', 
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json'
-    ]
+# catch errors?
+# def test_item_local_extensions_v090():
+#     stac_file = "test_validation/test_data/v090/items/CBERS_4.json"
+#     with open(stac_file) as f:
+#         js = json.load(f)
+#     result = validate_dict(js)
+#     assert sorted(result) == [
+#         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/eo/json-schema/schema.json', 
+#         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json',
+#         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json'
+#     ]
 
 def test_item_extensions_v090():
     stac_file = "test_validation/test_data/v090/extensions/eo/examples/example-landsat8.json"
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result == [
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json', 
+    assert sorted(result) == [ 
         'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/eo/json-schema/schema.json', 
-        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json'
+        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/view/json-schema/schema.json',
+        'https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json'
     ]
 
 
@@ -111,7 +106,7 @@ def test_item_extensions_v090():
 #     with open(stac_file) as f:
 #         js = json.load(f)
 #     result = validate_dict(js)
-#     assert result = []
+#     assert result == []
 
 
 
@@ -121,7 +116,7 @@ def test_collection_v1beta1():
         js = json.load(f)
     result = validate_dict(js)
     assert result == [
-        'https://cdn.staclint.com/v1.0.0-beta.1/collection.json'
+        'https://raw.githubusercontent.com/radiantearth/stac-spec/v1.0.0-beta.1/collection-spec/json-schema/collection.json'
     ]
 
 
@@ -130,7 +125,7 @@ def test_item_local_v1beta2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert result == [
         'https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json'
     ]
 
@@ -139,10 +134,10 @@ def test_item_extensions_v1beta2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
-        'https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json', 
+    assert sorted(result) == [
+        'https://schemas.stacspec.org/v1.0.0-beta.2/extensions/projection/json-schema/schema.json',
         'https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json', 
-        'https://schemas.stacspec.org/v1.0.0-beta.2/extensions/projection/json-schema/schema.json'
+        'https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json', 
     ]
 
 
@@ -151,10 +146,10 @@ def test_item_local_v1rc1():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
-        'https://schemas.stacspec.org/v1.0.0-rc.1/item-spec/json-schema/item.json', 
+    assert sorted(result) == [
         'https://schemas.stacspec.org/v1.0.0-rc.1/extensions/eo/json-schema/schema.json', 
-        'https://schemas.stacspec.org/v1.0.0-rc.1/extensions/view/json-schema/schema.json'
+        'https://schemas.stacspec.org/v1.0.0-rc.1/extensions/view/json-schema/schema.json',
+        'https://schemas.stacspec.org/v1.0.0-rc.1/item-spec/json-schema/item.json'
     ]
 
 
@@ -163,7 +158,7 @@ def test_collection_local_v1rc1():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert result == [
         'https://schemas.stacspec.org/v1.0.0-rc.1/collection-spec/json-schema/collection.json'
     ]
 
@@ -172,7 +167,7 @@ def test_default_catalog_v1rc2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert result == [
         'https://schemas.stacspec.org/v1.0.0-rc.2/catalog-spec/json-schema/catalog.json'
     ]
 
@@ -182,7 +177,7 @@ def test_item_v1rc2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert result == [
         'https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/item.json'
     ]
 
@@ -191,13 +186,13 @@ def test_item_extended_v1rc2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert sorted(result) == [
         'https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/item.json', 
         'https://stac-extensions.github.io/eo/v1.0.0/schema.json', 
         'https://stac-extensions.github.io/projection/v1.0.0/schema.json', 
-        'https://stac-extensions.github.io/view/v1.0.0/schema.json', 
+        'https://stac-extensions.github.io/remote-data/v1.0.0/schema.json', 
         'https://stac-extensions.github.io/scientific/v1.0.0/schema.json', 
-        'https://stac-extensions.github.io/remote-data/v1.0.0/schema.json'
+        'https://stac-extensions.github.io/view/v1.0.0/schema.json'
     ]
 
 def test_catalog_v1rc2():
@@ -205,7 +200,7 @@ def test_catalog_v1rc2():
     with open(stac_file) as f:
         js = json.load(f)
     result = validate_dict(js)
-    assert result = [
+    assert result == [
         'https://schemas.stacspec.org/v1.0.0-rc.2/catalog-spec/json-schema/catalog.json'
     ]
 
@@ -216,7 +211,7 @@ def test_catalog_v1rc2():
 #     with open(stac_file) as f:
 #         js = json.load(f)
 #     result = validate_dict(js)
-#     assert result = [
+#     assert result == [
 #     ]
 
 
@@ -226,7 +221,7 @@ def test_catalog_v1rc2():
 #     with open(stac_file) as f:
 #         js = json.load(f)
 #     result = validate_dict(js)
-#     assert result = [
+#     assert result == [
 #     ]
 
 # def test_item_extensions_remote_v1rc3():
@@ -234,5 +229,5 @@ def test_catalog_v1rc2():
 #     with open(stac_file) as f:
 #         js = json.load(f)
 #     result = validate_dict(js)
-#     assert result = [
+#     assert result == [
 #     ]
