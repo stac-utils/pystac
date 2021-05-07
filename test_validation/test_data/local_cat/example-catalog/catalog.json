@@ -1,0 +1,17 @@
+{
+    "id": "stac",
+    "stac_version": "1.0.0-beta.2",
+    "description": "A STAC of public datasets",
+    "links": [
+        {
+            "rel": "root",
+            "href": "./catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "./eo/catalog.json",
+            "type": "application/json"
+        }
+    ]
+}

@@ -45,8 +45,12 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # the schema.
     BASE_URIS: List[Tuple[STACVersionRange, Callable[[str], str]]] = [
         (
-            STACVersionRange(min_version="1.0.0-beta.1"),
+            STACVersionRange(min_version="1.0.0-beta.2"),
             lambda version: "https://schemas.stacspec.org/v{}".format(version),
+        ),
+        (
+            STACVersionRange(min_version="1.0.0-beta.1", max_version="1.0.0-beta.1"),
+            lambda version: "https://cdn.staclint.com/v1.0.0-beta.1",
         ),
         (
             STACVersionRange(min_version="0.8.0", max_version="0.9.0"),

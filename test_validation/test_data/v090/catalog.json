@@ -1,0 +1,15 @@
+{
+  "stac_version": "0.9.0",
+  "id": "sample",
+  "description": "This is a very basic sample catalog.",
+  "links": [
+    {
+      "href": "items/sample.json",
+      "rel": "item"
+    },
+    {
+      "href": "items/good_item_v090.json",
+      "rel": "item"
+    }
+  ]
+}

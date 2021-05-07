@@ -1,0 +1,27 @@
+{
+    "id": "eo",
+    "stac_version": "1.0.0-beta.2",
+    "description": "A STAC of EO Data",
+    "links": [
+        {
+            "rel": "root",
+            "href": "../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "./landsat-8-l1/collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "child",
+            "href": "./sentinel-2/collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ]
+}

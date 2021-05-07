@@ -1,0 +1,22 @@
+{
+    "id": "sentinel-2a",
+    "stac_version": "1.0.0-beta.2",
+    "description": "A STAC of Sentinel-2A imagery",
+    "links": [
+        {
+            "rel": "root",
+            "href": "../../../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "item",
+            "href": "./L1C_T53MNQ_A017245_20181011T011722/L1C_T53MNQ_A017245_20181011T011722.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../collection.json",
+            "type": "application/json"
+        }
+    ]
+}

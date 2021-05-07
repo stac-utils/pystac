@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schema.json#",
+  "title": "Checksum Extension Specification",
+  "description": "STAC Checksum Extension to a STAC Item",
+  "allOf": [
+    {
+      "$ref": "../../../item-spec/json-schema/item.json#/definitions/core"
+    },
+    {
+      "$ref": "#/definitions/checksum"
+    }
+  ],
+  "definitions": {
+    "checksum": {
+      "type": "object",
+      "properties": {
+        "links": {
+          "title": "Links",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/checksums"
+          }
+        },
+        "assets": {
+          "title": "Assets",
+          "type": "object",
+          "patternProperties": {
+            ".+": {
+              "$ref": "#/definitions/checksums"
+            }
+          }
+        }
+      }
+    },
+    "checksums": {
+      "type": "object",
+      "properties": {
+        "checksum:multihash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]+$",
+          "title": "Multihash"
+        }
+      }
+    }
+  }
+}
