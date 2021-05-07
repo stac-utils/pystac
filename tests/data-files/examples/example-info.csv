@@ -120,3 +120,5 @@
 "1.0.0/extended-item.json","ITEM","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json|https://stac-extensions.github.io/scientific/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json|https://stac-extensions.github.io/remote-data/v1.0.0/schema.json"
 "1.0.0/extensions-collection/collection.json","COLLECTION","1.0.0",""
 "1.0.0/extensions-collection/proj-example/proj-example.json","ITEM","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+"1.0.0-RC1/extended-item.json","ITEM","1.0.0-rc.1","eo|view|projection|scientific"
+"1.0.0-RC2/extended-item.json","ITEM","1.0.0-rc.2","https://stac-extensions.github.io/remote-data/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json|https://stac-extensions.github.io/scientific/v1.0.0/schema.json|https://stac-extensions.github.io/eo/v1.0.0/schema.json"
