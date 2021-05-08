@@ -45,11 +45,11 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # the schema.
     BASE_URIS: List[Tuple[STACVersionRange, Callable[[str], str]]] = [
         (
-            STACVersionRange(min_version="1.0.0-beta.1"),
+            STACVersionRange(min_version="1.0.0-beta.2"),
             lambda version: "https://schemas.stacspec.org/v{}".format(version),
         ),
         (
-            STACVersionRange(min_version="0.8.0", max_version="0.9.0"),
+            STACVersionRange(min_version="0.8.0", max_version="1.0.0-beta.1"),
             lambda version: (
                 f"https://raw.githubusercontent.com/radiantearth/stac-spec/v{version}"
             ),
@@ -70,7 +70,10 @@ class DefaultSchemaUriMap(SchemaUriMap):
             "collection-spec/json-schema/collection.json",
             None,
         ),
-        STACObjectType.ITEM: ("item-spec/json-schema/item.json", None),
+        STACObjectType.ITEM: (
+            "item-spec/json-schema/item.json",
+            None,
+        ),
         STACObjectType.ITEMCOLLECTION: (
             None,
             [
@@ -103,7 +106,6 @@ class DefaultSchemaUriMap(SchemaUriMap):
 
         if object_type not in self.DEFAULT_SCHEMA_MAP:
             raise KeyError("Unknown STAC object type {}".format(object_type))
-
         uri = self.DEFAULT_SCHEMA_MAP[object_type][0]
         if not is_latest:
             if self.DEFAULT_SCHEMA_MAP[object_type][1]:
@@ -134,11 +136,11 @@ class OldExtensionSchemaUriMap:
     ) -> List[Tuple[STACVersionRange, Callable[[STACVersionID], str]]]:
         return [
             (
-                STACVersionRange(min_version="1.0.0-beta.1"),
+                STACVersionRange(min_version="1.0.0-beta.2"),
                 lambda version: f"https://schemas.stacspec.org/v{version}",
             ),
             (
-                STACVersionRange(min_version="0.8.0", max_version="0.9.0"),
+                STACVersionRange(min_version="0.8.0", max_version="1.0.0-beta.1"),
                 lambda version: (
                     "https://raw.githubusercontent.com/"
                     f"radiantearth/stac-spec/v{version}"
