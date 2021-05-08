@@ -71,7 +71,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
             None,
         ),
         STACObjectType.ITEM: (
-            "item-spec/json-schema/item.json", 
+            "item-spec/json-schema/item.json",
             None,
         ),
         STACObjectType.ITEMCOLLECTION: (
