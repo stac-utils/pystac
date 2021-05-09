@@ -29,39 +29,39 @@ def make_item(year: int) -> pystac.Item:
 class ItemVersionExtensionTest(unittest.TestCase):
     version: str = "1.2.3"
 
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.item = make_item(2011)
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(VersionExtension.has_extension(self.item))
 
-    def test_add_version(self):
+    def test_add_version(self) -> None:
         VersionExtension.ext(self.item).apply(self.version)
         self.assertEqual(self.version, VersionExtension.ext(self.item).version)
         self.assertNotIn(version.DEPRECATED, self.item.properties)
         self.assertFalse(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
-    def test_version_in_properties(self):
+    def test_version_in_properties(self) -> None:
         VersionExtension.ext(self.item).apply(self.version, deprecated=True)
         self.assertIn(version.VERSION, self.item.properties)
         self.assertIn(version.DEPRECATED, self.item.properties)
         self.item.validate()
 
-    def test_add_not_deprecated_version(self):
+    def test_add_not_deprecated_version(self) -> None:
         VersionExtension.ext(self.item).apply(self.version, deprecated=False)
         self.assertIn(version.DEPRECATED, self.item.properties)
         self.assertFalse(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
-    def test_add_deprecated_version(self):
+    def test_add_deprecated_version(self) -> None:
         VersionExtension.ext(self.item).apply(self.version, deprecated=True)
         self.assertIn(version.DEPRECATED, self.item.properties)
         self.assertTrue(VersionExtension.ext(self.item).deprecated)
         self.item.validate()
 
-    def test_latest(self):
+    def test_latest(self) -> None:
         year = 2013
         latest = make_item(year)
         VersionExtension.ext(self.item).apply(self.version, latest=latest)
@@ -73,7 +73,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
-    def test_predecessor(self):
+    def test_predecessor(self) -> None:
         year = 2010
         predecessor = make_item(year)
         VersionExtension.ext(self.item).apply(self.version, predecessor=predecessor)
@@ -85,7 +85,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
-    def test_successor(self):
+    def test_successor(self) -> None:
         year = 2012
         successor = make_item(year)
         VersionExtension.ext(self.item).apply(self.version, successor=successor)
@@ -97,11 +97,11 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
-    def test_fail_validate(self):
+    def test_fail_validate(self) -> None:
         with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
-    def test_all_links(self):
+    def test_all_links(self) -> None:
         deprecated = True
         latest = make_item(2013)
         predecessor = make_item(2010)
@@ -111,7 +111,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         )
         self.item.validate()
 
-    def test_full_copy(self):
+    def test_full_copy(self) -> None:
         cat = TestCases.test_case_1()
 
         # Fetch two items from the catalog
@@ -146,7 +146,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIs(successor, item1_copy)
         self.assertIs(latest, item1_copy)
 
-    def test_setting_none_clears_link(self):
+    def test_setting_none_clears_link(self) -> None:
         deprecated = False
         latest = make_item(2013)
         predecessor = make_item(2010)
@@ -170,7 +170,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.item).successor)
 
-    def test_multiple_link_setting(self):
+    def test_multiple_link_setting(self) -> None:
         deprecated = False
         latest1 = make_item(2013)
         predecessor1 = make_item(2010)
@@ -224,39 +224,39 @@ def make_collection(year: int) -> pystac.Collection:
 class CollectionVersionExtensionTest(unittest.TestCase):
     version: str = "1.2.3"
 
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.collection = make_collection(2011)
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(VersionExtension.has_extension(self.collection))
 
-    def test_add_version(self):
+    def test_add_version(self) -> None:
         VersionExtension.ext(self.collection).apply(self.version)
         self.assertEqual(self.version, VersionExtension.ext(self.collection).version)
         self.assertNotIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertFalse(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
-    def test_version_deprecated(self):
+    def test_version_deprecated(self) -> None:
         VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
         self.assertIn(version.VERSION, self.collection.extra_fields)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.collection.validate()
 
-    def test_add_not_deprecated_version(self):
+    def test_add_not_deprecated_version(self) -> None:
         VersionExtension.ext(self.collection).apply(self.version, deprecated=False)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertFalse(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
-    def test_add_deprecated_version(self):
+    def test_add_deprecated_version(self) -> None:
         VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
         self.assertIn(version.DEPRECATED, self.collection.extra_fields)
         self.assertTrue(VersionExtension.ext(self.collection).deprecated)
         self.collection.validate()
 
-    def test_latest(self):
+    def test_latest(self) -> None:
         year = 2013
         latest = make_collection(year)
         VersionExtension.ext(self.collection).apply(self.version, latest=latest)
@@ -268,7 +268,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
-    def test_predecessor(self):
+    def test_predecessor(self) -> None:
         year = 2010
         predecessor = make_collection(year)
         VersionExtension.ext(self.collection).apply(
@@ -282,7 +282,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
-    def test_successor(self):
+    def test_successor(self) -> None:
         year = 2012
         successor = make_collection(year)
         VersionExtension.ext(self.collection).apply(self.version, successor=successor)
@@ -294,11 +294,11 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
-    def test_fail_validate(self):
+    def test_fail_validate(self) -> None:
         with self.assertRaises(pystac.STACValidationError):
             self.collection.validate()
 
-    def test_validate_all(self):
+    def test_validate_all(self) -> None:
         deprecated = True
         latest = make_collection(2013)
         predecessor = make_collection(2010)
@@ -308,7 +308,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         )
         self.collection.validate()
 
-    def test_full_copy(self):
+    def test_full_copy(self) -> None:
         cat = TestCases.test_case_1()
 
         # Fetch two collections from the catalog
@@ -342,7 +342,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertIs(successor, col1_copy)
         self.assertIs(latest, col1_copy)
 
-    def test_setting_none_clears_link(self):
+    def test_setting_none_clears_link(self) -> None:
         deprecated = False
         latest = make_collection(2013)
         predecessor = make_collection(2010)
@@ -366,7 +366,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.collection).successor)
 
-    def test_multiple_link_setting(self):
+    def test_multiple_link_setting(self) -> None:
         deprecated = False
         latest1 = make_collection(2013)
         predecessor1 = make_collection(2010)

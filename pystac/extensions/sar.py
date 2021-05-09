@@ -8,8 +8,7 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions.base import ExtensionManagementMixin
-from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
@@ -59,7 +58,7 @@ class ObservationDirection(enum.Enum):
 
 
 class SarExtension(
-    Generic[T], ProjectionExtension[T], ExtensionManagementMixin[pystac.Item]
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 

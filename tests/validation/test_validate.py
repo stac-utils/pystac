@@ -17,7 +17,7 @@ from tests.utils import TestCases
 
 
 class ValidateTest(unittest.TestCase):
-    def test_validate_current_version(self):
+    def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
         )
@@ -35,7 +35,7 @@ class ValidateTest(unittest.TestCase):
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
         item.validate()
 
-    def test_validate_examples(self):
+    def test_validate_examples(self) -> None:
         for example in TestCases.get_examples_info():
             with self.subTest(example.path):
                 stac_version = example.stac_version
@@ -72,7 +72,7 @@ class ValidateTest(unittest.TestCase):
                                     )
                                     raise e
 
-    def test_validate_error_contains_href(self):
+    def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
         cat = TestCases.test_case_1()
         item = cat.get_item("area-1-1-labels", recursive=True)
@@ -87,7 +87,7 @@ class ValidateTest(unittest.TestCase):
                 self.assertTrue(get_opt(item.get_self_href()) in str(e))
                 raise e
 
-    def test_validate_all(self):
+    def test_validate_all(self) -> None:
         for test_case in TestCases.all_test_catalogs():
             catalog_href = test_case.get_self_href()
             if catalog_href is not None:
@@ -124,7 +124,7 @@ class ValidateTest(unittest.TestCase):
             with self.assertRaises(pystac.STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
 
-    def test_validates_geojson_with_tuple_coordinates(self):
+    def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
         dict has tuples instead of lists for the coordinate sequence,
         which can be produced by shapely, then the geometry still passses

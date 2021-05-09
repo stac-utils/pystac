@@ -1,17 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
 
-import pystac
+from pystac import Collection, RangeSummary, STACObject, Summaries
 
 
 class SummariesExtension:
-    def __init__(self, collection: pystac.Collection) -> None:
+    summaries: Summaries
+
+    def __init__(self, collection: Collection) -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], RangeSummary[Any], Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -46,7 +48,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound=STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):

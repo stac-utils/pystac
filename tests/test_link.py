@@ -10,7 +10,7 @@ TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
 class LinkTest(unittest.TestCase):
     item: pystac.Item
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.item = pystac.Item(
             id="test-item",
             geometry=None,
@@ -19,7 +19,7 @@ class LinkTest(unittest.TestCase):
             properties={},
         )
 
-    def test_minimal(self):
+    def test_minimal(self) -> None:
         rel = "my rel"
         target = "https://example.com/a/b"
         link = pystac.Link(rel, target)
@@ -53,7 +53,7 @@ class LinkTest(unittest.TestCase):
         link.set_owner(self.item)
         self.assertEqual(self.item, link.owner)
 
-    def test_relative(self):
+    def test_relative(self) -> None:
         rel = "my rel"
         target = "../elsewhere"
         mime_type = "example/stac_thing"
@@ -67,7 +67,7 @@ class LinkTest(unittest.TestCase):
         }
         self.assertEqual(expected_dict, link.to_dict())
 
-    def test_link_does_not_fail_if_href_is_none(self):
+    def test_link_does_not_fail_if_href_is_none(self) -> None:
         """Test to ensure get_href does not fail when the href is None."""
         catalog = pystac.Catalog(id="test", description="test desc")
         catalog.add_item(self.item)
@@ -76,13 +76,13 @@ class LinkTest(unittest.TestCase):
         link = catalog.get_single_link("item")
         self.assertIsNone(link.get_href())
 
-    def test_resolve_stac_object_no_root_and_target_is_item(self):
+    def test_resolve_stac_object_no_root_and_target_is_item(self) -> None:
         link = pystac.Link("my rel", target=self.item)
         link.resolve_stac_object()
 
 
 class StaticLinkTest(unittest.TestCase):
-    def test_from_dict_round_trip(self):
+    def test_from_dict_round_trip(self) -> None:
         test_cases = [
             {"rel": "", "href": ""},  # Not valid, but works.
             {"rel": "r", "href": "t"},
@@ -95,18 +95,18 @@ class StaticLinkTest(unittest.TestCase):
             d2 = pystac.Link.from_dict(d).to_dict()
             self.assertEqual(d, d2)
 
-    def test_from_dict_failures(self):
+    def test_from_dict_failures(self) -> None:
         for d in [{}, {"href": "t"}, {"rel": "r"}]:
             with self.assertRaises(KeyError):
                 pystac.Link.from_dict(d)
 
-    def test_collection(self):
+    def test_collection(self) -> None:
         c = pystac.Collection("collection id", "desc", extent=ARBITRARY_EXTENT)
         link = pystac.Link.collection(c)
         expected = {"rel": "collection", "href": None, "type": "application/json"}
         self.assertEqual(expected, link.to_dict())
 
-    def test_child(self):
+    def test_child(self) -> None:
         c = pystac.Collection("collection id", "desc", extent=ARBITRARY_EXTENT)
         link = pystac.Link.child(c)
         expected = {"rel": "child", "href": None, "type": "application/json"}

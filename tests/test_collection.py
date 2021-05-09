@@ -16,7 +16,7 @@ TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
 
 class CollectionTest(unittest.TestCase):
-    def test_spatial_extent_from_coordinates(self):
+    def test_spatial_extent_from_coordinates(self) -> None:
         extent = SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"])
 
         self.assertEqual(len(extent.bboxes), 1)
@@ -25,13 +25,13 @@ class CollectionTest(unittest.TestCase):
         for x in bbox:
             self.assertTrue(type(x) is float)
 
-    def test_read_eo_items_are_heritable(self):
+    def test_read_eo_items_are_heritable(self) -> None:
         cat = TestCases.test_case_5()
         item = next(iter(cat.get_all_items()))
 
         self.assertTrue(EOExtension.has_extension(item))
 
-    def test_save_uses_previous_catalog_type(self):
+    def test_save_uses_previous_catalog_type(self) -> None:
         collection = TestCases.test_case_8()
         assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
@@ -43,15 +43,17 @@ class CollectionTest(unittest.TestCase):
             collection2 = pystac.Collection.from_file(href)
             self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
 
-    def test_clone_uses_previous_catalog_type(self):
+    def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.test_case_8()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
 
-    def test_multiple_extents(self):
+    def test_multiple_extents(self) -> None:
         cat1 = TestCases.test_case_1()
-        col1 = cat1.get_child("country-1").get_child("area-1-1")
+        country = cat1.get_child("country-1")
+        assert country is not None
+        col1 = country.get_child("area-1-1")
         col1.validate()
         self.assertIsInstance(col1, Collection)
         validate_dict(col1.to_dict(), pystac.STACObjectType.COLLECTION)
@@ -74,7 +76,7 @@ class CollectionTest(unittest.TestCase):
         cloned_ext = ext.clone()
         self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict["extent"])
 
-    def test_extra_fields(self):
+    def test_extra_fields(self) -> None:
         catalog = TestCases.test_case_2()
         collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
 
@@ -92,7 +94,7 @@ class CollectionTest(unittest.TestCase):
             self.assertTrue("test" in read_col.extra_fields)
             self.assertEqual(read_col.extra_fields["test"], "extra")
 
-    def test_update_extents(self):
+    def test_update_extents(self) -> None:
 
         catalog = TestCases.test_case_2()
         base_collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
@@ -149,7 +151,7 @@ class CollectionTest(unittest.TestCase):
             collection.extent.temporal.intervals,
         )
 
-    def test_supplying_href_in_init_does_not_fail(self):
+    def test_supplying_href_in_init_does_not_fail(self) -> None:
         test_href = "http://example.com/collection.json"
         spatial_extent = SpatialExtent(bboxes=[ARBITRARY_BBOX])
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
@@ -161,7 +163,7 @@ class CollectionTest(unittest.TestCase):
 
         self.assertEqual(collection.get_self_href(), test_href)
 
-    def test_collection_with_href_caches_by_href(self):
+    def test_collection_with_href_caches_by_href(self) -> None:
         collection = pystac.Collection.from_file(
             TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
         )
@@ -173,7 +175,7 @@ class CollectionTest(unittest.TestCase):
 
 
 class ExtentTest(unittest.TestCase):
-    def test_spatial_allows_single_bbox(self):
+    def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
         # Pass in a single BBOX
@@ -190,7 +192,7 @@ class ExtentTest(unittest.TestCase):
 
         collection.validate()
 
-    def test_from_items(self):
+    def test_from_items(self) -> None:
         item1 = Item(
             id="test-item-1",
             geometry=ARBITRARY_GEOM,

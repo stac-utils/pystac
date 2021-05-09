@@ -7,16 +7,16 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class ViewTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/view/example-landsat8.json")
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
         test_to_from_dict(self, pystac.Item, d)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
         self.assertFalse(ViewExtension.has_extension(item))
 
@@ -35,12 +35,12 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(ViewExtension.ext(item).sun_azimuth, 4.0)
         self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
 
-    def test_validate_view(self):
+    def test_validate_view(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         self.assertTrue(ViewExtension.has_extension(item))
         item.validate()
 
-    def test_off_nadir(self):
+    def test_off_nadir(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -73,7 +73,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_incidence_angle(self):
+    def test_incidence_angle(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -110,7 +110,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_azimuth(self):
+    def test_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -143,7 +143,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_sun_azimuth(self):
+    def test_sun_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -178,7 +178,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_sun_elevation(self):
+    def test_sun_elevation(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get

@@ -294,4 +294,4 @@ class ProjectionExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-PROJECTION_EXTENSION_HOOKS = ProjectionExtensionHooks()
+PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()

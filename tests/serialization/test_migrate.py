@@ -16,10 +16,10 @@ from tests.utils import TestCases
 
 
 class MigrateTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.examples = [e for e in TestCases.get_examples_info()]
 
-    def test_migrate(self):
+    def test_migrate(self) -> None:
         collection_cache = CollectionCache()
         for example in self.examples:
             with self.subTest(example.path):
@@ -55,7 +55,7 @@ class MigrateTest(unittest.TestCase):
                         pystac.read_dict(migrated_d, href=path), pystac.STACObject
                     )
 
-    def test_migrates_removed_extension(self):
+    def test_migrates_removed_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.7.0/extensions/sar/" "examples/sentinel1.json"
@@ -67,7 +67,7 @@ class MigrateTest(unittest.TestCase):
             str_to_datetime("2018-11-03T23:58:55.121559Z"),
         )
 
-    def test_migrates_added_extension(self):
+    def test_migrates_added_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/" "examples/planet-sample.json"
@@ -79,7 +79,7 @@ class MigrateTest(unittest.TestCase):
         self.assertEqual(view_ext.sun_elevation, 58.8)
         self.assertEqual(view_ext.off_nadir, 1)
 
-    def test_migrates_renamed_extension(self):
+    def test_migrates_renamed_extension(self) -> None:
         collection = pystac.Collection.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/extensions/asset/"

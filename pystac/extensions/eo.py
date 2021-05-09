@@ -272,16 +272,16 @@ class EOExtension(
         """
         return self._get_bands()
 
-    def _get_bands(self) -> Optional[List[Band]]:
-        return map_opt(
-            lambda bands: [Band(b) for b in bands],
-            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
-        )
-
     @bands.setter
     def bands(self, v: Optional[List[Band]]) -> None:
         self._set_property(
             BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
+        )
+
+    def _get_bands(self) -> Optional[List[Band]]:
+        return map_opt(
+            lambda bands: [Band(b) for b in bands],
+            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
         )
 
     @property
@@ -365,6 +365,7 @@ class SummariesEOExtension(SummariesExtension):
         """Get or sets a list of :class:`~pystac.Band` objects that represent
         the available bands.
         """
+
         return map_opt(
             lambda bands: [Band(b) for b in bands],
             self.summaries.get_list(BANDS_PROP, Dict[str, Any]),

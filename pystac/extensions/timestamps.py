@@ -154,4 +154,4 @@ class TimestampsExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-TIMESTAMPS_EXTENSION_HOOKS = TimestampsExtensionHooks()
+TIMESTAMPS_EXTENSION_HOOKS: ExtensionHooks = TimestampsExtensionHooks()

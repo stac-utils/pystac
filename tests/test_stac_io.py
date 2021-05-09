@@ -7,7 +7,7 @@ from tests.utils import TestCases
 
 
 class StacIOTest(unittest.TestCase):
-    def test_stac_io_issues_warnings(self):
+    def test_stac_io_issues_warnings(self) -> None:
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.
             warnings.simplefilter("always")

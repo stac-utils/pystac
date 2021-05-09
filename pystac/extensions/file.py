@@ -188,6 +188,7 @@ class SummariesFileExtension(SummariesExtension):
         Returns:
             FileDataType
         """
+
         return map_opt(
             lambda x: [FileDataType(t) for t in x],
             self.summaries.get_list(DATA_TYPE_PROP, str),
@@ -261,4 +262,4 @@ class FileExtensionHooks(ExtensionHooks):
                     obj["assets"][key][CHECKSUM_PROP] = old_checksum[key]
 
 
-FILE_EXTENSION_HOOKS = FileExtensionHooks()
+FILE_EXTENSION_HOOKS: ExtensionHooks = FileExtensionHooks()

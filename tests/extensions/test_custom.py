@@ -139,7 +139,7 @@ class CustomExtensionHooks(ExtensionHooks):
 
 
 class CustomExtensionTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
 
     def tearDown(self) -> None:
@@ -147,5 +147,5 @@ class CustomExtensionTest(unittest.TestCase):
 
     # TODO: Test custom extensions and extension hooks
 
-    def test_migrates(self):
+    def test_migrates(self) -> None:
         pass
