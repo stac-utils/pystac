@@ -1,27 +1,36 @@
-"""Implement the Satellite (SAT) Extension.
+"""Implements the Satellite extension.
 
-https://github.com/radiantearth/stac-spec/tree/dev/extensions/sat
+https://github.com/stac-extensions/sat
 """
 
 import enum
-from typing import List, Optional
+from typing import Generic, Optional, Set, TypeVar, cast
 
 import pystac
-from pystac import Extensions
-from pystac import item
-from pystac.extensions import base
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+)
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import map_opt
 
-ORBIT_STATE: str = 'sat:orbit_state'
-RELATIVE_ORBIT: str = 'sat:relative_orbit'
+T = TypeVar("T", pystac.Item, pystac.Asset)
+
+SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
+
+ORBIT_STATE: str = "sat:orbit_state"
+RELATIVE_ORBIT: str = "sat:relative_orbit"
 
 
 class OrbitState(enum.Enum):
-    ASCENDING: str = 'ascending'
-    DESCENDING: str = 'descending'
-    GEOSTATIONARY: str = 'geostationary'
+    ASCENDING = "ascending"
+    DESCENDING = "descending"
+    GEOSTATIONARY = "geostationary"
 
 
-class SatItemExt(base.ItemExtension):
+class SatExtension(
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+):
     """SatItemExt extends Item to add sat properties to a STAC Item.
 
     Args:
@@ -34,36 +43,27 @@ class SatItemExt(base.ItemExtension):
         Using SatItemExt to directly wrap an item will add the 'sat'
         extension ID to the item's stac_extensions.
     """
-    item: pystac.Item
 
-    def __init__(self, an_item: item.Item) -> None:
-        self.item = an_item
-
-    def apply(self, orbit_state: Optional[OrbitState] = None, relative_orbit: Optional[str] = None):
+    def apply(
+        self,
+        orbit_state: Optional[OrbitState] = None,
+        relative_orbit: Optional[int] = None,
+    ) -> None:
         """Applies ext extension properties to the extended Item.
 
-        Must specify at least one of orbit_state or relative_orbit.
+        Must specify at least one of orbit_state or relative_orbit in order
+        for the sat extension to properties to be valid.
 
         Args:
-            orbit_state (OrbitState): Optional state of the orbit. Either ascending or descending
-                for polar orbiting satellites, or geostationary for geosynchronous satellites.
-            relative_orbit (int): Optional non-negative integer of the orbit number at the time
-                of acquisition.
+            orbit_state (OrbitState): Optional state of the orbit. Either ascending or
+                descending for polar orbiting satellites, or geostationary for
+                geosynchronous satellites.
+            relative_orbit (int): Optional non-negative integer of the orbit number at
+                the time of acquisition.
         """
-        if orbit_state is None and relative_orbit is None:
-            raise pystac.STACError('Must provide at least one of: orbit_state or relative_orbit')
-        if orbit_state:
-            self.orbit_state = orbit_state
-        if relative_orbit:
-            self.relative_orbit = relative_orbit
 
-    @classmethod
-    def from_item(cls, an_item: item.Item):
-        return cls(an_item)
-
-    @classmethod
-    def _object_links(cls) -> List:
-        return []
+        self.orbit_state = orbit_state
+        self.relative_orbit = relative_orbit
 
     @property
     def orbit_state(self) -> Optional[OrbitState]:
@@ -72,43 +72,65 @@ class SatItemExt(base.ItemExtension):
         Returns:
             OrbitState or None
         """
-        if ORBIT_STATE not in self.item.properties:
-            return
-        return OrbitState(self.item.properties.get(ORBIT_STATE))
+        return map_opt(lambda x: OrbitState(x), self._get_property(ORBIT_STATE, str))
 
     @orbit_state.setter
     def orbit_state(self, v: Optional[OrbitState]) -> None:
-        if v is None:
-            if self.relative_orbit is None:
-                raise pystac.STACError('Must set relative_orbit before clearing orbit_state')
-            if ORBIT_STATE in self.item.properties:
-                del self.item.properties[ORBIT_STATE]
-        else:
-            self.item.properties[ORBIT_STATE] = v.value
+        self._set_property(ORBIT_STATE, map_opt(lambda x: x.value, v))
 
     @property
-    def relative_orbit(self) -> int:
+    def relative_orbit(self) -> Optional[int]:
         """Get or sets a relative orbit number of the item.
 
         Returns:
             int or None
         """
-        return self.item.properties.get(RELATIVE_ORBIT)
+        return self._get_property(RELATIVE_ORBIT, int)
 
     @relative_orbit.setter
-    def relative_orbit(self, v: int) -> None:
-        if v is None and self.orbit_state is None:
-            raise pystac.STACError('Must set orbit_state before clearing relative_orbit')
-        if v is None:
-            if RELATIVE_ORBIT in self.item.properties:
-                del self.item.properties[RELATIVE_ORBIT]
-            return
-        if v < 0:
-            raise pystac.STACError(f'relative_orbit must be >= 0.  Found {v}.')
+    def relative_orbit(self, v: Optional[int]) -> None:
+        self._set_property(RELATIVE_ORBIT, v)
 
-        self.item.properties[RELATIVE_ORBIT] = v
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
+
+    @staticmethod
+    def ext(obj: T) -> "SatExtension[T]":
+        if isinstance(obj, pystac.Item):
+            return cast(SatExtension[T], ItemSatExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            return cast(SatExtension[T], AssetSatExtension(obj))
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File extension does not apply to type {type(obj)}"
+            )
 
 
-SAT_EXTENSION_DEFINITION = base.ExtensionDefinition(Extensions.SAT, [
-    base.ExtendedObject(pystac.Item, SatItemExt),
-])
+class ItemSatExtension(SatExtension[pystac.Item]):
+    def __init__(self, item: pystac.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return "<ItemSatExtension Item id={}>".format(self.item.id)
+
+
+class AssetSatExtension(SatExtension[pystac.Asset]):
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return "<AssetSatExtension Asset href={}>".format(self.asset_href)
+
+
+class SatExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = set(["sat"])
+    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+
+
+SAT_EXTENSION_HOOKS = SatExtensionHooks()

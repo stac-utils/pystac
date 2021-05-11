@@ -17,11 +17,28 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     if [ "${1:-}" = "--help" ]; then
         usage
     else
-        # Lint
+        echo
+        echo " -- CHECKING TYPES WITH PYRIGHT --"
+        echo
+
+        scripts/pyright pystac tests
+
+        echo
+        echo " -- LINTING WITH FLAKE8 --"
+        echo
+
         flake8 pystac tests
 
-        # Code formatting
-        yapf -dpr pystac tests
+        echo
+        echo " -- CHECKING FORMAT WITH BLACK --"
+        echo
+
+        black --check pystac
+        black --check tests
+
+        echo
+        echo " -- CHECKING SPELLING WITH CODESPELL --"
+        echo
 
         # Code spelling
         codespell -I .codespellignore -f \
@@ -32,6 +49,10 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
             scripts/* \
             *.py \
             *.md
+
+        echo
+        echo " -- RUNNING UNIT TESTS --"
+        echo
 
         # Test suite with coverage enabled
         coverage run --source=pystac/ -m unittest discover tests/

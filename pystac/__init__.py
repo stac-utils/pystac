@@ -3,57 +3,74 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
 
 # flake8: noqa
+from pystac.errors import (
+    STACError,  # type:ignore
+    STACTypeError,  # type:ignore
+    ExtensionAlreadyExistsError,  # type:ignore
+    ExtensionTypeError,  # type:ignore
+    RequiredPropertyMissing,  # type:ignore
+    STACValidationError,  #  type:ignore
+)
 
-
-class STACError(Exception):
-    """A STACError is raised for errors relating to STAC, e.g. for
-    invalid formats or trying to operate on a STAC that does not have
-    the required information available.
-    """
-    pass
-
-
-from pystac.version import (__version__, get_stac_version, set_stac_version)
-from pystac.stac_io import STAC_IO
-from pystac.extensions import Extensions
-from pystac.stac_object import (STACObject, STACObjectType)
-from pystac.media_type import MediaType
-from pystac.link import (Link, LinkType)
-from pystac.catalog import (Catalog, CatalogType)
-from pystac.collection import (Collection, Extent, SpatialExtent, TemporalExtent, Provider)
-from pystac.item import (Item, Asset, CommonMetadata)
-
-from pystac.serialization import stac_object_from_dict
+from typing import Any, Dict, Optional
+from pystac.version import (
+    __version__,
+    get_stac_version,  # type:ignore
+    set_stac_version,  # type:ignore
+)
+from pystac.stac_io import StacIO  # type:ignore
+from pystac.stac_object import STACObject, STACObjectType  # type:ignore
+from pystac.media_type import MediaType  # type:ignore
+from pystac.link import Link, HIERARCHICAL_LINKS  # type:ignore
+from pystac.catalog import Catalog, CatalogType  # type:ignore
+from pystac.collection import (
+    Collection,  # type:ignore
+    Extent,  # type:ignore
+    SpatialExtent,  # type:ignore
+    TemporalExtent,  # type:ignore
+    Provider,  # type:ignore
+    Summaries,  # type:ignore
+    RangeSummary,  # type:ignore
+)
+from pystac.item import Item, Asset, CommonMetadata  # type:ignore
 
 import pystac.validation
 
-STAC_IO.stac_object_from_dict = stac_object_from_dict
-
-from pystac import extensions
+import pystac.extensions.hooks
+import pystac.extensions.datacube
 import pystac.extensions.eo
+import pystac.extensions.file
+import pystac.extensions.item_assets
 import pystac.extensions.label
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
 import pystac.extensions.sar
 import pystac.extensions.sat
 import pystac.extensions.scientific
-import pystac.extensions.single_file_stac
 import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
 
-STAC_EXTENSIONS = extensions.base.RegisteredSTACExtensions([
-    extensions.eo.EO_EXTENSION_DEFINITION, extensions.label.LABEL_EXTENSION_DEFINITION,
-    extensions.pointcloud.POINTCLOUD_EXTENSION_DEFINITION,
-    extensions.projection.PROJECTION_EXTENSION_DEFINITION, extensions.sar.SAR_EXTENSION_DEFINITION,
-    extensions.sat.SAT_EXTENSION_DEFINITION, extensions.scientific.SCIENTIFIC_EXTENSION_DEFINITION,
-    extensions.single_file_stac.SFS_EXTENSION_DEFINITION,
-    extensions.timestamps.TIMESTAMPS_EXTENSION_DEFINITION,
-    extensions.version.VERSION_EXTENSION_DEFINITION, extensions.view.VIEW_EXTENSION_DEFINITION
-])
+EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
+    [
+        pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
+        pystac.extensions.eo.EO_EXTENSION_HOOKS,
+        pystac.extensions.file.FILE_EXTENSION_HOOKS,
+        pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
+        pystac.extensions.label.LABEL_EXTENSION_HOOKS,
+        pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
+        pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
+        pystac.extensions.sar.SAR_EXTENSION_HOOKS,
+        pystac.extensions.sat.SAT_EXTENSION_HOOKS,
+        pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
+        pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_HOOKS,
+        pystac.extensions.version.VERSION_EXTENSION_HOOKS,
+        pystac.extensions.view.VIEW_EXTENSION_HOOKS,
+    ]
+)
 
 
-def read_file(href):
+def read_file(href: str) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what the
@@ -71,7 +88,9 @@ def read_file(href):
     return STACObject.from_file(href)
 
 
-def write_file(obj, include_self_link=True, dest_href=None):
+def write_file(
+    obj: STACObject, include_self_link: bool = True, dest_href: Optional[str] = None
+) -> None:
     """Writes a STACObject to a file.
 
     This will write only the Catalog, Collection or Item ``obj``. It will not attempt
@@ -94,7 +113,12 @@ def write_file(obj, include_self_link=True, dest_href=None):
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
 
 
-def read_dict(d, href=None, root=None):
+def read_dict(
+    d: Dict[str, Any],
+    href: Optional[str] = None,
+    root: Optional[Catalog] = None,
+    stac_io: Optional[StacIO] = None,
+) -> STACObject:
     """Reads a STAC object from a dict representing the serialized JSON version of the
     STAC object.
 
@@ -110,5 +134,9 @@ def read_dict(d, href=None, root=None):
         root (Catalog or Collection): Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
+        stac_io: Optional StacIO instance to use for reading. If None, the
+            default instance will be used.
     """
-    return stac_object_from_dict(d, href, root)
+    if stac_io is None:
+        stac_io = StacIO.default()
+    return stac_io.stac_object_from_dict(d, href, root)

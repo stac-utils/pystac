@@ -1,0 +1,163 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-rc.3",
+    "id": "20170831_162740_ssc1d1",
+    "properties": {
+        "datetime": "2017-08-31T16:27:42.176605Z",
+        "platform": "SSC1",
+        "constellation": "skysat",
+        "updated": "2017-11-01T21:09:02Z",
+        "created": "2017-09-01T19:37:35Z",
+        "gsd": 0.9,
+        "eo:cloud_cover": 0,
+        "view:azimuth": 121.3,
+        "view:sun_azimuth": 122,
+        "view:sun_elevation": 56.3,
+        "view:off_nadir": 27.2,
+        "pl:ground_control": true,
+        "pl:item_type": "SkySatScene",
+        "pl:quality_category": "standard",
+        "pl:strip_id": "s03_20170831T162740Z"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -95.46998977661133,
+                    29.059245820517656
+                ],
+                [
+                    -95.46990394592285,
+                    29.049491960581708
+                ],
+                [
+                    -95.44741630554199,
+                    29.03215782622282
+                ],
+                [
+                    -95.46647071838379,
+                    29.01797318720572
+                ],
+                [
+                    -95.46561241149902,
+                    29.016997452585333
+                ],
+                [
+                    -95.46509742736816,
+                    29.017072509421837
+                ],
+                [
+                    -95.44072151184082,
+                    28.997931250084207
+                ],
+                [
+                    -95.28116226196289,
+                    28.872261720487128
+                ],
+                [
+                    -95.26768684387207,
+                    28.87241204397036
+                ],
+                [
+                    -95.25609970092773,
+                    28.884888134910938
+                ],
+                [
+                    -95.28794288635254,
+                    28.910737431999245
+                ],
+                [
+                    -95.27498245239258,
+                    28.924335785215973
+                ],
+                [
+                    -95.24365425109863,
+                    28.89969215375586
+                ],
+                [
+                    -95.23927688598633,
+                    28.90405029511776
+                ],
+                [
+                    -95.23979187011719,
+                    28.929143616007288
+                ],
+                [
+                    -95.26897430419922,
+                    28.951677350293465
+                ],
+                [
+                    -95.35978317260742,
+                    29.022626563968657
+                ],
+                [
+                    -95.4081916809082,
+                    29.061796677850424
+                ],
+                [
+                    -95.42673110961913,
+                    29.048441489877778
+                ],
+                [
+                    -95.44741630554199,
+                    29.064872627755797
+                ],
+                [
+                    -95.46260833740233,
+                    29.06442249447776
+                ],
+                [
+                    -95.46998977661133,
+                    29.059245820517656
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "collection",
+            "href": "../../../collection.json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "thumbnail": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_Freeport_s03_20170831T162740Z.png",
+            "type": "image/png",
+            "title": "Thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "visual": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_Freeport_s03_20170831T162740Z.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "SkySatScene Visual GeoTIFF",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/ortho_visual",
+            "roles": [
+                "data"
+            ]
+        }
+    },
+    "bbox": [
+        -95.46998977661133,
+        28.872261720487128,
+        -95.23927688598633,
+        29.064872627755797
+    ],
+    "stac_extensions": [
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+    ],
+    "collection": "planet-disaster-data"
+}

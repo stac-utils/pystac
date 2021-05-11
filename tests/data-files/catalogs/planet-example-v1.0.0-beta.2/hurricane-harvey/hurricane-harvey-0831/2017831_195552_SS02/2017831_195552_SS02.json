@@ -1,0 +1,147 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-rc.3",
+    "id": "2017831_195552_SS02",
+    "properties": {
+        "datetime": "2017-08-31T19:55:53.513448Z",
+        "constellation": "skysat",
+        "platform": "SS02",
+        "created": "2017-09-01T19:31:37Z",
+        "updated": "2017-11-01T20:32:39Z",
+        "gsd": 1.1,
+        "eo:cloud_cover": 24,
+        "view:azimuth": 202.8,
+        "view:sun_azimuth": 230.3,
+        "view:sun_elevation": 59.4,
+        "view:off_nadir": 25,
+        "pl:ground_control": true,
+        "pl:item_type": "SkySatScene",
+        "pl:quality_category": "test",
+        "pl:strip_id": "s02_20170831T195552Z"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -95.82155227661133,
+                    29.834836581964858
+                ],
+                [
+                    -95.8256721496582,
+                    29.798198028657897
+                ],
+                [
+                    -95.77760696411131,
+                    29.797900099223124
+                ],
+                [
+                    -95.78086853027344,
+                    29.771082817849976
+                ],
+                [
+                    -95.82841873168945,
+                    29.77078480770624
+                ],
+                [
+                    -95.83253860473631,
+                    29.73442091918209
+                ],
+                [
+                    -95.52492141723633,
+                    29.7397869125961
+                ],
+                [
+                    -95.52217483520508,
+                    29.76795366711911
+                ],
+                [
+                    -95.4770278930664,
+                    29.76810267651335
+                ],
+                [
+                    -95.47307968139648,
+                    29.801177274210758
+                ],
+                [
+                    -95.51874160766602,
+                    29.801624153391575
+                ],
+                [
+                    -95.5154800415039,
+                    29.830071351055686
+                ],
+                [
+                    -95.61573028564453,
+                    29.83215616754356
+                ],
+                [
+                    -95.62946319580078,
+                    29.832751821407317
+                ],
+                [
+                    -95.7513427734375,
+                    29.834092029616816
+                ],
+                [
+                    -95.82155227661133,
+                    29.834836581964858
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "collection",
+            "href": "../../../collection.json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "thumbnail": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_20170831T195552Z_RGB.png",
+            "type": "image/png",
+            "title": "Thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "visual": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_20170831T195552Z_RGB.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "SkySatScene Visual GeoTIFF",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/ortho_visual",
+            "roles": [
+                "data"
+            ]
+        },
+        "full-jpg": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_20170831T195552Z_RGB_Corrected.jpg",
+            "type": "image/jpeg",
+            "title": "SkySatScene Visual JPG",
+            "roles": [
+                "overview"
+            ]
+        }
+    },
+    "bbox": [
+        -95.83253860473631,
+        29.73442091918209,
+        -95.47307968139648,
+        29.834836581964858
+    ],
+    "stac_extensions": [
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+    ],
+    "collection": "planet-disaster-data"
+}

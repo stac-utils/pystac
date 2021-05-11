@@ -1,14 +1,65 @@
 # Changelog
 
-## [unreleased]
+## unreleased
+
+### Added
+
+- Added type annotations across the library ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added assets to collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `item_assets` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `datacube` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added specific errors: `ExtensionAlreadyExistsError`, `ExtensionTypeError`, and `RequiredPropertyMissing`; moved custom exceptions to `pystac.errors` ([#309](https://github.com/stac-utils/pystac/pull/309))
+
+### Fixed
+
+### Changed
+
+- API change: The extension API changed significantly. See ([#309](https://github.com/stac-utils/pystac/pull/309)) for more details.
+- API change: Refactored the global STAC_IO object to an instance-specific `StacIO` implementation. STAC_IO is deprecated and will be removed next release. ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Asset.get_absolute_href returns None if no absolute href can be inferred (previously the relative href that was passed in was returned) ([#309](https://github.com/stac-utils/pystac/pull/309))
+
+### Removed
+
+- Removed `properties` from Collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
+- Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
+
+## [v0.5.6]
+
+### Added
+
+- HIERARCHICAL_LINKS array constant of all the types of hierarchical links (self is not included) ([#290](https://github.com/stac-utils/pystac/pull/290))
+
+### Fixed
+
+- Fixed error when accessing the statistics attribute of the pointcloud extension when no statistics were defined ([#282](https://github.com/stac-utils/pystac/pull/282))
+- Fixed exception being thrown when calling set_self_href on items with assets that have relative hrefs ([#291](https://github.com/stac-utils/pystac/pull/291))
+
+### Changed
+
+- Link behavior - link URLs can be either relative or absolute. Hierarchical (e.g., parent, child) links are made relative or absolute based on the value of the root catalog's `catalog_type` field ([#290](https://github.com/stac-utils/pystac/pull/290))
+- Internal self hrefs are set automatically when adding Items or Children to an existing catalog. This removes the need to call `normalize_hrefs` or manual setting of the hrefs for newly added STAC objects ([#294](https://github.com/stac-utils/pystac/pull/294))
+- Catalog.generate_subcatalogs is an order of magnitude faster ([#295](https://github.com/stac-utils/pystac/pull/295))
+
+### Removed
+
+- Removed LinkType class and the `link_type` field from links ([#290](https://github.com/stac-utils/pystac/pull/290))
+
+## [v0.5.5]
+
+### Added
+
+- Added support for STAC file extension ([#270](https://github.com/stac-utils/pystac/pull/270))
 
 ### Fixed
 
 - Fix handling of optional properties when using apply on view extension ([#259](https://github.com/stac-utils/pystac/pull/259))
+- Fixed issue with setting None into projection extension fields that are not required breaking validation ([#269](https://github.com/stac-utils/pystac/pull/269))
 
 ### Changed
 
 - Subclass relevant classes from `enum.Enum`. This allows iterating over the class' contents. The `__str__` method is overwritten so this should not break backwards compatibility. ([#261](https://github.com/stac-utils/pystac/pull/261))
+- Extract method to correctly handle setting properties in Item/Asset for ItemExtensions ([#272](https://github.com/stac-utils/pystac/pull/272))
 
 ## [v0.5.4]
 
@@ -233,3 +284,19 @@ use `Band.create`
 ## [v0.3.0] - 2019-10-31
 
 Initial release.
+
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v0.5.6...main>
+[v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>
+[v0.5.5]: <https://github.com/stac-utils/pystac/compare/v0.5.4..v0.5.5>
+[v0.5.4]: <https://github.com/stac-utils/pystac/compare/v0.5.3..v0.5.4>
+[v0.5.3]: <https://github.com/stac-utils/pystac/compare/v0.5.2...v0.5.3>
+[v0.5.2]: <https://github.com/stac-utils/pystac/compare/v0.5.1...v0.5.2>
+[v0.5.1]: <https://github.com/stac-utils/pystac/compare/v0.5.0...v0.5.1>
+[v0.5.0]: <https://github.com/stac-utils/pystac/compare/v0.4.0...v0.5.0>
+[v0.4.0]: <https://github.com/stac-utils/pystac/compare/v0.3.4...v0.4.0>
+[v0.3.4]: <https://github.com/stac-utils/pystac/compare/v0.3.3...v0.3.4>
+[v0.3.3]: <https://github.com/stac-utils/pystac/compare/v0.3.2...v0.3.3>
+[v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1...v0.3.2>
+[v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0...v0.3.1>
+[v0.3.0]: <https://github.com/stac-utils/pystac/tree/v0.3.0>
+
