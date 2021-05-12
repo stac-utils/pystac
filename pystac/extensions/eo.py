@@ -7,7 +7,7 @@ import re
 from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
 
 import pystac
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,

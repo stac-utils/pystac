@@ -23,12 +23,13 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
-from pystac.summary import Summaries
+from pystac.summaries import Summaries
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
 
 T = TypeVar("T")
+
 
 class SpatialExtent:
     """Describes the spatial extent of a Collection.
@@ -525,8 +526,6 @@ class Collection(Catalog):
         for item in self.get_items():
             self.update_summary_with_item(item)
 
-
-
     def add_item(
         self,
         item: "Item_Type",
@@ -535,7 +534,7 @@ class Collection(Catalog):
     ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
-        self.update_summary_with_item(item)
+        self.summaries.update_with_item(item)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         d = super().to_dict(include_self_link)

@@ -5,19 +5,10 @@ import urllib.request
 
 from pystac.utils import get_required
 
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Type,
-    Union,
-    cast,
-    TypeVar
-)
+from typing import (Any, Dict, Generic, List, Optional, Type, Union, cast, TypeVar)
 
 T = TypeVar("T")
+
 
 class RangeSummary(Generic[T]):
     def __init__(self, minimum: T, maximum: T):
@@ -37,10 +28,13 @@ class RangeSummary(Generic[T]):
         maximum: Optional[T] = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
+
 FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
 
-FIELDS_JSON_LOCAL_PATH =  os.path.join(os.path.dirname(__file__), "resources",
-                                       "fields-normalized.json")
+FIELDS_JSON_LOCAL_PATH = os.path.join(os.path.dirname(__file__), "resources",
+                                      "fields-normalized.json")
+
+
 class Summarizer():
     '''The Summarizer computes summaries from values, following the definition of fields
     to summarize provided in a json file.
@@ -53,8 +47,6 @@ class Summarizer():
         fields(str): the path to the json file with field descriptions.
         If no file is passed, a default one will be used.
     '''
-
-
     def __init__(self, fields: str = None):
         if fields is None:
             self._load_default_field_definitions()
@@ -75,40 +67,43 @@ class Summarizer():
                 jsonfields = json.load(f)
         self._set_field_definitions(jsonfields)
 
-    def _set_field_definitions(self, fields)
+    def _set_field_definitions(self, fields):
         self.summaryfields = {}
         for name, desc in fields["metadata"].items():
-            if desc.get("summary", True):
-                self.summaryfields[name] = {"mergeArrays": desc.get("mergeArrays", False)}
+            if isinstance(desc, dict):
+                if desc.get("summary", True):
+                    self.summaryfields[name] = {"mergeArrays": desc.get("mergeArrays", False)}
+            else:
+                self.summaryfields[name] = {"mergeArrays": False}
 
-    def update_summary_with_item(self, summary, item):
+    def update_with_item(self, summaries, item):
         for k, v in item.properties.items():
             if k in self.summaryfields:
-                if isinstance(v, list):
-                    listsummary = summary.get_list(k)
+                if isinstance(v, numbers.Number) and not isinstance(v, bool):
+                    rangesummary = summaries.get_range(k, float)
+                    if rangesummary is None:
+                        summaries.add(k, RangeSummary(v, v))
+                    else:
+                        rangesummary.update_with_value(v)
+                elif isinstance(v, list):
+                    listsummary = summaries.get_list(k, Any)
                     if listsummary is None:
                         listsummary = []
                     if self.summaryfields[k]["mergeArrays"]:
-                        listsummary =  list(set(self.summaries[k]) | set(v))
+                        listsummary = list(set(listsummary) | set(v))
                     else:
                         if v not in listsummary:
                             listsummary.append(v)
-                    summary.add(k, listsummary)
-                elif isinstance(v, numbers.Number):
-                    rangesummary = summary.get_range(k)
-                    if rangesummary is None:
-                        summary.add(RangeSummary(v, v))
-                    else:
-                        rangesummary.update_with_value(v)
+                    summaries.add(k, listsummary)
                 else:
-                    listsummary = summaries.get_list(k) or []:
-                    if v not in self.summaries[k]:
-                        self.summaries[k].append(v)
-                    summary.add(k, listsummary)
+                    listsummary = summaries.get_list(k, Any) or []
+                    if v not in listsummary:
+                        listsummary.append(v)
+                    summaries.add(k, listsummary)
+
 
 class Summaries:
-
-    def __init__(self, summaries: Dict[str, Any], summarizer: Summarizer) -> None:
+    def __init__(self, summaries: Dict[str, Any], summarizer: Summarizer = None) -> None:
         self._summaries = summaries
 
         self.summarizer = summarizer or Summarizer()
@@ -171,5 +166,5 @@ class Summaries:
     def empty(cls) -> "Summaries":
         return Summaries({})
 
-    def update_summary_with_item(self, item):
-        self.summarizer.update_summary_with_item(self, item)
+    def update_with_item(self, item):
+        self.summarizer.update_with_item(self, item)
