@@ -524,7 +524,7 @@ class Collection(Catalog):
         """
         self.summaries = Summaries.empty()
         for item in self.get_items():
-            self.update_summary_with_item(item)
+            self.summaries.update_with_item(item)
 
     def add_item(
         self,
