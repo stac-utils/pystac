@@ -1,6 +1,6 @@
 """Tests creating a custom extension"""
 
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
 
