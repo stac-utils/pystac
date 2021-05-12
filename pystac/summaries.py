@@ -163,8 +163,8 @@ class Summaries:
         }
 
     @classmethod
-    def empty(cls) -> "Summaries":
-        return Summaries({})
+    def empty(cls, summarizer: Summarizer = None) -> "Summaries":
+        return Summaries({}, summarizer)
 
     def update_with_item(self, item):
         self.summarizer.update_with_item(self, item)

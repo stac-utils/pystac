@@ -23,7 +23,7 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
-from pystac.summaries import Summaries
+from pystac.summaries import Summaries, Summarizer
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
@@ -518,11 +518,11 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
 
-    def create_summary(self):
-        """Creates a summary from current items
-        It will remove the content of the previous collection summary, in case it exists
+    def create_summaries(self, summarizer: Summarizer = None):
+        """Creates summaries from current items
+        It will remove previous collection summaries, in case they exists
         """
-        self.summaries = Summaries.empty()
+        self.summaries = Summaries.empty(summarizer)
         for item in self.get_items():
             self.summaries.update_with_item(item)
 
