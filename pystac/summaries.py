@@ -109,7 +109,7 @@ class Summarizer():
             else:
                 self.summaryfields[name] = {"mergeArrays": False}
 
-    def _update_with_item(self, summaries: Summaries, item: "Item_Type") -> None:
+    def _update_with_item(self, summaries: "Summaries", item: "Item_Type") -> None:
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 if isinstance(v, numbers.Number) and not isinstance(v, bool):
@@ -148,9 +148,12 @@ class Summarizer():
         return summaries
 
 
+DEFAULT_MAXCOUNT = 25
+
 class Summaries:
-    def __init__(self, summaries: Dict[str, Any]) -> None:
+    def __init__(self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT) -> None:
         self._summaries = summaries
+        self.maxcount = maxcount
 
         self.lists: Dict[str, List[Any]] = {}
         self.ranges: Dict[str, RangeSummary[Any]] = {}
@@ -230,7 +233,7 @@ class Summaries:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            **self.lists,
+            **{k: v for k, v in self.lists.items() if len(v) < self.maxcount},
             **{k: v.to_dict() for k, v in self.ranges.items()},
             **self.schemas,
             **self.other,
