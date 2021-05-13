@@ -24,7 +24,17 @@ if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
     from pystac.collection import Collection as Collection_Type
 
-T = TypeVar("T")
+from abc import abstractmethod
+
+
+class Comparable(Protocol):
+    """Protocol for annotating comparable types."""
+
+    @abstractmethod
+    def __lt__(self: "T", other: "T") -> bool:
+        pass
+
+T = TypeVar("T", bound=Comparable)
 
 
 class RangeSummary(Generic[T]):
@@ -35,9 +45,9 @@ class RangeSummary(Generic[T]):
     def to_dict(self) -> Dict[str, Any]:
         return {"minimum": self.minimum, "maximum": self.maximum}
 
-    def update_with_value(self, v: T):
+    def update_with_value(self, v: T) -> None:
         self.minimum = min(self.minimum, v)
-        self.maximum = min(self.maximum, v)
+        self.maximum = max(self.maximum, v)
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
@@ -65,7 +75,7 @@ class Summarizer():
         If no file is passed, a default one will be used.
     '''
 
-    __default_field_definitions = None
+    __default_field_definitions: dict = {}
 
     def __init__(self, fields: Optional[str] = None):
         if fields is None:
@@ -78,19 +88,19 @@ class Summarizer():
             except:
                 self._set_default_field_definitions()
 
-    def _set_default_field_definitions(self):
-        if Summarizer.__default_field_definitions is None:
+    def _set_default_field_definitions(self) ->None:
+        if not Summarizer.__default_field_definitions:
             try:
                 with urllib.request.urlopen(FIELDS_JSON_URL) as url:
                     type(self).__default_field_definitions = json.loads(url.read().decode())
             except:
                 pass
-        if Summarizer.__default_field_definitions is None:
+        if not Summarizer.__default_field_definitions:
             with open(FIELDS_JSON_LOCAL_PATH) as f:
                 type(self).__default_field_definitions = json.load(f)
         self._set_field_definitions(Summarizer.__default_field_definitions)
 
-    def _set_field_definitions(self, fields):
+    def _set_field_definitions(self, fields: dict) -> None:
         self.summaryfields = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
@@ -99,17 +109,17 @@ class Summarizer():
             else:
                 self.summaryfields[name] = {"mergeArrays": False}
 
-    def _update_with_item(self, summaries, item):
+    def _update_with_item(self, summaries: Summaries, item: "Item_Type") -> None:
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 if isinstance(v, numbers.Number) and not isinstance(v, bool):
-                    rangesummary = summaries.get_range(k, float)
+                    rangesummary: Optional[RangeSummary] = summaries.get_range(k, object)
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
                         rangesummary.update_with_value(v)
                 elif isinstance(v, list):
-                    listsummary = summaries.get_list(k, Any)
+                    listsummary: Optional[list] = summaries.get_list(k, object)
                     if listsummary is None:
                         listsummary = []
                     if self.summaryfields[k]["mergeArrays"]:
@@ -119,7 +129,7 @@ class Summarizer():
                             listsummary.append(v)
                     summaries.add(k, listsummary)
                 else:
-                    listsummary = summaries.get_list(k, Any) or []
+                    listsummary = summaries.get_list(k, object) or []
                     if v not in listsummary:
                         listsummary.append(v)
                     summaries.add(k, listsummary)
@@ -129,10 +139,10 @@ class Summarizer():
         """
         summaries = Summaries.empty()
         if hasattr(source, "get_items"):
-            for item in source.get_items():
+            for item in source.get_items():  # type: ignore[union-attr]
                 self._update_with_item(summaries, item)
         else:
-            for item in source:
+            for item in source:  # type: ignore[union-attr]
                 self._update_with_item(summaries, item)
 
         return summaries
@@ -191,29 +201,29 @@ class Summaries:
         self.other.update(summaries.other)
 
     def combine(self, summaries: "Summaries") -> None:
-        for k, v in summaries.lists.items():
-            if k in self.lists:
-                self.lists[k].extend(v)
+        for listname, listvalue in summaries.lists.items():
+            if listname in self.lists:
+                self.lists[listname].extend(listvalue)
             else:
-                self.lists[k] = v
-        for k, v in summaries.ranges.items():
-            if k in self.ranges:
-                self.ranges[k].update_with_value(v.minimum)
-                self.ranges[k].update_with_value(v.maximum)
+                self.lists[listname] = listvalue
+        for rangename, rang in summaries.ranges.items():
+            if rangename in self.ranges:
+                self.ranges[rangename].update_with_value(rang.minimum)
+                self.ranges[rangename].update_with_value(rang.maximum)
             else:
-                self.ranges[k] = v
-        for k, v in summaries.schemas.items():
-            if k in self.schemas:
-                self.schemas[k].update(v)
+                self.ranges[rangename] = rang
+        for schemaname, schema in summaries.schemas.items():
+            if schemaname in self.schemas:
+                self.schemas[schemaname].update(schema)
             else:
-                self.schemas[k] = v
+                self.schemas[schemaname] = schema
         for k, v in summaries.other.items():
             if k in self.other:
                 self.other[k].update(v)
             else:
                 self.other[k] = v
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )
