@@ -518,14 +518,6 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
 
-    def create_summaries(self, summarizer: Summarizer = None):
-        """Creates summaries from current items
-        It will remove previous collection summaries, in case they exists
-        """
-        self.summaries = Summaries.empty(summarizer)
-        for item in self.get_items():
-            self.summaries.update_with_item(item)
-
     def add_item(
         self,
         item: "Item_Type",
@@ -534,7 +526,7 @@ class Collection(Catalog):
     ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
-        self.summaries.update_with_item(item)
+
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         d = super().to_dict(include_self_link)

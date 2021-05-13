@@ -5,7 +5,24 @@ import urllib.request
 
 from pystac.utils import get_required
 
-from typing import (Any, Dict, Generic, List, Optional, Type, Union, cast, TypeVar)
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Type,
+    Union,
+    cast,
+    TypeVar,
+    Iterable,
+    Protocol,
+    TYPE_CHECKING
+)
+
+if TYPE_CHECKING:
+    from pystac.item import Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
 
 T = TypeVar("T")
 
@@ -47,25 +64,31 @@ class Summarizer():
         fields(str): the path to the json file with field descriptions.
         If no file is passed, a default one will be used.
     '''
-    def __init__(self, fields: str = None):
+
+    __default_field_definitions = None
+
+    def __init__(self, fields: Optional[str] = None):
         if fields is None:
-            self._load_default_field_definitions()
+            self._set_default_field_definitions()
         else:
             with open(fields) as f:
                 jsonfields = json.load(f)
             try:
                 self._set_field_definitions(jsonfields)
             except:
-                self._load_default_field_definitions()
+                self._set_default_field_definitions()
 
-    def _load_default_field_definitions(self):
-        try:
-            with urllib.request.urlopen(FIELDS_JSON_URL) as url:
-                jsonfields = json.loads(url.read().decode())
-        except:
+    def _set_default_field_definitions(self):
+        if Summarizer.__default_field_definitions is None:
+            try:
+                with urllib.request.urlopen(FIELDS_JSON_URL) as url:
+                    type(self).__default_field_definitions = json.loads(url.read().decode())
+            except:
+                pass
+        if Summarizer.__default_field_definitions is None:
             with open(FIELDS_JSON_LOCAL_PATH) as f:
-                jsonfields = json.load(f)
-        self._set_field_definitions(jsonfields)
+                type(self).__default_field_definitions = json.load(f)
+        self._set_field_definitions(Summarizer.__default_field_definitions)
 
     def _set_field_definitions(self, fields):
         self.summaryfields = {}
@@ -76,7 +99,7 @@ class Summarizer():
             else:
                 self.summaryfields[name] = {"mergeArrays": False}
 
-    def update_with_item(self, summaries, item):
+    def _update_with_item(self, summaries, item):
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 if isinstance(v, numbers.Number) and not isinstance(v, bool):
@@ -101,12 +124,24 @@ class Summarizer():
                         listsummary.append(v)
                     summaries.add(k, listsummary)
 
+    def summarize(self, source: Union["Collection_Type", Iterable["Item_Type"]]) -> "Summaries":
+        """Creates summaries from items
+        """
+        summaries = Summaries.empty()
+        if hasattr(source, "get_items"):
+            for item in source.get_items():
+                self._update_with_item(summaries, item)
+        else:
+            for item in source:
+                self._update_with_item(summaries, item)
+
+        return summaries
+
 
 class Summaries:
-    def __init__(self, summaries: Dict[str, Any], summarizer: Summarizer = None) -> None:
+    def __init__(self, summaries: Dict[str, Any]) -> None:
         self._summaries = summaries
 
-        self.summarizer = summarizer or Summarizer()
         self.lists: Dict[str, List[Any]] = {}
         self.ranges: Dict[str, RangeSummary[Any]] = {}
         self.schemas: Dict[str, Dict[str, Any]] = {}
@@ -149,6 +184,35 @@ class Summaries:
         self.schemas.pop(prop_key, None)
         self.other.pop(prop_key, None)
 
+    def update(self, summaries: "Summaries") -> None:
+        self.lists.update(summaries.lists)
+        self.ranges.update(summaries.ranges)
+        self.schemas.update(summaries.schemas)
+        self.other.update(summaries.other)
+
+    def combine(self, summaries: "Summaries") -> None:
+        for k, v in summaries.lists.items():
+            if k in self.lists:
+                self.lists[k].extend(v)
+            else:
+                self.lists[k] = v
+        for k, v in summaries.ranges.items():
+            if k in self.ranges:
+                self.ranges[k].update_with_value(v.minimum)
+                self.ranges[k].update_with_value(v.maximum)
+            else:
+                self.ranges[k] = v
+        for k, v in summaries.schemas.items():
+            if k in self.schemas:
+                self.schemas[k].update(v)
+            else:
+                self.schemas[k] = v
+        for k, v in summaries.other.items():
+            if k in self.other:
+                self.other[k].update(v)
+            else:
+                self.other[k] = v
+
     def is_empty(self):
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
@@ -163,8 +227,6 @@ class Summaries:
         }
 
     @classmethod
-    def empty(cls, summarizer: Summarizer = None) -> "Summaries":
-        return Summaries({}, summarizer)
+    def empty(cls) -> "Summaries":
+        return Summaries({})
 
-    def update_with_item(self, item):
-        self.summarizer.update_with_item(self, item)
