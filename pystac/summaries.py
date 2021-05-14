@@ -2,6 +2,7 @@ import os
 import json
 import numbers
 import urllib.request
+from enum import Enum
 
 from pystac.utils import get_required
 
@@ -34,6 +35,7 @@ class Comparable(Protocol):
     def __lt__(self: "T", other: "T") -> bool:
         pass
 
+
 T = TypeVar("T", bound=Comparable)
 
 
@@ -62,6 +64,14 @@ FIELDS_JSON_LOCAL_PATH = os.path.join(os.path.dirname(__file__), "resources",
                                       "fields-normalized.json")
 
 
+class SummaryStrategy(Enum):
+    ARRAY = "v"
+    RANGE = "r"
+    SCHEMA = "s"
+    DONT_SUMMARIZE = False
+    UNDEFINED = True
+
+
 class Summarizer():
     '''The Summarizer computes summaries from values, following the definition of fields
     to summarize provided in a json file.
@@ -88,7 +98,7 @@ class Summarizer():
             except:
                 self._set_default_field_definitions()
 
-    def _set_default_field_definitions(self) ->None:
+    def _set_default_field_definitions(self) -> None:
         if not Summarizer.__default_field_definitions:
             try:
                 with urllib.request.urlopen(FIELDS_JSON_URL) as url:
@@ -101,38 +111,41 @@ class Summarizer():
         self._set_field_definitions(Summarizer.__default_field_definitions)
 
     def _set_field_definitions(self, fields: dict) -> None:
-        self.summaryfields = {}
+        self.summaryfields : dict[str, SummaryStrategy] = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
-                if desc.get("summary", True):
-                    self.summaryfields[name] = {"mergeArrays": desc.get("mergeArrays", False)}
+                strategy_value = desc.get("summary", True)
+                try:
+                    strategy : SummaryStrategy = SummaryStrategy(strategy_value)
+                except ValueError:
+                    strategy = SummaryStrategy.UNDEFINED
+                if strategy != SummaryStrategy.DONT_SUMMARIZE:
+                    self.summaryfields[name] = strategy
             else:
-                self.summaryfields[name] = {"mergeArrays": False}
+                self.summaryfields[name] = SummaryStrategy.UNDEFINED
 
     def _update_with_item(self, summaries: "Summaries", item: "Item_Type") -> None:
         for k, v in item.properties.items():
             if k in self.summaryfields:
-                if isinstance(v, numbers.Number) and not isinstance(v, bool):
+                strategy = self.summaryfields[k]
+                if (strategy == SummaryStrategy.RANGE or
+                    (strategy == SummaryStrategy.UNDEFINED and
+                     isinstance(v, numbers.Number) and not isinstance(v, bool))):
                     rangesummary: Optional[RangeSummary] = summaries.get_range(k, object)
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
                         rangesummary.update_with_value(v)
-                elif isinstance(v, list):
-                    listsummary: Optional[list] = summaries.get_list(k, object)
-                    if listsummary is None:
-                        listsummary = []
-                    if self.summaryfields[k]["mergeArrays"]:
-                        listsummary = list(set(listsummary) | set(v))
-                    else:
-                        if v not in listsummary:
-                            listsummary.append(v)
+                elif (strategy == SummaryStrategy.ARRAY or
+                      (strategy == SummaryStrategy.UNDEFINED and isinstance(v, list))):
+                    listsummary: list = summaries.get_list(k, object) or []
+                    listsummary = list(set(listsummary) | set(v))
                     summaries.add(k, listsummary)
                 else:
-                    listsummary = summaries.get_list(k, object) or []
-                    if v not in listsummary:
-                        listsummary.append(v)
-                    summaries.add(k, listsummary)
+                    summary: list = summaries.get_list(k, object) or []
+                    if v not in summary:
+                        summary.append(v)
+                    summaries.add(k, summary)
 
     def summarize(self, source: Union["Collection_Type", Iterable["Item_Type"]]) -> "Summaries":
         """Creates summaries from items
@@ -149,6 +162,7 @@ class Summarizer():
 
 
 DEFAULT_MAXCOUNT = 25
+
 
 class Summaries:
     def __init__(self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT) -> None:
@@ -242,4 +256,3 @@ class Summaries:
     @classmethod
     def empty(cls) -> "Summaries":
         return Summaries({})
-

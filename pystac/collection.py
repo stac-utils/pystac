@@ -23,7 +23,7 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
-from pystac.summaries import Summaries, Summarizer
+from pystac.summaries import Summaries
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
@@ -526,7 +526,6 @@ class Collection(Catalog):
     ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
-
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         d = super().to_dict(include_self_link)
