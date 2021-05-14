@@ -69,7 +69,7 @@ class SummaryStrategy(Enum):
     RANGE = "r"
     SCHEMA = "s"
     DONT_SUMMARIZE = False
-    UNDEFINED = True
+    DEFAULT = True
 
 
 class Summarizer():
@@ -118,18 +118,18 @@ class Summarizer():
                 try:
                     strategy : SummaryStrategy = SummaryStrategy(strategy_value)
                 except ValueError:
-                    strategy = SummaryStrategy.UNDEFINED
+                    strategy = SummaryStrategy.DEFAULT
                 if strategy != SummaryStrategy.DONT_SUMMARIZE:
                     self.summaryfields[name] = strategy
             else:
-                self.summaryfields[name] = SummaryStrategy.UNDEFINED
+                self.summaryfields[name] = SummaryStrategy.DEFAULT
 
     def _update_with_item(self, summaries: "Summaries", item: "Item_Type") -> None:
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
                 if (strategy == SummaryStrategy.RANGE or
-                    (strategy == SummaryStrategy.UNDEFINED and
+                    (strategy == SummaryStrategy.DEFAULT and
                      isinstance(v, numbers.Number) and not isinstance(v, bool))):
                     rangesummary: Optional[RangeSummary] = summaries.get_range(k, object)
                     if rangesummary is None:
@@ -137,7 +137,7 @@ class Summarizer():
                     else:
                         rangesummary.update_with_value(v)
                 elif (strategy == SummaryStrategy.ARRAY or
-                      (strategy == SummaryStrategy.UNDEFINED and isinstance(v, list))):
+                      (strategy == SummaryStrategy.DEFAULT and isinstance(v, list))):
                     listsummary: list = summaries.get_list(k, object) or []
                     listsummary = list(set(listsummary) | set(v))
                     summaries.add(k, listsummary)
