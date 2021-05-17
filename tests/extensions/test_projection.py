@@ -140,7 +140,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(ProjectionExtension.ext(asset_no_prop).epsg, 8888)
 
         # Validate
-        proj_item.validate
+        proj_item.validate()
 
     def test_wkt2(self):
         proj_item = pystac.Item.from_file(self.example_uri)
