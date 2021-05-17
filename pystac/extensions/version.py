@@ -40,10 +40,10 @@ class VersionExtension(
     along with links to the latest, predecessor, and successor Items.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The item that is being extended.
+        item : The item that is being extended.
 
     Note:
         Using VersionItemExt to directly wrap an item will add the 'version'
@@ -66,13 +66,13 @@ class VersionExtension(
         """Applies version extension properties to the extended Item.
 
         Args:
-            version (str): The version string for the item.
-            deprecated (bool): Optional flag set to True if an Item is
+            version : The version string for the item.
+            deprecated : Optional flag set to True if an Item is
                 deprecated with the potential to be removed.  Defaults to false
                 if not present.
-            latest (Item): Item with the latest (e.g., current) version.
-            predecessor (Item): Item with the previous version.
-            successor (Item): Item with the next most recent version.
+            latest : Item with the latest (e.g., current) version.
+            predecessor : Item with the previous version.
+            successor : Item with the next most recent version.
         """
         self.version = version
         if deprecated is not None:

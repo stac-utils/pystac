@@ -141,11 +141,11 @@ class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
     Attributes:
-        object_type (str): Describes the STAC object type. One of
+        object_type : Describes the STAC object type. One of
             :class:`~pystac.STACObjectType`.
-        version_range (STACVersionRange): The STAC version range that describes what
+        version_range : The STAC version range that describes what
             has been identified as potential valid versions of the stac object.
-        extensions (List[str]): List of extension schema URIs for extensions this
+        extensions : List of extension schema URIs for extensions this
             object implements
     """
 
@@ -302,7 +302,7 @@ def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectType_Type
     """Determines the STACObjectType of the provided JSON dict.
 
     Args:
-        json_dict (dict): The dict of STAC JSON to identify.
+        json_dict : The dict of STAC JSON to identify.
 
     Returns:
         STACObjectType: The object type represented by the JSON.
@@ -338,7 +338,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     """Determines the STACJSONDescription of the provided JSON dict.
 
     Args:
-        json_dict (dict): The dict of STAC JSON to identify.
+        json_dict : The dict of STAC JSON to identify.
 
     Returns:
         STACJSONDescription: The description of the STAC object serialized in the

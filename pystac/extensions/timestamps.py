@@ -39,11 +39,11 @@ class TimestampsExtension(
         """Applies timestamps extension properties to the extended Item.
 
         Args:
-            published (datetime or None): Date and time the corresponding data
+            published : Date and time the corresponding data
                 was published the first time.
-            expires (datetime or None): Date and time the corresponding data
+            expires : Date and time the corresponding data
                 expires (is not valid any longer).
-            unpublished (datetime or None): Date and time the corresponding data
+            unpublished : Date and time the corresponding data
                 was unpublished.
         """
         self.published = published

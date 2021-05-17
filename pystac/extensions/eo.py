@@ -47,13 +47,13 @@ class Band:
         Sets the properties for this Band.
 
         Args:
-            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name (str): The name commonly used to refer to the band to make it
+            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name : The name commonly used to refer to the band to make it
                 easier to search for bands across instruments. See the `list of
                 accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-            description (str): Description to fully explain the band.
-            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+            description : Description to fully explain the band.
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
         """  # noqa
         self.name = name
@@ -75,13 +75,13 @@ class Band:
         Creates a new band.
 
         Args:
-            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name (str): The name commonly used to refer to the band to make it easier
+            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name : The name commonly used to refer to the band to make it easier
                 to search for bands across instruments. See the `list of accepted common names
                 <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-            description (str): Description to fully explain the band.
-            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+            description : Description to fully explain the band.
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
         """  # noqa
         b = cls({})
@@ -191,7 +191,7 @@ class Band:
         """Gets the band range for a common band name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
@@ -223,7 +223,7 @@ class Band:
         """Returns a description of the band for one with a common name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
 
         Returns:
             str or None: If a recognized common name, returns a description including the
@@ -242,10 +242,10 @@ class EOExtension(
     represents a snapshot of the earth for a single date and time.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     Note:
         Using EOItemExt to directly wrap an item will add the 'eo' extension ID to
@@ -256,9 +256,9 @@ class EOExtension(
         """Applies label extension properties to the extended Item.
 
         Args:
-            bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
+            bands : a list of :class:`~pystac.Band` objects that represent
                 the available bands.
-            cloud_cover (float or None): The estimate of cloud cover as a percentage
+            cloud_cover : The estimate of cloud cover as a percentage
                 (0-100) of the entire scene. If not available the field should not be
                 provided.
         """
