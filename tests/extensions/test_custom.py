@@ -106,7 +106,7 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
 class SummariesCustomExtension(SummariesExtension):
     @property
     def test_prop(self) -> Optional[RangeSummary[str]]:
-        return self.summaries.get_range(TEST_PROP, str)
+        return self.summaries.get_range(TEST_PROP)
 
     @test_prop.setter
     def test_prop(self, v: Optional[RangeSummary[str]]) -> None:

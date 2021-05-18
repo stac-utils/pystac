@@ -113,7 +113,7 @@ class Summarizer:
                 type(self).__default_field_definitions = json.load(f)
         self._set_field_definitions(Summarizer.__default_field_definitions)
 
-    def _set_field_definitions(self, fields: dict) -> None:
+    def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
         self.summaryfields: dict[str, SummaryStrategy] = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
@@ -136,9 +136,7 @@ class Summarizer:
                     and isinstance(v, numbers.Number)
                     and not isinstance(v, bool)
                 ):
-                    rangesummary: Optional[RangeSummary] = summaries.get_range(
-                        k, object
-                    )
+                    rangesummary: Optional[RangeSummary] = summaries.get_range(k)
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
@@ -146,7 +144,7 @@ class Summarizer:
                 elif strategy == SummaryStrategy.ARRAY or (
                     strategy == SummaryStrategy.DEFAULT and isinstance(v, list)
                 ):
-                    listsummary: list = summaries.get_list(k, object) or []
+                    listsummary: list = summaries.get_list(k) or []
                     if not isinstance(v, list):
                         v = [v]
                     for element in v:
@@ -154,7 +152,7 @@ class Summarizer:
                             listsummary.append(element)
                     summaries.add(k, listsummary)
                 else:
-                    summary: list = summaries.get_list(k, object) or []
+                    summary: list = summaries.get_list(k) or []
                     if v not in summary:
                         summary.append(v)
                     summaries.add(k, summary)
@@ -192,10 +190,10 @@ class Summaries:
         for prop_key, summary in summaries.items():
             self.add(prop_key, summary)
 
-    def get_list(self, prop: str, typ: Type[T]) -> Optional[List[T]]:
+    def get_list(self, prop: str) -> Optional[List[Any]]:
         return self.lists.get(prop)
 
-    def get_range(self, prop: str, typ: Type[T]) -> Optional[RangeSummary[T]]:
+    def get_range(self, prop: str) -> Optional[RangeSummary[Any]]:
         return self.ranges.get(prop)
 
     def get_schema(self, prop: str) -> Optional[Dict[str, Any]]:

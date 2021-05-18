@@ -190,7 +190,7 @@ class SummariesFileExtension(SummariesExtension):
         """
         return map_opt(
             lambda x: [FileDataType(t) for t in x],
-            self.summaries.get_list(DATA_TYPE_PROP, str),
+            self.summaries.get_list(DATA_TYPE_PROP),
         )
 
     @data_type.setter
@@ -204,7 +204,7 @@ class SummariesFileExtension(SummariesExtension):
         Returns:
             int or None
         """
-        return self.summaries.get_range(SIZE_PROP, int)
+        return self.summaries.get_range(SIZE_PROP)
 
     @size.setter
     def size(self, v: Optional[pystac.RangeSummary[int]]) -> None:
@@ -213,7 +213,7 @@ class SummariesFileExtension(SummariesExtension):
     @property
     def nodata(self) -> Optional[List[Any]]:
         """Get or sets the list of no data values"""
-        return self.summaries.get_list(NODATA_PROP, List[Any])
+        return self.summaries.get_list(NODATA_PROP)
 
     @nodata.setter
     def nodata(self, v: Optional[List[Any]]) -> None:
