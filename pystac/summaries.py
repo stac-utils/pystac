@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import json
 import numbers
@@ -32,7 +34,7 @@ class Comparable(Protocol):
     """Protocol for annotating comparable types."""
 
     @abstractmethod
-    def __lt__(self: "T", other: "T") -> bool:
+    def __lt__(self: T, x: T) -> bool:
         pass
 
 
@@ -82,7 +84,7 @@ class Summarizer:
     https://github.com/stac-utils/stac-fields
 
     Args:
-        fields(str): the path to the json file with field descriptions.
+        fields (str): the path to the json file with field descriptions.
         If no file is passed, a default one will be used.
     """
 
