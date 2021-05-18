@@ -61,7 +61,7 @@ class RangeSummary(Generic[T]):
 FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
 
 FIELDS_JSON_LOCAL_PATH = os.path.join(os.path.dirname(__file__), "resources",
-                                      "fields-normalized.json")
+                                      "fields.json")
 
 
 class SummaryStrategy(Enum):
@@ -91,9 +91,9 @@ class Summarizer():
         if fields is None:
             self._set_default_field_definitions()
         else:
-            with open(fields) as f:
-                jsonfields = json.load(f)
             try:
+                with open(fields) as f:
+                    jsonfields = json.load(f)
                 self._set_field_definitions(jsonfields)
             except:
                 self._set_default_field_definitions()
@@ -139,7 +139,11 @@ class Summarizer():
                 elif (strategy == SummaryStrategy.ARRAY or
                       (strategy == SummaryStrategy.DEFAULT and isinstance(v, list))):
                     listsummary: list = summaries.get_list(k, object) or []
-                    listsummary = list(set(listsummary) | set(v))
+                    if not isinstance(v, list):
+                        v = [v]
+                    for element in v:
+                        if element not in listsummary:
+                            listsummary.append(element)
                     summaries.add(k, listsummary)
                 else:
                     summary: list = summaries.get_list(k, object) or []
@@ -151,8 +155,8 @@ class Summarizer():
         """Creates summaries from items
         """
         summaries = Summaries.empty()
-        if hasattr(source, "get_items"):
-            for item in source.get_items():  # type: ignore[union-attr]
+        if hasattr(source, "get_all_items"):
+            for item in source.get_all_items():  # type: ignore[union-attr]
                 self._update_with_item(summaries, item)
         else:
             for item in source:  # type: ignore[union-attr]
