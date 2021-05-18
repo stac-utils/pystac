@@ -86,7 +86,7 @@ class Summarizer:
         If no file is passed, a default one will be used.
     """
 
-    __default_field_definitions: dict = {}
+    __default_field_definitions: Dict[str, Any] = {}
 
     def __init__(self, fields: Optional[str] = None):
         if fields is None:
