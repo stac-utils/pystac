@@ -44,7 +44,8 @@ The table below shows the corresponding versions between pystac and STAC:
 
 | pystac | STAC  |
 | ------ | ----- |
-| 0.5.x  | 1.0.x |
+| 1.x    | 1.0.x |
+| 0.5.x  | 1.0.0-beta.* |
 | 0.4.x  | 0.9.x |
 | 0.3.x  | 0.8.x |
 
@@ -114,11 +115,11 @@ To build and develop the documentation locally, make sure sphinx is available (w
 > make livehtml
 ```
 
-> Note: You will see some warnings along the lines of 
+> Note: You will see some warnings along the lines of
 > ```
-> WARNING: duplicate object description of pystac.Collection.id, 
+> WARNING: duplicate object description of pystac.Collection.id,
 > other instance in api, use :noindex: for one of them
-> ``` 
+> ```
 > for some of the
 > classes. This is expected due to [sphinx-doc/sphinx#8664](https://github.com/sphinx-doc/sphinx/issues/8664).
 
