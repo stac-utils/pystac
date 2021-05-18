@@ -28,13 +28,7 @@ class ItemTest(unittest.TestCase):
 
         test_to_from_dict(self, Item, item_dict)
         item = Item.from_dict(item_dict)
-        self.assertEqual(
-            item.get_self_href(),
-            (
-                "http://cool-sat.com/catalog/CS3-20160503_132130_04/"
-                "CS3-20160503_132130_04.json"
-            ),
-        )
+        self.assertEqual(item.id, "CS3-20160503_132131_05")
 
         # test asset creation additional field(s)
         self.assertEqual(
@@ -68,9 +62,7 @@ class ItemTest(unittest.TestCase):
         item = Item.from_dict(item_dict)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = (
-            "http://cool-sat.com/catalog/CS3-20160503_132130_04/data.geojson"
-        )
+        expected_href = os.path.abspath("./data.geojson")
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
 
@@ -173,15 +165,6 @@ class ItemTest(unittest.TestCase):
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
-
-    def test_self_contained_item(self):
-        item_dict = self.get_example_item_dict()
-        item_dict["links"] = [
-            link for link in item_dict["links"] if link["rel"] == "self"
-        ]
-        item = Item.from_dict(item_dict)
-        self.assertIsInstance(item, Item)
-        self.assertEqual(len(item.links), 1)
 
     def test_null_geometry(self):
         m = TestCases.get_path(
