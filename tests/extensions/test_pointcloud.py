@@ -57,7 +57,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(pc_count + 100, pc_item.properties["pc:count"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
         # Cannot test validation errors until the pointcloud schema.json syntax is fixed
         # Ensure setting bad count fails validation
@@ -79,7 +79,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual("sonar", pc_item.properties["pc:type"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
     def test_encoding(self):
         pc_item = pystac.Item.from_file(self.example_uri)
@@ -94,7 +94,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual("binary", pc_item.properties["pc:encoding"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
     def test_schemas(self):
         pc_item = pystac.Item.from_file(self.example_uri)
@@ -112,7 +112,7 @@ class PointcloudTest(unittest.TestCase):
         )
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
     def test_statistics(self):
         pc_item = pystac.Item.from_file(self.example_uri)
@@ -158,7 +158,7 @@ class PointcloudTest(unittest.TestCase):
         PointcloudExtension.ext(pc_item).density = density
         self.assertEqual(density, pc_item.properties["pc:density"])
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
     def test_pointcloud_schema(self):
         props: Dict[str, Any] = {
