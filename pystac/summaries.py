@@ -18,7 +18,7 @@ from typing import (
     TypeVar,
     Iterable,
     Protocol,
-    TYPE_CHECKING
+    TYPE_CHECKING,
 )
 
 if TYPE_CHECKING:
@@ -60,8 +60,9 @@ class RangeSummary(Generic[T]):
 
 FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
 
-FIELDS_JSON_LOCAL_PATH = os.path.join(os.path.dirname(__file__), "resources",
-                                      "fields.json")
+FIELDS_JSON_LOCAL_PATH = os.path.join(
+    os.path.dirname(__file__), "resources", "fields.json"
+)
 
 
 class SummaryStrategy(Enum):
@@ -72,8 +73,8 @@ class SummaryStrategy(Enum):
     DEFAULT = True
 
 
-class Summarizer():
-    '''The Summarizer computes summaries from values, following the definition of fields
+class Summarizer:
+    """The Summarizer computes summaries from values, following the definition of fields
     to summarize provided in a json file.
 
     For more information about the structure of the fields json file, see:
@@ -83,7 +84,7 @@ class Summarizer():
     Args:
         fields(str): the path to the json file with field descriptions.
         If no file is passed, a default one will be used.
-    '''
+    """
 
     __default_field_definitions: dict = {}
 
@@ -102,7 +103,9 @@ class Summarizer():
         if not Summarizer.__default_field_definitions:
             try:
                 with urllib.request.urlopen(FIELDS_JSON_URL) as url:
-                    type(self).__default_field_definitions = json.loads(url.read().decode())
+                    type(self).__default_field_definitions = json.loads(
+                        url.read().decode()
+                    )
             except:
                 pass
         if not Summarizer.__default_field_definitions:
@@ -111,12 +114,12 @@ class Summarizer():
         self._set_field_definitions(Summarizer.__default_field_definitions)
 
     def _set_field_definitions(self, fields: dict) -> None:
-        self.summaryfields : dict[str, SummaryStrategy] = {}
+        self.summaryfields: dict[str, SummaryStrategy] = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
                 strategy_value = desc.get("summary", True)
                 try:
-                    strategy : SummaryStrategy = SummaryStrategy(strategy_value)
+                    strategy: SummaryStrategy = SummaryStrategy(strategy_value)
                 except ValueError:
                     strategy = SummaryStrategy.DEFAULT
                 if strategy != SummaryStrategy.DONT_SUMMARIZE:
@@ -128,16 +131,21 @@ class Summarizer():
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
-                if (strategy == SummaryStrategy.RANGE or
-                    (strategy == SummaryStrategy.DEFAULT and
-                     isinstance(v, numbers.Number) and not isinstance(v, bool))):
-                    rangesummary: Optional[RangeSummary] = summaries.get_range(k, object)
+                if strategy == SummaryStrategy.RANGE or (
+                    strategy == SummaryStrategy.DEFAULT
+                    and isinstance(v, numbers.Number)
+                    and not isinstance(v, bool)
+                ):
+                    rangesummary: Optional[RangeSummary] = summaries.get_range(
+                        k, object
+                    )
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
                         rangesummary.update_with_value(v)
-                elif (strategy == SummaryStrategy.ARRAY or
-                      (strategy == SummaryStrategy.DEFAULT and isinstance(v, list))):
+                elif strategy == SummaryStrategy.ARRAY or (
+                    strategy == SummaryStrategy.DEFAULT and isinstance(v, list)
+                ):
                     listsummary: list = summaries.get_list(k, object) or []
                     if not isinstance(v, list):
                         v = [v]
@@ -151,9 +159,10 @@ class Summarizer():
                         summary.append(v)
                     summaries.add(k, summary)
 
-    def summarize(self, source: Union["Collection_Type", Iterable["Item_Type"]]) -> "Summaries":
-        """Creates summaries from items
-        """
+    def summarize(
+        self, source: Union["Collection_Type", Iterable["Item_Type"]]
+    ) -> "Summaries":
+        """Creates summaries from items"""
         summaries = Summaries.empty()
         if hasattr(source, "get_all_items"):
             for item in source.get_all_items():  # type: ignore[union-attr]
@@ -169,7 +178,9 @@ DEFAULT_MAXCOUNT = 25
 
 
 class Summaries:
-    def __init__(self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT) -> None:
+    def __init__(
+        self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
+    ) -> None:
         self._summaries = summaries
         self.maxcount = maxcount
 
