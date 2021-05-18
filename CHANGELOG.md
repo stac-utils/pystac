@@ -12,6 +12,8 @@
 
 ### Fixed
 
+- Validation checks in a few tests ([#346](https://github.com/stac-utils/pystac/pull/346))
+
 ### Changed
 
 - API change: The extension API changed significantly. See ([#309](https://github.com/stac-utils/pystac/pull/309)) for more details.
