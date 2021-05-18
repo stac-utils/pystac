@@ -6,7 +6,7 @@ __version__ = "0.5.6"
 
 
 class STACVersion:
-    DEFAULT_STAC_VERSION = "1.0.0-rc.3"
+    DEFAULT_STAC_VERSION = "1.0.0-rc.4"
     """Latest STAC version supported by PySTAC"""
 
     # Version that holds a user-set STAC version to use.
