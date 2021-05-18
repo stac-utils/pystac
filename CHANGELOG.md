@@ -4,6 +4,14 @@
 
 ### Added
 
+### Changed
+
+### Remove
+
+## 1.0.0-beta.1
+
+### Added
+
 - Added type annotations across the library ([#309](https://github.com/stac-utils/pystac/pull/309))
 - Added assets to collections ([#309](https://github.com/stac-utils/pystac/pull/309))
 - `item_assets` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
@@ -287,7 +295,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v0.5.6...main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1...main>
+[v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6...v1.0.0-beta.1>
 [v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>
 [v0.5.5]: <https://github.com/stac-utils/pystac/compare/v0.5.4..v0.5.5>
 [v0.5.4]: <https://github.com/stac-utils/pystac/compare/v0.5.3..v0.5.4>
