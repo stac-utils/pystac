@@ -9,8 +9,8 @@ class SummariesTest(unittest.TestCase):
         coll = TestCases.test_case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
-        self.assertEquals(len(summaries_dict["eo:bands"]), 4)
-        self.assertEquals(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["eo:bands"]), 4)
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_limit(self):
         coll = TestCases.test_case_5()
@@ -18,7 +18,7 @@ class SummariesTest(unittest.TestCase):
         summaries.maxcount = 2
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
-        self.assertEquals(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_custom_fields_file(self):
         coll = TestCases.test_case_5()
@@ -26,14 +26,14 @@ class SummariesTest(unittest.TestCase):
         summaries = Summarizer(path).summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
-        self.assertEquals(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_wrong_custom_fields_file(self):
         coll = TestCases.test_case_5()
         summaries = Summarizer("wrong/path").summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
         self.assertEquals(len(summaries_dict["eo:bands"]), 4)
-        self.assertEquals(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_empty(self):
         summaries = Summaries.empty()
