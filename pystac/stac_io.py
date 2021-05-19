@@ -23,7 +23,7 @@ import pystac.serialization
 
 # Use orjson if available
 try:
-    import orjson
+    import orjson  # type: ignore
 except ImportError:
     orjson = None
 
@@ -77,7 +77,7 @@ class StacIO(ABC):
         if orjson is not None:
             return orjson.loads(txt)
         else:
-            return json.loads(self.read_text(txt))
+            return json.loads(txt)
 
     def _json_dumps(
         self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]
