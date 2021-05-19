@@ -1,12 +1,12 @@
 import os
 from typing import Optional
 
-__version__ = "0.5.6"
+__version__ = "1.0.0-beta.1"
 """Library version"""
 
 
 class STACVersion:
-    DEFAULT_STAC_VERSION = "1.0.0-rc.3"
+    DEFAULT_STAC_VERSION = "1.0.0-rc.4"
     """Latest STAC version supported by PySTAC"""
 
     # Version that holds a user-set STAC version to use.
