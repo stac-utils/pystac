@@ -49,10 +49,10 @@ def make_relative_href(
     """Makes a given HREF relative to the given starting HREF.
 
     Args:
-        source_href (str): The HREF to make relative.
-        start_href (str): The HREF that the resulting HREF will be relative with
+        source_href : The HREF to make relative.
+        start_href : The HREF that the resulting HREF will be relative with
             respect to.
-        start_is_dir (str): If True, the start_href is treated as a directory.
+        start_is_dir : If True, the start_href is treated as a directory.
             Otherwise, the start_href is considered to be a file HREF.
             Defaults to False.
 
@@ -90,11 +90,11 @@ def make_absolute_href(
     """Makes a given HREF absolute based on the given starting HREF.
 
     Args:
-        source_href (str): The HREF to make absolute.
-        start_href (str): The HREF that will be used as the basis for which to resolve
+        source_href : The HREF to make absolute.
+        start_href : The HREF that will be used as the basis for which to resolve
             relative paths, if source_href is a relative path. Defaults to the
             current working directory.
-        start_is_dir (str): If True, the start_href is treated as a directory.
+        start_is_dir : If True, the start_href is treated as a directory.
             Otherwise, the start_href is considered to be a file HREF.
             Defaults to False.
 
@@ -142,7 +142,7 @@ def is_absolute_href(href: str) -> bool:
     """Determines if an HREF is absolute or not.
 
     Args:
-        href (str): The HREF to consider.
+        href : The HREF to consider.
 
     Returns:
         bool: True if the given HREF is absolute, False if it is relative.
@@ -155,7 +155,7 @@ def datetime_to_str(dt: datetime) -> str:
     """Convert a python datetime to an ISO8601 string
 
     Args:
-        dt (datetime): The datetime to convert.
+        dt : The datetime to convert.
 
     Returns:
         str: The ISO8601 formatted string representing the datetime.
@@ -179,7 +179,7 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     """Extract the bounding box from a geojson geometry
 
     Args:
-        geometry (dict): GeoJSON geometry dict
+        geometry : GeoJSON geometry dict
 
     Returns:
         list: Bounding box of geojson geometry, formatted according to:

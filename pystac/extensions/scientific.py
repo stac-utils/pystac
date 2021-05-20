@@ -95,9 +95,9 @@ class ScientificExtension(
         """Applies scientific extension properties to the extended Item.
 
         Args:
-            doi (str): Optional DOI string for the item.  Must not be a DOI link.
-            citation (str): Optional human-readable reference.
-            publications (List[Publication]): Optional list of relevant publications
+            doi : Optional DOI string for the item.  Must not be a DOI link.
+            citation : Optional human-readable reference.
+            publications : Optional list of relevant publications
                 referencing and describing the data.
         """
         self.doi = doi
@@ -164,7 +164,7 @@ class ScientificExtension(
         """Removes publications from the item.
 
         Args:
-            publication (Publication): The specific publication to remove of None to
+            publication : The specific publication to remove of None to
             remove all.
         """
         if PUBLICATIONS not in self.properties:

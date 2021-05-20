@@ -28,7 +28,7 @@ class STACObject(ABC):
     JSON, and can be cloned or copied.
 
     Attributes:
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+        links : A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
     """
 
@@ -58,7 +58,7 @@ class STACObject(ABC):
         """Add a link to this object's set of links.
 
         Args:
-             link (Link): The link to add.
+             link : The link to add.
         """
         link.set_owner(cast(STACObject, self))
         self.links.append(link)
@@ -67,7 +67,7 @@ class STACObject(ABC):
         """Add links to this object's set of links.
 
         Args:
-             links (List[Link]): The links to add.
+             links : The links to add.
         """
 
         for link in links:
@@ -77,7 +77,7 @@ class STACObject(ABC):
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
-             rel (str): The :class:`~pystac.Link` ``rel`` to match on.
+             rel : The :class:`~pystac.Link` ``rel`` to match on.
         """
 
         self.links = [link for link in self.links if link.rel != rel]
@@ -86,7 +86,7 @@ class STACObject(ABC):
         """Get single link that match the given ``rel``.
 
         Args:
-             rel (str): The :class:`~pystac.Link` ``rel`` to match on.
+             rel : The :class:`~pystac.Link` ``rel`` to match on.
         """
 
         return next((link for link in self.links if link.rel == rel), None)
@@ -95,7 +95,7 @@ class STACObject(ABC):
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
-            rel (str or None): If set, filter links such that only those
+            rel : If set, filter links such that only those
                 matching this relationship are returned.
 
         Returns:
@@ -111,7 +111,7 @@ class STACObject(ABC):
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
-            rel (str or None): If set, only clear links that match this relationship.
+            rel : If set, only clear links that match this relationship.
         """
         if rel is not None:
             self.links = [link for link in self.links if link.rel != rel]
@@ -168,7 +168,7 @@ class STACObject(ABC):
         :class:`~pystac.Link`.
 
         Args:
-            href (str): The absolute HREF of this object. If the given HREF
+            href : The absolute HREF of this object. If the given HREF
                 is not absolute, it will be transformed to an absolute
                 HREF based on the current working directory. If this is None
                 the call will clear the self HREF link.
@@ -212,7 +212,7 @@ class STACObject(ABC):
         for this object.
 
         Args:
-            root (Catalog, Collection or None): The root
+            root : The root
                 object to set. Passing in None will clear the root.
         """
         root_link_index = next(
@@ -257,7 +257,7 @@ class STACObject(ABC):
         for this object.
 
         Args:
-            parent (Catalog, Collection or None): The parent
+            parent : The parent
                 object to set. Passing in None will clear the parent.
         """
 
@@ -270,7 +270,7 @@ class STACObject(ABC):
         by links with their ``rel`` property matching the passed in argument.
 
         Args:
-            rel (str): The relation to match each :class:`~pystac.Link`'s
+            rel : The relation to match each :class:`~pystac.Link`'s
                 ``rel`` property against.
 
         Returns:
@@ -293,9 +293,9 @@ class STACObject(ABC):
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
-            include_self_link (bool): If this is true, include the 'self' link with
+            include_self_link : If this is true, include the 'self' link with
                 this object. Otherwise, leave out the self link.
-            dest_href (str): Optional HREF to save the file to. If None, the object
+            dest_href : Optional HREF to save the file to. If None, the object
                 will be saved to the object's self href.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 instance set on the object's root if available, otherwise will use the
@@ -340,9 +340,9 @@ class STACObject(ABC):
         this object.
 
         Args:
-            root (STACObject): Optional root to set as the root of the copied object,
+            root : Optional root to set as the root of the copied object,
                 and any other copies that are contained by this object.
-            parent (STACObject): Optional parent to set as the parent of the copy
+            parent : Optional parent to set as the parent of the copy
                 of this object.
 
         Returns:
@@ -412,7 +412,7 @@ class STACObject(ABC):
         """Generate a dictionary representing the JSON of this serialized object.
 
         Args:
-            include_self_link (bool): If True, the dict will contain a self link
+            include_self_link : If True, the dict will contain a self link
                 to this object. If False, the self link will be omitted.
 
             dict: A serialization of the object that can be written out as JSON.
@@ -440,7 +440,7 @@ class STACObject(ABC):
         """Reads a STACObject implementation from a file.
 
         Args:
-            href (str): The HREF to read the object from.
+            href : The HREF to read the object from.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 default instance.
 
@@ -480,10 +480,10 @@ class STACObject(ABC):
         """Parses this STACObject from the passed in dictionary.
 
         Args:
-            d (dict): The dict to parse.
-            href (str): Optional href that is the file location of the object being
+            d : The dict to parse.
+            href : Optional href that is the file location of the object being
                 parsed.
-            root (Catalog or Collection): Optional root of the catalog for this object.
+            root : Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
             migrate: Use True if this dict represents JSON from an older STAC object,

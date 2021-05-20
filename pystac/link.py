@@ -28,30 +28,30 @@ class Link:
     ideally the lazy deserialization of STACObjects is transparent to clients of PySTAC.
 
     Args:
-        rel (str): The relation of the link (e.g. 'child', 'item')
-        target (str or STACObject): The target of the link. If the link is
+        rel : The relation of the link (e.g. 'child', 'item')
+        target : The target of the link. If the link is
             unresolved, or the link is to something that is not a STACObject,
             the target is an HREF. If resolved, the target is a STACObject.
-        media_type (str): Optional description of the media type. Registered Media Types
+        media_type : Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
-        title (str): Optional title for this link.
-        properties (dict): Optional, additional properties for this link. This is used
+        title : Optional title for this link.
+        properties : Optional, additional properties for this link. This is used
             by extensions as a way to serialize and deserialize properties on link
             object JSON.
 
     Attributes:
-        rel (str): The relation of the link (e.g. 'child', 'item')
-        target (str or STACObject): The target of the link. If the link is
+        rel : The relation of the link (e.g. 'child', 'item')
+        target : The target of the link. If the link is
             unresolved, or the link is to something that is not a STACObject,
             the target is an HREF. If resolved, the target is a STACObject.
-        media_type (str or None): Optional description of the media type.
+        media_type : Optional description of the media type.
             Registered Media Types are preferred. See
             :class:`~pystac.MediaType` for common media types.
-        title (str or None): Optional title for this link.
-        properties (dict or None): Optional, additional properties for this link.
+        title : Optional title for this link.
+        properties : Optional, additional properties for this link.
             This is used by extensions as a way to serialize and deserialize properties
             on link object JSON.
-        owner (STACObject or None): The owner of this link. The link will use
+        owner : The owner of this link. The link will use
             its owner's root catalog
             :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve
             objects, and will create absolute HREFs from relative HREFs against
@@ -161,7 +161,7 @@ class Link:
         already resolved.
 
         Args:
-            root (Catalog or Collection): Optional root of the catalog for this link.
+            root : Optional root of the catalog for this link.
                 If provided, the root's resolved object cache is used to search for
                 previously resolved instances of the STAC object.
         """
@@ -273,7 +273,7 @@ class Link:
         """Deserializes a Link from a dict.
 
         Args:
-            d (dict): The dict that represents the Link in JSON
+            d : The dict that represents the Link in JSON
 
         Returns:
             Link: Link instance constructed from the dict.

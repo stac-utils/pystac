@@ -49,7 +49,7 @@ class StacIO(ABC):
         e.g. the "post" information in a pagination link from a STAC API search.
 
         Args:
-            source (str or pystac.Link): The source to read from.
+            source : The source to read from.
 
         Returns:
             str: The text contained in the file at the location specified by the uri.
@@ -68,8 +68,8 @@ class StacIO(ABC):
         link body.
 
         Args:
-            dest (str or pystac.Link): The destination to write to.
-            txt (str): The text to write.
+            dest : The destination to write to.
+            txt : The text to write.
         """
         raise NotImplementedError("write_text not implemented")
 
@@ -107,7 +107,7 @@ class StacIO(ABC):
         str vs Link as a parameter.
 
         Args:
-            source (str or Link): The source from which to read.
+            source : The source from which to read.
 
         Returns:
             dict: A dict representation of the JSON contained in the file at the
@@ -125,8 +125,8 @@ class StacIO(ABC):
         str vs Link as a parameter.
 
         Args:
-            source (str or pystac.Link): The source from which to read.
-            root (Catalog or Collection): Optional root of the catalog for this object.
+            source : The source from which to read.
+            root : Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
 
@@ -147,8 +147,8 @@ class StacIO(ABC):
         str vs Link as a parameter.
 
         Args:
-            dest (str or pystac.Link): The destination file to write the text to.
-            json_dict (dict): The JSON dict to write.
+            dest : The destination file to write the text to.
+            json_dict : The JSON dict to write.
         """
         txt = self._json_dumps(json_dict, dest)
         self.write_text(dest, txt)
@@ -295,7 +295,7 @@ class STAC_IO:
         """Read text from the given URI.
 
         Args:
-            uri (str): The URI from which to read text.
+            uri : The URI from which to read text.
 
         Returns:
             str: The text contained in the file at the location specified by the uri.
@@ -313,8 +313,8 @@ class STAC_IO:
         """Write the given text to a file at the given URI.
 
         Args:
-            uri (str): The URI of the file to write the text to.
-            txt (str): The text to write.
+            uri : The URI of the file to write the text to.
+            txt : The text to write.
 
         Note:
             This method uses the :func:`STAC_IO.write_text_method
@@ -329,7 +329,7 @@ class STAC_IO:
         """Read a dict from the given URI.
 
         Args:
-            uri (str): The URI from which to read.
+            uri : The URI from which to read.
 
         Returns:
             dict: A dict representation of the JSON contained in the file at the
@@ -350,8 +350,8 @@ class STAC_IO:
         """Read a STACObject from a JSON file at the given URI.
 
         Args:
-            uri (str): The URI from which to read.
-            root (Catalog or Collection): Optional root of the catalog for this object.
+            uri : The URI from which to read.
+            root : Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
 
@@ -373,8 +373,8 @@ class STAC_IO:
         """Write a dict to the given URI as JSON.
 
         Args:
-            uri (str): The URI of the file to write the text to.
-            json_dict (dict): The JSON dict to write.
+            uri : The URI of the file to write the text to.
+            json_dict : The JSON dict to write.
 
         Note:
             This method uses the :func:`STAC_IO.write_text_method

@@ -36,13 +36,13 @@ class SpatialExtent:
     """Describes the spatial extent of a Collection.
 
     Args:
-        bboxes (List[List[float]]): A list of bboxes that represent the spatial
+        bboxes : A list of bboxes that represent the spatial
             extent of the collection. Each bbox can be 2D or 3D. The length of the bbox
             array must be 2*n where n is the number of dimensions. For example, a
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
 
     Attributes:
-        bboxes (List[List[float]]): A list of bboxes that represent the spatial
+        bboxes : A list of bboxes that represent the spatial
             extent of the collection. Each bbox can be 2D or 3D. The length of the bbox
             array must be 2*n where n is the number of dimensions. For example, a
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
@@ -90,7 +90,7 @@ class SpatialExtent:
         in the coordinate set.
 
         Args:
-            coordinates (List[float]): Coordinates to derive the bbox from.
+            coordinates : Coordinates to derive the bbox from.
 
         Returns:
             SpatialExtent: A SpatialExtent with a single bbox that covers the
@@ -135,14 +135,14 @@ class TemporalExtent:
     """Describes the temporal extent of a Collection.
 
     Args:
-        intervals (List[List[datetime]]):  A list of two datetimes wrapped in a list,
+        intervals :  A list of two datetimes wrapped in a list,
         representing the temporal extent of a Collection. Open date ranges are supported
         by setting either the start (the first element of the interval) or the end (the
         second element of the interval) to None.
 
 
     Attributes:
-        intervals (List[List[datetime]]):  A list of two datetimes wrapped in a list,
+        intervals :  A list of two datetimes wrapped in a list,
         representing the temporal extent of a Collection. Open date ranges are
         represented by either the start (the first element of the interval) or the
         end (the second element of the interval) being None.
@@ -229,12 +229,12 @@ class Extent:
     """Describes the spatiotemporal extents of a Collection.
 
     Args:
-        spatial (SpatialExtent): Potential spatial extent covered by the collection.
-        temporal (TemporalExtent): Potential temporal extent covered by the collection.
+        spatial : Potential spatial extent covered by the collection.
+        temporal : Potential temporal extent covered by the collection.
 
     Attributes:
-        spatial (SpatialExtent): Potential spatial extent covered by the collection.
-        temporal (TemporalExtent): Potential temporal extent covered by the collection.
+        spatial : Potential spatial extent covered by the collection.
+        temporal : Potential temporal extent covered by the collection.
     """
 
     def __init__(self, spatial: SpatialExtent, temporal: TemporalExtent):
@@ -291,7 +291,7 @@ class Extent:
         """Create an Extent based on the datetimes and bboxes of a list of items.
 
         Args:
-            items (List[Item]): A list of items to derive the extent from.
+            items : A list of items to derive the extent from.
 
         Returns:
             Extent: An Extent that spatially and temporally covers all of the
@@ -359,23 +359,23 @@ class Provider:
     the final storage provider hosting the data.
 
     Args:
-        name (str): The name of the organization or the individual.
-        description (str): Optional multi-line description to add further provider
+        name : The name of the organization or the individual.
+        description : Optional multi-line description to add further provider
             information such as processing details for processors and producers,
             hosting details for hosts or basic contact information.
-        roles (List[str]): Optional roles of the provider. Any of
+        roles : Optional roles of the provider. Any of
             licensor, producer, processor or host.
-        url (str): Optional homepage on which the provider describes the dataset
+        url : Optional homepage on which the provider describes the dataset
             and publishes contact information.
 
     Attributes:
-        name (str): The name of the organization or the individual.
-        description (str): Optional multi-line description to add further provider
+        name : The name of the organization or the individual.
+        description : Optional multi-line description to add further provider
             information such as processing details for processors and producers,
             hosting details for hosts or basic contact information.
-        roles (List[str]): Optional roles of the provider. Any of
+        roles : Optional roles of the provider. Any of
             licensor, producer, processor or host.
-        url (str): Optional homepage on which the provider describes the dataset
+        url : Optional homepage on which the provider describes the dataset
             and publishes contact information.
     """
 
@@ -506,52 +506,52 @@ class Collection(Catalog):
     enable discovery.
 
     Args:
-        id (str): Identifier for the collection. Must be unique within the STAC.
-        description (str): Detailed multi-line description to fully explain the
+        id : Identifier for the collection. Must be unique within the STAC.
+        description : Detailed multi-line description to fully explain the
             collection. `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY
             be used for rich text representation.
-        extent (Extent): Spatial and temporal extents that describe the bounds of
+        extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
-        title (str or None): Optional short descriptive one-line title for the
+        title : Optional short descriptive one-line title for the
             collection.
-        stac_extensions (List[str]): Optional list of extensions the Collection
+        stac_extensions : Optional list of extensions the Collection
             implements.
-        href (str or None): Optional HREF for this collection, which be set as the
+        href : Optional HREF for this collection, which be set as the
             collection's self link's HREF.
-        catalog_type (str or None): Optional catalog type for this catalog. Must
+        catalog_type : Optional catalog type for this catalog. Must
             be one of the values in :class`~pystac.CatalogType`.
-        license (str):  Collection's license(s) as a
+        license :  Collection's license(s) as a
             `SPDX License identifier <https://spdx.org/licenses/>`_,
             `various`, or `proprietary`. If collection includes
             data with multiple different licenses, use `various` and add a link for
             each. Defaults to 'proprietary'.
-        keywords (List[str]): Optional list of keywords describing the collection.
-        providers (List[Provider]): Optional list of providers of this Collection.
-        summaries (dict): An optional map of property summaries,
+        keywords : Optional list of keywords describing the collection.
+        providers : Optional list of providers of this Collection.
+        summaries : An optional map of property summaries,
             either a set of values or statistics such as a range.
-        extra_fields (dict or None): Extra fields that are part of the top-level
+        extra_fields : Extra fields that are part of the top-level
             JSON properties of the Collection.
 
     Attributes:
-        id (str): Identifier for the collection.
-        description (str): Detailed multi-line description to fully explain the
+        id : Identifier for the collection.
+        description : Detailed multi-line description to fully explain the
             collection.
-        extent (Extent): Spatial and temporal extents that describe the bounds of
+        extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
-        title (str or None): Optional short descriptive one-line title for the
+        title : Optional short descriptive one-line title for the
             collection.
-        stac_extensions (List[str]): Optional list of extensions the Collection
+        stac_extensions : Optional list of extensions the Collection
             implements.
-        keywords (List[str] or None): Optional list of keywords describing the
+        keywords : Optional list of keywords describing the
             collection.
-        providers (List[Provider] or None): Optional list of providers of this
+        providers : Optional list of providers of this
             Collection.
-        assets (Optional[Dict[str, Asset]]): Optional map of Assets
-        summaries (dict or None): An optional map of property summaries,
+        assets : Optional map of Assets
+        summaries : An optional map of property summaries,
             either a set of values or statistics such as a range.
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+        links : A list of :class:`~pystac.Link` objects representing
             all links associated with this Collection.
-        extra_fields (dict or None): Extra fields that are part of the top-level
+        extra_fields : Extra fields that are part of the top-level
             JSON properties of the Catalog.
     """
 
@@ -731,8 +731,8 @@ class Collection(Catalog):
         """Adds an Asset to this item.
 
         Args:
-            key (str): The unique key of this asset.
-            asset (Asset): The Asset to add.
+            key : The unique key of this asset.
+            asset : The Asset to add.
         """
         asset.set_owner(self)
         self.assets[key] = asset
