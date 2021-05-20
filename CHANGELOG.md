@@ -6,6 +6,10 @@
 
 ### Changed
 
+### Fixed
+
+- Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
+
 ### Remove
 
 ## [1.0.0-beta.1]
