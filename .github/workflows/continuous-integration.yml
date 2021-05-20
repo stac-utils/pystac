@@ -30,10 +30,11 @@ jobs:
 
       - name: Execute linters and test suites
         run: ./scripts/cibuild
-
-
+      
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
+        # Only upload this once...
+        if: ${{ matrix.os == 'Linux' && matrix.python-version == "3.8"}}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
