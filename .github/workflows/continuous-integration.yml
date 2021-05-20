@@ -25,7 +25,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: pip-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
 
       - name: Execute linters and test suites
         run: ./scripts/cibuild
