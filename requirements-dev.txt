@@ -12,5 +12,8 @@ sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.7.1
 coverage==5.2.*
 
+# https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
+jinja2<3.0
+
 # optional dependencies
 orjson==3.5.2
