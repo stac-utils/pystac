@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added `Link.canonical` static method for creating links with "canonical" rel type ([#351](https://github.com/stac-utils/pystac/pull/351)) 
+
 ### Changed
 
 ### Fixed
@@ -12,7 +14,7 @@
 
 ### Remove
 
-## [1.0.0-beta.1]
+## [v1.0.0-beta.1]
 
 ### Added
 
