@@ -3,17 +3,19 @@ name: CI
 on:
   push:
     branches:
-      - develop
-      - master
+      - main
   pull_request:
 
 jobs:
   build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      # Allow other matrix jobs to complete if 1 fails
+      fail-fast: false
       matrix:
         python-version: ["3.6", "3.7", "3.8"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v2
 
@@ -26,15 +28,16 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: pip-${{ hashFiles('requirements-dev.txt') }}
-          restore-keys: pip-
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
 
       - name: Execute linters and test suites
         run: ./scripts/cibuild
-
-
+      
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
+        # Only upload this once...
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'}}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
