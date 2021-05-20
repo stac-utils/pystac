@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - develop
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -26,8 +25,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: pip-${{ hashFiles('requirements-dev.txt') }}
-          restore-keys: pip-
+          key: pip-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
 
       - name: Execute linters and test suites
         run: ./scripts/cibuild
