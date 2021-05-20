@@ -82,6 +82,19 @@ class LinkTest(unittest.TestCase):
 
 
 class StaticLinkTest(unittest.TestCase):
+    def setUp(self):
+        self.item = pystac.Item(
+            id="test-item",
+            geometry=None,
+            bbox=None,
+            datetime=TEST_DATETIME,
+            properties={},
+        )
+
+        self.collection = pystac.Collection(
+            "collection id", "desc", extent=ARBITRARY_EXTENT
+        )
+
     def test_from_dict_round_trip(self):
         test_cases = [
             {"rel": "", "href": ""},  # Not valid, but works.
@@ -101,13 +114,21 @@ class StaticLinkTest(unittest.TestCase):
                 pystac.Link.from_dict(d)
 
     def test_collection(self):
-        c = pystac.Collection("collection id", "desc", extent=ARBITRARY_EXTENT)
-        link = pystac.Link.collection(c)
+        link = pystac.Link.collection(self.collection)
         expected = {"rel": "collection", "href": None, "type": "application/json"}
         self.assertEqual(expected, link.to_dict())
 
     def test_child(self):
-        c = pystac.Collection("collection id", "desc", extent=ARBITRARY_EXTENT)
-        link = pystac.Link.child(c)
+        link = pystac.Link.child(self.collection)
         expected = {"rel": "child", "href": None, "type": "application/json"}
+        self.assertEqual(expected, link.to_dict())
+
+    def test_canonical_item(self):
+        link = pystac.Link.canonical(self.item)
+        expected = {"rel": "canonical", "href": None, "type": "application/json"}
+        self.assertEqual(expected, link.to_dict())
+
+    def test_canonical_collection(self):
+        link = pystac.Link.canonical(self.collection)
+        expected = {"rel": "canonical", "href": None, "type": "application/json"}
         self.assertEqual(expected, link.to_dict())

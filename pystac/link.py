@@ -14,7 +14,7 @@ HIERARCHICAL_LINKS = ["root", "child", "parent", "collection", "item", "items"]
 
 
 class Link:
-    """A link is connects a :class:`~pystac.STACObject` to another entity.
+    """A link connects a :class:`~pystac.STACObject` to another entity.
 
     The target of a link can be either another STACObject, or
     an HREF. When serialized, links always refer to the HREF of the target.
@@ -325,3 +325,13 @@ class Link:
     def item(item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
         return Link("item", item, title=title, media_type="application/json")
+
+    @staticmethod
+    def canonical(
+        item_or_collection: Union["Item_Type", "Collection_Type"],
+        title: Optional[str] = None,
+    ) -> "Link":
+        """Creates a canonical link to an Item or Collection."""
+        return Link(
+            "canonical", item_or_collection, title=title, media_type="application/json"
+        )
