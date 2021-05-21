@@ -309,87 +309,85 @@ The :class:`~pystac.validation.JsonSchemaSTACValidator` takes a :class:`~pystac.
 Extensions
 ==========
 
-Accessing Extension functionality
+From the documentation on `STAC Spec Extensions 
+<https://github.com/radiantearth/stac-spec/tree/master/extensions>`__:
+
+   Extensions to the core STAC specification provide additional JSON fields that can be
+   used to better describe the data. Most tend to be about describing a particular 
+   domain or type of data, but some imply functionality.
+
+This library makes an effort to support all extensions that are part of the
+`stac-extensions GitHub org
+<https://stac-extensions.github.io/#extensions-in-stac-extensions-organization>`__, and
+we are committed to supporting all STAC Extensions at the "Candidate" maturity level or
+above (see the `Extension Maturity
+<https://stac-extensions.github.io/#extension-maturity>`__ documentation for details).
+
+Accessing Extension Functionality
 ---------------------------------
 
-All STAC objects are accessed through ``Catalog``, ``Collection`` and ``Item``, and all extension functionality
-is accessed through the ``ext`` property on those objects. For instance, to access the band information
-from the ``eo`` extension for an item that implements the extension, you use:
+Extension functionality is encapsulated in classes that are specific to the STAC
+Extension (e.g. Electro-Optical, Projection, etc.) and STAC Object
+(:class:`~pystac.Collection`, :class:`pystac.Item`, or :class:`pystac.Asset`). All
+classes that extend these objects inherit from
+:class:`pystac.extensions.base.PropertiesExtension`, and you can use the
+``ext`` method on these classes to extend an object.
+
+For instance, to extend an item with the :stac-ext:`Electro-Optical Extension <eo>`
+you would use :meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>` as
+follows:
 
 .. code-block:: python
 
-   # All of the below are equivalent:
-   item.ext['eo'].bands
-   item.ext[pystac.Extensions.EO].bands
-   item.ext.eo.bands
+   import pystac
+   from pystac.extensions.eo import EOExtension
 
-Notice the ``eo`` property on ``ext`` - this utilizes the `__getattr__ <https://docs.python.org/3/reference/datamodel.html#object.__getattr__>`_ method to delegate the property name to the ``__getitem__`` method, so we can access any registered extension as if it were a property on ``ext``.
+   item = Item(...)  # See docs for creating an Item
+   eo_ext = EOExtension.ext(item)
 
-Extensions wrap the objects they extend. Extensions hold
-no values of their own, but instead use Python `properties <https://docs.python.org/3/library/functions.html#property>`_
-to directly modify the values of the objects they wrap.
-
-Any object that is returned by extension methods therefore also wrap components of the STAC objects.
-For instance, the ``LabelClasses`` holds a reference to the original ``Item``'s ``label:classes`` property, so that
-modifying the ``LabelClasses``
-properties through the setters will modify the item properties directly. For example:
+This extended instance now gives you access to the properties defined in that extension:
 
 .. code-block:: python
 
-    from pystac.extensions import label
+   eo_ext.bands
+   eo_ext.cloud_cover
 
-    label_classes = item.ext.label.label_classes
-    label_classes[0].classes.append("other_class")
-    assert "other_class" in item.properties['label:classes'][0]['classes']
+See the documentation for each extension implementation for details on the supported
+properties and other functionality.
 
-Because these objects wrap the object's dictionary, the __init__ methods need to take the
-``dict`` they wrap. Therefore to create a new object, use the class's `.create` method, for example:
+Instances of :class:`~pystac.extensions.base.PropertiesExtension` have a
+:attr:`~pystac.extensions.base.PropertiesExtension.properties` attribute that gives
+access to the properties of the extended object. There is also a
+:attr:`~pystac.extensions.base.PropertiesExtension.additional_read_properties`
+attribute that, if present, gives read access to properties of any objects that own the
+extended object. For instance, an extended :class:`pystac.Asset` instance would have
+read access to the properties of the :class:`pystac.Item` that owns it (if there is one).
 
-.. code-block:: python
-
-   item.ext.label.label_classes = [label.LabelClasses.create(['class1', 'class2'], name='label')]
-
-An `apply` method is available in extension wrappers and any objects that they return. This allows
-you to pass in property values pertaining to the extension. These will require arguments for properties
-required as part of the extension specification and have `None` default values for optional parameters:
-
-.. code-block:: python
-
-   eo_ext = item.ext.eo
-   eo_ext.apply(0.5, bands, cloud_cover=None) # Do not have to specify cloud_cover
-
-
-If you attempt to retrieve an extension wrapper for an extension that the object doesn't implement, PySTAC will
-throw a `pystac.extensions.ExtensionError`.
-
-Enabling an extension
----------------------
-
-You'll need to enable an extension on an object before using it. For example, if you are creating an Item and want to
-apply the label extension, you can do so in two ways.
-
-You can add the extension in the list of extensions when you create the Item:
+An ``apply`` method is available on extended objects. This allows you to pass in
+property values pertaining to the extension. Properties that are required by the
+extension will be required arguments to the ``apply`` method. Optional properties will
+have a default value of ``None``:
 
 .. code-block:: python
 
-   item = Item(id='Labels',
-               geometry=item.geometry,
-               bbox=item.bbox,
-               datetime=datetime.utcnow(),
-               properties={},
-               stac_extensions=[pystac.Extensions.LABEL])
+   # Do not have to specify cloud_cover
+   eo_ext.apply(0.5, bands, cloud_cover=None)
 
-or you can call ``ext.enable`` on an Item (which will work for any item, whether you created it or are modifying it):
 
-.. code-block:: python
+If you attempt to extend an object that is not supported by an extension, PySTAC will
+throw a :class:`pystac.ExtensionTypeError`.
 
-   item = Item(id='Labels',
-               geometry=item.geometry,
-               bbox=item.bbox,
-               datetime=datetime.utcnow(),
-               properties={})
+Extended Summaries
+------------------
 
-   item.ext.enable(pystac.Extensions.LABEL)
+Extension classes like :class:`~pystac.extensions.eo.EOExtension` may also provide a
+``summaries`` static method that can be used to extend the Collection summaries. This
+method returns a class inheriting from
+:class:`pystac.extensions.base.SummariesExtension` that provides tools for summarizing
+the properties defined by that extension. These classes also hold a reference to the
+Collection's :class:`pystac.Summaries` instance in the ``summaries`` attribute. 
+
+See :class:`pystac.extensions.eo.SummariesEOExtension` for an example implementation.
 
 Item Asset properties
 =====================

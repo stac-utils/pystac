@@ -88,6 +88,13 @@ Provider
    :members:
    :undoc-members:
 
+Summaries
+~~~~~~~~~
+
+.. autoclass:: pystac.Summaries
+   :members:
+   :undoc-members:
+
 Item Spec
 ---------
 

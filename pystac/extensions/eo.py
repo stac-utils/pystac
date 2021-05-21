@@ -315,7 +315,12 @@ class EOExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
         Extension <eo>`.
 
-        The type of the ``obj`` argument must match
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
             return cast(EOExtension[T], ItemEOExtension(obj))
