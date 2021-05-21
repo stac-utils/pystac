@@ -259,7 +259,9 @@ class EOExtension(
     :class:`~ItemEOExtension` to extend an :class:`~pystac.Item`).
     """
 
-    def apply(self, bands: List[Band], cloud_cover: Optional[float] = None) -> None:
+    def apply(
+        self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
+    ) -> None:
         """Applies label extension properties to the extended Item.
 
         Args:

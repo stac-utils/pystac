@@ -370,7 +370,7 @@ have a default value of ``None``:
 
 .. code-block:: python
 
-   # Do not have to specify cloud_cover
+   # Can also omit cloud_cover entirely...
    eo_ext.apply(0.5, bands, cloud_cover=None)
 
 
