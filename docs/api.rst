@@ -228,15 +228,47 @@ ExtensionManagementMixin
 
 Electro-Optical Extension
 -------------------------
+
+These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
+
 Band
 ~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.eo.Band
+   :members:
+   :undoc-members:
 
-.. .. autoclass:: pystac.extensions.eo.Band
-..    :members:
-..    :undoc-members:
+EOExtension
+~~~~~~~~~~~
 
+.. autoclass:: pystac.extensions.eo.EOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ItemEOExtension
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.ItemEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AssetEOExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.AssetEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SummariesEOExtension
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.SummariesEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Label Extension
 ---------------
