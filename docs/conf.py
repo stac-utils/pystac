@@ -59,7 +59,8 @@ extensions = [
 
 extlinks = {
     'tutorial': ('https://github.com/azavea/pystac/'
-                  'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial')
+                  'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
+    'stac-ext': ('https://github.com/stac-extensions/%s', '%s extension')
 }
 
 # Add any paths that contain templates here, relative to this directory.
