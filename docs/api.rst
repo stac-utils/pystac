@@ -201,22 +201,33 @@ ExtensionIndex
 .. .. autoclass:: pystac.stac_object.ExtensionIndex
 ..    :members: __getitem__, __getattr__, enable, implements
 
-
-EO Extension
+Base Classes
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
+Abstract base classes that should be inherited to implement specific extensions.
 
-EOItemExt
-~~~~~~~~~
+SummariesExtension
+~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.base.SummariesExtension
+   :members:
 
-.. .. autoclass:: pystac.extensions.eo.EOItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+PropertiesExtension
+~~~~~~~~~~~~~~~~~~~
 
+.. autoclass:: pystac.extensions.base.PropertiesExtension
+   :members:
+   :show-inheritance:
+
+ExtensionManagementMixin
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.ExtensionManagementMixin
+   :members:
+   :show-inheritance:
+
+Electro-Optical Extension
+-------------------------
 Band
 ~~~~
 

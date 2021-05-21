@@ -26,13 +26,16 @@ class STACObject(ABC):
     has links e.g. (Catalogs, Collections, or Items). A STACObject has
     common functionality, can be converted to and from Python ``dicts`` representing
     JSON, and can be cloned or copied.
-
-    Attributes:
-        links : A list of :class:`~pystac.Link` objects representing
-            all links associated with this STACObject.
     """
 
     id: str
+    """The ID of the STAC Object."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with this STAC Object."""
+    
+    stac_extensions: List[str]
+    """A list of schema URIs for STAC Extensions implemented by this STAC Object."""
 
     STAC_OBJECT_TYPE: STACObjectType
 
