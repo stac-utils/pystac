@@ -6,6 +6,7 @@ import numbers
 import urllib.request
 from enum import Enum
 
+import pystac
 from pystac.utils import get_required
 
 from typing import (
@@ -62,10 +63,6 @@ class RangeSummary(Generic[T]):
 
 FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
 
-FIELDS_JSON_LOCAL_PATH = os.path.join(
-    os.path.dirname(__file__), "resources", "fields.json"
-)
-
 
 class SummaryStrategy(Enum):
     ARRAY = "v"
@@ -88,32 +85,28 @@ class Summarizer:
         If no file is passed, a default one will be used.
     """
 
-    __default_field_definitions: Dict[str, Any] = {}
+    _default_field_definitions: Dict[str, Any] = {}
 
     def __init__(self, fields: Optional[str] = None):
         if fields is None:
             self._set_default_field_definitions()
         else:
-            try:
-                with open(fields) as f:
-                    jsonfields = json.load(f)
-                self._set_field_definitions(jsonfields)
-            except:
-                self._set_default_field_definitions()
+            jsonfields = pystac.StacIO.default().read_json(fields)
+            self._set_field_definitions(jsonfields)
 
     def _set_default_field_definitions(self) -> None:
-        if not Summarizer.__default_field_definitions:
+        if not Summarizer._default_field_definitions:
             try:
                 with urllib.request.urlopen(FIELDS_JSON_URL) as url:
-                    type(self).__default_field_definitions = json.loads(
+                    Summarizer._default_field_definitions = json.loads(
                         url.read().decode()
                     )
             except:
                 pass
-        if not Summarizer.__default_field_definitions:
-            with open(FIELDS_JSON_LOCAL_PATH) as f:
-                type(self).__default_field_definitions = json.load(f)
-        self._set_field_definitions(Summarizer.__default_field_definitions)
+        if not Summarizer._default_field_definitions:
+            raise Exception(f"Could not read fields definition file at {FIELDS_JSON_URL} or it is invalid.\n"
+                            "Try using a local fields definition file.")
+        self._set_field_definitions(Summarizer._default_field_definitions)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
         self.summaryfields: dict[str, SummaryStrategy] = {}
