@@ -4,7 +4,18 @@ https://github.com/stac-extensions/eo
 """
 
 import re
-from typing import Any, Dict, Generic, Iterable, List, Optional, Set, Tuple, TypeVar, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    cast,
+)
 
 import pystac
 from pystac.collection import RangeSummary
@@ -238,33 +249,34 @@ class Band:
 class EOExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """An abstract class that can be used to extend the properties of an :class:`~pystac.Item` 
-    with properties from the :stac-ext:`Electro-Optical Extension <eo>`. This class is generic 
-    over the type of STAC Object to be extended (e.g. :class:`~pystac.Item`, 
-    :class:`~pystac.Collection`).
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` with properties from the :stac-ext:`Electro-Optical
+    Extension <eo>`. This class is generic over the type of STAC Object to be
+    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
-    This class will generally not be used directly. Instead, use the concrete implementation
-    associated with the STAC Object you want to extend (e.g. :class:`~ItemEOExtension` to extend 
-    an :class:`~pystac.Item`).
+    This class will generally not be used directly. Instead, use the concrete
+    implementation associated with the STAC Object you want to extend (e.g.
+    :class:`~ItemEOExtension` to extend an :class:`~pystac.Item`).
     """
 
     def apply(self, bands: List[Band], cloud_cover: Optional[float] = None) -> None:
         """Applies label extension properties to the extended Item.
 
         Args:
-            bands : A list of available bands where each item is a :class:`~Band` object. 
-                If given, requires at least one band.
+            bands : A list of available bands where each item is a :class:`~Band`
+                object. If given, requires at least one band.
             cloud_cover : The estimate of cloud cover as a percentage
-                (0-100) of the entire scene. If not available the field should not be
-                provided.
+                (0-100) of the entire scene. If not available the field should not
+                be provided.
         """
         self.bands = bands
         self.cloud_cover = cloud_cover
 
     @property
     def bands(self) -> Optional[List[Band]]:
-        """Gets or sets a list of available bands where each item is a :class:`~Band` object
-        (or ``None`` if no bands have been set). If not available the field should not be provided.
+        """Gets or sets a list of available bands where each item is a :class:`~Band`
+        object (or ``None`` if no bands have been set). If not available the field
+        should not be provided.
         """
         return self._get_bands()
 
@@ -300,10 +312,10 @@ class EOExtension(
 
     @staticmethod
     def ext(obj: T) -> "EOExtension[T]":
-        """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical 
+        """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
         Extension <eo>`.
 
-        The type of the ``obj`` argument must match 
+        The type of the ``obj`` argument must match
         """
         if isinstance(obj, pystac.Item):
             return cast(EOExtension[T], ItemEOExtension(obj))
@@ -321,12 +333,12 @@ class EOExtension(
 
 
 class ItemEOExtension(EOExtension[pystac.Item]):
-    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Item` that extends
-    the properties of the Item to include properties defined in the :stac-ext:`Electro-Optical 
-    Extension <eo>`.
+    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`Electro-Optical Extension <eo>`.
 
-    This class should generally not be instantiated directly. Instead, call :meth:`EOExtension.ext`
-    on an :class:`~pystac.Item` to extend it.
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EOExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
     item: pystac.Item
@@ -334,7 +346,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
-    
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -365,12 +377,12 @@ class ItemEOExtension(EOExtension[pystac.Item]):
 
 
 class AssetEOExtension(EOExtension[pystac.Asset]):
-    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Asset` that extends
-    the Asset fields to include properties defined in the :stac-ext:`Electro-Optical 
-    Extension <eo>`.
-    
-    This class should generally not be instantiated directly. Instead, call :meth:`EOExtension.ext`
-    on an :class:`~pystac.Asset` to extend it.
+    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`Electro-Optical Extension <eo>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EOExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
     asset_href: str
@@ -380,8 +392,8 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
-    """If present, this will be a list containing 1 dictionary representing the properties of the
-    owning :class:`~pystac.Item`."""
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
@@ -395,9 +407,10 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
 
 class SummariesEOExtension(SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties 
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
+
     @property
     def bands(self) -> Optional[List[Band]]:
         """Get or sets a list of :class:`~pystac.Band` objects that represent

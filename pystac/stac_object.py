@@ -32,8 +32,9 @@ class STACObject(ABC):
     """The ID of the STAC Object."""
 
     links: List[Link]
-    """A list of :class:`~pystac.Link` objects representing all links associated with this STAC Object."""
-    
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this STAC Object."""
+
     stac_extensions: List[str]
     """A list of schema URIs for STAC Extensions implemented by this STAC Object."""
 
