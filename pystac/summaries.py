@@ -1,3 +1,4 @@
+import sys
 import json
 import numbers
 import urllib.request
@@ -17,9 +18,13 @@ from typing import (
     cast,
     TypeVar,
     Iterable,
-    Protocol,
     TYPE_CHECKING,
 )
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
