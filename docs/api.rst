@@ -134,6 +134,13 @@ MediaType
    :members:
    :undoc-members:
 
+RelType
+~~~~~~~
+
+.. autoclass:: pystac.RelType
+   :members:
+   :undoc-members:
+
 IO
 --
 

@@ -69,7 +69,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(version.LATEST)[0]
+        link = self.item.get_links(pystac.RelType.LATEST)[0]
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
@@ -81,7 +81,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(version.PREDECESSOR)[0]
+        link = self.item.get_links(pystac.RelType.PREDECESSOR)[0]
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
@@ -93,7 +93,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(version.SUCCESSOR)[0]
+        link = self.item.get_links(pystac.RelType.SUCCESSOR)[0]
         self.assertEqual(expected_href, link.get_href())
         self.item.validate()
 
@@ -138,9 +138,9 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
         # Check to see if the version links point to the instances of the
         # item objects as they should.
-        predecessor = item1_copy.get_single_link(version.PREDECESSOR).target
-        successor = item2_copy.get_single_link(version.SUCCESSOR).target
-        latest = item2_copy.get_single_link(version.LATEST).target
+        predecessor = item1_copy.get_single_link(pystac.RelType.PREDECESSOR).target
+        successor = item2_copy.get_single_link(pystac.RelType.SUCCESSOR).target
+        latest = item2_copy.get_single_link(pystac.RelType.LATEST).target
 
         self.assertIs(predecessor, item2_copy)
         self.assertIs(successor, item1_copy)
@@ -156,17 +156,17 @@ class ItemVersionExtensionTest(unittest.TestCase):
         )
 
         VersionExtension.ext(self.item).latest = None
-        links = self.item.get_links(version.LATEST)
+        links = self.item.get_links(pystac.RelType.LATEST)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.item).latest)
 
         VersionExtension.ext(self.item).predecessor = None
-        links = self.item.get_links(version.PREDECESSOR)
+        links = self.item.get_links(pystac.RelType.PREDECESSOR)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.item).predecessor)
 
         VersionExtension.ext(self.item).successor = None
-        links = self.item.get_links(version.SUCCESSOR)
+        links = self.item.get_links(pystac.RelType.SUCCESSOR)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.item).successor)
 
@@ -183,7 +183,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         latest2 = make_item(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.item).latest = latest2
-        links = self.item.get_links(version.LATEST)
+        links = self.item.get_links(pystac.RelType.LATEST)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
@@ -191,7 +191,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         predecessor2 = make_item(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.item).predecessor = predecessor2
-        links = self.item.get_links(version.PREDECESSOR)
+        links = self.item.get_links(pystac.RelType.PREDECESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
@@ -199,7 +199,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         successor2 = make_item(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.item).successor = successor2
-        links = self.item.get_links(version.SUCCESSOR)
+        links = self.item.get_links(pystac.RelType.SUCCESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
@@ -264,7 +264,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertIs(latest, latest_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(version.LATEST)[0]
+        link = self.collection.get_links(pystac.RelType.LATEST)[0]
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
@@ -278,7 +278,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertIs(predecessor, predecessor_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(version.PREDECESSOR)[0]
+        link = self.collection.get_links(pystac.RelType.PREDECESSOR)[0]
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
@@ -290,7 +290,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.assertIs(successor, successor_result)
 
         expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(version.SUCCESSOR)[0]
+        link = self.collection.get_links(pystac.RelType.SUCCESSOR)[0]
         self.assertEqual(expected_href, link.get_href())
         self.collection.validate()
 
@@ -334,9 +334,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
         # Check to see if the version links point to the instances of the
         # col objects as they should.
-        predecessor = col1_copy.get_single_link(version.PREDECESSOR).target
-        successor = col2_copy.get_single_link(version.SUCCESSOR).target
-        latest = col2_copy.get_single_link(version.LATEST).target
+        predecessor = col1_copy.get_single_link(pystac.RelType.PREDECESSOR).target
+        successor = col2_copy.get_single_link(pystac.RelType.SUCCESSOR).target
+        latest = col2_copy.get_single_link(pystac.RelType.LATEST).target
 
         self.assertIs(predecessor, col2_copy)
         self.assertIs(successor, col1_copy)
@@ -352,17 +352,17 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         )
 
         VersionExtension.ext(self.collection).latest = None
-        links = self.collection.get_links(version.LATEST)
+        links = self.collection.get_links(pystac.RelType.LATEST)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.collection).latest)
 
         VersionExtension.ext(self.collection).predecessor = None
-        links = self.collection.get_links(version.PREDECESSOR)
+        links = self.collection.get_links(pystac.RelType.PREDECESSOR)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.collection).predecessor)
 
         VersionExtension.ext(self.collection).successor = None
-        links = self.collection.get_links(version.SUCCESSOR)
+        links = self.collection.get_links(pystac.RelType.SUCCESSOR)
         self.assertEqual(0, len(links))
         self.assertIsNone(VersionExtension.ext(self.collection).successor)
 
@@ -379,7 +379,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         latest2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.collection).latest = latest2
-        links = self.collection.get_links(version.LATEST)
+        links = self.collection.get_links(pystac.RelType.LATEST)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
@@ -387,7 +387,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         predecessor2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.collection).predecessor = predecessor2
-        links = self.collection.get_links(version.PREDECESSOR)
+        links = self.collection.get_links(pystac.RelType.PREDECESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
@@ -395,7 +395,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         successor2 = make_collection(year)
         expected_href = URL_TEMPLATE % year
         VersionExtension.ext(self.collection).successor = successor2
-        links = self.collection.get_links(version.SUCCESSOR)
+        links = self.collection.get_links(pystac.RelType.SUCCESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 

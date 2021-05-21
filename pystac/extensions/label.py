@@ -773,9 +773,11 @@ class LabelExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(["label"])
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
-    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
+    def get_object_links(
+        self, so: pystac.STACObject
+    ) -> Optional[List[Union[str, pystac.RelType]]]:
         if isinstance(so, pystac.Item):
-            return ["source"]
+            return [pystac.RelType.SOURCE]
         return None
 
     def migrate(

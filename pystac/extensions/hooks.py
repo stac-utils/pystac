@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING, Union
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -37,7 +37,9 @@ class ExtensionHooks(ABC):
         """Translation of stac_object_types to strings, cached"""
         return set([x.value for x in self.stac_object_types])
 
-    def get_object_links(self, obj: "STACObject_Type") -> Optional[List[str]]:
+    def get_object_links(
+        self, obj: "STACObject_Type"
+    ) -> Optional[List[Union[str, pystac.RelType]]]:
         return None
 
     def migrate(
@@ -78,8 +80,10 @@ class RegisteredExtensionHooks:
         if extension_id in self.hooks:
             del self.hooks[extension_id]
 
-    def get_extended_object_links(self, obj: "STACObject_Type") -> List[str]:
-        result: Optional[List[str]] = None
+    def get_extended_object_links(
+        self, obj: "STACObject_Type"
+    ) -> List[Union[str, pystac.RelType]]:
+        result: Optional[List[Union[str, pystac.RelType]]] = None
         for ext in obj.stac_extensions:
             if ext in self.hooks:
                 ext_result = self.hooks[ext].get_object_links(obj)

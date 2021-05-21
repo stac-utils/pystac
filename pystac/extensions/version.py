@@ -22,14 +22,6 @@ SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 VERSION: str = "version"
 DEPRECATED: str = "deprecated"
 
-# Link "rel" attribute values.
-LATEST: str = "latest-version"
-PREDECESSOR: str = "predecessor-version"
-SUCCESSOR: str = "successor-version"
-
-# Media type for links.
-MEDIA_TYPE: str = "application/json"
-
 
 class VersionExtension(
     Generic[T],
@@ -110,41 +102,49 @@ class VersionExtension(
     def latest(self) -> Optional[T]:
         """Get or sets the most recent version."""
         return map_opt(
-            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(LATEST)), None)
+            lambda x: cast(T, x),
+            next(iter(self.obj.get_stac_objects(pystac.RelType.LATEST)), None),
         )
 
     @latest.setter
     def latest(self, item: Optional[T]) -> None:
-        self.obj.clear_links(LATEST)
+        self.obj.clear_links(pystac.RelType.LATEST)
         if item is not None:
-            self.obj.add_link(pystac.Link(LATEST, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(pystac.RelType.LATEST, item, pystac.MediaType.JSON)
+            )
 
     @property
     def predecessor(self) -> Optional[T]:
         """Get or sets the previous item."""
         return map_opt(
             lambda x: cast(T, x),
-            next(iter(self.obj.get_stac_objects(PREDECESSOR)), None),
+            next(iter(self.obj.get_stac_objects(pystac.RelType.PREDECESSOR)), None),
         )
 
     @predecessor.setter
     def predecessor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(PREDECESSOR)
+        self.obj.clear_links(pystac.RelType.PREDECESSOR)
         if item is not None:
-            self.obj.add_link(pystac.Link(PREDECESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(pystac.RelType.PREDECESSOR, item, pystac.MediaType.JSON)
+            )
 
     @property
     def successor(self) -> Optional[T]:
         """Get or sets the next item."""
         return map_opt(
-            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(SUCCESSOR)), None)
+            lambda x: cast(T, x),
+            next(iter(self.obj.get_stac_objects(pystac.RelType.SUCCESSOR)), None),
         )
 
     @successor.setter
     def successor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(SUCCESSOR)
+        self.obj.clear_links(pystac.RelType.SUCCESSOR)
         if item is not None:
-            self.obj.add_link(pystac.Link(SUCCESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(pystac.RelType.SUCCESSOR, item, pystac.MediaType.JSON)
+            )
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -193,7 +193,11 @@ class VersionExtensionHooks(ExtensionHooks):
 
     def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
         if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
-            return [LATEST, PREDECESSOR, SUCCESSOR]
+            return [
+                pystac.RelType.LATEST,
+                pystac.RelType.PREDECESSOR,
+                pystac.RelType.SUCCESSOR,
+            ]
         return None
 
 

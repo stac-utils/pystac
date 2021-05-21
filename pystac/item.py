@@ -823,7 +823,7 @@ class Item(STACObject):
         Returns:
             Item: self
         """
-        self.remove_links("collection")
+        self.remove_links(pystac.RelType.COLLECTION)
         self.collection_id = None
         if collection is not None:
             self.add_link(Link.collection(collection))
@@ -838,7 +838,7 @@ class Item(STACObject):
             Collection or None: If this item belongs to a collection, returns
             a reference to the collection. Otherwise returns None.
         """
-        collection_link = self.get_single_link("collection")
+        collection_link = self.get_single_link(pystac.RelType.COLLECTION)
         if collection_link is None:
             return None
         else:
@@ -847,7 +847,7 @@ class Item(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != "self"]
+            links = [x for x in links if x.rel != pystac.RelType.SELF]
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
@@ -898,8 +898,11 @@ class Item(STACObject):
 
         return clone
 
-    def _object_links(self) -> List[str]:
-        return ["collection"] + (pystac.EXTENSION_HOOKS.get_extended_object_links(self))
+    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+        return [
+            pystac.RelType.COLLECTION,
+            *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
+        ]
 
     @classmethod
     def from_dict(
@@ -945,7 +948,7 @@ class Item(STACObject):
 
         has_self_link = False
         for link in links:
-            has_self_link |= link["rel"] == "self"
+            has_self_link |= link["rel"] == pystac.RelType.SELF
             item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:

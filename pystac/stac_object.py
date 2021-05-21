@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
@@ -73,7 +73,7 @@ class STACObject(ABC):
         for link in links:
             self.add_link(link)
 
-    def remove_links(self, rel: str) -> None:
+    def remove_links(self, rel: Union[str, pystac.RelType]) -> None:
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
@@ -82,7 +82,7 @@ class STACObject(ABC):
 
         self.links = [link for link in self.links if link.rel != rel]
 
-    def get_single_link(self, rel: str) -> Optional[Link]:
+    def get_single_link(self, rel: Union[str, pystac.RelType]) -> Optional[Link]:
         """Get single link that match the given ``rel``.
 
         Args:
@@ -91,7 +91,7 @@ class STACObject(ABC):
 
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel: Optional[str] = None) -> List[Link]:
+    def get_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> List[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -107,7 +107,7 @@ class STACObject(ABC):
         else:
             return [link for link in self.links if link.rel == rel]
 
-    def clear_links(self, rel: Optional[str] = None) -> None:
+    def clear_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -126,7 +126,7 @@ class STACObject(ABC):
             :class:`~pystac.Link` or None: The root link for this object,
             or ``None`` if no root link is set.
         """
-        return self.get_single_link("root")
+        return self.get_single_link(pystac.RelType.ROOT)
 
     @property
     def self_href(self) -> str:
@@ -157,7 +157,7 @@ class STACObject(ABC):
             have the HREF the file was read from set as it's self HREF. All self
             links have absolute (as opposed to relative) HREFs.
         """
-        self_link = self.get_single_link("self")
+        self_link = self.get_single_link(pystac.RelType.SELF)
         if self_link:
             return cast(str, self_link.target)
         else:
@@ -179,7 +179,7 @@ class STACObject(ABC):
                 cast(STACObject, self)
             )
 
-        self.remove_links("self")
+        self.remove_links(pystac.RelType.SELF)
         if href is not None:
             self.add_link(Link.self_href(href))
 
@@ -216,7 +216,14 @@ class STACObject(ABC):
                 object to set. Passing in None will clear the root.
         """
         root_link_index = next(
-            iter([i for i, link in enumerate(self.links) if link.rel == "root"]), None
+            iter(
+                [
+                    i
+                    for i, link in enumerate(self.links)
+                    if link.rel == pystac.RelType.ROOT
+                ]
+            ),
+            None,
         )
 
         # Remove from old root resolution cache
@@ -226,7 +233,7 @@ class STACObject(ABC):
                 cast(pystac.Catalog, root_link.target)._resolved_objects.remove(self)
 
         if root is None:
-            self.remove_links("root")
+            self.remove_links(pystac.RelType.ROOT)
         else:
             new_root_link = Link.root(root)
             if root_link_index is not None:
@@ -246,7 +253,7 @@ class STACObject(ABC):
                 The parent object for this object,
                 or ``None`` if no root link is set.
         """
-        parent_link = self.get_single_link("parent")
+        parent_link = self.get_single_link(pystac.RelType.PARENT)
         if parent_link:
             return cast(pystac.Catalog, parent_link.resolve_stac_object().target)
         else:
@@ -261,11 +268,13 @@ class STACObject(ABC):
                 object to set. Passing in None will clear the parent.
         """
 
-        self.remove_links("parent")
+        self.remove_links(pystac.RelType.PARENT)
         if parent is not None:
             self.add_link(Link.parent(parent))
 
-    def get_stac_objects(self, rel: str) -> Iterable["STACObject"]:
+    def get_stac_objects(
+        self, rel: Union[str, pystac.RelType]
+    ) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
@@ -369,15 +378,20 @@ class STACObject(ABC):
                     target = cached_target
                 else:
                     target_parent = None
-                    if link.rel in ["child", "item"] and isinstance(
-                        clone, pystac.Catalog
+                    if (
+                        link.rel
+                        in [
+                            pystac.RelType.CHILD,
+                            pystac.RelType.ITEM,
+                        ]
+                        and isinstance(clone, pystac.Catalog)
                     ):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     if root is not None:
                         root._resolved_objects.cache(copied_target)
                     target = copied_target
-                if link.rel in ["child", "item"]:
+                if link.rel in [pystac.RelType.CHILD, pystac.RelType.ITEM]:
                     target.set_root(root)
                     if isinstance(clone, pystac.Catalog):
                         target.set_parent(clone)
@@ -392,7 +406,9 @@ class STACObject(ABC):
 
         This method mutates the entire catalog tree.
         """
-        link_rels = set(self._object_links()) | set(["root", "parent"])
+        link_rels = set(self._object_links()) | set(
+            [pystac.RelType.ROOT, pystac.RelType.PARENT]
+        )
 
         for link in self.links:
             if link.rel in link_rels:

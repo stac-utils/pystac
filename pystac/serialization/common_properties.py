@@ -68,7 +68,7 @@ def merge_common_properties(
             links = cast(List[Dict[str, Any]], item_dict["links"])
 
         collection_link = next(
-            (link for link in links if link["rel"] == "collection"), None
+            (link for link in links if link["rel"] == pystac.RelType.COLLECTION), None
         )
         if collection_link is not None:
             collection_href = cast(Dict[str, Any], collection_link).get("href")
