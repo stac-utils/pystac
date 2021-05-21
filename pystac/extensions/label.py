@@ -693,7 +693,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             "source",
             source_item,
             title=title,
-            media_type="application/json",
+            media_type=pystac.MediaType.JSON,
             properties=properties,
         )
         self.obj.add_link(link)
