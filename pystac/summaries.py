@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import os
 import json
 import numbers
@@ -35,7 +33,7 @@ class Comparable(Protocol):
     """Protocol for annotating comparable types."""
 
     @abstractmethod
-    def __lt__(self: T, x: T) -> bool:
+    def __lt__(self: "T", x: "T") -> bool:
         pass
 
 
