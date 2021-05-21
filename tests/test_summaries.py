@@ -32,21 +32,22 @@ class SummariesTest(unittest.TestCase):
     def test_summary_wrong_custom_fields_file(self):
         coll = TestCases.test_case_5()
         with self.assertRaises(FileNotFoundError) as context:
-            summaries = Summarizer("wrong/path").summarize(coll.get_all_items())
+            Summarizer("wrong/path").summarize(coll.get_all_items())
         self.assertTrue("No such file or directory" in str(context.exception))
-
 
     def test_cannot_open_fields_file(self):
         old_socket = socket.socket
+
         class no_network(socket.socket):
             def __init__(self, *args, **kwargs):
                 raise Exception("Network call blocked")
+
         socket.socket = no_network
 
         with self.assertRaises(Exception) as context:
-            summaries = Summarizer()
+            Summarizer()
         socket.socket = old_socket
-        self.assertTrue("Could not read fields definition file" in str(context.exception))
+        self.assertTrue("Could not read fields definition" in str(context.exception))
 
     def test_summary_empty(self):
         summaries = Summaries.empty()

@@ -1,4 +1,3 @@
-import os
 import json
 import numbers
 import urllib.request
@@ -102,7 +101,8 @@ class Summarizer:
             except:
                 pass
         if not Summarizer._default_field_definitions:
-            raise Exception(f"Could not read fields definition file at {FIELDS_JSON_URL} or it is invalid.\n"
+            raise Exception("Could not read fields definition file at "
+                            f"{FIELDS_JSON_URL} or it is invalid.\n"
                             "Try using a local fields definition file.")
         self._set_field_definitions(Summarizer._default_field_definitions)
 
