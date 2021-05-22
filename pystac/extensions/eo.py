@@ -40,7 +40,7 @@ CLOUD_COVER_PROP = "eo:cloud_cover"
 class Band:
     """Represents Band information attached to an Item that implements the eo extension.
 
-    Use Band.create to create a new Band.
+    Use :meth:`Band.create` to create a new Band.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -60,8 +60,8 @@ class Band:
         Args:
             name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
             common_name : The name commonly used to refer to the band to make it
-                easier to search for bands across instruments. See the `list of
-                accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+                easier to search for bands across instruments. See the :stac-ext:`list
+                of accepted common names <eo#common-band-names>`.
             description : Description to fully explain the band.
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
@@ -88,8 +88,8 @@ class Band:
         Args:
             name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
             common_name : The name commonly used to refer to the band to make it easier
-                to search for bands across instruments. See the `list of accepted common names
-                <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+                to search for bands across instruments. See the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
             description : Description to fully explain the band.
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
@@ -121,8 +121,8 @@ class Band:
     @property
     def common_name(self) -> Optional[str]:
         """Get or sets the name commonly used to refer to the band to make it easier
-            to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            to search for bands across instruments. See the :stac-ext:`list of accepted
+            common names <eo#common-band-names>`.
 
         Returns:
             Optional[str]
@@ -202,7 +202,8 @@ class Band:
         """Gets the band range for a common band name.
 
         Args:
-            common_name : The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
 
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
@@ -234,7 +235,8 @@ class Band:
         """Returns a description of the band for one with a common name.
 
         Args:
-            common_name : The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
 
         Returns:
             str or None: If a recognized common name, returns a description including the

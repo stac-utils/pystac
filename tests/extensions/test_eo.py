@@ -9,6 +9,33 @@ from pystac.extensions.eo import EOExtension, Band
 from tests.utils import TestCases, test_to_from_dict
 
 
+class BandsTest(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
+    def test_create(self):
+        band = Band.create(
+            name="B01",
+            common_name="red",
+            description=Band.band_description("red"),
+            center_wavelength=0.65,
+            full_width_half_max=0.1,
+        )
+
+        self.assertEqual(band.name, "B01")
+        self.assertEqual(band.common_name, "red")
+        self.assertEqual(band.description, "Common name: red, Range: 0.6 to 0.7")
+        self.assertEqual(band.center_wavelength, 0.65)
+        self.assertEqual(band.full_width_half_max, 0.1)
+
+        self.assertEqual(band.__repr__(), "<Band name=B01>")
+
+    def test_band_description_unknown_band(self):
+        desc = Band.band_description("rainbow")
+
+        self.assertIsNone(desc)
+
+
 class EOTest(unittest.TestCase):
     LANDSAT_EXAMPLE_URI = TestCases.get_path("data-files/eo/eo-landsat-example.json")
     BANDS_IN_ITEM_URI = TestCases.get_path(
@@ -178,3 +205,22 @@ class EOTest(unittest.TestCase):
         )
 
         self.assertEqual(eo_item.common_metadata.gsd, 30.0)
+
+    def test_item_apply(self):
+        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        eo_ext = EOExtension.ext(item)
+        test_band = Band.create(name="test")
+
+        self.assertEqual(eo_ext.cloud_cover, 78)
+        self.assertNotIn(test_band, eo_ext.bands or [])
+
+        eo_ext.apply(bands=[test_band], cloud_cover=15)
+
+        self.assertEqual(test_band.to_dict(), eo_ext.bands[0].to_dict())
+        self.assertEqual(eo_ext.cloud_cover, 15)
+
+    def test_extend_invalid_object(self):
+        link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
+
+        with self.assertRaises(pystac.ExtensionTypeError):
+            EOExtension.ext(link)  # type: ignore
