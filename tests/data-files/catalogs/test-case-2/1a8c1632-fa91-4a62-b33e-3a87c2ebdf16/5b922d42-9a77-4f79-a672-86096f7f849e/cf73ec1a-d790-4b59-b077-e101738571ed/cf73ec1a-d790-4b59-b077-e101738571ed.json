@@ -1,14 +1,11 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "cf73ec1a-d790-4b59-b077-e101738571ed",
   "properties": {
     "label:description": "Labels in layer",
     "label:type": "vector",
-    "datetime": "2019-08-07 20:37:10Z",
-    "label:method": [
-      "manual"
-    ],
+    "datetime": "2019-08-07T20:37:10Z",
     "label:classes": [
       {
         "name": "label",
@@ -19,11 +16,14 @@
         ]
       }
     ],
-    "label:task": [
-      "detection"
-    ],
     "label:properties": [
       "label"
+    ],
+    "label:tasks": [
+      "detection"
+    ],
+    "label:methods": [
+      "manual"
     ]
   },
   "geometry": {
@@ -877,12 +877,6 @@
       ]
     ]
   },
-  "bbox": [
-    -86.75155102590682,
-    35.68664518347332,
-    -86.43438975193705,
-    35.90922697349481
-  ],
   "links": [
     {
       "rel": "source",
@@ -908,7 +902,13 @@
       "title": "Label Data Feature Collection"
     }
   },
+  "bbox": [
+    -86.75155102590682,
+    35.68664518347332,
+    -86.43438975193705,
+    35.90922697349481
+  ],
   "stac_extensions": [
-    "label"
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
   ]
 }

@@ -1,6 +1,7 @@
 {
+  "type": "Collection",
   "id": "mon",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "description": "Tier 1 training data from mon",
   "links": [
     {
@@ -54,6 +55,7 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "extent": {
     "spatial": {
       "bbox": [
@@ -74,8 +76,5 @@
       ]
     }
   },
-  "license": "various",
-  "stac_extensions": [
-    "label"
-  ]
+  "license": "various"
 }

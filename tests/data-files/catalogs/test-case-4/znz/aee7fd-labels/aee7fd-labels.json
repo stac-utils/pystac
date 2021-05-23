@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "aee7fd-labels",
   "properties": {
     "label:description": "Geojson building labels for scene aee7fd",
@@ -61,12 +61,6 @@
     ],
     "type": "Polygon"
   },
-  "bbox": [
-    39.31369530504979,
-    -5.933017366868187,
-    39.340814311389366,
-    -5.905835679883141
-  ],
   "links": [
     {
       "rel": "collection",
@@ -90,7 +84,14 @@
       "type": "application/geo+json"
     }
   },
+  "bbox": [
+    39.31369530504979,
+    -5.933017366868187,
+    39.340814311389366,
+    -5.905835679883141
+  ],
   "stac_extensions": [
-    "label"
-  ]
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
+  "collection": "znz"
 }

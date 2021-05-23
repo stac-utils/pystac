@@ -1,8 +1,15 @@
 {
+  "type": "Collection",
   "id": "area-1-1",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "description": "test collection country-1",
-  "links": [{
+  "links": [
+    {
+      "rel": "root",
+      "href": "./multi-extent.json",
+      "type": "application/json"
+    },
+    {
       "rel": "item",
       "href": "./area-1-1-imagery/area-1-1-imagery.json",
       "type": "application/json"
@@ -18,6 +25,7 @@
       "type": "application/json"
     }
   ],
+  "stac_extensions": [],
   "extent": {
     "spatial": {
       "bbox": [

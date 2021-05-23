@@ -1,12 +1,39 @@
 {
-  "stac_version": "1.0.0-beta.2",
+  "type": "Collection",
   "id": "400c22e3-5b54-438b-b600-5e9bd6d0a498",
-  "title": "Label Collection",
+  "stac_version": "1.0.0-rc.4",
   "description": "Label Collection in layer 12cb17a8-ae08-469c-a2be-4d0619240014",
+  "links": [
+    {
+      "rel": "item",
+      "href": "./3c67b59c-2e6f-47fb-ba3c-0dd106941096.json",
+      "type": "application/json",
+      "label:assets": []
+    },
+    {
+      "rel": "license",
+      "href": "http://www.apache.org/licenses/LICENSE-2.0",
+      "label:assets": []
+    },
+    {
+      "rel": "root",
+      "href": "../../catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "../collection.json",
+      "type": "application/json",
+      "title": "Layer Collection",
+      "label:assets": []
+    }
+  ],
+  "stac_extensions": [],
+  "title": "Label Collection",
   "keywords": [],
   "version": "1",
-  "license": "Apache-2.0",
   "providers": [],
+  "properties": {},
   "extent": {
     "spatial": {
       "bbox": [
@@ -21,38 +48,11 @@
     "temporal": {
       "interval": [
         [
-          "2019-08-21T15:51:17.881Z",
-          "2019-08-21T15:51:17.881Z"
+          "2019-08-21T15:51:17.881000Z",
+          "2019-08-21T15:51:17.881000Z"
         ]
       ]
     }
   },
-  "properties": {},
-  "links": [
-    {
-      "href": "./3c67b59c-2e6f-47fb-ba3c-0dd106941096.json",
-      "rel": "item",
-      "type": "application/json",
-      "label:assets": []
-    },
-    {
-      "href": "http://www.apache.org/licenses/LICENSE-2.0",
-      "rel": "license",
-      "label:assets": []
-    },
-    {
-      "href": "../../catalog.json",
-      "rel": "root",
-      "type": "application/json",
-      "title": "Root",
-      "label:assets": []
-    },
-    {
-      "href": "../collection.json",
-      "rel": "parent",
-      "type": "application/json",
-      "title": "Layer Collection",
-      "label:assets": []
-    }
-  ]
+  "license": "Apache-2.0"
 }

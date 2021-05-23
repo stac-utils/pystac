@@ -1,6 +1,7 @@
 {
+  "type": "Catalog",
   "id": "CBERS4 MUX 027/069",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "description": "CBERS4 MUX camera path 027 row 069 catalog",
   "links": [
     {
@@ -18,5 +19,6 @@
       "href": "../../catalog.json",
       "type": "application/json"
     }
-  ]
+  ],
+  "stac_extensions": []
 }

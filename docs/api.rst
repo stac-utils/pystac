@@ -127,13 +127,6 @@ Link
    :members:
    :undoc-members:
 
-LinkType
-~~~~~~~~
-
-.. autoclass:: pystac.LinkType
-   :members:
-   :undoc-members:
-
 MediaType
 ~~~~~~~~~
 
@@ -149,7 +142,7 @@ STAC_IO
 
 STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
 
-.. autoclass:: pystac.STAC_IO
+.. autoclass:: pystac.stac_io.STAC_IO
    :members:
    :undoc-members:
 
@@ -185,25 +178,28 @@ STACError
 
 .. autoclass:: pystac.STACError
 
-ExtensionError
-~~~~~~~~~~~~~~
+ExtensionTypeError
+~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.ExtensionError
+.. autoclass:: pystac.ExtensionTypeError
 
 Extensions
 ----------
 
-.. autoclass:: pystac.extensions.Extensions
-   :members:
-   :undoc-members:
+**TEMPORARILY REMOVED**
+.. .. autoclass:: pystac.extensions.Extensions
+..    :members:
+..    :undoc-members:
 
 ExtensionIndex
 ~~~~~~~~~~~~~~
 
-An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
+**TEMPORARILY REMOVED**
 
-.. autoclass:: pystac.stac_object.ExtensionIndex
-   :members: __getitem__, __getattr__, enable, implements
+.. An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
+
+.. .. autoclass:: pystac.stac_object.ExtensionIndex
+..    :members: __getitem__, __getattr__, enable, implements
 
 
 EO Extension
@@ -214,17 +210,21 @@ These classes are representations of the `EO Extension Spec <https://github.com/
 EOItemExt
 ~~~~~~~~~
 
-.. autoclass:: pystac.extensions.eo.EOItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.eo.EOItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Band
 ~~~~
 
-.. autoclass:: pystac.extensions.eo.Band
-   :members:
-   :undoc-members:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.eo.Band
+..    :members:
+..    :undoc-members:
 
 
 Label Extension
@@ -235,10 +235,12 @@ These classes are representations of the `Label Extension Spec <https://github.c
 LabelItemExt
 ~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.label.LabelItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.label.LabelItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 LabelType
 ~~~~~~~~~
@@ -283,10 +285,12 @@ Implements the `Point Cloud Extension <https://github.com/radiantearth/stac-spec
 PointcloudItemExt
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Projection Extension
 --------------------
@@ -296,10 +300,12 @@ Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/
 ProjectionItemExt
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.projection.ProjectionItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.projection.ProjectionItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Timestamps Extension
 --------------------
@@ -309,10 +315,12 @@ Implements the `Timestamps Extension <https://github.com/radiantearth/stac-spec/
 TimestampsItemExt
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 SAR Extension
 -------------
@@ -322,10 +330,12 @@ Implements the `SAR Extension <https://github.com/radiantearth/stac-spec/tree/v1
 SarItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.sar.SarItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.sar.SarItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 SAT Extension
 -------------
@@ -335,25 +345,31 @@ Implements the `SAT Extension <https://github.com/radiantearth/stac-spec/tree/v1
 SatItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.sar.SatItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.sar.SatItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Single File STAC Extension
 --------------------------
 
 These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/single-file-stac>`_.
 
-.. automodule:: pystac.extensions.single_file_stac
-   :members: create_single_file_stac
+**TEMPORARILY REMOVED**
+
+.. .. automodule:: pystac.extensions.single_file_stac
+..    :members: create_single_file_stac
 
 SingleFileSTACCatalogExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
-   :members:
-   :undoc-members:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
+..    :members:
+..    :undoc-members:
 
 Version Extension
 -----------------
@@ -363,18 +379,22 @@ Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tre
 VersionCollectionExt
 ~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.version.VersionCollectionExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.version.VersionCollectionExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 VersionItemExt
 ~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.version.VersionItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.version.VersionItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 View Geometry Extension
 -----------------------
@@ -384,10 +404,12 @@ Implements the `View Geometry Extension <https://github.com/radiantearth/stac-sp
 ViewItemExt
 ~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.view.ViewItemExt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+**TEMPORARILY REMOVED**
+
+.. .. autoclass:: pystac.extensions.view.ViewItemExt
+..    :members:
+..    :undoc-members:
+..    :show-inheritance:
 
 Serialization
 -------------
@@ -401,17 +423,17 @@ Identification
 .. automodule:: pystac.serialization
    :members: identify_stac_object
 
-.. autoclass:: pystac.serialization.STACJSONDescription
-   :members:
-   :undoc-members:
+.. .. autoclass:: pystac.serialization.STACJSONDescription
+..    :members:
+..    :undoc-members:
 
 .. autoclass:: pystac.serialization.STACVersionRange
    :members:
    :undoc-members:
 
-.. autoclass:: pystac.serialization.STACVersionID
-   :members:
-   :undoc-members:
+.. .. autoclass:: pystac.serialization.STACVersionID
+..    :members:
+..    :undoc-members:
 
 
 Migration
@@ -456,8 +478,8 @@ schema URIs. A default implementation is included that uses known locations; how
 can provide their own schema URI maps in a :class:`~pystac.validation.JsonSchemaSTACValidator`
 to modify the URIs used.
 
-.. autoclass:: pystac.validation.SchemaUriMap
-   :members:
+.. .. autoclass:: pystac.validation.SchemaUriMap
+..    :members:
 
 .. autoclass:: pystac.validation.schema_uri_map.DefaultSchemaUriMap
    :members:

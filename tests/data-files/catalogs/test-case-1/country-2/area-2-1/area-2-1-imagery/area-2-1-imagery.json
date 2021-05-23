@@ -1,9 +1,9 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "area-2-1-imagery",
   "properties": {
-    "datetime": "2019-10-04 18:55:37Z"
+    "datetime": "2019-10-04T18:55:37Z"
   },
   "geometry": {
     "type": "Polygon",
@@ -32,13 +32,6 @@
       ]
     ]
   },
-  "bbox": [
-    -2.5048828125,
-    3.8916575492899987,
-    -1.9610595703125,
-    3.8916575492899987
-  ],
-  "collection": "area-2-1",
   "links": [
     {
       "rel": "collection",
@@ -65,5 +58,13 @@
       "href": "http://example.com/area-2-1_dsm.tif",
       "type": "image/vnd.stac.geotiff"
     }
-  }
+  },
+  "bbox": [
+    -2.5048828125,
+    3.8916575492899987,
+    -1.9610595703125,
+    3.8916575492899987
+  ],
+  "stac_extensions": [],
+  "collection": "area-2-1"
 }

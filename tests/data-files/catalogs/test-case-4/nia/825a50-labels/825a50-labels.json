@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "825a50-labels",
   "properties": {
     "label:description": "Geojson building labels for scene 825a50",
@@ -94,12 +94,6 @@
     ],
     "type": "Polygon"
   },
-  "bbox": [
-    2.000607112710697,
-    13.570445755015827,
-    2.0089069498293726,
-    13.583969811536608
-  ],
   "links": [
     {
       "rel": "collection",
@@ -123,7 +117,14 @@
       "type": "application/geo+json"
     }
   },
+  "bbox": [
+    2.000607112710697,
+    13.570445755015827,
+    2.0089069498293726,
+    13.583969811536608
+  ],
   "stac_extensions": [
-    "label"
-  ]
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
+  "collection": "nia"
 }

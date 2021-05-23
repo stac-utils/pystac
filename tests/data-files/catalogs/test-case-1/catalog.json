@@ -1,6 +1,7 @@
 {
+  "type": "Catalog",
   "id": "test",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "description": "test catalog",
   "links": [
     {
@@ -18,5 +19,6 @@
       "href": "./catalog.json",
       "type": "application/json"
     }
-  ]
+  ],
+  "stac_extensions": []
 }

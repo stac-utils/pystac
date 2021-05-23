@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "abe1a3-labels",
   "properties": {
     "label:description": "Geojson building labels for scene abe1a3",
@@ -130,12 +130,6 @@
     ],
     "type": "Polygon"
   },
-  "bbox": [
-    11.879921982584099,
-    -4.780589144725401,
-    11.894047213717943,
-    -4.7665107950056145
-  ],
   "links": [
     {
       "rel": "collection",
@@ -159,7 +153,14 @@
       "type": "application/geo+json"
     }
   },
+  "bbox": [
+    11.879921982584099,
+    -4.780589144725401,
+    11.894047213717943,
+    -4.7665107950056145
+  ],
   "stac_extensions": [
-    "label"
-  ]
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
+  "collection": "ptn"
 }

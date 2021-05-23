@@ -1,0 +1,128 @@
+{
+    "type": "Feature",
+    "stac_version": "1.0.0-rc.3",
+    "id": "20170831_195425_SS02",
+    "properties": {
+        "datetime": "2017-08-31T19:54:26.532800Z",
+        "updated": "2017-11-01T21:14:45Z",
+        "created": "2017-09-01T19:15:30Z",
+        "platform": "SS02",
+        "gsd": 1.1,
+        "eo:cloud_cover": 0,
+        "view:azimuth": 202.8,
+        "view:sun_azimuth": 231.9,
+        "view:sun_elevation": 58.4,
+        "view:off_nadir": 27.3,
+        "pl:ground_control": true,
+        "pl:item_type": "SkySatScene",
+        "pl:provider": "skysat",
+        "pl:quality_category": "test",
+        "pl:satellite_azimuth": 329.8,
+        "pl:strip_id": "s02_20170831T195425Z"
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -94.11540985107422,
+                    29.998057058071883
+                ],
+                [
+                    -94.11609649658203,
+                    29.96564257441305
+                ],
+                [
+                    -93.82942199707031,
+                    29.916554657596713
+                ],
+                [
+                    -93.8283920288086,
+                    29.94660528850718
+                ],
+                [
+                    -93.79920959472656,
+                    29.942737894394064
+                ],
+                [
+                    -93.79989624023438,
+                    29.977836419653794
+                ],
+                [
+                    -93.82736206054688,
+                    29.981405066834853
+                ],
+                [
+                    -93.82530212402342,
+                    30.011436098225726
+                ],
+                [
+                    -94.11540985107422,
+                    30.052156732418428
+                ],
+                [
+                    -94.11678314208984,
+                    30.02094898463764
+                ],
+                [
+                    -94.10202026367188,
+                    30.017679032856247
+                ],
+                [
+                    -94.10408020019531,
+                    29.99627304975274
+                ],
+                [
+                    -94.11540985107422,
+                    29.998057058071883
+                ]
+            ]
+        ]
+    },
+    "links": [
+        {
+            "rel": "collection",
+            "href": "../../../collection.json"
+        },
+        {
+            "rel": "root",
+            "href": "../../../collection.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "thumbnail": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_PortArthur_s02_20170831T195425Z.png",
+            "type": "image/png",
+            "title": "Thumbnail",
+            "roles": [
+                "thumbnail"
+            ]
+        },
+        "visual": {
+            "href": "https://storage.googleapis.com/pdd-stac/disasters/hurricane-harvey/0831/SkySat_PortArthur_s02_20170831T195425Z.tif",
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "title": "SkySatScene Visual GeoTIFF",
+            "pl:type": "https://api.planet.com/data/v1/asset-types/ortho_visual",
+            "roles": [
+                "data"
+            ]
+        }
+    },
+    "bbox": [
+        -94.11678314208984,
+        29.916554657596713,
+        -93.79920959472656,
+        30.052156732418428
+    ],
+    "stac_extensions": [
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+    ],
+    "collection": "planet-disaster-data"
+}

@@ -1,9 +1,9 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "label-example-1-label-item",
   "properties": {
-    "datetime": "2019-10-04 18:55:37Z",
+    "datetime": "2019-10-04T18:55:37Z",
     "label:description": "labels for area-1-1",
     "label:type": "raster",
     "label:properties": null,
@@ -79,12 +79,6 @@
       ]
     ]
   },
-  "bbox": [
-    -2.5048828125,
-    3.8916575492899987,
-    -1.9610595703125,
-    3.8916575492899987
-  ],
   "links": [
     {
       "rel": "source",
@@ -98,7 +92,13 @@
       "type": "image/tiff; application=geotiff"
     }
   },
+  "bbox": [
+    -2.5048828125,
+    3.8916575492899987,
+    -1.9610595703125,
+    3.8916575492899987
+  ],
   "stac_extensions": [
-    "label"
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
   ]
 }

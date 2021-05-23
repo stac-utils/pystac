@@ -1,14 +1,42 @@
 # Changelog
 
-## unreleased
+## [Unreleased]
 
 ### Added
 
+### Changed
+
 ### Fixed
+
+- Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
+
+### Remove
+
+## [1.0.0-beta.1]
+
+### Added
+
+- Added type annotations across the library ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added assets to collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `item_assets` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- `datacube` extension ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Added specific errors: `ExtensionAlreadyExistsError`, `ExtensionTypeError`, and `RequiredPropertyMissing`; moved custom exceptions to `pystac.errors` ([#309](https://github.com/stac-utils/pystac/pull/309))
+
+### Fixed
+
+- Validation checks in a few tests ([#346](https://github.com/stac-utils/pystac/pull/346))
 
 ### Changed
 
+- API change: The extension API changed significantly. See ([#309](https://github.com/stac-utils/pystac/pull/309)) for more details.
+- API change: Refactored the global STAC_IO object to an instance-specific `StacIO` implementation. STAC_IO is deprecated and will be removed next release. ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Asset.get_absolute_href returns None if no absolute href can be inferred (previously the relative href that was passed in was returned) ([#309](https://github.com/stac-utils/pystac/pull/309))
+
 ### Removed
+
+- Removed `properties` from Collections ([#309](https://github.com/stac-utils/pystac/pull/309))
+- Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
+- Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
 
 ## [v0.5.6]
 
@@ -271,18 +299,19 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v0.5.6...main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..main>
+[v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
 [v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>
 [v0.5.5]: <https://github.com/stac-utils/pystac/compare/v0.5.4..v0.5.5>
 [v0.5.4]: <https://github.com/stac-utils/pystac/compare/v0.5.3..v0.5.4>
-[v0.5.3]: <https://github.com/stac-utils/pystac/compare/v0.5.2...v0.5.3>
-[v0.5.2]: <https://github.com/stac-utils/pystac/compare/v0.5.1...v0.5.2>
-[v0.5.1]: <https://github.com/stac-utils/pystac/compare/v0.5.0...v0.5.1>
-[v0.5.0]: <https://github.com/stac-utils/pystac/compare/v0.4.0...v0.5.0>
-[v0.4.0]: <https://github.com/stac-utils/pystac/compare/v0.3.4...v0.4.0>
-[v0.3.4]: <https://github.com/stac-utils/pystac/compare/v0.3.3...v0.3.4>
-[v0.3.3]: <https://github.com/stac-utils/pystac/compare/v0.3.2...v0.3.3>
-[v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1...v0.3.2>
-[v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0...v0.3.1>
+[v0.5.3]: <https://github.com/stac-utils/pystac/compare/v0.5.2..v0.5.3>
+[v0.5.2]: <https://github.com/stac-utils/pystac/compare/v0.5.1..v0.5.2>
+[v0.5.1]: <https://github.com/stac-utils/pystac/compare/v0.5.0..v0.5.1>
+[v0.5.0]: <https://github.com/stac-utils/pystac/compare/v0.4.0..v0.5.0>
+[v0.4.0]: <https://github.com/stac-utils/pystac/compare/v0.3.4..v0.4.0>
+[v0.3.4]: <https://github.com/stac-utils/pystac/compare/v0.3.3..v0.3.4>
+[v0.3.3]: <https://github.com/stac-utils/pystac/compare/v0.3.2..v0.3.3>
+[v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1..v0.3.2>
+[v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0..v0.3.1>
 [v0.3.0]: <https://github.com/stac-utils/pystac/tree/v0.3.0>
 

@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.4",
   "id": "b15fce-labels",
   "properties": {
     "label:description": "Geojson building labels for scene b15fce",
@@ -146,12 +146,6 @@
       ]
     ]
   },
-  "bbox": [
-    39.231583919750726,
-    -6.806085900208043,
-    39.25215435443532,
-    -6.786630132161881
-  ],
   "links": [
     {
       "rel": "collection",
@@ -175,7 +169,14 @@
       "type": "application/geo+json"
     }
   },
+  "bbox": [
+    39.231583919750726,
+    -6.806085900208043,
+    39.25215435443532,
+    -6.786630132161881
+  ],
   "stac_extensions": [
-    "label"
-  ]
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
+  "collection": "dar"
 }

@@ -1,14 +1,32 @@
 {
-  "stac_version": "1.0.0-beta.2",
-  "stac_extensions": [],
   "type": "Feature",
+  "stac_version": "1.0.0-rc.4",
   "id": "CS3-20160503_132131_05",
-  "bbox": [
-    -122.59750209,
-    37.48803556,
-    -122.2880486,
-    37.613537207
-  ],
+  "properties": {
+    "datetime": "2016-05-03T13:22:30.040000Z",
+    "title": "A CS3 item",
+    "license": "PDDL-1.0",
+    "providers": [
+      {
+        "name": "CoolSat",
+        "roles": [
+          "producer",
+          "licensor"
+        ],
+        "url": "https://cool-sat.com/"
+      }
+    ],
+    "gsd": 30,
+    "platform": "political",
+    "instruments": [
+      "guitar",
+      "violin"
+    ],
+    "constellation": "big dipper",
+    "mission": "impossible",
+    "created": "2017-03-17T13:22:30.040Z",
+    "updated": "2017-03-18T13:22:30.040Z"
+  },
   "geometry": {
     "type": "Polygon",
     "coordinates": [
@@ -36,34 +54,7 @@
       ]
     ]
   },
-  "properties": {
-    "datetime": "2016-05-03T13:22:30.040Z",
-    "title": "A CS3 item",
-    "license": "PDDL-1.0",
-    "providers": [
-      {
-        "name": "CoolSat",
-        "roles": [
-          "producer",
-          "licensor"
-        ],
-        "url": "https://cool-sat.com/"
-      }
-    ],
-    "gsd": 30,
-    "platform": "political",
-    "instruments": ["guitar", "violin"],
-    "constellation": "big dipper",
-    "mission": "impossible",
-    "created": "2017-03-17T13:22:30.040Z",
-    "updated": "2017-03-18T13:22:30.040Z"
-  },
-  "collection": "CS3",
   "links": [
-    {
-      "rel": "self",
-      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"
-    },
     {
       "rel": "collection",
       "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json"
@@ -85,21 +76,31 @@
       "license": "CC-BY-4.0",
       "providers": [
         {
-            "name": "USGS",
-            "url": "https://landsat.usgs.gov/",
-            "roles": [
-                "producer",
-                "licensor"
-            ]
+          "name": "USGS",
+          "url": "https://landsat.usgs.gov/",
+          "roles": [
+            "producer",
+            "licensor"
+          ]
         }
       ],
       "gsd": 40,
       "platform": "shoes",
-      "instruments": ["caliper"],
+      "instruments": [
+        "caliper"
+      ],
       "constellation": "little dipper",
       "mission": "possible",
       "created": "2017-05-17T13:22:30.040Z",
       "updated": "2017-05-18T13:22:30.040Z"
     }
-  }
+  },
+  "bbox": [
+    -122.59750209,
+    37.48803556,
+    -122.2880486,
+    37.613537207
+  ],
+  "stac_extensions": [],
+  "collection": "CS3"
 }
