@@ -6,6 +6,8 @@
 
 ### Changed
 
+- Split `DefaultStacIO`'s reading and writing into two methods to allow subclasses to use the default link resolution behavior ([#354](https://github.com/stac-utils/pystac/pull/354))
+
 ### Fixed
 
 - Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
