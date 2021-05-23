@@ -2,6 +2,7 @@
 
 import datetime
 import unittest
+from typing import List, Optional
 
 import pystac
 from pystac.extensions import version
@@ -134,17 +135,25 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
         # Retrieve the copied version of the items
         item1_copy = cat_copy.get_item("area-1-1-imagery", recursive=True)
+        assert item1_copy is not None
         item2_copy = cat_copy.get_item("area-2-2-imagery", recursive=True)
+        assert item2_copy is not None
 
         # Check to see if the version links point to the instances of the
         # item objects as they should.
-        predecessor = item1_copy.get_single_link(version.PREDECESSOR).target
-        successor = item2_copy.get_single_link(version.SUCCESSOR).target
-        latest = item2_copy.get_single_link(version.LATEST).target
+        predecessor = item1_copy.get_single_link(version.PREDECESSOR)
+        assert predecessor is not None
+        predecessor_target = predecessor.target
+        successor = item2_copy.get_single_link(version.SUCCESSOR)
+        assert successor is not None
+        successor_target = successor.target
+        latest = item2_copy.get_single_link(version.LATEST)
+        assert latest is not None
+        latest_target = latest.target
 
-        self.assertIs(predecessor, item2_copy)
-        self.assertIs(successor, item1_copy)
-        self.assertIs(latest, item1_copy)
+        self.assertIs(predecessor_target, item2_copy)
+        self.assertIs(successor_target, item1_copy)
+        self.assertIs(latest_target, item1_copy)
 
     def test_setting_none_clears_link(self) -> None:
         deprecated = False
@@ -210,7 +219,8 @@ def make_collection(year: int) -> pystac.Collection:
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    temporal_extent = pystac.TemporalExtent([[start, end]])
+    intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
+    temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
 
     collection = pystac.Collection(asset_id, "desc", extent)
@@ -330,17 +340,25 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
         # Retrieve the copied version of the items
         col1_copy = cat_copy.get_child("area-1-1", recursive=True)
+        assert col1_copy is not None
         col2_copy = cat_copy.get_child("area-2-2", recursive=True)
+        assert col2_copy is not None
 
         # Check to see if the version links point to the instances of the
         # col objects as they should.
-        predecessor = col1_copy.get_single_link(version.PREDECESSOR).target
-        successor = col2_copy.get_single_link(version.SUCCESSOR).target
-        latest = col2_copy.get_single_link(version.LATEST).target
+        predecessor = col1_copy.get_single_link(version.PREDECESSOR)
+        assert predecessor is not None
+        predecessor_target = predecessor.target
+        successor = col2_copy.get_single_link(version.SUCCESSOR)
+        assert successor is not None
+        successor_target = successor.target
+        latest = col2_copy.get_single_link(version.LATEST)
+        assert latest is not None
+        latest_target = latest.target
 
-        self.assertIs(predecessor, col2_copy)
-        self.assertIs(successor, col1_copy)
-        self.assertIs(latest, col1_copy)
+        self.assertIs(predecessor_target, col2_copy)
+        self.assertIs(successor_target, col1_copy)
+        self.assertIs(latest_target, col1_copy)
 
     def test_setting_none_clears_link(self) -> None:
         deprecated = False

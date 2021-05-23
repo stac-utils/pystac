@@ -54,6 +54,7 @@ class CollectionTest(unittest.TestCase):
         country = cat1.get_child("country-1")
         assert country is not None
         col1 = country.get_child("area-1-1")
+        assert col1 is not None
         col1.validate()
         self.assertIsInstance(col1, Collection)
         validate_dict(col1.to_dict(), pystac.STACObjectType.COLLECTION)
@@ -79,6 +80,7 @@ class CollectionTest(unittest.TestCase):
     def test_extra_fields(self) -> None:
         catalog = TestCases.test_case_2()
         collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
+        assert collection is not None
 
         collection.extra_fields["test"] = "extra"
 

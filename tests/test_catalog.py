@@ -90,6 +90,7 @@ class CatalogTest(unittest.TestCase):
         cat = Catalog.from_file(catalog_url)
 
         zanzibar = cat.get_child("zanzibar-collection")
+        assert zanzibar is not None
 
         self.assertEqual(len(list(zanzibar.get_items())), 2)
 
@@ -212,7 +213,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(cat.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_walk_iterates_correctly(self) -> None:
-        def test_catalog(cat: Catalog):
+        def test_catalog(cat: Catalog) -> None:
             expected_catalog_iterations = 1
             actual_catalog_iterations = 0
             with self.subTest(title="Testing catalog {}".format(cat.id)):
@@ -300,7 +301,9 @@ class CatalogTest(unittest.TestCase):
         catalog = TestCases.test_case_1()
         catalog.normalize_hrefs("http://example.com")
         for root, _, items in catalog.walk():
-            self.assertTrue(root.get_self_href().startswith("http://example.com"))
+            self_href = root.get_self_href()
+            assert self_href is not None
+            self.assertTrue(self_href.startswith("http://example.com"))
             for link in root.links:
                 if link.is_resolved():
                     target_href = cast(pystac.STACObject, link.target).self_href
@@ -319,7 +322,9 @@ class CatalogTest(unittest.TestCase):
         catalog = TestCases.test_case_1()
         catalog.normalize_hrefs("./relativepath")
         abspath = os.path.abspath("./relativepath")
-        self.assertTrue(catalog.get_self_href().startswith(abspath))
+        self_href = catalog.get_self_href()
+        assert self_href is not None
+        self.assertTrue(self_href.startswith(abspath))
 
     def test_normalize_href_works_with_label_source_links(self) -> None:
         catalog = TestCases.test_case_1()
@@ -341,6 +346,7 @@ class CatalogTest(unittest.TestCase):
         )
 
         month_cat = catalog.get_child("8", recursive=True)
+        assert month_cat is not None
         type_cats = set([cat.id for cat in month_cat.get_children()])
 
         self.assertEqual(type_cats, set(["PSScene4Band", "SkySatScene", "PlanetScope"]))
@@ -410,8 +416,14 @@ class CatalogTest(unittest.TestCase):
         catalog.generate_subcatalogs("${property1}/${property2}")
 
         catalog.normalize_hrefs("/tmp")
-        item1_parent = catalog.get_item("item1", recursive=True).get_parent()
-        item2_parent = catalog.get_item("item2", recursive=True).get_parent()
+        item1 = catalog.get_item("item1", recursive=True)
+        assert item1 is not None
+        item1_parent = item1.get_parent()
+        assert item1_parent is not None
+        item2 = catalog.get_item("item2", recursive=True)
+        assert item2 is not None
+        item2_parent = item2.get_parent()
+        assert item2_parent is not None
         self.assertEqual(item1_parent.get_self_href(), item2_parent.get_self_href())
 
     def test_generate_subcatalogs_works_for_branched_subcatalogs(self) -> None:
@@ -462,7 +474,9 @@ class CatalogTest(unittest.TestCase):
 
         catalog.normalize_hrefs("/")
         for item in catalog.get_all_items():
-            parent_href = item.get_parent().self_href
+            item_parent = item.get_parent()
+            assert item_parent is not None
+            parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
             subcats = [el for el in path_to_parent.split("/") if el]
             self.assertEqual(len(subcats), 2, msg=" for item '{}'".format(item.id))
@@ -707,6 +721,7 @@ class CatalogTest(unittest.TestCase):
         cat = TestCases.test_case_2()
         cat.make_all_asset_hrefs_absolute()
         item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
+        assert item is not None
 
         href = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"].href
         self.assertTrue(is_absolute_href(href))
@@ -714,6 +729,7 @@ class CatalogTest(unittest.TestCase):
     def test_make_all_asset_hrefs_relative(self) -> None:
         cat = TestCases.test_case_2()
         item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
+        assert item is not None
         asset = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"]
         original_href = asset.href
         cat.make_all_asset_hrefs_absolute()
@@ -726,7 +742,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(asset.href, original_href)
 
     def test_make_all_links_relative_or_absolute(self) -> None:
-        def check_all_relative(cat: Catalog):
+        def check_all_relative(cat: Catalog) -> None:
             for root, catalogs, items in cat.walk():
                 for link in root.links:
                     if link.rel in HIERARCHICAL_LINKS:
@@ -736,7 +752,7 @@ class CatalogTest(unittest.TestCase):
                         if link.rel in HIERARCHICAL_LINKS:
                             self.assertFalse(is_absolute_href(link.href))
 
-        def check_all_absolute(cat: Catalog):
+        def check_all_absolute(cat: Catalog) -> None:
             for root, catalogs, items in cat.walk():
                 for link in root.links:
                     self.assertTrue(is_absolute_href(link.href))
@@ -796,6 +812,7 @@ class CatalogTest(unittest.TestCase):
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.test_case_1()
         item = cat.get_item("area-1-1-labels", recursive=True)
+        assert item is not None
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
         with TemporaryDirectory() as tmp_dir:
             cat.normalize_hrefs(tmp_dir)
@@ -813,6 +830,7 @@ class CatalogTest(unittest.TestCase):
         year = 2004
         month = 2
         for item in catalog.get_all_items():
+            assert item.datetime is not None
             item.datetime = item.datetime.replace(year=year, month=month)
             year += 1
             month += 1
@@ -832,6 +850,7 @@ class CatalogTest(unittest.TestCase):
 
                 # Set each item's HREF based on it's datetime
                 for item in items:
+                    assert item.datetime is not None
                     item_href = "{}/{}-{}/{}.json".format(
                         root_dir, item.datetime.year, item.datetime.month, item.id
                     )
@@ -854,10 +873,13 @@ class CatalogTest(unittest.TestCase):
                         os.path.join(d, root.id, root.DEFAULT_FILE_NAME),
                     )
                 for item in items:
+                    assert item.datetime is not None
                     end = "{}-{}/{}.json".format(
                         item.datetime.year, item.datetime.month, item.id
                     )
-                    self.assertTrue(item.get_self_href().endswith(end))
+                    self_href = item.get_self_href()
+                    assert self_href is not None
+                    self.assertTrue(self_href.endswith(end))
 
     def test_collections_cache_correctly(self) -> None:
         catalogs = TestCases.all_test_catalogs()
@@ -941,7 +963,7 @@ class CatalogTest(unittest.TestCase):
 
 
 class FullCopyTest(unittest.TestCase):
-    def check_link(self, link: pystac.Link, tag: str):
+    def check_link(self, link: pystac.Link, tag: str) -> None:
         if link.is_resolved():
             target_href: str = cast(pystac.STACObject, link.target).self_href
         else:
@@ -951,11 +973,11 @@ class FullCopyTest(unittest.TestCase):
             '[{}] {} does not contain "{}"'.format(link.rel, target_href, tag),
         )
 
-    def check_item(self, item: Item, tag: str):
+    def check_item(self, item: Item, tag: str) -> None:
         for link in item.links:
             self.check_link(link, tag)
 
-    def check_catalog(self, c: Catalog, tag: str):
+    def check_catalog(self, c: Catalog, tag: str) -> None:
         self.assertEqual(len(c.get_links("root")), 1)
 
         for link in c.links:
@@ -1065,6 +1087,7 @@ class FullCopyTest(unittest.TestCase):
 
             # Check that the relative asset link was saved correctly in the copy.
             item = cat2.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
+            assert item is not None
 
             href = item.assets[
                 "cf73ec1a-d790-4b59-b077-e101738571ed"

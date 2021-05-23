@@ -10,7 +10,7 @@ class VersionTest(unittest.TestCase):
         self._prev_env_version = os.environ.get("PYSTAC_STAC_VERSION_OVERRIDE")
         self._prev_version = pystac.get_stac_version()
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         if self._prev_env_version is None:
             os.environ.pop("PYSTAC_STAC_VERSION_OVERRIDE", None)
         else:

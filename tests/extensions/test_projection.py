@@ -119,6 +119,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_epsg, proj_item.properties["proj:epsg"])
 
         # Set
+        assert proj_epsg is not None
         ProjectionExtension.ext(proj_item).epsg = proj_epsg + 100
         self.assertEqual(proj_epsg + 100, proj_item.properties["proj:epsg"])
 
@@ -196,9 +197,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).projjson,
             ProjectionExtension.ext(proj_item).projjson,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).projjson["id"]["code"], 9999
-        )
+        asset_prop_json = ProjectionExtension.ext(asset_prop).projjson
+        assert asset_prop_json is not None
+        self.assertEqual(asset_prop_json["id"]["code"], 9999)
 
         # Set to Asset
         asset_value = deepcopy(PROJJSON)
@@ -208,9 +209,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).projjson,
             ProjectionExtension.ext(proj_item).projjson,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).projjson["id"]["code"], 7777
-        )
+        asset_no_prop_json = ProjectionExtension.ext(asset_no_prop).projjson
+        assert asset_no_prop_json is not None
+        self.assertEqual(asset_no_prop_json["id"]["code"], 7777)
 
         # Validate
         proj_item.validate()
@@ -239,10 +240,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).geometry,
             ProjectionExtension.ext(proj_item).geometry,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).geometry["coordinates"][0][0],
-            [0.0, 0.0],
-        )
+        asset_prop_geometry = ProjectionExtension.ext(asset_prop).geometry
+        assert asset_prop_geometry is not None
+        self.assertEqual(asset_prop_geometry["coordinates"][0][0], [0.0, 0.0])
 
         # Set to Asset
         asset_value: Dict[str, Any] = {"type": "Point", "coordinates": [1.0, 2.0]}

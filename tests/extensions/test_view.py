@@ -46,6 +46,7 @@ class ViewTest(unittest.TestCase):
         # Get
         self.assertIn("view:off_nadir", view_item.properties)
         view_off_nadir = ViewExtension.ext(view_item).off_nadir
+        assert view_off_nadir is not None
         self.assertEqual(view_off_nadir, view_item.properties["view:off_nadir"])
 
         # Set
@@ -79,6 +80,7 @@ class ViewTest(unittest.TestCase):
         # Get
         self.assertIn("view:incidence_angle", view_item.properties)
         view_incidence_angle = ViewExtension.ext(view_item).incidence_angle
+        assert view_incidence_angle is not None
         self.assertEqual(
             view_incidence_angle, view_item.properties["view:incidence_angle"]
         )
@@ -116,6 +118,7 @@ class ViewTest(unittest.TestCase):
         # Get
         self.assertIn("view:azimuth", view_item.properties)
         view_azimuth = ViewExtension.ext(view_item).azimuth
+        assert view_azimuth is not None
         self.assertEqual(view_azimuth, view_item.properties["view:azimuth"])
 
         # Set
@@ -149,6 +152,7 @@ class ViewTest(unittest.TestCase):
         # Get
         self.assertIn("view:sun_azimuth", view_item.properties)
         view_sun_azimuth = ViewExtension.ext(view_item).sun_azimuth
+        assert view_sun_azimuth is not None
         self.assertEqual(view_sun_azimuth, view_item.properties["view:sun_azimuth"])
 
         # Set
@@ -184,6 +188,7 @@ class ViewTest(unittest.TestCase):
         # Get
         self.assertIn("view:sun_elevation", view_item.properties)
         view_sun_elevation = ViewExtension.ext(view_item).sun_elevation
+        assert view_sun_elevation is not None
         self.assertEqual(view_sun_elevation, view_item.properties["view:sun_elevation"])
 
         # Set

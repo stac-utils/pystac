@@ -2,6 +2,7 @@
 
 import datetime
 import unittest
+from typing import List, Optional
 
 import pystac
 from pystac.extensions import scientific
@@ -183,7 +184,8 @@ def make_collection() -> pystac.Collection:
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    temporal_extent = pystac.TemporalExtent([[start, end]])
+    intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
+    temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
     collection = pystac.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % 2019)

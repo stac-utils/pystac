@@ -3,7 +3,7 @@ from imp import load_source
 from setuptools import setup, find_packages
 from glob import glob
 
-__version__ = load_source('pystac.version', 'pystac/version.py').__version__
+__version__ = load_source('pystac.version', 'pystac/version.py').__version__  # type: ignore
 
 from os.path import (
     basename,

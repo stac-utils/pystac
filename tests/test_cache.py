@@ -20,7 +20,7 @@ def create_catalog(suffix: Any, include_href: bool = True) -> pystac.Catalog:
 
 
 class ResolvedObjectCacheTest(unittest.TestCase):
-    def tests_get_or_cache_returns_previously_cached_href(self):
+    def tests_get_or_cache_returns_previously_cached_href(self) -> None:
         cache = ResolvedObjectCache()
         cat = create_catalog(1)
         cache_result_1 = cache.get_or_cache(cat)

@@ -35,7 +35,7 @@ class STACWritingTest(unittest.TestCase):
     def validate_link_types(
         self, root_href: str, catalog_type: pystac.CatalogType
     ) -> None:
-        def validate_asset_href_type(item: pystac.Item, item_href: str):
+        def validate_asset_href_type(item: pystac.Item, item_href: str) -> None:
             for asset in item.assets.values():
                 if not is_absolute_href(asset.href):
                     is_valid = not is_absolute_href(asset.href)

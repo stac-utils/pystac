@@ -122,9 +122,9 @@ class PointcloudTest(unittest.TestCase):
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
-        pc_statistics = [
-            s.to_dict() for s in PointcloudExtension.ext(pc_item).statistics
-        ]
+        statistics = PointcloudExtension.ext(pc_item).statistics
+        assert statistics is not None
+        pc_statistics = [s.to_dict() for s in statistics]
         self.assertEqual(pc_statistics, pc_item.properties["pc:statistics"])
 
         # Set

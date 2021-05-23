@@ -34,7 +34,7 @@ class CustomExtension(
 
     @property
     def test_prop(self) -> Optional[str]:
-        self._get_property(TEST_PROP, str)
+        return self._get_property(TEST_PROP, str)
 
     @test_prop.setter
     def test_prop(self, v: Optional[str]) -> None:

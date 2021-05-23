@@ -81,6 +81,7 @@ class LayoutTemplateTest(unittest.TestCase):
         template = LayoutTemplate("${collection}/item.json")
 
         collection = TestCases.test_case_4().get_child("acc")
+        assert collection is not None
         item = next(iter(collection.get_all_items()))
         assert item.collection_id is not None
 
@@ -96,6 +97,7 @@ class LayoutTemplateTest(unittest.TestCase):
         template = LayoutTemplate("${collection}/item.json")
 
         collection = TestCases.test_case_4().get_child("acc")
+        assert collection is not None
         item = next(iter(collection.get_all_items()))
         item.set_collection(None)
         assert item.collection_id is None

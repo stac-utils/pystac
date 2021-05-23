@@ -1,5 +1,6 @@
 import datetime
 import unittest
+from typing import Any, Dict, List
 
 import pystac
 from tests.utils.test_cases import ARBITRARY_EXTENT
@@ -74,6 +75,7 @@ class LinkTest(unittest.TestCase):
         catalog.set_self_href("/some/href")
 
         link = catalog.get_single_link("item")
+        assert link is not None
         self.assertIsNone(link.get_href())
 
     def test_resolve_stac_object_no_root_and_target_is_item(self) -> None:
@@ -83,11 +85,11 @@ class LinkTest(unittest.TestCase):
 
 class StaticLinkTest(unittest.TestCase):
     def test_from_dict_round_trip(self) -> None:
-        test_cases = [
+        test_cases: List[Dict[str, Any]] = [
             {"rel": "", "href": ""},  # Not valid, but works.
             {"rel": "r", "href": "t"},
             {"rel": "r", "href": "/t"},
-            {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", 1: 2},
+            {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2},
             # Special case.
             {"rel": "self", "href": "t"},
         ]
@@ -96,7 +98,8 @@ class StaticLinkTest(unittest.TestCase):
             self.assertEqual(d, d2)
 
     def test_from_dict_failures(self) -> None:
-        for d in [{}, {"href": "t"}, {"rel": "r"}]:
+        dicts: List[Dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
+        for d in dicts:
             with self.assertRaises(KeyError):
                 pystac.Link.from_dict(d)
 

@@ -28,8 +28,8 @@ class PropertiesExtension(ABC):
     properties: Dict[str, Any]
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
 
-    def _get_property(self, prop_name: str, typ: Type[P] = Type[Any]) -> Optional[P]:
-        result: Optional[typ] = self.properties.get(prop_name)
+    def _get_property(self, prop_name: str, typ: Type[P]) -> Optional[P]:
+        result = self.properties.get(prop_name)
         if result is not None:
             return result
         if self.additional_read_properties is not None:
