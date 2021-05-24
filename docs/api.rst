@@ -193,21 +193,6 @@ ExtensionTypeError
 Extensions
 ----------
 
-**TEMPORARILY REMOVED**
-.. .. autoclass:: pystac.extensions.Extensions
-..    :members:
-..    :undoc-members:
-
-ExtensionIndex
-~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
-
-.. .. autoclass:: pystac.stac_object.ExtensionIndex
-..    :members: __getitem__, __getattr__, enable, implements
-
 Base Classes
 ------------
 
