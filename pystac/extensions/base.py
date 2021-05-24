@@ -42,12 +42,19 @@ class PropertiesExtension(ABC):
     """
 
     properties: Dict[str, Any]
-    """Additional properties associated with this extension."""
+    """The properties that this extension wraps. 
+    
+    The extension which implements PropertiesExtension can use ``_get_property`` and
+    ``_set_property`` to get and set values on this instance. Note that _set_properties
+    mutates the properties directly."""
 
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
-    """Additional read-only properties accessible from the extended object. These are
-    used when extending a :class:`~pystac.Asset` to give access to the properties of
-    the owning :class:`~pystac.Item`."""
+    """Additional read-only properties accessible from the extended object.
+
+    These are used when extending an :class:`~pystac.Asset` to give access to the properties of
+    the owning :class:`~pystac.Item`. If a property exists in both ``additional_read_properties`` and
+    ``properties``, the value in ``additional_read_properties`` will take precedence. 
+    """
 
     def _get_property(self, prop_name: str, typ: Type[P] = Type[Any]) -> Optional[P]:
         result: Optional[typ] = self.properties.get(prop_name)
@@ -73,7 +80,7 @@ S = TypeVar("S", bound=pystac.STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
-    """Abstract base class with tools for adding and removing extensions from STAC
+    """Abstract base class with methods for adding and removing extensions from STAC
     Objects. This class is generic over the type of object being extended (e.g.
     :class:`~pystac.Item`).
 
