@@ -5,7 +5,10 @@ import unittest
 # from copy import deepcopy
 
 import pystac
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError, STACError
 from pystac.extensions.pointcloud import (
+    AssetPointcloudExtension,
     PointcloudExtension,
     PointcloudSchema,
     PointcloudStatistic,
@@ -178,6 +181,22 @@ class PointcloudTest(unittest.TestCase):
             setattr(schema, k, val)
             self.assertEqual(getattr(schema, k), val)
 
+        schema = PointcloudSchema.create("intensity", 16, "unsigned")
+        self.assertEqual(schema.name, "intensity")
+        self.assertEqual(schema.size, 16)
+        self.assertEqual(schema.type, "unsigned")
+
+        with self.assertRaises(STACError):
+            schema.size = 0.5  # type: ignore
+
+        empty_schema = PointcloudSchema({})
+        with self.assertRaises(STACError):
+            empty_schema.size
+        with self.assertRaises(STACError):
+            empty_schema.name
+        with self.assertRaises(STACError):
+            empty_schema.type
+
     def test_pointcloud_statistics(self):
         props: Dict[str, Any] = {
             "average": 1,
@@ -201,6 +220,76 @@ class PointcloudTest(unittest.TestCase):
             setattr(stat, k, val)
             self.assertEqual(getattr(stat, k), val)
 
+        stat = PointcloudStatistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
+        self.assertEqual(stat.name, "foo")
+        self.assertEqual(stat.position, 1)
+        self.assertEqual(stat.average, 2)
+        self.assertEqual(stat.count, 3)
+        self.assertEqual(stat.maximum, 4)
+        self.assertEqual(stat.minimum, 5)
+        self.assertEqual(stat.stddev, 6)
+        self.assertEqual(stat.variance, 7)
+
+        stat.name = None  # type: ignore
+        self.assertNotIn("name", stat.properties)
+        stat.position = None
+        self.assertNotIn("position", stat.properties)
+        stat.average = None
+        self.assertNotIn("average", stat.properties)
+        stat.count = None
+        self.assertNotIn("count", stat.properties)
+        stat.maximum = None
+        self.assertNotIn("maximum", stat.properties)
+        stat.minimum = None
+        self.assertNotIn("minimum", stat.properties)
+        stat.stddev = None
+        self.assertNotIn("stddev", stat.properties)
+        stat.variance = None
+        self.assertNotIn("variance", stat.properties)
+
+        empty_stat = PointcloudStatistic({})
+        with self.assertRaises(STACError):
+            empty_stat.name
+
     def test_statistics_accessor_when_no_stats(self):
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)
+
+    def test_asset_extension(self):
+        asset = Asset(
+            "https://github.com/PDAL/PDAL/blob"
+            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+            "/autzen_trim.laz",
+            "laz file",
+            "The laz data",
+            "application/octet-stream",
+            ["data"],
+            {"foo": "bar"},
+        )
+        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        pc_item.add_asset("data", asset)
+        ext = AssetPointcloudExtension(asset)
+        self.assertEqual(ext.asset_href, asset.href)
+        self.assertEqual(ext.properties, asset.properties)
+        self.assertEqual(ext.additional_read_properties, [pc_item.properties])
+
+    def test_ext(self):
+        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        PointcloudExtension.ext(pc_item)
+        asset = Asset(
+            "https://github.com/PDAL/PDAL/blob"
+            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+            "/autzen_trim.laz",
+            "laz file",
+            "The laz data",
+            "application/octet-stream",
+            ["data"],
+            {"foo": "bar"},
+        )
+        PointcloudExtension.ext(asset)
+
+        class RandomObject:
+            pass
+
+        with self.assertRaises(ExtensionTypeError):
+            PointcloudExtension.ext(RandomObject())  # type: ignore

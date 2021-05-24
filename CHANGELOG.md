@@ -7,6 +7,7 @@
 ### Changed
 
 - Split `DefaultStacIO`'s reading and writing into two methods to allow subclasses to use the default link resolution behavior ([#354](https://github.com/stac-utils/pystac/pull/354))
+- Increased test coverage for the pointcloud extension ([#352](https://github.com/stac-utils/pystac/pull/352))
 
 ### Fixed
 
