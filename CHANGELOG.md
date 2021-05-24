@@ -8,11 +8,9 @@
 
 ### Fixed
 
-### Remove
+### Removed
 
 ## [1.0.0-beta.2]
-
-### Added
 
 ### Changed
 
@@ -24,6 +22,9 @@
 - Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
 
 ### Removed
+
+- Removed type information from docstrings, since it is redundant with function type
+  annotations ([#342](https://github.com/stac-utils/pystac/pull/342))
 
 ## [1.0.0-beta.1]
 
