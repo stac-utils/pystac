@@ -19,7 +19,7 @@ def validate(stac_object: "STACObject_Type") -> List[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
-        stac_object (STACObject): The stac object to validate.
+        stac_object : The stac object to validate.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -52,15 +52,15 @@ def validate_dict(
     :class:`~pystac.validation.JsonSchemaSTACValidator` by default.
 
     Args:
-        stac_dict (dict): Dictionary that is the STAC json of the object.
-        stac_object_type (str): The stac object type of the object encoded in stac_dict.
+        stac_dict : Dictionary that is the STAC json of the object.
+        stac_object_type : The stac object type of the object encoded in stac_dict.
             One of :class:`~pystac.STACObjectType`. If not supplied, this will use
             PySTAC's identification logic to identify the object type.
-        stac_version (str): The version of STAC to validate the object against. If not supplied,
+        stac_version : The version of STAC to validate the object against. If not supplied,
             this will use PySTAC's identification logic to identify the stac version
-        extensions (List[str]): Extension IDs for this stac object. If not supplied,
+        extensions : Extension IDs for this stac object. If not supplied,
             PySTAC's identification logic to identify the extensions.
-        href (str): Optional HREF of the STAC object being validated.
+        href : Optional HREF of the STAC object being validated.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -113,8 +113,8 @@ def validate_all(
 
     Args:
 
-        stac_dict (dict): Dictionary that is the STAC json of the object.
-        href (str): HREF of the STAC object being validated. Used for error
+        stac_dict : Dictionary that is the STAC json of the object.
+        href : HREF of the STAC object being validated. Used for error
             reporting and resolving relative links.
         stac_io: Optional StacIO instance to use for reading hrefs. If None,
             the StacIO.default() instance is used.
@@ -184,7 +184,7 @@ def set_validator(validator: STACValidator) -> None:
     """Sets the STACValidator to use in PySTAC.
 
     Args:
-        validator (STACValidator): The STACValidator implementation to use for
+        validator : The STACValidator implementation to use for
             validation.
     """
     RegisteredValidator.set_validator(validator)

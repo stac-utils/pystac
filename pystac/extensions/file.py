@@ -59,10 +59,10 @@ class FileExtension(
     adds file related details such as checksum, data type and size for assets.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     Note:
         Using FileItemExt to directly wrap an item will add the 'file' extension ID to
@@ -79,10 +79,10 @@ class FileExtension(
         """Applies file extension properties to the extended Item.
 
         Args:
-            data_type (FileDataType): The data type of the file.
-            size (int or None): size of the file in bytes.
-            nodata (List[Object] or None): Value(s) for no-data.
-            checksum (str or None): Multihash for the corresponding file,
+            data_type : The data type of the file.
+            size : size of the file in bytes.
+            nodata : Value(s) for no-data.
+            checksum : Multihash for the corresponding file,
                 encoded as hexadecimal (base 16) string with lowercase letters.
         """
         self.data_type = data_type

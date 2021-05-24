@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-__version__ = "1.0.0-beta.1"
+__version__ = "1.0.0-beta.2"
 """Library version"""
 
 
@@ -57,7 +57,7 @@ def set_stac_version(stac_version: Optional[str]) -> None:
     the version.
 
     Args:
-        stac_version (str): The STAC version to use instead of the latest STAC version
+        stac_version : The STAC version to use instead of the latest STAC version
             that PySTAC supports (described in STACVersion.DEFAULT_STAC_VERSION).
             If None, clear to use the default for this version of PySTAC.
 

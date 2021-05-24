@@ -178,10 +178,10 @@ STACError
 
 .. autoclass:: pystac.STACError
 
-ExtensionError
-~~~~~~~~~~~~~~
+ExtensionTypeError
+~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.ExtensionError
+.. autoclass:: pystac.ExtensionTypeError
 
 Extensions
 ----------

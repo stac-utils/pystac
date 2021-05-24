@@ -1,6 +1,7 @@
 import unittest
 import warnings
 
+import pystac
 from pystac.stac_io import STAC_IO
 from tests.utils import TestCases
 
@@ -18,3 +19,8 @@ class StacIOTest(unittest.TestCase):
             # Verify some things
             self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+    def test_read_text(self):
+        _ = pystac.read_file(
+            TestCases.get_path("data-files/collections/multi-extent.json")
+        )
