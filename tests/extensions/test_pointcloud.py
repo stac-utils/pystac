@@ -255,7 +255,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)
 
-    def test_asset_extension(self):
+    def test_asset_extension(self) -> None:
         asset = Asset(
             "https://github.com/PDAL/PDAL/blob"
             "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
@@ -273,7 +273,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(ext.properties, asset.properties)
         self.assertEqual(ext.additional_read_properties, [pc_item.properties])
 
-    def test_ext(self):
+    def test_ext(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         PointcloudExtension.ext(pc_item)
         asset = Asset(
