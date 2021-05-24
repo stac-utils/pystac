@@ -357,11 +357,31 @@ properties and other functionality.
 
 Instances of :class:`~pystac.extensions.base.PropertiesExtension` have a
 :attr:`~pystac.extensions.base.PropertiesExtension.properties` attribute that gives
-access to the properties of the extended object. There is also a
-:attr:`~pystac.extensions.base.PropertiesExtension.additional_read_properties`
-attribute that, if present, gives read access to properties of any objects that own the
+access to the properties of the extended object. *This attribute is a reference to the
+properties of the* :class:`~pystac.Item` *or* :class:`~pystac.Asset` *being extended and
+can therefore mutate those properties.* For instance:
+
+.. code-block:: python
+
+   item = Item.from_file("tests/data-files/eo/eo-landsat-example.json")
+   print(item.properties["eo:cloud_cover"])
+   # 78
+
+   eo_ext = EOExtension.ext(item)
+   print(eo_ext.cloud_cover)
+   # 78
+
+   eo_ext.cloud_cover = 45
+   print(item.properties["eo:cloud_cover"])
+   # 45
+
+There is also a :attr:`~pystac.extensions.base.PropertiesExtension.additional_read_properties`
+attribute that, if present, gives read-only access to properties of any objects that own the
 extended object. For instance, an extended :class:`pystac.Asset` instance would have
-read access to the properties of the :class:`pystac.Item` that owns it (if there is one).
+read access to the properties of the :class:`pystac.Item` that owns it (if there is
+one). If a property exists in both additional_read_properties and properties, the value
+in additional_read_properties will take precedence.
+
 
 An ``apply`` method is available on extended objects. This allows you to pass in
 property values pertaining to the extension. Properties that are required by the
