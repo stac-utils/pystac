@@ -255,7 +255,7 @@ LabelRelType
 .. autoclass:: pystac.extensions.label.LabelRelType
    :members:
    :show-inheritance:
-   
+
 LabelType
 ~~~~~~~~~
 
@@ -390,6 +390,13 @@ Version Extension
 
 Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
 
+VersionRelType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionRelType
+   :members:
+   :show-inheritance:
+   
 VersionCollectionExt
 ~~~~~~~~~~~~~~~~~~~~
 

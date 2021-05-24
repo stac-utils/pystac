@@ -24,7 +24,11 @@ DEPRECATED: str = "deprecated"
 
 
 class VersionRelType(str, Enum):
-    """A list of rel types defined in the Version Extension."""
+    """A list of rel types defined in the Version Extension.
+
+    See the `Version Extension Relation types
+    <https://github.com/stac-extensions/version#relation-types>`__ documentation
+    for details."""
 
     def __str__(self) -> str:
         return str(self.value)
