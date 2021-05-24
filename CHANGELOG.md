@@ -6,6 +6,16 @@
 
 ### Changed
 
+### Fixed
+
+### Remove
+
+## [1.0.0-beta.2]
+
+### Added
+
+### Changed
+
 - Split `DefaultStacIO`'s reading and writing into two methods to allow subclasses to use the default link resolution behavior ([#354](https://github.com/stac-utils/pystac/pull/354))
 - Increased test coverage for the pointcloud extension ([#352](https://github.com/stac-utils/pystac/pull/352))
 
@@ -13,7 +23,7 @@
 
 - Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
 
-### Remove
+### Removed
 
 ## [1.0.0-beta.1]
 
@@ -302,7 +312,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..main>
+[v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
 [v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
 [v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>
 [v0.5.5]: <https://github.com/stac-utils/pystac/compare/v0.5.4..v0.5.5>
