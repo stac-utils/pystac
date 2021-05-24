@@ -14,6 +14,21 @@ from pystac.extensions.hooks import ExtensionHooks
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
 
+class LabelRelType(str, Enum):
+    """A list of rel types defined in the Label Extension.
+
+    See the`Label Extension Links
+    <https://github.com/stac-extensions/label#links-source-imagery>`__ documentation
+    for details.
+    """
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    SOURCE = "source"
+    """Used to indicate a link to the source item to which a label item applies."""
+
+
 class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
 
@@ -777,7 +792,7 @@ class LabelExtensionHooks(ExtensionHooks):
         self, so: pystac.STACObject
     ) -> Optional[List[Union[str, pystac.RelType]]]:
         if isinstance(so, pystac.Item):
-            return [pystac.RelType.SOURCE]
+            return [LabelRelType.SOURCE]
         return None
 
     def migrate(

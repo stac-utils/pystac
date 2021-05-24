@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class RelType(str, Enum):
-    """A list of common rel types that can be used in STAC Link metadata. 
+    """A list of common rel types that can be used in STAC Link metadata.
     See :stac-spec:`"Using Relation Types <best-practices.md#using-relation-types>`
     in the STAC Best Practices for guidelines on using relation types. You may also want
     to refer to the "Relation type" documentation for
@@ -15,7 +15,6 @@ class RelType(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    # Core + best practices
     ALTERNATE = "alternate"
     CANONICAL = "canonical"
     CHILD = "child"
@@ -31,11 +30,3 @@ class RelType(str, Enum):
     ROOT = "root"
     SELF = "self"
     VIA = "via"
-
-    # Label Extension
-    SOURCE = "source"
-
-    # Version Extension
-    LATEST = "latest-version"
-    PREDECESSOR = "predecessor-version"
-    SUCCESSOR = "successor-version"

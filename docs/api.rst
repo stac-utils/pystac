@@ -249,6 +249,13 @@ LabelItemExt
 ..    :undoc-members:
 ..    :show-inheritance:
 
+LabelRelType
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.label.LabelRelType
+   :members:
+   :show-inheritance:
+   
 LabelType
 ~~~~~~~~~
 

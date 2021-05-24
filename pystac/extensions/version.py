@@ -2,7 +2,7 @@
 
 https://github.com/stac-extensions/version
 """
-
+from enum import Enum
 from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
@@ -21,6 +21,24 @@ SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 # a prefix.  e.g. nothing like "ver:"
 VERSION: str = "version"
 DEPRECATED: str = "deprecated"
+
+
+class VersionRelType(str, Enum):
+    """A list of rel types defined in the Version Extension."""
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    LATEST = "latest-version"
+    """Indicates a link pointing to a resource containing the latest version."""
+
+    PREDECESSOR = "predecessor-version"
+    """Indicates a link pointing to a resource containing the predecessor version in the
+    version history."""
+
+    SUCCESSOR = "successor-version"
+    """Indicates a link pointing to a resource containing the successor version in the
+    version history."""
 
 
 class VersionExtension(
@@ -103,15 +121,15 @@ class VersionExtension(
         """Get or sets the most recent version."""
         return map_opt(
             lambda x: cast(T, x),
-            next(iter(self.obj.get_stac_objects(pystac.RelType.LATEST)), None),
+            next(iter(self.obj.get_stac_objects(VersionRelType.LATEST)), None),
         )
 
     @latest.setter
     def latest(self, item: Optional[T]) -> None:
-        self.obj.clear_links(pystac.RelType.LATEST)
+        self.obj.clear_links(VersionRelType.LATEST)
         if item is not None:
             self.obj.add_link(
-                pystac.Link(pystac.RelType.LATEST, item, pystac.MediaType.JSON)
+                pystac.Link(VersionRelType.LATEST, item, pystac.MediaType.JSON)
             )
 
     @property
@@ -119,15 +137,15 @@ class VersionExtension(
         """Get or sets the previous item."""
         return map_opt(
             lambda x: cast(T, x),
-            next(iter(self.obj.get_stac_objects(pystac.RelType.PREDECESSOR)), None),
+            next(iter(self.obj.get_stac_objects(VersionRelType.PREDECESSOR)), None),
         )
 
     @predecessor.setter
     def predecessor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(pystac.RelType.PREDECESSOR)
+        self.obj.clear_links(VersionRelType.PREDECESSOR)
         if item is not None:
             self.obj.add_link(
-                pystac.Link(pystac.RelType.PREDECESSOR, item, pystac.MediaType.JSON)
+                pystac.Link(VersionRelType.PREDECESSOR, item, pystac.MediaType.JSON)
             )
 
     @property
@@ -135,15 +153,15 @@ class VersionExtension(
         """Get or sets the next item."""
         return map_opt(
             lambda x: cast(T, x),
-            next(iter(self.obj.get_stac_objects(pystac.RelType.SUCCESSOR)), None),
+            next(iter(self.obj.get_stac_objects(VersionRelType.SUCCESSOR)), None),
         )
 
     @successor.setter
     def successor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(pystac.RelType.SUCCESSOR)
+        self.obj.clear_links(VersionRelType.SUCCESSOR)
         if item is not None:
             self.obj.add_link(
-                pystac.Link(pystac.RelType.SUCCESSOR, item, pystac.MediaType.JSON)
+                pystac.Link(VersionRelType.SUCCESSOR, item, pystac.MediaType.JSON)
             )
 
     @classmethod
@@ -194,9 +212,9 @@ class VersionExtensionHooks(ExtensionHooks):
     def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
         if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
             return [
-                pystac.RelType.LATEST,
-                pystac.RelType.PREDECESSOR,
-                pystac.RelType.SUCCESSOR,
+                VersionRelType.LATEST,
+                VersionRelType.PREDECESSOR,
+                VersionRelType.SUCCESSOR,
             ]
         return None
 
