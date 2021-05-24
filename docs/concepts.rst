@@ -397,6 +397,30 @@ have a default value of ``None``:
 If you attempt to extend an object that is not supported by an extension, PySTAC will
 throw a :class:`pystac.ExtensionTypeError`.
 
+Adding an Extension
+-------------------
+
+You can add an extension to a STAC object that does not already implement that extension
+using the :meth:`ExtensionManagementMixin.add_to
+<pystac.extensions.base.ExtensionManagementMixin.add_to>` method. Any concrete
+extension implementations that extend existing STAC objects should inherit from the
+:class:`~pystac.extensions.base.ExtensionManagementMixin` class, and will therefore have
+this method available. The
+:meth:`~pystac.extensions.base.ExtensionManagementMixin.add_to` adds the correct schema
+URI to the :attr:`~pystac.STACObject.stac_extensions` list for the object being extended.
+
+.. code-block:: python
+
+   # Load a basic item without any extensions
+   item = Item.from_file("tests/data-files/item/sample-item.json")
+   print(item.stac_extensions)
+   # []
+
+   # Add the Electro-Optical extension
+   EOExtension.add_to(item)
+   print(item.stac_extensions)
+   # ['https://stac-extensions.github.io/eo/v1.0.0/schema.json']
+
 Extended Summaries
 ------------------
 
