@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: build
+  test:
+    name: test
     runs-on: ${{ matrix.os }}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
@@ -16,6 +16,7 @@ jobs:
       matrix:
         python-version: ["3.6", "3.7", "3.8"]
         os: [ubuntu-latest, windows-latest, macos-latest]
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -31,8 +32,8 @@ jobs:
           # Cache based on OS, Python version, and dependency hash
           key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
 
-      - name: Execute linters and test suites
-        run: ./scripts/cibuild
+      - name: Execute test suite
+        run: ./scripts/test
       
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -42,14 +43,36 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           fail_ci_if_error: false 
-  vanilla:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{hashFiles('requirements-dev.txt') }}
+          
+      - name: Execute linters & type checkers
+        run: ./scripts/lint
+
+  vanilla:
+    runs-on: ubuntu-latest
+    steps:  
+      - uses: actions/checkout@v2
+      
       - uses: actions/setup-python@v2
         with:
           python-version: "3.8"
       - name: Install without orjson
         run: pip install '.[validation]'
-      - name: Run unittests
+      
+        - name: Run unittests
         run: python -m unittest discover tests
