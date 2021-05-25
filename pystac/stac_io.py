@@ -16,7 +16,7 @@ import warnings
 
 from urllib.parse import urlparse
 from urllib.request import urlopen
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
 
 import pystac
 import pystac.serialization
@@ -184,7 +184,8 @@ class DefaultStacIO(StacIO):
             try:
                 with urlopen(href) as f:
                     return f.read().decode("utf-8")
-            except HTTPError as e:
+            except (HTTPError, URLError) as e:
+                print(parsed.scheme)
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
             with open(href) as f:
