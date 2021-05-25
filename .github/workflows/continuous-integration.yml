@@ -31,10 +31,27 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache dependencies
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'Linux')
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+      
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'macOS')
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+          
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/cache@v2
+        with:
+          path: ~\AppData\Local\pip\Cache
           # Cache based on OS, Python version, and dependency hash
           key: test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
       
@@ -65,12 +82,29 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Cache dependencies
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'Linux')
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           # Cache based on OS, Python version, and dependency hash
-          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{hashFiles('requirements-dev.txt') }}
+          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+      
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'macOS')
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+          
+      - name: Cache dependencies (${{ runner.os }})
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/cache@v2
+        with:
+          path: ~\AppData\Local\pip\Cache
+          # Cache based on OS, Python version, and dependency hash
+          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
       
       - name: Install dependencies
         run: |
