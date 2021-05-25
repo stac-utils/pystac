@@ -14,11 +14,11 @@ from typing import (
 )
 import warnings
 
-from urllib.parse import urlparse
 from urllib.request import urlopen
-from urllib.error import HTTPError, URLError
+from urllib.error import HTTPError
 
 import pystac
+from pystac.utils import _urlparse as urlparse
 import pystac.serialization
 
 # Use orjson if available
@@ -184,8 +184,7 @@ class DefaultStacIO(StacIO):
             try:
                 with urlopen(href) as f:
                     return f.read().decode("utf-8")
-            except (HTTPError, URLError) as e:
-                print(parsed.scheme)
+            except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
             with open(href) as f:
