@@ -74,5 +74,5 @@ jobs:
       - name: Install without orjson
         run: pip install '.[validation]'
       
-        - name: Run unittests
+      - name: Run unittests
         run: python -m unittest discover tests
