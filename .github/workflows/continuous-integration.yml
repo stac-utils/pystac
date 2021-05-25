@@ -33,7 +33,7 @@ jobs:
           key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
 
       - name: Execute test suite
-        run: ./scripts/test
+        run: bash ./scripts/test
       
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
