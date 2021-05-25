@@ -31,6 +31,11 @@ jobs:
           path: ~/.cache/pip
           # Cache based on OS, Python version, and dependency hash
           key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e ".[validation]"
 
       - name: Execute test suite
         run: ./scripts/test
@@ -59,7 +64,12 @@ jobs:
           path: ~/.cache/pip
           # Cache based on OS, Python version, and dependency hash
           key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{hashFiles('requirements-dev.txt') }}
-          
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e ".[validation]"
+
       - name: Execute linters & type checkers
         run: ./scripts/lint
 
@@ -71,6 +81,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: "3.8"
+
       - name: Install without orjson
         run: pip install '.[validation]'
       
