@@ -26,7 +26,7 @@ class Sampling(enum.Enum):
     POINT = "point"
 
 
-class FileDataType(str, enum.Enum):
+class DataType(str, enum.Enum):
     def __str__(self) -> str:
         return str(self.value)
 
@@ -337,7 +337,7 @@ class RasterBand:
         self,
         nodata: Optional[float] = None,
         sampling: Optional[Sampling] = None,
-        data_type: Optional[FileDataType] = None,
+        data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
         spatial_resolution: Optional[float] = None,
         statistics: Optional[Statistics] = None,
@@ -381,10 +381,9 @@ class RasterBand:
     @classmethod
     def create(
         cls,
-        self,
         nodata: Optional[float] = None,
         sampling: Optional[Sampling] = None,
-        data_type: Optional[FileDataType] = None,
+        data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
         spatial_resolution: Optional[float] = None,
         statistics: Optional[Statistics] = None,
@@ -464,7 +463,7 @@ class RasterBand:
             self.properties.pop("sampling", None)
 
     @property
-    def data_type(self) -> Optional[FileDataType]:
+    def data_type(self) -> Optional[DataType]:
         """Get or sets the The data type of the band.
 
         Returns:
@@ -473,7 +472,7 @@ class RasterBand:
         return self.properties.get("data_type")
 
     @data_type.setter
-    def data_type(self, v: Optional[FileDataType]) -> None:
+    def data_type(self, v: Optional[DataType]) -> None:
         if v is not None:
             self.properties["data_type"] = v
         else:
