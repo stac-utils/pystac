@@ -4,6 +4,8 @@
 
 ### Added
 
+- solar_illumination field in eo extension ([#356](https://github.com/stac-utils/pystac/issues/356))
+
 ### Changed
 
 ### Fixed
