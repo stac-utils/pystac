@@ -4,6 +4,8 @@
 
 ### Added
 
+- raster extension support
+
 ### Changed
 
 ### Fixed
