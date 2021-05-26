@@ -56,7 +56,7 @@ class Band:
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
-            solar_illumination: The solar illumination of the band, 
+            solar_illumination: The solar illumination of the band,
                 as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         self.name = name
@@ -88,7 +88,7 @@ class Band:
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
-            solar_illumination: The solar illumination of the band, 
+            solar_illumination: The solar illumination of the band,
                 as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         b = cls({})

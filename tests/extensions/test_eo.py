@@ -66,6 +66,7 @@ class EOTest(unittest.TestCase):
         assert asset_bands is not None
         self.assertEqual(len(asset_bands), 1)
         self.assertEqual(asset_bands[0].name, "B1")
+        self.assertEqual(asset_bands[0].solar_illumination, 2000)
 
         index_asset = item.assets["index"]
         asset_bands = EOExtension.ext(index_asset).bands
@@ -88,9 +89,9 @@ class EOTest(unittest.TestCase):
 
         # Check adding a new asset
         new_bands = [
-            Band.create(name="red", description=Band.band_description("red")),
-            Band.create(name="green", description=Band.band_description("green")),
-            Band.create(name="blue", description=Band.band_description("blue")),
+            Band.create(name="red", description=Band.band_description("red"), solar_illumination=1900),
+            Band.create(name="green", description=Band.band_description("green"), solar_illumination=1950),
+            Band.create(name="blue", description=Band.band_description("blue"), solar_illumination=2000),
         ]
         asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
         EOExtension.ext(asset).bands = new_bands
