@@ -4,19 +4,14 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-import re
-from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
-from pystac.collection import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions import view
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
@@ -94,7 +89,7 @@ class Statistics:
         mean: Optional[float] = None,
         stddev: Optional[float] = None,
         valid_percent: Optional[float] = None,
-    ) -> "RasterBand":
+    ) -> "Statistics":
         """
         Creates a new band.
 
@@ -117,7 +112,7 @@ class Statistics:
 
     @property
     def minimum(self) -> Optional[float]:
-        """Get or sets the minmum pixel value
+        """Get or sets the minimum pixel value
 
         Returns:
             Optional[float]
@@ -125,7 +120,7 @@ class Statistics:
         return self.properties.get("minimum")
 
     @minimum.setter
-    def minimum(self, v: float) -> None:
+    def minimum(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["minimum"] = v
         else:
@@ -141,7 +136,7 @@ class Statistics:
         return self.properties.get("maximum")
 
     @maximum.setter
-    def maximum(self, v: float) -> None:
+    def maximum(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["maximum"] = v
         else:
@@ -157,7 +152,7 @@ class Statistics:
         return self.properties.get("mean")
 
     @mean.setter
-    def mean(self, v: float) -> None:
+    def mean(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["mean"] = v
         else:
@@ -173,7 +168,7 @@ class Statistics:
         return self.properties.get("stdev")
 
     @stdev.setter
-    def stdev(self, v: float) -> None:
+    def stdev(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["stdev"] = v
         else:
@@ -189,7 +184,7 @@ class Statistics:
         return self.properties.get("valid_percent")
 
     @valid_percent.setter
-    def valid_percent(self, v: float) -> None:
+    def valid_percent(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["valid_percent"] = v
         else:
@@ -215,10 +210,10 @@ class Histogram:
 
     def apply(
         self,
-        count: int = None,
-        min: float = None,
-        max: float = None,
-        buckets: List[int] = None,
+        count: int,
+        min: float,
+        max: float,
+        buckets: List[int],
     ) -> None:
         """
         Sets the properties for this raster Band.
@@ -240,11 +235,11 @@ class Histogram:
     @classmethod
     def create(
         cls,
-        count: int = None,
-        min: float = None,
-        max: float = None,
-        buckets: List[int] = None,
-    ) -> "RasterBand":
+        count: int,
+        min: float,
+        max: float,
+        buckets: List[int],
+    ) -> "Histogram":
         """
         Creates a new band.
 
@@ -267,52 +262,43 @@ class Histogram:
         return b
 
     @property
-    def count(self) -> Optional[float]:
+    def count(self) -> int:
         """Get or sets the number of buckets of the distribution.
 
         Returns:
-            Optional[float]
+            int
         """
-        return self.properties.get("count")
+        return get_required(self.properties["count"], self, "count")
 
     @count.setter
-    def count(self, v: float) -> None:
-        if v is not None:
-            self.properties["count"] = v
-        else:
-            self.properties.pop("count", None)
+    def count(self, v: int):
+        self.properties["count"] = v
 
     @property
-    def min(self) -> Optional[float]:
+    def min(self) -> float:
         """Get or sets the minimum value of the distribution.
 
         Returns:
-            Optional[float]
+            float
         """
-        return self.properties.get("min")
+        return get_required(self.properties["min"], self, "min")
 
     @min.setter
     def min(self, v: float) -> None:
-        if v is not None:
-            self.properties["min"] = v
-        else:
-            self.properties.pop("min", None)
+        self.properties["min"] = v
 
     @property
-    def max(self) -> Optional[float]:
+    def max(self) -> float:
         """Get or sets the maximum value of the distribution.
 
         Returns:
             float
         """
-        return self.properties.get("max")
+        return get_required(self.properties["max"], self, "max")
 
     @max.setter
     def max(self, v: float) -> None:
-        if v is not None:
-            self.properties["max"] = v
-        else:
-            self.properties.pop("max", None)
+        self.properties["max"] = v
 
     @property
     def buckets(self) -> List[int]:
@@ -322,14 +308,11 @@ class Histogram:
         Returns:
             List[int]
         """
-        return self.properties.get("buckets")
+        return get_required(self.properties["buckets"], self, "buckets")
 
     @buckets.setter
     def buckets(self, v: List[int]) -> None:
-        if v is not None:
-            self.properties["buckets"] = v
-        else:
-            self.properties.pop("buckets", None)
+        self.properties["buckets"] = v
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this histogram.
@@ -341,7 +324,8 @@ class Histogram:
 
 
 class RasterBand:
-    """Represents a Raster Band information attached to an Item that implements the raster extension.
+    """Represents a Raster Band information attached to an Item
+    that implements the raster extension.
 
     Use Band.create to create a new Band.
     """
@@ -455,7 +439,7 @@ class RasterBand:
         return self.properties.get("nodata")
 
     @nodata.setter
-    def nodata(self, v: float) -> None:
+    def nodata(self, v: Optional[float]) -> None:
         if v is not None:
             self.properties["nodata"] = v
         else:
@@ -610,7 +594,7 @@ class RasterBand:
             self.properties.pop("histogram", None)
 
     def __repr__(self) -> str:
-        return "<Raster Band name={}>".format(self.name)
+        return "<Raster Band>"
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this Band.
@@ -633,8 +617,8 @@ class RasterExtension(
         item : The Item that is being extended.
 
     Note:
-        Using RasterItemExt to directly wrap an item will add the 'raster' extension ID to
-        the item's stac_extensions.
+        Using RasterItemExt to directly wrap an item will add
+        the 'raster' extension ID to the item's stac_extensions.
     """
 
     def apply(self, bands: List[RasterBand]) -> None:
