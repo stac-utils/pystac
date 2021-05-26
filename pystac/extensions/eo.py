@@ -42,6 +42,7 @@ class Band:
         description: Optional[str] = None,
         center_wavelength: Optional[float] = None,
         full_width_half_max: Optional[float] = None,
+        solar_illumination: Optional[float] = None,
     ) -> None:
         """
         Sets the properties for this Band.
@@ -55,12 +56,15 @@ class Band:
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination: The solar illumination of the band, 
+                as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         self.name = name
         self.common_name = common_name
         self.description = description
         self.center_wavelength = center_wavelength
         self.full_width_half_max = full_width_half_max
+        self.solar_illumination = solar_illumination
 
     @classmethod
     def create(
@@ -70,6 +74,7 @@ class Band:
         description: Optional[str] = None,
         center_wavelength: Optional[float] = None,
         full_width_half_max: Optional[float] = None,
+        solar_illumination: Optional[float] = None,
     ) -> "Band":
         """
         Creates a new band.
@@ -83,6 +88,8 @@ class Band:
             center_wavelength : The center wavelength of the band, in micrometers (μm).
             full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination: The solar illumination of the band, 
+                as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         b = cls({})
         b.apply(
@@ -91,6 +98,7 @@ class Band:
             description=description,
             center_wavelength=center_wavelength,
             full_width_half_max=full_width_half_max,
+            solar_illumination=solar_illumination,
         )
         return b
 
@@ -174,6 +182,23 @@ class Band:
             self.properties["full_width_half_max"] = v
         else:
             self.properties.pop("full_width_half_max", None)
+
+    @property
+    def solar_illumination(self) -> Optional[float]:
+        """Get or sets the The solar illumination of the band,
+            as measured at half the maximum transmission, in W/m2/micrometers.
+
+        Returns:
+            [float]
+        """
+        return self.properties.get("solar_illumination")
+
+    @solar_illumination.setter
+    def solar_illumination(self, v: Optional[float]) -> None:
+        if v is not None:
+            self.properties["solar_illumination"] = v
+        else:
+            self.properties.pop("solar_illumination", None)
 
     def __repr__(self) -> str:
         return "<Band name={}>".format(self.name)
