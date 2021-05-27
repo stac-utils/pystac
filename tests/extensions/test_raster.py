@@ -4,7 +4,13 @@ import unittest
 import pystac
 from pystac import Item
 from pystac.utils import get_opt
-from pystac.extensions.raster import RasterExtension, RasterBand, Sampling, DataType, Statistics
+from pystac.extensions.raster import (
+    RasterExtension,
+    RasterBand,
+    Sampling,
+    DataType,
+    Statistics,
+)
 from tests.utils import TestCases, test_to_from_dict
 
 
@@ -82,9 +88,15 @@ class RasterTest(unittest.TestCase):
 
         # Check adding a new asset
         new_stats = [
-            Statistics.create(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88),
-            Statistics.create(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100),
-            Statistics.create(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
+            Statistics.create(
+                minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
+            ),
+            Statistics.create(
+                minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100
+            ),
+            Statistics.create(
+                minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
+            ),
         ]
         new_bands = [
             RasterBand.create(nodata=1, unit="test1", statistics=new_stats[0]),
