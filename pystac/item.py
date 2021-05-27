@@ -482,7 +482,7 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
 
@@ -525,10 +525,9 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
-
 
         Returns:
             datetime: Date and time that the metadata file was most recently
@@ -549,7 +548,7 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
 

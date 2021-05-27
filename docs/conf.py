@@ -15,6 +15,8 @@
 import os
 import sys
 import subprocess
+from typing import Any, Dict
+
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 from pystac.version import __version__, STACVersion
@@ -62,6 +64,7 @@ extlinks = {
                   'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
     'stac-spec': ('https://github.com/radiantearth/stac-spec/blob/'
                   'v{}/%s'.format(STACVersion.DEFAULT_STAC_VERSION), 'path'),
+    'stac-ext': ('https://github.com/stac-extensions/%s', '%s extension')
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -136,7 +139,7 @@ htmlhelp_basename = 'pystacdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, Any] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',

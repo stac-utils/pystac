@@ -431,9 +431,9 @@ class RangeSummary(Generic[T]):
         return {"minimum": self.minimum, "maximum": self.maximum}
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
-        minimum: Optional[T] = get_required(d.get("minimum"), "RangeSummary", "minimum")
-        maximum: Optional[T] = get_required(d.get("maximum"), "RangeSummary", "maximum")
+    def from_dict(cls, d: Dict[str, Any]) -> "RangeSummary[T]":
+        minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
+        maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
 
@@ -483,7 +483,7 @@ class Summaries:
         self.schemas.pop(prop_key, None)
         self.other.pop(prop_key, None)
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )

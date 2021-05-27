@@ -18,10 +18,10 @@ class ExtensionHooks(ABC):
 
     @property
     @abstractmethod
-    def prev_extension_ids(self) -> List[str]:
-        """A list of previous extension IDs (schema URIs or old short ids)
+    def prev_extension_ids(self) -> Set[str]:
+        """A set of previous extension IDs (schema URIs or old short ids)
         that should be migrated to the latest schema URI in the 'stac_extensions'
-        property. Override with a class attribute so that the list of previous
+        property. Override with a class attribute so that the set of previous
         IDs is only created once.
         """
         pass

@@ -133,4 +133,4 @@ class SatExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-SAT_EXTENSION_HOOKS = SatExtensionHooks()
+SAT_EXTENSION_HOOKS: ExtensionHooks = SatExtensionHooks()

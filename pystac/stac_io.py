@@ -25,7 +25,7 @@ import pystac.serialization
 try:
     import orjson  # type: ignore
 except ImportError:
-    orjson = None
+    orjson = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -170,13 +170,16 @@ class DefaultStacIO(StacIO):
     def read_text(
         self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
     ) -> str:
+        href: Optional[str]
         if isinstance(source, str):
             href = source
         else:
             href = source.get_absolute_href()
             if href is None:
                 raise IOError(f"Could not get an absolute HREF from link {source}")
+        return self.read_text_from_href(href, *args, **kwargs)
 
+    def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
         parsed = urlparse(href)
         if parsed.scheme != "":
             try:
@@ -191,13 +194,18 @@ class DefaultStacIO(StacIO):
     def write_text(
         self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
     ) -> None:
+        href: Optional[str]
         if isinstance(dest, str):
             href = dest
         else:
             href = dest.get_absolute_href()
             if href is None:
                 raise IOError(f"Could not get an absolute HREF from link {dest}")
+        return self.write_text_to_href(href, txt, *args, **kwargs)
 
+    def write_text_to_href(
+        self, href: str, txt: str, *args: Any, **kwargs: Any
+    ) -> None:
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)

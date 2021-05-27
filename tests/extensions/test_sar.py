@@ -21,14 +21,14 @@ def make_item() -> pystac.Item:
 
 
 class SarItemExtTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.item = make_item()
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(SarExtension.has_extension(self.item))
 
-    def test_required(self):
+    def test_required(self) -> None:
         mode: str = "Nonesense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         polarizations: List[sar.Polarization] = [
@@ -54,7 +54,7 @@ class SarItemExtTest(unittest.TestCase):
 
         self.item.validate()
 
-    def test_all(self):
+    def test_all(self) -> None:
         mode: str = "WV"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
         polarizations: List[sar.Polarization] = [
@@ -127,7 +127,7 @@ class SarItemExtTest(unittest.TestCase):
 
         self.item.validate()
 
-    def test_polarization_must_be_list(self):
+    def test_polarization_must_be_list(self) -> None:
         mode: str = "Nonesense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         # Skip type hint as we are passing in an incorrect polarization.
