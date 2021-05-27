@@ -4,7 +4,7 @@ import unittest
 import pystac
 from pystac import Item
 from pystac.utils import get_opt
-from pystac.extensions.raster import RasterExtension, RasterBand, Sampling, DataType
+from pystac.extensions.raster import RasterExtension, RasterBand, Sampling, DataType, Statistics
 from tests.utils import TestCases, test_to_from_dict
 
 
@@ -81,10 +81,15 @@ class RasterTest(unittest.TestCase):
         item2.validate()
 
         # Check adding a new asset
+        new_stats = [
+            Statistics.create(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88),
+            Statistics.create(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100),
+            Statistics.create(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
+        ]
         new_bands = [
-            RasterBand.create(nodata=1, unit="test1"),
-            RasterBand.create(nodata=2, unit="test3"),
-            RasterBand.create(nodata=3, unit="test3"),
+            RasterBand.create(nodata=1, unit="test1", statistics=new_stats[0]),
+            RasterBand.create(nodata=2, unit="test3", statistics=new_stats[1]),
+            RasterBand.create(nodata=3, unit="test3", statistics=new_stats[2]),
         ]
         asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
         RasterExtension.ext(asset).bands = new_bands
