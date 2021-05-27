@@ -108,7 +108,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     "show_powered_by": False,
-    "github_user": "azavea",
+    "github_user": "stac-utils",
     "github_repo": "pystac",
     "github_banner": True,
     "show_related": False,
