@@ -36,6 +36,12 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         flake8 pystac tests
 
         echo
+        echo " -- LINTING RST FILES WITH DOC8 --"
+        echo
+
+        doc8 docs -q
+
+        echo
         echo " -- CHECKING FORMAT WITH BLACK --"
         echo
 

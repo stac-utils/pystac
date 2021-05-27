@@ -45,24 +45,32 @@ More details on using ``unittest`` are `here
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
-PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and `yapf
-<https://github.com/google/yapf>`_ for code formatting and style checks.
+PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and`black
+<https://github.com/psf/black>`_ for code formatting and style checks.
 
 To run the flake8 style checks:
 
 .. code-block:: bash
 
-    > flake8 pystac
-    > flake8 tests
+    > flake8 pystac tests
 
 To format code:
 
 .. code-block:: bash
 
-   > yapf -ipr pystac
-   > yapf -ipr tests
+    > ./scripts/format
 
-You can also run the ``./scripts/test`` script to check flake8 and yapf.
+We also use `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in
+the docs.
+
+To check doc formatting:
+
+.. code-block:: bash
+
+    > doc8 docs
+
+You can also run the ``./scripts/test`` script to run unit tests, check code style with
+``flake8`` and ``black``, and check type annotations using ``mypy`` and ``pyright``.
 
 CHANGELOG
 ^^^^^^^^^
