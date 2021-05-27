@@ -57,9 +57,9 @@ class RangeSummary(Generic[T]):
         self.maximum = max(self.maximum, v)
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
-        minimum: Optional[T] = get_required(d.get("minimum"), "RangeSummary", "minimum")
-        maximum: Optional[T] = get_required(d.get("maximum"), "RangeSummary", "maximum")
+    def from_dict(cls, d: Dict[str, Any]) -> "RangeSummary[T]":
+        minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
+        maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
 
