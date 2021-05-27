@@ -7,16 +7,16 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class ViewTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/view/example-landsat8.json")
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
         test_to_from_dict(self, pystac.Item, d)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
         self.assertFalse(ViewExtension.has_extension(item))
 
@@ -35,17 +35,18 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(ViewExtension.ext(item).sun_azimuth, 4.0)
         self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
 
-    def test_validate_view(self):
+    def test_validate_view(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         self.assertTrue(ViewExtension.has_extension(item))
         item.validate()
 
-    def test_off_nadir(self):
+    def test_off_nadir(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:off_nadir", view_item.properties)
         view_off_nadir = ViewExtension.ext(view_item).off_nadir
+        assert view_off_nadir is not None
         self.assertEqual(view_off_nadir, view_item.properties["view:off_nadir"])
 
         # Set
@@ -73,12 +74,13 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_incidence_angle(self):
+    def test_incidence_angle(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:incidence_angle", view_item.properties)
         view_incidence_angle = ViewExtension.ext(view_item).incidence_angle
+        assert view_incidence_angle is not None
         self.assertEqual(
             view_incidence_angle, view_item.properties["view:incidence_angle"]
         )
@@ -110,12 +112,13 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_azimuth(self):
+    def test_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:azimuth", view_item.properties)
         view_azimuth = ViewExtension.ext(view_item).azimuth
+        assert view_azimuth is not None
         self.assertEqual(view_azimuth, view_item.properties["view:azimuth"])
 
         # Set
@@ -143,12 +146,13 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_sun_azimuth(self):
+    def test_sun_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_azimuth", view_item.properties)
         view_sun_azimuth = ViewExtension.ext(view_item).sun_azimuth
+        assert view_sun_azimuth is not None
         self.assertEqual(view_sun_azimuth, view_item.properties["view:sun_azimuth"])
 
         # Set
@@ -178,12 +182,13 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
-    def test_sun_elevation(self):
+    def test_sun_elevation(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_elevation", view_item.properties)
         view_sun_elevation = ViewExtension.ext(view_item).sun_elevation
+        assert view_sun_elevation is not None
         self.assertEqual(view_sun_elevation, view_item.properties["view:sun_elevation"])
 
         # Set

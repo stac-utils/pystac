@@ -2,6 +2,7 @@
 
 import datetime
 import unittest
+from typing import List, Optional
 
 import pystac
 from pystac.extensions import scientific
@@ -40,14 +41,14 @@ def make_item() -> pystac.Item:
 
 
 class ItemScientificExtensionTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.item = make_item()
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.item))
 
-    def test_doi(self):
+    def test_doi(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
         self.assertEqual(DOI, ScientificExtension.ext(self.item).doi)
         self.assertIn(scientific.DOI, self.item.properties)
@@ -69,14 +70,14 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(PUB1_DOI_URL, link.get_href())
         self.item.validate()
 
-    def test_citation(self):
+    def test_citation(self) -> None:
         ScientificExtension.ext(self.item).apply(citation=CITATION)
         self.assertEqual(CITATION, ScientificExtension.ext(self.item).citation)
         self.assertIn(scientific.CITATION, self.item.properties)
         self.assertFalse(self.item.get_links(scientific.CITE_AS))
         self.item.validate()
 
-    def test_publications_one(self):
+    def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(publications=publications)
         self.assertEqual([1], [int("1")])
@@ -89,7 +90,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertCountEqual(expected, doi_urls)
         self.item.validate()
 
-    def test_publications(self):
+    def test_publications(self) -> None:
         ScientificExtension.ext(self.item).apply(publications=PUBLICATIONS)
         self.assertEqual(PUBLICATIONS, ScientificExtension.ext(self.item).publications)
         self.assertIn(scientific.PUBLICATIONS, self.item.properties)
@@ -100,7 +101,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertCountEqual(expected, doi_urls)
         self.item.validate()
 
-    def test_remove_publication_one(self):
+    def test_remove_publication_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
         ScientificExtension.ext(self.item).remove_publication(publications[0])
@@ -110,7 +111,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
-    def test_remove_all_publications_one(self):
+    def test_remove_all_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
         ScientificExtension.ext(self.item).remove_publication()
@@ -120,7 +121,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
-    def test_remove_publication_forward(self):
+    def test_remove_publication_forward(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[0])
@@ -140,7 +141,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
-    def test_remove_publication_reverse(self):
+    def test_remove_publication_reverse(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[1])
@@ -158,7 +159,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
-    def test_remove_all_publications_with_some(self):
+    def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.item).remove_publication()
         self.assertFalse(ScientificExtension.ext(self.item).publications)
@@ -167,7 +168,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
-    def test_remove_all_publications_with_none(self):
+    def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
         ScientificExtension.ext(self.item).remove_publication()
         self.assertFalse(ScientificExtension.ext(self.item).publications)
@@ -183,7 +184,8 @@ def make_collection() -> pystac.Collection:
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    temporal_extent = pystac.TemporalExtent([[start, end]])
+    intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
+    temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
     collection = pystac.Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % 2019)
@@ -193,14 +195,14 @@ def make_collection() -> pystac.Collection:
 
 
 class CollectionScientificExtensionTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.collection = make_collection()
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.collection))
 
-    def test_doi(self):
+    def test_doi(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
         self.assertEqual(DOI, ScientificExtension.ext(self.collection).doi)
         self.assertIn(scientific.DOI, self.collection.extra_fields)
@@ -222,14 +224,14 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(PUB1_DOI_URL, link.get_href())
         self.collection.validate()
 
-    def test_citation(self):
+    def test_citation(self) -> None:
         ScientificExtension.ext(self.collection).apply(citation=CITATION)
         self.assertEqual(CITATION, ScientificExtension.ext(self.collection).citation)
         self.assertIn(scientific.CITATION, self.collection.extra_fields)
         self.assertFalse(self.collection.get_links(scientific.CITE_AS))
         self.collection.validate()
 
-    def test_publications_one(self):
+    def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(publications=publications)
         self.assertEqual(
@@ -244,7 +246,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
         self.collection.validate()
 
-    def test_publications(self):
+    def test_publications(self) -> None:
         ScientificExtension.ext(self.collection).apply(publications=PUBLICATIONS)
         self.assertEqual(
             PUBLICATIONS, ScientificExtension.ext(self.collection).publications
@@ -258,7 +260,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
         self.collection.validate()
 
-    def test_remove_publication_one(self):
+    def test_remove_publication_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
         ScientificExtension.ext(self.collection).remove_publication(publications[0])
@@ -268,7 +270,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
-    def test_remove_all_publications_one(self):
+    def test_remove_all_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
         ScientificExtension.ext(self.collection).remove_publication()
@@ -278,7 +280,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
-    def test_remove_publication_forward(self):
+    def test_remove_publication_forward(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[0])
@@ -298,7 +300,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
-    def test_remove_publication_reverse(self):
+    def test_remove_publication_reverse(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[1])
@@ -316,7 +318,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
-    def test_remove_all_publications_with_some(self):
+    def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.collection).remove_publication()
         self.assertFalse(ScientificExtension.ext(self.collection).publications)
@@ -325,7 +327,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
-    def test_remove_all_publications_with_none(self):
+    def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
         ScientificExtension.ext(self.collection).remove_publication()
         self.assertFalse(ScientificExtension.ext(self.collection).publications)

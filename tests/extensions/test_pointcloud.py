@@ -17,19 +17,19 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class PointcloudTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
         self.example_uri_no_statistics = TestCases.get_path(
             "data-files/pointcloud/example-laz-no-statistics.json"
         )
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
         test_to_from_dict(self, pystac.Item, d)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
 
         self.assertFalse(PointcloudExtension.has_extension(item))
@@ -43,11 +43,11 @@ class PointcloudTest(unittest.TestCase):
         )
         self.assertTrue(PointcloudExtension.has_extension(item))
 
-    def test_validate_pointcloud(self):
+    def test_validate_pointcloud(self) -> None:
         item = pystac.read_file(self.example_uri)
         item.validate()
 
-    def test_count(self):
+    def test_count(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -69,7 +69,7 @@ class PointcloudTest(unittest.TestCase):
             PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
             pc_item.validate()
 
-    def test_type(self):
+    def test_type(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -84,7 +84,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
-    def test_encoding(self):
+    def test_encoding(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -99,7 +99,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
-    def test_schemas(self):
+    def test_schemas(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -117,14 +117,14 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
-    def test_statistics(self):
+    def test_statistics(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
-        pc_statistics = [
-            s.to_dict() for s in PointcloudExtension.ext(pc_item).statistics
-        ]
+        statistics = PointcloudExtension.ext(pc_item).statistics
+        assert statistics is not None
+        pc_statistics = [s.to_dict() for s in statistics]
         self.assertEqual(pc_statistics, pc_item.properties["pc:statistics"])
 
         # Set
@@ -150,7 +150,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate
 
-    def test_density(self):
+    def test_density(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
         # Get
         self.assertIn("pc:density", pc_item.properties)
@@ -163,7 +163,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
-    def test_pointcloud_schema(self):
+    def test_pointcloud_schema(self) -> None:
         props: Dict[str, Any] = {
             "name": "test",
             "size": 8,
@@ -197,7 +197,7 @@ class PointcloudTest(unittest.TestCase):
         with self.assertRaises(STACError):
             empty_schema.type
 
-    def test_pointcloud_statistics(self):
+    def test_pointcloud_statistics(self) -> None:
         props: Dict[str, Any] = {
             "average": 1,
             "count": 1,
@@ -251,11 +251,11 @@ class PointcloudTest(unittest.TestCase):
         with self.assertRaises(STACError):
             empty_stat.name
 
-    def test_statistics_accessor_when_no_stats(self):
+    def test_statistics_accessor_when_no_stats(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)
 
-    def test_asset_extension(self):
+    def test_asset_extension(self) -> None:
         asset = Asset(
             "https://github.com/PDAL/PDAL/blob"
             "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
@@ -273,7 +273,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(ext.properties, asset.properties)
         self.assertEqual(ext.additional_read_properties, [pc_item.properties])
 
-    def test_ext(self):
+    def test_ext(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         PointcloudExtension.ext(pc_item)
         asset = Asset(

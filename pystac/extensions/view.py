@@ -195,4 +195,4 @@ class ViewExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-VIEW_EXTENSION_HOOKS = ViewExtensionHooks()
+VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()

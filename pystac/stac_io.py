@@ -25,7 +25,7 @@ import pystac.serialization
 try:
     import orjson  # type: ignore
 except ImportError:
-    orjson = None
+    orjson = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -170,6 +170,7 @@ class DefaultStacIO(StacIO):
     def read_text(
         self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
     ) -> str:
+        href: Optional[str]
         if isinstance(source, str):
             href = source
         else:
@@ -193,6 +194,7 @@ class DefaultStacIO(StacIO):
     def write_text(
         self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
     ) -> None:
+        href: Optional[str]
         if isinstance(dest, str):
             href = dest
         else:

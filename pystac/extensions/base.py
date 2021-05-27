@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
 
-import pystac
+from pystac import Collection, RangeSummary, STACObject, Summaries
 
 
 class SummariesExtension:
@@ -12,16 +12,16 @@ class SummariesExtension:
     extension-specific class that inherits from this class and instantiate that. See
     :class:`~pystac.extensions.eo.SummariesEOExtension` for an example."""
 
-    summaries: pystac.Summaries
+    summaries: Summaries
     """The summaries for the :class:`~pystac.Collection` being extended."""
 
-    def __init__(self, collection: pystac.Collection) -> None:
+    def __init__(self, collection: Collection) -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], RangeSummary[Any], Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -57,8 +57,8 @@ class PropertiesExtension(ABC):
     ``additional_read_properties`` will take precedence.
     """
 
-    def _get_property(self, prop_name: str, typ: Type[P] = Type[Any]) -> Optional[P]:
-        result: Optional[typ] = self.properties.get(prop_name)
+    def _get_property(self, prop_name: str, typ: Type[P]) -> Optional[P]:
+        result = self.properties.get(prop_name)
         if result is not None:
             return result
         if self.additional_read_properties is not None:
@@ -77,7 +77,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound=STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):

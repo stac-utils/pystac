@@ -9,7 +9,7 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class TimestampsTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path(
             "data-files/timestamps/example-landsat8.json"
@@ -19,10 +19,10 @@ class TimestampsTest(unittest.TestCase):
         self.sample_datetime_str = "2020-01-01T00:00:00Z"
         self.sample_datetime = str_to_datetime(self.sample_datetime_str)
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         test_to_from_dict(self, pystac.Item, self.item_dict)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
         self.assertFalse(TimestampsExtension.has_extension(item))
 
@@ -58,11 +58,11 @@ class TimestampsTest(unittest.TestCase):
         for p in ("expires", "unpublished"):
             self.assertNotIn(p, item.properties)
 
-    def test_validate_timestamps(self):
+    def test_validate_timestamps(self) -> None:
         item = pystac.read_file(self.example_uri)
         item.validate()
 
-    def test_expires(self):
+    def test_expires(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -104,7 +104,7 @@ class TimestampsTest(unittest.TestCase):
         # Validate
         timestamps_item.validate()
 
-    def test_published(self):
+    def test_published(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -146,7 +146,7 @@ class TimestampsTest(unittest.TestCase):
         # Validate
         timestamps_item.validate()
 
-    def test_unpublished(self):
+    def test_unpublished(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 
         # Get

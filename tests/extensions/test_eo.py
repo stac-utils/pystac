@@ -10,10 +10,10 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class BandsTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
 
-    def test_create(self):
+    def test_create(self) -> None:
         band = Band.create(
             name="B01",
             common_name="red",
@@ -30,7 +30,7 @@ class BandsTest(unittest.TestCase):
 
         self.assertEqual(band.__repr__(), "<Band name=B01>")
 
-    def test_band_description_unknown_band(self):
+    def test_band_description_unknown_band(self) -> None:
         desc = Band.band_description("rainbow")
 
         self.assertIsNone(desc)
@@ -43,21 +43,21 @@ class EOTest(unittest.TestCase):
     )
     EO_COLLECTION_URI = TestCases.get_path("data-files/eo/eo-collection.json")
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.LANDSAT_EXAMPLE_URI) as f:
             item_dict = json.load(f)
         test_to_from_dict(self, Item, item_dict)
 
-    def test_validate_eo(self):
+    def test_validate_eo(self) -> None:
         item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
         item2 = pystac.read_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
-    def test_bands(self):
+    def test_bands(self) -> None:
         item = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
 
         # Get
@@ -83,7 +83,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(EOExtension.ext(item).bands or []), 3)
         item.validate()
 
-    def test_asset_bands(self):
+    def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
@@ -125,7 +125,7 @@ class EOTest(unittest.TestCase):
 
         self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
 
-    def test_cloud_cover(self):
+    def test_cloud_cover(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
@@ -152,13 +152,14 @@ class EOTest(unittest.TestCase):
 
         item.validate()
 
-    def test_summaries(self):
+    def test_summaries(self) -> None:
         col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
         eo_summaries = EOExtension.summaries(col)
 
         # Get
 
         cloud_cover_summaries = eo_summaries.cloud_cover
+        assert cloud_cover_summaries is not None
         self.assertEqual(cloud_cover_summaries.minimum, 0.0)
         self.assertEqual(cloud_cover_summaries.maximum, 80.0)
 
@@ -175,7 +176,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(col_dict["summaries"]["eo:bands"]), 1)
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
-    def test_read_pre_09_fields_into_common_metadata(self):
+    def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/examples/" "landsat8-sample.json"
@@ -185,7 +186,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_item.common_metadata.platform, "landsat-8")
         self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
 
-    def test_reads_asset_bands_in_pre_1_0_version(self):
+    def test_reads_asset_bands_in_pre_1_0_version(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
@@ -197,7 +198,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(bands or []), 1)
         self.assertEqual(get_opt(bands)[0].common_name, "cirrus")
 
-    def test_reads_gsd_in_pre_1_0_version(self):
+    def test_reads_gsd_in_pre_1_0_version(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
@@ -206,7 +207,7 @@ class EOTest(unittest.TestCase):
 
         self.assertEqual(eo_item.common_metadata.gsd, 30.0)
 
-    def test_item_apply(self):
+    def test_item_apply(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
         eo_ext = EOExtension.ext(item)
         test_band = Band.create(name="test")
@@ -215,11 +216,12 @@ class EOTest(unittest.TestCase):
         self.assertNotIn(test_band, eo_ext.bands or [])
 
         eo_ext.apply(bands=[test_band], cloud_cover=15)
+        assert eo_ext.bands is not None
 
         self.assertEqual(test_band.to_dict(), eo_ext.bands[0].to_dict())
         self.assertEqual(eo_ext.cloud_cover, 15)
 
-    def test_extend_invalid_object(self):
+    def test_extend_invalid_object(self) -> None:
         link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
 
         with self.assertRaises(pystac.ExtensionTypeError):

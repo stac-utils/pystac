@@ -15,6 +15,8 @@
 import os
 import sys
 import subprocess
+from typing import Any, Dict
+
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 from pystac.version import __version__
@@ -135,7 +137,7 @@ htmlhelp_basename = 'pystacdoc'
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, Any] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
