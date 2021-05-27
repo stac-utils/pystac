@@ -5,6 +5,7 @@ import pystac
 from pystac import Item
 from pystac.utils import get_opt
 from pystac.extensions.raster import (
+    Histogram,
     RasterExtension,
     RasterBand,
     Sampling,
@@ -21,6 +22,7 @@ class RasterTest(unittest.TestCase):
     SENTINEL2_EXAMPLE_URI = TestCases.get_path(
         "data-files/raster/raster-sentinel2-example.json"
     )
+    GDALINFO_EXAMPLE_URI = TestCases.get_path("data-files/raster/gdalinfo.json")
 
     def setUp(self):
         self.maxDiff = None
@@ -98,10 +100,34 @@ class RasterTest(unittest.TestCase):
                 minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
             ),
         ]
+        # new_histograms = []
+        with open(self.GDALINFO_EXAMPLE_URI) as gdaljson_file:
+            gdaljson_data = json.load(gdaljson_file)
+            new_histograms = list(
+                map(
+                    lambda band: Histogram.from_dict(band["histogram"]),
+                    gdaljson_data["bands"],
+                )
+            )
         new_bands = [
-            RasterBand.create(nodata=1, unit="test1", statistics=new_stats[0]),
-            RasterBand.create(nodata=2, unit="test3", statistics=new_stats[1]),
-            RasterBand.create(nodata=3, unit="test3", statistics=new_stats[2]),
+            RasterBand.create(
+                nodata=1,
+                unit="test1",
+                statistics=new_stats[0],
+                histogram=new_histograms[0],
+            ),
+            RasterBand.create(
+                nodata=2,
+                unit="test2",
+                statistics=new_stats[1],
+                histogram=new_histograms[1],
+            ),
+            RasterBand.create(
+                nodata=3,
+                unit="test3",
+                statistics=new_stats[2],
+                histogram=new_histograms[2],
+            ),
         ]
         asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
         RasterExtension.ext(asset).bands = new_bands
