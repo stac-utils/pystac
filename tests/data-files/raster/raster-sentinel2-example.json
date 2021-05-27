@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.2",
+  "stac_version": "1.0.0-rc.4",
   "stac_extensions": [
     "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json",
@@ -60,7 +60,6 @@
     "eo:cloud_cover": 21.22,
     "sentinel:valid_cloud_cover": true
   },
-  "collection": "sentinel-s2-l2a-cogs",
   "assets": {
     "thumbnail": {
       "title": "Thumbnail",

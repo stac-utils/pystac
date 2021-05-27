@@ -12,7 +12,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
-from pystac.utils import get_required, map_opt
+from pystac.utils import get_opt, get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
@@ -21,7 +21,10 @@ SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
 BANDS_PROP = "raster:bands"
 
 
-class Sampling(enum.Enum):
+class Sampling(str, enum.Enum):
+    def __str__(self) -> str:
+        return str(self.value)
+
     AREA = "area"
     POINT = "point"
 
@@ -159,20 +162,20 @@ class Statistics:
             self.properties.pop("mean", None)
 
     @property
-    def stdev(self) -> Optional[float]:
-        """Get or sets the stdev pixel value
+    def stddev(self) -> Optional[float]:
+        """Get or sets the standard deviation pixel value
 
         Returns:
             Optional[float]
         """
-        return self.properties.get("stdev")
+        return self.properties.get("stddev")
 
-    @stdev.setter
-    def stdev(self, v: Optional[float]) -> None:
+    @stddev.setter
+    def stddev(self, v: Optional[float]) -> None:
         if v is not None:
-            self.properties["stdev"] = v
+            self.properties["stddev"] = v
         else:
-            self.properties.pop("stdev", None)
+            self.properties.pop("stddev", None)
 
     @property
     def valid_percent(self) -> Optional[float]:
@@ -197,6 +200,15 @@ class Statistics:
             dict: The wrapped dict of the Statistics that can be written out as JSON.
         """
         return self.properties
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "Statistics":
+        """Constructs an Statistics from a dict.
+
+        Returns:
+            Statistics: The Statistics deserialized from the JSON dict.
+        """
+        return Statistics(properties=d)
 
 
 class Histogram:
@@ -321,6 +333,15 @@ class Histogram:
             dict: The wrapped dict of the Histogram that can be written out as JSON.
         """
         return self.properties
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "Histogram":
+        """Constructs an Histogram from a dict.
+
+        Returns:
+            Histogram: The Histogram deserialized from the JSON dict.
+        """
+        return Histogram(properties=d)
 
 
 class RasterBand:
@@ -467,7 +488,7 @@ class RasterBand:
         """Get or sets the The data type of the band.
 
         Returns:
-            Optional[FileDataType]
+            Optional[DataType]
         """
         return self.properties.get("data_type")
 
@@ -517,12 +538,12 @@ class RasterBand:
         Returns:
             [Statistics]
         """
-        return self.properties.get("statistics")
+        return Statistics.from_dict(get_opt(self.properties.get("statistics")))
 
     @statistics.setter
     def statistics(self, v: Optional[Statistics]) -> None:
         if v is not None:
-            self.properties["statistics"] = v
+            self.properties["statistics"] = v.to_dict()
         else:
             self.properties.pop("statistics", None)
 
@@ -583,12 +604,12 @@ class RasterBand:
         Returns:
             [Histogram]
         """
-        return self.properties.get("histogram")
+        return Histogram.from_dict(get_opt(self.properties.get("histogram")))
 
     @histogram.setter
     def histogram(self, v: Optional[Histogram]) -> None:
         if v is not None:
-            self.properties["histogram"] = v
+            self.properties["histogram"] = v.to_dict()
         else:
             self.properties.pop("histogram", None)
 

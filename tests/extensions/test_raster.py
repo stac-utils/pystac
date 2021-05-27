@@ -47,10 +47,10 @@ class RasterTest(unittest.TestCase):
         self.assertEqual(asset_bands[0].spatial_resolution, 3)
 
         band0_stats = asset_bands[0].statistics
-
+        assert band0_stats is not None
+        self.assertEqual(band0_stats.minimum, 1962)
         self.assertEqual(band0_stats.maximum, 32925)
         self.assertEqual(band0_stats.mean, 8498.9400644319)
-        self.assertEqual(band0_stats.minimum, 1962)
         self.assertEqual(band0_stats.stddev, 5056.1292002722)
         self.assertEqual(band0_stats.valid_percent, 61.09)
 
@@ -83,4 +83,4 @@ class RasterTest(unittest.TestCase):
         RasterExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
-        self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].properties["raster:bands"]), 3)
