@@ -13,7 +13,6 @@ from typing import (
     Generic,
     List,
     Optional,
-    Type,
     Union,
     cast,
     TypeVar,
@@ -114,7 +113,7 @@ class Summarizer:
         self._set_field_definitions(Summarizer._default_field_definitions)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
-        self.summaryfields: dict[str, SummaryStrategy] = {}
+        self.summaryfields: Dict[str, SummaryStrategy] = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
                 strategy_value = desc.get("summary", True)
