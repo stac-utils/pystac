@@ -34,6 +34,11 @@ class ItemVersionExtensionTest(unittest.TestCase):
         super().setUp()
         self.item = make_item(2011)
 
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(VersionRelType.LATEST), "latest-version")
+        self.assertEqual(str(VersionRelType.PREDECESSOR), "predecessor-version")
+        self.assertEqual(str(VersionRelType.SUCCESSOR), "successor-version")
+
     def test_stac_extensions(self) -> None:
         self.assertTrue(VersionExtension.has_extension(self.item))
 
