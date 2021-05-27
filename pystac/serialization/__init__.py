@@ -21,10 +21,10 @@ def stac_object_from_dict(
     """Determines how to deserialize a dictionary into a STAC object.
 
     Args:
-        d (dict): The dict to parse.
-        href (str): Optional href that is the file location of the object being
+        d : The dict to parse.
+        href : Optional href that is the file location of the object being
             parsed.
-        root (Catalog or Collection): Optional root of the catalog for this object.
+        root : Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
 

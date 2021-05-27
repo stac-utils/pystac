@@ -14,30 +14,30 @@ class Asset:
     can be downloaded or streamed.
 
     Args:
-        href (str): Link to the asset object. Relative and absolute links are both
+        href : Link to the asset object. Relative and absolute links are both
             allowed.
-        title (str): Optional displayed title for clients and users.
-        description (str): A description of the Asset providing additional details,
+        title : Optional displayed title for clients and users.
+        description : A description of the Asset providing additional details,
             such as how it was processed or created. CommonMark 0.29 syntax MAY be used
             for rich text representation.
-        media_type (str): Optional description of the media type. Registered Media Types
+        media_type : Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
-        roles ([str]): Optional, Semantic roles (i.e. thumbnail, overview,
+        roles : Optional, Semantic roles (i.e. thumbnail, overview,
             data, metadata) of the asset.
-        properties (dict): Optional, additional properties for this asset. This is used
+        properties : Optional, additional properties for this asset. This is used
             by extensions as a way to serialize and deserialize properties on asset
             object JSON.
 
     Attributes:
-        href (str): Link to the asset object. Relative and absolute links are both
+        href : Link to the asset object. Relative and absolute links are both
             allowed.
-        title (str): Optional displayed title for clients and users.
-        description (str): A description of the Asset providing additional details,
+        title : Optional displayed title for clients and users.
+        description : A description of the Asset providing additional details,
             such as how it was processed or created. CommonMark 0.29 syntax MAY be
             used for rich text representation.
-        media_type (str): Optional description of the media type. Registered Media Types
+        media_type : Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
-        properties (dict): Optional, additional properties for this asset. This is used
+        properties : Optional, additional properties for this asset. This is used
             by extensions as a way to serialize and deserialize properties on asset
             object JSON.
         owner: The Item or Collection this asset belongs to, or None if it has no owner.

@@ -33,10 +33,10 @@ class ViewExtension(
     extensions that describe the actual data, such as the eo, sat or sar extensions.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     Note:
         Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
@@ -54,19 +54,19 @@ class ViewExtension(
         """Applies View Geometry extension properties to the extended Item.
 
         Args:
-            off_nadir (float): The angle from the sensor between nadir (straight down)
+            off_nadir : The angle from the sensor between nadir (straight down)
                 and the scene center. Measured in degrees (0-90).
-            incidence_angle (float): The incidence angle is the angle between the
+            incidence_angle : The incidence angle is the angle between the
                 vertical (normal) to the intercepting surface and the line of sight
                 back to the satellite at the scene center. Measured in degrees (0-90).
-            azimuth (float): Viewing azimuth angle. The angle measured from the
+            azimuth : Viewing azimuth angle. The angle measured from the
                 sub-satellite point (point on the ground below the platform) between
                 the scene center and true north. Measured clockwise from north in
                 degrees (0-360).
-            sun_azimuth (float): Sun azimuth angle. From the scene center point on the
+            sun_azimuth : Sun azimuth angle. From the scene center point on the
                 ground, this is the angle between truth north and the sun. Measured
                 clockwise in degrees (0-360).
-            sun_elevation (float): Sun elevation angle. The angle from the tangent of
+            sun_elevation : Sun elevation angle. The angle from the tangent of
                 the scene center point to the sun. Measured from the horizon in
                 degrees (0-90).
         """
@@ -195,4 +195,4 @@ class ViewExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-VIEW_EXTENSION_HOOKS = ViewExtensionHooks()
+VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()

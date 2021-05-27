@@ -1,6 +1,36 @@
 # Changelog
 
-## unreleased
+## [Unreleased]
+
+### Added
+
+- solar_illumination field in eo extension ([#356](https://github.com/stac-utils/pystac/issues/356))
+- Added `Link.canonical` static method for creating links with "canonical" rel type ([#351](https://github.com/stac-utils/pystac/pull/351))
+- Added `RelType` enum containing common `rel` values ([#351](https://github.com/stac-utils/pystac/pull/351))
+
+### Changed
+
+### Fixed
+
+### Removed
+
+## [1.0.0-beta.2]
+
+### Changed
+
+- Split `DefaultStacIO`'s reading and writing into two methods to allow subclasses to use the default link resolution behavior ([#354](https://github.com/stac-utils/pystac/pull/354))
+- Increased test coverage for the pointcloud extension ([#352](https://github.com/stac-utils/pystac/pull/352))
+
+### Fixed
+
+- Reading json without orjson ([#348](https://github.com/stac-utils/pystac/pull/348))
+
+### Removed
+
+- Removed type information from docstrings, since it is redundant with function type
+  annotations ([#342](https://github.com/stac-utils/pystac/pull/342))
+
+## [v1.0.0-beta.1]
 
 ### Added
 
@@ -287,18 +317,20 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v0.5.6...main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..main>
+[v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
+[v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
 [v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>
 [v0.5.5]: <https://github.com/stac-utils/pystac/compare/v0.5.4..v0.5.5>
 [v0.5.4]: <https://github.com/stac-utils/pystac/compare/v0.5.3..v0.5.4>
-[v0.5.3]: <https://github.com/stac-utils/pystac/compare/v0.5.2...v0.5.3>
-[v0.5.2]: <https://github.com/stac-utils/pystac/compare/v0.5.1...v0.5.2>
-[v0.5.1]: <https://github.com/stac-utils/pystac/compare/v0.5.0...v0.5.1>
-[v0.5.0]: <https://github.com/stac-utils/pystac/compare/v0.4.0...v0.5.0>
-[v0.4.0]: <https://github.com/stac-utils/pystac/compare/v0.3.4...v0.4.0>
-[v0.3.4]: <https://github.com/stac-utils/pystac/compare/v0.3.3...v0.3.4>
-[v0.3.3]: <https://github.com/stac-utils/pystac/compare/v0.3.2...v0.3.3>
-[v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1...v0.3.2>
-[v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0...v0.3.1>
+[v0.5.3]: <https://github.com/stac-utils/pystac/compare/v0.5.2..v0.5.3>
+[v0.5.2]: <https://github.com/stac-utils/pystac/compare/v0.5.1..v0.5.2>
+[v0.5.1]: <https://github.com/stac-utils/pystac/compare/v0.5.0..v0.5.1>
+[v0.5.0]: <https://github.com/stac-utils/pystac/compare/v0.4.0..v0.5.0>
+[v0.4.0]: <https://github.com/stac-utils/pystac/compare/v0.3.4..v0.4.0>
+[v0.3.4]: <https://github.com/stac-utils/pystac/compare/v0.3.3..v0.3.4>
+[v0.3.3]: <https://github.com/stac-utils/pystac/compare/v0.3.2..v0.3.3>
+[v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1..v0.3.2>
+[v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0..v0.3.1>
 [v0.3.0]: <https://github.com/stac-utils/pystac/tree/v0.3.0>
 

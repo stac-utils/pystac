@@ -16,9 +16,9 @@ def merge_common_properties(
     Note: This is only applicable to reading old STAC versions (pre 1.0.0-beta.1).
 
     Args:
-        item_dict (dict): JSON dict of the Item which properties should be merged
+        item_dict : JSON dict of the Item which properties should be merged
             into.
-        collection_cache (CollectionCache): Optional CollectionCache
+        collection_cache : Optional CollectionCache
             that will be used to read and write cached collections.
         json_href: The HREF of the file that this JSON comes from. Used
             to resolve relative paths.
@@ -68,7 +68,7 @@ def merge_common_properties(
             links = cast(List[Dict[str, Any]], item_dict["links"])
 
         collection_link = next(
-            (link for link in links if link["rel"] == "collection"), None
+            (link for link in links if link["rel"] == pystac.RelType.COLLECTION), None
         )
         if collection_link is not None:
             collection_href = cast(Dict[str, Any], collection_link).get("href")

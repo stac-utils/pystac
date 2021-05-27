@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
@@ -26,13 +26,17 @@ class STACObject(ABC):
     has links e.g. (Catalogs, Collections, or Items). A STACObject has
     common functionality, can be converted to and from Python ``dicts`` representing
     JSON, and can be cloned or copied.
-
-    Attributes:
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
-            all links associated with this STACObject.
     """
 
     id: str
+    """The ID of the STAC Object."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this STAC Object."""
+
+    stac_extensions: List[str]
+    """A list of schema URIs for STAC Extensions implemented by this STAC Object."""
 
     STAC_OBJECT_TYPE: STACObjectType
 
@@ -58,7 +62,7 @@ class STACObject(ABC):
         """Add a link to this object's set of links.
 
         Args:
-             link (Link): The link to add.
+             link : The link to add.
         """
         link.set_owner(cast(STACObject, self))
         self.links.append(link)
@@ -67,35 +71,35 @@ class STACObject(ABC):
         """Add links to this object's set of links.
 
         Args:
-             links (List[Link]): The links to add.
+             links : The links to add.
         """
 
         for link in links:
             self.add_link(link)
 
-    def remove_links(self, rel: str) -> None:
+    def remove_links(self, rel: Union[str, pystac.RelType]) -> None:
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
-             rel (str): The :class:`~pystac.Link` ``rel`` to match on.
+             rel : The :class:`~pystac.Link` ``rel`` to match on.
         """
 
         self.links = [link for link in self.links if link.rel != rel]
 
-    def get_single_link(self, rel: str) -> Optional[Link]:
+    def get_single_link(self, rel: Union[str, pystac.RelType]) -> Optional[Link]:
         """Get single link that match the given ``rel``.
 
         Args:
-             rel (str): The :class:`~pystac.Link` ``rel`` to match on.
+             rel : The :class:`~pystac.Link` ``rel`` to match on.
         """
 
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel: Optional[str] = None) -> List[Link]:
+    def get_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> List[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
-            rel (str or None): If set, filter links such that only those
+            rel : If set, filter links such that only those
                 matching this relationship are returned.
 
         Returns:
@@ -107,11 +111,11 @@ class STACObject(ABC):
         else:
             return [link for link in self.links if link.rel == rel]
 
-    def clear_links(self, rel: Optional[str] = None) -> None:
+    def clear_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
-            rel (str or None): If set, only clear links that match this relationship.
+            rel : If set, only clear links that match this relationship.
         """
         if rel is not None:
             self.links = [link for link in self.links if link.rel != rel]
@@ -126,7 +130,7 @@ class STACObject(ABC):
             :class:`~pystac.Link` or None: The root link for this object,
             or ``None`` if no root link is set.
         """
-        return self.get_single_link("root")
+        return self.get_single_link(pystac.RelType.ROOT)
 
     @property
     def self_href(self) -> str:
@@ -157,7 +161,7 @@ class STACObject(ABC):
             have the HREF the file was read from set as it's self HREF. All self
             links have absolute (as opposed to relative) HREFs.
         """
-        self_link = self.get_single_link("self")
+        self_link = self.get_single_link(pystac.RelType.SELF)
         if self_link:
             return cast(str, self_link.target)
         else:
@@ -168,7 +172,7 @@ class STACObject(ABC):
         :class:`~pystac.Link`.
 
         Args:
-            href (str): The absolute HREF of this object. If the given HREF
+            href : The absolute HREF of this object. If the given HREF
                 is not absolute, it will be transformed to an absolute
                 HREF based on the current working directory. If this is None
                 the call will clear the self HREF link.
@@ -179,7 +183,7 @@ class STACObject(ABC):
                 cast(STACObject, self)
             )
 
-        self.remove_links("self")
+        self.remove_links(pystac.RelType.SELF)
         if href is not None:
             self.add_link(Link.self_href(href))
 
@@ -212,11 +216,18 @@ class STACObject(ABC):
         for this object.
 
         Args:
-            root (Catalog, Collection or None): The root
+            root : The root
                 object to set. Passing in None will clear the root.
         """
         root_link_index = next(
-            iter([i for i, link in enumerate(self.links) if link.rel == "root"]), None
+            iter(
+                [
+                    i
+                    for i, link in enumerate(self.links)
+                    if link.rel == pystac.RelType.ROOT
+                ]
+            ),
+            None,
         )
 
         # Remove from old root resolution cache
@@ -226,7 +237,7 @@ class STACObject(ABC):
                 cast(pystac.Catalog, root_link.target)._resolved_objects.remove(self)
 
         if root is None:
-            self.remove_links("root")
+            self.remove_links(pystac.RelType.ROOT)
         else:
             new_root_link = Link.root(root)
             if root_link_index is not None:
@@ -246,7 +257,7 @@ class STACObject(ABC):
                 The parent object for this object,
                 or ``None`` if no root link is set.
         """
-        parent_link = self.get_single_link("parent")
+        parent_link = self.get_single_link(pystac.RelType.PARENT)
         if parent_link:
             return cast(pystac.Catalog, parent_link.resolve_stac_object().target)
         else:
@@ -257,20 +268,22 @@ class STACObject(ABC):
         for this object.
 
         Args:
-            parent (Catalog, Collection or None): The parent
+            parent : The parent
                 object to set. Passing in None will clear the parent.
         """
 
-        self.remove_links("parent")
+        self.remove_links(pystac.RelType.PARENT)
         if parent is not None:
             self.add_link(Link.parent(parent))
 
-    def get_stac_objects(self, rel: str) -> Iterable["STACObject"]:
+    def get_stac_objects(
+        self, rel: Union[str, pystac.RelType]
+    ) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
         Args:
-            rel (str): The relation to match each :class:`~pystac.Link`'s
+            rel : The relation to match each :class:`~pystac.Link`'s
                 ``rel`` property against.
 
         Returns:
@@ -293,9 +306,9 @@ class STACObject(ABC):
         """Saves this STAC Object to it's 'self' HREF.
 
         Args:
-            include_self_link (bool): If this is true, include the 'self' link with
+            include_self_link : If this is true, include the 'self' link with
                 this object. Otherwise, leave out the self link.
-            dest_href (str): Optional HREF to save the file to. If None, the object
+            dest_href : Optional HREF to save the file to. If None, the object
                 will be saved to the object's self href.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 instance set on the object's root if available, otherwise will use the
@@ -340,9 +353,9 @@ class STACObject(ABC):
         this object.
 
         Args:
-            root (STACObject): Optional root to set as the root of the copied object,
+            root : Optional root to set as the root of the copied object,
                 and any other copies that are contained by this object.
-            parent (STACObject): Optional parent to set as the parent of the copy
+            parent : Optional parent to set as the parent of the copy
                 of this object.
 
         Returns:
@@ -369,15 +382,20 @@ class STACObject(ABC):
                     target = cached_target
                 else:
                     target_parent = None
-                    if link.rel in ["child", "item"] and isinstance(
-                        clone, pystac.Catalog
+                    if (
+                        link.rel
+                        in [
+                            pystac.RelType.CHILD,
+                            pystac.RelType.ITEM,
+                        ]
+                        and isinstance(clone, pystac.Catalog)
                     ):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     if root is not None:
                         root._resolved_objects.cache(copied_target)
                     target = copied_target
-                if link.rel in ["child", "item"]:
+                if link.rel in [pystac.RelType.CHILD, pystac.RelType.ITEM]:
                     target.set_root(root)
                     if isinstance(clone, pystac.Catalog):
                         target.set_parent(clone)
@@ -392,7 +410,9 @@ class STACObject(ABC):
 
         This method mutates the entire catalog tree.
         """
-        link_rels = set(self._object_links()) | set(["root", "parent"])
+        link_rels = set(self._object_links()) | set(
+            [pystac.RelType.ROOT, pystac.RelType.PARENT]
+        )
 
         for link in self.links:
             if link.rel in link_rels:
@@ -412,7 +432,7 @@ class STACObject(ABC):
         """Generate a dictionary representing the JSON of this serialized object.
 
         Args:
-            include_self_link (bool): If True, the dict will contain a self link
+            include_self_link : If True, the dict will contain a self link
                 to this object. If False, the self link will be omitted.
 
             dict: A serialization of the object that can be written out as JSON.
@@ -440,7 +460,7 @@ class STACObject(ABC):
         """Reads a STACObject implementation from a file.
 
         Args:
-            href (str): The HREF to read the object from.
+            href : The HREF to read the object from.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 default instance.
 
@@ -480,10 +500,10 @@ class STACObject(ABC):
         """Parses this STACObject from the passed in dictionary.
 
         Args:
-            d (dict): The dict to parse.
-            href (str): Optional href that is the file location of the object being
+            d : The dict to parse.
+            href : Optional href that is the file location of the object being
                 parsed.
-            root (Catalog or Collection): Optional root of the catalog for this object.
+            root : Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
             migrate: Use True if this dict represents JSON from an older STAC object,

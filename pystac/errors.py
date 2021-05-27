@@ -60,7 +60,7 @@ class STACValidationError(Exception):
     is invalid.
 
     Args:
-        source (object): Source of the exception. Type will be determined by the
+        source : Source of the exception. Type will be determined by the
             validation implementation. For the default JsonSchemaValidator this will a
             the ``jsonschema.ValidationError``.
     """

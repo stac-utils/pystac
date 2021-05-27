@@ -14,6 +14,21 @@ from pystac.extensions.hooks import ExtensionHooks
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
 
+class LabelRelType(str, Enum):
+    """A list of rel types defined in the Label Extension.
+
+    See the`Label Extension Links
+    <https://github.com/stac-extensions/label#links-source-imagery>`__ documentation
+    for details.
+    """
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    SOURCE = "source"
+    """Used to indicate a link to the source item to which a label item applies."""
+
+
 class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
 
@@ -45,9 +60,9 @@ class LabelClasses:
         """Sets the properties for this LabelClasses.
 
         Args:
-            classes (List[str] or List[int] or List[float]): The different possible
+            classes : The different possible
                 class values.
-            name (str): The property key within the asset's each Feature corresponding
+            name : The property key within the asset's each Feature corresponding
                 to class labels. If labels are raster-formatted, do not supply;
                 required otherwise.
         """
@@ -63,9 +78,9 @@ class LabelClasses:
         """Creates a new LabelClasses.
 
         Args:
-            classes (List[str] or List[int] or List[float]): The different possible
+            classes : The different possible
                 class values.
-            name (str): The property key within the asset's each Feature corresponding
+            name : The property key within the asset's each Feature corresponding
                 to class labels. If labels are raster-formatted, do not supply;
                 required otherwise.
 
@@ -140,8 +155,8 @@ class LabelCount:
         """Sets the properties for this LabelCount.
 
         Args:
-            name (str): One of the different possible classes within the property.
-            count (int): The number of occurrences of the class.
+            name : One of the different possible classes within the property.
+            count : The number of occurrences of the class.
         """
         self.name = name
         self.count = count
@@ -151,8 +166,8 @@ class LabelCount:
         """Creates a LabelCount.
 
         Args:
-            name (str): One of the different possible classes within the property.
-            count (int): The number of occurrences of the class.
+            name : One of the different possible classes within the property.
+            count : The number of occurrences of the class.
         """
         x = cls({})
         x.apply(name, count)
@@ -216,8 +231,8 @@ class LabelStatistics:
         """Sets the property values for this instance.
 
         Args:
-            name (str): The name of the statistic being reported.
-            value (float): The value of the statistic
+            name : The name of the statistic being reported.
+            value : The value of the statistic
         """
         self.name = name
         self.value = value
@@ -227,8 +242,8 @@ class LabelStatistics:
         """Sets the property values for this instance.
 
         Args:
-            name (str): The name of the statistic being reported.
-            value (float): The value of the statistic
+            name : The name of the statistic being reported.
+            value : The value of the statistic
         """
         x = cls({})
         x.apply(name, value)
@@ -302,7 +317,7 @@ class LabelOverview:
         at least one is required.
 
         Args:
-            property_key (str): The property key within the asset corresponding to
+            property_key : The property key within the asset corresponding to
                 class labels that these counts or statistics are referencing. If the
                 label data is raster data, this should be None.
             counts: Optional list of LabelCounts containing counts
@@ -327,7 +342,7 @@ class LabelOverview:
         at least one is required.
 
         Args:
-            property_key (str): The property key within the asset corresponding to
+            property_key : The property key within the asset corresponding to
                 class labels.
             counts: Optional list of LabelCounts containing counts for
                 categorical data.
@@ -406,7 +421,7 @@ class LabelOverview:
         Creates a new LabelOverview.
 
         Args:
-            other (LabelOverview): The other LabelOverview to merge.
+            other : The other LabelOverview to merge.
 
         Returns:
             LabelOverview: A new LabelOverview with the counts merged. This will
@@ -450,10 +465,10 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
     labels and label metadata and should be part of a Collection.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     See:
         `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
@@ -480,22 +495,22 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         """Applies label extension properties to the extended Item.
 
         Args:
-            label_description (str): A description of the label, how it was created,
+            label_description : A description of the label, how it was created,
                 and what it is recommended for
-            label_type (str): An ENUM of either vector label type or raster label type. Use
+            label_type : An ENUM of either vector label type or raster label type. Use
                 one of :class:`~pystac.LabelType`.
-            label_properties (list or None): These are the names of the property field(s) in each
+            label_properties : These are the names of the property field(s) in each
                 Feature of the label asset's FeatureCollection that contains the classes
                 (keywords from label:classes if the property defines classes).
                 If labels are rasters, this should be None.
-            label_classes (List[LabelClass]): Optional, but required if using categorical data.
+            label_classes : Optional, but required if using categorical data.
                 A list of LabelClasses defining the list of possible class names for each
                 label:properties. (e.g., tree, building, car, hippo)
-            label_tasks (List[str]): Recommended to be a subset of 'regression', 'classification',
+            label_tasks : Recommended to be a subset of 'regression', 'classification',
                 'detection', or 'segmentation', but may be an arbitrary value.
             label_methods: Recommended to be a subset of 'automated' or 'manual',
                 but may be an arbitrary value.
-            label_overviews (List[LabelOverview]): Optional list of LabelOverview classes
+            label_overviews : Optional list of LabelOverview classes
                 that store counts (for classification-type data) or summary statistics (for
                 continuous numerical/regression data).
         """  # noqa E501
@@ -681,9 +696,9 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         """Adds a link to a source item.
 
         Args:
-            source_item (Item): Source imagery that the LabelItem applies to.
-            title (str): Optional title for the link.
-            assets (List[str]): Optional list of assets that determine what
+            source_item : Source imagery that the LabelItem applies to.
+            title : Optional title for the link.
+            assets : Optional list of assets that determine what
                 assets in the source item this label item data applies to.
         """
         properties = None
@@ -693,7 +708,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             "source",
             source_item,
             title=title,
-            media_type="application/json",
+            media_type=pystac.MediaType.JSON,
             properties=properties,
         )
         self.obj.add_link(link)
@@ -718,13 +733,13 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         """Adds a label asset to this LabelItem.
 
         Args:
-            href (str): Link to the asset object. Relative and absolute links are both
+            href : Link to the asset object. Relative and absolute links are both
                 allowed.
-            title (str): Optional displayed title for clients and users.
-            media_type (str): Optional description of the media type. Registered Media
+            title : Optional displayed title for clients and users.
+            media_type : Optional description of the media type. Registered Media
                 Types are preferred. See :class:`~pystac.MediaType` for common
                 media types.
-            properties (dict): Optional, additional properties for this asset. This is
+            properties : Optional, additional properties for this asset. This is
                 used by extensions as a way to serialize and deserialize properties on
                 asset object JSON.
         """
@@ -745,10 +760,10 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         """Adds a GeoJSON label asset to this LabelItem.
 
         Args:
-            href (str): Link to the asset object. Relative and absolute links are both
+            href : Link to the asset object. Relative and absolute links are both
                 allowed.
-            title (str): Optional displayed title for clients and users.
-            properties (dict): Optional, additional properties for this asset. This is
+            title : Optional displayed title for clients and users.
+            properties : Optional, additional properties for this asset. This is
                 used by extensions as a way to serialize and deserialize properties on
                 asset object JSON.
         """
@@ -773,9 +788,11 @@ class LabelExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(["label"])
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
-    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
+    def get_object_links(
+        self, so: pystac.STACObject
+    ) -> Optional[List[Union[str, pystac.RelType]]]:
         if isinstance(so, pystac.Item):
-            return ["source"]
+            return [LabelRelType.SOURCE]
         return None
 
     def migrate(

@@ -14,10 +14,10 @@ from tests.utils import TestCases
 
 
 class IdentifyTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.examples = TestCases.get_examples_info()
 
-    def test_identify(self):
+    def test_identify(self) -> None:
         collection_cache = CollectionCache()
         for example in self.examples:
             with self.subTest(example.path):
@@ -49,7 +49,7 @@ class IdentifyTest(unittest.TestCase):
 
 
 class VersionTest(unittest.TestCase):
-    def test_version_ordering(self):
+    def test_version_ordering(self) -> None:
         self.assertEqual(STACVersionID("0.9.0"), STACVersionID("0.9.0"))
         self.assertFalse(STACVersionID("0.9.0") < STACVersionID("0.9.0"))
         self.assertFalse(STACVersionID("0.9.0") != STACVersionID("0.9.0"))
@@ -59,12 +59,12 @@ class VersionTest(unittest.TestCase):
         self.assertFalse(STACVersionID("0.9.0") > "0.9.0")  # type:ignore
         self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")  # type:ignore
         self.assertTrue(
-            STACVersionID("1.0.0-beta.1")
+            STACVersionID("1.0.0-beta.1")  # type:ignore
             <= STACVersionID("1.0.0-beta.2")  # type:ignore
         )
         self.assertFalse(STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2"))
 
-    def test_version_range_ordering(self):
+    def test_version_range_ordering(self) -> None:
         version_range = STACVersionRange("0.9.0", "1.0.0-beta.2")
         self.assertIsInstance(str(version_range), str)
         self.assertTrue(version_range.contains("1.0.0-beta.1"))

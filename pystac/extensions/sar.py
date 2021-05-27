@@ -8,8 +8,7 @@ from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions.base import ExtensionManagementMixin
-from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
@@ -59,15 +58,15 @@ class ObservationDirection(enum.Enum):
 
 
 class SarExtension(
-    Generic[T], ProjectionExtension[T], ExtensionManagementMixin[pystac.Item]
+    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The item that is being extended.
+        item : The item that is being extended.
 
     Note:
         Using SarItemExt to directly wrap an item will add the 'sar'
@@ -93,36 +92,36 @@ class SarExtension(
         """Applies sar extension properties to the extended Item.
 
         Args:
-            instrument_mode (str): The name of the sensor acquisition mode that is
+            instrument_mode : The name of the sensor acquisition mode that is
                 commonly used. This should be the short name, if available. For example,
                 WV for "Wave mode."
-            frequency_band (FrequencyBand): The common name for the frequency band to
+            frequency_band : The common name for the frequency band to
                 make it easier to search for bands across instruments. See section
                 "Common Frequency Band Names" for a list of accepted names.
-            polarizations (List[Polarization]): Any combination of polarizations.
-            product_type (str): The product type, for example SSC, MGD, or SGC.
-            center_frequency (float): Optional center frequency of the instrument in
+            polarizations : Any combination of polarizations.
+            product_type : The product type, for example SSC, MGD, or SGC.
+            center_frequency : Optional center frequency of the instrument in
                 gigahertz (GHz).
-            resolution_range (float): Optional range resolution, which is the maximum
+            resolution_range : Optional range resolution, which is the maximum
                 ability to distinguish two adjacent targets perpendicular to the flight
                 path, in meters (m).
-            resolution_azimuth (float): Optional azimuth resolution, which is the
+            resolution_azimuth : Optional azimuth resolution, which is the
                 maximum ability to distinguish two adjacent targets parallel to the
                 flight path, in meters (m).
-            pixel_spacing_range (float): Optional range pixel spacing, which is the
+            pixel_spacing_range : Optional range pixel spacing, which is the
                 distance between adjacent pixels perpendicular to the flight path,
                 in meters (m). Strongly RECOMMENDED to be specified for
                 products of type GRD.
-            pixel_spacing_azimuth (float): Optional azimuth pixel spacing, which is the
+            pixel_spacing_azimuth : Optional azimuth pixel spacing, which is the
                 distance between adjacent pixels parallel to the flight path, in
                 meters (m). Strongly RECOMMENDED to be specified for products of
                 type GRD.
-            looks_range (int): Optional number of groups of signal samples (looks)
+            looks_range : Optional number of groups of signal samples (looks)
                 perpendicular to the flight path.
-            looks_azimuth (int): Optional number of groups of signal samples (looks)
+            looks_azimuth : Optional number of groups of signal samples (looks)
                 parallel to the flight path.
-            looks_equivalent_number (float): Optional equivalent number of looks (ENL).
-            observation_direction (ObservationDirection): Optional Antenna pointing
+            looks_equivalent_number : Optional equivalent number of looks (ENL).
+            observation_direction : Optional Antenna pointing
                 direction relative to the flight trajectory of the satellite.
         """
         self.instrument_mode = instrument_mode

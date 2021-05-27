@@ -88,6 +88,13 @@ Provider
    :members:
    :undoc-members:
 
+Summaries
+~~~~~~~~~
+
+.. autoclass:: pystac.Summaries
+   :members:
+   :undoc-members:
+
 Item Spec
 ---------
 
@@ -131,6 +138,13 @@ MediaType
 ~~~~~~~~~
 
 .. autoclass:: pystac.MediaType
+   :members:
+   :undoc-members:
+
+RelType
+~~~~~~~
+
+.. autoclass:: pystac.RelType
    :members:
    :undoc-members:
 
@@ -178,54 +192,82 @@ STACError
 
 .. autoclass:: pystac.STACError
 
-ExtensionError
-~~~~~~~~~~~~~~
+ExtensionTypeError
+~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.ExtensionError
+.. autoclass:: pystac.ExtensionTypeError
 
 Extensions
 ----------
 
-**TEMPORARILY REMOVED**
-.. .. autoclass:: pystac.extensions.Extensions
-..    :members:
-..    :undoc-members:
-
-ExtensionIndex
-~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
-
-.. .. autoclass:: pystac.stac_object.ExtensionIndex
-..    :members: __getitem__, __getattr__, enable, implements
-
-
-EO Extension
+Base Classes
 ------------
 
+Abstract base classes that should be inherited to implement specific extensions.
+
+SummariesExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.SummariesExtension
+   :members:
+
+PropertiesExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.PropertiesExtension
+   :members:
+   :show-inheritance:
+
+ExtensionManagementMixin
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.ExtensionManagementMixin
+   :members:
+   :show-inheritance:
+
+Electro-Optical Extension
+-------------------------
+
 These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
-
-EOItemExt
-~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.eo.EOItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
 
 Band
 ~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.eo.Band
+   :members:
+   :undoc-members:
 
-.. .. autoclass:: pystac.extensions.eo.Band
-..    :members:
-..    :undoc-members:
+EOExtension
+~~~~~~~~~~~
 
+.. autoclass:: pystac.extensions.eo.EOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ItemEOExtension
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.ItemEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AssetEOExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.AssetEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SummariesEOExtension
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.SummariesEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Label Extension
 ---------------
@@ -241,6 +283,13 @@ LabelItemExt
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
+
+LabelRelType
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.label.LabelRelType
+   :members:
+   :show-inheritance:
 
 LabelType
 ~~~~~~~~~
@@ -376,6 +425,13 @@ Version Extension
 
 Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
 
+VersionRelType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionRelType
+   :members:
+   :show-inheritance:
+   
 VersionCollectionExt
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -459,7 +515,7 @@ PySTAC includes a ``pystac.validation`` package for validating STAC objects, inc
 from PySTAC objects and directly from JSON.
 
 .. automodule:: pystac.validation
-   :members: validate, validate_dict, validate_all, set_validator, STACValidationError
+   :members: validate, validate_dict, validate_all, set_validator
 
 STACValidator
 ~~~~~~~~~~~~~

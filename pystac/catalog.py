@@ -36,7 +36,7 @@ class CatalogType(str, Enum):
 
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
-    Users may want to download a catalog from online and be able to use it on their
+    Users may want to download an online catalog from and be able to use it on their
     local computer, so all links need to be relative.
 
     See:
@@ -68,7 +68,7 @@ class CatalogType(str, Enum):
         Only applies to Catalogs or Collections
 
         Args:
-            stac_json (dict): The STAC JSON dict to determine the catalog type
+            stac_json : The STAC JSON dict to determine the catalog type
 
         Returns:
             Optional[CatalogType]: The catalog type of the catalog or collection.
@@ -77,7 +77,7 @@ class CatalogType(str, Enum):
         self_link = None
         relative = False
         for link in stac_json["links"]:
-            if link["rel"] == "self":
+            if link["rel"] == pystac.RelType.SELF:
                 self_link = link
             else:
                 relative |= not is_absolute_href(link["href"])
@@ -102,28 +102,28 @@ class Catalog(STACObject):
     as well as :class:`~pystac.Item` s.
 
     Args:
-        id (str): Identifier for the catalog. Must be unique within the STAC.
-        description (str): Detailed multi-line description to fully explain the catalog.
+        id : Identifier for the catalog. Must be unique within the STAC.
+        description : Detailed multi-line description to fully explain the catalog.
             `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY be used for rich text
             representation.
-        title (str or None): Optional short descriptive one-line title for the catalog.
-        stac_extensions (List[str]): Optional list of extensions the Catalog implements.
-        href (str or None): Optional HREF for this catalog, which be set as the
+        title : Optional short descriptive one-line title for the catalog.
+        stac_extensions : Optional list of extensions the Catalog implements.
+        href : Optional HREF for this catalog, which be set as the
             catalog's self link's HREF.
-        catalog_type (str or None): Optional catalog type for this catalog. Must
+        catalog_type : Optional catalog type for this catalog. Must
             be one of the values in :class`~pystac.CatalogType`.
 
     Attributes:
-        id (str): Identifier for the catalog.
-        description (str): Detailed multi-line description to fully explain the catalog.
-        title (str or None): Optional short descriptive one-line title for the catalog.
-        stac_extensions (List[str] or None): Optional list of extensions the Catalog
+        id : Identifier for the catalog.
+        description : Detailed multi-line description to fully explain the catalog.
+        title : Optional short descriptive one-line title for the catalog.
+        stac_extensions : Optional list of extensions the Catalog
             implements.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+        extra_fields : Extra fields that are part of the top-level JSON
             properties of the Catalog.
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+        links : A list of :class:`~pystac.Link` objects representing
             all links associated with this Catalog.
-        catalog_type (str): The catalog type. Defaults to ABSOLUTE_PUBLISHED
+        catalog_type : The catalog type. Defaults to ABSOLUTE_PUBLISHED
     """
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
@@ -197,9 +197,9 @@ class Catalog(STACObject):
         this Catalog's root.
 
         Args:
-            child (Catalog or Collection): The child to add.
-            title (str): Optional title to give to the :class:`~pystac.Link`
-            strategy (HrefLayoutStrategy): The layout strategy to use for setting the
+            child : The child to add.
+            title : Optional title to give to the :class:`~pystac.Link`
+            strategy : The layout strategy to use for setting the
                 self href of the child.
         """
 
@@ -229,7 +229,7 @@ class Catalog(STACObject):
         this Catalog's root.
 
         Args:
-            children (Iterable[Catalog or Collection]): The children to add.
+            children : The children to add.
         """
         for child in children:
             self.add_child(child)
@@ -245,8 +245,8 @@ class Catalog(STACObject):
         this Catalog's root.
 
         Args:
-            item (Item): The item to add.
-            title (str): Optional title to give to the :class:`~pystac.Link`
+            item : The item to add.
+            title : Optional title to give to the :class:`~pystac.Link`
         """
 
         # Prevent typo confusion
@@ -273,7 +273,7 @@ class Catalog(STACObject):
         this Catalog's root.
 
         Args:
-            items (Iterable[Item]): The items to add.
+            items : The items to add.
         """
         for item in items:
             self.add_item(item)
@@ -284,8 +284,8 @@ class Catalog(STACObject):
         """Gets the child of this catalog with the given ID, if it exists.
 
         Args:
-            id (str): The ID of the child to find.
-            recursive (bool): If True, search this catalog and all children for the
+            id : The ID of the child to find.
+            recursive : If True, search this catalog and all children for the
                 item; otherwise, only search the children of this catalog. Defaults
                 to False.
 
@@ -311,7 +311,7 @@ class Catalog(STACObject):
         """
         return map(
             lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
-            self.get_stac_objects("child"),
+            self.get_stac_objects(pystac.RelType.CHILD),
         )
 
     def get_child_links(self) -> List[Link]:
@@ -320,7 +320,7 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'child'``
         """
-        return self.get_links("child")
+        return self.get_links(pystac.RelType.CHILD)
 
     def clear_children(self) -> None:
         """Removes all children from this catalog.
@@ -336,12 +336,12 @@ class Catalog(STACObject):
         """Removes an child from this catalog.
 
         Args:
-            child_id (str): The ID of the child to remove.
+            child_id : The ID of the child to remove.
         """
         new_links: List[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != "child":
+            if link.rel != pystac.RelType.CHILD:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -357,8 +357,8 @@ class Catalog(STACObject):
         """Returns an item with a given ID.
 
         Args:
-            id (str): The ID of the item to find.
-            recursive (bool): If True, search this catalog and all children for the
+            id : The ID of the item to find.
+            recursive : If True, search this catalog and all children for the
                 item; otherwise, only search the items of this catalog. Defaults
                 to False.
 
@@ -378,9 +378,11 @@ class Catalog(STACObject):
         """Return all items of this catalog.
 
         Return:
-            Iterable[Item]: Generator of items who's parent is this catalog.
+            Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return map(lambda x: cast(pystac.Item, x), self.get_stac_objects("item"))
+        return map(
+            lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
+        )
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -394,18 +396,18 @@ class Catalog(STACObject):
                 item.set_parent(None)
                 item.set_root(None)
 
-        self.links = [link for link in self.links if link.rel != "item"]
+        self.links = [link for link in self.links if link.rel != pystac.RelType.ITEM]
 
     def remove_item(self, item_id: str) -> None:
         """Removes an item from this catalog.
 
         Args:
-            item_id (str): The ID of the item to remove.
+            item_id : The ID of the item to remove.
         """
         new_links: List[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != "item":
+            if link.rel != pystac.RelType.ITEM:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -436,12 +438,12 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'item'``
         """
-        return self.get_links("item")
+        return self.get_links(pystac.RelType.ITEM)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != "self"]
+            links = [x for x in links if x.rel != pystac.RelType.SELF]
 
         d: Dict[str, Any] = {
             "type": self.STAC_OBJECT_TYPE.value.title(),
@@ -474,7 +476,7 @@ class Catalog(STACObject):
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == "root":
+            if link.rel == pystac.RelType.ROOT:
                 # Catalog __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -515,13 +517,13 @@ class Catalog(STACObject):
         in sequence.
 
         Args:
-            root_href (str): The absolute HREF that all links will be normalized
+            root_href : The absolute HREF that all links will be normalized
                 against.
-            catalog_type (str): The catalog type that dictates the structure of
+            catalog_type : The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
                 Defaults to the root catalog.catalog_type or the current catalog
                 catalog_type if there is no root catalog.
-            strategy (HrefLayoutStrategy): The layout strategy to use in setting the
+            strategy : The layout strategy to use in setting the
                 HREFS for this catalog. Defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
         """
@@ -538,8 +540,8 @@ class Catalog(STACObject):
         This method mutates the entire catalog tree.
 
         Args:
-            root_href (str): The absolute HREF that all links will be normalized against.
-            strategy (HrefLayoutStrategy): The layout strategy to use in setting the HREFS
+            root_href : The absolute HREF that all links will be normalized against.
+            strategy : The layout strategy to use in setting the HREFS
                 for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
 
         See:
@@ -611,12 +613,12 @@ class Catalog(STACObject):
         and organize the items based on template values.
 
         Args:
-            template (str):   A template string that
+            template :   A template string that
                 can be consumed by a :class:`~pystac.layout.LayoutTemplate`
-            defaults (dict):  Default values for the template variables
+            defaults :  Default values for the template variables
                 that will be used if the property cannot be found on
                 the item.
-            parent_ids (List[str]): Optional list of the parent catalogs'
+            parent_ids : Optional list of the parent catalogs'
                 identifiers. If the bottom-most subcatalogs already match the
                 template, no subcatalog is added.
 
@@ -636,7 +638,7 @@ class Catalog(STACObject):
         layout_template = LayoutTemplate(template, defaults=defaults)
 
         keep_item_links: List[Link] = []
-        item_links = [lk for lk in self.links if lk.rel == "item"]
+        item_links = [lk for lk in self.links if lk.rel == pystac.RelType.ITEM]
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast(pystac.Item, link.target)
@@ -667,14 +669,16 @@ class Catalog(STACObject):
                 curr_parent = subcat
 
             # resolve collection link so when added back points to correct location
-            col_link = item.get_single_link("collection")
+            col_link = item.get_single_link(pystac.RelType.COLLECTION)
             if col_link is not None:
                 col_link.resolve_stac_object()
 
             curr_parent.add_item(item)
 
         # keep only non-item links and item links that have not been moved elsewhere
-        self.links = [lk for lk in self.links if lk.rel != "item"] + keep_item_links
+        self.links = [
+            lk for lk in self.links if lk.rel != pystac.RelType.ITEM
+        ] + keep_item_links
 
         return result
 
@@ -683,7 +687,7 @@ class Catalog(STACObject):
         self link HREF.
 
         Args:
-            catalog_type (str): The catalog type that dictates the structure of
+            catalog_type : The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
                 If not supplied, the catalog_type of this catalog will be used.
                 If that attribute is not set, an exception will be raised.
@@ -770,10 +774,12 @@ class Catalog(STACObject):
         for item in self.get_items():
             item.validate()
 
-    def _object_links(self) -> List[str]:
-        return ["child", "item"] + (
-            pystac.EXTENSION_HOOKS.get_extended_object_links(self) or []
-        )
+    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+        return [
+            pystac.RelType.CHILD,
+            pystac.RelType.ITEM,
+            *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
+        ]
 
     def map_items(
         self,
@@ -783,7 +789,7 @@ class Catalog(STACObject):
         item_mapper function.
 
         Args:
-            item_mapper (Callable):   A function that takes in an item, and returns
+            item_mapper :   A function that takes in an item, and returns
                 either an item or list of items. The item that is passed into the
                 item_mapper is a copy, so the method can mutate it safely.
 
@@ -829,7 +835,7 @@ class Catalog(STACObject):
         through the asset_mapper function.
 
         Args:
-            asset_mapper (Callable): A function that takes in an key and an Asset, and
+            asset_mapper : A function that takes in an key and an Asset, and
                 returns either an Asset, a (key, Asset), or a dictionary of Assets with
                 unique keys. The Asset that is passed into the item_mapper is a copy,
                 so the method can mutate it safely.
@@ -924,11 +930,11 @@ class Catalog(STACObject):
         )
 
         for link in links:
-            if link["rel"] == "root":
+            if link["rel"] == pystac.RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                cat.remove_links("root")
+                cat.remove_links(pystac.RelType.ROOT)
 
-            if link["rel"] != "self" or href is None:
+            if link["rel"] != pystac.RelType.SELF or href is None:
                 cat.add_link(Link.from_dict(link))
 
         return cat

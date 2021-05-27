@@ -386,4 +386,4 @@ class DatacubeExtensionHooks(ExtensionHooks):
     )
 
 
-DATACUBE_EXTENSION_HOOKS = DatacubeExtensionHooks()
+DATACUBE_EXTENSION_HOOKS: ExtensionHooks = DatacubeExtensionHooks()

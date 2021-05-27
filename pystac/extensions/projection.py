@@ -33,10 +33,10 @@ class ProjectionExtension(
     The Projection extension adds projection information to STAC Items.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     Note:
         Using ProjectionItemExt to directly wrap an item will add the 'proj' extension
@@ -60,23 +60,23 @@ class ProjectionExtension(
         """Applies Projection extension properties to the extended Item.
 
         Args:
-            epsg (int or None): REQUIRED. EPSG code of the datasource.
-            wkt2 (str or None): WKT2 string representing the Coordinate Reference
+            epsg : REQUIRED. EPSG code of the datasource.
+            wkt2 : WKT2 string representing the Coordinate Reference
                 System (CRS) that the ``geometry`` and ``bbox`` fields represent
-            projjson (dict or None): PROJJSON dict representing the
+            projjson : PROJJSON dict representing the
                 Coordinate Reference System (CRS) that the ``geometry`` and ``bbox``
                 fields represent
-            geometry (dict or None): GeoJSON Polygon dict that defines the footprint of
+            geometry : GeoJSON Polygon dict that defines the footprint of
                 this Item.
-            bbox (List[float] or None): Bounding box of the Item in the asset CRS in
+            bbox : Bounding box of the Item in the asset CRS in
                 2 or 3 dimensions.
-            centroid (dict or None): A dict with members 'lat' and 'lon' that defines
+            centroid : A dict with members 'lat' and 'lon' that defines
                 coordinates representing the centroid of the item in the asset data CRS.
                 Coordinates are defined in latitude and longitude, even if the data
                 coordinate system may not use lat/long.
-            shape (List[int] or None): Number of pixels in Y and X directions for the
+            shape : Number of pixels in Y and X directions for the
                 default grid.
-            transform (List[float] or None): The affine transformation coefficients for
+            transform : The affine transformation coefficients for
                 the default grid
         """
         self.epsg = epsg
@@ -294,4 +294,4 @@ class ProjectionExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-PROJECTION_EXTENSION_HOOKS = ProjectionExtensionHooks()
+PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()
