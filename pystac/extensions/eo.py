@@ -185,7 +185,7 @@ class Band:
 
     @property
     def solar_illumination(self) -> Optional[float]:
-        """Get or sets the The solar illumination of the band,
+        """Get or sets the solar illumination of the band,
             as measured at half the maximum transmission, in W/m2/micrometers.
 
         Returns:
