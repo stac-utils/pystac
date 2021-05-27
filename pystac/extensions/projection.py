@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/projection
 """
 
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -29,18 +29,14 @@ TRANSFORM_PROP = "proj:transform"
 class ProjectionExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """ProjectionItemExt is the extension of an Item in the Projection Extension.
-    The Projection extension adds projection information to STAC Items.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` with properties from the :stac-ext:`Projection
+    Extension <projection>`. This class is generic over the type of STAC Object to be
+    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
-    Args:
-        item : The item to be extended.
-
-    Attributes:
-        item : The Item that is being extended.
-
-    Note:
-        Using ProjectionItemExt to directly wrap an item will add the 'proj' extension
-        ID to the item's stac_extensions.
+    This class will generally not be used directly. Instead, use the concrete
+    implementation associated with the STAC Object you want to extend (e.g.
+    :class:`~ItemProjectionExtension` to extend an :class:`~pystac.Item`).
     """
 
     def __init__(self, item: pystac.Item) -> None:
@@ -96,12 +92,9 @@ class ProjectionExtension(
         called a 'projection') used by the asset data, and can usually be referenced
         using an `EPSG code <http://epsg.io/>`_.
         If the asset data does not have a CRS, such as in the case of non-rectified
-        imagery with Ground Control Points, epsg should be set to None.
-        It should also be set to null if a CRS exists, but for which there is no valid
-        EPSG code.
-
-        Returns:
-            int
+        imagery with Ground Control Points, ``epsg`` should be set to ``None``.
+        It should also be set to ``None`` if a CRS exists, but for which there is no
+        valid EPSG code.
         """
         return self._get_property(EPSG_PROP, int)
 
@@ -112,16 +105,13 @@ class ProjectionExtension(
     @property
     def wkt2(self) -> Optional[str]:
         """Get or sets the WKT2 string representing the Coordinate Reference System (CRS)
-        that the proj:geometry and proj:bbox fields represent
+        that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
         `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
         If the data does not have a CRS, such as in the case of non-rectified imagery
-        with Ground Control Points, wkt2 should be set to null. It should also be set
-        to null if a CRS exists, but for which a WKT2 string does not exist.
-
-        Returns:
-            str
+        with Ground Control Points, ``wkt2`` should be set to ``None``. It should also
+        be set to ``None`` if a CRS exists, but for which a WKT2 string does not exist.
         """
         return self._get_property(WKT2_PROP, str)
 
@@ -132,19 +122,17 @@ class ProjectionExtension(
     @property
     def projjson(self) -> Optional[Dict[str, Any]]:
         """Get or sets the PROJJSON string representing the Coordinate Reference System (CRS)
-        that the proj:geometry and proj:bbox fields represent
+        that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
         `PROJJSON object <https://proj.org/specifications/projjson.html>`_.
         If the data does not have a CRS, such as in the case of non-rectified imagery
-        with Ground Control Points, projjson should be set to null. It should also be
-        set to null if a CRS exists, but for which a PROJJSON string does not exist.
+        with Ground Control Points, ``projjson`` should be set to ``None``. It should
+        also be set to ``None`` if a CRS exists, but for which a PROJJSON string does
+        not exist.
 
         The schema for this object can be found
         `here <https://proj.org/schemas/v0.2/projjson.schema.json>`_.
-
-        Returns:
-            dict
         """
         return self._get_property(PROJJSON_PROP, Dict[str, Any])
 
@@ -162,9 +150,6 @@ class ProjectionExtension(
         the ``epsg``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
         Ideally, this will be represented by a Polygon with five coordinates, as the
         item in the asset data CRS should be a square aligned to the original CRS grid.
-
-        Returns:
-            dict
         """
         return self._get_property(GEOM_PROP, Dict[str, Any])
 
@@ -180,12 +165,10 @@ class ProjectionExtension(
         Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``,
         ``projjson`` or ``wkt2`` properties. First two numbers are coordinates of the
         lower left corner, followed by coordinates of upper right corner, e.g.,
-        [west, south, east, north], [xmin, ymin, xmax, ymax], [left, down, right, up],
-        or [west, south, lowest, east, north, highest]. The length of the array
-        must be 2*n where n is the number of dimensions.
-
-        Returns:
-            List[float]
+        ``[west, south, east, north]``, ``[xmin, ymin, xmax, ymax]``,
+        ``[left, down, right, up]``, or ``[west, south, lowest, east, north,
+        highest]``. The length of the array must be 2*n where n is the number of
+        dimensions.
         """
         return self._get_property(BBOX_PROP, List[float])
 
@@ -203,9 +186,6 @@ class ProjectionExtension(
         Example::
 
             item.ext.proj.centroid = { 'lat': 0.0, 'lon': 0.0 }
-
-        Returns:
-            dict
         """
         return self._get_property(CENTROID_PROP, Dict[str, float])
 
@@ -221,9 +201,6 @@ class ProjectionExtension(
         most common pixel grid used by the item's assets. The number of pixels should
         be specified in Y, X order. If the shape is defined in an item's properties it
         is used as the default shape for all assets that don't have an overriding shape.
-
-        Returns:
-            List[int]
         """
         return self._get_property(SHAPE_PROP, List[int])
 
@@ -242,9 +219,6 @@ class ProjectionExtension(
         GDAL `GetGeoTransform <https://gdal.org/api/gdaldataset_cpp.html#_CPPv4N11GDALDataset15GetGeoTransformEPd>`_
         or the
         Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api/rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
-
-        Returns:
-            List[float]
         """  # noqa: E501
         return self._get_property(TRANSFORM_PROP, List[float])
 
@@ -258,6 +232,16 @@ class ProjectionExtension(
 
     @staticmethod
     def ext(obj: T) -> "ProjectionExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Projection
+        Extension <projection>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
         elif isinstance(obj, pystac.Asset):
@@ -269,6 +253,20 @@ class ProjectionExtension(
 
 
 class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
+    """A concrete implementation of :class:`ProjectionExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`Projection Extension <projection>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ProjectionExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -278,6 +276,24 @@ class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
 
 
 class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
+    """A concrete implementation of :class:`ProjectionExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    in the :stac-ext:`Projection Extension <projection>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ProjectionExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties

@@ -344,17 +344,29 @@ PointcloudItemExt
 Projection Extension
 --------------------
 
-Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
+These classes are representations of the :stac-ext:`Projection Extension Spec
+<projection>`.
 
-ProjectionItemExt
-~~~~~~~~~~~~~~~~~
+ProjectionExtension
+~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.projection.ProjectionExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.projection.ProjectionItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.ItemProjectionExtension
+   :members:
+   :show-inheritance:
+
+AssetProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.AssetProjectionExtension
+   :members:
+   :show-inheritance:
 
 Timestamps Extension
 --------------------
