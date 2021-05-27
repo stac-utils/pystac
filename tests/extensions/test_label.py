@@ -12,6 +12,7 @@ from pystac.extensions.label import (
     LabelOverview,
     LabelStatistics,
     LabelType,
+    LabelRelType,
 )
 import pystac.validation
 from pystac.utils import get_opt
@@ -27,6 +28,9 @@ class LabelTest(unittest.TestCase):
         self.label_example_2_uri = TestCases.get_path(
             "data-files/label/label-example-2.json"
         )
+
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(LabelRelType.SOURCE), "source")
 
     def test_to_from_dict(self) -> None:
         with open(self.label_example_1_uri) as f:

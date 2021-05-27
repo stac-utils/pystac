@@ -19,7 +19,7 @@ from typing import Any, Dict
 
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
-from pystac.version import __version__
+from pystac.version import __version__, STACVersion
 
 git_branch = subprocess.check_output(['git',
                                       'rev-parse',
@@ -62,6 +62,8 @@ extensions = [
 extlinks = {
     'tutorial': ('https://github.com/azavea/pystac/'
                   'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
+    'stac-spec': ('https://github.com/radiantearth/stac-spec/blob/'
+                  'v{}/%s'.format(STACVersion.DEFAULT_STAC_VERSION), 'path'),
     'stac-ext': ('https://github.com/stac-extensions/%s', '%s extension')
 }
 

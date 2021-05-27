@@ -401,7 +401,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
             # self links became non-required in 0.7.0
             if not version_range.is_earlier_than("0.7.0") and not any(
                 filter(
-                    lambda l: cast(Dict[str, Any], l)["rel"] == "self",
+                    lambda l: cast(Dict[str, Any], l)["rel"] == pystac.RelType.SELF,
                     json_dict["links"],
                 )
             ):

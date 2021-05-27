@@ -52,10 +52,10 @@ class STACWritingTest(unittest.TestCase):
         ) -> None:
             item_dict = pystac.StacIO.default().read_json(href)
             item = pystac.Item.from_file(href)
-            rel_links = (
-                HIERARCHICAL_LINKS
-                + pystac.EXTENSION_HOOKS.get_extended_object_links(item)
-            )
+            rel_links = [
+                *HIERARCHICAL_LINKS,
+                *pystac.EXTENSION_HOOKS.get_extended_object_links(item),
+            ]
             for link in item.get_links():
                 if not link.rel == "self":
                     if link_type == "RELATIVE" and link.rel in rel_links:
