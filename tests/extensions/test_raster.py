@@ -54,6 +54,13 @@ class RasterTest(unittest.TestCase):
         self.assertEqual(band0_stats.stddev, 5056.1292002722)
         self.assertEqual(band0_stats.valid_percent, 61.09)
 
+        band0_hist = asset_bands[0].histogram
+        assert band0_hist is not None
+        self.assertEqual(band0_hist.count, 256)
+        self.assertEqual(band0_hist.min, 1901.288235294118)
+        self.assertEqual(band0_hist.max, 32985.71176470588)
+        self.assertEqual(len(band0_hist.buckets), band0_hist.count)
+
         index_asset = item.assets["metadata"]
         asset_bands = RasterExtension.ext(index_asset).bands
         self.assertIs(None, asset_bands)
