@@ -77,7 +77,7 @@ class CatalogType(str, Enum):
         self_link = None
         relative = False
         for link in stac_json["links"]:
-            if link["rel"] == "self":
+            if link["rel"] == pystac.RelType.SELF:
                 self_link = link
             else:
                 relative |= not is_absolute_href(link["href"])
@@ -311,7 +311,7 @@ class Catalog(STACObject):
         """
         return map(
             lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
-            self.get_stac_objects("child"),
+            self.get_stac_objects(pystac.RelType.CHILD),
         )
 
     def get_child_links(self) -> List[Link]:
@@ -320,7 +320,7 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'child'``
         """
-        return self.get_links("child")
+        return self.get_links(pystac.RelType.CHILD)
 
     def clear_children(self) -> None:
         """Removes all children from this catalog.
@@ -341,7 +341,7 @@ class Catalog(STACObject):
         new_links: List[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != "child":
+            if link.rel != pystac.RelType.CHILD:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -380,7 +380,9 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return map(lambda x: cast(pystac.Item, x), self.get_stac_objects("item"))
+        return map(
+            lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
+        )
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -394,7 +396,7 @@ class Catalog(STACObject):
                 item.set_parent(None)
                 item.set_root(None)
 
-        self.links = [link for link in self.links if link.rel != "item"]
+        self.links = [link for link in self.links if link.rel != pystac.RelType.ITEM]
 
     def remove_item(self, item_id: str) -> None:
         """Removes an item from this catalog.
@@ -405,7 +407,7 @@ class Catalog(STACObject):
         new_links: List[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != "item":
+            if link.rel != pystac.RelType.ITEM:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -436,12 +438,12 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'item'``
         """
-        return self.get_links("item")
+        return self.get_links(pystac.RelType.ITEM)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != "self"]
+            links = [x for x in links if x.rel != pystac.RelType.SELF]
 
         d: Dict[str, Any] = {
             "type": self.STAC_OBJECT_TYPE.value.title(),
@@ -474,7 +476,7 @@ class Catalog(STACObject):
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == "root":
+            if link.rel == pystac.RelType.ROOT:
                 # Catalog __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -636,7 +638,7 @@ class Catalog(STACObject):
         layout_template = LayoutTemplate(template, defaults=defaults)
 
         keep_item_links: List[Link] = []
-        item_links = [lk for lk in self.links if lk.rel == "item"]
+        item_links = [lk for lk in self.links if lk.rel == pystac.RelType.ITEM]
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast(pystac.Item, link.target)
@@ -667,14 +669,16 @@ class Catalog(STACObject):
                 curr_parent = subcat
 
             # resolve collection link so when added back points to correct location
-            col_link = item.get_single_link("collection")
+            col_link = item.get_single_link(pystac.RelType.COLLECTION)
             if col_link is not None:
                 col_link.resolve_stac_object()
 
             curr_parent.add_item(item)
 
         # keep only non-item links and item links that have not been moved elsewhere
-        self.links = [lk for lk in self.links if lk.rel != "item"] + keep_item_links
+        self.links = [
+            lk for lk in self.links if lk.rel != pystac.RelType.ITEM
+        ] + keep_item_links
 
         return result
 
@@ -770,10 +774,12 @@ class Catalog(STACObject):
         for item in self.get_items():
             item.validate()
 
-    def _object_links(self) -> List[str]:
-        return ["child", "item"] + (
-            pystac.EXTENSION_HOOKS.get_extended_object_links(self) or []
-        )
+    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+        return [
+            pystac.RelType.CHILD,
+            pystac.RelType.ITEM,
+            *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
+        ]
 
     def map_items(
         self,
@@ -924,11 +930,11 @@ class Catalog(STACObject):
         )
 
         for link in links:
-            if link["rel"] == "root":
+            if link["rel"] == pystac.RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                cat.remove_links("root")
+                cat.remove_links(pystac.RelType.ROOT)
 
-            if link["rel"] != "self" or href is None:
+            if link["rel"] != pystac.RelType.SELF or href is None:
                 cat.add_link(Link.from_dict(link))
 
         return cat

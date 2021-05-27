@@ -431,9 +431,9 @@ class RangeSummary(Generic[T]):
         return {"minimum": self.minimum, "maximum": self.maximum}
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any], typ: Type[T] = Any) -> "RangeSummary[T]":
-        minimum: Optional[T] = get_required(d.get("minimum"), "RangeSummary", "minimum")
-        maximum: Optional[T] = get_required(d.get("maximum"), "RangeSummary", "maximum")
+    def from_dict(cls, d: Dict[str, Any]) -> "RangeSummary[T]":
+        minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
+        maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
 
@@ -483,7 +483,7 @@ class Summaries:
         self.schemas.pop(prop_key, None)
         self.other.pop(prop_key, None)
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )
@@ -642,7 +642,7 @@ class Collection(Catalog):
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == "root":
+            if link.rel == pystac.RelType.ROOT:
                 # Collection __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -706,11 +706,11 @@ class Collection(Catalog):
         )
 
         for link in links:
-            if link["rel"] == "root":
+            if link["rel"] == pystac.RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                collection.remove_links("root")
+                collection.remove_links(pystac.RelType.ROOT)
 
-            if link["rel"] != "self" or href is None:
+            if link["rel"] != pystac.RelType.SELF or href is None:
                 collection.add_link(Link.from_dict(link))
 
         if assets is not None:

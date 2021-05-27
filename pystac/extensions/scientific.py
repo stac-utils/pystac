@@ -233,4 +233,4 @@ class ScientificExtensionHooks(ExtensionHooks):
     )
 
 
-SCIENTIFIC_EXTENSION_HOOKS = ScientificExtensionHooks()
+SCIENTIFIC_EXTENSION_HOOKS: ExtensionHooks = ScientificExtensionHooks()

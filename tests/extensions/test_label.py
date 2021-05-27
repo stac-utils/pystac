@@ -12,6 +12,7 @@ from pystac.extensions.label import (
     LabelOverview,
     LabelStatistics,
     LabelType,
+    LabelRelType,
 )
 import pystac.validation
 from pystac.utils import get_opt
@@ -19,7 +20,7 @@ from tests.utils import TestCases, test_to_from_dict
 
 
 class LabelTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.label_example_1_uri = TestCases.get_path(
             "data-files/label/label-example-1.json"
@@ -28,13 +29,16 @@ class LabelTest(unittest.TestCase):
             "data-files/label/label-example-2.json"
         )
 
-    def test_to_from_dict(self):
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(LabelRelType.SOURCE), "source")
+
+    def test_to_from_dict(self) -> None:
         with open(self.label_example_1_uri) as f:
             label_example_1_dict = json.load(f)
 
         test_to_from_dict(self, Item, label_example_1_dict)
 
-    def test_from_file(self):
+    def test_from_file(self) -> None:
         label_example_1 = Item.from_file(self.label_example_1_uri)
 
         overviews = get_opt(LabelExtension.ext(label_example_1).label_overviews)
@@ -47,7 +51,7 @@ class LabelTest(unittest.TestCase):
 
         label_example_2.validate()
 
-    def test_from_file_pre_081(self):
+    def test_from_file_pre_081(self) -> None:
         d = pystac.StacIO.default().read_json(self.label_example_1_uri)
 
         d["stac_version"] = "0.8.0-rc1"
@@ -63,7 +67,7 @@ class LabelTest(unittest.TestCase):
 
         self.assertEqual(len(LabelExtension.ext(label_example_1).label_tasks or []), 2)
 
-    def test_get_sources(self):
+    def test_get_sources(self) -> None:
         cat = TestCases.test_case_1()
 
         items = cat.get_all_items()
@@ -75,7 +79,7 @@ class LabelTest(unittest.TestCase):
                 self.assertEqual(len(sources), 1)
                 self.assertTrue(sources[0].id in item_ids)
 
-    def test_validate_label(self):
+    def test_validate_label(self) -> None:
         with open(self.label_example_1_uri) as f:
             label_example_1_dict = json.load(f)
         pystac.validation.validate_dict(
@@ -89,9 +93,10 @@ class LabelTest(unittest.TestCase):
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, "catalog.json"))
             label_item_read = cat_read.get_item("area-2-2-labels", recursive=True)
+            assert label_item_read is not None
             label_item_read.validate()
 
-    def test_read_label_item_owns_asset(self):
+    def test_read_label_item_owns_asset(self) -> None:
         item = next(
             x
             for x in TestCases.test_case_2().get_all_items()
@@ -101,7 +106,7 @@ class LabelTest(unittest.TestCase):
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
 
-    def test_label_description(self):
+    def test_label_description(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
@@ -116,7 +121,7 @@ class LabelTest(unittest.TestCase):
         )
         label_item.validate()
 
-    def test_label_type(self):
+    def test_label_type(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
@@ -129,7 +134,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(LabelType.RASTER, label_item.properties["label:type"])
         label_item.validate()
 
-    def test_label_properties(self):
+    def test_label_properties(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_item2 = pystac.Item.from_file(self.label_example_2_uri)
 
@@ -145,7 +150,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(["prop1", "prop2"], label_item.properties["label:properties"])
         label_item.validate()
 
-    def test_label_classes(self):
+    def test_label_classes(self) -> None:
         # Get
         label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_classes = LabelExtension.ext(label_item).label_classes
@@ -171,7 +176,7 @@ class LabelTest(unittest.TestCase):
 
         label_item.validate()
 
-    def test_label_tasks(self):
+    def test_label_tasks(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
@@ -184,7 +189,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(["classification"], label_item.properties["label:tasks"])
         label_item.validate()
 
-    def test_label_methods(self):
+    def test_label_methods(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
         # Get
@@ -199,7 +204,7 @@ class LabelTest(unittest.TestCase):
         )
         label_item.validate()
 
-    def test_label_overviews(self):
+    def test_label_overviews(self) -> None:
         # Get
         label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_ext = LabelExtension.ext(label_item)
@@ -215,14 +220,18 @@ class LabelTest(unittest.TestCase):
 
         label_counts = get_opt(label_overviews[0].counts)
         self.assertEqual(label_counts[1].count, 17)
-        get_opt(label_ext.label_overviews)[0].counts[1].count = 18
+        fisrt_overview_counts = get_opt(label_ext.label_overviews)[0].counts
+        assert fisrt_overview_counts is not None
+        fisrt_overview_counts[1].count = 18
         self.assertEqual(
             label_item.properties["label:overviews"][0]["counts"][1]["count"], 18
         )
 
         label_statistics = get_opt(label_overviews[1].statistics)
         self.assertEqual(label_statistics[0].name, "mean")
-        get_opt(label_ext.label_overviews)[1].statistics[0].name = "avg"
+        second_overview_statistics = get_opt(label_ext.label_overviews)[1].statistics
+        assert second_overview_statistics is not None
+        second_overview_statistics[0].name = "avg"
         self.assertEqual(
             label_item.properties["label:overviews"][1]["statistics"][0]["name"], "avg"
         )

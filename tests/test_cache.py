@@ -20,7 +20,7 @@ def create_catalog(suffix: Any, include_href: bool = True) -> pystac.Catalog:
 
 
 class ResolvedObjectCacheTest(unittest.TestCase):
-    def tests_get_or_cache_returns_previously_cached_href(self):
+    def tests_get_or_cache_returns_previously_cached_href(self) -> None:
         cache = ResolvedObjectCache()
         cat = create_catalog(1)
         cache_result_1 = cache.get_or_cache(cat)
@@ -30,7 +30,7 @@ class ResolvedObjectCacheTest(unittest.TestCase):
         cache_result_2 = cache.get_or_cache(identical_cat)
         self.assertIs(cache_result_2, cat)
 
-    def test_get_or_cache_returns_previously_cached_id(self):
+    def test_get_or_cache_returns_previously_cached_id(self) -> None:
         cache = ResolvedObjectCache()
         cat = create_catalog(1, include_href=False)
         cache_result_1 = cache.get_or_cache(cat)
@@ -42,7 +42,7 @@ class ResolvedObjectCacheTest(unittest.TestCase):
 
 
 class ResolvedObjectCollectionCacheTest(unittest.TestCase):
-    def test_merge(self):
+    def test_merge(self) -> None:
         cat1 = create_catalog(1, include_href=False)
         cat2 = create_catalog(2)
         cat3 = create_catalog(3, include_href=False)
@@ -79,7 +79,7 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         )
         self.assertIs(merged.get_by_href(get_opt(cat2.get_self_href())), cat2)
 
-    def test_cache(self):
+    def test_cache(self) -> None:
         cache = ResolvedObjectCache().as_collection_cache()
         collection = TestCases.test_case_8()
         collection_json = collection.to_dict()
