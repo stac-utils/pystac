@@ -27,7 +27,7 @@ class AssetDefinition:
 
     @property
     def title(self) -> Optional[str]:
-        self.properties.get(ASSET_TITLE_PROP)
+        return self.properties.get(ASSET_TITLE_PROP)
 
     @title.setter
     def title(self, v: Optional[str]) -> None:
@@ -38,7 +38,7 @@ class AssetDefinition:
 
     @property
     def description(self) -> Optional[str]:
-        self.properties.get(ASSET_DESC_PROP)
+        return self.properties.get(ASSET_DESC_PROP)
 
     @description.setter
     def description(self, v: Optional[str]) -> None:
@@ -49,7 +49,7 @@ class AssetDefinition:
 
     @property
     def media_type(self) -> Optional[str]:
-        self.properties.get(ASSET_TYPE_PROP)
+        return self.properties.get(ASSET_TYPE_PROP)
 
     @media_type.setter
     def media_type(self, v: Optional[str]) -> None:
@@ -60,7 +60,7 @@ class AssetDefinition:
 
     @property
     def roles(self) -> Optional[List[str]]:
-        self.properties.get(ASSET_ROLES_PROP)
+        return self.properties.get(ASSET_ROLES_PROP)
 
     @roles.setter
     def roles(self, v: Optional[List[str]]) -> None:
@@ -78,7 +78,7 @@ class AssetDefinition:
             roles=self.roles,
             properties={
                 k: v
-                for k, v in self.properties
+                for k, v in self.properties.items()
                 if k
                 not in set(
                     [
@@ -98,7 +98,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 
     @property
     def item_assets(self) -> Dict[str, AssetDefinition]:
-        result = get_required(
+        result: Dict[str, Any] = get_required(
             self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
         )
         return {k: AssetDefinition(v) for k, v in result.items()}
@@ -141,4 +141,4 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-ITEM_ASSETS_EXTENSION_HOOKS = ItemAssetsExtensionHooks()
+ITEM_ASSETS_EXTENSION_HOOKS: ExtensionHooks = ItemAssetsExtensionHooks()

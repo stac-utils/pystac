@@ -146,7 +146,7 @@ def validate_all(
                 links = cast(List[Dict[str, Any]], stac_dict.get("links"))
             for link in links:
                 rel = link.get("rel")
-                if rel in ["item", "child"]:
+                if rel in [pystac.RelType.ITEM, pystac.RelType.CHILD]:
                     link_href = make_absolute_href(
                         cast(str, link.get("href")), start_href=href
                     )

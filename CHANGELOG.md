@@ -5,6 +5,8 @@
 ### Added
 
 - solar_illumination field in eo extension ([#356](https://github.com/stac-utils/pystac/issues/356))
+- Added `Link.canonical` static method for creating links with "canonical" rel type ([#351](https://github.com/stac-utils/pystac/pull/351))
+- Added `RelType` enum containing common `rel` values ([#351](https://github.com/stac-utils/pystac/pull/351))
 
 ### Changed
 
@@ -28,7 +30,7 @@
 - Removed type information from docstrings, since it is redundant with function type
   annotations ([#342](https://github.com/stac-utils/pystac/pull/342))
 
-## [1.0.0-beta.1]
+## [v1.0.0-beta.1]
 
 ### Added
 

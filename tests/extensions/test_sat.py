@@ -22,19 +22,19 @@ def make_item() -> pystac.Item:
 
 
 class SatTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         self.item = make_item()
 
-    def test_stac_extensions(self):
+    def test_stac_extensions(self) -> None:
         self.assertTrue(SatExtension.has_extension(self.item))
 
-    def test_no_args_fails(self):
+    def test_no_args_fails(self) -> None:
         SatExtension.ext(self.item).apply()
         with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
-    def test_orbit_state(self):
+    def test_orbit_state(self) -> None:
         orbit_state = sat.OrbitState.ASCENDING
         SatExtension.ext(self.item).apply(orbit_state)
         self.assertEqual(orbit_state, SatExtension.ext(self.item).orbit_state)
@@ -42,7 +42,7 @@ class SatTest(unittest.TestCase):
         self.assertFalse(SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
-    def test_relative_orbit(self):
+    def test_relative_orbit(self) -> None:
         relative_orbit = 1234
         SatExtension.ext(self.item).apply(None, relative_orbit)
         self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
@@ -50,13 +50,13 @@ class SatTest(unittest.TestCase):
         self.assertFalse(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
 
-    def test_relative_orbit_no_negative(self):
+    def test_relative_orbit_no_negative(self) -> None:
         negative_relative_orbit = -2
         SatExtension.ext(self.item).apply(None, negative_relative_orbit)
         with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
-    def test_both(self):
+    def test_both(self) -> None:
         orbit_state = sat.OrbitState.DESCENDING
         relative_orbit = 4321
         SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
@@ -64,7 +64,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
-    def test_modify(self):
+    def test_modify(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
         orbit_state = sat.OrbitState.GEOSTATIONARY
@@ -75,7 +75,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
-    def test_from_dict(self):
+    def test_from_dict(self) -> None:
         orbit_state = sat.OrbitState.GEOSTATIONARY
         relative_orbit = 1001
         d: Dict[str, Any] = {
@@ -96,7 +96,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
         self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         orbit_state = sat.OrbitState.GEOSTATIONARY
         relative_orbit = 1002
         SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
@@ -108,14 +108,14 @@ class SatTest(unittest.TestCase):
         self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
         self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
 
-    def test_clear_orbit_state(self):
+    def test_clear_orbit_state(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
         SatExtension.ext(self.item).orbit_state = None
         self.assertIsNone(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
 
-    def test_clear_relative_orbit(self):
+    def test_clear_relative_orbit(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
         SatExtension.ext(self.item).relative_orbit = None

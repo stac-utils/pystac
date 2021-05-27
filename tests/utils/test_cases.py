@@ -203,7 +203,7 @@ class TestCases:
         return root_cat
 
     @staticmethod
-    def test_case_4():
+    def test_case_4() -> Catalog:
         """Test case that is based on a local copy of the Tier 1 dataset from
         DrivenData's OpenCities AI Challenge.
         See: https://www.drivendata.org/competitions/60/building-segmentation-disaster-resilience
@@ -213,21 +213,21 @@ class TestCases:
         )
 
     @staticmethod
-    def test_case_5():
+    def test_case_5() -> Catalog:
         """Based on a subset of https://cbers.stac.cloud/"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/test-case-5/catalog.json")
         )
 
     @staticmethod
-    def test_case_6():
+    def test_case_6() -> Catalog:
         """Based on a subset of CBERS, contains a root and 4 empty children"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/cbers-partial/catalog.json")
         )
 
     @staticmethod
-    def test_case_7():
+    def test_case_7() -> Catalog:
         """Test case 4 as STAC version 0.8.1"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/label_catalog-v0.8.1/catalog.json")
