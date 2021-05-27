@@ -283,7 +283,7 @@ class Histogram:
         return get_required(self.properties["count"], self, "count")
 
     @count.setter
-    def count(self, v: int):
+    def count(self, v: int) -> None:
         self.properties["count"] = v
 
     @property
@@ -652,21 +652,22 @@ class RasterExtension(
 
     @property
     def bands(self) -> Optional[List[RasterBand]]:
-        """Get or sets a list of :class:`~pystac.RasterBand` objects that represent
-        the available bands.
+        """Gets or sets a list of available bands where each item is a :class:`~RasterBand`
+        object (or ``None`` if no bands have been set). If not available the field
+        should not be provided.
         """
         return self._get_bands()
-
-    def _get_bands(self) -> Optional[List[RasterBand]]:
-        return map_opt(
-            lambda bands: [RasterBand(b) for b in bands],
-            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
-        )
 
     @bands.setter
     def bands(self, v: Optional[List[RasterBand]]) -> None:
         self._set_property(
             BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
+        )
+
+    def _get_bands(self) -> Optional[List[RasterBand]]:
+        return map_opt(
+            lambda bands: [RasterBand(b) for b in bands],
+            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
         )
 
     @classmethod

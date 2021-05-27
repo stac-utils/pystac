@@ -24,21 +24,21 @@ class RasterTest(unittest.TestCase):
     )
     GDALINFO_EXAMPLE_URI = TestCases.get_path("data-files/raster/gdalinfo.json")
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.PLANET_EXAMPLE_URI) as f:
             item_dict = json.load(f)
         test_to_from_dict(self, Item, item_dict)
 
-    def test_validate_raster(self):
+    def test_validate_raster(self) -> None:
         item = pystac.read_file(self.PLANET_EXAMPLE_URI)
         item2 = pystac.read_file(self.SENTINEL2_EXAMPLE_URI)
         item.validate()
         item2.validate()
 
-    def test_asset_bands(self):
+    def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
 
         # Get
@@ -77,14 +77,17 @@ class RasterTest(unittest.TestCase):
         item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
         b2_asset = item2.assets["B02"]
         self.assertEqual(
-            get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics.maximum, 19264
+            get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum,
+            19264,
         )
         b1_asset = item2.assets["B01"]
         RasterExtension.ext(b2_asset).bands = RasterExtension.ext(b1_asset).bands
 
         new_b2_asset_bands = RasterExtension.ext(item2.assets["B02"]).bands
 
-        self.assertEqual(get_opt(new_b2_asset_bands)[0].statistics.maximum, 20567)
+        self.assertEqual(
+            get_opt(get_opt(new_b2_asset_bands)[0].statistics).maximum, 20567
+        )
 
         item2.validate()
 
