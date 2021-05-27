@@ -134,3 +134,41 @@ class RasterTest(unittest.TestCase):
         item.add_asset("test", asset)
 
         self.assertEqual(len(item.assets["test"].properties["raster:bands"]), 3)
+        self.assertEqual(
+            item.assets["test"].properties["raster:bands"][1]["statistics"]["minimum"],
+            -1,
+        )
+        self.assertEqual(
+            item.assets["test"].properties["raster:bands"][1]["histogram"]["min"],
+            3848.354901960784,
+        )
+
+        new_stats[2].apply(
+            minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
+        )
+        new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
+        new_stats[0].apply(
+            minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
+        )
+        new_bands[2].apply(
+            nodata=1,
+            unit="test1",
+            statistics=new_stats[2],
+            histogram=new_histograms[0],
+        )
+        new_bands[1].apply(
+            nodata=2,
+            unit="test2",
+            statistics=new_stats[1],
+            histogram=new_histograms[1],
+        )
+        new_bands[0].apply(
+            nodata=3,
+            unit="test3",
+            statistics=new_stats[0],
+            histogram=new_histograms[2],
+        )
+        self.assertEqual(
+            item.assets["test"].properties["raster:bands"][0]["statistics"]["minimum"],
+            1,
+        )
