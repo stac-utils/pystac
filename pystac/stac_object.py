@@ -320,9 +320,9 @@ class STACObject(ABC):
             raised.
 
         Note:
-            When to include a self link is described in the `Use of Links section of the
-            STAC best practices document
-            <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#use-of-links>`_
+            When to include a self link is described in the :stac-spec:`Use of Links
+            section of the STAC best practices document
+            <best-practices.md#use-of-links>`
         """
         if stac_io is None:
             root = self.get_root()

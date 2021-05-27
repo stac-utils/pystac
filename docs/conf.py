@@ -62,7 +62,7 @@ extensions = [
 extlinks = {
     'tutorial': ('https://github.com/azavea/pystac/'
                   'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
-    'stac-spec': ('https://github.com/radiantearth/stac-spec/blob/'
+    'stac-spec': ('https://github.com/radiantearth/stac-spec/tree/'
                   'v{}/%s'.format(STACVersion.DEFAULT_STAC_VERSION), 'path'),
     'stac-ext': ('https://github.com/stac-extensions/%s', '%s extension')
 }

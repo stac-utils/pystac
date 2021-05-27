@@ -471,7 +471,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         item : The Item that is being extended.
 
     See:
-        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
+        :stac-ext:`Item fields in the label extension spec <label#item-properties>`
 
     Note:
         Using LabelItemExt to directly wrap an item will add the 'label' extension ID to

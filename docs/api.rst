@@ -2,7 +2,8 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2>`_ they relate to, if related to a specific spec item.
+and organized by the section of the :stac-spec:`STAC Spec <>` they relate to, if related
+to a specific spec item.
 
 pystac
 ------
@@ -13,7 +14,11 @@ pystac
 STACObject
 ----------
 
-STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Collection <pystac.Collection>` and :class:`Item <pystac.Item>`, and contains a variety of useful methods for dealing with links, copying objects, accessing extensions, and reading and writing files. You shouldn't use STACObject directly, but instead access this functionality through the implementing classes.
+STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Collection
+<pystac.Collection>` and :class:`Item <pystac.Item>`, and contains a variety of useful
+methods for dealing with links, copying objects, accessing extensions, and reading and
+writing files. You shouldn't use STACObject directly, but instead access this
+functionality through the implementing classes.
 
 .. autoclass:: pystac.STACObject
    :members:
@@ -28,7 +33,7 @@ STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Coll
 Catalog Spec
 ------------
 
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/catalog-spec>`_.
+These classes are representations of the :stac-spec:`Catalog Spec <catalog-spec>`.
 
 Catalog
 ~~~~~~~
@@ -50,7 +55,7 @@ CatalogType
 Collection Spec
 ---------------
 
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/collection-spec>`_.
+These classes are representations of the :stac-spec:`Collection Spec <collection-spec>`.
 
 Collection
 ~~~~~~~~~~
@@ -98,7 +103,7 @@ Summaries
 Item Spec
 ---------
 
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/item-spec>`_.
+These classes are representations of the :stac-spec:`Item Spec <item-spec>`.
 
 Item
 ~~~~
@@ -154,7 +159,8 @@ IO
 STAC_IO
 ~~~~~~~
 
-STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
+STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of
+PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
 
 .. autoclass:: pystac.stac_io.STAC_IO
    :members:
@@ -228,7 +234,7 @@ ExtensionManagementMixin
 Electro-Optical Extension
 -------------------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
+These classes are representations of the :stac-ext:`EO Extension Spec <eo>`.
 
 Band
 ~~~~
@@ -272,7 +278,7 @@ SummariesEOExtension
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/label>`_.
+These classes are representations of the :stac-ext:`Label Extension Spec <label>`.
 
 LabelItemExt
 ~~~~~~~~~~~~
@@ -329,7 +335,7 @@ LabelStatistics
 Pointcloud Extension
 --------------------
 
-Implements the `Point Cloud Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
+Implements the :stac-ext:`Point Cloud Extension <pointcloud>`.
 
 PointcloudItemExt
 ~~~~~~~~~~~~~~~~~
@@ -359,7 +365,7 @@ ProjectionItemExt
 Timestamps Extension
 --------------------
 
-Implements the `Timestamps Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/timestamps>`_.
+Implements the :stac-ext:`Timestamps Extension <timestamps>`.
 
 TimestampsItemExt
 ~~~~~~~~~~~~~~~~~
@@ -374,7 +380,7 @@ TimestampsItemExt
 SAR Extension
 -------------
 
-Implements the `SAR Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sar>`_.
+Implements the :stac-ext:`SAR Extension <sar>`.
 
 SarItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -389,7 +395,7 @@ SarItemExt
 SAT Extension
 -------------
 
-Implements the `SAT Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sat>`_.
+Implements the :stac-ext:`SAT Extension <sat>`.
 
 SatItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -404,7 +410,8 @@ SatItemExt
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/single-file-stac>`_.
+These classes are representations of the :stac-ext:`Single File STAC Extension
+<single-file-stac>`.
 
 **TEMPORARILY REMOVED**
 
@@ -423,7 +430,7 @@ SingleFileSTACCatalogExt
 Version Extension
 -----------------
 
-Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
+Implements the :stac-ext:`Version Extension <version>`.
 
 VersionRelType
 ~~~~~~~~~~~~~~
@@ -431,7 +438,7 @@ VersionRelType
 .. autoclass:: pystac.extensions.version.VersionRelType
    :members:
    :show-inheritance:
-   
+
 VersionCollectionExt
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -455,7 +462,7 @@ VersionItemExt
 View Geometry Extension
 -----------------------
 
-Implements the `View Geometry Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/view>`_.
+Implements the :stac-ext:`View Geometry Extension <view>`.
 
 ViewItemExt
 ~~~~~~~~~~~
@@ -529,10 +536,10 @@ STACValidator
 SchemaUriMap
 ~~~~~~~~~~~~
 
-A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension ids to
-schema URIs. A default implementation is included that uses known locations; however users
-can provide their own schema URI maps in a :class:`~pystac.validation.JsonSchemaSTACValidator`
-to modify the URIs used.
+A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension
+ids to schema URIs. A default implementation is included that uses known locations;
+however users can provide their own schema URI maps in a
+:class:`~pystac.validation.JsonSchemaSTACValidator` to modify the URIs used.
 
 .. .. autoclass:: pystac.validation.SchemaUriMap
 ..    :members:
