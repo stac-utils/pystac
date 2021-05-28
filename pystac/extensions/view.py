@@ -6,9 +6,11 @@ https://github.com/stac-extensions/view
 from typing import Any, Dict, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
+from pystac.collection import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 
@@ -158,6 +160,11 @@ class ViewExtension(
                 f"View extension does not apply to type {type(obj)}"
             )
 
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesViewExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesViewExtension(obj)
+
 
 class ItemViewExtension(ViewExtension[pystac.Item]):
     """A concrete implementation of :class:`ViewExtension` on an :class:`~pystac.Item`
@@ -209,6 +216,68 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetViewExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesViewExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`View Object Extension <view>`.
+    """
+
+    @property
+    def off_nadir(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`ScientificExtension.off_nadir` values for
+        this Collection.
+        """
+        return self.summaries.get_range(OFF_NADIR_PROP, float)
+
+    @off_nadir.setter
+    def off_nadir(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(OFF_NADIR_PROP, v)
+
+    @property
+    def incidence_angle(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`ScientificExtension.incidence_angle` values
+        for this Collection.
+        """
+        return self.summaries.get_range(INCIDENCE_ANGLE_PROP, float)
+
+    @incidence_angle.setter
+    def incidence_angle(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(INCIDENCE_ANGLE_PROP, v)
+
+    @property
+    def azimuth(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`ScientificExtension.azimuth` values
+        for this Collection.
+        """
+        return self.summaries.get_range(AZIMUTH_PROP, float)
+
+    @azimuth.setter
+    def azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(AZIMUTH_PROP, v)
+
+    @property
+    def sun_azimuth(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`ScientificExtension.sun_azimuth` values
+        for this Collection.
+        """
+        return self.summaries.get_range(SUN_AZIMUTH_PROP, float)
+
+    @sun_azimuth.setter
+    def sun_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(SUN_AZIMUTH_PROP, v)
+
+    @property
+    def sun_elevation(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`ScientificExtension.sun_elevation` values
+        for this Collection.
+        """
+        return self.summaries.get_range(SUN_ELEVATION_PROP, float)
+
+    @sun_elevation.setter
+    def sun_elevation(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(SUN_ELEVATION_PROP, v)
 
 
 class ViewExtensionHooks(ExtensionHooks):
