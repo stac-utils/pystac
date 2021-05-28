@@ -146,6 +146,27 @@ class RasterTest(unittest.TestCase):
             3848.354901960784,
         )
 
+        for s in new_stats:
+            s.minimum = None
+            s.maximum = None
+            s.mean = None
+            s.stddev = None
+            s.valid_percent = None
+            self.assertEqual(len(s.properties), 0)
+
+        for b in new_bands:
+            b.bits_per_sample = None
+            b.data_type = None
+            b.histogram = None
+            b.nodata = None
+            b.sampling = None
+            b.scale = None
+            b.spatial_resolution = None
+            b.statistics = None
+            b.unit = None
+            b.offset = None
+            self.assertEqual(len(b.properties), 0)
+
         new_stats[2].apply(
             minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
         )
@@ -171,6 +192,7 @@ class RasterTest(unittest.TestCase):
             statistics=new_stats[0],
             histogram=new_histograms[2],
         )
+        RasterExtension.ext(item.assets["test"]).apply(new_bands)
         self.assertEqual(
             item.assets["test"].properties["raster:bands"][0]["statistics"]["minimum"],
             1,
