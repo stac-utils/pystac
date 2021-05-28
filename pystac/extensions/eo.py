@@ -279,9 +279,10 @@ class EOExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` with properties from the :stac-ext:`Electro-Optical
-    Extension <eo>`. This class is generic over the type of STAC Object to be
-    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
+    :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
     This class will generally not be used directly. Instead, use the concrete
     implementation associated with the STAC Object you want to extend (e.g.
@@ -291,7 +292,8 @@ class EOExtension(
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended :class:`~pystac.Item`.
+        """Applies label extension properties to the extended :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
