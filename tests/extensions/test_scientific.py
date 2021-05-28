@@ -339,29 +339,42 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
 
 class SummariesScientificTest(unittest.TestCase):
-    CITATION = (
-        "Vega GC, Pertierra LR, Olalla-Tárraga MÁ (2017) Data from: MERRAclim, "
-        "a high-resolution global dataset of remotely sensed bioclimatic variables for "
-        "ecological modelling. Dryad Digital Repository."
-    )
-
     def setUp(self) -> None:
         super().setUp()
-        summaries = Summaries(summaries={"sci:citation": [self.CITATION]})
+        summaries = Summaries(
+            summaries={"sci:citation": [CITATION], "sci:doi": [PUB1_DOI, PUB2_DOI]}
+        )
         self.collection = make_collection()
         self.collection.summaries = summaries
 
-    def test_get_summaries(self) -> None:
+    def test_get_citation_summaries(self) -> None:
         citations = ScientificExtension.summaries(self.collection).citation
 
         assert citations is not None
-        self.assertListEqual([self.CITATION], citations)
+        self.assertListEqual([CITATION], citations)
 
-    def test_set_summaries(self) -> None:
-        sci_summaries = ScientificExtension.summaries(self.collection)
+    def test_set_citation_summaries(self) -> None:
+        collection = self.collection.clone()
+        sci_summaries = ScientificExtension.summaries(collection)
 
         sci_summaries.citation = None
         self.assertIsNone(sci_summaries.citation)
+
+    def test_get_doi_summaries(self) -> None:
+        dois = ScientificExtension.summaries(self.collection).doi
+
+        assert dois is not None
+        self.assertListEqual([PUB1_DOI, PUB2_DOI], dois)
+
+    def test_set_doi_summaries(self) -> None:
+        collection = self.collection.clone()
+        sci_summaries = ScientificExtension.summaries(collection)
+
+        sci_summaries.doi = [PUB2_DOI]
+        new_dois = ScientificExtension.summaries(self.collection).doi
+
+        assert new_dois is not None
+        self.assertListEqual([PUB2_DOI], new_dois)
 
 
 if __name__ == "__main__":

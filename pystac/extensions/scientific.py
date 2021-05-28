@@ -317,21 +317,21 @@ class SummariesScientificExtension(SummariesExtension):
 
     @property
     def citation(self) -> Optional[List[str]]:
-        """Get or sets the EPSG code of the datasource.
-
-        A Coordinate Reference System (CRS) is the data reference system (sometimes
-        called a 'projection') used by the asset data, and can usually be referenced
-        using an `EPSG code <http://epsg.io/>`_.
-        If the asset data does not have a CRS, such as in the case of non-rectified
-        imagery with Ground Control Points, ``epsg`` should be set to ``None``.
-        It should also be set to ``None`` if a CRS exists, but for which there is no
-        valid EPSG code.
-        """
+        """Get or sets the EPSG code summary."""
         return self.summaries.get_list(CITATION_PROP, str)
 
     @citation.setter
     def citation(self, v: Optional[List[str]]) -> None:
         self._set_summary(CITATION_PROP, v)
+
+    @property
+    def doi(self) -> Optional[List[str]]:
+        """Get or sets the DOI summary."""
+        return self.summaries.get_list(DOI_PROP, str)
+
+    @doi.setter
+    def doi(self, v: Optional[List[str]]) -> None:
+        self._set_summary(DOI_PROP, v)
 
 
 class ScientificExtensionHooks(ExtensionHooks):
