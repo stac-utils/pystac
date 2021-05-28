@@ -32,9 +32,11 @@ from pystac.utils import get_required, map_opt
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+PREFIX = "eo:"
 
-BANDS_PROP = "eo:bands"
-CLOUD_COVER_PROP = "eo:cloud_cover"
+# Field names
+BANDS_PROP = PREFIX + "bands"
+CLOUD_COVER_PROP = PREFIX + "cloud_cover"
 
 
 class Band:
@@ -289,7 +291,7 @@ class EOExtension(
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended Item.
+        """Applies label extension properties to the extended :class:`~pystac.Item`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`

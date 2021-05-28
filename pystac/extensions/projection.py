@@ -16,15 +16,17 @@ from pystac.extensions.base import (
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+PREFIX = "proj:"
 
-EPSG_PROP = "proj:epsg"
-WKT2_PROP = "proj:wkt2"
-PROJJSON_PROP = "proj:projjson"
-GEOM_PROP = "proj:geometry"
-BBOX_PROP = "proj:bbox"
-CENTROID_PROP = "proj:centroid"
-SHAPE_PROP = "proj:shape"
-TRANSFORM_PROP = "proj:transform"
+# Field names
+EPSG_PROP = PREFIX + "epsg"
+WKT2_PROP = PREFIX + "wkt2"
+PROJJSON_PROP = PREFIX + "projjson"
+GEOM_PROP = PREFIX + "geometry"
+BBOX_PROP = PREFIX + "bbox"
+CENTROID_PROP = PREFIX + "centroid"
+SHAPE_PROP = PREFIX + "shape"
+TRANSFORM_PROP = PREFIX + "transform"
 
 
 class ProjectionExtension(
