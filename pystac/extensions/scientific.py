@@ -317,7 +317,9 @@ class SummariesScientificExtension(SummariesExtension):
 
     @property
     def citation(self) -> Optional[List[str]]:
-        """Get or sets the EPSG code summary."""
+        """Get or sets the summary of :attr:`ScientificExtension.citation` values
+        for this Collection.
+        """
         return self.summaries.get_list(CITATION_PROP, str)
 
     @citation.setter
@@ -326,7 +328,9 @@ class SummariesScientificExtension(SummariesExtension):
 
     @property
     def doi(self) -> Optional[List[str]]:
-        """Get or sets the DOI summary."""
+        """Get or sets the summary of :attr:`ScientificExtension.citation` values
+        for this Collection.
+        """
         return self.summaries.get_list(DOI_PROP, str)
 
     @doi.setter

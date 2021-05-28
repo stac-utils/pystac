@@ -449,8 +449,8 @@ class SummariesEOExtension(SummariesExtension):
 
     @property
     def bands(self) -> Optional[List[Band]]:
-        """Get or sets a list of :class:`~pystac.Band` objects that represent
-        the available bands.
+        """Get or sets the summary of :attr:`EOExtension.bands` values
+        for this Collection.
         """
 
         return map_opt(
@@ -464,7 +464,9 @@ class SummariesEOExtension(SummariesExtension):
 
     @property
     def cloud_cover(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the range of cloud cover from the summary."""
+        """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
+        for this Collection.
+        """
         return self.summaries.get_range(CLOUD_COVER_PROP, float)
 
     @cloud_cover.setter

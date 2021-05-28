@@ -226,7 +226,7 @@ class SummariesViewExtension(SummariesExtension):
 
     @property
     def off_nadir(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`ScientificExtension.off_nadir` values for
+        """Get or sets the summary of :attr:`ViewExtension.off_nadir` values for
         this Collection.
         """
         return self.summaries.get_range(OFF_NADIR_PROP, float)
@@ -237,7 +237,7 @@ class SummariesViewExtension(SummariesExtension):
 
     @property
     def incidence_angle(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`ScientificExtension.incidence_angle` values
+        """Get or sets the summary of :attr:`ViewExtension.incidence_angle` values
         for this Collection.
         """
         return self.summaries.get_range(INCIDENCE_ANGLE_PROP, float)
@@ -248,7 +248,7 @@ class SummariesViewExtension(SummariesExtension):
 
     @property
     def azimuth(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`ScientificExtension.azimuth` values
+        """Get or sets the summary of :attr:`ViewExtension.azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(AZIMUTH_PROP, float)
@@ -259,7 +259,7 @@ class SummariesViewExtension(SummariesExtension):
 
     @property
     def sun_azimuth(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`ScientificExtension.sun_azimuth` values
+        """Get or sets the summary of :attr:`ViewExtension.sun_azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_AZIMUTH_PROP, float)
@@ -270,7 +270,7 @@ class SummariesViewExtension(SummariesExtension):
 
     @property
     def sun_elevation(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`ScientificExtension.sun_elevation` values
+        """Get or sets the summary of :attr:`ViewExtension.sun_elevation` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_ELEVATION_PROP, float)
