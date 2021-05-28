@@ -1,6 +1,7 @@
 """Tests for pystac.tests.extensions.scientific."""
 
 import datetime
+from pystac.collection import Summaries
 import unittest
 from typing import List, Optional
 
@@ -335,6 +336,32 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(1, len(links))
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
+
+
+class SummariesScientificTest(unittest.TestCase):
+    CITATION = (
+        "Vega GC, Pertierra LR, Olalla-Tárraga MÁ (2017) Data from: MERRAclim, "
+        "a high-resolution global dataset of remotely sensed bioclimatic variables for "
+        "ecological modelling. Dryad Digital Repository."
+    )
+
+    def setUp(self) -> None:
+        super().setUp()
+        summaries = Summaries(summaries={"sci:citation": [self.CITATION]})
+        self.collection = make_collection()
+        self.collection.summaries = summaries
+
+    def test_get_summaries(self) -> None:
+        citations = ScientificExtension.summaries(self.collection).citation
+
+        assert citations is not None
+        self.assertListEqual([self.CITATION], citations)
+
+    def test_set_summaries(self) -> None:
+        sci_summaries = ScientificExtension.summaries(self.collection)
+
+        sci_summaries.citation = None
+        self.assertIsNone(sci_summaries.citation)
 
 
 if __name__ == "__main__":

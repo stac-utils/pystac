@@ -16,6 +16,7 @@ import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
@@ -35,9 +36,9 @@ DOI_URL_BASE = "https://doi.org/"
 
 # Link rel type.
 class ScientificRelType(str, Enum):
-    """A list of rel types defined in the Scientific Extension.
+    """A list of rel types defined in the Scientific Citation Extension.
 
-    See the :stac-ext:`Scientific Extension Relation types
+    See the :stac-ext:`Scientific Citation Extension Relation types
     <scientific#relation-types>` documentation for details.
     """
 
@@ -104,8 +105,9 @@ class ScientificExtension(
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the
-    :stac-ext:`Scientific Extension <scientific>`. This class is generic over the type
-    of STAC Object to be extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    :stac-ext:`Scientific Citation Extension <scientific>`. This class is generic over
+    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
     This class will generally not be used directly. Instead, use the concrete
     implementation associated with the STAC Object you want to extend (e.g.
@@ -239,11 +241,16 @@ class ScientificExtension(
                 f"File extension does not apply to type {type(obj)}"
             )
 
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesScientificExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesScientificExtension(obj)
+
 
 class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
     """A concrete implementation of :class:`ScientificExtension` on an
     :class:`~pystac.Collection` that extends the properties of the Item to include
-    properties defined in the :stac-ext:`Scientific Extension <scientific>`.
+    properties defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`ScientificExtension.ext` on an :class:`~pystac.Collection` to extend it.
@@ -275,7 +282,7 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
 class ItemScientificExtension(ScientificExtension[pystac.Item]):
     """A concrete implementation of :class:`ScientificExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Scientific Extension <scientific>`.
+    :stac-ext:`Scientific Citation Extension <scientific>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`ScientificExtension.ext` on an :class:`~pystac.Item` to extend it.
@@ -300,6 +307,31 @@ class ItemScientificExtension(ScientificExtension[pystac.Item]):
 
     def __repr__(self) -> str:
         return "<ItemScientificExtension Item id={}>".format(self.item.id)
+
+
+class SummariesScientificExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
+    """
+
+    @property
+    def citation(self) -> Optional[List[str]]:
+        """Get or sets the EPSG code of the datasource.
+
+        A Coordinate Reference System (CRS) is the data reference system (sometimes
+        called a 'projection') used by the asset data, and can usually be referenced
+        using an `EPSG code <http://epsg.io/>`_.
+        If the asset data does not have a CRS, such as in the case of non-rectified
+        imagery with Ground Control Points, ``epsg`` should be set to ``None``.
+        It should also be set to ``None`` if a CRS exists, but for which there is no
+        valid EPSG code.
+        """
+        return self.summaries.get_list(CITATION_PROP, str)
+
+    @citation.setter
+    def citation(self, v: Optional[List[str]]) -> None:
+        self._set_summary(CITATION_PROP, v)
 
 
 class ScientificExtensionHooks(ExtensionHooks):
