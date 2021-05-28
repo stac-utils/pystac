@@ -10,6 +10,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
@@ -251,6 +252,11 @@ class ProjectionExtension(
                 f"File extension does not apply to type {type(obj)}"
             )
 
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesProjectionExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesProjectionExtension(obj)
+
 
 class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
     """A concrete implementation of :class:`ProjectionExtension` on an :class:`~pystac.Item`
@@ -302,6 +308,31 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetProjectionExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesProjectionExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Projection Extension <projection>`.
+    """
+
+    @property
+    def epsg(self) -> Optional[List[int]]:
+        """Get or sets the EPSG code of the datasource.
+
+        A Coordinate Reference System (CRS) is the data reference system (sometimes
+        called a 'projection') used by the asset data, and can usually be referenced
+        using an `EPSG code <http://epsg.io/>`_.
+        If the asset data does not have a CRS, such as in the case of non-rectified
+        imagery with Ground Control Points, ``epsg`` should be set to ``None``.
+        It should also be set to ``None`` if a CRS exists, but for which there is no
+        valid EPSG code.
+        """
+        return self.summaries.get_list(EPSG_PROP, int)
+
+    @epsg.setter
+    def epsg(self, v: Optional[List[int]]) -> None:
+        self._set_summary(EPSG_PROP, v)
 
 
 class ProjectionExtensionHooks(ExtensionHooks):

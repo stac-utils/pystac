@@ -405,3 +405,33 @@ class ProjectionTest(unittest.TestCase):
 
         # Validate
         proj_item.validate()
+
+
+class ProjectionSummariesTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.example_uri = TestCases.get_path(
+            "data-files/projection/collection-with-summaries.json"
+        )
+
+    def test_get_summaries(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        proj_summaries = ProjectionExtension.summaries(col)
+
+        # Get
+
+        epsg_summaries = proj_summaries.epsg
+        assert epsg_summaries is not None
+        self.assertListEqual(epsg_summaries, [32614])
+
+    def test_set_summaries(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        proj_summaries = ProjectionExtension.summaries(col)
+
+        # Set
+
+        proj_summaries.epsg = [4326]
+
+        col_dict = col.to_dict()
+        self.assertEqual(len(col_dict["summaries"]["proj:epsg"]), 1)
+        self.assertEqual(col_dict["summaries"]["proj:epsg"][0], 4326)
