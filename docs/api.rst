@@ -368,6 +368,40 @@ AssetProjectionExtension
    :members:
    :show-inheritance:
 
+Scientific Extension
+--------------------
+
+These classes are representations of the :stac-ext:`Scientific Extension Spec
+<scientific>`.
+
+Publication
+~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.Publication
+   :members:
+   :show-inheritance:
+
+ScientificExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ScientificExtension
+   :members:
+   :show-inheritance:
+
+CollectionScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.CollectionScientificExtension
+   :members:
+   :show-inheritance:
+
+ItemScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ItemScientificExtension
+   :members:
+   :show-inheritance:
+
 Timestamps Extension
 --------------------
 

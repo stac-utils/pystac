@@ -8,6 +8,7 @@ https://doi.org/10.1000/182
 """
 
 import copy
+from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 from urllib import parse
 
@@ -22,27 +23,41 @@ from pystac.utils import map_opt
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
+PREFIX = "sci:"
 
-# STAC fields strings.
-PREFIX: str = "sci:"
-DOI: str = PREFIX + "doi"
-CITATION: str = PREFIX + "citation"
-PUBLICATIONS: str = PREFIX + "publications"
-
-# Link type.
-CITE_AS: str = "cite-as"
+# Field names
+DOI_PROP = PREFIX + "doi"
+CITATION_PROP = PREFIX + "citation"
+PUBLICATIONS_PROP = PREFIX + "publications"
 
 DOI_URL_BASE = "https://doi.org/"
 
 
+# Link rel type.
+class ScientificRelType(str, Enum):
+    """A list of rel types defined in the Scientific Extension.
+
+    See the :stac-ext:`Scientific Extension Relation types
+    <scientific#relation-types>` documentation for details.
+    """
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    CITE_AS = "cite-as"
+    """Used to indicate a link to the publication referenced by the ``sci:doi``
+    field."""
+
+
 def doi_to_url(doi: str) -> str:
+    """Converts a DOI to the corresponding URL."""
     return DOI_URL_BASE + parse.quote(doi)
 
 
 class Publication:
     """Helper for Publication entries."""
 
-    def __init__(self, doi: str, citation: str) -> None:
+    def __init__(self, doi: Optional[str], citation: Optional[str]) -> None:
         self.doi = doi
         self.citation = citation
 
@@ -55,21 +70,27 @@ class Publication:
     def __repr__(self) -> str:
         return f"<Publication doi={self.doi} target={self.citation}>"
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, Optional[str]]:
         return copy.deepcopy({"doi": self.doi, "citation": self.citation})
 
     @staticmethod
     def from_dict(d: Dict[str, str]) -> "Publication":
-        return Publication(d["doi"], d["citation"])
+        return Publication(d.get("doi"), d.get("citation"))
 
-    def get_link(self) -> pystac.Link:
-        return pystac.Link(CITE_AS, doi_to_url(self.doi))
+    def get_link(self) -> Optional[pystac.Link]:
+        """Gets a :class:`~pystac.Link` for the DOI for this publication. If
+        :attr:`Publication.doi` is ``None``, this method will also return ``None``."""
+        if self.doi is None:
+            return None
+        return pystac.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], doi: str) -> None:
+def remove_link(links: List[pystac.Link], doi: Optional[str]) -> None:
+    if doi is None:
+        return
     url = doi_to_url(doi)
     for i, a_link in enumerate(links):
-        if a_link.rel != CITE_AS:
+        if a_link.rel != ScientificRelType.CITE_AS:
             continue
         if a_link.target == url:
             del links[i]
@@ -81,7 +102,15 @@ class ScientificExtension(
     PropertiesExtension,
     ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
-    """ScientificItemExt extends Item to add citations and DOIs to a STAC Item."""
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` with properties from the :stac-ext:`Scientific
+    Extension <scientific>`. This class is generic over the type of STAC Object to be
+    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+
+    This class will generally not be used directly. Instead, use the concrete
+    implementation associated with the STAC Object you want to extend (e.g.
+    :class:`~ItemScientificExtension` to extend an :class:`~pystac.Item`).
+    """
 
     def __init__(self, obj: pystac.STACObject) -> None:
         self.obj = obj
@@ -92,7 +121,8 @@ class ScientificExtension(
         citation: Optional[str] = None,
         publications: Optional[List[Publication]] = None,
     ) -> None:
-        """Applies scientific extension properties to the extended Item.
+        """Applies scientific extension properties to the extended
+        :class:`~pystac.Item`.
 
         Args:
             doi : Optional DOI string for the item.  Must not be a DOI link.
@@ -108,66 +138,63 @@ class ScientificExtension(
     def doi(self) -> Optional[str]:
         """Get or sets the DOI for the item.
 
-        Returns:
-            str
+        This MUST NOT be a DOIs link. For all DOI names respective DOI links SHOULD be
+        added to the links section.
         """
-        return self._get_property(DOI, str)
+        return self._get_property(DOI_PROP, str)
 
     @doi.setter
     def doi(self, v: Optional[str]) -> None:
-        if DOI in self.properties:
-            if v == self.properties[DOI]:
+        if DOI_PROP in self.properties:
+            if v == self.properties[DOI_PROP]:
                 return
-            remove_link(self.obj.links, self.properties[DOI])
+            remove_link(self.obj.links, self.properties[DOI_PROP])
 
         if v is not None:
-            self.properties[DOI] = v
+            self.properties[DOI_PROP] = v
             url = doi_to_url(v)
-            self.obj.add_link(pystac.Link(CITE_AS, url))
+            self.obj.add_link(pystac.Link(ScientificRelType.CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
-        """Get or sets the citation for the item.
+        """Get or sets the recommended human-readable reference (citation) to be used by
+        publications citing the data.
 
-        Returns:
-            str
+        No specific citation style is suggested, but the citation should contain all
+        information required to find the publication distinctively.
         """
-        return self._get_property(CITATION, str)
+        return self._get_property(CITATION_PROP, str)
 
     @citation.setter
     def citation(self, v: Optional[str]) -> None:
-        self._set_property(CITATION, v)
+        self._set_property(CITATION_PROP, v)
 
     @property
     def publications(self) -> Optional[List[Publication]]:
-        """Get or sets the publication list for the item.
-
-        Returns:
-            List of Publication instances.
-        """
+        """Get or sets the list of relevant publications referencing and describing the
+        data."""
         return map_opt(
             lambda pubs: [Publication.from_dict(pub) for pub in pubs],
-            self._get_property(PUBLICATIONS, List[Dict[str, Any]]),
+            self._get_property(PUBLICATIONS_PROP, List[Dict[str, Any]]),
         )
 
     @publications.setter
     def publications(self, v: Optional[List[Publication]]) -> None:
         self._set_property(
-            PUBLICATIONS, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v)
+            PUBLICATIONS_PROP, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v)
         )
         if v is not None:
             for pub in v:
-                self.obj.add_link(pub.get_link())
+                pub_link = pub.get_link()
+                if pub_link is not None:
+                    self.obj.add_link(pub_link)
 
     # None for publication will clear all.
     def remove_publication(self, publication: Optional[Publication] = None) -> None:
-        """Removes publications from the item.
-
-        Args:
-            publication : The specific publication to remove of None to
-            remove all.
-        """
-        if PUBLICATIONS not in self.properties:
+        """Removes the given :class:`Publication` from the extended
+        :class:`~pystac.Item`. If the ``publication`` argument is ``None``, all
+        publications will be removed from the :class:`~pystac.Item`."""
+        if PUBLICATIONS_PROP not in self.properties:
             return
 
         if not publication:
@@ -176,16 +203,16 @@ class ScientificExtension(
                 for one_pub in pubs:
                     remove_link(self.obj.links, one_pub.doi)
 
-            del self.properties[PUBLICATIONS]
+            del self.properties[PUBLICATIONS_PROP]
             return
 
         # One publication and link to remove
         remove_link(self.obj.links, publication.doi)
         to_remove = publication.to_dict()
-        self.properties[PUBLICATIONS].remove(to_remove)
+        self.properties[PUBLICATIONS_PROP].remove(to_remove)
 
-        if not self.properties[PUBLICATIONS]:
-            del self.properties[PUBLICATIONS]
+        if not self.properties[PUBLICATIONS_PROP]:
+            del self.properties[PUBLICATIONS_PROP]
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -193,6 +220,16 @@ class ScientificExtension(
 
     @staticmethod
     def ext(obj: T) -> "ScientificExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Scientific
+        Extension <scientific>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Collection):
             return cast(ScientificExtension[T], CollectionScientificExtension(obj))
         if isinstance(obj, pystac.Item):
@@ -204,6 +241,25 @@ class ScientificExtension(
 
 
 class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
+    """A concrete implementation of :class:`ScientificExtension` on an
+    :class:`~pystac.Collection` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Scientific Extension <scientific>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ScientificExtension.ext` on an :class:`~pystac.Collection` to extend it.
+    """
+
+    collection: pystac.Collection
+    """The :class:`~pystac.Collection` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Collection` properties, including extension properties."""
+
+    links: List[pystac.Link]
+    """The list of :class:`~pystac.Link` objects associated with the
+    :class:`~pystac.Collection` being extended, including links added by this extension.
+    """
+
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
@@ -211,10 +267,31 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return "<CollectionScientificExtension Item id={}>".format(self.collection.id)
+        return "<CollectionScientificExtension Collection id={}>".format(
+            self.collection.id
+        )
 
 
 class ItemScientificExtension(ScientificExtension[pystac.Item]):
+    """A concrete implementation of :class:`ScientificExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`Scientific Extension <scientific>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ScientificExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
+    links: List[pystac.Link]
+    """The list of :class:`~pystac.Link` objects associated with the
+    :class:`~pystac.Item` being extended, including links added by this extension.
+    """
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
