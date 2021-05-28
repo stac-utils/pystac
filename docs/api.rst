@@ -501,17 +501,29 @@ VersionItemExt
 View Geometry Extension
 -----------------------
 
-Implements the `View Geometry Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/view>`_.
+These classes are representations of the :stac-ext:`View Geometry Extension Spec
+<view>`.
 
-ViewItemExt
-~~~~~~~~~~~
+ViewExtension
+~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.view.ViewExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.view.ViewItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemViewExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.ItemViewExtension
+   :members:
+   :show-inheritance:
+
+AssetViewExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.AssetViewExtension
+   :members:
+   :show-inheritance:
 
 Serialization
 -------------

@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Generic, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -15,32 +15,26 @@ from pystac.extensions.hooks import ExtensionHooks
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+PREFIX = "view:"
 
-OFF_NADIR_PROP = "view:off_nadir"
-INCIDENCE_ANGLE_PROP = "view:incidence_angle"
-AZIMUTH_PROP = "view:azimuth"
-SUN_AZIMUTH_PROP = "view:sun_azimuth"
-SUN_ELEVATION_PROP = "view:sun_elevation"
+OFF_NADIR_PROP = PREFIX + "off_nadir"
+INCIDENCE_ANGLE_PROP = PREFIX + "incidence_angle"
+AZIMUTH_PROP = PREFIX + "azimuth"
+SUN_AZIMUTH_PROP = PREFIX + "sun_azimuth"
+SUN_ELEVATION_PROP = PREFIX + "sun_elevation"
 
 
 class ViewExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """ViewItemExt is the extension of the Item in the View Geometry Extension.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
+    Extension <view>`. This class is generic over the type of STAC Object to be
+    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Asset`).
 
-    View Geometry adds metadata related to angles of sensors and other radiance angles
-    that affect the view of resulting data. It will often be combined with other
-    extensions that describe the actual data, such as the eo, sat or sar extensions.
-
-    Args:
-        item : The item to be extended.
-
-    Attributes:
-        item : The Item that is being extended.
-
-    Note:
-        Using ViewItemExt to directly wrap an item will add the 'view' extension ID to
-        the item's stac_extensions.
+    This class will generally not be used directly. Instead, use the concrete
+    implementation associated with the STAC Object you want to extend (e.g.
+    :class:`~ItemViewExtension` to extend an :class:`~pystac.Item`).
     """
 
     def apply(
@@ -51,7 +45,8 @@ class ViewExtension(
         sun_azimuth: Optional[float] = None,
         sun_elevation: Optional[float] = None,
     ) -> None:
-        """Applies View Geometry extension properties to the extended Item.
+        """Applies View Geometry extension properties to the extended
+        :class:`~pystac.Item`.
 
         Args:
             off_nadir : The angle from the sensor between nadir (straight down)
@@ -80,9 +75,6 @@ class ViewExtension(
     def off_nadir(self) -> Optional[float]:
         """Get or sets the angle from the sensor between nadir (straight down)
         and the scene center. Measured in degrees (0-90).
-
-        Returns:
-            float
         """
         return self._get_property(OFF_NADIR_PROP, float)
 
@@ -95,9 +87,6 @@ class ViewExtension(
         """Get or sets the incidence angle is the angle between the vertical (normal)
         to the intercepting surface and the line of sight back to the satellite at
         the scene center. Measured in degrees (0-90).
-
-        Returns:
-            float
         """
         return self._get_property(INCIDENCE_ANGLE_PROP, float)
 
@@ -112,9 +101,6 @@ class ViewExtension(
         The angle measured from the sub-satellite
         point (point on the ground below the platform) between the scene center and true
         north. Measured clockwise from north in degrees (0-360).
-
-        Returns:
-            float
         """
         return self._get_property(AZIMUTH_PROP, float)
 
@@ -129,9 +115,6 @@ class ViewExtension(
         From the scene center point on the ground, this
         is the angle between truth north and the sun. Measured clockwise in
         degrees (0-360).
-
-        Returns:
-            float
         """
         return self._get_property(SUN_AZIMUTH_PROP, float)
 
@@ -143,9 +126,6 @@ class ViewExtension(
     def sun_elevation(self) -> Optional[float]:
         """Get or sets the sun elevation angle. The angle from the tangent of the scene
         center point to the sun. Measured from the horizon in degrees (0-90).
-
-        Returns:
-            float
         """
         return self._get_property(SUN_ELEVATION_PROP, float)
 
@@ -159,6 +139,16 @@ class ViewExtension(
 
     @staticmethod
     def ext(obj: T) -> "ViewExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`View
+        Geometry Extension <scientific>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             return cast(ViewExtension[T], ItemViewExtension(obj))
         elif isinstance(obj, pystac.Asset):
@@ -170,6 +160,20 @@ class ViewExtension(
 
 
 class ItemViewExtension(ViewExtension[pystac.Item]):
+    """A concrete implementation of :class:`ViewExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`View Geometry Extension <view>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ViewExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -179,6 +183,24 @@ class ItemViewExtension(ViewExtension[pystac.Item]):
 
 
 class AssetViewExtension(ViewExtension[pystac.Asset]):
+    """A concrete implementation of :class:`ViewExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`View Geometry Extension <view>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ViewExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties

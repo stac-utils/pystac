@@ -103,9 +103,9 @@ class ScientificExtension(
     ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` with properties from the :stac-ext:`Scientific
-    Extension <scientific>`. This class is generic over the type of STAC Object to be
-    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the
+    :stac-ext:`Scientific Extension <scientific>`. This class is generic over the type
+    of STAC Object to be extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
     This class will generally not be used directly. Instead, use the concrete
     implementation associated with the STAC Object you want to extend (e.g.
