@@ -85,7 +85,7 @@ def validate_dict(
 
     stac_version_id = STACVersionID(stac_version)
 
-    # If the version is before 1.0.0-rc.1, substitute extension short IDs for
+    # If the version is before 1.0.0-rc.2, substitute extension short IDs for
     # their schemas.
     if stac_version_id < "1.0.0-rc.2":
 
