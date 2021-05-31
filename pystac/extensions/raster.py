@@ -688,6 +688,24 @@ class RasterExtension(
 
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):
+    """A concrete implementation of :class:`RasterExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`Raster Extension <raster>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`RasterExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+    
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+    
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
