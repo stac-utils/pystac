@@ -31,10 +31,10 @@ from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 
-BANDS_PROP = "eo:bands"
-CLOUD_COVER_PROP = "eo:cloud_cover"
+BANDS_PROP: str = "eo:bands"
+CLOUD_COVER_PROP: str = "eo:cloud_cover"
 
 
 class Band:
