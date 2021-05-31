@@ -467,7 +467,7 @@ class RasterBand:
 
     @property
     def sampling(self) -> Optional[Sampling]:
-        """Get or sets the Indicates whether a pixel value should be assumed
+        """Get or sets the property indicating whether a pixel value should be assumed
         to represent a sampling over the region of the pixel or a point sample
         at the center of the pixel.
 
