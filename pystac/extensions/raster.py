@@ -713,7 +713,7 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetRasterExtension Item id={}>".format(self.asset_href)
+        return "<AssetRasterExtension Asset href={}>".format(self.asset_href)
 
 
 class SummariesRasterExtension(SummariesExtension):
