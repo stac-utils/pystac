@@ -717,6 +717,10 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
 
 
 class SummariesRasterExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Raster Extension <raster>`.
+    """
     @property
     def bands(self) -> Optional[List[RasterBand]]:
         """Get or sets a list of :class:`~pystac.Band` objects that represent
