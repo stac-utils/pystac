@@ -12,6 +12,8 @@
 
 ### Fixed
 
+- `Collection.from_dict` and `Collection.from_file` now correctly construct `Asset` objects.
+
 ### Removed
 
 ## [1.0.0-beta.2]
