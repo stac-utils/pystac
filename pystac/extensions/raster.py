@@ -54,7 +54,7 @@ class DataType(str, enum.Enum):
 class Statistics:
     """Represents statistics information attached to a band in the raster extension.
 
-    Use Band.create to create a new Band.
+    Use Statistics.create to create a new Statistics instance.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
