@@ -57,7 +57,7 @@ class Statistics:
     Use Statistics.create to create a new Statistics instance.
     """
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: Dict[str, Optional[float]]) -> None:
         self.properties = properties
 
     def apply(
