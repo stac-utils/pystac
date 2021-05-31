@@ -485,7 +485,7 @@ class RasterBand:
 
     @property
     def data_type(self) -> Optional[DataType]:
-        """Get or sets the The data type of the band.
+        """Get or sets the data type of the band.
 
         Returns:
             Optional[DataType]
