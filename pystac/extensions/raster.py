@@ -640,7 +640,8 @@ class RasterExtension(
     """
 
     def apply(self, bands: List[RasterBand]) -> None:
-        """Applies label extension properties to the extended Item.
+        """Applies raster extension properties to the extended :class:`pystac.Item` or 
+        :class:`pystac.Asset`.
 
         Args:
             bands : a list of :class:`~pystac.RasterBand` objects that represent
