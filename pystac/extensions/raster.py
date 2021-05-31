@@ -4,7 +4,7 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -629,9 +629,9 @@ class RasterExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from 
-    the :stac-ext:`Raster Extension <raster>`. This class is generic over 
-    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`, 
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from
+    the :stac-ext:`Raster Extension <raster>`. This class is generic over
+    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Asset`).
 
     This class will generally not be used directly. Instead, use the concrete
@@ -640,7 +640,7 @@ class RasterExtension(
     """
 
     def apply(self, bands: List[RasterBand]) -> None:
-        """Applies raster extension properties to the extended :class:`pystac.Item` or 
+        """Applies raster extension properties to the extended :class:`pystac.Item` or
         :class:`pystac.Asset`.
 
         Args:
@@ -695,7 +695,7 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
     This class should generally not be instantiated directly. Instead, call
     :meth:`RasterExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
-    
+
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
@@ -705,7 +705,7 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
-    
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -721,6 +721,7 @@ class SummariesRasterExtension(SummariesExtension):
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Raster Extension <raster>`.
     """
+
     @property
     def bands(self) -> Optional[List[RasterBand]]:
         """Get or sets a list of :class:`~pystac.Band` objects that represent
