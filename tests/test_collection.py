@@ -3,7 +3,6 @@ import os
 import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
-from unittest.case import expectedFailure
 from dateutil import tz
 
 import pystac
