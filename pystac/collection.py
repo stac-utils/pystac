@@ -715,7 +715,7 @@ class Collection(Catalog):
 
         if assets is not None:
             for asset_key, asset_dict in assets.items():
-                collection.add_asset(asset_key, Asset(asset_dict))
+                collection.add_asset(asset_key, Asset(**asset_dict))
 
         return collection
 

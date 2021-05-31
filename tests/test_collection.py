@@ -3,6 +3,7 @@ import os
 import json
 from tempfile import TemporaryDirectory
 from datetime import datetime
+from unittest.case import expectedFailure
 from dateutil import tz
 
 import pystac
@@ -174,6 +175,14 @@ class CollectionTest(unittest.TestCase):
         # Since all of our STAC objects have HREFs, everything should be
         # cached only by HREF
         self.assertEqual(len(cache.id_keys_to_objects), 0)
+
+    def test_assets(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/multi-extent.json"),
+        )
+        result = collection.assets["asset"]
+        expected = pystac.Asset(href="/path/to/asset", title="asset title", description="asset description")
+        self.assertEqual(result.to_dict(), expected.to_dict())
 
 
 class ExtentTest(unittest.TestCase):

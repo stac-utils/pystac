@@ -56,5 +56,12 @@
       ]
     }
   },
-  "license": "proprietary"
+  "license": "proprietary",
+  "assets": {
+    "asset": {
+      "href": "/path/to/asset",
+      "title": "asset title",
+      "description": "asset description"
+    }
+  }
 }
