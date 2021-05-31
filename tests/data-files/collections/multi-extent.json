@@ -59,9 +59,10 @@
   "license": "proprietary",
   "assets": {
     "asset": {
-      "href": "/path/to/asset",
+      "href": "/path/to/asset.json",
       "title": "asset title",
-      "description": "asset description"
+      "description": "asset description",
+      "type": "application/json"
     }
   }
 }

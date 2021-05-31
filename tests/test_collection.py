@@ -182,7 +182,10 @@ class CollectionTest(unittest.TestCase):
         )
         result = collection.assets["asset"]
         expected = pystac.Asset(
-            href="/path/to/asset", title="asset title", description="asset description"
+            href="/path/to/asset.json",
+            title="asset title",
+            description="asset description",
+            media_type="application/json",
         )
         self.assertEqual(result.to_dict(), expected.to_dict())
 

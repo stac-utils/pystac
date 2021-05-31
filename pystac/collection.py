@@ -715,6 +715,8 @@ class Collection(Catalog):
 
         if assets is not None:
             for asset_key, asset_dict in assets.items():
+                asset_dict = dict(asset_dict)
+                asset_dict.setdefault("media_type", asset_dict.pop("type", None))
                 collection.add_asset(asset_key, Asset(**asset_dict))
 
         return collection
