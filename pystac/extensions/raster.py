@@ -628,17 +628,15 @@ class RasterBand:
 class RasterExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """RasterItemExt is the extension of the Item in the raster extension
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from 
+    the :stac-ext:`Raster Extension <raster>`. This class is generic over 
+    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`, 
+    :class:`~pystac.Asset`).
 
-    Args:
-        item : The item to be extended.
-
-    Attributes:
-        item : The Item that is being extended.
-
-    Note:
-        Using RasterItemExt to directly wrap an item will add
-        the 'raster' extension ID to the item's stac_extensions.
+    This class will generally not be used directly. Instead, use the concrete
+    implementation associated with the STAC Object you want to extend (e.g.
+    :class:`~ItemRasterExtension` to extend an :class:`~pystac.Item`).
     """
 
     def apply(self, bands: List[RasterBand]) -> None:
