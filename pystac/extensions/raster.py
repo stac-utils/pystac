@@ -533,7 +533,7 @@ class RasterBand:
 
     @property
     def statistics(self) -> Optional[Statistics]:
-        """Get or sets Average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
 
         Returns:
             [Statistics]
