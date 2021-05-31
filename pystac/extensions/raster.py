@@ -517,7 +517,7 @@ class RasterBand:
 
     @property
     def spatial_resolution(self) -> Optional[float]:
-        """Get or sets Average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
 
         Returns:
             [float]
