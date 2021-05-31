@@ -599,7 +599,7 @@ class RasterBand:
 
     @property
     def histogram(self) -> Optional[Histogram]:
-        """Get or sets the Histogram distribution information of the pixels values in the band
+        """Get or sets the histogram distribution information of the pixels values in the band
 
         Returns:
             [Histogram]
