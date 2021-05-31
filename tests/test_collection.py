@@ -181,7 +181,9 @@ class CollectionTest(unittest.TestCase):
             TestCases.get_path("data-files/collections/multi-extent.json"),
         )
         result = collection.assets["asset"]
-        expected = pystac.Asset(href="/path/to/asset", title="asset title", description="asset description")
+        expected = pystac.Asset(
+            href="/path/to/asset", title="asset title", description="asset description"
+        )
         self.assertEqual(result.to_dict(), expected.to_dict())
 
 
