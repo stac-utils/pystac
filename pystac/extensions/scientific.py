@@ -23,13 +23,13 @@ from pystac.utils import map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
-SCHEMA_URI = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
-PREFIX = "sci:"
+SCHEMA_URI: str = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
+PREFIX: str = "sci:"
 
 # Field names
-DOI_PROP = PREFIX + "doi"
-CITATION_PROP = PREFIX + "citation"
-PUBLICATIONS_PROP = PREFIX + "publications"
+DOI_PROP: str = PREFIX + "doi"
+CITATION_PROP: str = PREFIX + "citation"
+PUBLICATIONS_PROP: str = PREFIX + "publications"
 
 DOI_URL_BASE = "https://doi.org/"
 
@@ -109,9 +109,9 @@ class ScientificExtension(
     the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Collection`).
 
-    To create a concrete instance of :class:`ScientificExtension`, use the 
+    To create a concrete instance of :class:`ScientificExtension`, use the
     :meth:`ScientificExtension.ext` method. For example:
-    
+
     .. code-block:: python
 
        >>> item: pystac.Item = ...

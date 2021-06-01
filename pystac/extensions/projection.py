@@ -15,18 +15,18 @@ from pystac.extensions.base import (
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
-PREFIX = "proj:"
+SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+PREFIX: str = "proj:"
 
 # Field names
-EPSG_PROP = PREFIX + "epsg"
-WKT2_PROP = PREFIX + "wkt2"
-PROJJSON_PROP = PREFIX + "projjson"
-GEOM_PROP = PREFIX + "geometry"
-BBOX_PROP = PREFIX + "bbox"
-CENTROID_PROP = PREFIX + "centroid"
-SHAPE_PROP = PREFIX + "shape"
-TRANSFORM_PROP = PREFIX + "transform"
+EPSG_PROP: str = PREFIX + "epsg"
+WKT2_PROP: str = PREFIX + "wkt2"
+PROJJSON_PROP: str = PREFIX + "projjson"
+GEOM_PROP: str = PREFIX + "geometry"
+BBOX_PROP: str = PREFIX + "bbox"
+CENTROID_PROP: str = PREFIX + "centroid"
+SHAPE_PROP: str = PREFIX + "shape"
+TRANSFORM_PROP: str = PREFIX + "transform"
 
 
 class ProjectionExtension(
@@ -37,9 +37,9 @@ class ProjectionExtension(
     Extension <projection>`. This class is generic over the type of STAC Object to be
     extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
-    To create a concrete instance of :class:`ProjectionExtension`, use the 
+    To create a concrete instance of :class:`ProjectionExtension`, use the
     :meth:`ProjectionExtension.ext` method. For example:
-    
+
     .. code-block:: python
 
        >>> item: pystac.Item = ...

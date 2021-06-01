@@ -284,9 +284,9 @@ class EOExtension(
     STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Collection`).
 
-    To create a concrete instance of :class:`EOExtension`, use the 
+    To create a concrete instance of :class:`EOExtension`, use the
     :meth:`EOExtension.ext` method. For example:
-    
+
     .. code-block:: python
 
        >>> item: pystac.Item = ...

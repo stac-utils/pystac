@@ -16,14 +16,14 @@ from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
-PREFIX = "view:"
+SCHEMA_URI: str = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+PREFIX: str = "view:"
 
-OFF_NADIR_PROP = PREFIX + "off_nadir"
-INCIDENCE_ANGLE_PROP = PREFIX + "incidence_angle"
-AZIMUTH_PROP = PREFIX + "azimuth"
-SUN_AZIMUTH_PROP = PREFIX + "sun_azimuth"
-SUN_ELEVATION_PROP = PREFIX + "sun_elevation"
+OFF_NADIR_PROP: str = PREFIX + "off_nadir"
+INCIDENCE_ANGLE_PROP: str = PREFIX + "incidence_angle"
+AZIMUTH_PROP: str = PREFIX + "azimuth"
+SUN_AZIMUTH_PROP: str = PREFIX + "sun_azimuth"
+SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 
 class ViewExtension(
@@ -34,9 +34,9 @@ class ViewExtension(
     Extension <view>`. This class is generic over the type of STAC Object to be
     extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Asset`).
 
-    To create a concrete instance of :class:`ViewExtension`, use the 
+    To create a concrete instance of :class:`ViewExtension`, use the
     :meth:`ViewExtension.ext` method. For example:
-    
+
     .. code-block:: python
 
        >>> item: pystac.Item = ...
