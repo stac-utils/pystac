@@ -2,6 +2,7 @@ import unittest
 import os
 import json
 import ntpath
+import sys
 from datetime import datetime, timezone, timedelta
 
 from pystac import utils
@@ -10,6 +11,8 @@ from pystac.utils import make_relative_href, make_absolute_href, is_absolute_hre
 
 
 class UtilsTest(unittest.TestCase):
+    
+    @unittest.skipIf(sys.platform in ("win32", "cygwin"))
     def test_make_relative_href(self):
         # Test cases of (source_href, start_href, expected)
         test_cases = [
@@ -102,6 +105,7 @@ class UtilsTest(unittest.TestCase):
         finally:
             utils._pathlib = os.path
 
+    @unittest.skipIf(sys.platform in ("win32", "cygwin"))
     def test_make_absolute_href(self):
         # Test cases of (source_href, start_href, expected)
         test_cases = [
@@ -135,6 +139,7 @@ class UtilsTest(unittest.TestCase):
             actual = make_absolute_href(source_href, start_href)
             self.assertEqual(actual, expected)
 
+    @unittest.skipIf(sys.platform in ("win32", "cygwin"))
     def test_make_absolute_href_on_vsitar(self):
         rel_path = "some/item.json"
         cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
