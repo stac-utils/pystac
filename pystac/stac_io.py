@@ -14,11 +14,11 @@ from typing import (
 )
 import warnings
 
-from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
+from pystac.utils import safe_urlparse
 import pystac.serialization
 
 # Use orjson if available
@@ -179,7 +179,7 @@ class DefaultStacIO(StacIO):
         return self.read_text_from_href(href, *args, **kwargs)
 
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
-        parsed = urlparse(href)
+        parsed = safe_urlparse(href)
         if parsed.scheme != "":
             try:
                 with urlopen(href) as f:

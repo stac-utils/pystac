@@ -17,7 +17,7 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.utils import is_absolute_href
+from pystac.utils import is_absolute_href, join_path_or_url, JoinType
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, MockStacIO
 
 
@@ -457,14 +457,17 @@ class CatalogTest(unittest.TestCase):
                     properties=properties,
                 )
             )
-        result = catalog.generate_subcatalogs("${property1}/${property2}")
+
+        result = catalog.generate_subcatalogs(
+            join_path_or_url(JoinType.PATH, "${property1}", "${property2}")
+        )
         self.assertEqual(len(result), 6)
 
         catalog.normalize_hrefs("/")
         for item in catalog.get_all_items():
             parent_href = item.get_parent().self_href
             path_to_parent, _ = os.path.split(parent_href)
-            subcats = [el for el in path_to_parent.split("/") if el]
+            subcats = [el for el in path_to_parent.split(os.sep) if el]
             self.assertEqual(len(subcats), 2, msg=" for item '{}'".format(item.id))
 
     def test_map_items(self):
@@ -854,10 +857,18 @@ class CatalogTest(unittest.TestCase):
                         os.path.join(d, root.id, root.DEFAULT_FILE_NAME),
                     )
                 for item in items:
-                    end = "{}-{}/{}.json".format(
-                        item.datetime.year, item.datetime.month, item.id
+                    assert item.datetime is not None
+                    end = join_path_or_url(
+                        JoinType.PATH,
+                        "{}-{}".format(item.datetime.year, item.datetime.month),
+                        "{}.json".format(item.id),
                     )
-                    self.assertTrue(item.get_self_href().endswith(end))
+                    self_href = item.get_self_href()
+                    assert self_href is not None
+                    self.assertTrue(
+                        self_href.endswith(end),
+                        msg="{} does not end with {}".format(self_href, end),
+                    )
 
     def test_collections_cache_correctly(self):
         catalogs = TestCases.all_test_catalogs()

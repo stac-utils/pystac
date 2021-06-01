@@ -1,8 +1,9 @@
 import os
 import posixpath
+from enum import Enum
 from pystac.errors import RequiredPropertyMissing
 from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
-from urllib.parse import urlparse, ParseResult as URLParseResult
+from urllib.parse import urljoin, urlparse, urlunparse, ParseResult as URLParseResult
 from datetime import datetime, timezone
 import dateutil.parser
 
@@ -11,7 +12,7 @@ import dateutil.parser
 _pathlib = os.path
 
 
-def _urlparse(href: str) -> URLParseResult:
+def safe_urlparse(href: str) -> URLParseResult:
     """Version of URL parse that takes into account windows paths.
 
     A windows absolute path will be parsed with a scheme from urllib.parse.urlparse.
@@ -31,13 +32,30 @@ def _urlparse(href: str) -> URLParseResult:
         return parsed
 
 
-def _join(is_path: bool, *args: str) -> str:
-    """Version of os.path.join that takes into account whether or not we are working
-    with a URL.
+class JoinType(str, Enum):
+    """Allowed join types for the :func:`_join` function."""
 
-    A windows system shouldn't use os.path.join if we're working with a URL.
-    """
-    if is_path:
+    def __str__(self) -> str:
+        return str(self.value)
+
+    @staticmethod
+    def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
+        """Determines the appropriate join type based on the scheme of the parsed
+        result."""
+        if parsed_uri.scheme == "":
+            return JoinType.PATH
+        else:
+            return JoinType.URL
+
+    PATH = "path"
+    URL = "url"
+
+
+def join_path_or_url(join_type: JoinType, *args: str) -> str:
+    """Version of os.path.join that takes into account whether or not we are working
+    with a URL."""
+
+    if join_type == JoinType.PATH:
         return _pathlib.join(*args)
     else:
         return posixpath.join(*args)

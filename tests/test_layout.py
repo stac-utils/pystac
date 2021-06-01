@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-import os
 from typing import Callable
 from pystac.collection import Collection
 import unittest
 
 import pystac
+from pystac.utils import join_path_or_url, JoinType
 from pystac.layout import (
     LayoutTemplate,
     CustomLayoutStrategy,
@@ -183,22 +183,34 @@ class LayoutTemplateTest(unittest.TestCase):
 
 class CustomLayoutStrategyTest(unittest.TestCase):
     def get_custom_catalog_func(self) -> Callable[[pystac.Catalog, str, bool], str]:
-        def fn(cat: pystac.Catalog, parent_dir: str, is_root: bool):
-            return os.path.join(parent_dir, "cat/{}/{}.json".format(is_root, cat.id))
+        def fn(cat: pystac.Catalog, parent_dir: str, is_root: bool) -> str:
+            # Use JoinType.URL since we always use this in cases where we are using
+            # URLs
+            return join_path_or_url(
+                JoinType.URL, parent_dir, "cat/{}/{}.json".format(is_root, cat.id)
+            )
 
         return fn
 
     def get_custom_collection_func(
         self,
     ) -> Callable[[pystac.Collection, str, bool], str]:
-        def fn(col: pystac.Collection, parent_dir: str, is_root: bool):
-            return os.path.join(parent_dir, "col/{}/{}.json".format(is_root, col.id))
+        def fn(col: pystac.Collection, parent_dir: str, is_root: bool) -> str:
+            # Use JoinType.URL since we always use this in cases where we are using
+            # URLs
+            return join_path_or_url(
+                JoinType.URL, parent_dir, "col/{}/{}.json".format(is_root, col.id)
+            )
 
         return fn
 
     def get_custom_item_func(self) -> Callable[[pystac.Item, str], str]:
-        def fn(item: pystac.Item, parent_dir: str):
-            return os.path.join(parent_dir, "item/{}.json".format(item.id))
+        def fn(item: pystac.Item, parent_dir: str) -> str:
+            # Use JoinType.URL since we always use this in cases where we are using
+            # URLs
+            return join_path_or_url(
+                JoinType.URL, parent_dir, "item/{}.json".format(item.id)
+            )
 
         return fn
 
