@@ -74,7 +74,9 @@ class LayoutTemplate:
     # Special template vars specific to Items
     ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
-    def __init__(self, template: str, defaults: Dict[str, str] = None) -> None:
+    def __init__(
+        self, template: str, defaults: Optional[Dict[str, str]] = None
+    ) -> None:
         self.template = template
         self.defaults = defaults or {}
 
