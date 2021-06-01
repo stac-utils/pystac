@@ -187,7 +187,7 @@ class DefaultStacIO(StacIO):
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
-            with open(href) as f:
+            with open(href, encoding="utf-8") as f:
                 return f.read()
 
     def write_text(
@@ -207,7 +207,7 @@ class DefaultStacIO(StacIO):
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
-        with open(href, "w") as f:
+        with open(href, "w", encoding="utf-8") as f:
             f.write(txt)
 
 

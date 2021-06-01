@@ -28,8 +28,8 @@ class LabelTest(unittest.TestCase):
             "data-files/label/label-example-2.json"
         )
 
-    def test_to_from_dict(self):
-        with open(self.label_example_1_uri) as f:
+    def test_to_from_dict(self) -> None:
+        with open(self.label_example_1_uri, encoding="utf-8") as f:
             label_example_1_dict = json.load(f)
 
         test_to_from_dict(self, Item, label_example_1_dict)
@@ -75,14 +75,14 @@ class LabelTest(unittest.TestCase):
                 self.assertEqual(len(sources), 1)
                 self.assertTrue(sources[0].id in item_ids)
 
-    def test_validate_label(self):
-        with open(self.label_example_1_uri) as f:
+    def test_validate_label(self) -> None:
+        with open(self.label_example_1_uri, encoding="utf-8") as f:
             label_example_1_dict = json.load(f)
         pystac.validation.validate_dict(
             label_example_1_dict, pystac.STACObjectType.ITEM
         )
 
-        with TemporaryDirectory() as tmp_dir:
+        with TemporaryDirectory(dir=".") as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
             catalog = TestCases.test_case_1()
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)
