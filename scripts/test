@@ -2,60 +2,14 @@
 
 set -e
 
-if [[ -n "${CI}" ]]; then
-    set -x
+if [[ -z ${CI} ]]; then
+    source ./scripts/lint
 fi
 
-function usage() {
-    echo -n \
-        "Usage: $(basename "$0")
-Execute project linters and test suites.
-"
-}
+echo
+echo " -- RUNNING UNIT TESTS --"
+echo
 
-if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
-    if [ "${1:-}" = "--help" ]; then
-        usage
-    else
-        echo
-        echo " -- CHECKING TYPES WITH PYRIGHT --"
-        echo
-
-        scripts/pyright pystac tests
-
-        echo
-        echo " -- LINTING WITH FLAKE8 --"
-        echo
-
-        flake8 pystac tests
-
-        echo
-        echo " -- CHECKING FORMAT WITH BLACK --"
-        echo
-
-        black --check pystac
-        black --check tests
-
-        echo
-        echo " -- CHECKING SPELLING WITH CODESPELL --"
-        echo
-
-        # Code spelling
-        codespell -I .codespellignore -f \
-            pystac/*.py pystac/**/*.py \
-            tests/*.py tests/**/*.py \
-            docs/*.rst docs/**/*.rst \
-            docs/*.ipynb docs/**/*.ipynb \
-            scripts/* \
-            *.py \
-            *.md
-
-        echo
-        echo " -- RUNNING UNIT TESTS --"
-        echo
-
-        # Test suite with coverage enabled
-        coverage run --source=pystac/ -m unittest discover tests/
-        coverage xml
-    fi
-fi
+# Test suite with coverage enabled
+coverage run --source=pystac/ -m unittest discover tests/
+coverage xml
