@@ -53,7 +53,7 @@ jobs:
         with:
           path: ~\AppData\Local\pip\Cache
           # Cache based on OS, Python version, and dependency hash
-          key: test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+          key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
       
       - name: Install dependencies
         run: |
@@ -101,7 +101,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements-test.txt
-          pip install -e .
 
       - name: Execute linters & type checkers
         run: ./scripts/lint
