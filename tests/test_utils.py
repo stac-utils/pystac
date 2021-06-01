@@ -60,7 +60,7 @@ class UtilsTest(unittest.TestCase):
             actual = make_relative_href(source_href, start_href)
             self.assertEqual(actual, expected)
 
-    def test_make_relative_href_windows(self):
+    def test_make_relative_href_windows(self) -> None:
         utils._pathlib = ntpath
         try:
             # Test cases of (source_href, start_href, expected)
@@ -118,7 +118,7 @@ class UtilsTest(unittest.TestCase):
     @unittest.skipIf(
         sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
     )
-    def test_make_absolute_href(self):
+    def test_make_absolute_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
         test_cases = [
             ("item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
@@ -154,14 +154,14 @@ class UtilsTest(unittest.TestCase):
     @unittest.skipIf(
         sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
     )
-    def test_make_absolute_href_on_vsitar(self):
+    def test_make_absolute_href_on_vsitar(self) -> None:
         rel_path = "some/item.json"
         cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
         expected = "/vsitar//tmp/catalog.tar/some/item.json"
 
         self.assertEqual(expected, make_absolute_href(rel_path, cat_path))
 
-    def test_make_absolute_href_windows(self):
+    def test_make_absolute_href_windows(self) -> None:
         utils._pathlib = ntpath
         try:
             # Test cases of (source_href, start_href, expected)
@@ -202,7 +202,7 @@ class UtilsTest(unittest.TestCase):
         finally:
             utils._pathlib = os.path
 
-    def test_is_absolute_href(self):
+    def test_is_absolute_href(self) -> None:
         # Test cases of (href, expected)
         test_cases = [
             ("item.json", False),
@@ -216,7 +216,7 @@ class UtilsTest(unittest.TestCase):
             actual = is_absolute_href(href)
             self.assertEqual(actual, expected)
 
-    def test_is_absolute_href_windows(self):
+    def test_is_absolute_href_windows(self) -> None:
         utils._pathlib = ntpath
         try:
 
@@ -235,7 +235,7 @@ class UtilsTest(unittest.TestCase):
         finally:
             utils._pathlib = os.path
 
-    def test_datetime_to_str(self):
+    def test_datetime_to_str(self) -> None:
         cases = (
             (
                 "timezone naive, assume utc",
@@ -259,7 +259,7 @@ class UtilsTest(unittest.TestCase):
                 got = utils.datetime_to_str(dt)
                 self.assertEqual(expected, got)
 
-    def test_geojson_bbox(self):
+    def test_geojson_bbox(self) -> None:
         # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON
         with open("tests/data-files/geojson/sample.geojson") as sample_geojson:
             all_features = json.load(sample_geojson)

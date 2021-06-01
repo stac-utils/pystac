@@ -3,6 +3,12 @@
 set -e
 
 echo
+echo " -- CHECKING TYPES WITH MYPY --"
+echo
+
+mypy docs pystac setup.py tests
+
+echo
 echo " -- CHECKING TYPES WITH PYRIGHT --"
 echo
 
