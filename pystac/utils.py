@@ -61,6 +61,60 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
         return posixpath.join(*args)
 
 
+def _make_relative_href_url(
+    parsed_source: URLParseResult,
+    parsed_start: URLParseResult,
+    start_is_dir: bool = False,
+) -> str:
+
+    # If the start path is not a directory, get the parent directory
+    start_dir = (
+        parsed_start.path if start_is_dir else parsed_start.path.rsplit("/", 1)[0]
+    )
+
+    # Strip the leading slashes from both paths
+    start_dir = start_dir.lstrip("/")
+    source_path = parsed_source.path.lstrip("/")
+
+    # Get the relative path
+    rel_url = posixpath.relpath(source_path, start_dir)
+
+    # Ensure we retain a trailing slash from the original source path
+    if parsed_source.path.endswith("/"):
+        rel_url += "/"
+
+    # Prepend the "./"
+    if not rel_url.startswith("."):
+        rel_url = "./" + rel_url
+    return rel_url
+
+
+def _make_relative_href_path(
+    parsed_source: URLParseResult,
+    parsed_start: URLParseResult,
+    start_is_dir: bool = False,
+) -> str:
+    # If the start path is not a directory, get the parent directory
+    start_dir = (
+        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+    )
+
+    # Strip the leading slashes from both paths
+    start_dir = start_dir.lstrip("/")
+    source_path = parsed_source.path.lstrip("/")
+
+    relpath = _pathlib.relpath(source_path, start_dir)
+
+    # Ensure we retain a trailing slash from the original source path
+    if parsed_source.path.endswith("/"):
+        relpath += "/"
+
+    if not relpath.startswith("."):
+        relpath = _pathlib.join(".", relpath)
+
+    return relpath
+
+
 def make_relative_href(
     source_href: str, start_href: str, start_is_dir: bool = False
 ) -> str:
@@ -79,27 +133,78 @@ def make_relative_href(
         parent, then source_href will be returned unchanged.
     """
 
-    parsed_source = _urlparse(source_href)
-    parsed_start = _urlparse(start_href)
+    parsed_source = safe_urlparse(source_href)
+    parsed_start = safe_urlparse(start_href)
     if not (
         parsed_source.scheme == parsed_start.scheme
         and parsed_source.netloc == parsed_start.netloc
     ):
         return source_href
 
-    is_path = parsed_start.scheme == ""
-
-    if start_is_dir:
-        start_dir = parsed_start.path
+    if JoinType.from_parsed_uri(parsed_start) == JoinType.PATH:
+        return _make_relative_href_path(parsed_source, parsed_start, start_is_dir)
     else:
-        start_dir = _pathlib.dirname(parsed_start.path)
-    relpath = _pathlib.relpath(parsed_source.path, start_dir)
-    if not is_path:
-        relpath = relpath.replace("\\", "/")
-    if not relpath.startswith("."):
-        relpath = _join(is_path, ".", relpath)
+        return _make_relative_href_url(parsed_source, parsed_start, start_is_dir)
 
-    return relpath
+
+def _make_absolute_href_url(
+    parsed_source: URLParseResult,
+    parsed_start: URLParseResult,
+    start_is_dir: bool = False,
+) -> str:
+
+    # If the source is already absolute, just return it
+    if parsed_source.scheme != "":
+        return urlunparse((parsed_source))
+
+    # If the start path is not a directory, get the parent directory
+    start_dir = (
+        parsed_start.path if start_is_dir else parsed_start.path.rsplit("/", 1)[0]
+    )
+    # Ensure the directory has a trailing slash so urljoin works properly
+    start_dir = start_dir.rstrip("/") + "/"
+
+    # Join the start directory to the relative path and find the absolute path
+    abs_path = urljoin(start_dir, parsed_source.path)
+    abs_path = abs_path.replace("\\", "/")
+
+    return urlunparse(
+        (
+            parsed_start.scheme,
+            parsed_start.netloc,
+            abs_path,
+            parsed_source.params,
+            parsed_source.query,
+            parsed_source.fragment,
+        )
+    )
+
+
+def _make_absolute_href_path(
+    parsed_source: URLParseResult,
+    parsed_start: URLParseResult,
+    start_is_dir: bool = False,
+) -> str:
+
+    # If the source is already absolute, just return it
+    if _pathlib.isabs(parsed_source.path):
+        return urlunparse((parsed_source))
+
+    # If the start path is not a directory, get the parent directory
+    start_dir = (
+        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+    )
+
+    # Join the start directory to the relative path and find the absolute path
+    abs_path = _pathlib.abspath(_pathlib.join(start_dir, parsed_source.path))
+
+    # Account for the normalization of abspath for
+    # things like /vsitar// prefixes by replacing the
+    # original start_dir text when abspath modifies the start_dir.
+    if not start_dir == _pathlib.abspath(start_dir):
+        abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
+
+    return abs_path
 
 
 def make_absolute_href(
@@ -124,36 +229,13 @@ def make_absolute_href(
         start_href = os.getcwd()
         start_is_dir = True
 
-    parsed_source = _urlparse(source_href)
-    if parsed_source.scheme == "":
-        if not _pathlib.isabs(parsed_source.path):
-            parsed_start = _urlparse(start_href)
-            is_path = parsed_start.scheme == ""
-            if start_is_dir:
-                start_dir = parsed_start.path
-            else:
-                start_dir = _pathlib.dirname(parsed_start.path)
-            abs_path = _pathlib.abspath(_join(is_path, start_dir, parsed_source.path))
+    parsed_start = safe_urlparse(start_href)
+    parsed_source = safe_urlparse(source_href)
 
-            # Account for the normalization of abspath for
-            # things like /vsitar// prefixes by replacing the
-            # original start_dir text when abspath modifies the start_dir.
-            if not start_dir == _pathlib.abspath(start_dir):
-                abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
-
-            if parsed_start.scheme != "":
-                if not is_path:
-                    abs_path = abs_path.replace("\\", "/")
-
-                return "{}://{}{}".format(
-                    parsed_start.scheme, parsed_start.netloc, abs_path
-                )
-            else:
-                return abs_path
-        else:
-            return source_href
+    if JoinType.from_parsed_uri(parsed_start) == JoinType.PATH:
+        return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
     else:
-        return source_href
+        return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
 
 
 def is_absolute_href(href: str) -> bool:
@@ -165,7 +247,7 @@ def is_absolute_href(href: str) -> bool:
     Returns:
         bool: True if the given HREF is absolute, False if it is relative.
     """
-    parsed = _urlparse(href)
+    parsed = safe_urlparse(href)
     return parsed.scheme != "" or _pathlib.isabs(parsed.path)
 
 
