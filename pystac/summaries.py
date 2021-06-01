@@ -1,8 +1,7 @@
 import sys
-import json
 import numbers
-import urllib.request
 from enum import Enum
+from functools import lru_cache
 
 import pystac
 from pystac.utils import get_required
@@ -65,6 +64,11 @@ class RangeSummary(Generic[T]):
 FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
 
 
+@lru_cache(maxsize=None)
+def _get_fields_json(url: str) -> Dict[str, Any]:
+    return pystac.StacIO.default().read_json(url)
+
+
 class SummaryStrategy(Enum):
     ARRAY = "v"
     RANGE = "r"
@@ -86,31 +90,20 @@ class Summarizer:
         If no file is passed, a default one will be used.
     """
 
-    _default_field_definitions: Dict[str, Any] = {}
-
     def __init__(self, fields: Optional[str] = None):
-        if fields is None:
-            self._set_default_field_definitions()
-        else:
-            jsonfields = pystac.StacIO.default().read_json(fields)
-            self._set_field_definitions(jsonfields)
-
-    def _set_default_field_definitions(self) -> None:
-        if not Summarizer._default_field_definitions:
-            try:
-                with urllib.request.urlopen(FIELDS_JSON_URL) as url:
-                    Summarizer._default_field_definitions = json.loads(
-                        url.read().decode()
-                    )
-            except:
-                pass
-        if not Summarizer._default_field_definitions:
-            raise Exception(
-                "Could not read fields definition file at "
-                f"{FIELDS_JSON_URL} or it is invalid.\n"
-                "Try using a local fields definition file."
-            )
-        self._set_field_definitions(Summarizer._default_field_definitions)
+        fieldspath = fields or FIELDS_JSON_URL
+        try:
+            jsonfields = _get_fields_json(fieldspath)
+        except:
+            if fields is None:
+                raise Exception(
+                    "Could not read fields definition file at "
+                    f"{fields} or it is invalid.\n"
+                    "Try using a local fields definition file."
+                )
+            else:
+                raise
+        self._set_field_definitions(jsonfields)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
         self.summaryfields: Dict[str, SummaryStrategy] = {}
@@ -161,11 +154,11 @@ class Summarizer:
     ) -> "Summaries":
         """Creates summaries from items"""
         summaries = Summaries.empty()
-        if hasattr(source, "get_all_items"):
-            for item in source.get_all_items():  # type: ignore[union-attr]
+        if isinstance(source, pystac.Collection):
+            for item in source.get_all_items():
                 self._update_with_item(summaries, item)
         else:
-            for item in source:  # type: ignore[union-attr]
+            for item in source:
                 self._update_with_item(summaries, item)
 
         return summaries
