@@ -61,7 +61,7 @@ class RangeSummary(Generic[T]):
         return cls(minimum=minimum, maximum=maximum)
 
 
-FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields.json"
+FIELDS_JSON_URL = "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json"
 
 
 @lru_cache(maxsize=None)
