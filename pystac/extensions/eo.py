@@ -284,9 +284,13 @@ class EOExtension(
     STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Collection`).
 
-    This class will generally not be used directly. Instead, use the concrete
-    implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemEOExtension` to extend an :class:`~pystac.Item`).
+    To create a concrete instance of :class:`EOExtension`, use the 
+    :meth:`EOExtension.ext` method. For example:
+    
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> view_ext = ViewExtension.ext(item)
     """
 
     def apply(

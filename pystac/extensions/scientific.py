@@ -109,9 +109,13 @@ class ScientificExtension(
     the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Collection`).
 
-    This class will generally not be used directly. Instead, use the concrete
-    implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemScientificExtension` to extend an :class:`~pystac.Item`).
+    To create a concrete instance of :class:`ScientificExtension`, use the 
+    :meth:`ScientificExtension.ext` method. For example:
+    
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> sci_ext = ScientificExtension.ext(item)
     """
 
     def __init__(self, obj: pystac.STACObject) -> None:

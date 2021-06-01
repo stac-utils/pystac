@@ -37,9 +37,13 @@ class ProjectionExtension(
     Extension <projection>`. This class is generic over the type of STAC Object to be
     extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
-    This class will generally not be used directly. Instead, use the concrete
-    implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemProjectionExtension` to extend an :class:`~pystac.Item`).
+    To create a concrete instance of :class:`ProjectionExtension`, use the 
+    :meth:`ProjectionExtension.ext` method. For example:
+    
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> proj_ext = ProjectionExtension.ext(item)
     """
 
     def __init__(self, item: pystac.Item) -> None:

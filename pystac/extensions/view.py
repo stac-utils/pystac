@@ -34,9 +34,13 @@ class ViewExtension(
     Extension <view>`. This class is generic over the type of STAC Object to be
     extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Asset`).
 
-    This class will generally not be used directly. Instead, use the concrete
-    implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemViewExtension` to extend an :class:`~pystac.Item`).
+    To create a concrete instance of :class:`ViewExtension`, use the 
+    :meth:`ViewExtension.ext` method. For example:
+    
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> view_ext = ViewExtension.ext(item)
     """
 
     def apply(
