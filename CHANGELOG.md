@@ -15,8 +15,11 @@
 
 - Links to STAC Spec point to latest supported version ([#368](https://github.com/stac-utils/pystac/pull/368))
 - Links to STAC Extension pages point to repos in `stac-extensions` GitHub org ([#368](https://github.com/stac-utils/pystac/pull/368))
+- Collection assets ([#373](https://github.com/stac-utils/pystac/pull/373))
 
 ### Removed
+
+- Two v0.6.0 examples from the test suite ([#373](https://github.com/stac-utils/pystac/pull/373))
 
 ## [1.0.0-beta.2]
 
