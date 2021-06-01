@@ -166,12 +166,12 @@ class UtilsTest(unittest.TestCase):
         try:
             # Test cases of (source_href, start_href, expected)
             test_cases = [
-                ("item.json", "C:\\a\\b\\c\\catalog.json", "c:\\a\\b\\c\\item.json"),
-                (".\\item.json", "C:\\a\\b\\c\\catalog.json", "c:\\a\\b\\c\\item.json"),
+                ("item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
+                (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
                 (
                     ".\\z\\item.json",
                     "Z:\\a\\b\\c\\catalog.json",
-                    "z:\\a\\b\\c\\z\\item.json",
+                    "Z:\\a\\b\\c\\z\\item.json",
                 ),
                 ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:\\a\\b\\item.json"),
                 (
