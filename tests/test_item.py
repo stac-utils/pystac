@@ -73,7 +73,7 @@ class ItemTest(unittest.TestCase):
 
         item.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory() as tmp_dir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
             p = os.path.join(tmp_dir, "item.json")
             item.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:

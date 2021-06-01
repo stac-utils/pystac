@@ -1,3 +1,4 @@
+import os
 import unittest
 from tempfile import TemporaryDirectory
 
@@ -99,8 +100,10 @@ class STACWritingTest(unittest.TestCase):
 
         validate_catalog_link_type(root_href, link_type, root_should_include_href)
 
-    def do_test(self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType):
-        with TemporaryDirectory() as tmp_dir:
+    def do_test(
+        self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType
+    ) -> None:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             self.validate_catalog(catalog)
 

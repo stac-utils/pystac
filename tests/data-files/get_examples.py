@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "examples"))
 
-    with TemporaryDirectory() as tmp_dir:
+    with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
         call(
             [
                 "git",

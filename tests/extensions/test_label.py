@@ -82,7 +82,7 @@ class LabelTest(unittest.TestCase):
             label_example_1_dict, pystac.STACObjectType.ITEM
         )
 
-        with TemporaryDirectory(dir=".") as tmp_dir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
             catalog = TestCases.test_case_1()
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)

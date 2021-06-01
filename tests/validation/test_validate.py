@@ -98,7 +98,7 @@ class ValidateTest(unittest.TestCase):
         # Modify a 0.8.1 collection in a catalog to be invalid with a
         # since-renamed extension and make sure it catches the validation error.
 
-        with TemporaryDirectory() as tmp_dir:
+        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
             dst_dir = os.path.join(tmp_dir, "catalog")
             # Copy test case 7 to the temporary directory
             catalog_href = get_opt(TestCases.test_case_7().get_self_href())
