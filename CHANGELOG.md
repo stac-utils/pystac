@@ -13,6 +13,9 @@
 
 ### Fixed
 
+- Links to STAC Spec point to latest supported version ([#368](https://github.com/stac-utils/pystac/pull/368))
+- Links to STAC Extension pages point to repos in `stac-extensions` GitHub org ([#368](https://github.com/stac-utils/pystac/pull/368))
+
 ### Removed
 
 ## [1.0.0-beta.2]

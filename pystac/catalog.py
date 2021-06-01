@@ -40,7 +40,7 @@ class CatalogType(str, Enum):
     local computer, so all links need to be relative.
 
     See:
-        `The best practices documentation on self-contained catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#self-contained-catalogs>`_
+        :stac-spec:`The best practices documentation on self-contained catalogs <best-practices.md#self-contained-catalogs>`
     """  # noqa E501
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -49,7 +49,7 @@ class CatalogType(str, Enum):
     both in the links objects and in the asset hrefs.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
+        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
     """  # noqa E501
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -58,7 +58,7 @@ class CatalogType(str, Enum):
     but includes an absolute self link at the root catalog, to identify its online location.
 
     See:
-        `The best practices documentation on published catalogs <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#published-catalogs>`_
+        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
     """  # noqa E501
 
     @classmethod
@@ -545,7 +545,7 @@ class Catalog(STACObject):
                 for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
 
         See:
-            `STAC best practices document <https://github.com/radiantearth/stac-spec/blob/v0.8.1/best-practices.md#catalog-layout>`_ for the canonical layout of a STAC.
+            :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>` for the canonical layout of a STAC.
         """  # noqa E501
         if strategy is None:
             _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
