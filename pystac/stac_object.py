@@ -56,7 +56,7 @@ class STACObject(ABC):
         """
         import pystac.validation
 
-        return pystac.validation.validate(self)  # type:ignore
+        return pystac.validation.validate(self)
 
     def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.

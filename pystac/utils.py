@@ -194,8 +194,14 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
         for x in coords:
             # This handles points
             if isinstance(x, float):
-                lats.append(coords[0])  # type:ignore
-                lons.append(coords[1])  # type:ignore
+                assert isinstance(
+                    coords[0], float
+                ), f"Type mismatch: {coords[0]} is not a float"
+                assert isinstance(
+                    coords[1], float
+                ), f"Type mismatch: {coords[1]} is not a float"
+                lats.append(coords[0])
+                lons.append(coords[1])
                 return
             if isinstance(x[0], list):
                 extract_coords(x)  # type:ignore

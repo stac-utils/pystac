@@ -23,7 +23,7 @@ import pystac.serialization
 
 # Use orjson if available
 try:
-    import orjson  # type: ignore
+    import orjson
 except ImportError:
     orjson = None  # type: ignore[assignment]
 
