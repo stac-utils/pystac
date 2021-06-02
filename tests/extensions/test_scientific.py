@@ -1,13 +1,19 @@
 """Tests for pystac.tests.extensions.scientific."""
 
 import datetime
+from pystac.link import Link
 from pystac.collection import Summaries
 import unittest
 from typing import List, Optional
 
 import pystac
 from pystac.extensions import scientific
-from pystac.extensions.scientific import ScientificExtension, ScientificRelType
+from pystac.extensions.scientific import (
+    Publication,
+    ScientificExtension,
+    ScientificRelType,
+    remove_link,
+)
 
 URL_TEMPLATE = "http://example.com/catalog/%s.json"
 
@@ -39,6 +45,28 @@ def make_item() -> pystac.Item:
 
     ScientificExtension.add_to(item)
     return item
+
+
+class TestRemoveLinks(unittest.TestCase):
+    def test_remove_none_doi(self) -> None:
+        """Calling remove_link with doi = None should have no effect."""
+        link = Link(
+            rel=ScientificRelType.CITE_AS,
+            target="https://some-domain.com/some/paper.pdf",
+        )
+        links = [link]
+
+        remove_link(links, doi=None)
+
+        self.assertEqual(len(links), 1)
+        self.assertIn(link, links)
+
+
+class TestPublication(unittest.TestCase):
+    def test_get_link_returns_none_if_no_doi(self) -> None:
+        pub = Publication(None, CITATION)
+
+        self.assertIsNone(pub.get_link())
 
 
 class ItemScientificExtensionTest(unittest.TestCase):
