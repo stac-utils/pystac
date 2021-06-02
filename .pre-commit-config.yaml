@@ -1,0 +1,12 @@
+# Configuration file for pre-commit (https://pre-commit.com/).
+# Please run `pre-commit run --all-files` when adding or changing entries.
+
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black
+        language: system
+        stages: [commit]
+        types: [python]

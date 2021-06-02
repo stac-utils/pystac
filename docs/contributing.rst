@@ -58,7 +58,7 @@ To format code:
 
 .. code-block:: bash
 
-    > ./scripts/format
+    > pre-commit run --all-files
 
 We also use `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in
 the docs.

@@ -18,9 +18,7 @@ echo
 echo " -- CHECKING FORMAT WITH BLACK --"
 echo
 
-black --check pystac
-black --check tests
-black --check setup.py
+pre-commit run --all-files
 
 echo
 echo " -- CHECKING SPELLING WITH CODESPELL --"
