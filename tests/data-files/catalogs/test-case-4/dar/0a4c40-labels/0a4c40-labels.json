@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "0a4c40-labels",
   "properties": {
     "label:description": "Geojson building labels for scene 0a4c40",
