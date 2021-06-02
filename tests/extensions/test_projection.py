@@ -6,7 +6,7 @@ from copy import deepcopy
 import pystac
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 WKT2 = """
 GEOGCS["WGS 84",
@@ -80,7 +80,7 @@ class ProjectionTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))

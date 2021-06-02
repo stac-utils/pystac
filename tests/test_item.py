@@ -11,7 +11,7 @@ from pystac.validation import validate_dict
 import pystac.serialization.common_properties
 from pystac.item import CommonMetadata
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime, is_absolute_href
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class ItemTest(unittest.TestCase):
@@ -26,7 +26,7 @@ class ItemTest(unittest.TestCase):
 
         item_dict = self.get_example_item_dict()
 
-        test_to_from_dict(self, Item, item_dict)
+        assert_to_from_dict(self, Item, item_dict)
         item = Item.from_dict(item_dict)
         self.assertEqual(item.id, "CS3-20160503_132131_05")
 
