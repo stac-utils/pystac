@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "area-1-1-imagery",
   "properties": {
     "datetime": "2019-10-04T18:55:37Z"

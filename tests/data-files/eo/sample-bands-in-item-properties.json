@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "CS3-20160503_132131_05",
   "properties": {
     "datetime": "2016-05-03T13:22:30Z",

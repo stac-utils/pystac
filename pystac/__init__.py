@@ -18,9 +18,10 @@ from pystac.version import (
     get_stac_version,  # type:ignore
     set_stac_version,  # type:ignore
 )
+from pystac.media_type import MediaType  # type:ignore
+from pystac.rel_type import RelType  # type: ignore
 from pystac.stac_io import StacIO  # type:ignore
 from pystac.stac_object import STACObject, STACObjectType  # type:ignore
-from pystac.media_type import MediaType  # type:ignore
 from pystac.link import Link, HIERARCHICAL_LINKS  # type:ignore
 from pystac.catalog import Catalog, CatalogType  # type:ignore
 from pystac.collection import (
@@ -30,8 +31,8 @@ from pystac.collection import (
     TemporalExtent,  # type:ignore
     Provider,  # type:ignore
     Summaries,  # type:ignore
-    RangeSummary,  # type:ignore
 )
+from pystac.summaries import RangeSummary  # type:ignore
 from pystac.item import Item, Asset, CommonMetadata  # type:ignore
 
 import pystac.validation

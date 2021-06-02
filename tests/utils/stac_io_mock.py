@@ -9,7 +9,7 @@ class MockStacIO(pystac.StacIO):
     clients to replace STAC_IO functionality, all within a context scope.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.mock = Mock()
 
     def read_text(

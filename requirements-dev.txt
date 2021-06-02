@@ -1,4 +1,4 @@
-mypy==0.790
+mypy==0.812
 flake8==3.8.*
 black==21.4b2
 
@@ -11,6 +11,7 @@ sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.7.1
 coverage==5.2.*
+doc8==0.8.1
 
 # https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
 jinja2<3.0

@@ -7,7 +7,7 @@ from tests.utils import TestCases
 
 
 class StacIOTest(unittest.TestCase):
-    def test_stac_io_issues_warnings(self):
+    def test_stac_io_issues_warnings(self) -> None:
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.
             warnings.simplefilter("always")
@@ -20,7 +20,7 @@ class StacIOTest(unittest.TestCase):
             self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
-    def test_read_text(self):
+    def test_read_text(self) -> None:
         _ = pystac.read_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )

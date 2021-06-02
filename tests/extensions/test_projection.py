@@ -6,7 +6,7 @@ from copy import deepcopy
 import pystac
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 WKT2 = """
 GEOGCS["WGS 84",
@@ -71,18 +71,18 @@ PROJJSON = json.loads(
 
 
 class ProjectionTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path(
             "data-files/projection/example-landsat8.json"
         )
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, pystac.Item, d)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
         self.assertFalse(ProjectionExtension.has_extension(item))
 
@@ -98,7 +98,7 @@ class ProjectionTest(unittest.TestCase):
             transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0],
         )
 
-    def test_partial_apply(self):
+    def test_partial_apply(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         ProjectionExtension.ext(proj_item).apply(epsg=1111)
@@ -106,11 +106,11 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(ProjectionExtension.ext(proj_item).epsg, 1111)
         proj_item.validate()
 
-    def test_validate_proj(self):
+    def test_validate_proj(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
-    def test_epsg(self):
+    def test_epsg(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -119,6 +119,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(proj_epsg, proj_item.properties["proj:epsg"])
 
         # Set
+        assert proj_epsg is not None
         ProjectionExtension.ext(proj_item).epsg = proj_epsg + 100
         self.assertEqual(proj_epsg + 100, proj_item.properties["proj:epsg"])
 
@@ -142,7 +143,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
-    def test_wkt2(self):
+    def test_wkt2(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -177,7 +178,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
-    def test_projjson(self):
+    def test_projjson(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -196,9 +197,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).projjson,
             ProjectionExtension.ext(proj_item).projjson,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).projjson["id"]["code"], 9999
-        )
+        asset_prop_json = ProjectionExtension.ext(asset_prop).projjson
+        assert asset_prop_json is not None
+        self.assertEqual(asset_prop_json["id"]["code"], 9999)
 
         # Set to Asset
         asset_value = deepcopy(PROJJSON)
@@ -208,9 +209,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).projjson,
             ProjectionExtension.ext(proj_item).projjson,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).projjson["id"]["code"], 7777
-        )
+        asset_no_prop_json = ProjectionExtension.ext(asset_no_prop).projjson
+        assert asset_no_prop_json is not None
+        self.assertEqual(asset_no_prop_json["id"]["code"], 7777)
 
         # Validate
         proj_item.validate()
@@ -220,7 +221,7 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
-    def test_geometry(self):
+    def test_geometry(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -239,10 +240,9 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(asset_no_prop).geometry,
             ProjectionExtension.ext(proj_item).geometry,
         )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).geometry["coordinates"][0][0],
-            [0.0, 0.0],
-        )
+        asset_prop_geometry = ProjectionExtension.ext(asset_prop).geometry
+        assert asset_prop_geometry is not None
+        self.assertEqual(asset_prop_geometry["coordinates"][0][0], [0.0, 0.0])
 
         # Set to Asset
         asset_value: Dict[str, Any] = {"type": "Point", "coordinates": [1.0, 2.0]}
@@ -261,7 +261,7 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
-    def test_bbox(self):
+    def test_bbox(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -294,7 +294,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
-    def test_centroid(self):
+    def test_centroid(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -335,7 +335,7 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).centroid = {"lat": 2.0, "lng": 3.0}
             proj_item.validate()
 
-    def test_shape(self):
+    def test_shape(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -369,7 +369,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
-    def test_transform(self):
+    def test_transform(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -405,3 +405,33 @@ class ProjectionTest(unittest.TestCase):
 
         # Validate
         proj_item.validate()
+
+
+class ProjectionSummariesTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.example_uri = TestCases.get_path(
+            "data-files/projection/collection-with-summaries.json"
+        )
+
+    def test_get_summaries(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        proj_summaries = ProjectionExtension.summaries(col)
+
+        # Get
+
+        epsg_summaries = proj_summaries.epsg
+        assert epsg_summaries is not None
+        self.assertListEqual(epsg_summaries, [32614])
+
+    def test_set_summaries(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        proj_summaries = ProjectionExtension.summaries(col)
+
+        # Set
+
+        proj_summaries.epsg = [4326]
+
+        col_dict = col.to_dict()
+        self.assertEqual(len(col_dict["summaries"]["proj:epsg"]), 1)
+        self.assertEqual(col_dict["summaries"]["proj:epsg"][0], 4326)

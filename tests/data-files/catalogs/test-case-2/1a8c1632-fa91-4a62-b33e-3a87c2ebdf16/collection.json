@@ -1,7 +1,7 @@
 {
   "type": "Collection",
   "id": "1a8c1632-fa91-4a62-b33e-3a87c2ebdf16",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "description": "Project layer collection",
   "links": [
     {

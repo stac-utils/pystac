@@ -14,6 +14,20 @@ from pystac.extensions.hooks import ExtensionHooks
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
 
+class LabelRelType(str, Enum):
+    """A list of rel types defined in the Label Extension.
+
+    See the :stac-ext:`Label Extension Links <label#links-source-imagery>`
+    documentation for details.
+    """
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    SOURCE = "source"
+    """Used to indicate a link to the source item to which a label item applies."""
+
+
 class LabelType(str, Enum):
     """Enumerates valid label types (RASTER or VECTOR)."""
 
@@ -456,7 +470,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         item : The Item that is being extended.
 
     See:
-        `Item fields in the label extension spec <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/label#item-fields>`_
+        :stac-ext:`Item fields in the label extension spec <label#item-properties>`
 
     Note:
         Using LabelItemExt to directly wrap an item will add the 'label' extension ID to
@@ -693,7 +707,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             "source",
             source_item,
             title=title,
-            media_type="application/json",
+            media_type=pystac.MediaType.JSON,
             properties=properties,
         )
         self.obj.add_link(link)
@@ -773,9 +787,11 @@ class LabelExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(["label"])
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
-    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
+    def get_object_links(
+        self, so: pystac.STACObject
+    ) -> Optional[List[Union[str, pystac.RelType]]]:
         if isinstance(so, pystac.Item):
-            return ["source"]
+            return [LabelRelType.SOURCE]
         return None
 
     def migrate(

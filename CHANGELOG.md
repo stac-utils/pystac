@@ -10,6 +10,27 @@
 
 ### Removed
 
+## [1.0.0-beta.3]
+
+### Added
+
+- Summaries for View Geometry, Projection, and Scientific extensions ([#372](https://github.com/stac-utils/pystac/pull/372))
+- Raster extension support ([#364](https://github.com/stac-utils/pystac/issues/364))
+- solar_illumination field in eo extension ([#356](https://github.com/stac-utils/pystac/issues/356))
+- Added `Link.canonical` static method for creating links with "canonical" rel type ([#351](https://github.com/stac-utils/pystac/pull/351))
+- Added `RelType` enum containing common `rel` values ([#351](https://github.com/stac-utils/pystac/pull/351))
+- Added support for summaries ([#264](https://github.com/stac-utils/pystac/pull/264))
+
+### Fixed
+
+- Links to STAC Spec point to latest supported version ([#368](https://github.com/stac-utils/pystac/pull/368))
+- Links to STAC Extension pages point to repos in `stac-extensions` GitHub org ([#368](https://github.com/stac-utils/pystac/pull/368))
+- Collection assets ([#373](https://github.com/stac-utils/pystac/pull/373))
+
+### Removed
+
+- Two v0.6.0 examples from the test suite ([#373](https://github.com/stac-utils/pystac/pull/373))
+
 ## [1.0.0-beta.2]
 
 ### Changed
@@ -26,7 +47,7 @@
 - Removed type information from docstrings, since it is redundant with function type
   annotations ([#342](https://github.com/stac-utils/pystac/pull/342))
 
-## [1.0.0-beta.1]
+## [v1.0.0-beta.1]
 
 ### Added
 
@@ -313,7 +334,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..main>
+[v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
 [v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
 [v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
 [v0.5.6]: <https://github.com/stac-utils/pystac/compare/v0.5.5..v0.5.6>

@@ -3,7 +3,7 @@ from imp import load_source
 from setuptools import setup, find_packages
 from glob import glob
 
-__version__ = load_source('pystac.version', 'pystac/version.py').__version__
+__version__ = load_source('pystac.version', 'pystac/version.py').__version__  # type: ignore
 
 from os.path import (
     basename,
@@ -27,7 +27,10 @@ setup(
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
     include_package_data=False,
-    install_requires=["python-dateutil>=2.7.0"],
+    install_requires=[
+        "python-dateutil>=2.7.0",
+        'typing_extensions >= 3.7; python_version < "3.8"',
+    ],
     extras_require={
         "validation": ["jsonschema>=3.0"],
         "orjson": ["orjson>=3.5"]

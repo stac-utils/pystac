@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "LC08_L1TP_107018_20181001_20181001_01_RT",
   "properties": {
     "platform": "landsat-8",
@@ -65,7 +65,8 @@
           "name": "B1",
           "common_name": "coastal",
           "center_wavelength": 0.44,
-          "full_width_half_max": 0.02
+          "full_width_half_max": 0.02,
+          "solar_illumination": 2000
         }
       ]
     },

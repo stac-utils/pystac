@@ -2,7 +2,8 @@ API Reference
 =============
 
 This API reference is auto-generated for the Python docstrings,
-and organized by the section of the `STAC Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2>`_ they relate to, if related to a specific spec item.
+and organized by the section of the :stac-spec:`STAC Spec <>` they relate to, if related
+to a specific spec item.
 
 pystac
 ------
@@ -13,7 +14,11 @@ pystac
 STACObject
 ----------
 
-STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Collection <pystac.Collection>` and :class:`Item <pystac.Item>`, and contains a variety of useful methods for dealing with links, copying objects, accessing extensions, and reading and writing files. You shouldn't use STACObject directly, but instead access this functionality through the implementing classes.
+STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Collection
+<pystac.Collection>` and :class:`Item <pystac.Item>`, and contains a variety of useful
+methods for dealing with links, copying objects, accessing extensions, and reading and
+writing files. You shouldn't use STACObject directly, but instead access this
+functionality through the implementing classes.
 
 .. autoclass:: pystac.STACObject
    :members:
@@ -28,7 +33,7 @@ STACObject is the base class for :class:`Catalog <pystac.Catalog>`, :class:`Coll
 Catalog Spec
 ------------
 
-These classes are representations of the `Catalog Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/catalog-spec>`_.
+These classes are representations of the :stac-spec:`Catalog Spec <catalog-spec>`.
 
 Catalog
 ~~~~~~~
@@ -50,7 +55,7 @@ CatalogType
 Collection Spec
 ---------------
 
-These classes are representations of the `Collection Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/collection-spec>`_.
+These classes are representations of the :stac-spec:`Collection Spec <collection-spec>`.
 
 Collection
 ~~~~~~~~~~
@@ -88,10 +93,17 @@ Provider
    :members:
    :undoc-members:
 
+Summaries
+~~~~~~~~~
+
+.. autoclass:: pystac.Summaries
+   :members:
+   :undoc-members:
+
 Item Spec
 ---------
 
-These classes are representations of the `Item Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/item-spec>`_.
+These classes are representations of the :stac-spec:`Item Spec <item-spec>`.
 
 Item
 ~~~~
@@ -134,13 +146,21 @@ MediaType
    :members:
    :undoc-members:
 
+RelType
+~~~~~~~
+
+.. autoclass:: pystac.RelType
+   :members:
+   :undoc-members:
+
 IO
 --
 
 STAC_IO
 ~~~~~~~
 
-STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
+STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of
+PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
 
 .. autoclass:: pystac.stac_io.STAC_IO
    :members:
@@ -186,51 +206,79 @@ ExtensionTypeError
 Extensions
 ----------
 
-**TEMPORARILY REMOVED**
-.. .. autoclass:: pystac.extensions.Extensions
-..    :members:
-..    :undoc-members:
-
-ExtensionIndex
-~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. An ExtensionIndex is accessed through the :attr:`STACObject.ext <pystac.STACObject.ext>` property and is the primary way to access information and functionality around STAC extensions.
-
-.. .. autoclass:: pystac.stac_object.ExtensionIndex
-..    :members: __getitem__, __getattr__, enable, implements
-
-
-EO Extension
+Base Classes
 ------------
 
-These classes are representations of the `EO Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/eo>`_.
+Abstract base classes that should be inherited to implement specific extensions.
 
-EOItemExt
-~~~~~~~~~
+SummariesExtension
+~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.base.SummariesExtension
+   :members:
 
-.. .. autoclass:: pystac.extensions.eo.EOItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+PropertiesExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.PropertiesExtension
+   :members:
+   :show-inheritance:
+
+ExtensionManagementMixin
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.base.ExtensionManagementMixin
+   :members:
+   :show-inheritance:
+
+Electro-Optical Extension
+-------------------------
+
+These classes are representations of the :stac-ext:`EO Extension Spec <eo>`.
 
 Band
 ~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.eo.Band
+   :members:
+   :undoc-members:
 
-.. .. autoclass:: pystac.extensions.eo.Band
-..    :members:
-..    :undoc-members:
+EOExtension
+~~~~~~~~~~~
 
+.. autoclass:: pystac.extensions.eo.EOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ItemEOExtension
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.ItemEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AssetEOExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.AssetEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SummariesEOExtension
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.eo.SummariesEOExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Label Extension
 ---------------
 
-These classes are representations of the `Label Extension Spec <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/label>`_.
+These classes are representations of the :stac-ext:`Label Extension Spec <label>`.
 
 LabelItemExt
 ~~~~~~~~~~~~
@@ -241,6 +289,13 @@ LabelItemExt
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
+
+LabelRelType
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.label.LabelRelType
+   :members:
+   :show-inheritance:
 
 LabelType
 ~~~~~~~~~
@@ -280,7 +335,7 @@ LabelStatistics
 Pointcloud Extension
 --------------------
 
-Implements the `Point Cloud Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/pointcloud>`_.
+Implements the :stac-ext:`Point Cloud Extension <pointcloud>`.
 
 PointcloudItemExt
 ~~~~~~~~~~~~~~~~~
@@ -295,22 +350,68 @@ PointcloudItemExt
 Projection Extension
 --------------------
 
-Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
+These classes are representations of the :stac-ext:`Projection Extension Spec
+<projection>`.
 
-ProjectionItemExt
-~~~~~~~~~~~~~~~~~
+ProjectionExtension
+~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.projection.ProjectionExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.projection.ProjectionItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.ItemProjectionExtension
+   :members:
+   :show-inheritance:
+
+AssetProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.AssetProjectionExtension
+   :members:
+   :show-inheritance:
+
+Scientific Extension
+--------------------
+
+These classes are representations of the :stac-ext:`Scientific Extension Spec
+<scientific>`.
+
+Publication
+~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.Publication
+   :members:
+   :show-inheritance:
+
+ScientificExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ScientificExtension
+   :members:
+   :show-inheritance:
+
+CollectionScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.CollectionScientificExtension
+   :members:
+   :show-inheritance:
+
+ItemScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ItemScientificExtension
+   :members:
+   :show-inheritance:
 
 Timestamps Extension
 --------------------
 
-Implements the `Timestamps Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/timestamps>`_.
+Implements the :stac-ext:`Timestamps Extension <timestamps>`.
 
 TimestampsItemExt
 ~~~~~~~~~~~~~~~~~
@@ -325,7 +426,7 @@ TimestampsItemExt
 SAR Extension
 -------------
 
-Implements the `SAR Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sar>`_.
+Implements the :stac-ext:`SAR Extension <sar>`.
 
 SarItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -340,7 +441,7 @@ SarItemExt
 SAT Extension
 -------------
 
-Implements the `SAT Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/sat>`_.
+Implements the :stac-ext:`SAT Extension <sat>`.
 
 SatItemExt
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -355,7 +456,8 @@ SatItemExt
 Single File STAC Extension
 --------------------------
 
-These classes are representations of the `Single File STAC Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/single-file-stac>`_.
+These classes are representations of the :stac-ext:`Single File STAC Extension
+<single-file-stac>`.
 
 **TEMPORARILY REMOVED**
 
@@ -374,7 +476,14 @@ SingleFileSTACCatalogExt
 Version Extension
 -----------------
 
-Implements the `Version Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/version>`_.
+Implements the :stac-ext:`Version Extension <version>`.
+
+VersionRelType
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionRelType
+   :members:
+   :show-inheritance:
 
 VersionCollectionExt
 ~~~~~~~~~~~~~~~~~~~~
@@ -399,17 +508,29 @@ VersionItemExt
 View Geometry Extension
 -----------------------
 
-Implements the `View Geometry Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/view>`_.
+These classes are representations of the :stac-ext:`View Geometry Extension Spec
+<view>`.
 
-ViewItemExt
-~~~~~~~~~~~
+ViewExtension
+~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.view.ViewExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.view.ViewItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemViewExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.ItemViewExtension
+   :members:
+   :show-inheritance:
+
+AssetViewExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.AssetViewExtension
+   :members:
+   :show-inheritance:
 
 Serialization
 -------------
@@ -459,7 +580,7 @@ PySTAC includes a ``pystac.validation`` package for validating STAC objects, inc
 from PySTAC objects and directly from JSON.
 
 .. automodule:: pystac.validation
-   :members: validate, validate_dict, validate_all, set_validator, STACValidationError
+   :members: validate, validate_dict, validate_all, set_validator
 
 STACValidator
 ~~~~~~~~~~~~~
@@ -473,10 +594,10 @@ STACValidator
 SchemaUriMap
 ~~~~~~~~~~~~
 
-A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension ids to
-schema URIs. A default implementation is included that uses known locations; however users
-can provide their own schema URI maps in a :class:`~pystac.validation.JsonSchemaSTACValidator`
-to modify the URIs used.
+A ``SchemaMapUri`` defines methods for mapping STAC versions, object types and extension
+ids to schema URIs. A default implementation is included that uses known locations;
+however users can provide their own schema URI maps in a
+:class:`~pystac.validation.JsonSchemaSTACValidator` to modify the URIs used.
 
 .. .. autoclass:: pystac.validation.SchemaUriMap
 ..    :members:

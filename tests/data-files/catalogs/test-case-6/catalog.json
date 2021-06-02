@@ -1,7 +1,7 @@
 {
   "type": "Catalog",
   "id": "fd478c2b-3f71-41e4-a87b-e97a8a0d0afa",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "description": "Exported from Raster Foundry 2020-01-09 21:17:20.186",
   "links": [
     {

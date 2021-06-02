@@ -563,4 +563,4 @@ class PointcloudExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()
+POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()
