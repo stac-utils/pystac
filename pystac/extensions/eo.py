@@ -32,9 +32,11 @@ from pystac.utils import get_required, map_opt
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+PREFIX: str = "eo:"
 
-BANDS_PROP: str = "eo:bands"
-CLOUD_COVER_PROP: str = "eo:cloud_cover"
+# Field names
+BANDS_PROP: str = PREFIX + "bands"
+CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
 
 
 class Band:
@@ -277,19 +279,25 @@ class EOExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` with properties from the :stac-ext:`Electro-Optical
-    Extension <eo>`. This class is generic over the type of STAC Object to be
-    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
+    :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
-    This class will generally not be used directly. Instead, use the concrete
-    implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemEOExtension` to extend an :class:`~pystac.Item`).
+    To create a concrete instance of :class:`EOExtension`, use the
+    :meth:`EOExtension.ext` method. For example:
+
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> view_ext = ViewExtension.ext(item)
     """
 
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended Item.
+        """Applies label extension properties to the extended :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
@@ -447,8 +455,8 @@ class SummariesEOExtension(SummariesExtension):
 
     @property
     def bands(self) -> Optional[List[Band]]:
-        """Get or sets a list of :class:`~pystac.Band` objects that represent
-        the available bands.
+        """Get or sets the summary of :attr:`EOExtension.bands` values
+        for this Collection.
         """
 
         return map_opt(
@@ -462,7 +470,9 @@ class SummariesEOExtension(SummariesExtension):
 
     @property
     def cloud_cover(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the range of cloud cover from the summary."""
+        """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
+        for this Collection.
+        """
         return self.summaries.get_range(CLOUD_COVER_PROP)
 
     @cloud_cover.setter

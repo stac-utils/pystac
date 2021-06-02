@@ -17,9 +17,8 @@ SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 class LabelRelType(str, Enum):
     """A list of rel types defined in the Label Extension.
 
-    See the`Label Extension Links
-    <https://github.com/stac-extensions/label#links-source-imagery>`__ documentation
-    for details.
+    See the :stac-ext:`Label Extension Links <label#links-source-imagery>`
+    documentation for details.
     """
 
     def __str__(self) -> str:

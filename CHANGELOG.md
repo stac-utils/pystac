@@ -4,6 +4,7 @@
 
 ### Added
 
+- Summaries for View Geometry, Projection, and Scientific extensions ([#372](https://github.com/stac-utils/pystac/pull/372))
 - Raster extension support ([#364](https://github.com/stac-utils/pystac/issues/364))
 - solar_illumination field in eo extension ([#356](https://github.com/stac-utils/pystac/issues/356))
 - Added `Link.canonical` static method for creating links with "canonical" rel type ([#351](https://github.com/stac-utils/pystac/pull/351))
