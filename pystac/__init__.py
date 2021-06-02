@@ -31,8 +31,8 @@ from pystac.collection import (
     TemporalExtent,  # type:ignore
     Provider,  # type:ignore
     Summaries,  # type:ignore
-    RangeSummary,  # type:ignore
 )
+from pystac.summaries import RangeSummary  # type:ignore
 from pystac.item import Item, Asset, CommonMetadata  # type:ignore
 
 import pystac.validation
