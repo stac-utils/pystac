@@ -17,3 +17,12 @@ repos:
         language: system
         stages: [commit]
         types: [python]
+
+      - id: mypy
+        name: mypy
+        entry: mypy
+        args: [--no-incremental]
+        language: system
+        stages: [commit]
+        types: [python]
+        require_serial: true
