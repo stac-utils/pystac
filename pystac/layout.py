@@ -423,8 +423,8 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
 class BestPracticesLayoutStrategy(HrefLayoutStrategy):
     """Layout strategy that represents the catalog layout described
-    in the `STAC Best Practices documentation
-    <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_
+    in the :stac-spec:`STAC Best Practices documentation
+    <best-practices.md>`
 
     For a root catalog or collection, this will use the filename 'catalog.json'
     or 'collection.json' to the given directory. For a non-root catalog or collection,

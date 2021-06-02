@@ -31,6 +31,13 @@ echo
 echo " -- CHECKING SPELLING WITH CODESPELL --"
 echo
 
+echo
+echo " -- LINTING RST FILES WITH DOC8 --"
+echo
+
+doc8 docs -q
+
+
 # Code spelling
 codespell -I .codespellignore -f \
     pystac/*.py pystac/**/*.py \

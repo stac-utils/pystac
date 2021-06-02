@@ -62,7 +62,7 @@ extensions = [
 extlinks = {
     'tutorial': ('https://github.com/azavea/pystac/'
                   'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
-    'stac-spec': ('https://github.com/radiantearth/stac-spec/blob/'
+    'stac-spec': ('https://github.com/radiantearth/stac-spec/tree/'
                   'v{}/%s'.format(STACVersion.DEFAULT_STAC_VERSION), 'path'),
     'stac-ext': ('https://github.com/stac-extensions/%s', '%s extension')
 }
@@ -108,7 +108,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     "show_powered_by": False,
-    "github_user": "azavea",
+    "github_user": "stac-utils",
     "github_repo": "pystac",
     "github_banner": True,
     "show_related": False,

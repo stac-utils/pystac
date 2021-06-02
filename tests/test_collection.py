@@ -175,6 +175,13 @@ class CollectionTest(unittest.TestCase):
         # cached only by HREF
         self.assertEqual(len(cache.id_keys_to_objects), 0)
 
+    def test_assets(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        with open(path) as f:
+            data = json.load(f)
+        collection = pystac.read_dict(data)
+        collection.validate()
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self) -> None:
