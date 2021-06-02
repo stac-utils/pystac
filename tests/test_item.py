@@ -18,7 +18,7 @@ class ItemTest(unittest.TestCase):
     def get_example_item_dict(self) -> Dict[str, Any]:
         m = TestCases.get_path("data-files/item/sample-item.json")
         with open(m) as f:
-            item_dict = json.load(f)
+            item_dict: Dict[str, Any] = json.load(f)
         return item_dict
 
     def test_to_from_dict(self) -> None:

@@ -58,14 +58,14 @@ class PropertiesExtension(ABC):
     """
 
     def _get_property(self, prop_name: str, typ: Type[P]) -> Optional[P]:
-        result = self.properties.get(prop_name)
-        if result is not None:
-            return result
+        maybe_property: Optional[P] = self.properties.get(prop_name)
+        if maybe_property is not None:
+            return maybe_property
         if self.additional_read_properties is not None:
             for props in self.additional_read_properties:
-                result = props.get(prop_name)
-                if result is not None:
-                    return result
+                maybe_additional_property: Optional[P] = props.get(prop_name)
+                if maybe_additional_property is not None:
+                    return maybe_additional_property
         return None
 
     def _set_property(

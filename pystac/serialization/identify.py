@@ -52,16 +52,16 @@ class STACVersionID:
         return self.version_string
 
     def __eq__(self, other: Any) -> bool:
-        if type(other) is str:
-            other = STACVersionID(other)
-        return self.version_string == other.version_string
+        if not isinstance(other, STACVersionID):
+            other = STACVersionID(str(other))
+        return str(self) == str(other)
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
-    def __lt__(self, other: Any) -> bool:
-        if type(other) is str:
-            other = STACVersionID(other)
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, STACVersionID):
+            other = STACVersionID(str(other))
         if self.version_core < other.version_core:
             return True
         elif self.version_core > other.version_core:
