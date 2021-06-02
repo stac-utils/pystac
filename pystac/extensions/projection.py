@@ -327,7 +327,7 @@ class SummariesProjectionExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ProjectionExtension.epsg` values
         for this Collection.
         """
-        return self.summaries.get_list(EPSG_PROP, int)
+        return self.summaries.get_list(EPSG_PROP)
 
     @epsg.setter
     def epsg(self, v: Optional[List[int]]) -> None:

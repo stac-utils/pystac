@@ -6,7 +6,7 @@ https://github.com/stac-extensions/view
 from typing import Any, Dict, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -233,7 +233,7 @@ class SummariesViewExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ViewExtension.off_nadir` values for
         this Collection.
         """
-        return self.summaries.get_range(OFF_NADIR_PROP, float)
+        return self.summaries.get_range(OFF_NADIR_PROP)
 
     @off_nadir.setter
     def off_nadir(self, v: Optional[RangeSummary[float]]) -> None:
@@ -244,7 +244,7 @@ class SummariesViewExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ViewExtension.incidence_angle` values
         for this Collection.
         """
-        return self.summaries.get_range(INCIDENCE_ANGLE_PROP, float)
+        return self.summaries.get_range(INCIDENCE_ANGLE_PROP)
 
     @incidence_angle.setter
     def incidence_angle(self, v: Optional[RangeSummary[float]]) -> None:
@@ -255,7 +255,7 @@ class SummariesViewExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ViewExtension.azimuth` values
         for this Collection.
         """
-        return self.summaries.get_range(AZIMUTH_PROP, float)
+        return self.summaries.get_range(AZIMUTH_PROP)
 
     @azimuth.setter
     def azimuth(self, v: Optional[RangeSummary[float]]) -> None:
@@ -266,7 +266,7 @@ class SummariesViewExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ViewExtension.sun_azimuth` values
         for this Collection.
         """
-        return self.summaries.get_range(SUN_AZIMUTH_PROP, float)
+        return self.summaries.get_range(SUN_AZIMUTH_PROP)
 
     @sun_azimuth.setter
     def sun_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
@@ -277,7 +277,7 @@ class SummariesViewExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ViewExtension.sun_elevation` values
         for this Collection.
         """
-        return self.summaries.get_range(SUN_ELEVATION_PROP, float)
+        return self.summaries.get_range(SUN_ELEVATION_PROP)
 
     @sun_elevation.setter
     def sun_elevation(self, v: Optional[RangeSummary[float]]) -> None:

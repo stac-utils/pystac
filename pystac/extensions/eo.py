@@ -18,7 +18,7 @@ from typing import (
 )
 
 import pystac
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -461,7 +461,7 @@ class SummariesEOExtension(SummariesExtension):
 
         return map_opt(
             lambda bands: [Band(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP, Dict[str, Any]),
+            self.summaries.get_list(BANDS_PROP),
         )
 
     @bands.setter
@@ -473,7 +473,7 @@ class SummariesEOExtension(SummariesExtension):
         """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
         for this Collection.
         """
-        return self.summaries.get_range(CLOUD_COVER_PROP, float)
+        return self.summaries.get_range(CLOUD_COVER_PROP)
 
     @cloud_cover.setter
     def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:

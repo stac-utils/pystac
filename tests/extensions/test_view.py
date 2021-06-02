@@ -3,7 +3,7 @@ from pystac.collection import Collection
 import unittest
 
 import pystac
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.extensions.view import ViewExtension
 from tests.utils import TestCases, test_to_from_dict
 

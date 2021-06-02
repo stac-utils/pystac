@@ -3,7 +3,7 @@ import unittest
 
 import pystac
 from pystac import Item
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
 from tests.utils import TestCases, test_to_from_dict

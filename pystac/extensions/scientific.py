@@ -324,7 +324,7 @@ class SummariesScientificExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ScientificExtension.citation` values
         for this Collection.
         """
-        return self.summaries.get_list(CITATION_PROP, str)
+        return self.summaries.get_list(CITATION_PROP)
 
     @citation.setter
     def citation(self, v: Optional[List[str]]) -> None:
@@ -335,7 +335,7 @@ class SummariesScientificExtension(SummariesExtension):
         """Get or sets the summary of :attr:`ScientificExtension.citation` values
         for this Collection.
         """
-        return self.summaries.get_list(DOI_PROP, str)
+        return self.summaries.get_list(DOI_PROP)
 
     @doi.setter
     def doi(self, v: Optional[List[str]]) -> None:
