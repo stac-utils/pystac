@@ -16,7 +16,7 @@ from pystac.extensions.label import (
 )
 import pystac.validation
 from pystac.utils import get_opt
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class LabelTest(unittest.TestCase):
@@ -36,7 +36,7 @@ class LabelTest(unittest.TestCase):
         with open(self.label_example_1_uri) as f:
             label_example_1_dict = json.load(f)
 
-        test_to_from_dict(self, Item, label_example_1_dict)
+        assert_to_from_dict(self, Item, label_example_1_dict)
 
     def test_from_file(self) -> None:
         label_example_1 = Item.from_file(self.label_example_1_uri)

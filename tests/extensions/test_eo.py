@@ -6,7 +6,7 @@ from pystac import Item
 from pystac.collection import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class BandsTest(unittest.TestCase):
@@ -49,7 +49,7 @@ class EOTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.LANDSAT_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, Item, item_dict)
+        assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_eo(self) -> None:
         item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)

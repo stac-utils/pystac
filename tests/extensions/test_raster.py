@@ -12,7 +12,7 @@ from pystac.extensions.raster import (
     DataType,
     Statistics,
 )
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class RasterTest(unittest.TestCase):
@@ -30,7 +30,7 @@ class RasterTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.PLANET_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, Item, item_dict)
+        assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_raster(self) -> None:
         item = pystac.read_file(self.PLANET_EXAMPLE_URI)
