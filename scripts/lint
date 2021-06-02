@@ -3,7 +3,7 @@
 set -e
 
 echo
-echo " -- CHECKING WITH BLACK, FLAKE8 AND MYPY --"
+echo " -- CHECKING WITH BLACK, DOC8, FLAKE8 AND MYPY --"
 echo
 
 pre-commit run --all-files
@@ -11,13 +11,6 @@ pre-commit run --all-files
 echo
 echo " -- CHECKING SPELLING WITH CODESPELL --"
 echo
-
-echo
-echo " -- LINTING RST FILES WITH DOC8 --"
-echo
-
-doc8 docs -q
-
 
 # Code spelling
 codespell -I .codespellignore -f \
