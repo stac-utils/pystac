@@ -9,13 +9,7 @@ echo
 mypy docs pystac setup.py tests
 
 echo
-echo " -- LINTING WITH FLAKE8 --"
-echo
-
-flake8 pystac setup.py tests
-
-echo
-echo " -- CHECKING FORMAT WITH BLACK --"
+echo " -- CHECKING WITH BLACK AND FLAKE8 --"
 echo
 
 pre-commit run --all-files

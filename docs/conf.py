@@ -19,7 +19,7 @@ from typing import Any, Dict
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
-from pystac.version import __version__, STACVersion
+from pystac.version import __version__, STACVersion  # noqa:E402
 
 git_branch = (
     subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])

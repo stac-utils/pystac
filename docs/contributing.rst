@@ -45,16 +45,10 @@ More details on using ``unittest`` are `here
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
-PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and`black
+PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and `black
 <https://github.com/psf/black>`_ for code formatting and style checks.
 
-To run the flake8 style checks:
-
-.. code-block:: bash
-
-    > flake8 pystac tests
-
-To format code:
+To run both:
 
 .. code-block:: bash
 

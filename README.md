@@ -77,21 +77,19 @@ To run linters, code formatters, and test suites all together, use `test`:
 
 ### Code quality checks
 
-PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [yapf](https://github.com/google/yapf) for code formatting and style checks.
-
-To run the flake8 style checks:
+PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [Black](https://github.com/psf/black) for code formatting and style checks. To run both:
 
 ```
-> flake8 pystac tests
+> pre-commit run --all-files
 ```
 
-To format code:
+To run these automatically when committing files (runs only on the staged files):
 
 ```
-> yapf -ipr pystac tests
+> pre-commit install --hook-type=pre-commit --overwrite
 ```
 
-Note that you may have to use `yapf3` explicitly depending on your environment.
+To avoid running these checks when committing, use `git commit --no-verify`.
 
 To check for spelling mistakes in modified files:
 
