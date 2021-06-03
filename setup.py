@@ -1,9 +1,6 @@
 import os
-from importlib import import_module
 from setuptools import setup, find_packages
 from glob import glob
-
-__version__ = import_module("pystac.version").__version__  # type: ignore
 
 from os.path import basename, splitext
 
@@ -14,7 +11,6 @@ with open(os.path.join(here, "README.md")) as readme_file:
 
 setup(
     name="pystac",
-    version=__version__,
     description=(
         "Python library for working with Spatiotemporal Asset Catalog (STAC)."
     ),
@@ -30,10 +26,7 @@ setup(
         "python-dateutil>=2.7.0",
         'typing_extensions >= 3.7; python_version < "3.8"',
     ],
-    extras_require={
-        "validation": ["jsonschema>=3.0"],
-        "orjson": ["orjson>=3.5"]
-    },
+    extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=["pystac", "imagery", "raster", "catalog", "STAC"],
