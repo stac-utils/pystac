@@ -437,6 +437,16 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
+    def _get_bands(self) -> Optional[List[Band]]:
+        if BANDS_PROP not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: Band(band),
+                cast(List[Dict[str, Any]], self.properties.get(BANDS_PROP)),
+            )
+        )
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties

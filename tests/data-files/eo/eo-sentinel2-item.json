@@ -1,0 +1,589 @@
+{
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/version/v1.0.0/schema.json"
+  ],
+  "type": "Feature",
+  "id": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          86.99949043202683,
+          69.40964050938386
+        ],
+        [
+          89.79493686530785,
+          69.38716009345416
+        ],
+        [
+          89.6733360684267,
+          68.4035546435041
+        ],
+        [
+          86.99951263501231,
+          68.42491711604748
+        ],
+        [
+          86.99949043202683,
+          69.40964050938386
+        ],
+        [
+          86.99949043202683,
+          69.40964050938386
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-06-15T06:06:41.024Z",
+    "created": "2020-06-15T08:07:20Z",
+    "updated": "2021-06-02T06:33:30.2164608Z",
+    "platform": "sentinel-2a",
+    "constellation": "sentinel-2",
+    "mission": "sentinel-2",
+    "instruments": [
+      "msi"
+    ],
+    "gsd": 10.0,
+    "sat:orbit_state": "descending",
+    "sat:absolute_orbit": 26014,
+    "sat:relative_orbit": 134,
+    "sat:platform_international_designator": "2015-000A",
+    "processing:level": "L1C",
+    "processing:lineage": "Generation of Level-1C User Product",
+    "title": "Sentinel-2A MSI L1C 15/06/2020 06:06:41",
+    "eo:bands": [
+      {
+        "name": "coastal",
+        "description": "coastal 443nm TOA 60",
+        "common_name": "coastal",
+        "center_wavelength": 0.4427,
+        "solar_illumination": 1884.69
+      },
+      {
+        "name": "blue",
+        "description": "blue 493nm TOA 10",
+        "common_name": "blue",
+        "center_wavelength": 0.49269999999999997,
+        "solar_illumination": 1959.66
+      },
+      {
+        "name": "green",
+        "description": "green 560nm TOA 10",
+        "common_name": "green",
+        "center_wavelength": 0.5598,
+        "solar_illumination": 1823.24
+      },
+      {
+        "name": "red",
+        "description": "red 665nm TOA 10",
+        "common_name": "red",
+        "center_wavelength": 0.6646,
+        "solar_illumination": 1512.06
+      },
+      {
+        "name": "rededge70",
+        "description": "rededge 704nm TOA 20",
+        "common_name": "rededge",
+        "center_wavelength": 0.7041000000000001,
+        "solar_illumination": 1424.64
+      },
+      {
+        "name": "rededge74",
+        "description": "rededge 740nm TOA 20",
+        "common_name": "rededge",
+        "center_wavelength": 0.7405,
+        "solar_illumination": 1287.61
+      },
+      {
+        "name": "rededge78",
+        "description": "rededge 783nm TOA 20",
+        "common_name": "rededge",
+        "center_wavelength": 0.7827999999999999,
+        "solar_illumination": 1162.08
+      },
+      {
+        "name": "nir",
+        "description": "nir 833nm TOA 10",
+        "common_name": "nir",
+        "center_wavelength": 0.8328,
+        "solar_illumination": 1041.63
+      },
+      {
+        "name": "nir09",
+        "description": "nir09 945nm TOA 60",
+        "common_name": "nir09",
+        "center_wavelength": 0.9451,
+        "solar_illumination": 812.92
+      },
+      {
+        "name": "cirrus",
+        "description": "cirrus 1374nm TOA 60",
+        "common_name": "cirrus",
+        "center_wavelength": 1.3735,
+        "solar_illumination": 367.15
+      },
+      {
+        "name": "swir16",
+        "description": "swir16 1614nm TOA 20",
+        "common_name": "swir16",
+        "center_wavelength": 1.6137000000000001,
+        "solar_illumination": 245.59
+      },
+      {
+        "name": "swir22",
+        "description": "swir22 2202nm TOA 20",
+        "common_name": "swir22",
+        "center_wavelength": 2.2024,
+        "solar_illumination": 85.25
+      },
+      {
+        "name": "nir08",
+        "description": "nir08 865nm TOA 20",
+        "common_name": "nir08",
+        "center_wavelength": 0.8647,
+        "solar_illumination": 955.32
+      }
+    ],
+    "disaster:class": "Acquisition",
+    "cpe:status": {
+      "stage": "dataset",
+      "message": null
+    },
+    "disaster:call_ids": [
+      100
+    ],
+    "disaster:sensor_type": "Optical",
+    "disaster:resolution_class": "HR",
+    "cpe:cos2Xml": null,
+    "description": "<div style=\"float: left; width: 64px;\"><img width=\"64px\" src=\"https://d1nhio0ox7pgb.cloudfront.net/_img/g_collection_png/standard/128x128/satellite.png\" /></div>\n\n### Sentinel-2A MSI L1C 15/06/2020 06:06:41\n-----------------------\n\n* Platform **sentinel-2a**\n* Instruments **System.String[]**\n* Sensing Time **15/06/2020 06:06:41**\n* Created **15/06/2020 08:07:20**\n* Updated **02/06/2021 06:33:08**\n",
+    "cpe:cos2Id": "100-ESA-SENTINEL2-S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720",
+    "version": "3"
+  },
+  "bbox": [
+    86.99949043202683,
+    68.4035546435041,
+    89.79493686530785,
+    69.40964050938386
+  ],
+  "assets": {
+    "mtd": {
+      "type": "application/xml",
+      "roles": [
+        "metadata"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/MTD_MSIL1C.xml",
+      "file:size": 44162
+    },
+    "B01": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B01.jp2",
+      "gsd": 60.0,
+      "eo:bands": [
+        {
+          "name": "coastal",
+          "description": "coastal 443nm TOA 60",
+          "common_name": "coastal",
+          "center_wavelength": 0.4427,
+          "solar_illumination": 1884.69
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 60.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 3761460
+    },
+    "B02": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B02.jp2",
+      "gsd": 10.0,
+      "eo:bands": [
+        {
+          "name": "blue",
+          "description": "blue 493nm TOA 10",
+          "common_name": "blue",
+          "center_wavelength": 0.49269999999999997,
+          "solar_illumination": 1959.66
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 10.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 104626138
+    },
+    "B03": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B03.jp2",
+      "gsd": 10.0,
+      "eo:bands": [
+        {
+          "name": "green",
+          "description": "green 560nm TOA 10",
+          "common_name": "green",
+          "center_wavelength": 0.5598,
+          "solar_illumination": 1823.24
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 10.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 105510111
+    },
+    "B04": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B04.jp2",
+      "gsd": 10.0,
+      "eo:bands": [
+        {
+          "name": "red",
+          "description": "red 665nm TOA 10",
+          "common_name": "red",
+          "center_wavelength": 0.6646,
+          "solar_illumination": 1512.06
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 10.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 109843887
+    },
+    "B05": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B05.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "rededge70",
+          "description": "rededge 704nm TOA 20",
+          "common_name": "rededge",
+          "center_wavelength": 0.7041000000000001,
+          "solar_illumination": 1424.64
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 32686974
+    },
+    "B06": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B06.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "rededge74",
+          "description": "rededge 740nm TOA 20",
+          "common_name": "rededge",
+          "center_wavelength": 0.7405,
+          "solar_illumination": 1287.61
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 33739533
+    },
+    "B07": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B07.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "rededge78",
+          "description": "rededge 783nm TOA 20",
+          "common_name": "rededge",
+          "center_wavelength": 0.7827999999999999,
+          "solar_illumination": 1162.08
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 33756313
+    },
+    "B08": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B08.jp2",
+      "gsd": 10.0,
+      "eo:bands": [
+        {
+          "name": "nir",
+          "description": "nir 833nm TOA 10",
+          "common_name": "nir",
+          "center_wavelength": 0.8328,
+          "solar_illumination": 1041.63
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 10.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 120382989
+    },
+    "B09": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B09.jp2",
+      "gsd": 60.0,
+      "eo:bands": [
+        {
+          "name": "nir09",
+          "description": "nir09 945nm TOA 60",
+          "common_name": "nir09",
+          "center_wavelength": 0.9451,
+          "solar_illumination": 812.92
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 60.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 3747702
+    },
+    "B10": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B10.jp2",
+      "gsd": 60.0,
+      "eo:bands": [
+        {
+          "name": "cirrus",
+          "description": "cirrus 1374nm TOA 60",
+          "common_name": "cirrus",
+          "center_wavelength": 1.3735,
+          "solar_illumination": 367.15
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 60.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 2418729
+    },
+    "B11": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B11.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "swir16",
+          "description": "swir16 1614nm TOA 20",
+          "common_name": "swir16",
+          "center_wavelength": 1.6137000000000001,
+          "solar_illumination": 245.59
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 32410828
+    },
+    "B12": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B12.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "swir22",
+          "description": "swir22 2202nm TOA 20",
+          "common_name": "swir22",
+          "center_wavelength": 2.2024,
+          "solar_illumination": 85.25
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 31164855
+    },
+    "B8A": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_B8A.jp2",
+      "gsd": 20.0,
+      "eo:bands": [
+        {
+          "name": "nir08",
+          "description": "nir08 865nm TOA 20",
+          "common_name": "nir08",
+          "center_wavelength": 0.8647,
+          "solar_illumination": 955.32
+        }
+      ],
+      "raster:bands": [
+        {
+          "nodata": 0.0,
+          "spatial_resolution": 20.0,
+          "statistics": {
+            "minimum": 0.0,
+            "maximum": 10000.0
+          }
+        }
+      ],
+      "file:size": 33717292
+    },
+    "PVI": {
+      "type": "image/jp2",
+      "roles": [
+        "overview"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/QI_DATA/T45WWS_20200615T060641_PVI.jp2",
+      "file:size": 166248
+    },
+    "TCI": {
+      "type": "image/jp2",
+      "roles": [
+        "data",
+        "reflectance"
+      ],
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/GRANULE/L1C_T45WWS_A026014_20200615T060638/IMG_DATA/T45WWS_20200615T060641_TCI.jp2",
+      "file:size": 135093974
+    },
+    "manifest": {
+      "type": "text/xml",
+      "roles": [
+        "metadata"
+      ],
+      "title": "SAFE Manifest",
+      "href": "S2A_MSIL1C_20200615T060641_N0209_R134_T45WWS_20200615T080720.SAFE/manifest.safe",
+      "file:size": 73239
+    }
+  },
+  "links": []
+}

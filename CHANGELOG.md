@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Fixed returned None by `EOExtension.get_bands` for asset without EO bands
+
 ### Removed
 
 ## [1.0.0-beta.3]

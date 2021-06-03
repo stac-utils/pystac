@@ -42,6 +42,7 @@ class EOTest(unittest.TestCase):
         "data-files/eo/sample-bands-in-item-properties.json"
     )
     EO_COLLECTION_URI = TestCases.get_path("data-files/eo/eo-collection.json")
+    S2_ITEM_URI = TestCases.get_path("data-files/eo/eo-sentinel2-item.json")
 
     def setUp(self) -> None:
         self.maxDiff = None
@@ -82,6 +83,13 @@ class EOTest(unittest.TestCase):
         )
         self.assertEqual(len(EOExtension.ext(item).bands or []), 3)
         item.validate()
+
+    def test_asset_bands_s2(self) -> None:
+        item = pystac.Item.from_file(self.S2_ITEM_URI)
+        for key, asset in item.get_assets().items():
+            eo_bands = EOExtension.ext(asset).bands
+            if key == "mtd":
+                assert eo_bands is None
 
     def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
