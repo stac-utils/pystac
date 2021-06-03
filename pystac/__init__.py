@@ -4,35 +4,36 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 from pystac.errors import (
-    STACError,  # type:ignore
-    STACTypeError,  # type:ignore
-    ExtensionAlreadyExistsError,  # type:ignore
-    ExtensionTypeError,  # type:ignore
-    RequiredPropertyMissing,  # type:ignore
-    STACValidationError,  #  type:ignore
+    STACError,
+    STACTypeError,
+    ExtensionAlreadyExistsError,
+    ExtensionTypeError,
+    RequiredPropertyMissing,
+    STACValidationError,
 )
 
 from typing import Any, Dict, Optional
 from pystac.version import (
     __version__,
-    get_stac_version,  # type:ignore
-    set_stac_version,  # type:ignore
+    get_stac_version,
+    set_stac_version,
 )
-from pystac.stac_io import StacIO  # type:ignore
-from pystac.stac_object import STACObject, STACObjectType  # type:ignore
-from pystac.media_type import MediaType  # type:ignore
-from pystac.link import Link, HIERARCHICAL_LINKS  # type:ignore
-from pystac.catalog import Catalog, CatalogType  # type:ignore
+from pystac.media_type import MediaType
+from pystac.rel_type import RelType
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObject, STACObjectType
+from pystac.link import Link, HIERARCHICAL_LINKS
+from pystac.catalog import Catalog, CatalogType
 from pystac.collection import (
-    Collection,  # type:ignore
-    Extent,  # type:ignore
-    SpatialExtent,  # type:ignore
-    TemporalExtent,  # type:ignore
-    Provider,  # type:ignore
-    Summaries,  # type:ignore
-    RangeSummary,  # type:ignore
+    Collection,
+    Extent,
+    SpatialExtent,
+    TemporalExtent,
+    Provider,
+    Summaries,
 )
-from pystac.item import Item, Asset, CommonMetadata  # type:ignore
+from pystac.summaries import RangeSummary
+from pystac.item import Item, Asset, CommonMetadata
 
 import pystac.validation
 
@@ -79,7 +80,7 @@ def read_file(href: str) -> STACObject:
     This is a convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
 
     Args:
-        href (str): The HREF to read the object from.
+        href : The HREF to read the object from.
 
     Returns:
         The specific STACObject implementation class that is represented
@@ -104,10 +105,10 @@ def write_file(
     Convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
 
     Args:
-        obj (STACObject): The STACObject to save.
-        include_self_link (bool): If this is true, include the 'self' link with this object.
+        obj : The STACObject to save.
+        include_self_link : If this is true, include the 'self' link with this object.
             Otherwise, leave out the self link.
-        dest_href (str): Optional HREF to save the file to. If None, the object will be saved
+        dest_href : Optional HREF to save the file to. If None, the object will be saved
             to the object's self href.
     """
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
@@ -128,10 +129,10 @@ def read_dict(
     This is a convenience method for :meth:`pystac.serialization.stac_object_from_dict`
 
     Args:
-        d (dict): The dict to parse.
-        href (str): Optional href that is the file location of the object being
+        d : The dict to parse.
+        href : Optional href that is the file location of the object being
             parsed.
-        root (Catalog or Collection): Optional root of the catalog for this object.
+        root : Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
         stac_io: Optional StacIO instance to use for reading. If None, the

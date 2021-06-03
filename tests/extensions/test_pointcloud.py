@@ -5,28 +5,31 @@ import unittest
 # from copy import deepcopy
 
 import pystac
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError, STACError
 from pystac.extensions.pointcloud import (
+    AssetPointcloudExtension,
     PointcloudExtension,
     PointcloudSchema,
     PointcloudStatistic,
 )
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class PointcloudTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
         self.example_uri_no_statistics = TestCases.get_path(
             "data-files/pointcloud/example-laz-no-statistics.json"
         )
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, pystac.Item, d)
 
-    def test_apply(self):
+    def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
 
         self.assertFalse(PointcloudExtension.has_extension(item))
@@ -40,11 +43,11 @@ class PointcloudTest(unittest.TestCase):
         )
         self.assertTrue(PointcloudExtension.has_extension(item))
 
-    def test_validate_pointcloud(self):
+    def test_validate_pointcloud(self) -> None:
         item = pystac.read_file(self.example_uri)
         item.validate()
 
-    def test_count(self):
+    def test_count(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -57,7 +60,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(pc_count + 100, pc_item.properties["pc:count"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
         # Cannot test validation errors until the pointcloud schema.json syntax is fixed
         # Ensure setting bad count fails validation
@@ -66,7 +69,7 @@ class PointcloudTest(unittest.TestCase):
             PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
             pc_item.validate()
 
-    def test_type(self):
+    def test_type(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -79,9 +82,9 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual("sonar", pc_item.properties["pc:type"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
-    def test_encoding(self):
+    def test_encoding(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -94,9 +97,9 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual("binary", pc_item.properties["pc:encoding"])
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
-    def test_schemas(self):
+    def test_schemas(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
@@ -112,16 +115,16 @@ class PointcloudTest(unittest.TestCase):
         )
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
-    def test_statistics(self):
+    def test_statistics(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
-        pc_statistics = [
-            s.to_dict() for s in PointcloudExtension.ext(pc_item).statistics
-        ]
+        statistics = PointcloudExtension.ext(pc_item).statistics
+        assert statistics is not None
+        pc_statistics = [s.to_dict() for s in statistics]
         self.assertEqual(pc_statistics, pc_item.properties["pc:statistics"])
 
         # Set
@@ -147,7 +150,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate
 
-    def test_density(self):
+    def test_density(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
         # Get
         self.assertIn("pc:density", pc_item.properties)
@@ -158,9 +161,9 @@ class PointcloudTest(unittest.TestCase):
         PointcloudExtension.ext(pc_item).density = density
         self.assertEqual(density, pc_item.properties["pc:density"])
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
-    def test_pointcloud_schema(self):
+    def test_pointcloud_schema(self) -> None:
         props: Dict[str, Any] = {
             "name": "test",
             "size": 8,
@@ -178,7 +181,23 @@ class PointcloudTest(unittest.TestCase):
             setattr(schema, k, val)
             self.assertEqual(getattr(schema, k), val)
 
-    def test_pointcloud_statistics(self):
+        schema = PointcloudSchema.create("intensity", 16, "unsigned")
+        self.assertEqual(schema.name, "intensity")
+        self.assertEqual(schema.size, 16)
+        self.assertEqual(schema.type, "unsigned")
+
+        with self.assertRaises(STACError):
+            schema.size = 0.5  # type: ignore
+
+        empty_schema = PointcloudSchema({})
+        with self.assertRaises(STACError):
+            empty_schema.size
+        with self.assertRaises(STACError):
+            empty_schema.name
+        with self.assertRaises(STACError):
+            empty_schema.type
+
+    def test_pointcloud_statistics(self) -> None:
         props: Dict[str, Any] = {
             "average": 1,
             "count": 1,
@@ -201,6 +220,76 @@ class PointcloudTest(unittest.TestCase):
             setattr(stat, k, val)
             self.assertEqual(getattr(stat, k), val)
 
-    def test_statistics_accessor_when_no_stats(self):
+        stat = PointcloudStatistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
+        self.assertEqual(stat.name, "foo")
+        self.assertEqual(stat.position, 1)
+        self.assertEqual(stat.average, 2)
+        self.assertEqual(stat.count, 3)
+        self.assertEqual(stat.maximum, 4)
+        self.assertEqual(stat.minimum, 5)
+        self.assertEqual(stat.stddev, 6)
+        self.assertEqual(stat.variance, 7)
+
+        stat.name = None  # type: ignore
+        self.assertNotIn("name", stat.properties)
+        stat.position = None
+        self.assertNotIn("position", stat.properties)
+        stat.average = None
+        self.assertNotIn("average", stat.properties)
+        stat.count = None
+        self.assertNotIn("count", stat.properties)
+        stat.maximum = None
+        self.assertNotIn("maximum", stat.properties)
+        stat.minimum = None
+        self.assertNotIn("minimum", stat.properties)
+        stat.stddev = None
+        self.assertNotIn("stddev", stat.properties)
+        stat.variance = None
+        self.assertNotIn("variance", stat.properties)
+
+        empty_stat = PointcloudStatistic({})
+        with self.assertRaises(STACError):
+            empty_stat.name
+
+    def test_statistics_accessor_when_no_stats(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)
+
+    def test_asset_extension(self) -> None:
+        asset = Asset(
+            "https://github.com/PDAL/PDAL/blob"
+            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+            "/autzen_trim.laz",
+            "laz file",
+            "The laz data",
+            "application/octet-stream",
+            ["data"],
+            {"foo": "bar"},
+        )
+        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        pc_item.add_asset("data", asset)
+        ext = AssetPointcloudExtension(asset)
+        self.assertEqual(ext.asset_href, asset.href)
+        self.assertEqual(ext.properties, asset.properties)
+        self.assertEqual(ext.additional_read_properties, [pc_item.properties])
+
+    def test_ext(self) -> None:
+        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        PointcloudExtension.ext(pc_item)
+        asset = Asset(
+            "https://github.com/PDAL/PDAL/blob"
+            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+            "/autzen_trim.laz",
+            "laz file",
+            "The laz data",
+            "application/octet-stream",
+            ["data"],
+            {"foo": "bar"},
+        )
+        PointcloudExtension.ext(asset)
+
+        class RandomObject:
+            pass
+
+        with self.assertRaises(ExtensionTypeError):
+            PointcloudExtension.ext(RandomObject())  # type: ignore

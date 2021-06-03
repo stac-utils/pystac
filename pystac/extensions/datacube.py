@@ -32,6 +32,8 @@ DIM_UNIT_PROP = "unit"
 
 
 class Dimension(ABC):
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -350,6 +352,9 @@ class DatacubeExtension(
 
 
 class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
+    collection: pystac.Collection
+    properties: Dict[str, Any]
+
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
@@ -359,6 +364,9 @@ class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
 
 
 class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
+    item: pystac.Item
+    properties: Dict[str, Any]
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -368,11 +376,17 @@ class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
 
 
 class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
+    asset_href: str
+    properties: Dict[str, Any]
+    additional_read_properties: Optional[List[Dict[str, Any]]]
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
+        else:
+            self.additional_read_properties = None
 
     def __repr__(self) -> str:
         return "<AssetDatacubeExtension Item id={}>".format(self.asset_href)
@@ -386,4 +400,4 @@ class DatacubeExtensionHooks(ExtensionHooks):
     )
 
 
-DATACUBE_EXTENSION_HOOKS = DatacubeExtensionHooks()
+DATACUBE_EXTENSION_HOOKS: ExtensionHooks = DatacubeExtensionHooks()

@@ -66,15 +66,17 @@ class LayoutTemplate:
         template = LayoutTemplate("${collection}/${common_metadata.license}")
 
     Args:
-        template (str): The template string to use.
-        defaults (dict): A dictionary of template vars to values. These values
+        template : The template string to use.
+        defaults : A dictionary of template vars to values. These values
             will be used in case a value cannot be derived from a stac object.
     """
 
     # Special template vars specific to Items
     ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
-    def __init__(self, template: str, defaults: Dict[str, str] = None) -> None:
+    def __init__(
+        self, template: str, defaults: Optional[Dict[str, str]] = None
+    ) -> None:
         self.template = template
         self.defaults = defaults or {}
 
@@ -184,7 +186,7 @@ class LayoutTemplate:
         value is used; if there is no default then this will raise an error.
 
         Args:
-            stac_object (STACObject): The STACObject to derive template
+            stac_object : The STACObject to derive template
                 variable values from.
 
         Returns:
@@ -207,7 +209,7 @@ class LayoutTemplate:
         the template string for this template.
 
         Args:
-            stac_object (STACObject): The STACObject to derive template
+            stac_object : The STACObject to derive template
                 variable values from.
 
         Returns:
@@ -265,18 +267,18 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
     stac object paths.
 
     Args:
-        catalog_func (Callable[Catalog, str, bool] -> str): A function that takes
+        catalog_func : A function that takes
             an catalog, a parent directory, and a flag specifying whether
             or not this catalog is the root. If it is the root, its usually
             best to not create a subdirectory and put the Catalog file directly
             in the parent directory. Must return the string path.
-        collection_func (Callable[Catalog, str, bool] -> str): A function that
+        collection_func : A function that
             is used for collections in the same manner at ``catalog_func``. This
             takes the same parameters.
-        item_func  (Callable[Catalog, str] -> str): A function that takes
+        item_func  : A function that takes
             an item and a parent directory and returns the path to be used
             for the item.
-        fallback_strategy (HrefLayoutStrategy): The fallback strategy to
+        fallback_strategy : The fallback strategy to
             use if a function is not provided for a stac object type. Defaults to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
@@ -332,16 +334,16 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
     object.
 
     Args:
-        catalog_template (str): The template string to use for catalog paths.
+        catalog_template : The template string to use for catalog paths.
             Must be a valid template string that can be used by
             :class:`~pystac.layout.LayoutTemplate`
-        collection_template (str): The template string to use for collection paths.
+        collection_template : The template string to use for collection paths.
             Must be a valid template string that can be used by
             :class:`~pystac.layout.LayoutTemplate`
-        item_template (str): The template string to use for item paths.
+        item_template : The template string to use for item paths.
             Must be a valid template string that can be used by
             :class:`~pystac.layout.LayoutTemplate`
-        fallback_strategy (HrefLayoutStrategy): The fallback strategy to
+        fallback_strategy : The fallback strategy to
             use if a template is not provided. Defaults to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
@@ -406,8 +408,8 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
 class BestPracticesLayoutStrategy(HrefLayoutStrategy):
     """Layout strategy that represents the catalog layout described
-    in the `STAC Best Practices documentation
-    <https://github.com/radiantearth/stac-spec/blob/v1.0.0-beta.2/best-practices.md>`_
+    in the :stac-spec:`STAC Best Practices documentation
+    <best-practices.md>`
 
     For a root catalog or collection, this will use the filename 'catalog.json'
     or 'collection.json' to the given directory. For a non-root catalog or collection,

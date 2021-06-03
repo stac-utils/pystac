@@ -1,7 +1,7 @@
 {
   "type": "Collection",
   "id": "CBERS4PAN10M",
-  "stac_version": "1.0.0-rc.3",
+  "stac_version": "1.0.0",
   "description": "CBERS4 PAN10M camera catalog",
   "links": [
     {
@@ -16,8 +16,7 @@
     }
   ],
   "stac_extensions": [
-    "eo",
-    "item-assets"
+    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
   ],
   "providers": [
     {

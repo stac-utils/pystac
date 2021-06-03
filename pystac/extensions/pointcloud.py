@@ -39,9 +39,9 @@ class PointcloudSchema:
         """Sets the properties for this PointCloudSchema.
 
         Args:
-           name (str): The name of dimension.
-           size (int): The size of the dimension in bytes. Whole bytes are supported.
-           type (str): Dimension type. Valid values are `floating`, `unsigned`, and
+           name : The name of dimension.
+           size : The size of the dimension in bytes. Whole bytes are supported.
+           type : Dimension type. Valid values are `floating`, `unsigned`, and
            `signed`
         """
         self.properties["name"] = name
@@ -53,9 +53,9 @@ class PointcloudSchema:
         """Creates a new PointCloudSchema.
 
         Args:
-           name (str): The name of dimension.
-           size (int): The size of the dimension in bytes. Whole bytes are supported.
-           type (str): Dimension type. Valid values are `floating`, `unsigned`, and
+           name : The name of dimension.
+           size : The size of the dimension in bytes. Whole bytes are supported.
+           type : Dimension type. Valid values are `floating`, `unsigned`, and
            `signed`
 
         Returns:
@@ -72,7 +72,7 @@ class PointcloudSchema:
         Returns:
             int
         """
-        result = self.properties.get("size")
+        result: Optional[int] = self.properties.get("size")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have size property: {self.properties}"
@@ -93,7 +93,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have name property: {self.properties}"
@@ -111,7 +111,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("type")
+        result: Optional[str] = self.properties.get("type")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema has no type property: {self.properties}"
@@ -161,14 +161,14 @@ class PointcloudStatistic:
         """Sets the properties for this PointcloudStatistic.
 
         Args:
-            name (str): REQUIRED. The name of the channel.
-            position (int): Position of the channel in the schema.
-            average (float): The average of the channel.
-            count (int): The number of elements in the channel.
-            maximum (float): The maximum value of the channel.
-            minimum (float): The minimum value of the channel.
-            stddev (float): The standard deviation of the channel.
-            variance (float): The variance of the channel.
+            name : REQUIRED. The name of the channel.
+            position : Position of the channel in the schema.
+            average : The average of the channel.
+            count : The number of elements in the channel.
+            maximum : The maximum value of the channel.
+            minimum : The minimum value of the channel.
+            stddev : The standard deviation of the channel.
+            variance : The variance of the channel.
         """
         self.properties["name"] = name
         self.properties["position"] = position
@@ -194,14 +194,14 @@ class PointcloudStatistic:
         """Creates a new PointcloudStatistic class.
 
         Args:
-            name (str): REQUIRED. The name of the channel.
-            position (int): Position of the channel in the schema.
+            name : REQUIRED. The name of the channel.
+            position : Position of the channel in the schema.
             average (float) The average of the channel.
-            count (int): The number of elements in the channel.
-            maximum (float): The maximum value of the channel.
-            minimum (float): The minimum value of the channel.
-            stddev (float): The standard deviation of the channel.
-            variance (float): The variance of the channel.
+            count : The number of elements in the channel.
+            maximum : The maximum value of the channel.
+            minimum : The minimum value of the channel.
+            stddev : The standard deviation of the channel.
+            variance : The variance of the channel.
 
         Returns:
             LabelClasses
@@ -226,7 +226,7 @@ class PointcloudStatistic:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud statistics does not have name property: {self.properties}"
@@ -372,10 +372,10 @@ class PointcloudExtension(
     The Pointclout extension adds pointcloud information to STAC Items.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The Item that is being extended.
+        item : The Item that is being extended.
 
     """
 
@@ -392,18 +392,18 @@ class PointcloudExtension(
         """Applies Pointcloud extension properties to the extended Item.
 
         Args:
-            count (int): REQUIRED. The number of points in the cloud.
-            type (str): REQUIRED. Phenomenology type for the point cloud. Possible valid
+            count : REQUIRED. The number of points in the cloud.
+            type : REQUIRED. Phenomenology type for the point cloud. Possible valid
                 values might include lidar, eopc, radar, sonar, or otherThe type of file
                 or data format of the cloud.
-            encoding (str): REQUIRED. Content encoding or format of the data.
-            schemas (List[PointcloudSchema]): REQUIRED. A sequential array of items
+            encoding : REQUIRED. Content encoding or format of the data.
+            schemas : REQUIRED. A sequential array of items
             that define the
                 dimensions and their types.
-            density (float or None): Number of points per square unit area.
-            statistics (List[int] or None): A sequential array of items mapping to
+            density : Number of points per square unit area.
+            statistics : A sequential array of items mapping to
                 pc:schemas defines per-channel statistics.
-            epsg (str): An EPSG code for the projected coordinates of the pointcloud.
+            epsg : An EPSG code for the projected coordinates of the pointcloud.
         """
         self.count = count
         self.type = type
@@ -563,4 +563,4 @@ class PointcloudExtensionHooks(ExtensionHooks):
     stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
 
 
-POINTCLOUD_EXTENSION_HOOKS = PointcloudExtensionHooks()
+POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()

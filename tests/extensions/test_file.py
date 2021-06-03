@@ -2,26 +2,26 @@ import json
 import unittest
 
 import pystac
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 from pystac.extensions.file import FileExtension, FileDataType
 
 
 class FileTest(unittest.TestCase):
     FILE_EXAMPLE_URI = TestCases.get_path("data-files/file/file-example.json")
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.maxDiff = None
 
-    def test_to_from_dict(self):
+    def test_to_from_dict(self) -> None:
         with open(self.FILE_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, pystac.Item, item_dict)
+        assert_to_from_dict(self, pystac.Item, item_dict)
 
-    def test_validate_file(self):
+    def test_validate_file(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         item.validate()
 
-    def test_asset_size(self):
+    def test_asset_size(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
@@ -34,7 +34,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_size, FileExtension.ext(asset).size)
         item.validate()
 
-    def test_asset_checksum(self):
+    def test_asset_checksum(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
@@ -50,7 +50,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
         item.validate()
 
-    def test_asset_data_type(self):
+    def test_asset_data_type(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
@@ -63,7 +63,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_data_type, FileExtension.ext(asset).data_type)
         item.validate()
 
-    def test_asset_nodata(self):
+    def test_asset_nodata(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
@@ -76,7 +76,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_nodata, FileExtension.ext(asset).nodata)
         item.validate()
 
-    def test_migrates_old_checksum(self):
+    def test_migrates_old_checksum(self) -> None:
         example_path = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/"
             "extensions/checksum/examples/sentinel1.json"

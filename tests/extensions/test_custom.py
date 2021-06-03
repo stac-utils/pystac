@@ -1,6 +1,6 @@
 """Tests creating a custom extension"""
 
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
 
@@ -34,7 +34,7 @@ class CustomExtension(
 
     @property
     def test_prop(self) -> Optional[str]:
-        self._get_property(TEST_PROP, str)
+        return self._get_property(TEST_PROP, str)
 
     @test_prop.setter
     def test_prop(self, v: Optional[str]) -> None:
@@ -106,7 +106,7 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
 class SummariesCustomExtension(SummariesExtension):
     @property
     def test_prop(self) -> Optional[RangeSummary[str]]:
-        return self.summaries.get_range(TEST_PROP, str)
+        return self.summaries.get_range(TEST_PROP)
 
     @test_prop.setter
     def test_prop(self, v: Optional[RangeSummary[str]]) -> None:
@@ -139,7 +139,7 @@ class CustomExtensionHooks(ExtensionHooks):
 
 
 class CustomExtensionTest(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
 
     def tearDown(self) -> None:
@@ -147,5 +147,5 @@ class CustomExtensionTest(unittest.TestCase):
 
     # TODO: Test custom extensions and extension hooks
 
-    def test_migrates(self):
+    def test_migrates(self) -> None:
         pass

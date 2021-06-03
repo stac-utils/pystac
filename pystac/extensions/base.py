@@ -1,17 +1,27 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
 
-import pystac
+from pystac import Collection, RangeSummary, STACObject, Summaries
 
 
 class SummariesExtension:
-    def __init__(self, collection: pystac.Collection) -> None:
+    """Base class for extending the properties in :attr:`pystac.Collection.summaries`
+    to include properties defined by a STAC Extension.
+
+    This class should generally not be instantiated directly. Instead, create an
+    extension-specific class that inherits from this class and instantiate that. See
+    :class:`~pystac.extensions.eo.SummariesEOExtension` for an example."""
+
+    summaries: Summaries
+    """The summaries for the :class:`~pystac.Collection` being extended."""
+
+    def __init__(self, collection: Collection) -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], RangeSummary[Any], Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -23,18 +33,39 @@ P = TypeVar("P")
 
 
 class PropertiesExtension(ABC):
-    properties: Dict[str, Any]
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """Abstract base class for extending the properties of an :class:`~pystac.Item`
+    to include properties defined by a STAC Extension.
 
-    def _get_property(self, prop_name: str, typ: Type[P] = Type[Any]) -> Optional[P]:
-        result: Optional[typ] = self.properties.get(prop_name)
-        if result is not None:
-            return result
+    This class should not be instantiated directly. Instead, create an
+    extension-specific class that inherits from this class and instantiate that. See
+    :class:`~pystac.extensions.eo.PropertiesEOExtension` for an example.
+    """
+
+    properties: Dict[str, Any]
+    """The properties that this extension wraps.
+
+    The extension which implements PropertiesExtension can use ``_get_property`` and
+    ``_set_property`` to get and set values on this instance. Note that _set_properties
+    mutates the properties directly."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """Additional read-only properties accessible from the extended object.
+
+    These are used when extending an :class:`~pystac.Asset` to give access to the
+    properties of the owning :class:`~pystac.Item`. If a property exists in both
+    ``additional_read_properties`` and ``properties``, the value in
+    ``additional_read_properties`` will take precedence.
+    """
+
+    def _get_property(self, prop_name: str, typ: Type[P]) -> Optional[P]:
+        maybe_property: Optional[P] = self.properties.get(prop_name)
+        if maybe_property is not None:
+            return maybe_property
         if self.additional_read_properties is not None:
             for props in self.additional_read_properties:
-                result = props.get(prop_name)
-                if result is not None:
-                    return result
+                maybe_additional_property: Optional[P] = props.get(prop_name)
+                if maybe_additional_property is not None:
+                    return maybe_additional_property
         return None
 
     def _set_property(
@@ -46,17 +77,30 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound=STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
+    """Abstract base class with methods for adding and removing extensions from STAC
+    Objects. This class is generic over the type of object being extended (e.g.
+    :class:`~pystac.Item`).
+
+    Concrete extension implementations should inherit from this class and either
+    provide a concrete type or a bounded type variable.
+
+    See :class:`~pystac.extensions.eo.EOExtension` for an example implementation.
+    """
+
     @classmethod
     @abstractmethod
     def get_schema_uri(cls) -> str:
+        """Gets the schema URI associated with this extension."""
         pass
 
     @classmethod
     def add_to(cls, obj: S) -> None:
+        """Add the schema URI for this extension to the
+        :attr:`pystac.STACObject.stac_extensions` list for the given object."""
         if obj.stac_extensions is None:
             obj.stac_extensions = [cls.get_schema_uri()]
         else:
@@ -64,6 +108,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def remove_from(cls, obj: S) -> None:
+        """Remove the schema URI for this extension from the
+        :attr:`pystac.STACObject.stac_extensions` list for the given object."""
         if obj.stac_extensions is not None:
             obj.stac_extensions = [
                 uri for uri in obj.stac_extensions if uri != cls.get_schema_uri()
@@ -71,6 +117,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def has_extension(cls, obj: S) -> bool:
+        """Check if the given object implements this extension by checking
+        :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
         return (
             obj.stac_extensions is not None
             and cls.get_schema_uri() in obj.stac_extensions

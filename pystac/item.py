@@ -26,7 +26,7 @@ class CommonMetadata:
     this item and are optional
 
     Args:
-        properties (dict): Dictionary of attributes that is the Item's properties
+        properties : Dictionary of attributes that is the Item's properties
     """
 
     def __init__(self, properties: Dict[str, Any]):
@@ -87,10 +87,10 @@ class CommonMetadata:
         else:
             start_datetime = asset.properties.get("start_datetime")
 
-        if start_datetime:
-            start_datetime = str_to_datetime(start_datetime)
+        if start_datetime is None:
+            return None
 
-        return start_datetime
+        return str_to_datetime(start_datetime)
 
     def set_start_datetime(
         self, start_datetime: Optional[Datetime], asset: Optional[Asset] = None
@@ -138,10 +138,10 @@ class CommonMetadata:
         else:
             end_datetime = asset.properties.get("end_datetime")
 
-        if end_datetime:
-            end_datetime = str_to_datetime(end_datetime)
+        if end_datetime is None:
+            return None
 
-        return end_datetime
+        return str_to_datetime(end_datetime)
 
     def set_end_datetime(
         self, end_datetime: Optional[Datetime], asset: Optional[Asset] = None
@@ -231,10 +231,10 @@ class CommonMetadata:
         else:
             providers = asset.properties.get("providers")
 
-        if providers is not None:
-            providers = [Provider.from_dict(d) for d in providers]
+        if providers is None:
+            return None
 
-        return providers
+        return [Provider.from_dict(d) for d in providers]
 
     def set_providers(
         self, providers: Optional[List[Provider]], asset: Optional[Asset] = None
@@ -482,7 +482,7 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
 
@@ -494,10 +494,10 @@ class CommonMetadata:
         else:
             created = asset.properties.get("created")
 
-        if created:
-            created = str_to_datetime(created)
+        if created is None:
+            return None
 
-        return created
+        return str_to_datetime(created)
 
     def set_created(
         self, created: Optional[Datetime], asset: Optional[Asset] = None
@@ -525,10 +525,9 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
-
 
         Returns:
             datetime: Date and time that the metadata file was most recently
@@ -549,7 +548,7 @@ class CommonMetadata:
         Note:
             ``created`` and ``updated`` have different meaning depending on where they
             are used. If those fields are available in the Item `properties`, it's
-            referencing to the creation and update times of the metadata. Having those
+            referencing the creation and update times of the metadata. Having those
             fields in the Item `assets` refers to the creation and update times of the
             actual data linked to in the Asset Object.
 
@@ -561,10 +560,10 @@ class CommonMetadata:
         else:
             updated = asset.properties.get("updated")
 
-        if updated:
-            updated = str_to_datetime(updated)
+        if updated is None:
+            return None
 
-        return updated
+        return str_to_datetime(updated)
 
     def set_updated(
         self, updated: Optional[Datetime], asset: Optional[Asset] = None
@@ -590,48 +589,48 @@ class Item(STACObject):
     satellite imagery, derived data, DEM's, etc.
 
     Args:
-        id (str): Provider identifier. Must be unique within the STAC.
-        geometry (dict): Defines the full footprint of the asset represented by this
+        id : Provider identifier. Must be unique within the STAC.
+        geometry : Defines the full footprint of the asset represented by this
             item, formatted according to
             `RFC 7946, section 3.1 (GeoJSON) <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float] or None):  Bounding Box of the asset represented by this item
+        bbox :  Bounding Box of the asset represented by this item
             using either 2D or 3D geometries. The length of the array must be 2*n
             where n is the number of dimensions. Could also be None in the case of a
             null geometry.
-        datetime (datetime or None): Datetime associated with this item. If None,
+        datetime : Datetime associated with this item. If None,
             a start_datetime and end_datetime must be supplied in the properties.
-        properties (dict): A dictionary of additional metadata for the item.
-        stac_extensions (List[str]): Optional list of extensions the Item implements.
-        href (str or None): Optional HREF for this item, which be set as the item's
+        properties : A dictionary of additional metadata for the item.
+        stac_extensions : Optional list of extensions the Item implements.
+        href : Optional HREF for this item, which be set as the item's
             self link's HREF.
-        collection (Collection or str): The Collection or Collection ID that this item
+        collection : The Collection or Collection ID that this item
             belongs to.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+        extra_fields : Extra fields that are part of the top-level JSON
             properties of the Item.
 
     Attributes:
-        id (str): Provider identifier. Unique within the STAC.
-        geometry (dict): Defines the full footprint of the asset represented by this
+        id : Provider identifier. Unique within the STAC.
+        geometry : Defines the full footprint of the asset represented by this
             item, formatted according to
             `RFC 7946, section 3.1 (GeoJSON) <https://tools.ietf.org/html/rfc7946>`_.
-        bbox (List[float] or None):  Bounding Box of the asset represented by this item
+        bbox :  Bounding Box of the asset represented by this item
             using either 2D or 3D geometries. The length of the array is 2*n where n
             is the number of dimensions. Could also be None in the case of a null
             geometry.
-        datetime (datetime or None): Datetime associated with this item. If None,
+        datetime : Datetime associated with this item. If None,
             the start_datetime and end_datetime in the common_metadata
             will supply the datetime range of the Item.
-        properties (dict): A dictionary of additional metadata for the item.
-        stac_extensions (List[str] or None): Optional list of extensions the Item
+        properties : A dictionary of additional metadata for the item.
+        stac_extensions : Optional list of extensions the Item
             implements.
-        collection (Collection or None): Collection that this item is a part of.
-        links (List[Link]): A list of :class:`~pystac.Link` objects representing
+        collection : Collection that this item is a part of.
+        links : A list of :class:`~pystac.Link` objects representing
             all links associated with this STACObject.
-        assets (Dict[str, Asset]): Dictionary of asset objects that can be downloaded,
+        assets : Dictionary of asset objects that can be downloaded,
             each with a unique key.
-        collection_id (str or None): The Collection ID that this item belongs to, if
+        collection_id : The Collection ID that this item belongs to, if
             any.
-        extra_fields (dict or None): Extra fields that are part of the top-level JSON
+        extra_fields : Extra fields that are part of the top-level JSON
             properties of the Item.
     """
 
@@ -700,7 +699,7 @@ class Item(STACObject):
         as the old location.
 
         Args:
-            href (str): The absolute HREF of this object. If the given HREF
+            href : The absolute HREF of this object. If the given HREF
                 is not absolute, it will be transformed to an absolute
                 HREF based on the current working directory. If this is None
                 the call will clear the self HREF link.
@@ -759,8 +758,8 @@ class Item(STACObject):
         """Adds an Asset to this item.
 
         Args:
-            key (str): The unique key of this asset.
-            asset (Asset): The Asset to add.
+            key : The unique key of this asset.
+            asset : The Asset to add.
         """
         asset.set_owner(self)
         self.assets[key] = asset
@@ -817,13 +816,13 @@ class Item(STACObject):
         this item.
 
         Args:
-            collection (Collection or None): The collection to set as this
+            collection : The collection to set as this
                 item's collection. If None, will clear the collection.
 
         Returns:
             Item: self
         """
-        self.remove_links("collection")
+        self.remove_links(pystac.RelType.COLLECTION)
         self.collection_id = None
         if collection is not None:
             self.add_link(Link.collection(collection))
@@ -838,7 +837,7 @@ class Item(STACObject):
             Collection or None: If this item belongs to a collection, returns
             a reference to the collection. Otherwise returns None.
         """
-        collection_link = self.get_single_link("collection")
+        collection_link = self.get_single_link(pystac.RelType.COLLECTION)
         if collection_link is None:
             return None
         else:
@@ -847,7 +846,7 @@ class Item(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != "self"]
+            links = [x for x in links if x.rel != pystac.RelType.SELF]
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
@@ -898,8 +897,11 @@ class Item(STACObject):
 
         return clone
 
-    def _object_links(self) -> List[str]:
-        return ["collection"] + (pystac.EXTENSION_HOOKS.get_extended_object_links(self))
+    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+        return [
+            pystac.RelType.COLLECTION,
+            *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
+        ]
 
     @classmethod
     def from_dict(
@@ -945,7 +947,7 @@ class Item(STACObject):
 
         has_self_link = False
         for link in links:
-            has_self_link |= link["rel"] == "self"
+            has_self_link |= link["rel"] == pystac.RelType.SELF
             item.add_link(Link.from_dict(link))
 
         if not has_self_link and href is not None:

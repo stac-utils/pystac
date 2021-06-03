@@ -4,10 +4,21 @@ https://github.com/stac-extensions/eo
 """
 
 import re
-from typing import Any, Dict, Generic, List, Optional, Set, Tuple, TypeVar, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    cast,
+)
 
 import pystac
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -20,16 +31,18 @@ from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+PREFIX: str = "eo:"
 
-BANDS_PROP = "eo:bands"
-CLOUD_COVER_PROP = "eo:cloud_cover"
+# Field names
+BANDS_PROP: str = PREFIX + "bands"
+CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
 
 
 class Band:
     """Represents Band information attached to an Item that implements the eo extension.
 
-    Use Band.create to create a new Band.
+    Use :meth:`Band.create` to create a new Band.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -42,25 +55,29 @@ class Band:
         description: Optional[str] = None,
         center_wavelength: Optional[float] = None,
         full_width_half_max: Optional[float] = None,
+        solar_illumination: Optional[float] = None,
     ) -> None:
         """
         Sets the properties for this Band.
 
         Args:
-            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name (str): The name commonly used to refer to the band to make it
-                easier to search for bands across instruments. See the `list of
-                accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-            description (str): Description to fully explain the band.
-            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name : The name commonly used to refer to the band to make it
+                easier to search for bands across instruments. See the :stac-ext:`list
+                of accepted common names <eo#common-band-names>`.
+            description : Description to fully explain the band.
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination: The solar illumination of the band,
+                as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         self.name = name
         self.common_name = common_name
         self.description = description
         self.center_wavelength = center_wavelength
         self.full_width_half_max = full_width_half_max
+        self.solar_illumination = solar_illumination
 
     @classmethod
     def create(
@@ -70,19 +87,22 @@ class Band:
         description: Optional[str] = None,
         center_wavelength: Optional[float] = None,
         full_width_half_max: Optional[float] = None,
+        solar_illumination: Optional[float] = None,
     ) -> "Band":
         """
         Creates a new band.
 
         Args:
-            name (str): The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name (str): The name commonly used to refer to the band to make it easier
-                to search for bands across instruments. See the `list of accepted common names
-                <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
-            description (str): Description to fully explain the band.
-            center_wavelength (float): The center wavelength of the band, in micrometers (μm).
-            full_width_half_max (float): Full width at half maximum (FWHM). The width of the band,
+            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name : The name commonly used to refer to the band to make it easier
+                to search for bands across instruments. See the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
+            description : Description to fully explain the band.
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
                 as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination: The solar illumination of the band,
+                as measured at half the maximum transmission, in W/m2/micrometers.
         """  # noqa
         b = cls({})
         b.apply(
@@ -91,6 +111,7 @@ class Band:
             description=description,
             center_wavelength=center_wavelength,
             full_width_half_max=full_width_half_max,
+            solar_illumination=solar_illumination,
         )
         return b
 
@@ -110,8 +131,8 @@ class Band:
     @property
     def common_name(self) -> Optional[str]:
         """Get or sets the name commonly used to refer to the band to make it easier
-            to search for bands across instruments. See the `list of accepted common names
-            <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            to search for bands across instruments. See the :stac-ext:`list of accepted
+            common names <eo#common-band-names>`.
 
         Returns:
             Optional[str]
@@ -175,6 +196,23 @@ class Band:
         else:
             self.properties.pop("full_width_half_max", None)
 
+    @property
+    def solar_illumination(self) -> Optional[float]:
+        """Get or sets the solar illumination of the band,
+            as measured at half the maximum transmission, in W/m2/micrometers.
+
+        Returns:
+            [float]
+        """
+        return self.properties.get("solar_illumination")
+
+    @solar_illumination.setter
+    def solar_illumination(self, v: Optional[float]) -> None:
+        if v is not None:
+            self.properties["solar_illumination"] = v
+        else:
+            self.properties.pop("solar_illumination", None)
+
     def __repr__(self) -> str:
         return "<Band name={}>".format(self.name)
 
@@ -191,7 +229,8 @@ class Band:
         """Gets the band range for a common band name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
 
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
@@ -223,7 +262,8 @@ class Band:
         """Returns a description of the band for one with a common name.
 
         Args:
-            common_name (str): The common band name. Must be one of the `list of accepted common names <https://github.com/radiantearth/stac-spec/tree/v0.8.1/extensions/eo#common-band-names>`_.
+            common_name : The common band name. Must be one of the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
 
         Returns:
             str or None: If a recognized common name, returns a description including the
@@ -238,45 +278,44 @@ class Band:
 class EOExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """EOItemExt is the extension of the Item in the eo extension which
-    represents a snapshot of the earth for a single date and time.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
+    :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
-    Args:
-        item (Item): The item to be extended.
+    To create a concrete instance of :class:`EOExtension`, use the
+    :meth:`EOExtension.ext` method. For example:
 
-    Attributes:
-        item (Item): The Item that is being extended.
+    .. code-block:: python
 
-    Note:
-        Using EOItemExt to directly wrap an item will add the 'eo' extension ID to
-        the item's stac_extensions.
+       >>> item: pystac.Item = ...
+       >>> view_ext = ViewExtension.ext(item)
     """
 
-    def apply(self, bands: List[Band], cloud_cover: Optional[float] = None) -> None:
-        """Applies label extension properties to the extended Item.
+    def apply(
+        self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
+    ) -> None:
+        """Applies label extension properties to the extended :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
 
         Args:
-            bands (List[Band]): a list of :class:`~pystac.Band` objects that represent
-                the available bands.
-            cloud_cover (float or None): The estimate of cloud cover as a percentage
-                (0-100) of the entire scene. If not available the field should not be
-                provided.
+            bands : A list of available bands where each item is a :class:`~Band`
+                object. If given, requires at least one band.
+            cloud_cover : The estimate of cloud cover as a percentage
+                (0-100) of the entire scene. If not available the field should not
+                be provided.
         """
         self.bands = bands
         self.cloud_cover = cloud_cover
 
     @property
     def bands(self) -> Optional[List[Band]]:
-        """Get or sets a list of :class:`~pystac.Band` objects that represent
-        the available bands.
+        """Gets or sets a list of available bands where each item is a :class:`~Band`
+        object (or ``None`` if no bands have been set). If not available the field
+        should not be provided.
         """
         return self._get_bands()
-
-    def _get_bands(self) -> Optional[List[Band]]:
-        return map_opt(
-            lambda bands: [Band(b) for b in bands],
-            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
-        )
 
     @bands.setter
     def bands(self, v: Optional[List[Band]]) -> None:
@@ -284,10 +323,16 @@ class EOExtension(
             BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
         )
 
+    def _get_bands(self) -> Optional[List[Band]]:
+        return map_opt(
+            lambda bands: [Band(b) for b in bands],
+            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
+        )
+
     @property
     def cloud_cover(self) -> Optional[float]:
-        """Get or sets the estimate of cloud cover as a percentage (0-100) of the
-            entire scene. If not available the field should not be provided.
+        """Get or sets the estimate of cloud cover as a percentage
+        (0-100) of the entire scene. If not available the field should not be provided.
 
         Returns:
             float or None
@@ -304,6 +349,16 @@ class EOExtension(
 
     @staticmethod
     def ext(obj: T) -> "EOExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
+        Extension <eo>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
@@ -315,10 +370,25 @@ class EOExtension(
 
     @staticmethod
     def summaries(obj: pystac.Collection) -> "SummariesEOExtension":
+        """Returns the extended summaries object for the given collection."""
         return SummariesEOExtension(obj)
 
 
 class ItemEOExtension(EOExtension[pystac.Item]):
+    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`Electro-Optical Extension <eo>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EOExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -349,6 +419,24 @@ class ItemEOExtension(EOExtension[pystac.Item]):
 
 
 class AssetEOExtension(EOExtension[pystac.Asset]):
+    """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`Electro-Optical Extension <eo>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EOExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -356,18 +444,24 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetEOExtension Item id={}>".format(self.asset_href)
+        return "<AssetEOExtension Asset href={}>".format(self.asset_href)
 
 
 class SummariesEOExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Electro-Optical Extension <eo>`.
+    """
+
     @property
     def bands(self) -> Optional[List[Band]]:
-        """Get or sets a list of :class:`~pystac.Band` objects that represent
-        the available bands.
+        """Get or sets the summary of :attr:`EOExtension.bands` values
+        for this Collection.
         """
+
         return map_opt(
             lambda bands: [Band(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP, Dict[str, Any]),
+            self.summaries.get_list(BANDS_PROP),
         )
 
     @bands.setter
@@ -376,8 +470,10 @@ class SummariesEOExtension(SummariesExtension):
 
     @property
     def cloud_cover(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the range of cloud cover from the summary."""
-        return self.summaries.get_range(CLOUD_COVER_PROP, float)
+        """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
+        for this Collection.
+        """
+        return self.summaries.get_range(CLOUD_COVER_PROP)
 
     @cloud_cover.setter
     def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:

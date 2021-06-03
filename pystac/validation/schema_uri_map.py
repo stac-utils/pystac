@@ -21,9 +21,9 @@ class SchemaUriMap(ABC):
         """Get the schema URI for the given object type and stac version.
 
         Args:
-            object_type (STACObjectType): STAC object type. One of
+            object_type : STAC object type. One of
                 :class:`~pystac.STACObjectType`
-            stac_version (str): The STAC version of the schema to return.
+            stac_version : The STAC version of the schema to return.
 
         Returns:
             str: The URI of the schema, or None if not found.

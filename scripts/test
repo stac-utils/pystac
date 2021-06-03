@@ -18,6 +18,12 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         usage
     else
         echo
+        echo " -- CHECKING TYPES WITH MYPY --"
+        echo
+
+        mypy docs pystac setup.py tests
+
+        echo
         echo " -- CHECKING TYPES WITH PYRIGHT --"
         echo
 
@@ -28,6 +34,12 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         echo
 
         flake8 pystac tests
+
+        echo
+        echo " -- LINTING RST FILES WITH DOC8 --"
+        echo
+
+        doc8 docs -q
 
         echo
         echo " -- CHECKING FORMAT WITH BLACK --"
@@ -55,7 +67,7 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
         echo
 
         # Test suite with coverage enabled
-        coverage run --source=pystac/ -m unittest discover tests/
+        coverage run -m unittest discover tests/
         coverage xml
     fi
 fi

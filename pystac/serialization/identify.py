@@ -52,16 +52,16 @@ class STACVersionID:
         return self.version_string
 
     def __eq__(self, other: Any) -> bool:
-        if type(other) is str:
-            other = STACVersionID(other)
-        return self.version_string == other.version_string
+        if not isinstance(other, STACVersionID):
+            other = STACVersionID(str(other))
+        return str(self) == str(other)
 
-    def __ne__(self, other: Any) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
-    def __lt__(self, other: Any) -> bool:
-        if type(other) is str:
-            other = STACVersionID(other)
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, STACVersionID):
+            other = STACVersionID(str(other))
         if self.version_core < other.version_core:
             return True
         elif self.version_core > other.version_core:
@@ -141,11 +141,11 @@ class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
     Attributes:
-        object_type (str): Describes the STAC object type. One of
+        object_type : Describes the STAC object type. One of
             :class:`~pystac.STACObjectType`.
-        version_range (STACVersionRange): The STAC version range that describes what
+        version_range : The STAC version range that describes what
             has been identified as potential valid versions of the stac object.
-        extensions (List[str]): List of extension schema URIs for extensions this
+        extensions : List of extension schema URIs for extensions this
             object implements
     """
 
@@ -302,7 +302,7 @@ def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectType_Type
     """Determines the STACObjectType of the provided JSON dict.
 
     Args:
-        json_dict (dict): The dict of STAC JSON to identify.
+        json_dict : The dict of STAC JSON to identify.
 
     Returns:
         STACObjectType: The object type represented by the JSON.
@@ -338,7 +338,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     """Determines the STACJSONDescription of the provided JSON dict.
 
     Args:
-        json_dict (dict): The dict of STAC JSON to identify.
+        json_dict : The dict of STAC JSON to identify.
 
     Returns:
         STACJSONDescription: The description of the STAC object serialized in the
@@ -401,7 +401,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
             # self links became non-required in 0.7.0
             if not version_range.is_earlier_than("0.7.0") and not any(
                 filter(
-                    lambda l: cast(Dict[str, Any], l)["rel"] == "self",
+                    lambda l: cast(Dict[str, Any], l)["rel"] == pystac.RelType.SELF,
                     json_dict["links"],
                 )
             ):

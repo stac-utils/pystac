@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.3",
+  "stac_version": "1.0.0",
   "id": "CS3-20160503_132131_05",
   "properties": {
     "datetime": "2016-05-03T13:22:30.040000Z",
@@ -45,10 +45,6 @@
     ]
   },
   "links": [
-    {
-      "rel": "self",
-      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"
-    },
     {
       "rel": "collection",
       "href": "https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json"

@@ -50,12 +50,12 @@ class ResolvedObjectCache:
     them with their copies.
 
     Args:
-        id_keys_to_objects (Dict[str, STACObject]): Existing cache of
+        id_keys_to_objects : Existing cache of
             a key made up of the STACObject and it's parents IDs mapped
             to the cached STACObject.
-        hrefs_to_objects (Dict[str, STACObject]): STAC Object HREFs matched to
+        hrefs_to_objects : STAC Object HREFs matched to
             their cached object.
-        ids_to_collections (Dict[str, Collection]): Map of collection IDs
+        ids_to_collections : Map of collection IDs
             to collections.
     """
 
@@ -63,7 +63,7 @@ class ResolvedObjectCache:
         self,
         id_keys_to_objects: Optional[Dict[str, "STACObject_Type"]] = None,
         hrefs_to_objects: Optional[Dict[str, "STACObject_Type"]] = None,
-        ids_to_collections: Dict[str, "Collection_Type"] = None,
+        ids_to_collections: Optional[Dict[str, "Collection_Type"]] = None,
     ):
         self.id_keys_to_objects = id_keys_to_objects or {}
         self.hrefs_to_objects = hrefs_to_objects or {}
@@ -76,7 +76,7 @@ class ResolvedObjectCache:
         none exists, sets the cached object to the given object.
 
         Args:
-            obj (STACObject): The given object who's cache key will be checked
+            obj : The given object who's cache key will be checked
                 against the cache.
 
         Returns:
@@ -101,7 +101,7 @@ class ResolvedObjectCache:
         """Get the cached object that has the same cache key as the given object.
 
         Args:
-            obj (STACObject): The given object who's cache key will be checked against
+            obj : The given object who's cache key will be checked against
                 the cache.
 
         Returns:
@@ -118,7 +118,7 @@ class ResolvedObjectCache:
         """Gets the cached object at href.
 
         Args:
-            href (str): The href to use as the key for the cached object.
+            href : The href to use as the key for the cached object.
 
         Returns:
             STACObject or None: Returns the STACObject if cached, otherwise None.
@@ -129,7 +129,7 @@ class ResolvedObjectCache:
         """Retrieved a cached Collection by its ID.
 
         Args:
-            id (str): The ID of the collection.
+            id : The ID of the collection.
 
         Returns:
             Collection or None: Returns the collection if there is one cached
@@ -141,7 +141,7 @@ class ResolvedObjectCache:
         """Set the given object into the cache.
 
         Args:
-            obj (STACObject): The object to cache
+            obj : The object to cache
         """
         key, is_href = get_cache_key(obj)
         if is_href:
@@ -156,7 +156,7 @@ class ResolvedObjectCache:
         """Removes any cached object that matches the given object's cache key.
 
         Args:
-            obj (STACObject): The object to remove
+            obj : The object to remove
         """
         key, is_href = get_cache_key(obj)
 
@@ -194,9 +194,9 @@ class ResolvedObjectCache:
         in the first will be cached in the resulting merged ResolvedObjectCache.
 
         Args:
-            first (ResolvedObjectCache): The first cache to merge. This cache will be
+            first : The first cache to merge. This cache will be
                 the preferred cache for objects in the case of ID conflicts.
-            second (ResolvedObjectCache): The second cache to merge.
+            second : The second cache to merge.
 
         Returns:
             ResolvedObjectCache: The resulting merged cache.
@@ -235,8 +235,12 @@ class CollectionCache:
 
     def __init__(
         self,
-        cached_ids: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
-        cached_hrefs: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
+        cached_ids: Optional[
+            Dict[str, Union["Collection_Type", Dict[str, Any]]]
+        ] = None,
+        cached_hrefs: Optional[
+            Dict[str, Union["Collection_Type", Dict[str, Any]]]
+        ] = None,
     ):
         self.cached_ids = cached_ids or {}
         self.cached_hrefs = cached_hrefs or {}
@@ -273,8 +277,12 @@ class ResolvedObjectCollectionCache(CollectionCache):
     def __init__(
         self,
         resolved_object_cache: ResolvedObjectCache,
-        cached_ids: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
-        cached_hrefs: Dict[str, Union["Collection_Type", Dict[str, Any]]] = None,
+        cached_ids: Optional[
+            Dict[str, Union["Collection_Type", Dict[str, Any]]]
+        ] = None,
+        cached_hrefs: Optional[
+            Dict[str, Union["Collection_Type", Dict[str, Any]]]
+        ] = None,
     ):
         super().__init__(cached_ids, cached_hrefs)
         self.resolved_object_cache = resolved_object_cache

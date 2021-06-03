@@ -2,7 +2,7 @@
 
 https://github.com/stac-extensions/version
 """
-
+from enum import Enum
 from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, Set, TypeVar, Union, cast
 
@@ -22,13 +22,27 @@ SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 VERSION: str = "version"
 DEPRECATED: str = "deprecated"
 
-# Link "rel" attribute values.
-LATEST: str = "latest-version"
-PREDECESSOR: str = "predecessor-version"
-SUCCESSOR: str = "successor-version"
 
-# Media type for links.
-MEDIA_TYPE: str = "application/json"
+class VersionRelType(str, Enum):
+    """A list of rel types defined in the Version Extension.
+
+    See the `Version Extension Relation types
+    <https://github.com/stac-extensions/version#relation-types>`__ documentation
+    for details."""
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    LATEST = "latest-version"
+    """Indicates a link pointing to a resource containing the latest version."""
+
+    PREDECESSOR = "predecessor-version"
+    """Indicates a link pointing to a resource containing the predecessor version in the
+    version history."""
+
+    SUCCESSOR = "successor-version"
+    """Indicates a link pointing to a resource containing the successor version in the
+    version history."""
 
 
 class VersionExtension(
@@ -40,10 +54,10 @@ class VersionExtension(
     along with links to the latest, predecessor, and successor Items.
 
     Args:
-        item (Item): The item to be extended.
+        item : The item to be extended.
 
     Attributes:
-        item (Item): The item that is being extended.
+        item : The item that is being extended.
 
     Note:
         Using VersionItemExt to directly wrap an item will add the 'version'
@@ -66,13 +80,13 @@ class VersionExtension(
         """Applies version extension properties to the extended Item.
 
         Args:
-            version (str): The version string for the item.
-            deprecated (bool): Optional flag set to True if an Item is
+            version : The version string for the item.
+            deprecated : Optional flag set to True if an Item is
                 deprecated with the potential to be removed.  Defaults to false
                 if not present.
-            latest (Item): Item with the latest (e.g., current) version.
-            predecessor (Item): Item with the previous version.
-            successor (Item): Item with the next most recent version.
+            latest : Item with the latest (e.g., current) version.
+            predecessor : Item with the previous version.
+            successor : Item with the next most recent version.
         """
         self.version = version
         if deprecated is not None:
@@ -110,41 +124,49 @@ class VersionExtension(
     def latest(self) -> Optional[T]:
         """Get or sets the most recent version."""
         return map_opt(
-            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(LATEST)), None)
+            lambda x: cast(T, x),
+            next(iter(self.obj.get_stac_objects(VersionRelType.LATEST)), None),
         )
 
     @latest.setter
     def latest(self, item: Optional[T]) -> None:
-        self.obj.clear_links(LATEST)
+        self.obj.clear_links(VersionRelType.LATEST)
         if item is not None:
-            self.obj.add_link(pystac.Link(LATEST, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(VersionRelType.LATEST, item, pystac.MediaType.JSON)
+            )
 
     @property
     def predecessor(self) -> Optional[T]:
         """Get or sets the previous item."""
         return map_opt(
             lambda x: cast(T, x),
-            next(iter(self.obj.get_stac_objects(PREDECESSOR)), None),
+            next(iter(self.obj.get_stac_objects(VersionRelType.PREDECESSOR)), None),
         )
 
     @predecessor.setter
     def predecessor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(PREDECESSOR)
+        self.obj.clear_links(VersionRelType.PREDECESSOR)
         if item is not None:
-            self.obj.add_link(pystac.Link(PREDECESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(VersionRelType.PREDECESSOR, item, pystac.MediaType.JSON)
+            )
 
     @property
     def successor(self) -> Optional[T]:
         """Get or sets the next item."""
         return map_opt(
-            lambda x: cast(T, x), next(iter(self.obj.get_stac_objects(SUCCESSOR)), None)
+            lambda x: cast(T, x),
+            next(iter(self.obj.get_stac_objects(VersionRelType.SUCCESSOR)), None),
         )
 
     @successor.setter
     def successor(self, item: Optional[T]) -> None:
-        self.obj.clear_links(SUCCESSOR)
+        self.obj.clear_links(VersionRelType.SUCCESSOR)
         if item is not None:
-            self.obj.add_link(pystac.Link(SUCCESSOR, item, MEDIA_TYPE))
+            self.obj.add_link(
+                pystac.Link(VersionRelType.SUCCESSOR, item, pystac.MediaType.JSON)
+            )
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -193,7 +215,11 @@ class VersionExtensionHooks(ExtensionHooks):
 
     def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
         if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
-            return [LATEST, PREDECESSOR, SUCCESSOR]
+            return [
+                VersionRelType.LATEST,
+                VersionRelType.PREDECESSOR,
+                VersionRelType.SUCCESSOR,
+            ]
         return None
 
 
