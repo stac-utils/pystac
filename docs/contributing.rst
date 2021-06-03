@@ -48,6 +48,7 @@ Code quality checks
 PySTAC uses
 
 - `black <https://github.com/psf/black>`_ for Python code formatting
+- `codespell <https://github.com/codespell-project/codespell/>`_ to check code for common misspellings
 - `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in the docs
 - `flake8 <http://flake8.pycqa.org/en/latest/>`_ for Python style checks
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks

@@ -11,6 +11,14 @@ repos:
         stages: [commit]
         types: [python]
 
+      - id: codespell
+        name: codespell
+        entry: codespell
+        args: [--ignore-words=.codespellignore]
+        language: system
+        stages: [commit]
+        types_or: [jupyter, markdown, python, shell]
+
       - id: doc8
         name: doc8
         entry: doc8

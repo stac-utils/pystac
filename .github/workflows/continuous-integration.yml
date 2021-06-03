@@ -103,7 +103,7 @@ jobs:
           pip install -r requirements-test.txt
 
       - name: Execute linters & type checkers
-        run: ./scripts/lint
+        run: pre-commit run --all-files
 
   vanilla:
     runs-on: ubuntu-latest

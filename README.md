@@ -91,12 +91,6 @@ To run these automatically when committing files (runs only on the staged files)
 
 To avoid running these checks when committing, use `git commit --no-verify`.
 
-To check for spelling mistakes in modified files:
-
-```
-> git diff --name-only | xargs codespell -I .codespellignore -f
-```
-
 You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
 
 ### Continuous Integration
