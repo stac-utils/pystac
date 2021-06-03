@@ -1,9 +1,9 @@
 import os
-from imp import load_source
+from importlib import import_module
 from setuptools import setup, find_packages
 from glob import glob
 
-__version__ = load_source('pystac.version', 'pystac/version.py').__version__  # type: ignore
+__version__ = import_module("pystac.version").__version__  # type: ignore
 
 from os.path import basename, splitext
 
