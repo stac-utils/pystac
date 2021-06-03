@@ -68,6 +68,35 @@ class IdentifyTest(unittest.TestCase):
 
         self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
 
+    def test_identify_0_8_itemcollection(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertEqual(
+            identify_stac_object_type(itemcollection_dict),
+            pystac.STACObjectType.ITEMCOLLECTION,
+        )
+
+    def test_identify_0_9_itemcollection(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.9.0/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertEqual(
+            identify_stac_object_type(itemcollection_dict),
+            pystac.STACObjectType.ITEMCOLLECTION,
+        )
+
+    def test_identify_invalid_with_stac_version(self) -> None:
+        not_stac = {"stac_version": "0.9.0", "type": "Custom"}
+
+        self.assertIsNone(identify_stac_object_type(not_stac))
+
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self) -> None:

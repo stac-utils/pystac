@@ -10,6 +10,7 @@ stdout*
 .idea
 .vscode
 
+
 # Sphinx documentation
 .ipynb_checkpoints/
 
