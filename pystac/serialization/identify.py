@@ -298,40 +298,59 @@ def _identify_stac_extensions(
     return list(stac_extensions)
 
 
-def identify_stac_object_type(json_dict: Dict[str, Any]) -> "STACObjectType_Type":
-    """Determines the STACObjectType of the provided JSON dict.
+def identify_stac_object_type(
+    json_dict: Dict[str, Any]
+) -> Optional["STACObjectType_Type"]:
+    """Determines the STACObjectType of the provided JSON dict. If the JSON dict does
+    not represent a STAC object, returns ``None``.
+
+    Will first try to identify the object using ``"type"`` field as described in the
+    guidelines in :stac-spec:`How to Differentiate STAC Files
+    <best-practices.md#how-to-differentiate-stac-files>`. If this fails, will fall back
+    to using the pre-1.0 heuristic described in `this issue
+    <https://github.com/radiantearth/stac-spec/issues/889#issuecomment-684529444>`__
 
     Args:
-        json_dict : The dict of STAC JSON to identify.
-
-    Returns:
-        STACObjectType: The object type represented by the JSON.
+        json_dict : The dict of JSON to identify.
     """
-    object_type = None
-
-    if "type" in json_dict:  # Try to identify using 'type' property
+    # Try to identify using 'type' property, if present
+    if "type" in json_dict:
+        # Try to find 'type' property in known STACObjectType values
         for t in pystac.STACObjectType:
             if json_dict["type"].lower() == t.value.lower():
-                object_type = t
-                break
+                return t
 
-    if object_type is None:  # Use old-approach based on other properties
-        # Identify pre-1.0 ITEMCOLLECTION (since removed)
-        if "type" in json_dict and "assets" not in json_dict:
-            if "stac_version" in json_dict and json_dict["stac_version"].startswith(
-                "0"
-            ):
-                if json_dict["type"] == "FeatureCollection":
-                    object_type = pystac.STACObjectType.ITEMCOLLECTION
+    obj_type = json_dict.get("type")
 
-        if "extent" in json_dict:
-            object_type = pystac.STACObjectType.COLLECTION
-        elif "assets" in json_dict:
-            object_type = pystac.STACObjectType.ITEM
+    # For pre-1.0 objects for version 0.8.* or later 'stac_version' must be present,
+    # except for in ItemCollections (which are handled in the else clause)
+    if "stac_version" in json_dict:
+        # Pre-1.0 STAC objects with 'type' == "Feature" are Items
+        if obj_type == "Feature":
+            return pystac.STACObjectType.ITEM
+        # Pre-1.0 STAC objects with 'type' == "FeatureCollection" are ItemCollections
+        if obj_type == "FeatureCollection":
+            return pystac.STACObjectType.ITEMCOLLECTION
+        # Anything else with a 'type' field is not a STAC object
+        if obj_type is not None:
+            return None
+
+        # Collections will contain either an 'extent' or a 'license' (or both)
+        if "extent" in json_dict or "license" in json_dict:
+            return pystac.STACObjectType.COLLECTION
+        # Everything else that has a stac_version is a Catalog
         else:
-            object_type = pystac.STACObjectType.CATALOG
-
-    return object_type
+            return pystac.STACObjectType.CATALOG
+    else:
+        # Prior to STAC 0.9 ItemCollections did not have a stac_version field and could
+        # only be identified by the fact that all of their 'features' are STAC Items
+        if obj_type == "FeatureCollection":
+            if all(
+                identify_stac_object_type(feat) == pystac.STACObjectType.ITEM
+                for feat in json_dict.get("features", [])
+            ):
+                return pystac.STACObjectType.ITEMCOLLECTION
+        return None
 
 
 def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
@@ -345,6 +364,9 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         given dict.
     """
     object_type = identify_stac_object_type(json_dict)
+
+    if object_type is None:
+        raise pystac.STACTypeError("JSON does not represent a STAC object.")
 
     version_range = STACVersionRange()
 

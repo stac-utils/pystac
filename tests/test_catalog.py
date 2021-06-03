@@ -795,19 +795,19 @@ class CatalogTest(unittest.TestCase):
     def test_extra_fields(self) -> None:
         catalog = TestCases.test_case_1()
 
-        catalog.extra_fields["type"] = "FeatureCollection"
+        catalog.extra_fields["custom_field"] = "Special content"
 
         with get_temp_dir() as tmp_dir:
             p = os.path.join(tmp_dir, "catalog.json")
             catalog.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:
                 cat_json = json.load(f)
-            self.assertTrue("type" in cat_json)
-            self.assertEqual(cat_json["type"], "FeatureCollection")
+            self.assertTrue("custom_field" in cat_json)
+            self.assertEqual(cat_json["custom_field"], "Special content")
 
             read_cat = pystac.Catalog.from_file(p)
-            self.assertTrue("type" in read_cat.extra_fields)
-            self.assertEqual(read_cat.extra_fields["type"], "FeatureCollection")
+            self.assertTrue("custom_field" in read_cat.extra_fields)
+            self.assertEqual(read_cat.extra_fields["custom_field"], "Special content")
 
     def test_validate_all(self) -> None:
         for cat in TestCases.all_test_catalogs():

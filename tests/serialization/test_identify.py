@@ -47,6 +47,27 @@ class IdentifyTest(unittest.TestCase):
                     set(actual.extensions), set(example.extensions), msg=msg
                 )
 
+    def test_identify_non_stac_type(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        self.assertIsNone(identify_stac_object_type(plain_feature_dict))
+
+    def test_identify_non_stac_raises_error(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        with self.assertRaises(pystac.STACTypeError) as ctx:
+            identify_stac_object(plain_feature_dict)
+
+        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self) -> None:
