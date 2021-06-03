@@ -97,7 +97,9 @@ class LabelClasses:
         Returns:
             List[str] or List[int] or List[float]
         """
-        result = self.properties.get("classes")
+        result: Optional[
+            Union[List[str], List[int], List[float]]
+        ] = self.properties.get("classes")
         if result is None:
             raise pystac.STACError(
                 f"LabelClasses does not contain classes property: {self.properties}"
@@ -179,7 +181,7 @@ class LabelCount:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Label count has no name property: {self.properties}"
@@ -197,7 +199,7 @@ class LabelCount:
         Returns:
             int
         """
-        result = self.properties.get("count")
+        result: Optional[int] = self.properties.get("count")
         if result is None:
             raise pystac.STACError(
                 f"Label count has no count property: {self.properties}"
@@ -255,7 +257,7 @@ class LabelStatistics:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Label statistics has no name property: {self.properties}"
@@ -273,7 +275,7 @@ class LabelStatistics:
         Returns:
             float
         """
-        result = self.properties.get("value")
+        result: Optional[float] = self.properties.get("value")
         if result is None:
             raise pystac.STACError(
                 f"Label statistics has no value property: {self.properties}"
@@ -529,7 +531,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         Returns:
             str
         """
-        result = self.obj.properties.get("label:description")
+        result: Optional[str] = self.obj.properties.get("label:description")
         if result is None:
             raise pystac.STACError(f"label:description not set for item {self.obj.id}")
         return result

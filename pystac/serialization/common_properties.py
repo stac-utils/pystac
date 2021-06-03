@@ -71,7 +71,7 @@ def merge_common_properties(
             (link for link in links if link["rel"] == pystac.RelType.COLLECTION), None
         )
         if collection_link is not None:
-            collection_href = cast(Dict[str, Any], collection_link).get("href")
+            collection_href = collection_link.get("href")
             if collection_href is not None:
                 if json_href is not None:
                     collection_href = make_absolute_href(collection_href, json_href)

@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, TYPE_CHECKING
 
 import pystac
 from pystac.serialization.identify import (
-    STACVersionRange,  # type:ignore
+    STACVersionRange,
     identify_stac_object,
     identify_stac_object_type,
 )

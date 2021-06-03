@@ -60,7 +60,7 @@ class VersionTest(unittest.TestCase):
         self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")  # type:ignore
         self.assertTrue(
             STACVersionID("1.0.0-beta.1")  # type:ignore
-            <= STACVersionID("1.0.0-beta.2")  # type:ignore
+            <= STACVersionID("1.0.0-beta.2")
         )
         self.assertFalse(STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2"))
 
