@@ -26,8 +26,14 @@ setup(
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     include_package_data=False,
-    install_requires=["python-dateutil>=2.7.0"],
-    extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
+    install_requires=[
+        "python-dateutil>=2.7.0",
+        'typing_extensions >= 3.7; python_version < "3.8"',
+    ],
+    extras_require={
+        "validation": ["jsonschema>=3.0"],
+        "orjson": ["orjson>=3.5"]
+    },
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords=["pystac", "imagery", "raster", "catalog", "STAC"],

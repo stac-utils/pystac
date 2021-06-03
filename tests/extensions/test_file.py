@@ -2,7 +2,7 @@ import json
 import unittest
 
 import pystac
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 from pystac.extensions.file import FileExtension, FileDataType
 
 
@@ -15,7 +15,7 @@ class FileTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.FILE_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        test_to_from_dict(self, pystac.Item, item_dict)
+        assert_to_from_dict(self, pystac.Item, item_dict)
 
     def test_validate_file(self) -> None:
         item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)

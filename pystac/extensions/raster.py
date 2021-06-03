@@ -729,7 +729,7 @@ class SummariesRasterExtension(SummariesExtension):
         """
         return map_opt(
             lambda bands: [RasterBand(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP, Dict[str, Any]),
+            self.summaries.get_list(BANDS_PROP),
         )
 
     @bands.setter

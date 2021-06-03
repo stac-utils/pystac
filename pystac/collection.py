@@ -3,13 +3,11 @@ from datetime import datetime as Datetime
 from typing import (
     Any,
     Dict,
-    Generic,
     Iterable,
     List,
     Optional,
     TYPE_CHECKING,
     Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -24,7 +22,8 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
-from pystac.utils import datetime_to_str, get_required
+from pystac.utils import datetime_to_str
+from pystac.summaries import Summaries
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
@@ -420,85 +419,6 @@ class Provider:
             roles=d.get("roles"),
             url=d.get("url"),
         )
-
-
-class RangeSummary(Generic[T]):
-    def __init__(self, minimum: T, maximum: T):
-        self.minimum = minimum
-        self.maximum = maximum
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {"minimum": self.minimum, "maximum": self.maximum}
-
-    @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "RangeSummary[T]":
-        minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
-        maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
-        return cls(minimum=minimum, maximum=maximum)
-
-
-class Summaries:
-    def __init__(self, summaries: Dict[str, Any]) -> None:
-        self._summaries = summaries
-
-        self.lists: Dict[str, List[Any]] = {}
-        self.ranges: Dict[str, RangeSummary[Any]] = {}
-        self.schemas: Dict[str, Dict[str, Any]] = {}
-        self.other: Dict[str, Any] = {}
-
-        for prop_key, summary in summaries.items():
-            self.add(prop_key, summary)
-
-    def get_list(self, prop: str, typ: Type[T]) -> Optional[List[T]]:
-        return self.lists.get(prop)
-
-    def get_range(self, prop: str, typ: Type[T]) -> Optional[RangeSummary[T]]:
-        return self.ranges.get(prop)
-
-    def get_schema(self, prop: str) -> Optional[Dict[str, Any]]:
-        return self.schemas.get(prop)
-
-    def add(
-        self,
-        prop_key: str,
-        summary: Union[List[Any], RangeSummary[Any], Dict[str, Any]],
-    ) -> None:
-        if isinstance(summary, list):
-            self.lists[prop_key] = summary
-        elif isinstance(summary, dict):
-            if "minimum" in summary:
-                self.ranges[prop_key] = RangeSummary[Any].from_dict(
-                    cast(Dict[str, Any], summary)
-                )
-            else:
-                self.schemas[prop_key] = summary
-        elif isinstance(summary, RangeSummary):
-            self.ranges[prop_key] = summary
-        else:
-            self.other[prop_key] = summary
-
-    def remove(self, prop_key: str) -> None:
-        self.lists.pop(prop_key, None)
-        self.ranges.pop(prop_key, None)
-        self.schemas.pop(prop_key, None)
-        self.other.pop(prop_key, None)
-
-    def is_empty(self) -> bool:
-        return not (
-            any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
-        )
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            **self.lists,
-            **{k: v.to_dict() for k, v in self.ranges.items()},
-            **self.schemas,
-            **self.other,
-        }
-
-    @classmethod
-    def empty(cls) -> "Summaries":
-        return Summaries({})
 
 
 class Collection(Catalog):

@@ -17,7 +17,7 @@ import pystac
 from tests.utils.stac_io_mock import MockStacIO  #  type:ignore
 
 
-def test_to_from_dict(
+def assert_to_from_dict(
     test_class: unittest.TestCase,
     stac_object_class: Type[pystac.STACObject],
     d: Dict[str, Any],

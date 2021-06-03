@@ -1,6 +1,6 @@
 """Tests creating a custom extension"""
 
-from pystac.collection import RangeSummary
+from pystac.summaries import RangeSummary
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
 
@@ -106,7 +106,7 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
 class SummariesCustomExtension(SummariesExtension):
     @property
     def test_prop(self) -> Optional[RangeSummary[str]]:
-        return self.summaries.get_range(TEST_PROP, str)
+        return self.summaries.get_range(TEST_PROP)
 
     @test_prop.setter
     def test_prop(self, v: Optional[RangeSummary[str]]) -> None:

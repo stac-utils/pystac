@@ -350,17 +350,63 @@ PointcloudItemExt
 Projection Extension
 --------------------
 
-Implements the `Projection Extension <https://github.com/radiantearth/stac-spec/tree/v1.0.0-beta.2/extensions/projection>`_.
+These classes are representations of the :stac-ext:`Projection Extension Spec
+<projection>`.
 
-ProjectionItemExt
-~~~~~~~~~~~~~~~~~
+ProjectionExtension
+~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.projection.ProjectionExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.projection.ProjectionItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.ItemProjectionExtension
+   :members:
+   :show-inheritance:
+
+AssetProjectionExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.projection.AssetProjectionExtension
+   :members:
+   :show-inheritance:
+
+Scientific Extension
+--------------------
+
+These classes are representations of the :stac-ext:`Scientific Extension Spec
+<scientific>`.
+
+Publication
+~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.Publication
+   :members:
+   :show-inheritance:
+
+ScientificExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ScientificExtension
+   :members:
+   :show-inheritance:
+
+CollectionScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.CollectionScientificExtension
+   :members:
+   :show-inheritance:
+
+ItemScientificExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.scientific.ItemScientificExtension
+   :members:
+   :show-inheritance:
 
 Timestamps Extension
 --------------------
@@ -462,17 +508,29 @@ VersionItemExt
 View Geometry Extension
 -----------------------
 
-Implements the :stac-ext:`View Geometry Extension <view>`.
+These classes are representations of the :stac-ext:`View Geometry Extension Spec
+<view>`.
 
-ViewItemExt
-~~~~~~~~~~~
+ViewExtension
+~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.view.ViewExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.view.ViewItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemViewExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.ItemViewExtension
+   :members:
+   :show-inheritance:
+
+AssetViewExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.view.AssetViewExtension
+   :members:
+   :show-inheritance:
 
 Serialization
 -------------

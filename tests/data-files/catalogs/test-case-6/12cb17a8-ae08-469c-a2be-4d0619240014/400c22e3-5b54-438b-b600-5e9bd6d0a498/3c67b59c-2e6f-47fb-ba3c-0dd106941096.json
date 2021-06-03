@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "3c67b59c-2e6f-47fb-ba3c-0dd106941096",
   "properties": {
     "label:description": "Labels in layer",
