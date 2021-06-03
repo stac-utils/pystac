@@ -185,103 +185,12 @@ def _identify_stac_extensions(
 
     # checksum
     if "links" in d:
-        found_checksum = False
         for link in d["links"]:
             link_props = cast(Dict[str, Any], link).keys()
 
             if any(prop.startswith("checksum:") for prop in link_props):
-                found_checksum = True
                 stac_extensions.add(OldExtensionShortIDs.CHECKSUM.value)
-        if not found_checksum:
-            if "assets" in d:
-                for asset in d["assets"].values():
-                    asset_props = cast(Dict[str, Any], asset).keys()
-                    if any(prop.startswith("checksum:") for prop in asset_props):
-                        found_checksum = True
-                        stac_extensions.add(OldExtensionShortIDs.CHECKSUM.value)
-        if found_checksum:
-            version_range.set_min(STACVersionID("0.6.2"))
-
-    # datacube
-    if object_type == pystac.STACObjectType.ITEM:
-        if any(k.startswith("cube:") for k in cast(Dict[str, Any], d["properties"])):
-            stac_extensions.add(OldExtensionShortIDs.DATACUBE.value)
-            version_range.set_min(STACVersionID("0.6.1"))
-
-    # datetime-range (old extension)
-    if object_type == pystac.STACObjectType.ITEM:
-        if "dtr:start_datetime" in d["properties"]:
-            stac_extensions.add("datetime-range")
-            version_range.set_min(STACVersionID("0.6.0"))
-
-    # eo
-    if object_type == pystac.STACObjectType.ITEM:
-        if any(k.startswith("eo:") for k in cast(Dict[str, Any], d["properties"])):
-            stac_extensions.add(OldExtensionShortIDs.EO.value)
-            if "eo:epsg" in d["properties"]:
-                if d["properties"]["eo:epsg"] is None:
-                    version_range.set_min(STACVersionID("0.6.1"))
-            if "eo:crs" in d["properties"]:
-                version_range.set_max(STACVersionID("0.4.1"))
-            if "eo:constellation" in d["properties"]:
-                version_range.set_min(STACVersionID("0.6.0"))
-        if "eo:bands" in d:
-            stac_extensions.add(OldExtensionShortIDs.EO.value)
-            version_range.set_max(STACVersionID("0.5.2"))
-
-    # pointcloud
-    if object_type == pystac.STACObjectType.ITEM:
-        if any(k.startswith("pc:") for k in cast(Dict[str, Any], d["properties"])):
-            stac_extensions.add(OldExtensionShortIDs.POINTCLOUD.value)
-            version_range.set_min(STACVersionID("0.6.2"))
-
-    # sar
-    if object_type == pystac.STACObjectType.ITEM:
-        if any(k.startswith("sar:") for k in cast(Dict[str, Any], d["properties"])):
-            stac_extensions.add(OldExtensionShortIDs.SAR.value)
-            version_range.set_min(STACVersionID("0.6.2"))
-            if version_range.contains("0.6.2"):
-                for prop in [
-                    "sar:absolute_orbit",
-                    "sar:resolution",
-                    "sar:pixel_spacing",
-                    "sar:looks",
-                ]:
-                    if prop in d["properties"]:
-                        if isinstance(d["properties"][prop], list):
-                            version_range.set_max(STACVersionID("0.6.2"))
-            if version_range.contains("0.7.0"):
-                for prop in [
-                    "sar:incidence_angle",
-                    "sar:relative_orbit",
-                    "sar:observation_direction",
-                    "sar:resolution_range",
-                    "sar:resolution_azimuth",
-                    "sar:pixel_spacing_range",
-                    "sar:pixel_spacing_azimuth",
-                    "sar:looks_range",
-                    "sar:looks_azimuth",
-                    "sar:looks_equivalent_number",
-                ]:
-                    if prop in d["properties"]:
-                        version_range.set_min(STACVersionID("0.7.0"))
-                if "sar:absolute_orbit" in d["properties"] and not isinstance(
-                    d["properties"]["sar:absolute_orbit"], list
-                ):
-                    version_range.set_min(STACVersionID("0.7.0"))
-            if "sar:off_nadir" in d["properties"]:
-                version_range.set_max(STACVersionID("0.6.2"))
-
-    # scientific
-    if (
-        object_type == pystac.STACObjectType.ITEM
-        or object_type == pystac.STACObjectType.COLLECTION
-    ):
-        if "properties" in d:
-            prop_keys = cast(Dict[str, Any], d["properties"]).keys()
-            if any(k.startswith("sci:") for k in prop_keys):
-                stac_extensions.add(OldExtensionShortIDs.SCIENTIFIC.value)
-                version_range.set_min(STACVersionID("0.6.0"))
+                version_range.set_min(STACVersionID("0.6.2"))
 
     # Single File STAC
     if object_type == pystac.STACObjectType.ITEMCOLLECTION:
