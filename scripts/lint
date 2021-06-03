@@ -12,13 +12,13 @@ echo
 echo " -- CHECKING TYPES WITH PYRIGHT --"
 echo
 
-scripts/pyright pystac tests
+scripts/pyright pystac setup.py tests
 
 echo
 echo " -- LINTING WITH FLAKE8 --"
 echo
 
-flake8 pystac tests
+flake8 pystac setup.py tests
 
 echo
 echo " -- CHECKING FORMAT WITH BLACK --"
@@ -26,6 +26,7 @@ echo
 
 black --check pystac
 black --check tests
+black --check setup.py
 
 echo
 echo " -- CHECKING SPELLING WITH CODESPELL --"

@@ -19,5 +19,6 @@ if [ "${BASH_SOURCE[0]}" = "${0}" ]; then
     else
         black pystac
         black tests
+        black setup.py
     fi
 fi
