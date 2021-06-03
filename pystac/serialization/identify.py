@@ -187,11 +187,7 @@ def _identify_stac_extensions(
     if "links" in d:
         found_checksum = False
         for link in d["links"]:
-            # Account for old links as dicts
-            if isinstance(link, str):
-                link_props = cast(Dict[str, Any], d["links"][link]).keys()
-            else:
-                link_props = cast(Dict[str, Any], link).keys()
+            link_props = cast(Dict[str, Any], link).keys()
 
             if any(prop.startswith("checksum:") for prop in link_props):
                 found_checksum = True
@@ -374,15 +370,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     stac_extensions = json_dict.get("stac_extensions", None)
 
     if stac_version is None:
-        if (
-            object_type == pystac.STACObjectType.CATALOG
-            or object_type == pystac.STACObjectType.COLLECTION
-        ):
-            version_range.set_max(STACVersionID("0.5.2"))
-        elif object_type == pystac.STACObjectType.ITEM:
-            version_range.set_max(STACVersionID("0.7.0"))
-        else:  # ItemCollection
-            version_range.set_min(STACVersionID("0.8.0"))
+        version_range.set_min(STACVersionID("0.8.0"))
     else:
         version_range.set_to_single(stac_version)
 
@@ -394,7 +382,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         # if the stac_extensions property doesn't exist for everything
         # but ItemCollection (except after 0.9.0, when ItemCollection also got
         # the stac_extensions property).
-        if version_range.is_earlier_than("0.8.0") or (
+        if (
             object_type == pystac.STACObjectType.ITEMCOLLECTION
             and not version_range.is_later_than("0.8.1")
         ):
@@ -411,22 +399,5 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         # always identified with the schema URI as the identifier. This
         # code translates the short name IDs used pre-1.0.0-RC1 to the
         # relevant extension schema uri identifier.
-
-    if not version_range.is_single_version():
-        # Final Checks
-
-        if "links" in json_dict:
-            # links were a dictionary only in 0.5
-            if "links" in json_dict and isinstance(json_dict["links"], dict):
-                version_range.set_to_single(STACVersionID("0.5.2"))
-
-            # self links became non-required in 0.7.0
-            if not version_range.is_earlier_than("0.7.0") and not any(
-                filter(
-                    lambda l: cast(Dict[str, Any], l)["rel"] == pystac.RelType.SELF,
-                    json_dict["links"],
-                )
-            ):
-                version_range.set_min(STACVersionID("0.7.0"))
 
     return STACJSONDescription(object_type, version_range, set(stac_extensions))
