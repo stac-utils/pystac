@@ -1,10 +1,9 @@
 ipython==7.16.1
+# https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
+Jinja2==2.11.3
+nbsphinx==0.7.1
 Sphinx==3.5.4
 sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
-nbsphinx==0.7.1
-
-# https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
-jinja2<3.0
 
 -r ./requirements-test.txt
