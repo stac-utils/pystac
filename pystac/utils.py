@@ -163,11 +163,11 @@ def _make_absolute_href_url(
         return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
-    start_dir = (
-        parsed_start.path if start_is_dir else parsed_start.path.rsplit("/", 1)[0]
-    )
-    # Ensure the directory has a trailing slash so urljoin works properly
-    start_dir = start_dir.rstrip("/") + "/"
+    if start_is_dir:
+        start_dir = parsed_start.path
+    else:
+        # Ensure the directory has a trailing slash so urljoin works properly
+        start_dir = parsed_start.path.rsplit("/", 1)[0] + "/"
 
     # Join the start directory to the relative path and find the absolute path
     abs_path = urljoin(start_dir, parsed_source.path)
