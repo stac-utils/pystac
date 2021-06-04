@@ -76,7 +76,9 @@
       "label:assets": []
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+  ],
   "title": "Scene Collection",
   "keywords": [],
   "version": "1",

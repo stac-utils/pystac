@@ -18,7 +18,10 @@
       "href": "./example-item-without-commons.json"
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+  ],
   "title": "Landsat 8 L1",
   "keywords": [
     "landsat"
