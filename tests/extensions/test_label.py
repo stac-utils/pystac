@@ -1,7 +1,6 @@
 import json
 import os
 import unittest
-from tempfile import TemporaryDirectory
 
 import pystac
 from pystac import Catalog, Item, CatalogType
@@ -16,7 +15,7 @@ from pystac.extensions.label import (
 )
 import pystac.validation
 from pystac.utils import get_opt
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict, TemporaryDirectory
 
 
 class LabelTest(unittest.TestCase):
@@ -86,7 +85,7 @@ class LabelTest(unittest.TestCase):
             label_example_1_dict, pystac.STACObjectType.ITEM
         )
 
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
+        with TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
             catalog = TestCases.test_case_1()
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)

@@ -1,6 +1,8 @@
 # flake8: noqa
 
-from typing import Any, Dict, Type
+import os
+import tempfile
+from typing import Any, Dict, Type, Optional
 import unittest
 from tests.utils.test_cases import (
     TestCases,
@@ -41,3 +43,18 @@ def assert_to_from_dict(
     _parse_times(d1)
     _parse_times(d2)
     test_class.assertDictEqual(d1, d2)
+
+
+# Mypy raises an error for this class:
+#  error: Missing type parameters for generic type "TemporaryDirectory"  [type-arg]
+# Trying to add a concrete type (e.g. TemporaryDirectory[str]) satisfies mypy, but
+# raises a runtime exception:
+#  TypeError: 'type' object is not subscriptable
+class TemporaryDirectory(tempfile.TemporaryDirectory):  # type: ignore [type-arg]
+    def __init__(self, suffix: Optional[str] = None, prefix: Optional[str] = None):
+        """In the GitHub Actions Windows runner the default TMPDIR directory is on a
+        different drive (C:\\) than the code and test data files (D:\\). This was causing
+        failures in os.path.relpath on Windows, so we put the temp directories in the
+        current working directory instead. There os a "tmp*" line in the .gitignore file
+        that ignores these directories."""
+        super().__init__(suffix=suffix, prefix=prefix, dir=os.getcwd())

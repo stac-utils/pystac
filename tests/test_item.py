@@ -3,7 +3,6 @@ from datetime import datetime
 import json
 from typing import Any, Dict, List
 import unittest
-from tempfile import TemporaryDirectory
 
 import pystac
 from pystac import Asset, Item, Provider
@@ -11,7 +10,7 @@ from pystac.validation import validate_dict
 import pystac.serialization.common_properties
 from pystac.item import CommonMetadata
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime, is_absolute_href
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict, TemporaryDirectory
 
 
 class ItemTest(unittest.TestCase):
@@ -73,7 +72,7 @@ class ItemTest(unittest.TestCase):
 
         item.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory(dir=os.getcwd()) as tmp_dir:
+        with TemporaryDirectory() as tmp_dir:
             p = os.path.join(tmp_dir, "item.json")
             item.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:
