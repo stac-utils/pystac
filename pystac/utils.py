@@ -160,7 +160,7 @@ def _make_absolute_href_url(
 
     # If the source is already absolute, just return it
     if parsed_source.scheme != "":
-        return urlunparse((parsed_source))
+        return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
@@ -193,7 +193,7 @@ def _make_absolute_href_path(
 
     # If the source is already absolute, just return it
     if _pathlib.isabs(parsed_source.path):
-        return urlunparse((parsed_source))
+        return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
