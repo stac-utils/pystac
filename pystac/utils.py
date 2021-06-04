@@ -88,8 +88,8 @@ def _make_relative_href_url(
     if parsed_source.path.endswith("/"):
         rel_url += "/"
 
-    # Prepend the "./"
-    if not rel_url.startswith("."):
+    # Prepend the "./", if necessary
+    if rel_url != "./" and not rel_url.startswith("../"):
         rel_url = "./" + rel_url
     return rel_url
 
@@ -114,7 +114,7 @@ def _make_relative_href_path(
     if parsed_source.path.endswith("/"):
         relpath += "/"
 
-    if not relpath.startswith("."):
+    if relpath != "./" and not relpath.startswith(".." + _pathlib.sep):
         relpath = _pathlib.join(".", relpath)
 
     return relpath

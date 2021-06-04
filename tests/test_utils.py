@@ -21,6 +21,7 @@ class UtilsTest(unittest.TestCase):
             ("/a/b/catalog.json", "/a/b/c/catalog.json", "../catalog.json"),
             ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
             ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
+            ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
         ]
 
         for source_href, start_href, expected in test_cases:
@@ -59,6 +60,11 @@ class UtilsTest(unittest.TestCase):
                 "http://stacspec.org/a/",
                 "https://stacspec.org/a/b/c/catalog.json",
                 "http://stacspec.org/a/",
+            ),
+            (
+                "http://stacspec.org/a/b/.dotfile",
+                "http://stacspec.org/a/b/catalog.json",
+                "./.dotfile",
             ),
         ]
 
