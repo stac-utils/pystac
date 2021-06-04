@@ -74,7 +74,7 @@ def _make_relative_href_url(
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else parsed_start.path.rsplit("/", 1)[0]
+        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
     )
 
     # Strip the leading slashes from both paths
