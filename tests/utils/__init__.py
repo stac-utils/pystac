@@ -3,10 +3,10 @@
 from typing import Any, Dict, Type
 import unittest
 from tests.utils.test_cases import (
-    TestCases,  # type:ignore
-    ARBITRARY_GEOM,  # type:ignore
-    ARBITRARY_BBOX,  # type:ignore
-    ARBITRARY_EXTENT,  # type:ignore
+    TestCases,
+    ARBITRARY_GEOM,
+    ARBITRARY_BBOX,
+    ARBITRARY_EXTENT,
 )
 
 from copy import deepcopy
@@ -14,7 +14,7 @@ from datetime import datetime
 from dateutil.parser import parse
 
 import pystac
-from tests.utils.stac_io_mock import MockStacIO  #  type:ignore
+from tests.utils.stac_io_mock import MockStacIO
 
 
 def assert_to_from_dict(

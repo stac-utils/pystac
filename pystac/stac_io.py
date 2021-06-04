@@ -23,7 +23,7 @@ import pystac.serialization
 
 # Use orjson if available
 try:
-    import orjson  # type: ignore
+    import orjson
 except ImportError:
     orjson = None  # type: ignore[assignment]
 
@@ -74,10 +74,12 @@ class StacIO(ABC):
         raise NotImplementedError("write_text not implemented")
 
     def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+        result: Dict[str, Any]
         if orjson is not None:
-            return orjson.loads(txt)
+            result = orjson.loads(txt)
         else:
-            return json.loads(txt)
+            result = json.loads(txt)
+        return result
 
     def _json_dumps(
         self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]
@@ -181,15 +183,17 @@ class DefaultStacIO(StacIO):
 
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
         parsed = safe_urlparse(href)
+        href_contents: str
         if parsed.scheme != "":
             try:
                 with urlopen(href) as f:
-                    return f.read().decode("utf-8")
+                    href_contents = f.read().decode("utf-8")
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
             with open(href, encoding="utf-8") as f:
-                return f.read()
+                href_contents = f.read()
+        return href_contents
 
     def write_text(
         self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
@@ -225,9 +229,10 @@ class DuplicateKeyReportingMixin(StacIO):
     """
 
     def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
-        return json.loads(
+        result: Dict[str, Any] = json.loads(
             txt, object_pairs_hook=self.duplicate_object_names_report_builder(source)
         )
+        return result
 
     @staticmethod
     def duplicate_object_names_report_builder(
@@ -349,7 +354,8 @@ class STAC_IO:
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
-        return json.loads(STAC_IO.read_text(uri))
+        result: Dict[str, Any] = json.loads(STAC_IO.read_text(uri))
+        return result
 
     @classmethod
     def read_stac_object(
