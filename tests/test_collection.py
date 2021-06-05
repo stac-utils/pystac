@@ -9,7 +9,7 @@ from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType
 from pystac.utils import datetime_to_str
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, TemporaryDirectory
+from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, get_temp_dir
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
@@ -34,7 +34,7 @@ class CollectionTest(unittest.TestCase):
         collection = TestCases.test_case_8()
         assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             collection.normalize_hrefs(tmp_dir)
             href = collection.self_href
             collection.save()
@@ -83,7 +83,7 @@ class CollectionTest(unittest.TestCase):
 
         collection.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             p = os.path.join(tmp_dir, "collection.json")
             collection.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:

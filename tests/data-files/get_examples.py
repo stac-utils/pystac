@@ -11,7 +11,7 @@ from urllib.error import HTTPError
 
 import pystac
 from pystac.serialization import identify_stac_object
-from tests.utils import TemporaryDirectory
+from tests.utils import get_temp_dir
 
 
 def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "examples"))
 
-    with TemporaryDirectory() as tmp_dir:
+    with get_temp_dir() as tmp_dir:
         call(
             [
                 "git",

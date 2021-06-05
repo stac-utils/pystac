@@ -1,8 +1,8 @@
 # flake8: noqa
 
 import os
-import tempfile
-from typing import Any, Dict, Type, Optional
+from tempfile import TemporaryDirectory
+from typing import Any, AnyStr, Dict, TYPE_CHECKING, Type
 import unittest
 from tests.utils.test_cases import (
     TestCases,
@@ -17,6 +17,9 @@ from dateutil.parser import parse
 
 import pystac
 from tests.utils.stac_io_mock import MockStacIO
+
+if TYPE_CHECKING:
+    from tempfile import TemporaryDirectory as TemporaryDirectory_Type
 
 
 def assert_to_from_dict(
@@ -45,16 +48,12 @@ def assert_to_from_dict(
     test_class.assertDictEqual(d1, d2)
 
 
-# Mypy raises an error for this class:
-#  error: Missing type parameters for generic type "TemporaryDirectory"  [type-arg]
-# Trying to add a concrete type (e.g. TemporaryDirectory[str]) satisfies mypy, but
-# raises a runtime exception:
-#  TypeError: 'type' object is not subscriptable
-class TemporaryDirectory(tempfile.TemporaryDirectory):  # type: ignore [type-arg]
-    def __init__(self, suffix: Optional[str] = None, prefix: Optional[str] = None):
-        """In the GitHub Actions Windows runner the default TMPDIR directory is on a
-        different drive (C:\\) than the code and test data files (D:\\). This was causing
-        failures in os.path.relpath on Windows, so we put the temp directories in the
-        current working directory instead. There os a "tmp*" line in the .gitignore file
-        that ignores these directories."""
-        super().__init__(suffix=suffix, prefix=prefix, dir=os.getcwd())
+# Use suggestion from https://github.com/python/mypy/issues/5264#issuecomment-399407428
+# to solve type errors.
+def get_temp_dir() -> "TemporaryDirectory_Type[str]":
+    """In the GitHub Actions Windows runner the default TMPDIR directory is on a
+    different drive (C:\\) than the code and test data files (D:\\). This was causing
+    failures in os.path.relpath on Windows, so we put the temp directories in the
+    current working directory instead. There os a "tmp*" line in the .gitignore file
+    that ignores these directories."""
+    return TemporaryDirectory(dir=os.getcwd())
