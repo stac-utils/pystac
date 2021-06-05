@@ -13,18 +13,9 @@ if TYPE_CHECKING:
     from pystac import STACObjectType as STACObjectType_Type
 
 
-def _migrate_links(d: Dict[str, Any], version: STACVersionID) -> None:
-    if version < "0.6":
-        if "links" in d:
-            if isinstance(d["links"], dict):
-                d["links"] = list(d["links"].values())
-
-
 def _migrate_catalog(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    _migrate_links(d, version)
-
     if version < "0.8":
         d["stac_extensions"] = list(info.extensions)
 
@@ -38,8 +29,6 @@ def _migrate_collection(
 def _migrate_item(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    _migrate_links(d, version)
-
     if version < "0.8":
         d["stac_extensions"] = list(info.extensions)
 
