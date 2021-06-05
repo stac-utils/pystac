@@ -14,11 +14,11 @@ from typing import (
 )
 import warnings
 
-from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
+from pystac.utils import safe_urlparse
 import pystac.serialization
 
 # Use orjson if available
@@ -182,7 +182,7 @@ class DefaultStacIO(StacIO):
         return self.read_text_from_href(href, *args, **kwargs)
 
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
-        parsed = urlparse(href)
+        parsed = safe_urlparse(href)
         href_contents: str
         if parsed.scheme != "":
             try:
@@ -191,9 +191,8 @@ class DefaultStacIO(StacIO):
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
-            with open(href) as f:
+            with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
-
         return href_contents
 
     def write_text(
@@ -214,7 +213,7 @@ class DefaultStacIO(StacIO):
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
-        with open(href, "w") as f:
+        with open(href, "w", encoding="utf-8") as f:
             f.write(txt)
 
 

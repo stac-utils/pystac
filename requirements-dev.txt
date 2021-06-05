@@ -1,20 +1,10 @@
-mypy==0.812
-flake8==3.8.*
-black==21.4b2
-
-codespell==1.17.1
 ipython==7.16.1
-jsonschema==3.2.0
-pylint==1.9.1
 Sphinx==3.5.4
 sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.7.1
-coverage==5.2.*
-doc8==0.8.1
 
 # https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
 jinja2<3.0
 
-# optional dependencies
-orjson==3.5.2
+-r ./requirements-test.txt
