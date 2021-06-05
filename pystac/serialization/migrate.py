@@ -29,8 +29,8 @@ def _migrate_collection(
 def _migrate_item(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    if version < "0.8":
-        d["stac_extensions"] = list(info.extensions)
+    # No migrations necessary for supported STAC versions (>=0.8)
+    pass
 
 
 def _migrate_itemcollection(
