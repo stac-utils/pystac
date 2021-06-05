@@ -45,6 +45,9 @@ setup(
     project_urls={
         "Tracker": "https://github.com/stac-utils/pystac/issues",
         "Documentation": "https://pystac.readthedocs.io/en/latest/",
+        "GitHub Discussions": (
+            "https://github.com/radiantearth/stac-spec/discussions/categories/pystac"
+        ),
     },
     test_suite="tests",
 )
