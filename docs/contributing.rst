@@ -59,7 +59,7 @@ To run all of these:
 
     > pre-commit run --all-files
 
-You can also run the ``./scripts/test`` script to run all of the above and unit tests.
+You can also run ``./scripts/test`` to run the tests.
 
 CHANGELOG
 ^^^^^^^^^

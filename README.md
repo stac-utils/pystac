@@ -91,11 +91,11 @@ To run these automatically when committing files (runs only on the staged files)
 
 To avoid running these checks when committing, use `git commit --no-verify`.
 
-You can also run the `./scripts/test` script to check for linting, spelling, and run unit tests.
+You can also run the `./scripts/test` script to run unit tests.
 
 ### Continuous Integration
 
-CI will run the `scripts/test` script to check for code quality. If you have a Pull Request that fails CI, make sure to fix any linting, spelling or test issues reported by `scripts/test`.
+CI will run `pre-commit run --all-files` and `./scripts/test` to check for code quality. If you have a Pull Request that fails CI, make sure to fix any linting, spelling or test issues reported by either of these.
 
 ### Documentation
 
