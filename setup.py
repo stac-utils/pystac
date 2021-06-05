@@ -29,7 +29,7 @@ setup(
     ],
     extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
-    license_file="LICENSE",
+    license_files=["LICENSE"],
     zip_safe=False,
     keywords=["pystac", "imagery", "raster", "catalog", "STAC"],
     classifiers=[
