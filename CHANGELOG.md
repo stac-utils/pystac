@@ -8,7 +8,7 @@
 
 ### Fixed
 
-- Fixed returned None by `EOExtension.get_bands` for asset without EO bands
+- Fixed returned None by `EOExtension.get_bands` for asset without EO bands ([#406](https://github.com/stac-utils/pystac/pull/406))
 
 ### Removed
 
