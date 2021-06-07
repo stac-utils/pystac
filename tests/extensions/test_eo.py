@@ -86,11 +86,8 @@ class EOTest(unittest.TestCase):
 
     def test_asset_bands_s2(self) -> None:
         item = pystac.Item.from_file(self.S2_ITEM_URI)
-        for key, asset in item.get_assets().items():
-            eo_bands = EOExtension.ext(asset).bands
-            if key == "mtd":
-                assert eo_bands is None
-
+        mtd_asset = item.get_assets()["mtd"]
+        self.assertIsNone(EOExtension.ext(asset).bands)
     def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
