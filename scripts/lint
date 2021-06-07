@@ -9,12 +9,6 @@ echo
 mypy docs pystac setup.py tests
 
 echo
-echo " -- CHECKING TYPES WITH PYRIGHT --"
-echo
-
-scripts/pyright pystac setup.py tests
-
-echo
 echo " -- LINTING WITH FLAKE8 --"
 echo
 

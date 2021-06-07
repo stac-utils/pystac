@@ -70,7 +70,7 @@ To check doc formatting:
     > doc8 docs
 
 You can also run the ``./scripts/test`` script to run unit tests, check code style with
-``flake8`` and ``black``, and check type annotations using ``mypy`` and ``pyright``.
+``flake8`` and ``black``, and check type annotations using ``mypy``.
 
 CHANGELOG
 ^^^^^^^^^
