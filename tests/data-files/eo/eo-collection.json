@@ -18,7 +18,9 @@
       "href": "https://landsat-stac.s3.amazonaws.com/landsat-8-l1/paths/catalog.json"
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+  ],
   "title": "Landsat 8 L1",
   "keywords": [
     "landsat"

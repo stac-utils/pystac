@@ -20,7 +20,9 @@
       "type": "application/json"
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+  ],
   "summaries": {
     "view:off_nadir": {
       "minimum": 0.5,
