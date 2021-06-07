@@ -6,7 +6,7 @@ In the interest of fostering an open and welcoming environment, we as contributo
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [stac-psc-admins](mailto:stac-psc@radiant.earth). All
+reported by contacting the [STAC Project Steering Committee](mailto:stac-psc@radiant.earth). All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
