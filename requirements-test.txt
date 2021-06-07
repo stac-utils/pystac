@@ -10,4 +10,4 @@ coverage==5.2.*
 doc8==0.8.1
 
 # optional dependencies
-orjson==3.5.2
+orjson==3.5.3
