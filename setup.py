@@ -16,18 +16,20 @@ setup(
     ),
     long_description=readme,
     long_description_content_type="text/markdown",
-    author="Azavea",
-    author_email="info@azavea.com",
-    url="https://github.com/stac-utils/pystac.git",
+    author="stac-utils",
+    author_email="stac@radiant.earth",
+    url="https://github.com/stac-utils/pystac",
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     include_package_data=False,
+    python_requires=">=3.6",
     install_requires=[
         "python-dateutil>=2.7.0",
         'typing_extensions >= 3.7; python_version < "3.8"',
     ],
     extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
+    license_files=["LICENSE"],
     zip_safe=False,
     keywords=["pystac", "imagery", "raster", "catalog", "STAC"],
     classifiers=[
@@ -40,5 +42,12 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
+    project_urls={
+        "Tracker": "https://github.com/stac-utils/pystac/issues",
+        "Documentation": "https://pystac.readthedocs.io/en/latest/",
+        "GitHub Discussions": (
+            "https://github.com/radiantearth/stac-spec/discussions/categories/pystac"
+        ),
+    },
     test_suite="tests",
 )
