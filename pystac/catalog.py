@@ -798,7 +798,7 @@ class Catalog(STACObject):
             to the item_mapper function.
         """
 
-        new_cat = cast(Catalog, self.full_copy())
+        new_cat = self.full_copy()
 
         def process_catalog(catalog: Catalog) -> None:
             for child in catalog.get_children():

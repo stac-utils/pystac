@@ -5,7 +5,7 @@ from datetime import datetime
 import pystac
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class TimestampsTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class TimestampsTest(unittest.TestCase):
         self.sample_datetime = str_to_datetime(self.sample_datetime_str)
 
     def test_to_from_dict(self) -> None:
-        test_to_from_dict(self, pystac.Item, self.item_dict)
+        assert_to_from_dict(self, pystac.Item, self.item_dict)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))

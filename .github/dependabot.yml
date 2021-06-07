@@ -6,3 +6,7 @@ updates:
       interval: daily
     commit-message:
       prefix: build(deps)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily

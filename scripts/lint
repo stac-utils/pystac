@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+echo
+echo " -- CHECKING TYPES WITH MYPY --"
+echo
+
+mypy docs pystac setup.py tests
+
+echo
+echo " -- CHECKING TYPES WITH PYRIGHT --"
+echo
+
+scripts/pyright pystac setup.py tests
+
+echo
+echo " -- LINTING WITH FLAKE8 --"
+echo
+
+flake8 pystac setup.py tests
+
+echo
+echo " -- CHECKING FORMAT WITH BLACK --"
+echo
+
+black --check pystac
+black --check tests
+black --check setup.py
+
+echo
+echo " -- CHECKING SPELLING WITH CODESPELL --"
+echo
+
+echo
+echo " -- LINTING RST FILES WITH DOC8 --"
+echo
+
+doc8 docs -q
+
+
+# Code spelling
+codespell -I .codespellignore -f \
+    pystac/*.py pystac/**/*.py \
+    tests/*.py tests/**/*.py \
+    docs/*.rst docs/**/*.rst \
+    docs/*.ipynb docs/**/*.ipynb \
+    scripts/* \
+    *.py \
+    *.md

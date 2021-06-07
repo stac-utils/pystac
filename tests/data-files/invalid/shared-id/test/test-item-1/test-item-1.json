@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "test-item-1",
   "properties": {
     "datetime": "2020-03-14T16:32:00Z"

@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "CBERS_4_MUX_20190510_027_069_L2",
   "properties": {
     "gsd": 20.0,

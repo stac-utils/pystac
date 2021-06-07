@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "d43bead8-e3f8-4c51-95d6-e24e750a402b",
   "properties": {
     "datetime": "2019-08-07T20:37:10Z"

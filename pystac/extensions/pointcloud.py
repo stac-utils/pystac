@@ -72,7 +72,7 @@ class PointcloudSchema:
         Returns:
             int
         """
-        result = self.properties.get("size")
+        result: Optional[int] = self.properties.get("size")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have size property: {self.properties}"
@@ -93,7 +93,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have name property: {self.properties}"
@@ -111,7 +111,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("type")
+        result: Optional[str] = self.properties.get("type")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema has no type property: {self.properties}"
@@ -226,7 +226,7 @@ class PointcloudStatistic:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud statistics does not have name property: {self.properties}"

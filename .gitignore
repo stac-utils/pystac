@@ -1,3 +1,4 @@
+tmp*
 *.pyc
 *.egg-info
 build/

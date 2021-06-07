@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0-rc.4",
+  "stac_version": "1.0.0",
   "id": "a017f9-labels",
   "properties": {
     "label:description": "Geojson building labels for scene a017f9",

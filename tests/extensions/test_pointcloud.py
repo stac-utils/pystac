@@ -13,7 +13,7 @@ from pystac.extensions.pointcloud import (
     PointcloudSchema,
     PointcloudStatistic,
 )
-from tests.utils import TestCases, test_to_from_dict
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class PointcloudTest(unittest.TestCase):
@@ -27,7 +27,7 @@ class PointcloudTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        test_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))

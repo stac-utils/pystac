@@ -1,21 +1,58 @@
 {
-  "stac_extensions": [
-    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/processing/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
-  ],
-  "stac_version": "1.0.0-rc.4",
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003",
+  "properties": {
+    "datetime": "2018-10-01T01:54:33Z",
+    "mission": "planetscope",
+    "platform": "planetscope",
+    "instruments": [
+      "ps2"
+    ],
+    "gsd": 3,
+    "sat:orbit_state": "descending",
+    "sat:absolute_orbit": 1736074,
+    "view:sun_elevation": 60.99449,
+    "view:sun_azimuth": 94.82318,
+    "view:incidence_angle": 0.1531593,
+    "view:off_nadir": 0.1102388,
+    "proj:epsg": 32750,
+    "processing:level": "L3B",
+    "title": "Planetscope PS2 L3B 01/10/2018 01:54:33",
+    "disaster:call_id": 857
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          119.749003733,
+          -0.782842043003
+        ],
+        [
+          119.990422256,
+          -0.782842043003
+        ],
+        [
+          119.990422256,
+          -0.902255498348
+        ],
+        [
+          119.749003733,
+          -0.902255498348
+        ],
+        [
+          119.749003733,
+          -0.782842043003
+        ]
+      ]
+    ]
+  },
   "links": [],
   "assets": {
     "data": {
-      "type": "image/tiff; application=geotiff;",
-      "roles": [
-        "data"
-      ],
       "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/PT01S00_842547E119_8697242018100100000000MS00_GG001002003.tif",
+      "type": "image/tiff; application=geotiff;",
       "eo:bands": [
         {
           "name": "band-1",
@@ -46,7 +83,7 @@
         {
           "sampling": "area",
           "name": "Red TOA reflectance",
-          "unit": "W⋅sr−1⋅m−2⋅nm−1",
+          "unit": "W\u22c5sr\u22121\u22c5m\u22122\u22c5nm\u22121",
           "data_type": "uint16",
           "scale": 0.01,
           "offset": 0,
@@ -326,9 +363,9 @@
         {
           "sampling": "area",
           "name": "Green TOA reflectance",
-          "unit": "W⋅sr−1⋅m−2⋅nm−1",
+          "unit": "W\u22c5sr\u22121\u22c5m\u22122\u22c5nm\u22121",
           "data_type": "uint16",
-          "scale": 0.0000196236732904,
+          "scale": 1.96236732904e-05,
           "offset": 0,
           "nodata": 0,
           "spatial_resolution": 3,
@@ -606,9 +643,9 @@
         {
           "sampling": "area",
           "name": "Blue TOA reflectance",
-          "unit": "W⋅sr−1⋅m−2⋅nm−1",
+          "unit": "W\u22c5sr\u22121\u22c5m\u22122\u22c5nm\u22121",
           "data_type": "uint16",
-          "scale": 0.0000218499248607,
+          "scale": 2.18499248607e-05,
           "offset": 0,
           "nodata": 0,
           "spatial_resolution": 3,
@@ -886,9 +923,9 @@
         {
           "sampling": "area",
           "name": "NIR TOA reflectance",
-          "unit": "W⋅sr−1⋅m−2⋅nm−1",
+          "unit": "W\u22c5sr\u22121\u22c5m\u22122\u22c5nm\u22121",
           "data_type": "uint16",
-          "scale": 0.0000218499248607,
+          "scale": 2.18499248607e-05,
           "offset": 0,
           "nodata": 0,
           "spatial_resolution": 3,
@@ -1164,87 +1201,50 @@
           }
         }
       ],
-      "size": 180076568
+      "size": 180076568,
+      "roles": [
+        "data"
+      ]
     },
     "metadata": {
+      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/vendor_metadata/20181001_015433_1027_3B_AnalyticMS_metadata.xml",
       "type": "application/xml",
+      "size": 10420,
       "roles": [
         "metadata"
-      ],
-      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/vendor_metadata/20181001_015433_1027_3B_AnalyticMS_metadata.xml",
-      "size": 10420
+      ]
     },
     "overview": {
+      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/PT01S00_842547E119_8697242018100100000000MS00_GG001002003-br.jpg",
       "type": "image/jpeg",
+      "title": "Scene Overview",
+      "size": 846975,
       "roles": [
         "overview"
-      ],
-      "title": "Scene Overview",
-      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/PT01S00_842547E119_8697242018100100000000MS00_GG001002003-br.jpg",
-      "size": 846975
+      ]
     },
     "thumbnail": {
+      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/PT01S00_842547E119_8697242018100100000000MS00_GG001002003-th.jpg",
       "type": "image/jpeg",
+      "title": "Scene Thumbnail",
+      "size": 38126,
       "roles": [
         "thumbnail"
-      ],
-      "title": "Scene Thumbnail",
-      "href": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003/PT01S00_842547E119_8697242018100100000000MS00_GG001002003-th.jpg",
-      "size": 38126
-    }
-  },
-  "type": "Feature",
-  "id": "PT01S00_842547E119_8697242018100100000000MS00_GG001002003",
-  "geometry": {
-    "type": "Polygon",
-    "coordinates": [
-      [
-        [
-          119.749003733,
-          -0.782842043003
-        ],
-        [
-          119.990422256,
-          -0.782842043003
-        ],
-        [
-          119.990422256,
-          -0.902255498348
-        ],
-        [
-          119.749003733,
-          -0.902255498348
-        ],
-        [
-          119.749003733,
-          -0.782842043003
-        ]
       ]
-    ]
-  },
-  "properties": {
-    "datetime": "2018-10-01T01:54:33+00:00",
-    "mission": "planetscope",
-    "platform": "planetscope",
-    "instruments": [
-      "ps2"
-    ],
-    "gsd": 3,
-    "sat:orbit_state": "descending",
-    "sat:absolute_orbit": 1736074,
-    "view:sun_elevation": 60.99449,
-    "view:sun_azimuth": 94.82318,
-    "view:incidence_angle": 0.1531593,
-    "view:off_nadir": 0.1102388,
-    "proj:epsg": 32750,
-    "processing:level": "L3B",
-    "title": "Planetscope PS2 L3B 01/10/2018 01:54:33",
-    "disaster:call_id": 857
+    }
   },
   "bbox": [
     119.749003733,
     -0.902255498348,
     119.990422256,
     -0.782842043003
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/processing/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
   ]
 }

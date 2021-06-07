@@ -2,6 +2,7 @@ import unittest
 import os
 import json
 import ntpath
+import sys
 from datetime import datetime, timezone, timedelta
 
 from pystac import utils
@@ -10,12 +11,26 @@ from pystac.utils import make_relative_href, make_absolute_href, is_absolute_hre
 
 
 class UtilsTest(unittest.TestCase):
+    @unittest.skipIf(
+        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
+    )
     def test_make_relative_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
         test_cases = [
             ("/a/b/c/d/catalog.json", "/a/b/c/catalog.json", "./d/catalog.json"),
             ("/a/b/catalog.json", "/a/b/c/catalog.json", "../catalog.json"),
             ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
+            ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
+            ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
+        ]
+
+        for source_href, start_href, expected in test_cases:
+            actual = make_relative_href(source_href, start_href)
+            self.assertEqual(actual, expected)
+
+    def test_make_relative_href_url(self) -> None:
+
+        test_cases = [
             (
                 "http://stacspec.org/a/b/c/d/catalog.json",
                 "http://stacspec.org/a/b/c/catalog.json",
@@ -40,6 +55,16 @@ class UtilsTest(unittest.TestCase):
                 "http://stacspec.org/a/catalog.json",
                 "https://stacspec.org/a/b/c/catalog.json",
                 "http://stacspec.org/a/catalog.json",
+            ),
+            (
+                "http://stacspec.org/a/",
+                "https://stacspec.org/a/b/c/catalog.json",
+                "http://stacspec.org/a/",
+            ),
+            (
+                "http://stacspec.org/a/b/.dotfile",
+                "http://stacspec.org/a/b/catalog.json",
+                "./.dotfile",
             ),
         ]
 
@@ -102,6 +127,9 @@ class UtilsTest(unittest.TestCase):
         finally:
             utils._pathlib = os.path
 
+    @unittest.skipIf(
+        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
+    )
     def test_make_absolute_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
         test_cases = [
@@ -135,6 +163,9 @@ class UtilsTest(unittest.TestCase):
             actual = make_absolute_href(source_href, start_href)
             self.assertEqual(actual, expected)
 
+    @unittest.skipIf(
+        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
+    )
     def test_make_absolute_href_on_vsitar(self) -> None:
         rel_path = "some/item.json"
         cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
@@ -147,12 +178,12 @@ class UtilsTest(unittest.TestCase):
         try:
             # Test cases of (source_href, start_href, expected)
             test_cases = [
-                ("item.json", "C:\\a\\b\\c\\catalog.json", "c:\\a\\b\\c\\item.json"),
-                (".\\item.json", "C:\\a\\b\\c\\catalog.json", "c:\\a\\b\\c\\item.json"),
+                ("item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
+                (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
                 (
                     ".\\z\\item.json",
                     "Z:\\a\\b\\c\\catalog.json",
-                    "z:\\a\\b\\c\\z\\item.json",
+                    "Z:\\a\\b\\c\\z\\item.json",
                 ),
                 ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:\\a\\b\\item.json"),
                 (

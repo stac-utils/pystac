@@ -56,7 +56,7 @@ class STACObject(ABC):
         """
         import pystac.validation
 
-        return pystac.validation.validate(self)  # type:ignore
+        return pystac.validation.validate(self)
 
     def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.
@@ -64,7 +64,7 @@ class STACObject(ABC):
         Args:
              link : The link to add.
         """
-        link.set_owner(cast(STACObject, self))
+        link.set_owner(self)
         self.links.append(link)
 
     def add_links(self, links: List[Link]) -> None:
@@ -179,18 +179,14 @@ class STACObject(ABC):
         """
         root_link = self.get_root_link()
         if root_link is not None and root_link.is_resolved():
-            cast(pystac.Catalog, root_link.target)._resolved_objects.remove(
-                cast(STACObject, self)
-            )
+            cast(pystac.Catalog, root_link.target)._resolved_objects.remove(self)
 
         self.remove_links(pystac.RelType.SELF)
         if href is not None:
             self.add_link(Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
-            cast(pystac.Catalog, root_link.target)._resolved_objects.cache(
-                cast(STACObject, self)
-            )
+            cast(pystac.Catalog, root_link.target)._resolved_objects.cache(self)
 
     def get_root(self) -> Optional["Catalog_Type"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
