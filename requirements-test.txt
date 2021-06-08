@@ -1,6 +1,6 @@
 mypy==0.812
 flake8==3.8.*
-black==21.4b2
+black==21.5b2
 
 codespell==1.17.1
 
@@ -10,4 +10,4 @@ coverage==5.2.*
 doc8==0.8.1
 
 # optional dependencies
-orjson==3.5.2
+orjson==3.5.3
