@@ -14,7 +14,9 @@
 
 ### Fixed
 
-- Fixed returned None by `EOExtension.get_bands` for asset without EO bands ([#406](https://github.com/stac-utils/pystac/pull/406))
+- `EOExtension.get_bands` returns `None` for asset without EO bands ([#406](https://github.com/stac-utils/pystac/pull/406))
+- `identify_stac_object_type` returns `None` and `identify_stac_object` raises `STACTypeError` for non-STAC objects
+  ([#402](https://github.com/stac-utils/pystac/pull/402))
 
 ### Removed
 

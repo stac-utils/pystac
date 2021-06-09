@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/eo
 """
 
-import re
 from typing import (
     Any,
     Dict,
@@ -498,36 +497,6 @@ class EOExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        if version < "0.5":
-            if "eo:crs" in obj["properties"]:
-                # Try to pull out the EPSG code.
-                # Otherwise, just leave it alone.
-                wkt = obj["properties"]["eo:crs"]
-                matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
-                if len(matches) > 0:
-                    epsg_code = matches[-1].group(1)
-                    obj["properties"].pop("eo:crs")
-                    obj["properties"]["eo:epsg"] = int(epsg_code)
-
-        if version < "0.6":
-            # Change eo:bands from a dict to a list. eo:bands on an asset
-            # is an index instead of a dict key. eo:bands is in properties.
-            bands_dict = obj["eo:bands"]
-            keys_to_indices: Dict[str, int] = {}
-            bands: List[Dict[str, Any]] = []
-            for i, (k, band) in enumerate(bands_dict.items()):
-                keys_to_indices[k] = i
-                bands.append(band)
-
-            obj.pop("eo:bands")
-            obj["properties"]["eo:bands"] = bands
-            for k, asset in obj["assets"].items():
-                if "eo:bands" in asset:
-                    asset_band_indices: List[int] = []
-                    for bk in asset["eo:bands"]:
-                        asset_band_indices.append(keys_to_indices[bk])
-                    asset["eo:bands"] = sorted(asset_band_indices)
-
         if version < "0.9":
             # Some eo fields became common_metadata
             if (
