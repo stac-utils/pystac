@@ -1,6 +1,6 @@
 from copy import deepcopy
 from pystac.errors import STACTypeError
-from typing import Any, Dict, Iterator, List, Optional, Collection
+from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable
 
 import pystac
 from pystac.utils import make_absolute_href, is_absolute_href
@@ -66,7 +66,7 @@ class ItemCollection(Collection[pystac.Item]):
 
     def __init__(
         self,
-        items: List[pystac.Item],
+        items: Iterable[pystac.Item],
         extra_fields: Optional[Dict[str, Any]] = None,
         clone_items: bool = True,
     ):
