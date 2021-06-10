@@ -34,6 +34,7 @@ from pystac.collection import (
 )
 from pystac.summaries import RangeSummary
 from pystac.item import Item, Asset, CommonMetadata
+from pystac.item_collection import ItemCollection
 
 import pystac.validation
 
