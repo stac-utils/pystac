@@ -8,6 +8,8 @@
 - Links to Issues, Discussions, and documentation sites ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Python minimum version set to `>=3.6` ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Code of Conduct ([#399](https://github.com/stac-utils/pystac/pull/399))
+- `ItemCollection` class for working with GeoJSON FeatureCollections containing only
+  STAC Items ([#430](https://github.com/stac-utils/pystac/pull/430))
 
 ### Changed
 
