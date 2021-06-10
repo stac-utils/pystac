@@ -127,6 +127,14 @@ CommonMetadata
    :members:
    :undoc-members:
 
+ItemCollection
+--------------
+Represents a GeoJSON FeatureCollection in which all Features are STAC Items
+
+.. autoclass:: pystac.ItemCollection
+   :members:
+   :show-inheritance:
+   
 Links
 -----
 

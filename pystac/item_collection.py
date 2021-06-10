@@ -9,7 +9,30 @@ from pystac.serialization.identify import identify_stac_object_type
 
 class ItemCollection(Sized, Iterable[pystac.Item]):
     """Implementation of a GeoJSON FeatureCollection whose features are all STAC
-    Items."""
+    Items.
+
+    All :class:`~pystac.Item` instances passed to the :class:`~ItemCollection` instance
+    during instantation are cloned and have their ``"root"`` URL cleared. Instances of
+    this class are iterable and sized (see examples below).
+    
+    Any additional top-level fields in the FeatureCollection are retained in
+    :attr:`~ItemCollection.extra_fields` by the :meth:`~ItemCollection.from_dict` and
+    :meth:`~ItemCollection.from_file` methods and will be present in the serialized file
+    from :meth:`~ItemCollection.save_object`.
+
+    Examples:
+
+        Loop over all items in the ItemCollection
+
+        >>> item_collection: ItemCollection = ...
+        >>> for item in item_collection:
+        ...     ...
+
+        Get the number of Items in the ItemCollection
+
+        >>> length: int = len(item_collection)
+
+    """
 
     items: List[pystac.Item]
     """The list of :class:`pystac.Item` instances contained in this
@@ -46,8 +69,8 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
 
     def clone(self) -> "ItemCollection":
         """Creates a clone of this instance. This clone is a deep copy; all
-        :class:`~pystac.Item`s are cloned and all additional top-level fields are deep
-        copied."""
+        :class:`~pystac.Item` instances are cloned and all additional top-level fields
+        are deep copied."""
         return self.__class__(
             items=[item.clone() for item in self.items],
             extra_fields=deepcopy(self.extra_fields),
