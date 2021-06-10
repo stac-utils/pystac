@@ -12,9 +12,9 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
     Items.
 
     All :class:`~pystac.Item` instances passed to the :class:`~ItemCollection` instance
-    during instantation are cloned and have their ``"root"`` URL cleared. Instances of
+    during instantiation are cloned and have their ``"root"`` URL cleared. Instances of
     this class are iterable and sized (see examples below).
-    
+
     Any additional top-level fields in the FeatureCollection are retained in
     :attr:`~ItemCollection.extra_fields` by the :meth:`~ItemCollection.from_dict` and
     :meth:`~ItemCollection.from_file` methods and will be present in the serialized file
