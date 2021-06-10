@@ -2,7 +2,7 @@ ipython==7.16.1
 Sphinx==4.0.2
 sphinx-autobuild==0.7.1
 sphinxcontrib-fulltoc==1.2.0
-nbsphinx==0.7.1
+nbsphinx==0.8.6
 
 # https://github.com/pydata/xarray/issues/5299#issuecomment-840730954
 jinja2<3.0
