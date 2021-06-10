@@ -36,10 +36,7 @@ def merge_common_properties(
 
     # The commons extension was removed in 1.0.0-beta.1, so if this is an earlier STAC
     # item we don't have to bother with merging.
-    if (
-        stac_version is not None
-        and STACVersionID(stac_version) > "0.9.0"  # type:ignore
-    ):
+    if stac_version is not None and STACVersionID(stac_version) > "0.9.0":
         return False
 
     # Check to see if this is a 0.9.0 item that
