@@ -20,34 +20,47 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
     :meth:`~ItemCollection.from_file` methods and will be present in the serialized file
     from :meth:`~ItemCollection.save_object`.
 
+    Arguments:
+
+        items : List of :class:`~pystac.Item` instances to include in the
+            :class:`~ItemCollection`.
+        extra_fields : Dictionary of additional top-level fields included in the
+            :class:`~ItemCollection`.
+        clone_items : Optional flag indicating whether :class:`~pystac.Item` instances
+            should be cloned before storing in the :class:`~ItemCollection`. Setting to
+            ``False`` will result in faster instantiation, but any changes made to
+            :class:`~pystac.Item` instances in the :class:`~ItemCollection` will also
+            mutate the original :class:`~pystac.Item`. Defaults to ``True``.
+
     Examples:
 
-        Loop over all items in the ItemCollection
+        Loop over all items in the :class`~ItemCollection`
 
         >>> item_collection: ItemCollection = ...
         >>> for item in item_collection:
         ...     ...
 
-        Get the number of Items in the ItemCollection
+        Get the number of :class:`~pytac.Item` instances in the
+        :class:`~ItemCollection`
 
         >>> length: int = len(item_collection)
 
     """
 
     items: List[pystac.Item]
-    """The list of :class:`pystac.Item` instances contained in this
-    ``ItemCollection``."""
+    """List of :class:`pystac.Item` instances contained in this ``ItemCollection``."""
 
     extra_fields: Dict[str, Any]
-    """Dictionary containing additional top-level fields for the GeoJSON
+    """Dictionary of additional top-level fields for the GeoJSON
     FeatureCollection."""
 
     def __init__(
-        self, items: List[pystac.Item], extra_fields: Optional[Dict[str, Any]] = None
+        self,
+        items: List[pystac.Item],
+        extra_fields: Optional[Dict[str, Any]] = None,
+        clone_items: bool = True,
     ):
-        self.items = [item.clone() for item in items]
-        for item in self.items:
-            item.clear_links("root")
+        self.items = [item.clone() if clone_items else item for item in items]
         self.extra_fields = extra_fields or {}
 
     def __getitem__(self, idx: int) -> pystac.Item:
