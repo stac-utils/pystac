@@ -29,9 +29,10 @@ def migrate(path: str) -> None:
                 )
             )
             obj = pystac.read_dict(stac_json, href=path)
-            migrated = obj.to_dict(include_self_link=False)
-            with open(path, "w") as f:
-                json.dump(migrated, f, indent=2)
+            if not isinstance(obj, pystac.ItemCollection):
+                migrated = obj.to_dict(include_self_link=False)
+                with open(path, "w") as f:
+                    json.dump(migrated, f, indent=2)
 
 
 if __name__ == "__main__":

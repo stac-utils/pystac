@@ -53,8 +53,8 @@ class EOTest(unittest.TestCase):
         assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_eo(self) -> None:
-        item = pystac.read_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = pystac.read_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 

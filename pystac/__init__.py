@@ -12,7 +12,7 @@ from pystac.errors import (
     STACValidationError,
 )
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 from pystac.version import (
     __version__,
     get_stac_version,
@@ -72,7 +72,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(href: str) -> STACObject:
+def read_file(href: str) -> Union[STACObject, ItemCollection]:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what the
@@ -87,11 +87,16 @@ def read_file(href: str) -> STACObject:
         The specific STACObject implementation class that is represented
         by the JSON read from the file located at HREF.
     """
-    return STACObject.from_file(href)
+    try:
+        return STACObject.from_file(href)
+    except STACTypeError:
+        return ItemCollection.from_file(href)
 
 
 def write_file(
-    obj: STACObject, include_self_link: bool = True, dest_href: Optional[str] = None
+    obj: Union[STACObject, ItemCollection],
+    include_self_link: bool = True,
+    dest_href: Optional[str] = None,
 ) -> None:
     """Writes a STACObject to a file.
 
@@ -107,12 +112,20 @@ def write_file(
 
     Args:
         obj : The STACObject to save.
-        include_self_link : If this is true, include the 'self' link with this object.
-            Otherwise, leave out the self link.
-        dest_href : Optional HREF to save the file to. If None, the object will be saved
-            to the object's self href.
+        include_self_link : If ``True``, include the ``"self"`` link with this object.
+            Otherwise, leave out the self link. Ignored for :class:~ItemCollection`
+            instances.
+        dest_href : Optional HREF to save the file to. If ``None``, the object will be
+            saved to the object's ``"self"`` href (for :class:`~STACObject` sub-classes)
+            or a :exc:`~STACError` will be raised (for :class:`~ItemCollection`
+            instances).
     """
-    obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
+    if isinstance(obj, ItemCollection):
+        if dest_href is None:
+            raise STACError("Must provide dest_href when saving and ItemCollection.")
+        obj.save_object(dest_href=dest_href)
+    else:
+        obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
 
 
 def read_dict(
@@ -120,25 +133,31 @@ def read_dict(
     href: Optional[str] = None,
     root: Optional[Catalog] = None,
     stac_io: Optional[StacIO] = None,
-) -> STACObject:
-    """Reads a STAC object from a dict representing the serialized JSON version of the
-    STAC object.
+) -> Union[STACObject, ItemCollection]:
+    """Reads a :class:`~STACObject` or :class:`~ItemCollection` from a JSON-like dict
+    representing a serialized STAC object.
 
-    This method will return either a Catalog, a Collection, or an Item based on what the
-    dict contains.
+    This method will return either a :class:`~Catalog`, :class:`~Collection`,
+    :class`~Item`, or :class:`~ItemCollection` based on the contents of the dict.
 
-    This is a convenience method for :meth:`pystac.serialization.stac_object_from_dict`
+    This is a convenience method for either
+    :meth:`stac_io.stac_object_from_dict <stac_io.stac_object_from_dict>` or
+    :meth:`ItemCollection.from_dict <ItemCollection.from_dict>`.
 
     Args:
         d : The dict to parse.
         href : Optional href that is the file location of the object being
-            parsed.
+            parsed. Ignored if the dict represents an :class:`~ItemCollection`.
         root : Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
-            previously resolved instances of the STAC object.
-        stac_io: Optional StacIO instance to use for reading. If None, the
-            default instance will be used.
+            previously resolved instances of the STAC object.  Ignored if the dict
+            represents an :class:`~ItemCollection`.
+        stac_io: Optional :class:`~StacIO` instance to use for reading. If ``None``,
+            the default instance will be used.
     """
     if stac_io is None:
         stac_io = StacIO.default()
-    return stac_io.stac_object_from_dict(d, href, root)
+    try:
+        return stac_io.stac_object_from_dict(d, href, root)
+    except STACTypeError:
+        return ItemCollection.from_dict(d)

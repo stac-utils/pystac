@@ -83,3 +83,20 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
         d = stac_io.read_json(href)
 
         return cls.from_dict(d)
+
+    def save_object(
+        self,
+        dest_href: str,
+        stac_io: Optional[pystac.StacIO] = None,
+    ) -> None:
+        """Saves this instance to the ``dest_href`` location.
+
+        Args:
+            dest_href : Location to which the file will be saved.
+            stac_io: Optional :class:`~pystac.StacIO` instance to use. If not provided,
+                will use the default instance.
+        """
+        if stac_io is None:
+            stac_io = pystac.StacIO.default()
+
+        stac_io.save_json(dest_href, self.to_dict())
