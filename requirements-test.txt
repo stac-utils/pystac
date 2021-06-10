@@ -1,0 +1,16 @@
+mypy==0.901
+flake8==3.8.*
+black==21.4b2
+
+codespell==1.17.1
+
+jsonschema==3.2.0
+pylint==1.9.1
+coverage==5.5
+doc8==0.8.1
+
+types-python-dateutil==0.1.2
+types-orjson==0.1.0
+
+# optional dependencies
+orjson==3.5.3

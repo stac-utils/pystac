@@ -2,7 +2,6 @@ import os
 import json
 from typing import Any, Dict, List, Tuple, Union, cast
 import unittest
-from tempfile import TemporaryDirectory
 from datetime import datetime
 from collections import defaultdict
 
@@ -17,14 +16,20 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.utils import is_absolute_href
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX, MockStacIO
+from pystac.utils import is_absolute_href, join_path_or_url, JoinType
+from tests.utils import (
+    TestCases,
+    ARBITRARY_GEOM,
+    ARBITRARY_BBOX,
+    MockStacIO,
+    get_temp_dir,
+)
 
 
 class CatalogTypeTest(unittest.TestCase):
     def test_determine_type_for_absolute_published(self) -> None:
         cat = TestCases.test_case_1()
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat_json = pystac.StacIO.default().read_json(
                 os.path.join(tmp_dir, "catalog.json")
@@ -35,7 +40,7 @@ class CatalogTypeTest(unittest.TestCase):
 
     def test_determine_type_for_relative_published(self) -> None:
         cat = TestCases.test_case_2()
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
             cat_json = pystac.StacIO.default().read_json(
                 os.path.join(tmp_dir, "catalog.json")
@@ -63,7 +68,7 @@ class CatalogTypeTest(unittest.TestCase):
 
 class CatalogTest(unittest.TestCase):
     def test_create_and_read(self) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
             catalog = TestCases.test_case_1()
 
@@ -283,7 +288,7 @@ class CatalogTest(unittest.TestCase):
     def test_save_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.test_case_1()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             href = catalog.self_href
             catalog.save()
@@ -360,7 +365,7 @@ class CatalogTest(unittest.TestCase):
 
         catalog.generate_subcatalogs("${year}/${day}")
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             catalog.save(pystac.CatalogType.SELF_CONTAINED)
 
@@ -469,7 +474,10 @@ class CatalogTest(unittest.TestCase):
                     properties=properties,
                 )
             )
-        result = catalog.generate_subcatalogs("${property1}/${property2}")
+
+        result = catalog.generate_subcatalogs(
+            join_path_or_url(JoinType.PATH, "${property1}", "${property2}")
+        )
         self.assertEqual(len(result), 6)
 
         catalog.normalize_hrefs("/")
@@ -478,7 +486,7 @@ class CatalogTest(unittest.TestCase):
             assert item_parent is not None
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
-            subcats = [el for el in path_to_parent.split("/") if el]
+            subcats = [el for el in path_to_parent.split(os.sep) if el]
             self.assertEqual(len(subcats), 2, msg=" for item '{}'".format(item.id))
 
     def test_map_items(self) -> None:
@@ -486,7 +494,7 @@ class CatalogTest(unittest.TestCase):
             item.properties["ITEM_MAPPER"] = "YEP"
             return item
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog = TestCases.test_case_1()
 
             new_cat = catalog.map_items(item_mapper)
@@ -510,7 +518,7 @@ class CatalogTest(unittest.TestCase):
             item2.properties["ITEM_MAPPER_2"] = "YEP"
             return [item, item2]
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog = TestCases.test_case_1()
             catalog_items = catalog.get_all_items()
 
@@ -615,7 +623,7 @@ class CatalogTest(unittest.TestCase):
 
             return asset
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog = TestCases.test_case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
@@ -648,7 +656,7 @@ class CatalogTest(unittest.TestCase):
             else:
                 return asset
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog = TestCases.test_case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
@@ -688,7 +696,7 @@ class CatalogTest(unittest.TestCase):
             else:
                 return asset
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             catalog = TestCases.test_case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
@@ -763,7 +771,7 @@ class CatalogTest(unittest.TestCase):
         test_cases = TestCases.all_test_catalogs()
 
         for catalog in test_cases:
-            with TemporaryDirectory() as tmp_dir:
+            with get_temp_dir() as tmp_dir:
                 c2 = catalog.full_copy()
                 c2.normalize_hrefs(tmp_dir)
                 c2.catalog_type = CatalogType.RELATIVE_PUBLISHED
@@ -787,19 +795,19 @@ class CatalogTest(unittest.TestCase):
     def test_extra_fields(self) -> None:
         catalog = TestCases.test_case_1()
 
-        catalog.extra_fields["type"] = "FeatureCollection"
+        catalog.extra_fields["custom_field"] = "Special content"
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             p = os.path.join(tmp_dir, "catalog.json")
             catalog.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:
                 cat_json = json.load(f)
-            self.assertTrue("type" in cat_json)
-            self.assertEqual(cat_json["type"], "FeatureCollection")
+            self.assertTrue("custom_field" in cat_json)
+            self.assertEqual(cat_json["custom_field"], "Special content")
 
             read_cat = pystac.Catalog.from_file(p)
-            self.assertTrue("type" in read_cat.extra_fields)
-            self.assertEqual(read_cat.extra_fields["type"], "FeatureCollection")
+            self.assertTrue("custom_field" in read_cat.extra_fields)
+            self.assertEqual(read_cat.extra_fields["custom_field"], "Special content")
 
     def test_validate_all(self) -> None:
         for cat in TestCases.all_test_catalogs():
@@ -814,7 +822,7 @@ class CatalogTest(unittest.TestCase):
         item = cat.get_item("area-1-1-labels", recursive=True)
         assert item is not None
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat.normalize_hrefs(tmp_dir)
             cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
 
@@ -835,7 +843,7 @@ class CatalogTest(unittest.TestCase):
             year += 1
             month += 1
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             for root, _, items in catalog.walk():
 
                 # Set root's HREF based off the parent
@@ -874,12 +882,17 @@ class CatalogTest(unittest.TestCase):
                     )
                 for item in items:
                     assert item.datetime is not None
-                    end = "{}-{}/{}.json".format(
-                        item.datetime.year, item.datetime.month, item.id
+                    end = join_path_or_url(
+                        JoinType.PATH,
+                        "{}-{}".format(item.datetime.year, item.datetime.month),
+                        "{}.json".format(item.id),
                     )
                     self_href = item.get_self_href()
                     assert self_href is not None
-                    self.assertTrue(self_href.endswith(end))
+                    self.assertTrue(
+                        self_href.endswith(end),
+                        msg="{} does not end with {}".format(self_href, end),
+                    )
 
     def test_collections_cache_correctly(self) -> None:
         catalogs = TestCases.all_test_catalogs()
@@ -920,7 +933,7 @@ class CatalogTest(unittest.TestCase):
         for item in cat.get_all_items():
             pass
 
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             new_stac_uri = os.path.join(tmp_dir, "test-case-6")
             cat.normalize_hrefs(new_stac_uri)
             cat.save(catalog_type=CatalogType.SELF_CONTAINED)
@@ -990,7 +1003,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_item(item, tag)
 
     def test_full_copy_1(self) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat = Catalog(id="test", description="test catalog")
 
             item = Item(
@@ -1011,7 +1024,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_catalog(cat2, "dest")
 
     def test_full_copy_2(self) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             cat = Catalog(id="test", description="test catalog")
             image_item = Item(
                 id="Imagery",
@@ -1058,7 +1071,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_catalog(cat2, "dest")
 
     def test_full_copy_3(self) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             root_cat = TestCases.test_case_1()
             root_cat.normalize_hrefs(
                 os.path.join(tmp_dir, "catalog-full-copy-3-source")
@@ -1072,7 +1085,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_catalog(cat2, "dest")
 
     def test_full_copy_4(self) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with get_temp_dir() as tmp_dir:
             root_cat = TestCases.test_case_2()
             root_cat.normalize_hrefs(
                 os.path.join(tmp_dir, "catalog-full-copy-4-source")

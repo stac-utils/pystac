@@ -4,9 +4,19 @@
 
 ### Added
 
+- License file included in distribution ([#409](https://github.com/stac-utils/pystac/pull/409))
+- Links to Issues, Discussions, and documentation sites ([#409](https://github.com/stac-utils/pystac/pull/409))
+- Python minimum version set to `>=3.6` ([#409](https://github.com/stac-utils/pystac/pull/409))
+
 ### Changed
 
+- Package author to `stac-utils`, email to `stac@radiant.earth`, url to this repo ([#409](https://github.com/stac-utils/pystac/pull/409))
+
 ### Fixed
+
+- `EOExtension.get_bands` returns `None` for asset without EO bands ([#406](https://github.com/stac-utils/pystac/pull/406))
+- `identify_stac_object_type` returns `None` and `identify_stac_object` raises `STACTypeError` for non-STAC objects
+  ([#402](https://github.com/stac-utils/pystac/pull/402))
 
 ### Removed
 

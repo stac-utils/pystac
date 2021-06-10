@@ -13,7 +13,6 @@ from typing import (
     List,
     Optional,
     Union,
-    cast,
     TypeVar,
     Iterable,
     TYPE_CHECKING,
@@ -130,7 +129,7 @@ class Summarizer:
                     and isinstance(v, numbers.Number)
                     and not isinstance(v, bool)
                 ):
-                    rangesummary: Optional[RangeSummary] = summaries.get_range(k)
+                    rangesummary: Optional[RangeSummary[Any]] = summaries.get_range(k)
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
@@ -138,7 +137,7 @@ class Summarizer:
                 elif strategy == SummaryStrategy.ARRAY or (
                     strategy == SummaryStrategy.DEFAULT and isinstance(v, list)
                 ):
-                    listsummary: list = summaries.get_list(k) or []
+                    listsummary: List[Any] = summaries.get_list(k) or []
                     if not isinstance(v, list):
                         v = [v]
                     for element in v:
@@ -146,7 +145,7 @@ class Summarizer:
                             listsummary.append(element)
                     summaries.add(k, listsummary)
                 else:
-                    summary: list = summaries.get_list(k) or []
+                    summary: List[Any] = summaries.get_list(k) or []
                     if v not in summary:
                         summary.append(v)
                     summaries.add(k, summary)
@@ -202,9 +201,7 @@ class Summaries:
             self.lists[prop_key] = summary
         elif isinstance(summary, dict):
             if "minimum" in summary:
-                self.ranges[prop_key] = RangeSummary[Any].from_dict(
-                    cast(Dict[str, Any], summary)
-                )
+                self.ranges[prop_key] = RangeSummary[Any].from_dict(summary)
             else:
                 self.schemas[prop_key] = summary
         elif isinstance(summary, RangeSummary):

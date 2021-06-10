@@ -20,7 +20,9 @@
       "type": "application/json"
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+  ],
   "summaries": {
     "proj:epsg": [
       32614

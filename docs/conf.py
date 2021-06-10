@@ -32,7 +32,7 @@ git_branch = subprocess.check_output(['git',
 
 project = 'pystac'
 copyright = '2019, Azavea'
-author = 'Azavea'
+author = 'stac-utils'
 
 # The short X.Y version
 version = __version__
@@ -60,7 +60,7 @@ extensions = [
 ]
 
 extlinks = {
-    'tutorial': ('https://github.com/azavea/pystac/'
+    'tutorial': ('https://github.com/stac-utils/pystac/'
                   'tree/{}/docs/tutorials/%s'.format(git_branch), 'tutorial'),
     'stac-spec': ('https://github.com/radiantearth/stac-spec/tree/'
                   'v{}/%s'.format(STACVersion.DEFAULT_STAC_VERSION), 'path'),
@@ -162,7 +162,7 @@ latex_elements: Dict[str, Any] = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'pystac.tex', 'pystac Documentation',
-     'Azavea', 'manual'),
+     'stac-utils', 'manual'),
 ]
 
 

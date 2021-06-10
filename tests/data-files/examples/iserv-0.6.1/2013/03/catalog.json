@@ -1,1 +1,0 @@
-{"stac_version": "0.6.1", "id": "2013/03", "description": "Imagery from March 2013", "links": [{"rel": "root", "href": "https://iserv-stac.s3.amazonaws.com/0.6.1/catalog.json"}, {"rel": "collection", "href": "https://iserv-stac.s3.amazonaws.com/0.6.1/catalog.json"}, {"rel": "parent", "href": "../catalog.json"}, {"rel": "child", "href": "27/catalog.json"}]}

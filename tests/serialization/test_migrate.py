@@ -58,7 +58,7 @@ class MigrateTest(unittest.TestCase):
     def test_migrates_removed_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.7.0/extensions/sar/" "examples/sentinel1.json"
+                "data-files/examples/0.8.1/extensions/sar/examples/sentinel1.json"
             )
         )
         self.assertFalse("dtr" in item.stac_extensions)

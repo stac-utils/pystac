@@ -17,7 +17,9 @@
       "href": "069/catalog.json"
     }
   ],
-  "stac_extensions": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+  ],
   "providers": [
     {
       "name": "Instituto Nacional de Pesquisas Espaciais, INPE",

@@ -157,9 +157,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def _validate_from_uri(self, stac_dict: Dict[str, Any], schema_uri: str) -> None:
         schema, resolver = self.get_schema_from_uri(schema_uri)
-        jsonschema.validate(
-            instance=stac_dict, schema=schema, resolver=resolver
-        )  # type:ignore
+        jsonschema.validate(instance=stac_dict, schema=schema, resolver=resolver)
         for uri in resolver.store:
             if uri not in self.schema_cache:
                 self.schema_cache[uri] = resolver.store[uri]

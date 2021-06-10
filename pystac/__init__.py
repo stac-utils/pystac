@@ -4,36 +4,36 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 
 # flake8: noqa
 from pystac.errors import (
-    STACError,  # type:ignore
-    STACTypeError,  # type:ignore
-    ExtensionAlreadyExistsError,  # type:ignore
-    ExtensionTypeError,  # type:ignore
-    RequiredPropertyMissing,  # type:ignore
-    STACValidationError,  #  type:ignore
+    STACError,
+    STACTypeError,
+    ExtensionAlreadyExistsError,
+    ExtensionTypeError,
+    RequiredPropertyMissing,
+    STACValidationError,
 )
 
 from typing import Any, Dict, Optional
 from pystac.version import (
     __version__,
-    get_stac_version,  # type:ignore
-    set_stac_version,  # type:ignore
+    get_stac_version,
+    set_stac_version,
 )
-from pystac.media_type import MediaType  # type:ignore
-from pystac.rel_type import RelType  # type: ignore
-from pystac.stac_io import StacIO  # type:ignore
-from pystac.stac_object import STACObject, STACObjectType  # type:ignore
-from pystac.link import Link, HIERARCHICAL_LINKS  # type:ignore
-from pystac.catalog import Catalog, CatalogType  # type:ignore
+from pystac.media_type import MediaType
+from pystac.rel_type import RelType
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObject, STACObjectType
+from pystac.link import Link, HIERARCHICAL_LINKS
+from pystac.catalog import Catalog, CatalogType
 from pystac.collection import (
-    Collection,  # type:ignore
-    Extent,  # type:ignore
-    SpatialExtent,  # type:ignore
-    TemporalExtent,  # type:ignore
-    Provider,  # type:ignore
-    Summaries,  # type:ignore
+    Collection,
+    Extent,
+    SpatialExtent,
+    TemporalExtent,
+    Provider,
+    Summaries,
 )
-from pystac.summaries import RangeSummary  # type:ignore
-from pystac.item import Item, Asset, CommonMetadata  # type:ignore
+from pystac.summaries import RangeSummary
+from pystac.item import Item, Asset, CommonMetadata
 
 import pystac.validation
 

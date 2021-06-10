@@ -47,6 +47,68 @@ class IdentifyTest(unittest.TestCase):
                     set(actual.extensions), set(example.extensions), msg=msg
                 )
 
+    def test_identify_non_stac_type(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        self.assertIsNone(identify_stac_object_type(plain_feature_dict))
+
+    def test_identify_non_stac_raises_error(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        with self.assertRaises(pystac.STACTypeError) as ctx:
+            identify_stac_object(plain_feature_dict)
+
+        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+
+    def test_identify_0_8_itemcollection_type(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertEqual(
+            identify_stac_object_type(itemcollection_dict),
+            pystac.STACObjectType.ITEMCOLLECTION,
+        )
+
+    def test_identify_0_9_itemcollection(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.9.0/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertEqual(
+            identify_stac_object_type(itemcollection_dict),
+            pystac.STACObjectType.ITEMCOLLECTION,
+        )
+
+    def test_identify_invalid_with_stac_version(self) -> None:
+        not_stac = {"stac_version": "0.9.0", "type": "Custom"}
+
+        self.assertIsNone(identify_stac_object_type(not_stac))
+
+    def test_identify_0_8_itemcollection(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        actual = identify_stac_object(itemcollection_dict)
+
+        self.assertEqual(actual.object_type, pystac.STACObjectType.ITEMCOLLECTION)
+        self.assertTrue(actual.version_range.contains("0.8.1"))
+
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self) -> None:
@@ -55,13 +117,10 @@ class VersionTest(unittest.TestCase):
         self.assertFalse(STACVersionID("0.9.0") != STACVersionID("0.9.0"))
         self.assertFalse(STACVersionID("0.9.0") > STACVersionID("0.9.0"))
         self.assertTrue(STACVersionID("1.0.0-beta.2") < "1.0.0")
-        self.assertTrue(STACVersionID("0.9.1") > "0.9.0")  # type:ignore
-        self.assertFalse(STACVersionID("0.9.0") > "0.9.0")  # type:ignore
-        self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")  # type:ignore
-        self.assertTrue(
-            STACVersionID("1.0.0-beta.1")  # type:ignore
-            <= STACVersionID("1.0.0-beta.2")  # type:ignore
-        )
+        self.assertTrue(STACVersionID("0.9.1") > "0.9.0")
+        self.assertFalse(STACVersionID("0.9.0") > "0.9.0")
+        self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")
+        self.assertTrue(STACVersionID("1.0.0-beta.1") <= STACVersionID("1.0.0-beta.2"))
         self.assertFalse(STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2"))
 
     def test_version_range_ordering(self) -> None:

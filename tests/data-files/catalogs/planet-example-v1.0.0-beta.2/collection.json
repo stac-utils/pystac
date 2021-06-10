@@ -1,6 +1,10 @@
 {
     "id": "planet-disaster-data",
     "stac_version": "1.0.0-beta.2",
+    "stac_extensions": [
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
+    ],
     "description": "[Planet Disaster Data](https://www.planet.com/disasterdata/) makes imagery available directly to the public, volunteers, humanitarian organizations, and other coordinating bodies in support of the International Charter for Space and Major Disasters. Data is released for individual disaster events, providing a 30 day window pre- and post-disaster. Imagery is provided under Creative Commons licenses, free of charge, with either CC-BY-SA or CC-BY-NC.",
     "links": [
         {
