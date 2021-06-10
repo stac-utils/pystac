@@ -44,6 +44,12 @@ class TestItemCollection(unittest.TestCase):
 
         self.assertEqual(item_collection[0].id, expected_id)
 
+    def test_item_collection_contains(self) -> None:
+        item = pystac.Item.from_file(self.SIMPLE_ITEM)
+        item_collection = pystac.ItemCollection(items=[item], clone_items=False)
+
+        self.assertIn(item, item_collection)
+
     def test_item_collection_extra_fields(self) -> None:
         item_collection = pystac.ItemCollection(
             items=self.items, extra_fields={"custom_field": "My value"}

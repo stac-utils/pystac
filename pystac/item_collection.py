@@ -1,19 +1,20 @@
 from copy import deepcopy
 from pystac.errors import STACTypeError
-from typing import Any, Dict, Iterator, List, Optional, Sized, Iterable
+from typing import Any, Dict, Iterator, List, Optional, Collection
 
 import pystac
 from pystac.utils import make_absolute_href, is_absolute_href
 from pystac.serialization.identify import identify_stac_object_type
 
 
-class ItemCollection(Sized, Iterable[pystac.Item]):
+class ItemCollection(Collection[pystac.Item]):
     """Implementation of a GeoJSON FeatureCollection whose features are all STAC
     Items.
 
     All :class:`~pystac.Item` instances passed to the :class:`~ItemCollection` instance
     during instantiation are cloned and have their ``"root"`` URL cleared. Instances of
-    this class are iterable and sized (see examples below).
+    this class implement the abstract methods of :class:`typing.Collection` (see
+    below for examples using these methods).
 
     Any additional top-level fields in the FeatureCollection are retained in
     :attr:`~ItemCollection.extra_fields` by the :meth:`~ItemCollection.from_dict` and
@@ -45,6 +46,15 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
 
         >>> length: int = len(item_collection)
 
+        Check if an :class:`~pystac.Item` is in the :class:`~ItemCollection`. Note
+        that you must use `clone_items=False` for this to return ``True``, since
+        equality of PySTAC objects is currently evaluated using default object
+        equality (i.e. ``item_1 is item_2``).
+
+        >>> item: Item = ...
+        >>> item_collection = ItemCollection(items=[item], clone_items=False)
+        >>> assert item in item_collection
+
     """
 
     items: List[pystac.Item]
@@ -71,6 +81,9 @@ class ItemCollection(Sized, Iterable[pystac.Item]):
 
     def __len__(self) -> int:
         return len(self.items)
+
+    def __contains__(self, __x: object) -> bool:
+        return __x in self.items
 
     def to_dict(self) -> Dict[str, Any]:
         """Serializes an :class:`ItemCollection` instance to a JSON-like dictionary."""
