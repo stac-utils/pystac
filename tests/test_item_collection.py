@@ -1,4 +1,5 @@
 import json
+from pystac.item_collection import ItemCollection
 from typing import cast
 import unittest
 import pystac
@@ -24,6 +25,7 @@ class TestItemCollection(unittest.TestCase):
         self.items = [
             pystac.Item.from_dict(f) for f in self.item_collection_dict["features"]
         ]
+        self.stac_io = pystac.StacIO.default()
 
     def test_item_collection_length(self) -> None:
         item_collection = pystac.ItemCollection(items=self.items)
@@ -105,8 +107,7 @@ class TestItemCollection(unittest.TestCase):
         self.assertIsNot(item_collection_1[0], item_collection_2[0])
 
     def test_raise_error_for_invalid_object(self) -> None:
-        with open(self.SIMPLE_ITEM) as src:
-            item_dict = json.load(src)
+        item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
 
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.ItemCollection.from_dict(item_dict)
@@ -115,3 +116,9 @@ class TestItemCollection(unittest.TestCase):
         _ = pystac.ItemCollection.from_file(
             "./tests/data-files/item-collection/sample-item-collection.json"
         )
+
+    def test_from_list_of_dicts(self) -> None:
+        item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
+        item_collection = ItemCollection(items=[item_dict])
+
+        self.assertEqual(item_collection[0].id, item_dict.get("id"))

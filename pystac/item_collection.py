@@ -1,10 +1,13 @@
 from copy import deepcopy
 from pystac.errors import STACTypeError
-from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable
+from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable, Union
 
 import pystac
 from pystac.utils import make_absolute_href, is_absolute_href
 from pystac.serialization.identify import identify_stac_object_type
+
+
+ItemLike = Union[pystac.Item, Dict[str, Any]]
 
 
 class ItemCollection(Collection[pystac.Item]):
@@ -66,11 +69,18 @@ class ItemCollection(Collection[pystac.Item]):
 
     def __init__(
         self,
-        items: Iterable[pystac.Item],
+        items: Iterable[ItemLike],
         extra_fields: Optional[Dict[str, Any]] = None,
         clone_items: bool = True,
     ):
-        self.items = [item.clone() if clone_items else item for item in items]
+        def map_item(item_or_dict: ItemLike) -> pystac.Item:
+            # Converts dicts to pystac.Items and clones if necessary
+            if isinstance(item_or_dict, pystac.Item):
+                return item_or_dict.clone() if clone_items else item_or_dict
+            else:
+                return pystac.Item.from_dict(item_or_dict)
+
+        self.items = list(map(map_item, items))
         self.extra_fields = extra_fields or {}
 
     def __getitem__(self, idx: int) -> pystac.Item:
