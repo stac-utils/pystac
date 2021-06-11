@@ -12,6 +12,8 @@
 ### Changed
 
 - Package author to `stac-utils`, email to `stac@radiant.earth`, url to this repo ([#409](https://github.com/stac-utils/pystac/pull/409))
+- `StacIO.read_json` passes arbitrary positional and keyword arguments to
+  `StacIO.read_text` ([#433](https://github.com/stac-utils/pystac/pull/433))
 
 ### Fixed
 
