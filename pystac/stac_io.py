@@ -102,7 +102,9 @@ class StacIO(ABC):
             result._stac_io = self
         return result
 
-    def read_json(self, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+    def read_json(
+        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Read a dict from the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -115,7 +117,7 @@ class StacIO(ABC):
             dict: A dict representation of the JSON contained in the file at the
             given source.
         """
-        txt = self.read_text(source)
+        txt = self.read_text(source, *args, **kwargs)
         return self._json_loads(txt, source)
 
     def read_stac_object(
