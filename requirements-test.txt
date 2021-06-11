@@ -1,4 +1,4 @@
-mypy==0.901
+mypy==0.902
 flake8==3.8.*
 black==21.4b2
 
