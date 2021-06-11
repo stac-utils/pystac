@@ -104,14 +104,20 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ItemCollection":
-        """Creates a :class:`ItemCollection` instance from a dictionary."""
+        """Creates a :class:`ItemCollection` instance from a dictionary.
+
+        Arguments:
+            d : The dictionary from which the :class:`~ItemCollection` will be created
+        """
         if identify_stac_object_type(d) != pystac.STACObjectType.ITEMCOLLECTION:
             raise STACTypeError("Dict is not a valid ItemCollection")
 
         items = [pystac.Item.from_dict(item) for item in d.get("features", [])]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
 
-        return cls(items=items, extra_fields=extra_fields)
+        # Since we are reading these Items from a dict within this method, there will be
+        # no other references and we do not need to clone them.
+        return cls(items=items, extra_fields=extra_fields, clone_items=False)
 
     @classmethod
     def from_file(
