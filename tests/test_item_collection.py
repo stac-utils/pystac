@@ -1,5 +1,4 @@
 import json
-from pystac.item_collection import ItemCollection
 from typing import cast
 import unittest
 import pystac
@@ -119,6 +118,28 @@ class TestItemCollection(unittest.TestCase):
 
     def test_from_list_of_dicts(self) -> None:
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
-        item_collection = ItemCollection(items=[item_dict])
+        item_collection = pystac.ItemCollection(items=[item_dict])
 
         self.assertEqual(item_collection[0].id, item_dict.get("id"))
+
+    def test_add_item_collections(self) -> None:
+        item_1 = pystac.Item.from_file(self.SIMPLE_ITEM)
+        item_2 = pystac.Item.from_file(self.EXTENDED_ITEM)
+        item_3 = pystac.Item.from_file(self.CORE_ITEM)
+
+        item_collection_1 = pystac.ItemCollection(
+            items=[item_1, item_2], clone_items=False
+        )
+        item_collection_2 = pystac.ItemCollection(
+            items=[item_2, item_3], clone_items=False
+        )
+
+        combined = item_collection_1 + item_collection_2
+
+        self.assertEqual(len(combined), 3)
+
+    def test_add_other_raises_error(self) -> None:
+        item_collection = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
+
+        with self.assertRaises(TypeError):
+            _ = item_collection + 2
