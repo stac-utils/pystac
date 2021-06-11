@@ -47,7 +47,7 @@ class TestItemCollection(unittest.TestCase):
 
     def test_item_collection_contains(self) -> None:
         item = pystac.Item.from_file(self.SIMPLE_ITEM)
-        item_collection = pystac.ItemCollection(items=[item], clone_items=False)
+        item_collection = pystac.ItemCollection(items=[item])
 
         self.assertIn(item, item_collection)
 
@@ -127,12 +127,8 @@ class TestItemCollection(unittest.TestCase):
         item_2 = pystac.Item.from_file(self.EXTENDED_ITEM)
         item_3 = pystac.Item.from_file(self.CORE_ITEM)
 
-        item_collection_1 = pystac.ItemCollection(
-            items=[item_1, item_2], clone_items=False
-        )
-        item_collection_2 = pystac.ItemCollection(
-            items=[item_2, item_3], clone_items=False
-        )
+        item_collection_1 = pystac.ItemCollection(items=[item_1, item_2])
+        item_collection_2 = pystac.ItemCollection(items=[item_2, item_3])
 
         combined = item_collection_1 + item_collection_2
 

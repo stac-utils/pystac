@@ -32,9 +32,9 @@ class ItemCollection(Collection[pystac.Item]):
             :class:`~ItemCollection`.
         clone_items : Optional flag indicating whether :class:`~pystac.Item` instances
             should be cloned before storing in the :class:`~ItemCollection`. Setting to
-            ``False`` will result in faster instantiation, but any changes made to
-            :class:`~pystac.Item` instances in the :class:`~ItemCollection` will also
-            mutate the original :class:`~pystac.Item`. Defaults to ``True``.
+            ``True`` ensures that changes made to :class:`~pystac.Item` instances in
+            the :class:`~ItemCollection` will not mutate the original ``Item``, but
+            will result in slower instantiation. Defaults to ``False``.
 
     Examples:
 
@@ -50,12 +50,12 @@ class ItemCollection(Collection[pystac.Item]):
         >>> length: int = len(item_collection)
 
         Check if an :class:`~pystac.Item` is in the :class:`~ItemCollection`. Note
-        that you must use `clone_items=False` for this to return ``True``, since
-        equality of PySTAC objects is currently evaluated using default object
-        equality (i.e. ``item_1 is item_2``).
+        that the ``clone_items`` argument must be ``False`` for this to return
+        ``True``, since equality of PySTAC objects is currently evaluated using default
+        object equality (i.e. ``item_1 is item_2``).
 
         >>> item: Item = ...
-        >>> item_collection = ItemCollection(items=[item], clone_items=False)
+        >>> item_collection = ItemCollection(items=[item])
         >>> assert item in item_collection
 
         Combine :class:`~ItemCollection` instances
@@ -63,14 +63,8 @@ class ItemCollection(Collection[pystac.Item]):
         >>> item_1: Item = ...
         >>> item_2: Item = ...
         >>> item_3: Item = ...
-        >>> item_collection_1 = ItemCollection(
-        ...     items=[item_1, item_2],
-        ...     clone_items=False
-        ... )
-        >>> item_collection_2 = ItemCollection(
-        ...     items=[item_2, item_3],
-        ...     clone_items=False
-        ... )
+        >>> item_collection_1 = ItemCollection(items=[item_1, item_2])
+        >>> item_collection_2 = ItemCollection(items=[item_2, item_3])
         >>> combined = item_collection_1 + item_collection_2
         >>> assert len(combined) == 3
         # If an item is present in both ItemCollections it will only be added once
@@ -87,7 +81,7 @@ class ItemCollection(Collection[pystac.Item]):
         self,
         items: Iterable[ItemLike],
         extra_fields: Optional[Dict[str, Any]] = None,
-        clone_items: bool = True,
+        clone_items: bool = False,
     ):
         def map_item(item_or_dict: ItemLike) -> pystac.Item:
             # Converts dicts to pystac.Items and clones if necessary
@@ -152,9 +146,7 @@ class ItemCollection(Collection[pystac.Item]):
         items = [pystac.Item.from_dict(item) for item in d.get("features", [])]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
 
-        # Since we are reading these Items from a dict within this method, there will be
-        # no other references and we do not need to clone them.
-        return cls(items=items, extra_fields=extra_fields, clone_items=False)
+        return cls(items=items, extra_fields=extra_fields)
 
     @classmethod
     def from_file(
