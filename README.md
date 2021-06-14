@@ -55,71 +55,7 @@ See the [documentation page](https://pystac.readthedocs.io/en/latest/) for the l
 
 ## Developing
 
-To ensure development libraries are installed, install everything in `requirements-dev.txt`:
-
-```
-> pip install -r requirements-dev.txt
-```
-
-### Unit Tests
-
-Unit tests are in the `tests` folder. To run unit tests, use `unittest`:
-
-```
-> python -m unittest discover tests
-```
-
-To run linters, code formatters, and test suites all together, use `test`:
-
-```
-> ./scripts/test
-```
-
-### Code quality checks
-
-PySTAC uses [flake8](http://flake8.pycqa.org/en/latest/) and [Black](https://github.com/psf/black) for code formatting and style checks. To run both:
-
-```
-> pre-commit run --all-files
-```
-
-To run these automatically when committing files (runs only on the staged files):
-
-```
-> pre-commit install --hook-type=pre-commit --overwrite
-```
-
-To avoid running these checks when committing, use `git commit --no-verify`.
-
-You can also run the `./scripts/test` script to run unit tests.
-
-### Continuous Integration
-
-CI will run `pre-commit run --all-files` and `./scripts/test` to check for code quality. If you have a Pull Request that fails CI, make sure to fix any linting, spelling or test issues reported by either of these.
-
-### Documentation
-
-To build and develop the documentation locally, make sure sphinx is available (which is installed with `requirements-dev.txt`), and use the Makefile in the docs folder:
-
-```
-> cd docs
-> make html
-> make livehtml
-```
-
-> Note: You will see some warnings along the lines of
-> ```
-> WARNING: duplicate object description of pystac.Collection.id,
-> other instance in api, use :noindex: for one of them
-> ```
-> for some of the
-> classes. This is expected due to [sphinx-doc/sphinx#8664](https://github.com/sphinx-doc/sphinx/issues/8664).
-
-Use 'make' without arguments to see a list of available commands.
-
-__Note__: `nbsphinx` requires that a local `pystac` is installed; use `pip install -e .`.
-
-
+See [contributing docs](docs/contributing.rst)
 
 ## Running the quickstart and tutorials
 
