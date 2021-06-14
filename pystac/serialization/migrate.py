@@ -33,16 +33,7 @@ def _migrate_item(
     pass
 
 
-def _migrate_itemcollection(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
-) -> None:
-    if version < "0.9.0":
-        d["stac_extensions"] = list(info.extensions)
-
-
 # Extensions
-
-
 def _migrate_item_assets(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> Optional[Set[str]]:
@@ -83,7 +74,6 @@ def _get_object_migrations() -> Dict[
         pystac.STACObjectType.CATALOG: _migrate_catalog,
         pystac.STACObjectType.COLLECTION: _migrate_collection,
         pystac.STACObjectType.ITEM: _migrate_item,
-        pystac.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection,
     }
 
 

@@ -44,7 +44,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertTrue(PointcloudExtension.has_extension(item))
 
     def test_validate_pointcloud(self) -> None:
-        item = pystac.read_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
     def test_count(self) -> None:

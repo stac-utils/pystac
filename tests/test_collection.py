@@ -178,7 +178,7 @@ class CollectionTest(unittest.TestCase):
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:
             data = json.load(f)
-        collection = pystac.read_dict(data)
+        collection = pystac.Collection.from_dict(data)
         collection.validate()
 
 

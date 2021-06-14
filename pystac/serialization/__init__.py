@@ -51,4 +51,4 @@ def stac_object_from_dict(
     if info.object_type == pystac.STACObjectType.ITEM:
         return pystac.Item.from_dict(d, href=href, root=root, migrate=False)
 
-    raise ValueError(f"Unknown STAC object type {info.object_type}")
+    raise pystac.STACTypeError(f"Unknown STAC object type {info.object_type}")

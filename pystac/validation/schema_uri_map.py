@@ -71,13 +71,6 @@ class DefaultSchemaUriMap(SchemaUriMap):
             None,
         ),
         STACObjectType.ITEM: ("item-spec/json-schema/item.json", None),
-        STACObjectType.ITEMCOLLECTION: (
-            None,
-            [
-                STACVersionRange(min_version="v0.8.0-rc1", max_version="0.9.0"),
-                "item-spec/json-schema/itemcollection.json",
-            ],
-        ),
     }
 
     @classmethod

@@ -34,6 +34,7 @@ from pystac.collection import (
 )
 from pystac.summaries import RangeSummary
 from pystac.item import Item, Asset, CommonMetadata
+from pystac.item_collection import ItemCollection
 
 import pystac.validation
 
@@ -85,12 +86,20 @@ def read_file(href: str) -> STACObject:
     Returns:
         The specific STACObject implementation class that is represented
         by the JSON read from the file located at HREF.
+
+    Raises:
+        STACTypeError : If the file at ``href`` does not represent a valid
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
+            a :class:`~pystac.STACObject` and must be read using
+            :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
     return STACObject.from_file(href)
 
 
 def write_file(
-    obj: STACObject, include_self_link: bool = True, dest_href: Optional[str] = None
+    obj: STACObject,
+    include_self_link: bool = True,
+    dest_href: Optional[str] = None,
 ) -> None:
     """Writes a STACObject to a file.
 
@@ -106,10 +115,10 @@ def write_file(
 
     Args:
         obj : The STACObject to save.
-        include_self_link : If this is true, include the 'self' link with this object.
+        include_self_link : If ``True``, include the ``"self"`` link with this object.
             Otherwise, leave out the self link.
-        dest_href : Optional HREF to save the file to. If None, the object will be saved
-            to the object's self href.
+        dest_href : Optional HREF to save the file to. If ``None``, the object will be
+            saved to the object's ``"self"`` href.
     """
     obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
 
@@ -120,13 +129,14 @@ def read_dict(
     root: Optional[Catalog] = None,
     stac_io: Optional[StacIO] = None,
 ) -> STACObject:
-    """Reads a STAC object from a dict representing the serialized JSON version of the
-    STAC object.
+    """Reads a :class:`~STACObject` or :class:`~ItemCollection` from a JSON-like dict
+    representing a serialized STAC object.
 
-    This method will return either a Catalog, a Collection, or an Item based on what the
-    dict contains.
+    This method will return either a :class:`~Catalog`, :class:`~Collection`,
+    or :class`~Item` based on the contents of the dict.
 
-    This is a convenience method for :meth:`pystac.serialization.stac_object_from_dict`
+    This is a convenience method for either
+    :meth:`stac_io.stac_object_from_dict <stac_io.stac_object_from_dict>`.
 
     Args:
         d : The dict to parse.
@@ -135,8 +145,14 @@ def read_dict(
         root : Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
-        stac_io: Optional StacIO instance to use for reading. If None, the
-            default instance will be used.
+        stac_io: Optional :class:`~StacIO` instance to use for reading. If ``None``,
+            the default instance will be used.
+
+    Raises:
+        STACTypeError : If the ``d`` dictionary does not represent a valid
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
+            a :class:`~pystac.STACObject` and must be read using
+            :meth:`ItemCollection.from_dict <pystac.ItemCollection.from_dict>`
     """
     if stac_io is None:
         stac_io = StacIO.default()
