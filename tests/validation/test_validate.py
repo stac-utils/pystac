@@ -18,7 +18,8 @@ from tests.utils import TestCases, get_temp_dir
 class ValidateTest(unittest.TestCase):
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
-            TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
+            TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json"),
+            migrate=True,
         )
         catalog.validate()
 

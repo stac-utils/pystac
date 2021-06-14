@@ -670,9 +670,12 @@ class Collection(Catalog):
 
     @classmethod
     def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
+        cls,
+        href: str,
+        stac_io: Optional[pystac.StacIO] = None,
+        migrate: bool = False,
     ) -> "Collection":
-        result = super().from_file(href, stac_io)
+        result = super().from_file(href, stac_io, migrate)
         if not isinstance(result, Collection):
             raise pystac.STACTypeError(f"{result} is not a {Collection}.")
         return result

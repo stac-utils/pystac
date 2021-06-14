@@ -1122,7 +1122,12 @@ class CatalogSubClassTest(unittest.TestCase):
         self.stac_io = pystac.StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
-
         catalog_dict = self.stac_io.read_json(self.TEST_CASE_1)
         custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
+
+        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+
+    def test_from_file_returns_subclass(self) -> None:
+        custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
+
         self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)

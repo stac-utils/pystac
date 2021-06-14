@@ -33,8 +33,8 @@ class RasterTest(unittest.TestCase):
         assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_raster(self) -> None:
-        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
-        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
+        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI, migrate=True)
+        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI, migrate=True)
 
         item.validate()
         item2.validate()

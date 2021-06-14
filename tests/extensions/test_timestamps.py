@@ -59,7 +59,7 @@ class TimestampsTest(unittest.TestCase):
             self.assertNotIn(p, item.properties)
 
     def test_validate_timestamps(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri, migrate=True)
         item.validate()
 
     def test_expires(self) -> None:

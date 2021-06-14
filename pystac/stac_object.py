@@ -6,6 +6,8 @@ import pystac
 from pystac import STACError
 from pystac.link import Link
 from pystac.utils import is_absolute_href, make_absolute_href
+from pystac import serialization
+from pystac.serialization.identify import identify_stac_object
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
@@ -450,7 +452,10 @@ class STACObject(ABC):
 
     @classmethod
     def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
+        cls,
+        href: str,
+        stac_io: Optional[pystac.StacIO] = None,
+        migrate: bool = False,
     ) -> "STACObject":
         """Reads a STACObject implementation from a file.
 
@@ -458,6 +463,8 @@ class STACObject(ABC):
             href : The HREF to read the object from.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 default instance.
+            migrate: Indicates whether to migrate the object to the latest
+                version when reading from file. Defaults to ``False``.
 
         Returns:
             The specific STACObject implementation class that is represented
@@ -469,7 +476,11 @@ class STACObject(ABC):
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
-        o = stac_io.read_stac_object(href)
+        d = stac_io.read_json(href)
+        if migrate:
+            info = identify_stac_object(d)
+            d = serialization.migrate.migrate_to_latest(d, info)
+        o = cls.from_dict(d, href=href)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:

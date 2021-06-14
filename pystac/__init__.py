@@ -72,7 +72,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(href: str) -> STACObject:
+def read_file(href: str, migrate: bool = False) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what the
@@ -82,6 +82,8 @@ def read_file(href: str) -> STACObject:
 
     Args:
         href : The HREF to read the object from.
+        migrate: Indicates whether to migrate the object to the latest
+                version when reading from file. Defaults to ``False``.
 
     Returns:
         The specific STACObject implementation class that is represented
@@ -93,7 +95,18 @@ def read_file(href: str) -> STACObject:
             a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
-    return STACObject.from_file(href)
+    stac_io = StacIO.default()
+    d = stac_io.read_json(href)
+    typ = pystac.serialization.identify.identify_stac_object_type(d)
+
+    if typ == STACObjectType.CATALOG:
+        return Catalog.from_file(href, migrate=migrate)
+    elif typ == STACObjectType.COLLECTION:
+        return Collection.from_file(href, migrate=migrate)
+    elif typ == STACObjectType.ITEM:
+        return Item.from_file(href, migrate=migrate)
+    else:
+        raise STACTypeError(f"Cannot read file of type {typ}")
 
 
 def write_file(
@@ -128,6 +141,7 @@ def read_dict(
     href: Optional[str] = None,
     root: Optional[Catalog] = None,
     stac_io: Optional[StacIO] = None,
+    migrate: bool = False,
 ) -> STACObject:
     """Reads a :class:`~STACObject` or :class:`~ItemCollection` from a JSON-like dict
     representing a serialized STAC object.
@@ -156,4 +170,4 @@ def read_dict(
     """
     if stac_io is None:
         stac_io = StacIO.default()
-    return stac_io.stac_object_from_dict(d, href, root)
+    return stac_io.stac_object_from_dict(d, href, root, migrate)

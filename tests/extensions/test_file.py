@@ -81,7 +81,7 @@ class FileTest(unittest.TestCase):
             "data-files/examples/1.0.0-beta.2/"
             "extensions/checksum/examples/sentinel1.json"
         )
-        item = pystac.Item.from_file(example_path)
+        item = pystac.Item.from_file(example_path, migrate=True)
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(

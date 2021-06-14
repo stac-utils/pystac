@@ -264,7 +264,12 @@ class CollectionSubClassTest(unittest.TestCase):
         self.stac_io = pystac.StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
-
         collection_dict = self.stac_io.read_json(self.MULTI_EXTENT)
         custom_collection = self.BasicCustomCollection.from_dict(collection_dict)
+
+        self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+
+    def test_from_file_returns_subclass(self) -> None:
+        custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
+
         self.assertIsInstance(custom_collection, self.BasicCustomCollection)

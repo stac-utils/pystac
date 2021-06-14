@@ -53,8 +53,8 @@ class EOTest(unittest.TestCase):
         assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_eo(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI, migrate=True)
+        item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI, migrate=True)
         item.validate()
         item2.validate()
 
@@ -198,8 +198,9 @@ class EOTest(unittest.TestCase):
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.8.1/item-spec/examples/" "landsat8-sample.json"
-            )
+                "data-files/examples/0.8.1/item-spec/examples/landsat8-sample.json"
+            ),
+            migrate=True,
         )
 
         self.assertEqual(eo_item.common_metadata.platform, "landsat-8")
@@ -208,8 +209,9 @@ class EOTest(unittest.TestCase):
     def test_reads_asset_bands_in_pre_1_0_version(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
-            )
+                "data-files/examples/0.9.0/item-spec/examples/landsat8-sample.json"
+            ),
+            migrate=True,
         )
 
         bands = EOExtension.ext(item.assets["B9"]).bands
@@ -220,8 +222,9 @@ class EOTest(unittest.TestCase):
     def test_reads_gsd_in_pre_1_0_version(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
-            )
+                "data-files/examples/0.9.0/item-spec/examples/landsat8-sample.json"
+            ),
+            migrate=True,
         )
 
         self.assertEqual(eo_item.common_metadata.gsd, 30.0)

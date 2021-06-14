@@ -53,7 +53,8 @@ class MigrateTest(unittest.TestCase):
         item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/extensions/sar/examples/sentinel1.json"
-            )
+            ),
+            migrate=True,
         )
         self.assertFalse("dtr" in item.stac_extensions)
         self.assertEqual(
@@ -65,7 +66,8 @@ class MigrateTest(unittest.TestCase):
         item = pystac.Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/" "examples/planet-sample.json"
-            )
+            ),
+            migrate=True,
         )
         self.assertTrue(ViewExtension.has_extension(item))
         view_ext = ViewExtension.ext(item)
@@ -78,7 +80,8 @@ class MigrateTest(unittest.TestCase):
             TestCases.get_path(
                 "data-files/examples/0.9.0/extensions/asset/"
                 "examples/example-landsat8.json"
-            )
+            ),
+            migrate=True,
         )
 
         self.assertTrue(ItemAssetsExtension.has_extension(collection))

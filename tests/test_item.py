@@ -712,7 +712,12 @@ class ItemSubClassTest(unittest.TestCase):
         self.stac_io = pystac.StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
-
         item_dict = self.stac_io.read_json(self.SAMPLE_ITEM)
         custom_item = self.BasicCustomItem.from_dict(item_dict)
+
+        self.assertIsInstance(custom_item, self.BasicCustomItem)
+
+    def test_from_file_returns_subclass(self) -> None:
+        custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
+
         self.assertIsInstance(custom_item, self.BasicCustomItem)

@@ -9,6 +9,8 @@ import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
+from pystac.serialization.migrate import migrate_to_latest
+from pystac.serialization.identify import identify_stac_object
 from pystac.stac_object import STACObject
 from pystac.utils import (
     is_absolute_href,
@@ -912,10 +914,8 @@ class Item(STACObject):
         migrate: bool = False,
     ) -> "Item":
         if migrate:
-            result = pystac.read_dict(d, href=href, root=root)
-            if not isinstance(result, Item):
-                raise pystac.STACError(f"{result} is not a Catalog")
-            return result
+            info = identify_stac_object(d)
+            d = migrate_to_latest(d, info)
 
         d = deepcopy(d)
         id = d.pop("id")
@@ -975,8 +975,13 @@ class Item(STACObject):
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> "Item":
-        result = super().from_file(href, stac_io)
+    def from_file(
+        cls,
+        href: str,
+        stac_io: Optional[pystac.StacIO] = None,
+        migrate: bool = False,
+    ) -> "Item":
+        result = super().from_file(href, stac_io, migrate)
         if not isinstance(result, Item):
             raise pystac.STACTypeError(f"{result} is not a {Item}.")
         return result
