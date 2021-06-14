@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 import os
-from typing import Any, Dict, cast
+from typing import Any, Dict
 from pystac.utils import get_opt
 import shutil
 import unittest
@@ -20,7 +20,6 @@ class ValidateTest(unittest.TestCase):
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
         )
-        catalog = cast(pystac.STACObject, catalog)
         catalog.validate()
 
         collection = pystac.read_file(
@@ -30,11 +29,9 @@ class ValidateTest(unittest.TestCase):
                 "collection.json"
             )
         )
-        collection = cast(pystac.Collection, collection)
         collection.validate()
 
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
-        item = cast(pystac.Item, item)
         item.validate()
 
     def test_validate_examples(self) -> None:

@@ -1,5 +1,4 @@
 import json
-from typing import cast
 import unittest
 import pystac
 
@@ -76,19 +75,6 @@ class TestItemCollection(unittest.TestCase):
             "custom_field": "My value",
         }
         item_collection = pystac.ItemCollection.from_dict(d)
-        expected = len(features)
-        self.assertEqual(expected, len(item_collection.items))
-        self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")
-
-    def test_item_collection_from_dict_top_level(self) -> None:
-        features = [item.to_dict() for item in self.items]
-        d = {
-            "type": "FeatureCollection",
-            "features": features,
-            "custom_field": "My value",
-        }
-        item_collection = pystac.read_dict(d)
-        item_collection = cast(pystac.ItemCollection, item_collection)
         expected = len(features)
         self.assertEqual(expected, len(item_collection.items))
         self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")

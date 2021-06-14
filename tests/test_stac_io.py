@@ -46,18 +46,10 @@ class StacIOTest(unittest.TestCase):
             pystac.write_file(catalog, dest_href=dest_href)
             self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
 
-    def test_read_write_item_collection(self) -> None:
-        item_collection = pystac.read_file(
-            TestCases.get_path("data-files/item-collection/sample-item-collection.json")
-        )
-        with get_temp_dir() as tmp_dir:
-            dest_href = os.path.join(tmp_dir, "item-collection.json")
-            pystac.write_file(item_collection, dest_href=dest_href)
-            self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
-
-    def test_write_item_collection_needs_href(self) -> None:
-        item_collection = pystac.read_file(
-            TestCases.get_path("data-files/item-collection/sample-item-collection.json")
-        )
-        with self.assertRaises(pystac.STACError):
-            pystac.write_file(item_collection)
+    def test_read_item_collection_raises_exception(self) -> None:
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.read_file(
+                TestCases.get_path(
+                    "data-files/item-collection/sample-item-collection.json"
+                )
+            )
