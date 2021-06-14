@@ -488,10 +488,10 @@ class STACObject(ABC):
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
-        if root_link is not None:
+        if isinstance(o, pystac.Catalog) and root_link is not None:
             if not root_link.is_resolved():
                 if root_link.get_absolute_href() == href:
-                    o.set_root(cast(pystac.Catalog, o))
+                    o.set_root(o)
         return o
 
     @classmethod
