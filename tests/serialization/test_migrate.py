@@ -49,12 +49,6 @@ class MigrateTest(unittest.TestCase):
                         e_id.endswith(".json"), f"{e_id} is not a JSON schema URI"
                     )
 
-                # Test that PySTAC can read it without errors.
-                if info.object_type != pystac.STACObjectType.ITEMCOLLECTION:
-                    self.assertIsInstance(
-                        pystac.read_dict(migrated_d, href=path), pystac.STACObject
-                    )
-
     def test_migrates_removed_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(

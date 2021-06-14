@@ -140,7 +140,7 @@ class ItemCollection(Collection[pystac.Item]):
         Arguments:
             d : The dictionary from which the :class:`~ItemCollection` will be created
         """
-        if identify_stac_object_type(d) != pystac.STACObjectType.ITEMCOLLECTION:
+        if not cls.is_item_collection(d):
             raise STACTypeError("Dict is not a valid ItemCollection")
 
         items = [pystac.Item.from_dict(item) for item in d.get("features", [])]
@@ -184,3 +184,29 @@ class ItemCollection(Collection[pystac.Item]):
             stac_io = pystac.StacIO.default()
 
         stac_io.save_json(dest_href, self.to_dict())
+
+    @staticmethod
+    def is_item_collection(d: Dict[str, Any]) -> bool:
+        """Checks if the given dictionary represents a valid :class:`ItemCollection`.
+
+        Args:
+            d : Dictionary to check
+        """
+        typ = d.get("type")
+
+        # All ItemCollections are GeoJSON FeatureCollections
+        if typ != "FeatureCollection":
+            return False
+
+        # If it is a FeatureCollection and has a "stac_version" field, then it is an
+        #  ItemCollection. This will cover ItemCollections from STAC 0.9 to
+        #  <1.0.0-beta.1, when ItemCollections were removed from the core STAC Spec
+        if "stac_version" in d:
+            return True
+
+        # Prior to STAC 0.9 ItemCollections did not have a stac_version field and could
+        #  only be identified by the fact that all of their 'features' are STAC Items.
+        return all(
+            identify_stac_object_type(feature) == pystac.STACObjectType.ITEM
+            for feature in d.get("features", [])
+        )

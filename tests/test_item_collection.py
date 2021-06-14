@@ -125,3 +125,27 @@ class TestItemCollection(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             _ = item_collection + 2
+
+    def test_identify_0_8_itemcollection_type(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertTrue(
+            pystac.ItemCollection.is_item_collection(itemcollection_dict),
+            msg="Did not correctly identify valid STAC 0.8 ItemCollection.",
+        )
+
+    def test_identify_0_9_itemcollection(self) -> None:
+        itemcollection_path = TestCases.get_path(
+            "data-files/examples/0.9.0/item-spec/"
+            "examples/itemcollection-sample-full.json"
+        )
+        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+
+        self.assertTrue(
+            pystac.ItemCollection.is_item_collection(itemcollection_dict),
+            msg="Did not correctly identify valid STAC 0.9 ItemCollection.",
+        )

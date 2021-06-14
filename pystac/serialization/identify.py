@@ -1,6 +1,6 @@
 from enum import Enum
 from functools import total_ordering
-from typing import Any, Dict, List, Optional, Set, TYPE_CHECKING, Union, cast
+from typing import Any, Dict, Optional, Set, TYPE_CHECKING, Union
 
 import pystac
 from pystac.version import STACVersion
@@ -165,44 +165,6 @@ class STACJSONDescription:
         )
 
 
-def _identify_stac_extensions(
-    object_type: str, d: Dict[str, Any], version_range: STACVersionRange
-) -> List[str]:
-    """Identifies extensions for STAC Objects that don't list their
-    extensions in a 'stac_extensions' property.
-
-    Returns a list of stac_extensions. May mutate the version_range to update
-    min or max version.
-    """
-    stac_extensions: Set[str] = set([])
-
-    # assets (collection assets)
-
-    if object_type == pystac.STACObjectType.ITEMCOLLECTION:
-        if "assets" in d:
-            stac_extensions.add("assets")
-            version_range.set_min(STACVersionID("0.8.0"))
-
-    # checksum
-    if "links" in d:
-        for link in d["links"]:
-            link_props = cast(Dict[str, Any], link).keys()
-
-            if any(prop.startswith("checksum:") for prop in link_props):
-                stac_extensions.add(OldExtensionShortIDs.CHECKSUM.value)
-                version_range.set_min(STACVersionID("0.6.2"))
-
-    # Single File STAC
-    if object_type == pystac.STACObjectType.ITEMCOLLECTION:
-        if "collections" in d:
-            stac_extensions.add(OldExtensionShortIDs.SINGLE_FILE_STAC.value)
-            version_range.set_min(STACVersionID("0.8.0"))
-            if "stac_extensions" not in d:
-                version_range.set_max(STACVersionID("0.8.1"))
-
-    return list(stac_extensions)
-
-
 def identify_stac_object_type(
     json_dict: Dict[str, Any]
 ) -> Optional["STACObjectType_Type"]:
@@ -227,15 +189,11 @@ def identify_stac_object_type(
 
     obj_type = json_dict.get("type")
 
-    # For pre-1.0 objects for version 0.8.* or later 'stac_version' must be present,
-    # except for in ItemCollections (which are handled in the else clause)
+    # For pre-1.0 objects for version 0.8.* or later 'stac_version' must be present
     if "stac_version" in json_dict:
         # Pre-1.0 STAC objects with 'type' == "Feature" are Items
         if obj_type == "Feature":
             return pystac.STACObjectType.ITEM
-        # Pre-1.0 STAC objects with 'type' == "FeatureCollection" are ItemCollections
-        if obj_type == "FeatureCollection":
-            return pystac.STACObjectType.ITEMCOLLECTION
         # Anything else with a 'type' field is not a STAC object
         if obj_type is not None:
             return None
@@ -246,16 +204,8 @@ def identify_stac_object_type(
         # Everything else that has a stac_version is a Catalog
         else:
             return pystac.STACObjectType.CATALOG
-    else:
-        # Prior to STAC 0.9 ItemCollections did not have a stac_version field and could
-        # only be identified by the fact that all of their 'features' are STAC Items
-        if obj_type == "FeatureCollection":
-            if all(
-                identify_stac_object_type(feat) == pystac.STACObjectType.ITEM
-                for feat in json_dict.get("features", [])
-            ):
-                return pystac.STACObjectType.ITEMCOLLECTION
-        return None
+
+    return None
 
 
 def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
@@ -287,19 +237,7 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
         version_range.set_min(STACVersionID("0.8.0"))
 
     if stac_extensions is None:
-        # If this is post-0.8, we can assume there are no extensions
-        # if the stac_extensions property doesn't exist for everything
-        # but ItemCollection (except after 0.9.0, when ItemCollection also got
-        # the stac_extensions property).
-        if (
-            object_type == pystac.STACObjectType.ITEMCOLLECTION
-            and not version_range.is_later_than("0.8.1")
-        ):
-            stac_extensions = _identify_stac_extensions(
-                object_type, json_dict, version_range
-            )
-        else:
-            stac_extensions = []
+        stac_extensions = []
 
         # Between 1.0.0-beta.2 and 1.0.0-RC1, STAC extensions changed from
         # being split between 'common' and custom extensions, with common

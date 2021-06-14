@@ -18,7 +18,6 @@ class STACObjectType(str, Enum):
     CATALOG = "CATALOG"
     COLLECTION = "COLLECTION"
     ITEM = "ITEM"
-    ITEMCOLLECTION = "ITEMCOLLECTION"
 
 
 class STACObject(ABC):
