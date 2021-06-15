@@ -24,10 +24,11 @@ T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
 
-DATA_TYPE_PROP = "file:data_type"
-SIZE_PROP = "file:size"
-NODATA_PROP = "file:nodata"
-CHECKSUM_PROP = "file:checksum"
+PREFIX = "file:"
+DATA_TYPE_PROP = PREFIX + "data_type"
+SIZE_PROP = PREFIX + "size"
+NODATA_PROP = PREFIX + "nodata"
+CHECKSUM_PROP = PREFIX + "checksum"
 
 
 class FileDataType(str, enum.Enum):
@@ -55,18 +56,19 @@ class FileDataType(str, enum.Enum):
 class FileExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """FileItemExt is the extension of the Item in the file extension which
-    adds file related details such as checksum, data type and size for assets.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
+    :stac-ext:`File Info Extension <file>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Asset`).
 
-    Args:
-        item : The item to be extended.
+    To create a concrete instance of :class:`FileExtension`, use the
+    :meth:`FileExtension.ext` method. For example:
 
-    Attributes:
-        item : The Item that is being extended.
+    .. code-block:: python
 
-    Note:
-        Using FileItemExt to directly wrap an item will add the 'file' extension ID to
-        the item's stac_extensions.
+       >>> item: pystac.Item = ...
+       >>> file_ext = FileExtension.ext(item)
     """
 
     def apply(
@@ -92,11 +94,7 @@ class FileExtension(
 
     @property
     def data_type(self) -> Optional[FileDataType]:
-        """Get or sets the data_type of the file.
-
-        Returns:
-            FileDataType
-        """
+        """Get or sets the data_type of the file."""
         return map_opt(
             lambda s: FileDataType(s), self._get_property(DATA_TYPE_PROP, str)
         )
@@ -107,11 +105,7 @@ class FileExtension(
 
     @property
     def size(self) -> Optional[int]:
-        """Get or sets the size in bytes of the file
-
-        Returns:
-            int or None
-        """
+        """Get or sets the size in bytes of the file."""
         return self._get_property(SIZE_PROP, int)
 
     @size.setter
@@ -120,7 +114,7 @@ class FileExtension(
 
     @property
     def nodata(self) -> Optional[List[Any]]:
-        """Get or sets the no data values"""
+        """Get or sets the no data values."""
         return self._get_property(NODATA_PROP, List[Any])
 
     @nodata.setter
@@ -129,11 +123,7 @@ class FileExtension(
 
     @property
     def checksum(self) -> Optional[str]:
-        """Get or sets the checksum
-
-        Returns:
-            str or None
-        """
+        """Get or sets the checksum"""
         return self._get_property(CHECKSUM_PROP, str)
 
     @checksum.setter
@@ -146,6 +136,16 @@ class FileExtension(
 
     @staticmethod
     def ext(obj: T) -> "FileExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`File Info
+        Extension <file>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             return cast(FileExtension[T], ItemFileExtension(obj))
         elif isinstance(obj, pystac.Asset):
@@ -161,6 +161,14 @@ class FileExtension(
 
 
 class ItemFileExtension(FileExtension[pystac.Item]):
+    """A concrete implementation of :class:`FileExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`File Info Extension <file>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`FileExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -170,6 +178,14 @@ class ItemFileExtension(FileExtension[pystac.Item]):
 
 
 class AssetFileExtension(FileExtension[pystac.Asset]):
+    """A concrete implementation of :class:`FileExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`File Info Extension <info>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`FileExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -183,11 +199,7 @@ class AssetFileExtension(FileExtension[pystac.Asset]):
 class SummariesFileExtension(SummariesExtension):
     @property
     def data_type(self) -> Optional[List[FileDataType]]:
-        """Get or sets the data_type of the file.
-
-        Returns:
-            FileDataType
-        """
+        """Get or sets the summary of data_type values for this Collection."""
 
         return map_opt(
             lambda x: [FileDataType(t) for t in x],
@@ -200,11 +212,7 @@ class SummariesFileExtension(SummariesExtension):
 
     @property
     def size(self) -> Optional[pystac.RangeSummary[int]]:
-        """Get or sets the size in bytes of the file
-
-        Returns:
-            int or None
-        """
+        """Get or sets the summary of size values for this Collection."""
         return self.summaries.get_range(SIZE_PROP)
 
     @size.setter
@@ -213,7 +221,7 @@ class SummariesFileExtension(SummariesExtension):
 
     @property
     def nodata(self) -> Optional[List[Any]]:
-        """Get or sets the list of no data values"""
+        """Get or sets the summary of nodata values for this Collection."""
         return self.summaries.get_list(NODATA_PROP)
 
     @nodata.setter
