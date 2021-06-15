@@ -283,20 +283,43 @@ SummariesEOExtension
    :undoc-members:
    :show-inheritance:
 
+File Info Extension
+-------------------
+
+These classes are representations of the :stac-ext:`File Info Extension Spec <file>`.
+
+ByteOrder
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.ByteOrder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+MappingObject
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.MappingObject
+   :members:
+
+FileExtension
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.FileExtension
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+.. autoclass:: pystac.extensions.file.AssetFileExtension
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+
 Label Extension
 ---------------
 
 These classes are representations of the :stac-ext:`Label Extension Spec <label>`.
-
-LabelItemExt
-~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.label.LabelItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
 
 LabelRelType
 ~~~~~~~~~~~~
@@ -339,6 +362,14 @@ LabelStatistics
 .. autoclass:: pystac.extensions.label.LabelStatistics
    :members:
    :undoc-members:
+
+LabelExtension
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.label.LabelExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Pointcloud Extension
 --------------------
@@ -460,26 +491,6 @@ SatItemExt
 ..    :members:
 ..    :undoc-members:
 ..    :show-inheritance:
-
-Single File STAC Extension
---------------------------
-
-These classes are representations of the :stac-ext:`Single File STAC Extension
-<single-file-stac>`.
-
-**TEMPORARILY REMOVED**
-
-.. .. automodule:: pystac.extensions.single_file_stac
-..    :members: create_single_file_stac
-
-SingleFileSTACCatalogExt
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
-..    :members:
-..    :undoc-members:
 
 Version Extension
 -----------------
