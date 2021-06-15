@@ -1,6 +1,6 @@
 """Implements the Versioning Indicators extension.
 
-:stac-ext:version
+https://github.com/stac-extensions/version
 """
 from enum import Enum
 from pystac.utils import get_required, map_opt

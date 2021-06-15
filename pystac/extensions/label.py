@@ -29,7 +29,7 @@ class LabelRelType(str, Enum):
 
 
 class LabelType(str, Enum):
-    """Enumerates valid label types (RASTER or VECTOR)."""
+    """Enumerates valid label types ("raster" or "vector")."""
 
     def __str__(self) -> str:
         return str(self.value)
@@ -42,9 +42,9 @@ class LabelType(str, Enum):
 
 
 class LabelClasses:
-    """Defines the list of possible class names (e.g., tree, building, car, hippo)
+    """Defines the list of possible class names (e.g., tree, building, car, hippo).
 
-    Use LabelClasses.create to create a new instance of LabelClasses from
+    Use :meth:`LabelClasses.create` to create a new instance of ``LabelClasses`` from
     property values.
     """
 
@@ -56,11 +56,10 @@ class LabelClasses:
         classes: Union[List[str], List[int], List[float]],
         name: Optional[str] = None,
     ) -> None:
-        """Sets the properties for this LabelClasses.
+        """Sets the properties for this instance.
 
         Args:
-            classes : The different possible
-                class values.
+            classes : The different possible class values.
             name : The property key within the asset's each Feature corresponding
                 to class labels. If labels are raster-formatted, do not supply;
                 required otherwise.
@@ -74,17 +73,13 @@ class LabelClasses:
         classes: Union[List[str], List[int], List[float]],
         name: Optional[str] = None,
     ) -> "LabelClasses":
-        """Creates a new LabelClasses.
+        """Creates a new ``LabelClasses`` instance.
 
         Args:
-            classes : The different possible
-                class values.
+            classes : The different possible class values.
             name : The property key within the asset's each Feature corresponding
                 to class labels. If labels are raster-formatted, do not supply;
                 required otherwise.
-
-        Returns:
-            LabelClasses
         """
         c = cls({})
         c.apply(classes, name)
@@ -92,11 +87,7 @@ class LabelClasses:
 
     @property
     def classes(self) -> Union[List[str], List[int], List[float]]:
-        """Get or sets the class values.
-
-        Returns:
-            List[str] or List[int] or List[float]
-        """
+        """Gets or sets the class values."""
         result: Optional[
             Union[List[str], List[int], List[float]]
         ] = self.properties.get("classes")
@@ -117,8 +108,9 @@ class LabelClasses:
 
     @property
     def name(self) -> Optional[str]:
-        """Get or sets the property key within the asset's each Feature corresponding to
-        class labels. If labels are raster-formatted, do not supply; required otherwise.
+        """Gets or sets the property key within each Feature in the asset corresponding
+        to class labels. If labels are raster-formatted, do not supply; required
+        otherwise.
         """
         return self.properties.get("name")
 
@@ -135,18 +127,14 @@ class LabelClasses:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelClasses.
-
-        Returns:
-            dict: The wrapped dict of the LabelClasses that can be written out as JSON.
-        """
+        """Returns the dictionary representing the JSON of this LabelClasses."""
         return self.properties
 
 
 class LabelCount:
     """Contains counts for categorical data.
 
-    Use LabelCount.create to create a new LabelCount
+    Use :meth:`LabelCount.create` to create a new instance.
     """
 
     def __init__(self, properties: Dict[str, Any]):
@@ -164,7 +152,7 @@ class LabelCount:
 
     @classmethod
     def create(cls, name: str, count: int) -> "LabelCount":
-        """Creates a LabelCount.
+        """Creates a ``LabelCount`` instance.
 
         Args:
             name : One of the different possible classes within the property.
@@ -176,11 +164,7 @@ class LabelCount:
 
     @property
     def name(self) -> str:
-        """Get or sets the class that this count represents.
-
-        Returns:
-            str
-        """
+        """Gets or sets the class that this count represents."""
         result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
@@ -194,11 +178,7 @@ class LabelCount:
 
     @property
     def count(self) -> int:
-        """Get or sets the number of occurrences of the class.
-
-        Returns:
-            int
-        """
+        """Get or sets the number of occurrences of the class."""
         result: Optional[int] = self.properties.get("count")
         if result is None:
             raise pystac.STACError(
@@ -211,18 +191,14 @@ class LabelCount:
         self.properties["count"] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelCount.
-
-        Returns:
-            dict: The wrapped dict of the LabelCount that can be written out as JSON.
-        """
+        """Returns the dictionary representing the JSON of this instance."""
         return {"name": self.name, "count": self.count}
 
 
 class LabelStatistics:
     """Contains statistics for regression/continuous numeric value data.
 
-    Use LabelStatistics.create to create a new instance.
+    Use :meth:`LabelStatistics.create` to create a new instance.
     """
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -252,11 +228,7 @@ class LabelStatistics:
 
     @property
     def name(self) -> str:
-        """Get or sets the name of the statistic being reported.
-
-        Returns:
-            str
-        """
+        """Gets or sets the name of the statistic being reported."""
         result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
@@ -270,11 +242,7 @@ class LabelStatistics:
 
     @property
     def value(self) -> float:
-        """Get or sets the value of the statistic
-
-        Returns:
-            float
-        """
+        """Gets or sets the value of the statistic."""
         result: Optional[float] = self.properties.get("value")
         if result is None:
             raise pystac.STACError(
@@ -287,12 +255,7 @@ class LabelStatistics:
         self.properties["value"] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelStatistics.
-
-        Returns:
-            dict: The wrapped dict of the LabelStatistics that can be written out as
-            JSON.
-        """
+        """Returns the dictionary representing the JSON of this LabelStatistics."""
         return {"name": self.name, "value": self.value}
 
 
@@ -300,7 +263,7 @@ class LabelOverview:
     """Stores counts (for classification-type data) or summary statistics (for
     continuous numerical/regression data).
 
-    Use LabelOverview.create to create a new LabelOverview.
+    Use :meth:`LabelOverview.create` to create a new instance.
     """
 
     def __init__(self, properties: Dict[str, Any]):
@@ -312,7 +275,7 @@ class LabelOverview:
         counts: Optional[List[LabelCount]] = None,
         statistics: Optional[List[LabelStatistics]] = None,
     ) -> None:
-        """Sets the properties for this LabelOverview.
+        """Sets the properties for this instance.
 
         Either ``counts`` or ``statistics``, or both, can be placed in an overview;
         at least one is required.
@@ -321,10 +284,10 @@ class LabelOverview:
             property_key : The property key within the asset corresponding to
                 class labels that these counts or statistics are referencing. If the
                 label data is raster data, this should be None.
-            counts: Optional list of LabelCounts containing counts
+            counts: Optional list of :class:`LabelCounts` containing counts
                 for categorical data.
-            statistics: Optional list of statistics containing statistics for
-                regression/continuous numeric value data.
+            statistics: Optional list of :class:`LabelStatistics` containing statistics
+                for regression/continuous numeric value data.
         """
         self.property_key = property_key
         self.counts = counts
@@ -337,7 +300,7 @@ class LabelOverview:
         counts: Optional[List[LabelCount]] = None,
         statistics: Optional[List[LabelStatistics]] = None,
     ) -> "LabelOverview":
-        """Creates a new LabelOverview.
+        """Creates a new instance.
 
         Either ``counts`` or ``statistics``, or both, can be placed in an overview;
         at least one is required.
@@ -345,10 +308,10 @@ class LabelOverview:
         Args:
             property_key : The property key within the asset corresponding to
                 class labels.
-            counts: Optional list of LabelCounts containing counts for
+            counts: Optional list of :class:`LabelCounts` containing counts for
                 categorical data.
-            statistics: Optional list of Statistics containing statistics for
-                regression/continuous numeric value data.
+            statistics: Optional list of :class:`LabelStatistics` containing statistics
+                for regression/continuous numeric value data.
         """
         x = LabelOverview({})
         x.apply(property_key, counts, statistics)
@@ -356,11 +319,8 @@ class LabelOverview:
 
     @property
     def property_key(self) -> Optional[str]:
-        """Get or sets the property key within the asset corresponding to class labels.
-
-        Returns:
-            str
-        """
+        """Gets or sets the property key within the asset corresponding to class
+        labels."""
         return self.properties.get("property_key")
 
     @property_key.setter
@@ -369,11 +329,8 @@ class LabelOverview:
 
     @property
     def counts(self) -> Optional[List[LabelCount]]:
-        """Get or sets the list of LabelCounts containing counts for categorical data.
-
-        Returns:
-            List[LabelCount]
-        """
+        """Gets or sets the list of :class:`LabelCounts` containing counts for
+        categorical data."""
         counts = self.properties.get("counts")
         if counts is None:
             return None
@@ -393,12 +350,8 @@ class LabelOverview:
 
     @property
     def statistics(self) -> Optional[List[LabelStatistics]]:
-        """Get or sets the list of Statistics containing statistics for
-        regression/continuous numeric value data.
-
-        Returns:
-            List[Statistics]
-        """
+        """Gets or sets the list of :class:`LabelStatistics` containing statistics for
+        regression/continuous numeric value data."""
         statistics = self.properties.get("statistics")
         if statistics is None:
             return None
@@ -419,13 +372,13 @@ class LabelOverview:
 
     def merge_counts(self, other: "LabelOverview") -> "LabelOverview":
         """Merges the counts associated with this overview with another overview.
-        Creates a new LabelOverview.
+        Creates a new instance.
 
         Args:
             other : The other LabelOverview to merge.
 
         Returns:
-            LabelOverview: A new LabelOverview with the counts merged. This will
+            A new LabelOverview with the counts merged. This will
             drop any statistics associated with either of the LabelOverviews.
         """
         assert self.property_key == other.property_key
@@ -452,32 +405,22 @@ class LabelOverview:
         return LabelOverview.create(self.property_key, counts=new_counts)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelOverview.
-
-        Returns:
-            dict: The wrapped dict of the LabelOverview that can be written out as JSON.
-        """
+        """Returns the dictionary representing the JSON of this LabelOverview."""
         return self.properties
 
 
 class LabelExtension(ExtensionManagementMixin[pystac.Item]):
-    """A LabelItemExt is the extension of the Item in the label extension which
-    represents a polygon, set of polygons, or raster data defining
-    labels and label metadata and should be part of a Collection.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
-    Args:
-        item : The item to be extended.
+    To create a concrete instance of :class:`LabeExtension`, use the
+    :meth:`LabelExtension.ext` method. For example:
 
-    Attributes:
-        item : The Item that is being extended.
+    .. code-block:: python
 
-    See:
-        :stac-ext:`Item fields in the label extension spec <label#item-properties>`
-
-    Note:
-        Using LabelItemExt to directly wrap an item will add the 'label' extension ID to
-        the item's stac_extensions.
-    """  # noqa E501
+       >>> item: pystac.Item = ...
+       >>> label_ext = LabelExtension.ext(item)
+    """
 
     def __init__(self, item: pystac.Item) -> None:
         self.obj = item
@@ -498,23 +441,24 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         Args:
             label_description : A description of the label, how it was created,
                 and what it is recommended for
-            label_type : An ENUM of either vector label type or raster label type. Use
+            label_type : An Enum of either vector label type or raster label type. Use
                 one of :class:`~pystac.LabelType`.
             label_properties : These are the names of the property field(s) in each
                 Feature of the label asset's FeatureCollection that contains the classes
                 (keywords from label:classes if the property defines classes).
                 If labels are rasters, this should be None.
             label_classes : Optional, but required if using categorical data.
-                A list of LabelClasses defining the list of possible class names for each
-                label:properties. (e.g., tree, building, car, hippo)
+                A list of :class:`LabelClasses` instances defining the list of possible
+                class names for each label:properties. (e.g., tree, building, car,
+                hippo)
             label_tasks : Recommended to be a subset of 'regression', 'classification',
                 'detection', or 'segmentation', but may be an arbitrary value.
             label_methods: Recommended to be a subset of 'automated' or 'manual',
                 but may be an arbitrary value.
-            label_overviews : Optional list of LabelOverview classes
-                that store counts (for classification-type data) or summary statistics (for
-                continuous numerical/regression data).
-        """  # noqa E501
+            label_overviews : Optional list of :class:`LabelOverview` instances
+                that store counts (for classification-type data) or summary statistics
+                (for continuous numerical/regression data).
+        """
         self.label_description = label_description
         self.label_type = label_type
         self.label_properties = label_properties
@@ -525,12 +469,8 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_description(self) -> str:
-        """Get or sets a description of the label, how it was created,
-        and what it is recommended for.
-
-        Returns:
-            str
-        """
+        """Gets or sets a description of the label, how it was created,
+        and what it is recommended for."""
         result: Optional[str] = self.obj.properties.get("label:description")
         if result is None:
             raise pystac.STACError(f"label:description not set for item {self.obj.id}")
@@ -542,7 +482,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_type(self) -> LabelType:
-        """Gets or sets an ENUM of either vector label type or raster label type."""
+        """Gets or sets an Enum of either vector label type or raster label type."""
         result = self.obj.properties.get("label:type")
         if result is None:
             raise pystac.STACError(f"label:type is not set for item {self.obj.id}")
@@ -560,16 +500,10 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_properties(self) -> Optional[List[str]]:
-        """Label Properties
-
-        Gets or sets the names of the property field(s) in each
+        """Gets or sets the names of the property field(s) in each
         Feature of the label asset's FeatureCollection that contains the classes
         (keywords from label:classes if the property defines classes).
-        If labels are rasters, this should be None.
-
-        Returns:
-            List[str] or None
-        """
+        If labels are rasters, this should be None."""
         return self.obj.properties.get("label:properties")
 
     @label_properties.setter
@@ -584,14 +518,10 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_classes(self) -> Optional[List[LabelClasses]]:
-        """Get or set a list of LabelClasses defining the list of possible class names for each
-        label:properties. (e.g., tree, building, car, hippo).
+        """Gets or set a list of :class:`LabelClasses` defining the list of possible
+        class names for each label:properties. (e.g., tree, building, car, hippo).
 
-        Optional, but required if using categorical data.
-
-        Returns:
-            List[LabelClasses] or None
-        """
+        Optional, but required if using categorical data."""
         label_classes = self.obj.properties.get("label:classes")
         if label_classes is not None:
             return [LabelClasses(classes) for classes in label_classes]
@@ -613,13 +543,9 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_tasks(self) -> Optional[List[str]]:
-        """Get or set a list of tasks these labels apply to. Usually a subset of 'regression',
-            'classification', 'detection', or 'segmentation', but may be arbitrary
-            values.
-
-        Returns:
-            List[str] or None
-        """
+        """Gets or set a list of tasks these labels apply to. Usually a subset of 'regression',
+        'classification', 'detection', or 'segmentation', but may be arbitrary
+        values."""
         return self.obj.properties.get("label:tasks")
 
     @label_tasks.setter
@@ -636,13 +562,9 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_methods(self) -> Optional[List[str]]:
-        """Get or set a list of methods used for labeling.
+        """Gets or set a list of methods used for labeling.
 
-        Usually a subset of 'automated' or 'manual', but may be arbitrary values.
-
-        Returns:
-            List[str] or None
-        """
+        Usually a subset of 'automated' or 'manual', but may be arbitrary values."""
         return self.obj.properties.get("label:methods")
 
     @label_methods.setter
@@ -659,13 +581,9 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @property
     def label_overviews(self) -> Optional[List[LabelOverview]]:
-        """Get or set a list of LabelOverview classes
+        """Gets or set a list of :class:`LabelOverview` instances
         that store counts (for classification-type data) or summary statistics (for
-        continuous numerical/regression data).
-
-        Returns:
-            List[LabelOverview] or None
-        """
+        continuous numerical/regression data)."""
         overviews = self.obj.properties.get("label:overviews")
         if overviews is not None:
             return [LabelOverview(overview) for overview in overviews]
@@ -719,8 +637,8 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         this LabelItem.
 
         Returns:
-            Generator[Items]: A possibly empty list of source imagery items. Determined
-            by links of this LabelItem that have ``rel=='source'``.
+            A possibly empty list of source imagery items. Determined by links of this
+            LabelItem that have ``rel=='source'``.
         """
         return map(lambda x: cast(pystac.Item, x), self.obj.get_stac_objects("source"))
 
@@ -781,6 +699,15 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
     @classmethod
     def ext(cls, obj: pystac.Item) -> "LabelExtension":
+        """Extends the given STAC Object with properties from the :stac-ext:`Label
+        Extension <label>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         return cls(obj)
 
 
