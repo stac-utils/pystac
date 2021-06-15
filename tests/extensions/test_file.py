@@ -3,7 +3,7 @@ import unittest
 
 import pystac
 from tests.utils import TestCases, assert_to_from_dict
-from pystac.extensions.file import FileExtension, FileDataType
+from pystac.extensions.file import FileExtension
 
 
 class FileTest(unittest.TestCase):
@@ -48,32 +48,6 @@ class FileTest(unittest.TestCase):
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
         FileExtension.ext(asset).checksum = new_checksum
         self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
-        item.validate()
-
-    def test_asset_data_type(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
-        asset = item.assets["thumbnail"]
-
-        # Get
-        self.assertEqual(FileDataType.UINT8, FileExtension.ext(asset).data_type)
-
-        # Set
-        new_data_type = FileDataType.UINT16
-        FileExtension.ext(asset).data_type = new_data_type
-        self.assertEqual(new_data_type, FileExtension.ext(asset).data_type)
-        item.validate()
-
-    def test_asset_nodata(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
-        asset = item.assets["thumbnail"]
-
-        # Get
-        self.assertEqual([], FileExtension.ext(asset).nodata)
-
-        # Set
-        new_nodata = [-1]
-        FileExtension.ext(asset).nodata = new_nodata
-        self.assertEqual(new_nodata, FileExtension.ext(asset).nodata)
         item.validate()
 
     def test_migrates_old_checksum(self) -> None:
