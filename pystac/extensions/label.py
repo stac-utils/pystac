@@ -10,8 +10,19 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Union, cast
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import get_required
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+
+PREFIX = "label:"
+
+PROPERTIES_PROP = PREFIX + "properties"
+CLASSES_PROP = PREFIX + "classes"
+DESCRIPTION_PROP = PREFIX + "description"
+TYPE_PROP = PREFIX + "type"
+TASKS_PROP = PREFIX + "tasks"
+METHODS_PROP = PREFIX + "methods"
+OVERVIEWS_PROP = PREFIX + "overviews"
 
 
 class LabelRelType(str, Enum):
@@ -44,8 +55,7 @@ class LabelType(str, Enum):
 class LabelClasses:
     """Defines the list of possible class names (e.g., tree, building, car, hippo).
 
-    Use :meth:`LabelClasses.create` to create a new instance of ``LabelClasses`` from
-    property values.
+    Use :meth:`LabelClasses.create` to create a new instance from property values.
     """
 
     def __init__(self, properties: Dict[str, Any]):
@@ -53,7 +63,7 @@ class LabelClasses:
 
     def apply(
         self,
-        classes: Union[List[str], List[int], List[float]],
+        classes: List[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> None:
         """Sets the properties for this instance.
@@ -70,10 +80,10 @@ class LabelClasses:
     @classmethod
     def create(
         cls,
-        classes: Union[List[str], List[int], List[float]],
+        classes: List[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> "LabelClasses":
-        """Creates a new ``LabelClasses`` instance.
+        """Creates a new :class:`~LabelClasses` instance.
 
         Args:
             classes : The different possible class values.
@@ -86,48 +96,33 @@ class LabelClasses:
         return c
 
     @property
-    def classes(self) -> Union[List[str], List[int], List[float]]:
+    def classes(self) -> List[Union[str, int, float]]:
         """Gets or sets the class values."""
-        result: Optional[
-            Union[List[str], List[int], List[float]]
-        ] = self.properties.get("classes")
-        if result is None:
-            raise pystac.STACError(
-                f"LabelClasses does not contain classes property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("classes"), self, "classes")
 
     @classes.setter
-    def classes(self, v: Union[List[str], List[int], List[float]]) -> None:
-        if not type(v) is list:
-            raise pystac.STACError(
-                "classes must be a list! Invalid input: {}".format(v)
-            )
-
+    def classes(self, v: List[Union[str, int, float]]) -> None:
         self.properties["classes"] = v
 
     @property
     def name(self) -> Optional[str]:
         """Gets or sets the property key within each Feature in the asset corresponding
-        to class labels. If labels are raster-formatted, do not supply; required
-        otherwise.
+        to class labels. If labels are raster-formatted, use ``None``.
         """
         return self.properties.get("name")
 
     @name.setter
     def name(self, v: Optional[str]) -> None:
-        if v is not None:
-            self.properties["name"] = v
-        else:
-            self.properties.pop("name", None)
+        # The "name" property is required but may be null
+        self.properties["name"] = v
 
     def __repr__(self) -> str:
-        return "<LabelClasses classes={}>".format(
+        return "<ClassObject classes={}>".format(
             ",".join([str(x) for x in self.classes])
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelClasses."""
+        """Returns the dictionary representing the JSON of this instance."""
         return self.properties
 
 
@@ -141,7 +136,7 @@ class LabelCount:
         self.properties = properties
 
     def apply(self, name: str, count: int) -> None:
-        """Sets the properties for this LabelCount.
+        """Sets the properties for this instance.
 
         Args:
             name : One of the different possible classes within the property.
@@ -152,7 +147,7 @@ class LabelCount:
 
     @classmethod
     def create(cls, name: str, count: int) -> "LabelCount":
-        """Creates a ``LabelCount`` instance.
+        """Creates a :class:`LabelCount` instance.
 
         Args:
             name : One of the different possible classes within the property.
@@ -165,26 +160,17 @@ class LabelCount:
     @property
     def name(self) -> str:
         """Gets or sets the class that this count represents."""
-        result: Optional[str] = self.properties.get("name")
-        if result is None:
-            raise pystac.STACError(
-                f"Label count has no name property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
+
         self.properties["name"] = v
 
     @property
     def count(self) -> int:
         """Get or sets the number of occurrences of the class."""
-        result: Optional[int] = self.properties.get("count")
-        if result is None:
-            raise pystac.STACError(
-                f"Label count has no count property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("count"), self, "count")
 
     @count.setter
     def count(self, v: int) -> None:
@@ -192,7 +178,7 @@ class LabelCount:
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this instance."""
-        return {"name": self.name, "count": self.count}
+        return self.properties
 
 
 class LabelStatistics:
@@ -216,7 +202,7 @@ class LabelStatistics:
 
     @classmethod
     def create(cls, name: str, value: float) -> "LabelStatistics":
-        """Sets the property values for this instance.
+        """Creates a new :class:`LabelStatistics` instance.
 
         Args:
             name : The name of the statistic being reported.
@@ -229,12 +215,7 @@ class LabelStatistics:
     @property
     def name(self) -> str:
         """Gets or sets the name of the statistic being reported."""
-        result: Optional[str] = self.properties.get("name")
-        if result is None:
-            raise pystac.STACError(
-                f"Label statistics has no name property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -243,12 +224,7 @@ class LabelStatistics:
     @property
     def value(self) -> float:
         """Gets or sets the value of the statistic."""
-        result: Optional[float] = self.properties.get("value")
-        if result is None:
-            raise pystac.STACError(
-                f"Label statistics has no value property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("value"), self, "value")
 
     @value.setter
     def value(self, v: float) -> None:
@@ -256,7 +232,7 @@ class LabelStatistics:
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this LabelStatistics."""
-        return {"name": self.name, "value": self.value}
+        return self.properties
 
 
 class LabelOverview:
@@ -363,11 +339,6 @@ class LabelOverview:
         if v is None:
             self.properties.pop("statistics", None)
         else:
-            if not isinstance(v, list):
-                raise pystac.STACError(
-                    "statistics must be a list! Invalid input: {}".format(v)
-                )
-
             self.properties["statistics"] = [s.to_dict() for s in v]
 
     def merge_counts(self, other: "LabelOverview") -> "LabelOverview":
@@ -471,32 +442,24 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
     def label_description(self) -> str:
         """Gets or sets a description of the label, how it was created,
         and what it is recommended for."""
-        result: Optional[str] = self.obj.properties.get("label:description")
-        if result is None:
-            raise pystac.STACError(f"label:description not set for item {self.obj.id}")
-        return result
+        return get_required(
+            self.obj.properties.get(DESCRIPTION_PROP), self.obj, DESCRIPTION_PROP
+        )
 
     @label_description.setter
     def label_description(self, v: str) -> None:
-        self.obj.properties["label:description"] = v
+        self.obj.properties[DESCRIPTION_PROP] = v
 
     @property
     def label_type(self) -> LabelType:
         """Gets or sets an Enum of either vector label type or raster label type."""
-        result = self.obj.properties.get("label:type")
-        if result is None:
-            raise pystac.STACError(f"label:type is not set for item {self.obj.id}")
-        return LabelType(result)
+        return LabelType(
+            get_required(self.obj.properties.get(TYPE_PROP), self.obj, TYPE_PROP)
+        )
 
     @label_type.setter
     def label_type(self, v: LabelType) -> None:
-        if v not in LabelType.ALL:
-            raise pystac.STACError(
-                "label_type must be one of "
-                "{}. Invalid input: {}".format(LabelType.ALL, v)
-            )
-
-        self.obj.properties["label:type"] = v
+        self.obj.properties[TYPE_PROP] = v
 
     @property
     def label_properties(self) -> Optional[List[str]]:
@@ -504,17 +467,11 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         Feature of the label asset's FeatureCollection that contains the classes
         (keywords from label:classes if the property defines classes).
         If labels are rasters, this should be None."""
-        return self.obj.properties.get("label:properties")
+        return self.obj.properties.get(PROPERTIES_PROP)
 
     @label_properties.setter
     def label_properties(self, v: Optional[List[str]]) -> None:
-        if v is not None:
-            if not isinstance(v, list):
-                raise pystac.STACError(
-                    "label_properties must be a list! Invalid input: {}".format(v)
-                )
-
-        self.obj.properties["label:properties"] = v
+        self.obj.properties[PROPERTIES_PROP] = v
 
     @property
     def label_classes(self) -> Optional[List[LabelClasses]]:
@@ -522,7 +479,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         class names for each label:properties. (e.g., tree, building, car, hippo).
 
         Optional, but required if using categorical data."""
-        label_classes = self.obj.properties.get("label:classes")
+        label_classes = self.obj.properties.get(CLASSES_PROP)
         if label_classes is not None:
             return [LabelClasses(classes) for classes in label_classes]
         else:
@@ -531,7 +488,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
     @label_classes.setter
     def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
         if v is None:
-            self.obj.properties.pop("label:classes", None)
+            self.obj.properties.pop(CLASSES_PROP, None)
         else:
             if not isinstance(v, list):
                 raise pystac.STACError(
@@ -539,26 +496,21 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
                 )
 
             classes = [x.to_dict() for x in v]
-            self.obj.properties["label:classes"] = classes
+            self.obj.properties[CLASSES_PROP] = classes
 
     @property
     def label_tasks(self) -> Optional[List[str]]:
         """Gets or set a list of tasks these labels apply to. Usually a subset of 'regression',
         'classification', 'detection', or 'segmentation', but may be arbitrary
         values."""
-        return self.obj.properties.get("label:tasks")
+        return self.obj.properties.get(TASKS_PROP)
 
     @label_tasks.setter
     def label_tasks(self, v: Optional[List[str]]) -> None:
         if v is None:
-            self.obj.properties.pop("label:tasks", None)
+            self.obj.properties.pop(TASKS_PROP, None)
         else:
-            if not isinstance(v, list):
-                raise pystac.STACError(
-                    "label_tasks must be a list! Invalid input: {}".format(v)
-                )
-
-            self.obj.properties["label:tasks"] = v
+            self.obj.properties[TASKS_PROP] = v
 
     @property
     def label_methods(self) -> Optional[List[str]]:
@@ -572,11 +524,6 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         if v is None:
             self.obj.properties.pop("label:methods", None)
         else:
-            if not isinstance(v, list):
-                raise pystac.STACError(
-                    "label_methods must be a list! Invalid input: {}".format(v)
-                )
-
             self.obj.properties["label:methods"] = v
 
     @property
@@ -584,7 +531,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         """Gets or set a list of :class:`LabelOverview` instances
         that store counts (for classification-type data) or summary statistics (for
         continuous numerical/regression data)."""
-        overviews = self.obj.properties.get("label:overviews")
+        overviews = self.obj.properties.get(OVERVIEWS_PROP)
         if overviews is not None:
             return [LabelOverview(overview) for overview in overviews]
         else:
@@ -593,15 +540,9 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
     @label_overviews.setter
     def label_overviews(self, v: Optional[List[LabelOverview]]) -> None:
         if v is None:
-            self.obj.properties.pop("label:overviews", None)
+            self.obj.properties.pop(OVERVIEWS_PROP, None)
         else:
-            if not isinstance(v, list):
-                raise pystac.STACError(
-                    "label_overviews must be a list! Invalid input: {}".format(v)
-                )
-
-            overviews = [x.to_dict() for x in v]
-            self.obj.properties["label:overviews"] = overviews
+            self.obj.properties[OVERVIEWS_PROP] = [x.to_dict() for x in v]
 
     def __repr__(self) -> str:
         return "<LabelItemExt Item id={}>".format(self.obj.id)
@@ -730,16 +671,16 @@ class LabelExtensionHooks(ExtensionHooks):
             props = obj["properties"]
             # Migrate 0.8.0-rc1 non-pluralized forms
             # As it's a common mistake, convert for any pre-1.0.0 version.
-            if "label:property" in props and "label:properties" not in props:
-                props["label:properties"] = props["label:property"]
+            if "label:property" in props and PROPERTIES_PROP not in props:
+                props[PROPERTIES_PROP] = props["label:property"]
                 del props["label:property"]
 
-            if "label:task" in props and "label:tasks" not in props:
-                props["label:tasks"] = props["label:task"]
+            if "label:task" in props and TASKS_PROP not in props:
+                props[TASKS_PROP] = props["label:task"]
                 del props["label:task"]
 
-            if "label:overview" in props and "label:overviews" not in props:
-                props["label:overviews"] = props["label:overview"]
+            if "label:overview" in props and OVERVIEWS_PROP not in props:
+                props[OVERVIEWS_PROP] = props["label:overview"]
                 del props["label:overview"]
 
             if "label:method" in props and "label:methods" not in props:
