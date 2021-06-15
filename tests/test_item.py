@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 import json
-from tempfile import TemporaryDirectory
+import tempfile
 from typing import Any, Dict, List
 import unittest
 
@@ -73,7 +73,7 @@ class ItemTest(unittest.TestCase):
 
         item.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             p = os.path.join(tmp_dir, "item.json")
             item.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:

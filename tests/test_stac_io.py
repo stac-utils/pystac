@@ -1,7 +1,7 @@
 import os
 import unittest
 import warnings
-from tempfile import TemporaryDirectory
+import tempfile
 
 import pystac
 from pystac.stac_io import STAC_IO
@@ -26,14 +26,14 @@ class StacIOTest(unittest.TestCase):
         collection = pystac.read_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             dest_href = os.path.join(tmp_dir, "collection.json")
             pystac.write_file(collection, dest_href=dest_href)
             self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
 
     def test_read_item(self) -> None:
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             dest_href = os.path.join(tmp_dir, "item.json")
             pystac.write_file(item, dest_href=dest_href)
             self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
@@ -42,7 +42,7 @@ class StacIOTest(unittest.TestCase):
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             dest_href = os.path.join(tmp_dir, "catalog.json")
             pystac.write_file(catalog, dest_href=dest_href)
             self.assertTrue(os.path.exists(dest_href), msg="File was not written.")

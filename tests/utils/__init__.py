@@ -17,7 +17,7 @@ import pystac
 from tests.utils.stac_io_mock import MockStacIO
 
 if TYPE_CHECKING:
-    from tempfile import TemporaryDirectory as TemporaryDirectory_Type
+    import tempfile as TemporaryDirectory_Type
 
 
 def assert_to_from_dict(

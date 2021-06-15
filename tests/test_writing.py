@@ -1,5 +1,5 @@
 import unittest
-from tempfile import TemporaryDirectory
+import tempfile
 from typing import Any, List
 
 import pystac
@@ -105,7 +105,7 @@ class STACWritingTest(unittest.TestCase):
     def do_test(
         self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType
     ) -> None:
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             self.validate_catalog(catalog)
 

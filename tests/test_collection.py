@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 from dateutil import tz
-from tempfile import TemporaryDirectory
+import tempfile
 
 import pystac
 from pystac.extensions.eo import EOExtension
@@ -35,7 +35,7 @@ class CollectionTest(unittest.TestCase):
         collection = TestCases.test_case_8()
         assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             collection.normalize_hrefs(tmp_dir)
             href = collection.self_href
             collection.save()
@@ -84,7 +84,7 @@ class CollectionTest(unittest.TestCase):
 
         collection.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             p = os.path.join(tmp_dir, "collection.json")
             collection.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:

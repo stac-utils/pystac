@@ -6,7 +6,7 @@ import os
 import argparse
 import json
 from subprocess import call
-from tempfile import TemporaryDirectory
+import tempfile
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "examples"))
 
-    with TemporaryDirectory() as tmp_dir:
+    with tempfile.TemporaryDirectory() as tmp_dir:
         call(
             [
                 "git",
