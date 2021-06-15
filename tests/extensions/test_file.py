@@ -3,26 +3,72 @@ import unittest
 
 import pystac
 from tests.utils import TestCases, assert_to_from_dict
-from pystac.extensions.file import FileExtension, FileDataType
+from pystac.extensions.file import FileExtension, ByteOrder, MappingObject
+
+
+class ByteOrderTest(unittest.TestCase):
+    def test_to_str(self) -> None:
+        self.assertEqual(str(ByteOrder.LITTLE_ENDIAN), "little-endian")
+        self.assertEqual(str(ByteOrder.BIG_ENDIAN), "big-endian")
+
+
+class MappingObjectTest(unittest.TestCase):
+    def test_create(self) -> None:
+        values = [0, 1]
+        summary = "clouds"
+        m = MappingObject.create(values, summary)
+
+        self.assertListEqual(m.values, values)
+        self.assertEqual(m.summary, summary)
+
+    def test_set_properties(self) -> None:
+        values = [0, 1]
+        summary = "clouds"
+        m = MappingObject.create(values, summary)
+
+        new_values = [3, 4]
+        new_summary = "cloud shadow"
+        m.summary = new_summary
+        m.values = new_values
+
+        self.assertListEqual(m.values, new_values)
+        self.assertEqual(m.summary, new_summary)
+
+    def test_apply(self) -> None:
+        values = [0, 1]
+        summary = "clouds"
+        m = MappingObject.create(values, summary)
+
+        new_values = [3, 4]
+        new_summary = "cloud shadow"
+        m.apply(new_values, new_summary)
+
+        self.assertListEqual(m.values, new_values)
+        self.assertEqual(m.summary, new_summary)
 
 
 class FileTest(unittest.TestCase):
-    FILE_EXAMPLE_URI = TestCases.get_path("data-files/file/file-example.json")
+    FILE_ITEM_EXAMPLE_URI = TestCases.get_path("data-files/file/item.json")
+    FILE_COLLECTION_EXAMPLE_URI = TestCases.get_path("data-files/file/collection.json")
 
     def setUp(self) -> None:
         self.maxDiff = None
 
     def test_to_from_dict(self) -> None:
-        with open(self.FILE_EXAMPLE_URI) as f:
+        with open(self.FILE_ITEM_EXAMPLE_URI) as f:
             item_dict = json.load(f)
         assert_to_from_dict(self, pystac.Item, item_dict)
 
-    def test_validate_file(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
+    def test_validate_item(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         item.validate()
 
-    def test_asset_size(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
+    def test_validate_collection(self) -> None:
+        collection = pystac.Collection.from_file(self.FILE_COLLECTION_EXAMPLE_URI)
+        collection.validate()
+
+    def test_item_asset_size(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -34,8 +80,21 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_size, FileExtension.ext(asset).size)
         item.validate()
 
-    def test_asset_checksum(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
+    def test_item_asset_header_size(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        asset = item.assets["measurement"]
+
+        # Get
+        self.assertEqual(4096, FileExtension.ext(asset).header_size)
+
+        # Set
+        new_header_size = 8192
+        FileExtension.ext(asset).header_size = new_header_size
+        self.assertEqual(new_header_size, FileExtension.ext(asset).header_size)
+        item.validate()
+
+    def test_item_asset_checksum(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -50,31 +109,72 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
         item.validate()
 
-    def test_asset_data_type(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
-        asset = item.assets["thumbnail"]
-
+    def test_item_asset_byte_order(self) -> None:
         # Get
-        self.assertEqual(FileDataType.UINT8, FileExtension.ext(asset).data_type)
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        asset = item.assets["thumbnail"]
+        file_ext = FileExtension.ext(asset)
+
+        self.assertEqual(ByteOrder.BIG_ENDIAN, file_ext.byte_order)
 
         # Set
-        new_data_type = FileDataType.UINT16
-        FileExtension.ext(asset).data_type = new_data_type
-        self.assertEqual(new_data_type, FileExtension.ext(asset).data_type)
+        new_byte_order = ByteOrder.LITTLE_ENDIAN
+        file_ext.byte_order = new_byte_order
+
+        self.assertEqual(file_ext.byte_order, new_byte_order)
+
         item.validate()
 
-    def test_asset_nodata(self) -> None:
-        item = pystac.Item.from_file(self.FILE_EXAMPLE_URI)
+    def test_item_asset_values(self) -> None:
+        # Set/get
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
+        file_ext = FileExtension.ext(asset)
+        values = [MappingObject.create([0], summary="clouds")]
 
-        # Get
-        self.assertEqual([], FileExtension.ext(asset).nodata)
+        file_ext.values = values
 
-        # Set
-        new_nodata = [-1]
-        FileExtension.ext(asset).nodata = new_nodata
-        self.assertEqual(new_nodata, FileExtension.ext(asset).nodata)
-        item.validate()
+        self.assertEqual(file_ext.values, values)
+
+    def test_item_asset_apply(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        asset = item.assets["thumbnail"]
+        file_ext = FileExtension.ext(asset)
+
+        new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
+        new_size = 1
+        new_header_size = 8192
+        new_values = [MappingObject.create([0], summary="clouds")]
+        new_byte_order = ByteOrder.LITTLE_ENDIAN
+
+        self.assertNotEqual(file_ext.checksum, new_checksum)
+        self.assertNotEqual(file_ext.size, new_size)
+        self.assertNotEqual(file_ext.header_size, new_header_size)
+        self.assertNotEqual(file_ext.values, new_values)
+        self.assertNotEqual(file_ext.byte_order, new_byte_order)
+
+        file_ext.apply(
+            byte_order=new_byte_order,
+            checksum=new_checksum,
+            size=new_size,
+            header_size=new_header_size,
+            values=new_values,
+        )
+
+        self.assertEqual(file_ext.checksum, new_checksum)
+        self.assertEqual(file_ext.size, new_size)
+        self.assertEqual(file_ext.header_size, new_header_size)
+        self.assertEqual(file_ext.values, new_values)
+        self.assertEqual(file_ext.byte_order, new_byte_order)
+
+    def test_repr(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        asset = item.assets["thumbnail"]
+        file_ext = FileExtension.ext(asset)
+
+        self.assertEqual(
+            file_ext.__repr__(), f"<AssetFileExtension Asset href={asset.href}>"
+        )
 
     def test_migrates_old_checksum(self) -> None:
         example_path = TestCases.get_path(

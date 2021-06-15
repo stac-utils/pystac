@@ -289,7 +289,7 @@ class EOExtension(
     .. code-block:: python
 
        >>> item: pystac.Item = ...
-       >>> view_ext = ViewExtension.ext(item)
+       >>> eo_ext = EOExtension.ext(item)
     """
 
     def apply(
