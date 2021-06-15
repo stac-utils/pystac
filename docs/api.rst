@@ -484,7 +484,7 @@ SingleFileSTACCatalogExt
 Version Extension
 -----------------
 
-Implements the :stac-ext:`Version Extension <version>`.
+Implements the :stac-ext:`Versioning Indicators Extension <version>`.
 
 VersionRelType
 ~~~~~~~~~~~~~~
@@ -493,25 +493,26 @@ VersionRelType
    :members:
    :show-inheritance:
 
-VersionCollectionExt
+VersionExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionExtension
+   :members:
+   :show-inheritance:
+
+CollectionVersionExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.CollectionVersionExtension
+   :members:
+   :show-inheritance:
+
+ItemVersionExtension
 ~~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.version.VersionCollectionExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
-
-VersionItemExt
-~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.version.VersionItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+.. autoclass:: pystac.extensions.version.ItemVersionExtension
+   :members:
+   :show-inheritance:
 
 View Geometry Extension
 -----------------------

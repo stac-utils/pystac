@@ -1,6 +1,6 @@
-"""Implements the Version extension.
+"""Implements the Versioning Indicators extension.
 
-https://github.com/stac-extensions/version
+:stac-ext:version
 """
 from enum import Enum
 from pystac.utils import get_required, map_opt
@@ -50,18 +50,19 @@ class VersionExtension(
     PropertiesExtension,
     ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
-    """VersionItemExt extends Item to add version and deprecated properties
-    along with links to the latest, predecessor, and successor Items.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
+    :stac-ext:`Versioning Indicators Extension <version>`. This class is generic over
+    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
-    Args:
-        item : The item to be extended.
+    To create a concrete instance of :class:`VersionExtension`, use the
+    :meth:`VersionExtension.ext` method. For example:
 
-    Attributes:
-        item : The item that is being extended.
+    .. code-block:: python
 
-    Note:
-        Using VersionItemExt to directly wrap an item will add the 'version'
-        extension ID to the item's stac_extensions.
+       >>> item: pystac.Item = ...
+       >>> version_ext = VersionExtension.ext(item)
     """
 
     obj: pystac.STACObject
@@ -77,16 +78,18 @@ class VersionExtension(
         predecessor: Optional[T] = None,
         successor: Optional[T] = None,
     ) -> None:
-        """Applies version extension properties to the extended Item.
+        """Applies version extension properties to the extended :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
 
         Args:
             version : The version string for the item.
-            deprecated : Optional flag set to True if an Item is
-                deprecated with the potential to be removed.  Defaults to false
-                if not present.
-            latest : Item with the latest (e.g., current) version.
-            predecessor : Item with the previous version.
-            successor : Item with the next most recent version.
+            deprecated : Optional flag set to ``True`` if an Item is deprecated with the
+                potential to be removed.  Defaults to ``False`` if not present.
+            latest : Item representing the latest (e.g., current) version.
+            predecessor : Item representing the resource containing the predecessor
+                version in the version history.
+            successor : Item representing the resource containing the successor version
+            in the version history.
         """
         self.version = version
         if deprecated is not None:
@@ -100,11 +103,8 @@ class VersionExtension(
 
     @property
     def version(self) -> str:
-        """Get or sets a version string of the item.
-
-        Returns:
-            str
-        """
+        """Get or sets a version string of the :class:`~pystac.Item` or
+        :class:`pystac.Collection`."""
         return get_required(self._get_property(VERSION, str), self, VERSION)
 
     @version.setter
@@ -113,7 +113,14 @@ class VersionExtension(
 
     @property
     def deprecated(self) -> Optional[bool]:
-        """Get or sets is the item is deprecated."""
+        """Get or sets whether the item is deprecated.
+
+        A value of ``True`` specifies that the Collection or Item is deprecated with the
+        potential to be removed. It should be transitioned out of usage as soon as
+        possible and users should refrain from using it in new projects. A link with
+        relation type ``latest-version`` SHOULD be added to the links and MUST refer to
+        the resource that can be used instead.
+        """
         return self._get_property(DEPRECATED, bool)
 
     @deprecated.setter
@@ -122,50 +129,66 @@ class VersionExtension(
 
     @property
     def latest(self) -> Optional[T]:
-        """Get or sets the most recent version."""
+        """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
+        representing the most recent version.
+        """
         return map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.LATEST)), None),
         )
 
     @latest.setter
-    def latest(self, item: Optional[T]) -> None:
+    def latest(self, item_or_collection: Optional[T]) -> None:
         self.obj.clear_links(VersionRelType.LATEST)
-        if item is not None:
+        if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(VersionRelType.LATEST, item, pystac.MediaType.JSON)
+                pystac.Link(
+                    VersionRelType.LATEST, item_or_collection, pystac.MediaType.JSON
+                )
             )
 
     @property
     def predecessor(self) -> Optional[T]:
-        """Get or sets the previous item."""
+        """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
+        representing the resource containing the predecessor version in the version
+        history.
+        """
         return map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.PREDECESSOR)), None),
         )
 
     @predecessor.setter
-    def predecessor(self, item: Optional[T]) -> None:
+    def predecessor(self, item_or_collection: Optional[T]) -> None:
         self.obj.clear_links(VersionRelType.PREDECESSOR)
-        if item is not None:
+        if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(VersionRelType.PREDECESSOR, item, pystac.MediaType.JSON)
+                pystac.Link(
+                    VersionRelType.PREDECESSOR,
+                    item_or_collection,
+                    pystac.MediaType.JSON,
+                )
             )
 
     @property
     def successor(self) -> Optional[T]:
-        """Get or sets the next item."""
+        """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
+        representing the resource containing the successor version in the version
+        history.
+        """
         return map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.SUCCESSOR)), None),
         )
 
     @successor.setter
-    def successor(self, item: Optional[T]) -> None:
+    def successor(self, item_or_collection: Optional[T]) -> None:
         self.obj.clear_links(VersionRelType.SUCCESSOR)
-        if item is not None:
+        if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(VersionRelType.SUCCESSOR, item, pystac.MediaType.JSON)
+                pystac.Link(
+                    VersionRelType.SUCCESSOR, item_or_collection, pystac.MediaType.JSON
+                )
             )
 
     @classmethod
@@ -174,6 +197,16 @@ class VersionExtension(
 
     @staticmethod
     def ext(obj: T) -> "VersionExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Versioning
+        Indicators Extension <version>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Collection`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Collection):
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
         if isinstance(obj, pystac.Item):
@@ -185,6 +218,15 @@ class VersionExtension(
 
 
 class CollectionVersionExtension(VersionExtension[pystac.Collection]):
+    """A concrete implementation of :class:`VersionExtension` on a
+    :class:`~pystac.Collection` that extends the properties of the Collection to
+    include properties defined in the :stac-ext:`Versioning Indicators Extension
+    <version>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`VersionExtension.ext` on an :class:`~pystac.Collection` to extend it.
+    """
+
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
@@ -196,6 +238,14 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
 
 
 class ItemVersionExtension(VersionExtension[pystac.Item]):
+    """A concrete implementation of :class:`VersionExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    defined in the :stac-ext:`Versioning Indicators Extension <version>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`VersionExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
