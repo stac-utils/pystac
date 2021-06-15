@@ -271,22 +271,28 @@ class STAC_IO:
     """
 
     @staticmethod
-    def read_text_method(uri: str) -> str:
+    def issue_deprecation_warning() -> None:
         warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
+            "STAC_IO is deprecated and will be removed in v1.0.0. "
+            "Please use instances of StacIO (e.g. StacIO.default()) instead.",
             DeprecationWarning,
         )
+
+    def __init__(self) -> None:
+        STAC_IO.issue_deprecation_warning()
+
+    def __init_subclass__(cls) -> None:
+        STAC_IO.issue_deprecation_warning()
+
+    @staticmethod
+    def read_text_method(uri: str) -> str:
+        STAC_IO.issue_deprecation_warning()
         return StacIO.default().read_text(uri)
 
     @staticmethod
     def write_text_method(uri: str, txt: str) -> None:
         """Default method for writing text."""
-        warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
-            DeprecationWarning,
-        )
+        STAC_IO.issue_deprecation_warning()
         return StacIO.default().write_text(uri, txt)
 
     @staticmethod
@@ -295,11 +301,7 @@ class STAC_IO:
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
-        warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
-            DeprecationWarning,
-        )
+        STAC_IO.issue_deprecation_warning()
         return pystac.serialization.stac_object_from_dict(d, href, root)
 
     # This is set in __init__.py
@@ -356,6 +358,7 @@ class STAC_IO:
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
+        STAC_IO.issue_deprecation_warning()
         result: Dict[str, Any] = json.loads(STAC_IO.read_text(uri))
         return result
 

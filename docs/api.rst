@@ -164,11 +164,18 @@ RelType
 IO
 --
 
+StacIO
+~~~~~~
+
+.. autoclass:: pystac.StacIO
+   :members:
+   :undoc-members:
+
 STAC_IO
 ~~~~~~~
 
-STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of
-PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
+.. deprecated:: 1.0.0-beta.1
+   Use :class:`pystac.StacIO` instead. This class will be removed in v1.0.0.
 
 .. autoclass:: pystac.stac_io.STAC_IO
    :members:
