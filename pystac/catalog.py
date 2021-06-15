@@ -919,7 +919,7 @@ class Catalog(STACObject):
 
         d.pop("stac_version")
 
-        cat = Catalog(
+        cat = cls(
             id=id,
             description=description,
             title=title,

@@ -697,3 +697,22 @@ class CommonMetadataTest(unittest.TestCase):
         new_a1_value = cm.get_updated(item.assets["analytic"])
         self.assertEqual(new_a1_value, set_value)
         self.assertEqual(cm.updated, item_value)
+
+
+class ItemSubClassTest(unittest.TestCase):
+    """This tests cases related to creating classes inheriting from pystac.Catalog to
+    ensure that inheritance, class methods, etc. function as expected."""
+
+    SAMPLE_ITEM = TestCases.get_path("data-files/item/sample-item.json")
+
+    class BasicCustomItem(pystac.Item):
+        pass
+
+    def setUp(self) -> None:
+        self.stac_io = pystac.StacIO.default()
+
+    def test_from_dict_returns_subclass(self) -> None:
+
+        item_dict = self.stac_io.read_json(self.SAMPLE_ITEM)
+        custom_item = self.BasicCustomItem.from_dict(item_dict)
+        self.assertIsInstance(custom_item, self.BasicCustomItem)

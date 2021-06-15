@@ -610,7 +610,7 @@ class Collection(Catalog):
 
         d.pop("stac_version")
 
-        collection = Collection(
+        collection = cls(
             id=id,
             description=description,
             extent=extent,
