@@ -18,6 +18,17 @@ from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict, get_temp_dir
 
 
+class LabelTypeTest(unittest.TestCase):
+    def test_to_str(self) -> None:
+        self.assertEqual(str(LabelType.VECTOR), "vector")
+        self.assertEqual(str(LabelType.RASTER), "raster")
+
+
+class LabelRelTypeTest(unittest.TestCase):
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(LabelRelType.SOURCE), "source")
+
+
 class LabelTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
@@ -27,9 +38,6 @@ class LabelTest(unittest.TestCase):
         self.label_example_2_uri = TestCases.get_path(
             "data-files/label/label-example-2.json"
         )
-
-    def test_rel_types(self) -> None:
-        self.assertEqual(str(LabelRelType.SOURCE), "source")
 
     def test_to_from_dict(self) -> None:
         with open(self.label_example_1_uri, encoding="utf-8") as f:
@@ -163,7 +171,8 @@ class LabelTest(unittest.TestCase):
             LabelClasses.create(name="label", classes=["seven", "eight"]),
         ]
 
-        LabelExtension.ext(label_item).label_classes = new_classes
+        label_ext = LabelExtension.ext(label_item)
+        label_ext.label_classes = new_classes
         self.assertEqual(
             [
                 class_name
@@ -172,6 +181,13 @@ class LabelTest(unittest.TestCase):
             ],
             ["five", "six", "seven", "eight"],
         )
+
+        self.assertListEqual(
+            [lc.name for lc in label_ext.label_classes], ["label2", "label"]
+        )
+
+        first_lc = label_ext.label_classes[0]
+        self.assertEqual("<ClassObject classes=five,six>", first_lc.__repr__())
 
         label_item.validate()
 
@@ -219,12 +235,13 @@ class LabelTest(unittest.TestCase):
 
         label_counts = get_opt(label_overviews[0].counts)
         self.assertEqual(label_counts[1].count, 17)
-        fisrt_overview_counts = get_opt(label_ext.label_overviews)[0].counts
-        assert fisrt_overview_counts is not None
-        fisrt_overview_counts[1].count = 18
+        first_overview_counts = get_opt(label_ext.label_overviews)[0].counts
+        assert first_overview_counts is not None
+        first_overview_counts[1].count = 18
         self.assertEqual(
             label_item.properties["label:overviews"][0]["counts"][1]["count"], 18
         )
+        self.assertEqual(first_overview_counts[1].name, "two")
 
         label_statistics = get_opt(label_overviews[1].statistics)
         self.assertEqual(label_statistics[0].name, "mean")
@@ -271,3 +288,75 @@ class LabelTest(unittest.TestCase):
         )
 
         label_item.validate()
+
+    def test_merge_label_overviews(self) -> None:
+
+        overview_1 = LabelOverview.create(
+            property_key="label",
+            counts=[
+                LabelCount.create(name="water", count=25),
+                LabelCount.create(name="land", count=17),
+            ],
+        )
+        overview_2 = LabelOverview.create(
+            property_key="label",
+            counts=[
+                LabelCount.create(name="water", count=10),
+                LabelCount.create(name="unknown", count=4),
+            ],
+        )
+        merged_overview = overview_1.merge_counts(overview_2)
+
+        merged_counts = get_opt(merged_overview.counts)
+
+        water_count = next(c for c in merged_counts if c.name == "water")
+        land_count = next(c for c in merged_counts if c.name == "land")
+        unknown_count = next(c for c in merged_counts if c.name == "unknown")
+
+        self.assertEqual(35, water_count.count)
+        self.assertEqual(17, land_count.count)
+        self.assertEqual(4, unknown_count.count)
+
+    def test_merge_label_overviews_empty_counts(self) -> None:
+        # Right side is empty
+        overview_1 = LabelOverview.create(
+            property_key="label",
+            counts=[
+                LabelCount.create(name="water", count=25),
+                LabelCount.create(name="land", count=17),
+            ],
+        )
+        overview_2 = LabelOverview.create(
+            property_key="label",
+            counts=None,
+        )
+
+        merged_overview_1 = overview_1.merge_counts(overview_2)
+        expected_counts = [c.to_dict() for c in get_opt(overview_1.counts)]
+        actual_counts = [c.to_dict() for c in get_opt(merged_overview_1.counts)]
+        self.assertListEqual(expected_counts, actual_counts)
+
+        # Left side is empty
+        merged_overview_2 = overview_2.merge_counts(overview_1)
+        expected_counts = [c.to_dict() for c in get_opt(overview_1.counts)]
+        actual_counts = [c.to_dict() for c in get_opt(merged_overview_2.counts)]
+        self.assertEqual(expected_counts, actual_counts)
+
+    def test_merge_label_overviews_error(self) -> None:
+        overview_1 = LabelOverview.create(
+            property_key="label",
+            counts=[
+                LabelCount.create(name="water", count=25),
+                LabelCount.create(name="land", count=17),
+            ],
+        )
+        overview_2 = LabelOverview.create(
+            property_key="not label",
+            counts=[
+                LabelCount.create(name="water", count=10),
+                LabelCount.create(name="unknown", count=4),
+            ],
+        )
+
+        with self.assertRaises(AssertionError):
+            _ = overview_1.merge_counts(overview_2)
