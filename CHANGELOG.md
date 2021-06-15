@@ -10,6 +10,7 @@
 - Code of Conduct ([#399](https://github.com/stac-utils/pystac/pull/399))
 - `ItemCollection` class for working with GeoJSON FeatureCollections containing only
   STAC Items ([#430](https://github.com/stac-utils/pystac/pull/430))
+- Support for Python 3.9 ([#420](https://github.com/stac-utils/pystac/pull/420))
 
 ### Changed
 
