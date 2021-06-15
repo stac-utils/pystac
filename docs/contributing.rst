@@ -45,32 +45,29 @@ More details on using ``unittest`` are `here
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
-PySTAC uses `flake8 <http://flake8.pycqa.org/en/latest/>`_ and`black
-<https://github.com/psf/black>`_ for code formatting and style checks.
+tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing, and
+``./scripts/test`` to run the tests.
 
-To run the flake8 style checks:
+PySTAC uses
 
-.. code-block:: bash
+- `black <https://github.com/psf/black>`_ for Python code formatting
+- `codespell <https://github.com/codespell-project/codespell/>`_ to check code for common misspellings
+- `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in the docs
+- `flake8 <http://flake8.pycqa.org/en/latest/>`_ for Python style checks
+- `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
 
-    > flake8 pystac tests
+Run all of these with ``pre-commit run --all-files`` or a single one using
+``pre-commit run --all-files ID``, where ``ID`` is one of the command names above. For
+example, to format all the Python code, run ``pre-commit run --all-files black``.
 
-To format code:
+You can also install a Git pre-commit hook which will run the relevant linters and
+formatters on any staged code when committing. This will be much faster than running on
+all files, which is usually[#]_ only required when changing the pre-commit version or
+configuration. Once installed you can bypass this check by adding the ``--no-verify``
+flag to Git commit commands, as in ``git commit --no-verify``.
 
-.. code-block:: bash
-
-    > ./scripts/format
-
-We also use `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in
-the docs.
-
-To check doc formatting:
-
-.. code-block:: bash
-
-    > doc8 docs
-
-You can also run the ``./scripts/test`` script to run unit tests, check code style with
-``flake8`` and ``black``, and check type annotations using ``mypy``.
+.. [#] In rare cases changes to one file might invalidate an unchanged file, such as
+   when modifying the return type of a function used in another file.
 
 CHANGELOG
 ^^^^^^^^^

@@ -58,6 +58,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r requirements-test.txt
           pip install -e ".[validation]"
       
@@ -103,10 +104,11 @@ jobs:
       
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r requirements-test.txt
 
       - name: Execute linters & type checkers
-        run: ./scripts/lint
+        run: pre-commit run --all-files
 
   vanilla:
     runs-on: ubuntu-latest

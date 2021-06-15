@@ -1,0 +1,43 @@
+# Configuration file for pre-commit (https://pre-commit.com/).
+# Please run `pre-commit run --all-files` when adding or changing entries.
+
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black
+        language: system
+        stages: [commit]
+        types: [python]
+
+      - id: codespell
+        name: codespell
+        entry: codespell
+        args: [--ignore-words=.codespellignore]
+        language: system
+        stages: [commit]
+        types_or: [jupyter, markdown, python, shell]
+
+      - id: doc8
+        name: doc8
+        entry: doc8
+        language: system
+        files: \.rst$
+        require_serial: true
+
+      - id: flake8
+        name: flake8
+        entry: flake8
+        language: system
+        stages: [commit]
+        types: [python]
+
+      - id: mypy
+        name: mypy
+        entry: mypy
+        args: [--no-incremental]
+        language: system
+        stages: [commit]
+        types: [python]
+        require_serial: true
