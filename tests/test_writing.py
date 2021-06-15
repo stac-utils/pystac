@@ -1,4 +1,5 @@
 import unittest
+from tempfile import TemporaryDirectory
 from typing import Any, List
 
 import pystac
@@ -6,7 +7,7 @@ from pystac import Collection, CatalogType, HIERARCHICAL_LINKS
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from pystac.validation import validate_dict
 
-from tests.utils import TestCases, get_temp_dir
+from tests.utils import TestCases
 
 
 class STACWritingTest(unittest.TestCase):
@@ -104,7 +105,7 @@ class STACWritingTest(unittest.TestCase):
     def do_test(
         self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType
     ) -> None:
-        with get_temp_dir() as tmp_dir:
+        with TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             self.validate_catalog(catalog)
 
