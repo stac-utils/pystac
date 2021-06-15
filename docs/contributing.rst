@@ -45,6 +45,9 @@ More details on using ``unittest`` are `here
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
+tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing, and
+``./scripts/test`` to run the tests.
+
 PySTAC uses
 
 - `black <https://github.com/psf/black>`_ for Python code formatting
@@ -53,13 +56,18 @@ PySTAC uses
 - `flake8 <http://flake8.pycqa.org/en/latest/>`_ for Python style checks
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
 
-To run all of these:
+Run all of these with ``pre-commit run --all-files`` or a single one using
+``pre-commit run --all-files ID``, where ``ID`` is one of the command names above. For
+example, to format all the Python code, run ``pre-commit run --all-files black``.
 
-.. code-block:: bash
+You can also install a Git pre-commit hook which will run the relevant linters and
+formatters on any staged code when committing. This will be much faster than running on
+all files, which is usually[#]_ only required when changing the pre-commit version or
+configuration. Once installed you can bypass this check by adding the ``--no-verify``
+flag to Git commit commands, as in ``git commit --no-verify``.
 
-    > pre-commit run --all-files
-
-You can also run ``./scripts/test`` to run the tests.
+.. [#] In rare cases changes to one file might invalidate an unchanged file, such as
+   when modifying the return type of a function used in another file.
 
 CHANGELOG
 ^^^^^^^^^
