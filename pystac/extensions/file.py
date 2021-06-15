@@ -16,7 +16,7 @@ from pystac.serialization.identify import (
 )
 from pystac.utils import get_required
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", bound=pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -60,7 +60,7 @@ class MappingObject:
 
     @classmethod
     def create(cls, values: List[Any], summary: str) -> "MappingObject":
-        """Creates a new :class:`~MapptingObject` instance.
+        """Creates a new :class:`~MappingObject` instance.
 
         Args:
             values : The value(s) in the file. At least one array element is required.
@@ -96,16 +96,15 @@ class FileExtension(
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`File Info Extension <file>`. This class is generic over the type of
-    STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Asset`).
+    STAC Object to be extended (e.g. :class:`~pystac.Asset`).
 
     To create a concrete instance of :class:`FileExtension`, use the
     :meth:`FileExtension.ext` method. For example:
 
     .. code-block:: python
 
-       >>> item: pystac.Item = ...
-       >>> file_ext = FileExtension.ext(item)
+       >>> asset: pystac.Asset = ...
+       >>> file_ext = FileExtension.ext(asset)
     """
 
     def apply(
@@ -195,38 +194,18 @@ class FileExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        This extension can be applied to instances of :class:`~pystac.Asset`.
 
         Raises:
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
-            return cast(FileExtension[T], ItemFileExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        if isinstance(obj, pystac.Asset):
             return cast(FileExtension[T], AssetFileExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"File extension does not apply to type {type(obj)}"
             )
-
-
-class ItemFileExtension(FileExtension[pystac.Item]):
-    """A concrete implementation of :class:`FileExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`File Info Extension <file>`.
-
-    This class should generally not be instantiated directly. Instead, call
-    :meth:`FileExtension.ext` on an :class:`~pystac.Item` to extend it.
-    """
-
-    def __init__(self, item: pystac.Item):
-        self.item = item
-        self.properties = item.properties
-
-    def __repr__(self) -> str:
-        return "<ItemFileExtension Item id={}>".format(self.item.id)
 
 
 class AssetFileExtension(FileExtension[pystac.Asset]):
