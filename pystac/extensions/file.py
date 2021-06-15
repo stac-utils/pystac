@@ -4,7 +4,7 @@ https://github.com/stac-extensions/file
 """
 
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, List, Optional, Set
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -15,8 +15,6 @@ from pystac.serialization.identify import (
     STACVersionID,
 )
 from pystac.utils import get_required
-
-T = TypeVar("T", bound=pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -90,15 +88,11 @@ class MappingObject:
         self.properties["summary"] = v
 
 
-class FileExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
-    """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
-    :stac-ext:`File Info Extension <file>`. This class is generic over the type of
-    STAC Object to be extended (e.g. :class:`~pystac.Asset`).
+class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
+    """A class that can be used to extend the properties of an :class:`~pystac.Asset`
+    with properties from the :stac-ext:`File Info Extension <file>`.
 
-    To create a concrete instance of :class:`FileExtension`, use the
+    To create an instance of :class:`FileExtension`, use the
     :meth:`FileExtension.ext` method. For example:
 
     .. code-block:: python
@@ -106,6 +100,15 @@ class FileExtension(
        >>> asset: pystac.Asset = ...
        >>> file_ext = FileExtension.ext(asset)
     """
+
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
 
     def apply(
         self,
@@ -189,42 +192,14 @@ class FileExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "FileExtension[T]":
+    @classmethod
+    def ext(cls, obj: pystac.Asset) -> "FileExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 
         This extension can be applied to instances of :class:`~pystac.Asset`.
-
-        Raises:
-
-            pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Asset):
-            return cast(FileExtension[T], AssetFileExtension(obj))
-        else:
-            raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
-            )
-
-
-class AssetFileExtension(FileExtension[pystac.Asset]):
-    """A concrete implementation of :class:`FileExtension` on an :class:`~pystac.Asset`
-    that extends the Asset fields to include properties defined in the
-    :stac-ext:`File Info Extension <info>`.
-
-    This class should generally not be instantiated directly. Instead, call
-    :meth:`FileExtension.ext` on an :class:`~pystac.Asset` to extend it.
-    """
-
-    def __init__(self, asset: pystac.Asset):
-        self.asset_href = asset.href
-        self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, pystac.Item):
-            self.additional_read_properties = [asset.owner.properties]
-
-    def __repr__(self) -> str:
-        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
+        return cls(obj)
 
 
 class FileExtensionHooks(ExtensionHooks):

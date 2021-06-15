@@ -176,12 +176,6 @@ class FileTest(unittest.TestCase):
             file_ext.__repr__(), f"<AssetFileExtension Asset href={asset.href}>"
         )
 
-    def test_extend_invalid_object(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
-
-        with self.assertRaises(pystac.ExtensionTypeError):
-            _ = FileExtension.ext(item)
-
     def test_migrates_old_checksum(self) -> None:
         example_path = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/"

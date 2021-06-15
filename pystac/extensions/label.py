@@ -381,10 +381,10 @@ class LabelOverview:
 
 
 class LabelExtension(ExtensionManagementMixin[pystac.Item]):
-    """An abstract class that can be used to extend the properties of an
+    """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
-    To create a concrete instance of :class:`LabeExtension`, use the
+    To create an instance of :class:`LabeExtension`, use the
     :meth:`LabelExtension.ext` method. For example:
 
     .. code-block:: python
@@ -644,10 +644,6 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         Extension <label>`.
 
         This extension can be applied to instances of :class:`~pystac.Item`.
-
-        Raises:
-
-            pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         return cls(obj)
 

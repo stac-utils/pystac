@@ -310,12 +310,6 @@ FileExtension
    :show-inheritance:
    :undoc-members:
 
-.. autoclass:: pystac.extensions.file.AssetFileExtension
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-
 Label Extension
 ---------------
 
