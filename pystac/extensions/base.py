@@ -100,10 +100,11 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def add_to(cls, obj: S) -> None:
         """Add the schema URI for this extension to the
-        :attr:`pystac.STACObject.stac_extensions` list for the given object."""
+        :attr:`~pystac.STACObject.stac_extensions` list for the given object, if it is
+        not already present."""
         if obj.stac_extensions is None:
             obj.stac_extensions = [cls.get_schema_uri()]
-        else:
+        elif cls.get_schema_uri() not in obj.stac_extensions:
             obj.stac_extensions.append(cls.get_schema_uri())
 
     @classmethod

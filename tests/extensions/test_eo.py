@@ -43,6 +43,7 @@ class EOTest(unittest.TestCase):
     )
     EO_COLLECTION_URI = TestCases.get_path("data-files/eo/eo-collection.json")
     S2_ITEM_URI = TestCases.get_path("data-files/eo/eo-sentinel2-item.json")
+    PLAIN_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 
     def setUp(self) -> None:
         self.maxDiff = None
@@ -51,6 +52,24 @@ class EOTest(unittest.TestCase):
         with open(self.LANDSAT_EXAMPLE_URI) as f:
             item_dict = json.load(f)
         assert_to_from_dict(self, Item, item_dict)
+
+    def test_add_to(self) -> None:
+        item = Item.from_file(self.PLAIN_ITEM)
+        self.assertNotIn(EOExtension.get_schema_uri(), item.stac_extensions)
+
+        # Check that the URI gets added to stac_extensions
+        EOExtension.add_to(item)
+        self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
+
+        # Check that the URI only gets added once, regardless of how many times add_to
+        # is called.
+        EOExtension.add_to(item)
+        EOExtension.add_to(item)
+
+        eo_uris = [
+            uri for uri in item.stac_extensions if uri == EOExtension.get_schema_uri()
+        ]
+        self.assertEqual(len(eo_uris), 1)
 
     def test_validate_eo(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
