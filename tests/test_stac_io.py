@@ -22,6 +22,39 @@ class StacIOTest(unittest.TestCase):
             self.assertEqual(len(w), 1)
             self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
 
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            # Trigger instantiation warning.
+            _ = STAC_IO()
+
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            class CustomSTAC_IO(STAC_IO):
+                pass
+
+            self.assertEqual(len(w), 1)
+            self.assertTrue(issubclass(w[-1].category, DeprecationWarning))
+
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+
+            d = STAC_IO.read_json(
+                TestCases.get_path("data-files/item/sample-item.json")
+            )
+            _ = STAC_IO.stac_object_from_dict(d)
+
+            self.assertEqual(len(w), 3)
+            self.assertTrue(
+                all(issubclass(wrn.category, DeprecationWarning) for wrn in w)
+            )
+
     def test_read_write_collection(self) -> None:
         collection = pystac.read_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
