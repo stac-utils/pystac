@@ -20,10 +20,23 @@ def _migrate_catalog(
         d["stac_extensions"] = list(info.extensions)
 
 
+def _migrate_collection_summaries(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
+    if version < "1.0.0-rc.1":
+        for prop, summary in d.get("summaries", {}).items():
+            if isinstance(summary, dict) and "min" in summary and "max" in summary:
+                d["summaries"][prop] = {
+                    "minimum": summary["min"],
+                    "maximum": summary["max"],
+                }
+
+
 def _migrate_collection(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     _migrate_catalog(d, version, info)
+    _migrate_collection_summaries(d, version, info)
 
 
 def _migrate_item(
