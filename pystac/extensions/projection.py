@@ -237,8 +237,8 @@ class ProjectionExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "ProjectionExtension[T]":
+    @classmethod
+    def ext(cls, obj: T) -> "ProjectionExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`Projection
         Extension <projection>`.
 
@@ -250,12 +250,14 @@ class ProjectionExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            cls.validate_has_extension(obj)
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Projection extension does not apply to type {type(obj)}"
             )
 
     @staticmethod
