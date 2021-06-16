@@ -645,7 +645,13 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
 
         This extension can be applied to instances of :class:`~pystac.Item`.
         """
-        return cls(obj)
+        if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
+            return cls(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"Label extension does not apply to type {type(obj)}"
+            )
 
 
 class LabelExtensionHooks(ExtensionHooks):

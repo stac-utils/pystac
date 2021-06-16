@@ -361,3 +361,18 @@ class LabelTest(unittest.TestCase):
 
         with self.assertRaises(AssertionError):
             _ = overview_1.merge_counts(overview_2)
+
+    def test_extension_type_error(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/with-assets.json")
+        )
+        with self.assertRaises(pystac.ExtensionTypeError):
+            _ = LabelExtension.ext(collection)  # type: ignore
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.label_example_1_uri)
+        item.stac_extensions.remove(LabelExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = LabelExtension.ext(item)
