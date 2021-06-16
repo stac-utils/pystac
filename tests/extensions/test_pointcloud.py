@@ -293,3 +293,21 @@ class PointcloudTest(unittest.TestCase):
 
         with self.assertRaises(ExtensionTypeError):
             PointcloudExtension.ext(RandomObject())  # type: ignore
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = PointcloudExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["thumbnail"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = PointcloudExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = PointcloudExtension.ext(ownerless_asset)
