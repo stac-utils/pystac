@@ -9,7 +9,7 @@ import pystac
 from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType
-from pystac.utils import datetime_to_str
+from pystac.utils import datetime_to_str, get_required
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
@@ -181,6 +181,20 @@ class CollectionTest(unittest.TestCase):
             data = json.load(f)
         collection = pystac.Collection.from_dict(data)
         collection.validate()
+
+    def test_schema_summary(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path(
+                "data-files/examples/1.0.0/collection-only/collection-with-schemas.json"
+            )
+        )
+        instruments_schema = get_required(
+            collection.summaries.get_schema("instruments"),
+            collection.summaries,
+            "instruments",
+        )
+
+        self.assertIsInstance(instruments_schema, dict)
 
 
 class ExtentTest(unittest.TestCase):
