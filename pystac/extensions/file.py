@@ -199,7 +199,13 @@ class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
 
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
-        return cls(obj)
+        if isinstance(obj, pystac.Asset):
+            cls.validate_has_extension(obj)
+            return cls(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File Info extension does not apply to type {type(obj)}"
+            )
 
 
 class FileExtensionHooks(ExtensionHooks):
