@@ -205,9 +205,6 @@ class FileTest(unittest.TestCase):
             _ = FileExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        stac_io = pystac.StacIO.default()
-        item_dict = stac_io.read_json(self.FILE_ITEM_EXAMPLE_URI)
-        asset_dict = item_dict["assets"]["measurement"]
-        ownerless_asset = pystac.Asset.from_dict(asset_dict)
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
 
         _ = FileExtension.ext(ownerless_asset)

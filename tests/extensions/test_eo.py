@@ -279,8 +279,5 @@ class EOTest(unittest.TestCase):
             _ = EOExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        stac_io = pystac.StacIO.default()
-        item_dict = stac_io.read_json(self.LANDSAT_EXAMPLE_URI)
-        asset_dict = item_dict["assets"]["B11"]
-        ownerless_asset = pystac.Asset.from_dict(asset_dict)
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = EOExtension.ext(ownerless_asset)
