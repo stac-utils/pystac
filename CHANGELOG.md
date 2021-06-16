@@ -26,7 +26,7 @@
 - `identify_stac_object_type` returns `None` and `identify_stac_object` raises `STACTypeError` for non-STAC objects
   ([#402](https://github.com/stac-utils/pystac/pull/402))
 - `ExtensionManagementMixin.add_to` is now idempotent (only adds schema URI to
-  `stac_extensions` once per `Item` regardless of the number of calls)
+  `stac_extensions` once per `Item` regardless of the number of calls) ([#419](https://github.com/stac-utils/pystac/pull/419))
 
 ### Removed
 
