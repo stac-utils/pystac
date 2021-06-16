@@ -264,3 +264,23 @@ class EOTest(unittest.TestCase):
 
         with self.assertRaises(pystac.ExtensionTypeError):
             EOExtension.ext(link)  # type: ignore
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = EOExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["thumbnail"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = EOExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        stac_io = pystac.StacIO.default()
+        item_dict = stac_io.read_json(self.LANDSAT_EXAMPLE_URI)
+        asset_dict = item_dict["assets"]["B11"]
+        ownerless_asset = pystac.Asset.from_dict(asset_dict)
+        _ = EOExtension.ext(ownerless_asset)

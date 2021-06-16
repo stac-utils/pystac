@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
 
-from pystac import Collection, RangeSummary, STACObject, Summaries
+import pystac
 
 
 class SummariesExtension:
@@ -12,16 +12,16 @@ class SummariesExtension:
     extension-specific class that inherits from this class and instantiate that. See
     :class:`~pystac.extensions.eo.SummariesEOExtension` for an example."""
 
-    summaries: Summaries
+    summaries: pystac.Summaries
     """The summaries for the :class:`~pystac.Collection` being extended."""
 
-    def __init__(self, collection: Collection) -> None:
+    def __init__(self, collection: pystac.Collection) -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -77,7 +77,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=STACObject)
+S = TypeVar("S", bound=pystac.STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
@@ -124,3 +124,17 @@ class ExtensionManagementMixin(Generic[S], ABC):
             obj.stac_extensions is not None
             and cls.get_schema_uri() in obj.stac_extensions
         )
+
+    @classmethod
+    def validate_has_extension(cls, obj: Union[S, pystac.Asset]) -> None:
+        """Given a :class:`~pystac.STACObject` or :class:`pystac.Asset` instance, checks
+        if the object (or its owner in the case of an Asset) has this extension's schema
+        URI in it's :attr:`~pystac.STACObject.stac_extensions` list."""
+        extensible = obj.owner if isinstance(obj, pystac.Asset) else obj
+        if (
+            extensible is not None
+            and cls.get_schema_uri() not in extensible.stac_extensions
+        ):
+            raise pystac.ExtensionNotImplemented(
+                f"Could not find extension schema URI {cls.get_schema_uri()} in object."
+            )
