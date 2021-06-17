@@ -515,7 +515,7 @@ class STACObject(ABC):
 
     @classmethod
     @abstractmethod
-    def identify_dict(cls, d: Dict[str, Any]) -> bool:
+    def dict_matches_object_type(cls, d: Dict[str, Any]) -> bool:
         """Returns a boolean indicating whether the given dictionary represents a valid
         instance of this :class:`~STACObject` sub-class.
 
