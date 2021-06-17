@@ -13,7 +13,7 @@
 - Support for Python 3.9 ([#420](https://github.com/stac-utils/pystac/pull/420))
 - Migration for pre-1.0.0-rc.1 Stats Objects (renamed to Range Objects in 1.0.0-rc.3) ([#447](https://github.com/stac-utils/pystac/pull/447))
 - Attempting to extend a `STACObject` that does not contain the extension's schema URI in
-  `stac_extensions` raises new `ExtensionNotImplementedError`.
+  `stac_extensions` raises new `ExtensionNotImplementedError` ([#450](https://github.com/stac-utils/pystac/pull/450))
 
 ### Changed
 
@@ -22,6 +22,9 @@
   `StacIO.read_text` ([#433](https://github.com/stac-utils/pystac/pull/433))
 - `FileExtension` updated to work with File Info Extension v2.0.0 ([#442](https://github.com/stac-utils/pystac/pull/442))
 - `FileExtension` only operates on `pystac.Asset` instances ([#442](https://github.com/stac-utils/pystac/pull/442))
+- `*Extension.ext` methods now have an optional `add_if_missing` argument, which will
+  add the extension schema URI to the object's `stac_extensions` list if it is not
+  present ([#450](https://github.com/stac-utils/pystac/pull/450))
 
 ### Fixed
 
