@@ -1,3 +1,4 @@
+from copy import deepcopy
 import unittest
 import os
 import json
@@ -181,6 +182,21 @@ class CollectionTest(unittest.TestCase):
             data = json.load(f)
         collection = pystac.Collection.from_dict(data)
         collection.validate()
+
+    def test_to_dict_preserves_dict(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        with open(path) as f:
+            collection_dict = json.load(f)
+        param_dict = deepcopy(collection_dict)
+
+        # test that the parameter is preserved
+        _ = Collection.from_dict(param_dict)
+        self.assertEqual(param_dict, collection_dict)
+
+        # assert that the parameter is not preserved with
+        # non-default parameter
+        _ = Collection.from_dict(param_dict, preserve_dict=False)
+        self.assertNotEqual(param_dict, collection_dict)
 
     def test_schema_summary(self) -> None:
         collection = pystac.Collection.from_file(
