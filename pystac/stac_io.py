@@ -99,6 +99,7 @@ class StacIO(ABC):
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
+        preserve_dict: bool = True,
     ) -> "STACObject_Type":
         if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
             collection_cache = None
@@ -114,15 +115,21 @@ class StacIO(ABC):
         d = migrate_to_latest(d, info)
 
         if info.object_type == pystac.STACObjectType.CATALOG:
-            result = pystac.Catalog.from_dict(d, href=href, root=root, migrate=False)
+            result = pystac.Catalog.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
             result._stac_io = self
             return result
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
-            return pystac.Collection.from_dict(d, href=href, root=root, migrate=False)
+            return pystac.Collection.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
 
         if info.object_type == pystac.STACObjectType.ITEM:
-            return pystac.Item.from_dict(d, href=href, root=root, migrate=False)
+            return pystac.Item.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
@@ -164,7 +171,7 @@ class StacIO(ABC):
         """
         d = self.read_json(source)
         href = source if isinstance(source, str) else source.get_absolute_href()
-        return self.stac_object_from_dict(d, href=href, root=root)
+        return self.stac_object_from_dict(d, href=href, root=root, preserve_dict=False)
 
     def save_json(
         self, dest: Union[str, "Link_Type"], json_dict: Dict[str, Any]

@@ -473,7 +473,7 @@ class STACObject(ABC):
             href = make_absolute_href(href)
 
         d = stac_io.read_json(href)
-        o = cls.from_dict(d, href=href, migrate=True)
+        o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
