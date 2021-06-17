@@ -198,3 +198,18 @@ class RasterTest(unittest.TestCase):
             item.assets["test"].properties["raster:bands"][0]["statistics"]["minimum"],
             1,
         )
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item.stac_extensions.remove(RasterExtension.get_schema_uri())
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["data"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = RasterExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = RasterExtension.ext(ownerless_asset)
