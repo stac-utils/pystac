@@ -12,7 +12,7 @@
   STAC Items ([#430](https://github.com/stac-utils/pystac/pull/430))
 - Support for Python 3.9 ([#420](https://github.com/stac-utils/pystac/pull/420))
 - Migration for pre-1.0.0-rc.1 Stats Objects (renamed to Range Objects in 1.0.0-rc.3) ([#447](https://github.com/stac-utils/pystac/pull/447))
-- Attempt to extend a `STACObject` that does not contain the extension's schema URI in
+- Attempting to extend a `STACObject` that does not contain the extension's schema URI in
   `stac_extensions` raises new `ExtensionNotImplementedError`.
 
 ### Changed
@@ -379,4 +379,3 @@ Initial release.
 [v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1..v0.3.2>
 [v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0..v0.3.1>
 [v0.3.0]: <https://github.com/stac-utils/pystac/tree/v0.3.0>
-
