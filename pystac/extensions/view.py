@@ -143,8 +143,8 @@ class ViewExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "ViewExtension[T]":
+    @classmethod
+    def ext(cls, obj: T) -> "ViewExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`View
         Geometry Extension <scientific>`.
 
@@ -156,8 +156,10 @@ class ViewExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
             return cast(ViewExtension[T], ItemViewExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            cls.validate_has_extension(obj)
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

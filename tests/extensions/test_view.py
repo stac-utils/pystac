@@ -220,6 +220,24 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ViewExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ViewExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["blue"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ViewExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = ViewExtension.ext(ownerless_asset)
+
 
 class ViewSummariestest(unittest.TestCase):
     def setUp(self) -> None:
