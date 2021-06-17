@@ -76,10 +76,11 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 def read_file(href: str) -> STACObject:
     """Reads a STAC object from a file.
 
-    This method will return either a Catalog, a Collection, or an Item based on what the
-    file contains.
+    This method will return either a Catalog, a Collection, or an Item based on what
+    the file contains.
 
-    This is a convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
+    This is a convenience method for :meth:`StacIO.read_stac_object
+    <pystac.StacIO.read_stac_object>`
 
     Args:
         href : The HREF to read the object from.
@@ -90,22 +91,12 @@ def read_file(href: str) -> STACObject:
 
     Raises:
         STACTypeError : If the file at ``href`` does not represent a valid
-            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
-            a :class:`~pystac.STACObject` and must be read using
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection`
+            is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
     stac_io = StacIO.default()
-    d = stac_io.read_json(href)
-    typ = pystac.serialization.identify.identify_stac_object_type(d)
-
-    if typ == STACObjectType.CATALOG:
-        return Catalog.from_file(href)
-    elif typ == STACObjectType.COLLECTION:
-        return Collection.from_file(href)
-    elif typ == STACObjectType.ITEM:
-        return Item.from_file(href)
-    else:
-        raise STACTypeError(f"Cannot read file of type {typ}")
+    return stac_io.read_stac_object(href)
 
 
 def write_file(
@@ -148,7 +139,7 @@ def read_dict(
     or :class`~Item` based on the contents of the dict.
 
     This is a convenience method for either
-    :meth:`stac_io.stac_object_from_dict <stac_io.stac_object_from_dict>`.
+    :meth:`StacIO.stac_object_from_dict <pystac.StacIO.stac_object_from_dict>`.
 
     Args:
         d : The dict to parse.
@@ -162,8 +153,8 @@ def read_dict(
 
     Raises:
         STACTypeError : If the ``d`` dictionary does not represent a valid
-            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
-            a :class:`~pystac.STACObject` and must be read using
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection`
+            is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_dict <pystac.ItemCollection.from_dict>`
     """
     if stac_io is None:

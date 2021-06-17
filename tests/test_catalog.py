@@ -974,6 +974,14 @@ class CatalogTest(unittest.TestCase):
         # cached only by HREF
         self.assertEqual(len(cache.id_keys_to_objects), 0)
 
+    def testfrom_invalid_dict_raises_exception(self) -> None:
+        stac_io = pystac.StacIO.default()
+        collection_dict = stac_io.read_json(
+            TestCases.get_path("data-files/collections/multi-extent.json")
+        )
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.Catalog.from_dict(collection_dict)
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link: pystac.Link, tag: str) -> None:

@@ -9,6 +9,11 @@ import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
+from pystac.serialization import (
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 from pystac.stac_object import STACObject
 from pystac.utils import (
     is_absolute_href,
@@ -912,10 +917,13 @@ class Item(STACObject):
         migrate: bool = False,
     ) -> "Item":
         if migrate:
-            result = pystac.read_dict(d, href=href, root=root)
-            if not isinstance(result, Item):
-                raise pystac.STACError(f"{result} is not a Catalog")
-            return result
+            info = identify_stac_object(d)
+            d = migrate_to_latest(d, info)
+
+        if not cls.identify_dict(d):
+            raise pystac.STACTypeError(
+                f"{d} does not represent a {cls.__name__} instance"
+            )
 
         d = deepcopy(d)
         id = d.pop("id")
@@ -980,3 +988,7 @@ class Item(STACObject):
         if not isinstance(result, Item):
             raise pystac.STACTypeError(f"{result} is not a {Item}.")
         return result
+
+    @classmethod
+    def identify_dict(cls, d: Dict[str, Any]) -> bool:
+        return identify_stac_object_type(d) == STACObjectType.ITEM

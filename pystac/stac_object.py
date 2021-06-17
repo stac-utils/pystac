@@ -6,8 +6,6 @@ import pystac
 from pystac import STACError
 from pystac.link import Link
 from pystac.utils import is_absolute_href, make_absolute_href
-from pystac import serialization
-from pystac.serialization.identify import identify_stac_object
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
@@ -465,6 +463,9 @@ class STACObject(ABC):
             The specific STACObject implementation class that is represented
             by the JSON read from the file located at HREF.
         """
+        if cls == STACObject:
+            return pystac.read_file(href)
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
@@ -472,9 +473,7 @@ class STACObject(ABC):
             href = make_absolute_href(href)
 
         d = stac_io.read_json(href)
-        info = identify_stac_object(d)
-        d = serialization.migrate.migrate_to_latest(d, info)
-        o = cls.from_dict(d, href=href)
+        o = cls.from_dict(d, href=href, migrate=True)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -513,3 +512,16 @@ class STACObject(ABC):
             STACObject: The STACObject parsed from this dict.
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def identify_dict(cls, d: Dict[str, Any]) -> bool:
+        """Returns a boolean indicating whether the given dictionary represents a valid
+        instance of this :class:`~STACObject` sub-class.
+
+        Args:
+            d : A dictionary to identify
+        """
+        raise NotImplementedError(
+            "identify_dict must be implemented by the STACObject subclass."
+        )

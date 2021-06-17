@@ -196,6 +196,14 @@ class CollectionTest(unittest.TestCase):
 
         self.assertIsInstance(instruments_schema, dict)
 
+    def test_from_invalid_dict_raises_exception(self) -> None:
+        stac_io = pystac.StacIO.default()
+        catalog_dict = stac_io.read_json(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.Collection.from_dict(catalog_dict)
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self) -> None:

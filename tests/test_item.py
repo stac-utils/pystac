@@ -216,6 +216,14 @@ class ItemTest(unittest.TestCase):
         item.make_asset_hrefs_relative()
         self.assertEqual(asset.get_absolute_href(), original_href)
 
+    def test_from_invalid_dict_raises_exception(self) -> None:
+        stac_io = pystac.StacIO.default()
+        catalog_dict = stac_io.read_json(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.Item.from_dict(catalog_dict)
+
 
 class CommonMetadataTest(unittest.TestCase):
     def setUp(self) -> None:
