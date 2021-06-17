@@ -1107,3 +1107,22 @@ class FullCopyTest(unittest.TestCase):
             ].get_absolute_href()
             assert href is not None
             self.assertTrue(os.path.exists(href))
+
+
+class CatalogSubClassTest(unittest.TestCase):
+    """This tests cases related to creating classes inheriting from pystac.Catalog to
+    ensure that inheritance, class methods, etc. function as expected."""
+
+    TEST_CASE_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+
+    class BasicCustomCatalog(pystac.Catalog):
+        pass
+
+    def setUp(self) -> None:
+        self.stac_io = pystac.StacIO.default()
+
+    def test_from_dict_returns_subclass(self) -> None:
+
+        catalog_dict = self.stac_io.read_json(self.TEST_CASE_1)
+        custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
+        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)

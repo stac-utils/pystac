@@ -904,7 +904,7 @@ class Catalog(STACObject):
         if migrate:
             result = pystac.read_dict(d, href=href, root=root)
             if not isinstance(result, Catalog):
-                raise pystac.STACError(f"{result} is not a Catalog")
+                raise pystac.STACTypeError(f"{result} is not a Catalog")
             return result
 
         catalog_type = CatalogType.determine_type(d)
@@ -919,7 +919,7 @@ class Catalog(STACObject):
 
         d.pop("stac_version")
 
-        cat = Catalog(
+        cat = cls(
             id=id,
             description=description,
             title=title,
