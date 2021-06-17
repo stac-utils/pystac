@@ -304,15 +304,17 @@ class SarExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "SarExtension[T]":
+    @classmethod
+    def ext(cls, obj: T) -> "SarExtension[T]":
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
             return cast(SarExtension[T], ItemSarExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            cls.validate_has_extension(obj)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"SAR extension does not apply to type {type(obj)}"
             )
 
 

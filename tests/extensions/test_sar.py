@@ -7,6 +7,7 @@ import unittest
 import pystac
 from pystac.extensions import sar
 from pystac.extensions.sar import SarExtension
+from tests.utils import TestCases
 
 
 def make_item() -> pystac.Item:
@@ -24,6 +25,7 @@ class SarItemExtTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.item = make_item()
+        self.sentinel_example_uri = TestCases.get_path("data-files/sar/sentinel-1.json")
 
     def test_stac_extensions(self) -> None:
         self.assertTrue(SarExtension.has_extension(self.item))
@@ -140,6 +142,24 @@ class SarItemExtTest(unittest.TestCase):
                 polarizations,  # type:ignore
                 product_type,
             )
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item.stac_extensions.remove(SarExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = SarExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["measurement"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = SarExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = SarExtension.ext(ownerless_asset)
 
 
 if __name__ == "__main__":
