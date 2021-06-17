@@ -193,13 +193,21 @@ class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Asset) -> "FileExtension":
+    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "FileExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
-        return cls(obj)
+        if isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
+            return cls(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File Info extension does not apply to type {type(obj)}"
+            )
 
 
 class FileExtensionHooks(ExtensionHooks):

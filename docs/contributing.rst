@@ -62,7 +62,7 @@ example, to format all the Python code, run ``pre-commit run --all-files black``
 
 You can also install a Git pre-commit hook which will run the relevant linters and
 formatters on any staged code when committing. This will be much faster than running on
-all files, which is usually[#]_ only required when changing the pre-commit version or
+all files, which is usually [#]_ only required when changing the pre-commit version or
 configuration. Once installed you can bypass this check by adding the ``--no-verify``
 flag to Git commit commands, as in ``git commit --no-verify``.
 

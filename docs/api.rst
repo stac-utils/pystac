@@ -414,6 +414,43 @@ AssetProjectionExtension
    :members:
    :show-inheritance:
 
+Raster Extension
+----------------
+
+DataType
+~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.DataType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Statistics
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.Statistics
+   :members:
+
+Histogram
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.Histogram
+   :members:
+
+RasterBand
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.RasterBand
+   :members:
+
+RasterExtension
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.RasterExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 Scientific Extension
 --------------------
 

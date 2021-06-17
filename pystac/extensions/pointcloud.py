@@ -522,15 +522,21 @@ class PointcloudExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "PointcloudExtension[T]":
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "PointcloudExtension[T]":
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
+            cls.validate_has_extension(obj)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Pointcloud extension does not apply to type {type(obj)}"
             )
 
 

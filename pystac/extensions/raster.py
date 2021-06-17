@@ -4,7 +4,7 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
+from typing import Any, Dict, Iterable, List, Optional
 
 import pystac
 from pystac.extensions.base import (
@@ -13,8 +13,6 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.utils import get_opt, get_required, map_opt
-
-T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
 
@@ -625,9 +623,7 @@ class RasterBand:
         return self.properties
 
 
-class RasterExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from
     the :stac-ext:`Raster Extension <raster>`. This class is generic over
@@ -638,6 +634,25 @@ class RasterExtension(
     implementation associated with the STAC Object you want to extend (e.g.
     :class:`~ItemRasterExtension` to extend an :class:`~pystac.Item`).
     """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.properties
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return "<AssetRasterExtension Asset href={}>".format(self.asset_href)
 
     def apply(self, bands: List[RasterBand]) -> None:
         """Applies raster extension properties to the extended :class:`pystac.Item` or
@@ -673,10 +688,22 @@ class RasterExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "RasterExtension[T]":
+    @classmethod
+    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "RasterExtension":
+        """Extends the given STAC Object with properties from the :stac-ext:`Raster
+        Extension <raster>`.
+
+        This extension can be applied to instances of :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Asset):
-            return cast(RasterExtension[T], AssetRasterExtension(obj))
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
+            return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
                 f"Raster extension does not apply to type {type(obj)}"
@@ -685,35 +712,6 @@ class RasterExtension(
     @staticmethod
     def summaries(obj: pystac.Collection) -> "SummariesRasterExtension":
         return SummariesRasterExtension(obj)
-
-
-class AssetRasterExtension(RasterExtension[pystac.Asset]):
-    """A concrete implementation of :class:`RasterExtension` on an :class:`~pystac.Asset`
-    that extends the Asset fields to include properties defined in the
-    :stac-ext:`Raster Extension <raster>`.
-
-    This class should generally not be instantiated directly. Instead, call
-    :meth:`RasterExtension.ext` on an :class:`~pystac.Asset` to extend it.
-    """
-
-    asset_href: str
-    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
-
-    properties: Dict[str, Any]
-    """The :class:`~pystac.Asset` fields, including extension properties."""
-
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
-    """If present, this will be a list containing 1 dictionary representing the
-    properties of the owning :class:`~pystac.Item`."""
-
-    def __init__(self, asset: pystac.Asset):
-        self.asset_href = asset.href
-        self.properties = asset.properties
-        if asset.owner and isinstance(asset.owner, pystac.Item):
-            self.additional_read_properties = [asset.owner.properties]
-
-    def __repr__(self) -> str:
-        return "<AssetRasterExtension Asset href={}>".format(self.asset_href)
 
 
 class SummariesRasterExtension(SummariesExtension):

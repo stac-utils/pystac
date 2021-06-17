@@ -7,6 +7,7 @@ from pystac.errors import (
     STACError,
     STACTypeError,
     ExtensionAlreadyExistsError,
+    ExtensionNotImplemented,
     ExtensionTypeError,
     RequiredPropertyMissing,
     STACValidationError,

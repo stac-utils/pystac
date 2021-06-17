@@ -117,8 +117,17 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, collection: pystac.Collection) -> "ItemAssetsExtension":
-        return cls(collection)
+    def ext(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "ItemAssetsExtension":
+        if isinstance(obj, pystac.Collection):
+            if add_if_missing:
+                cls.add_to(obj)
+            return cls(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"Item Assets extension does not apply to type {type(obj)}"
+            )
 
 
 class ItemAssetsExtensionHooks(ExtensionHooks):

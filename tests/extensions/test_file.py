@@ -50,6 +50,7 @@ class MappingObjectTest(unittest.TestCase):
 class FileTest(unittest.TestCase):
     FILE_ITEM_EXAMPLE_URI = TestCases.get_path("data-files/file/item.json")
     FILE_COLLECTION_EXAMPLE_URI = TestCases.get_path("data-files/file/collection.json")
+    PLAIN_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 
     def setUp(self) -> None:
         self.maxDiff = None
@@ -188,3 +189,32 @@ class FileTest(unittest.TestCase):
             FileExtension.ext(item.assets["noises"]).checksum,
             "90e40210a30d1711e81a4b11ef67b28744321659",
         )
+
+    def test_extension_type_error(self) -> None:
+        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+
+        with self.assertRaises(pystac.ExtensionTypeError):
+            _ = FileExtension.ext(item)  # type: ignore
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        asset = item.assets["thumbnail"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = FileExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+
+        _ = FileExtension.ext(ownerless_asset)
+
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        asset = item.assets["thumbnail"]
+
+        self.assertNotIn(FileExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = FileExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(FileExtension.get_schema_uri(), item.stac_extensions)

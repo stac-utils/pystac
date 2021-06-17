@@ -337,13 +337,22 @@ class DatacubeExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "DatacubeExtension[T]":
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "DatacubeExtension[T]":
         if isinstance(obj, pystac.Collection):
+            if add_if_missing:
+                cls.add_to(obj)
+            cls.validate_has_extension(obj)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
+            cls.validate_has_extension(obj)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and obj.owner is not None:
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
