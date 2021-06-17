@@ -4,11 +4,14 @@ import warnings
 import tempfile
 
 import pystac
-from pystac.stac_io import STAC_IO
+from pystac.stac_io import STAC_IO, StacIO
 from tests.utils import TestCases
 
 
 class StacIOTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.stac_io = StacIO.default()
+
     def test_stac_io_issues_warnings(self) -> None:
         with warnings.catch_warnings(record=True) as w:
             # Cause all warnings to always be triggered.
@@ -87,3 +90,30 @@ class StacIOTest(unittest.TestCase):
                     "data-files/item-collection/sample-item-collection.json"
                 )
             )
+
+    def test_read_item_dict(self) -> None:
+        item_dict = self.stac_io.read_json(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+        item = pystac.read_dict(item_dict)
+        self.assertIsInstance(item, pystac.Item)
+
+    def test_read_collection_dict(self) -> None:
+        collection_dict = self.stac_io.read_json(
+            TestCases.get_path("data-files/collections/multi-extent.json")
+        )
+        collection = pystac.read_dict(collection_dict)
+        self.assertIsInstance(collection, pystac.Collection)
+
+    def test_read_catalog_dict(self) -> None:
+        catalog_dict = self.stac_io.read_json(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        catalog = pystac.read_dict(catalog_dict)
+        self.assertIsInstance(catalog, pystac.Catalog)
+
+    def test_read_from_stac_object(self) -> None:
+        catalog = pystac.STACObject.from_file(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        self.assertIsInstance(catalog, pystac.Catalog)
