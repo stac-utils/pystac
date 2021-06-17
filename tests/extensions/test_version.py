@@ -33,6 +33,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.item = make_item(2011)
+        self.example_item_uri = TestCases.get_path("data-files/version/item.json")
 
     def test_rel_types(self) -> None:
         self.assertEqual(str(VersionRelType.LATEST), "latest-version")
@@ -218,6 +219,14 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
 
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_item_uri)
+        item.stac_extensions.remove(VersionExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = VersionExtension.ext(item)
+
 
 def make_collection(year: int) -> pystac.Collection:
     asset_id = f"my/collection/of/things/{year}"
@@ -243,6 +252,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.collection = make_collection(2011)
+        self.example_collection_uri = TestCases.get_path(
+            "data-files/version/collection.json"
+        )
 
     def test_stac_extensions(self) -> None:
         self.assertTrue(VersionExtension.has_extension(self.collection))
@@ -422,6 +434,14 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         links = self.collection.get_links(VersionRelType.SUCCESSOR)
         self.assertEqual(1, len(links))
         self.assertEqual(expected_href, links[0].get_href())
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Collection does not include extension URI
+        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection.stac_extensions.remove(VersionExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = VersionExtension.ext(collection)
 
 
 if __name__ == "__main__":
