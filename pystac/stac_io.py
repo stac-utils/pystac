@@ -19,7 +19,12 @@ from urllib.error import HTTPError
 
 import pystac
 from pystac.utils import safe_urlparse
-import pystac.serialization
+from pystac.serialization import (
+    merge_common_properties,
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 
 # Use orjson if available
 try:
@@ -95,12 +100,31 @@ class StacIO(ABC):
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
-        result = pystac.serialization.stac_object_from_dict(d, href, root)
-        if isinstance(result, pystac.Catalog):
-            # Set the stac_io instance for usage by io operations
-            # where this catalog is the root.
+        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+            collection_cache = None
+            if root is not None:
+                collection_cache = root._resolved_objects.as_collection_cache()
+
+            # Merge common properties in case this is an older STAC object.
+            merge_common_properties(
+                d, json_href=href, collection_cache=collection_cache
+            )
+
+        info = identify_stac_object(d)
+        d = migrate_to_latest(d, info)
+
+        if info.object_type == pystac.STACObjectType.CATALOG:
+            result = pystac.Catalog.from_dict(d, href=href, root=root, migrate=False)
             result._stac_io = self
-        return result
+            return result
+
+        if info.object_type == pystac.STACObjectType.COLLECTION:
+            return pystac.Collection.from_dict(d, href=href, root=root, migrate=False)
+
+        if info.object_type == pystac.STACObjectType.ITEM:
+            return pystac.Item.from_dict(d, href=href, root=root, migrate=False)
+
+        raise ValueError(f"Unknown STAC object type {info.object_type}")
 
     def read_json(
         self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
@@ -302,7 +326,30 @@ class STAC_IO:
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
         STAC_IO.issue_deprecation_warning()
-        return pystac.serialization.stac_object_from_dict(d, href, root)
+        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+            collection_cache = None
+            if root is not None:
+                collection_cache = root._resolved_objects.as_collection_cache()
+
+            # Merge common properties in case this is an older STAC object.
+            merge_common_properties(
+                d, json_href=href, collection_cache=collection_cache
+            )
+
+        info = identify_stac_object(d)
+
+        d = migrate_to_latest(d, info)
+
+        if info.object_type == pystac.STACObjectType.CATALOG:
+            return pystac.Catalog.from_dict(d, href=href, root=root, migrate=False)
+
+        if info.object_type == pystac.STACObjectType.COLLECTION:
+            return pystac.Collection.from_dict(d, href=href, root=root, migrate=False)
+
+        if info.object_type == pystac.STACObjectType.ITEM:
+            return pystac.Item.from_dict(d, href=href, root=root, migrate=False)
+
+        raise ValueError(f"Unknown STAC object type {info.object_type}")
 
     # This is set in __init__.py
     _STAC_OBJECT_CLASSES = None

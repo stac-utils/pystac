@@ -6,6 +6,8 @@ import pystac
 from pystac import STACError
 from pystac.link import Link
 from pystac.utils import is_absolute_href, make_absolute_href
+from pystac import serialization
+from pystac.serialization.identify import identify_stac_object
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
@@ -469,7 +471,10 @@ class STACObject(ABC):
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
-        o = stac_io.read_stac_object(href)
+        d = stac_io.read_json(href)
+        info = identify_stac_object(d)
+        d = serialization.migrate.migrate_to_latest(d, info)
+        o = cls.from_dict(d, href=href)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:

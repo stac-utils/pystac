@@ -94,7 +94,18 @@ def read_file(href: str) -> STACObject:
             a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
-    return STACObject.from_file(href)
+    stac_io = StacIO.default()
+    d = stac_io.read_json(href)
+    typ = pystac.serialization.identify.identify_stac_object_type(d)
+
+    if typ == STACObjectType.CATALOG:
+        return Catalog.from_file(href)
+    elif typ == STACObjectType.COLLECTION:
+        return Collection.from_file(href)
+    elif typ == STACObjectType.ITEM:
+        return Item.from_file(href)
+    else:
+        raise STACTypeError(f"Cannot read file of type {typ}")
 
 
 def write_file(
