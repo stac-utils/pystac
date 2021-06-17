@@ -161,6 +161,25 @@ class SarItemExtTest(unittest.TestCase):
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = SarExtension.ext(ownerless_asset)
 
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item.stac_extensions.remove(SarExtension.get_schema_uri())
+        self.assertNotIn(SarExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = SarExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(SarExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item.stac_extensions.remove(SarExtension.get_schema_uri())
+        self.assertNotIn(SarExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["measurement"]
+
+        _ = SarExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(SarExtension.get_schema_uri(), item.stac_extensions)
+
 
 if __name__ == "__main__":
     unittest.main()

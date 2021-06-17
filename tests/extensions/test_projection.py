@@ -424,6 +424,25 @@ class ProjectionTest(unittest.TestCase):
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = ProjectionExtension.ext(ownerless_asset)
 
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = ProjectionExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["B8"]
+
+        _ = ProjectionExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
 
 class ProjectionSummariesTest(unittest.TestCase):
     def setUp(self) -> None:

@@ -203,3 +203,22 @@ class TimestampsTest(unittest.TestCase):
         # Should succeed if Asset has no owner
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = TimestampsExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+        self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = TimestampsExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+        self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["blue"]
+
+        _ = TimestampsExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)

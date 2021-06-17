@@ -117,11 +117,15 @@ class TimestampsExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T) -> "TimestampsExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "TimestampsExtension[T]":
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
             cls.validate_has_extension(obj)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:

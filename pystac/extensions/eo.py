@@ -347,7 +347,7 @@ class EOExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T) -> "EOExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "EOExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
         Extension <eo>`.
 
@@ -359,9 +359,13 @@ class EOExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
             cls.validate_has_extension(obj)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:

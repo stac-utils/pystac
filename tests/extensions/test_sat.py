@@ -141,3 +141,22 @@ class SatTest(unittest.TestCase):
         # Should succeed if Asset has no owner
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = SatExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item.stac_extensions.remove(SatExtension.get_schema_uri())
+        self.assertNotIn(SatExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = SatExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(SatExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item.stac_extensions.remove(SatExtension.get_schema_uri())
+        self.assertNotIn(SatExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["measurement_iw1_vh"]
+
+        _ = SatExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(SatExtension.get_schema_uri(), item.stac_extensions)

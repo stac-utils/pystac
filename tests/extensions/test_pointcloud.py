@@ -311,3 +311,22 @@ class PointcloudTest(unittest.TestCase):
         # Should succeed if Asset has no owner
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = PointcloudExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+        self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = PointcloudExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+        self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["thumbnail"]
+
+        _ = PointcloudExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)

@@ -216,6 +216,15 @@ class ItemScientificExtensionTest(unittest.TestCase):
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = ScientificExtension.ext(item)
 
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_item_uri)
+        item.stac_extensions.remove(ScientificExtension.get_schema_uri())
+        self.assertNotIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = ScientificExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+
 
 def make_collection() -> pystac.Collection:
     asset_id = "my/thing"

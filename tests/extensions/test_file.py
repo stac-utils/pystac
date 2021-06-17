@@ -208,3 +208,13 @@ class FileTest(unittest.TestCase):
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
 
         _ = FileExtension.ext(ownerless_asset)
+
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        asset = item.assets["thumbnail"]
+
+        self.assertNotIn(FileExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = FileExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(FileExtension.get_schema_uri(), item.stac_extensions)

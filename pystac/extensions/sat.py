@@ -96,11 +96,15 @@ class SatExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T) -> "SatExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "SatExtension[T]":
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cast(SatExtension[T], ItemSatExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
             cls.validate_has_extension(obj)
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:

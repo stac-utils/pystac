@@ -227,6 +227,15 @@ class ItemVersionExtensionTest(unittest.TestCase):
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = VersionExtension.ext(item)
 
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_item_uri)
+        item.stac_extensions.remove(VersionExtension.get_schema_uri())
+        self.assertNotIn(VersionExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = VersionExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(VersionExtension.get_schema_uri(), item.stac_extensions)
+
 
 def make_collection(year: int) -> pystac.Collection:
     asset_id = f"my/collection/of/things/{year}"

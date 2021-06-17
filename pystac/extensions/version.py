@@ -196,7 +196,7 @@ class VersionExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T) -> "VersionExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "VersionExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`Versioning
         Indicators Extension <version>`.
 
@@ -208,9 +208,13 @@ class VersionExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Collection):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:

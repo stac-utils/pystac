@@ -213,3 +213,12 @@ class RasterTest(unittest.TestCase):
         # Should succeed if Asset has no owner
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = RasterExtension.ext(ownerless_asset)
+
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item.stac_extensions.remove(RasterExtension.get_schema_uri())
+        asset = item.assets["data"]
+
+        _ = RasterExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(RasterExtension.get_schema_uri(), item.stac_extensions)

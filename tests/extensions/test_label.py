@@ -376,3 +376,12 @@ class LabelTest(unittest.TestCase):
 
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = LabelExtension.ext(item)
+
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.label_example_1_uri)
+        item.stac_extensions.remove(LabelExtension.get_schema_uri())
+        self.assertNotIn(LabelExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = LabelExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(LabelExtension.get_schema_uri(), item.stac_extensions)

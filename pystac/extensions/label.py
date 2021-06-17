@@ -639,13 +639,15 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Item) -> "LabelExtension":
+    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> "LabelExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`Label
         Extension <label>`.
 
         This extension can be applied to instances of :class:`~pystac.Item`.
         """
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
             cls.validate_has_extension(obj)
             return cls(obj)
         else:

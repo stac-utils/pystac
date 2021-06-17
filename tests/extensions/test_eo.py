@@ -281,3 +281,20 @@ class EOTest(unittest.TestCase):
         # Should succeed if Asset has no owner
         ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
         _ = EOExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        self.assertNotIn(EOExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = EOExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        self.assertNotIn(EOExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["thumbnail"]
+
+        _ = EOExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
