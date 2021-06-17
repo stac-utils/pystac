@@ -116,11 +116,13 @@ class TimestampsExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "TimestampsExtension[T]":
+    @classmethod
+    def ext(cls, obj: T) -> "TimestampsExtension[T]":
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            cls.validate_has_extension(obj)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

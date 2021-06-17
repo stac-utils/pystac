@@ -185,3 +185,21 @@ class TimestampsTest(unittest.TestCase):
 
         # Validate
         timestamps_item.validate()
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = TimestampsExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["blue"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = TimestampsExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = TimestampsExtension.ext(ownerless_asset)
