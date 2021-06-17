@@ -379,7 +379,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.collection.validate()
 
     def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Item does not include extension URI
+        # Should raise exception if Collection does not include extension URI
         collection = pystac.Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
