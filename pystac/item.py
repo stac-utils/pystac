@@ -915,6 +915,7 @@ class Item(STACObject):
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "Item":
         if migrate:
             info = identify_stac_object(d)
@@ -925,7 +926,9 @@ class Item(STACObject):
                 f"{d} does not represent a {cls.__name__} instance"
             )
 
-        d = deepcopy(d)
+        if preserve_dict:
+            d = deepcopy(d)
+
         id = d.pop("id")
         geometry = d.pop("geometry")
         properties = d.pop("properties")

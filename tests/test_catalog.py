@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 import json
 import tempfile
@@ -84,6 +85,19 @@ class CatalogTest(unittest.TestCase):
             items = read_catalog.get_all_items()
 
             self.assertEqual(len(list(items)), 8)
+
+    def test_from_dict_preserves_dict(self) -> None:
+        catalog_dict = TestCases.test_case_1().to_dict()
+        param_dict = deepcopy(catalog_dict)
+
+        # test that the parameter is preserved
+        _ = Catalog.from_dict(param_dict)
+        self.assertEqual(param_dict, catalog_dict)
+
+        # assert that the parameter is not preserved with
+        # non-default parameter
+        _ = Catalog.from_dict(param_dict, preserve_dict=False)
+        self.assertNotEqual(param_dict, catalog_dict)
 
     def test_read_remote(self) -> None:
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.

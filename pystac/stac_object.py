@@ -495,6 +495,7 @@ class STACObject(ABC):
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "STACObject":
         """Parses this STACObject from the passed in dictionary.
 
@@ -507,6 +508,11 @@ class STACObject(ABC):
                 previously resolved instances of the STAC object.
             migrate: Use True if this dict represents JSON from an older STAC object,
                 so that migrations are run against it.
+            preserve_dict: If False, the dict parameter ``d`` may be modified
+                during this method call. Otherwise the dict is not mutated.
+                Defaults to True, which results results in a deepcopy of the
+                parameter. Set to False when possible to avoid the performance
+                hit of a deepcopy. Defaults to True.
 
         Returns:
             STACObject: The STACObject parsed from this dict.

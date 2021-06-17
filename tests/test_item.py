@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 from datetime import datetime
 import json
@@ -25,9 +26,10 @@ class ItemTest(unittest.TestCase):
         self.maxDiff = None
 
         item_dict = self.get_example_item_dict()
+        param_dict = deepcopy(item_dict)
 
-        assert_to_from_dict(self, Item, item_dict)
-        item = Item.from_dict(item_dict)
+        assert_to_from_dict(self, Item, param_dict)
+        item = Item.from_dict(param_dict)
         self.assertEqual(item.id, "CS3-20160503_132131_05")
 
         # test asset creation additional field(s)
@@ -36,6 +38,14 @@ class ItemTest(unittest.TestCase):
             "http://cool-sat.com/catalog/products/analytic.json",
         )
         self.assertEqual(len(item.assets["thumbnail"].properties), 0)
+
+        # test that the parameter is preserved
+        self.assertEqual(param_dict, item_dict)
+
+        # assert that the parameter is not preserved with
+        # non-default parameter
+        _ = Item.from_dict(param_dict, preserve_dict=False)
+        self.assertNotEqual(param_dict, item_dict)
 
     def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
         cat = TestCases.test_case_2()

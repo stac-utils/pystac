@@ -587,6 +587,7 @@ class Collection(Catalog):
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "Collection":
         if migrate:
             info = identify_stac_object(d)
@@ -597,7 +598,9 @@ class Collection(Catalog):
 
         catalog_type = CatalogType.determine_type(d)
 
-        d = deepcopy(d)
+        if preserve_dict:
+            d = deepcopy(d)
+
         id = d.pop("id")
         description = d.pop("description")
         license = d.pop("license")
