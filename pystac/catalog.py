@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 from enum import Enum
+from pystac.errors import STACTypeError
 from typing import (
     Any,
     Callable,
@@ -15,7 +16,7 @@ from typing import (
 )
 
 import pystac
-from pystac.stac_object import STACObject
+from pystac.stac_object import STACObject, STACObjectType
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -23,6 +24,11 @@ from pystac.layout import (
 )
 from pystac.link import Link
 from pystac.cache import ResolvedObjectCache
+from pystac.serialization import (
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
@@ -902,10 +908,11 @@ class Catalog(STACObject):
         migrate: bool = False,
     ) -> "Catalog":
         if migrate:
-            result = pystac.read_dict(d, href=href, root=root)
-            if not isinstance(result, Catalog):
-                raise pystac.STACError(f"{result} is not a Catalog")
-            return result
+            info = identify_stac_object(d)
+            d = migrate_to_latest(d, info)
+
+        if not cls.matches_object_type(d):
+            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
 
         catalog_type = CatalogType.determine_type(d)
 
@@ -919,7 +926,7 @@ class Catalog(STACObject):
 
         d.pop("stac_version")
 
-        cat = Catalog(
+        cat = cls(
             id=id,
             description=description,
             title=title,
@@ -946,7 +953,16 @@ class Catalog(STACObject):
 
     @classmethod
     def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> "Catalog":
+        if stac_io is None:
+            stac_io = pystac.StacIO.default()
+
         result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
             raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
+        result._stac_io = stac_io
+
         return result
+
+    @classmethod
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        return identify_stac_object_type(d) == STACObjectType.CATALOG

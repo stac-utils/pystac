@@ -463,13 +463,17 @@ class STACObject(ABC):
             The specific STACObject implementation class that is represented
             by the JSON read from the file located at HREF.
         """
+        if cls == STACObject:
+            return pystac.read_file(href)
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
-        o = stac_io.read_stac_object(href)
+        d = stac_io.read_json(href)
+        o = cls.from_dict(d, href=href, migrate=True)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -508,3 +512,16 @@ class STACObject(ABC):
             STACObject: The STACObject parsed from this dict.
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        """Returns a boolean indicating whether the given dictionary represents a valid
+        instance of this :class:`~STACObject` sub-class.
+
+        Args:
+            d : A dictionary to identify
+        """
+        raise NotImplementedError(
+            "identify_dict must be implemented by the STACObject subclass."
+        )

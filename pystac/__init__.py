@@ -73,16 +73,19 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(href: str) -> STACObject:
+def read_file(href: str, stac_io: Optional[StacIO] = None) -> STACObject:
     """Reads a STAC object from a file.
 
-    This method will return either a Catalog, a Collection, or an Item based on what the
-    file contains.
+    This method will return either a Catalog, a Collection, or an Item based on what
+    the file contains.
 
-    This is a convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
+    This is a convenience method for :meth:`StacIO.read_stac_object
+    <pystac.StacIO.read_stac_object>`
 
     Args:
         href : The HREF to read the object from.
+        stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If not
+            provided, will use :meth:`StacIO.default` to create an instance.
 
     Returns:
         The specific STACObject implementation class that is represented
@@ -90,17 +93,20 @@ def read_file(href: str) -> STACObject:
 
     Raises:
         STACTypeError : If the file at ``href`` does not represent a valid
-            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
-            a :class:`~pystac.STACObject` and must be read using
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection`
+            is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
-    return STACObject.from_file(href)
+    if stac_io is None:
+        stac_io = StacIO.default()
+    return stac_io.read_stac_object(href)
 
 
 def write_file(
     obj: STACObject,
     include_self_link: bool = True,
     dest_href: Optional[str] = None,
+    stac_io: Optional[StacIO] = None,
 ) -> None:
     """Writes a STACObject to a file.
 
@@ -120,8 +126,14 @@ def write_file(
             Otherwise, leave out the self link.
         dest_href : Optional HREF to save the file to. If ``None``, the object will be
             saved to the object's ``"self"`` href.
+        stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If not
+            provided, will use :meth:`StacIO.default` to create an instance.
     """
-    obj.save_object(include_self_link=include_self_link, dest_href=dest_href)
+    if stac_io is None:
+        stac_io = StacIO.default()
+    obj.save_object(
+        include_self_link=include_self_link, dest_href=dest_href, stac_io=stac_io
+    )
 
 
 def read_dict(
@@ -137,7 +149,7 @@ def read_dict(
     or :class`~Item` based on the contents of the dict.
 
     This is a convenience method for either
-    :meth:`stac_io.stac_object_from_dict <stac_io.stac_object_from_dict>`.
+    :meth:`StacIO.stac_object_from_dict <pystac.StacIO.stac_object_from_dict>`.
 
     Args:
         d : The dict to parse.
@@ -151,8 +163,8 @@ def read_dict(
 
     Raises:
         STACTypeError : If the ``d`` dictionary does not represent a valid
-            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection` is not
-            a :class:`~pystac.STACObject` and must be read using
+            :class:`~pystac.STACObject`. Note that an :class:`~pystac.ItemCollection`
+            is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_dict <pystac.ItemCollection.from_dict>`
     """
     if stac_io is None:

@@ -196,6 +196,14 @@ class CollectionTest(unittest.TestCase):
 
         self.assertIsInstance(instruments_schema, dict)
 
+    def test_from_invalid_dict_raises_exception(self) -> None:
+        stac_io = pystac.StacIO.default()
+        catalog_dict = stac_io.read_json(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.Collection.from_dict(catalog_dict)
+
 
 class ExtentTest(unittest.TestCase):
     def test_spatial_allows_single_bbox(self) -> None:
@@ -264,3 +272,27 @@ class ExtentTest(unittest.TestCase):
 
         self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
         self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+
+
+class CollectionSubClassTest(unittest.TestCase):
+    """This tests cases related to creating classes inheriting from pystac.Catalog to
+    ensure that inheritance, class methods, etc. function as expected."""
+
+    MULTI_EXTENT = TestCases.get_path("data-files/collections/multi-extent.json")
+
+    class BasicCustomCollection(pystac.Collection):
+        pass
+
+    def setUp(self) -> None:
+        self.stac_io = pystac.StacIO.default()
+
+    def test_from_dict_returns_subclass(self) -> None:
+        collection_dict = self.stac_io.read_json(self.MULTI_EXTENT)
+        custom_collection = self.BasicCustomCollection.from_dict(collection_dict)
+
+        self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+
+    def test_from_file_returns_subclass(self) -> None:
+        custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
+
+        self.assertIsInstance(custom_collection, self.BasicCustomCollection)
