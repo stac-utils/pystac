@@ -224,8 +224,8 @@ class ScientificExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "ScientificExtension[T]":
+    @classmethod
+    def ext(cls, obj: T) -> "ScientificExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`Scientific
         Extension <scientific>`.
 
@@ -237,8 +237,10 @@ class ScientificExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Collection):
+            cls.validate_has_extension(obj)
             return cast(ScientificExtension[T], CollectionScientificExtension(obj))
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj)
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
