@@ -452,6 +452,15 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = VersionExtension.ext(collection)
 
+    def test_ext_add_to(self) -> None:
+        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection.stac_extensions.remove(VersionExtension.get_schema_uri())
+        self.assertNotIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
+
+        _ = VersionExtension.ext(collection, add_if_missing=True)
+
+        self.assertIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
+
 
 if __name__ == "__main__":
     unittest.main()

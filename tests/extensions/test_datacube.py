@@ -1,18 +1,15 @@
-import json
 import unittest
 import pystac
 from pystac.extensions.datacube import DatacubeExtension
 
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import TestCases
 
 
 class DatacubeTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
-        self.example_uri = TestCases.get_path(
-            "data-files/datacube/item.json"
-        )
-    
+        self.example_uri = TestCases.get_path("data-files/datacube/item.json")
+
     def test_validate_datacube(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
