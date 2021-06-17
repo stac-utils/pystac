@@ -911,7 +911,7 @@ class Catalog(STACObject):
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
 
-        if not cls.dict_matches_object_type(d):
+        if not cls.matches_object_type(d):
             raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
 
         catalog_type = CatalogType.determine_type(d)
@@ -964,5 +964,5 @@ class Catalog(STACObject):
         return result
 
     @classmethod
-    def dict_matches_object_type(cls, d: Dict[str, Any]) -> bool:
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.CATALOG
