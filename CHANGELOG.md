@@ -4,6 +4,18 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+### Deprecated
+
+## [v1.0.0-rc.1]
+
+### Added
+
 - License file included in distribution ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Links to Issues, Discussions, and documentation sites ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Python minimum version set to `>=3.6` ([#409](https://github.com/stac-utils/pystac/pull/409))
@@ -14,6 +26,7 @@
 - Migration for pre-1.0.0-rc.1 Stats Objects (renamed to Range Objects in 1.0.0-rc.3) ([#447](https://github.com/stac-utils/pystac/pull/447))
 - Attempting to extend a `STACObject` that does not contain the extension's schema URI in
   `stac_extensions` raises new `ExtensionNotImplementedError` ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `STACObject.from_dict` now takes a `preserve_dict` parameter, which if False will avoid a call to deepcopy on the passed in dict and can result in performance gains (defaults to True. Reading from a file will use preserve_dict=False resulting in better performance. ([#454](https://github.com/stac-utils/pystac/pull/454))
 
 ### Changed
 
@@ -25,6 +38,8 @@
 - `*Extension.ext` methods now have an optional `add_if_missing` argument, which will
   add the extension schema URI to the object's `stac_extensions` list if it is not
   present ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `from_file` and `from_dict` methods on `STACObject` sub-classes always return instance
+  of calling class ([#451](https://github.com/stac-utils/pystac/pull/451))
 
 ### Fixed
 
@@ -37,9 +52,7 @@
   ([#455](https://github.com/stac-utils/pystac/pull/455))
 - Schema URI base for STAC 1.0.0-beta.1 ([#455](https://github.com/stac-utils/pystac/pull/455))
 
-### Removed
-
-## [1.0.0-beta.3]
+## [v1.0.0-beta.3]
 
 ### Added
 
@@ -60,7 +73,7 @@
 
 - Two v0.6.0 examples from the test suite ([#373](https://github.com/stac-utils/pystac/pull/373))
 
-## [1.0.0-beta.2]
+## [v1.0.0-beta.2]
 
 ### Changed
 
@@ -368,7 +381,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..main>
+[v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
 [v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
 [v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
