@@ -26,6 +26,7 @@
 - Migration for pre-1.0.0-rc.1 Stats Objects (renamed to Range Objects in 1.0.0-rc.3) ([#447](https://github.com/stac-utils/pystac/pull/447))
 - Attempting to extend a `STACObject` that does not contain the extension's schema URI in
   `stac_extensions` raises new `ExtensionNotImplementedError` ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `STACObject.from_dict` now takes a `preserve_dict` parameter, which if False will avoid a call to deepcopy on the passed in dict and can result in performance gains (defaults to True. Reading from a file will use preserve_dict=False resulting in better performance. ([#454](https://github.com/stac-utils/pystac/pull/454))
 
 ### Changed
 
