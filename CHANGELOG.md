@@ -33,6 +33,9 @@
   ([#402](https://github.com/stac-utils/pystac/pull/402))
 - `ExtensionManagementMixin.add_to` is now idempotent (only adds schema URI to
   `stac_extensions` once per `Item` regardless of the number of calls) ([#419](https://github.com/stac-utils/pystac/pull/419))
+- Version check for when extensions changed from short links to schema URIs
+  ([#455](https://github.com/stac-utils/pystac/pull/455))
+- Schema URI base for STAC 1.0.0-beta.1 ([#455](https://github.com/stac-utils/pystac/pull/455))
 
 ### Removed
 
