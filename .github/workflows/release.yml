@@ -1,15 +1,15 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types:
+      - created
 
 jobs:
   release:
     name: release
     runs-on: ubuntu-latest
-    if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
+    if: ${{ github.repository }} == 'stac-utils/pystac'
     steps:
       - uses: actions/checkout@v2
 
