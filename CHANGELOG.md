@@ -10,7 +10,49 @@
 
 ### Removed
 
-## [1.0.0-beta.3]
+### Deprecated
+
+## [v1.0.0-rc.1]
+
+### Added
+
+- License file included in distribution ([#409](https://github.com/stac-utils/pystac/pull/409))
+- Links to Issues, Discussions, and documentation sites ([#409](https://github.com/stac-utils/pystac/pull/409))
+- Python minimum version set to `>=3.6` ([#409](https://github.com/stac-utils/pystac/pull/409))
+- Code of Conduct ([#399](https://github.com/stac-utils/pystac/pull/399))
+- `ItemCollection` class for working with GeoJSON FeatureCollections containing only
+  STAC Items ([#430](https://github.com/stac-utils/pystac/pull/430))
+- Support for Python 3.9 ([#420](https://github.com/stac-utils/pystac/pull/420))
+- Migration for pre-1.0.0-rc.1 Stats Objects (renamed to Range Objects in 1.0.0-rc.3) ([#447](https://github.com/stac-utils/pystac/pull/447))
+- Attempting to extend a `STACObject` that does not contain the extension's schema URI in
+  `stac_extensions` raises new `ExtensionNotImplementedError` ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `STACObject.from_dict` now takes a `preserve_dict` parameter, which if False will avoid a call to deepcopy on the passed in dict and can result in performance gains (defaults to True. Reading from a file will use preserve_dict=False resulting in better performance. ([#454](https://github.com/stac-utils/pystac/pull/454))
+
+### Changed
+
+- Package author to `stac-utils`, email to `stac@radiant.earth`, url to this repo ([#409](https://github.com/stac-utils/pystac/pull/409))
+- `StacIO.read_json` passes arbitrary positional and keyword arguments to
+  `StacIO.read_text` ([#433](https://github.com/stac-utils/pystac/pull/433))
+- `FileExtension` updated to work with File Info Extension v2.0.0 ([#442](https://github.com/stac-utils/pystac/pull/442))
+- `FileExtension` only operates on `pystac.Asset` instances ([#442](https://github.com/stac-utils/pystac/pull/442))
+- `*Extension.ext` methods now have an optional `add_if_missing` argument, which will
+  add the extension schema URI to the object's `stac_extensions` list if it is not
+  present ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `from_file` and `from_dict` methods on `STACObject` sub-classes always return instance
+  of calling class ([#451](https://github.com/stac-utils/pystac/pull/451))
+
+### Fixed
+
+- `EOExtension.get_bands` returns `None` for asset without EO bands ([#406](https://github.com/stac-utils/pystac/pull/406))
+- `identify_stac_object_type` returns `None` and `identify_stac_object` raises `STACTypeError` for non-STAC objects
+  ([#402](https://github.com/stac-utils/pystac/pull/402))
+- `ExtensionManagementMixin.add_to` is now idempotent (only adds schema URI to
+  `stac_extensions` once per `Item` regardless of the number of calls) ([#419](https://github.com/stac-utils/pystac/pull/419))
+- Version check for when extensions changed from short links to schema URIs
+  ([#455](https://github.com/stac-utils/pystac/pull/455))
+- Schema URI base for STAC 1.0.0-beta.1 ([#455](https://github.com/stac-utils/pystac/pull/455))
+
+## [v1.0.0-beta.3]
 
 ### Added
 
@@ -31,7 +73,7 @@
 
 - Two v0.6.0 examples from the test suite ([#373](https://github.com/stac-utils/pystac/pull/373))
 
-## [1.0.0-beta.2]
+## [v1.0.0-beta.2]
 
 ### Changed
 
@@ -64,7 +106,7 @@
 ### Changed
 
 - API change: The extension API changed significantly. See ([#309](https://github.com/stac-utils/pystac/pull/309)) for more details.
-- API change: Refactored the global STAC_IO object to an instance-specific `StacIO` implementation. STAC_IO is deprecated and will be removed next release. ([#309](https://github.com/stac-utils/pystac/pull/309))
+- API change: Refactored the global STAC_IO object to an instance-specific `StacIO` implementation. ([#309](https://github.com/stac-utils/pystac/pull/309))
 - Asset.get_absolute_href returns None if no absolute href can be inferred (previously the relative href that was passed in was returned) ([#309](https://github.com/stac-utils/pystac/pull/309))
 
 ### Removed
@@ -72,6 +114,11 @@
 - Removed `properties` from Collections ([#309](https://github.com/stac-utils/pystac/pull/309))
 - Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
 - Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
+
+# Deprecated
+
+- Deprecated `STAC_IO` in favor of new `StacIO` class. `STAC_IO` will be removed in
+  v1.0.0. ([#309](https://github.com/stac-utils/pystac/pull/309))
 
 ## [v0.5.6]
 
@@ -334,7 +381,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..main>
+[v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
 [v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
 [v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
@@ -351,4 +399,3 @@ Initial release.
 [v0.3.2]: <https://github.com/stac-utils/pystac/compare/v0.3.1..v0.3.2>
 [v0.3.1]: <https://github.com/stac-utils/pystac/compare/v0.3.0..v0.3.1>
 [v0.3.0]: <https://github.com/stac-utils/pystac/tree/v0.3.0>
-

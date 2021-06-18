@@ -44,7 +44,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertTrue(PointcloudExtension.has_extension(item))
 
     def test_validate_pointcloud(self) -> None:
-        item = pystac.read_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
     def test_count(self) -> None:
@@ -293,3 +293,40 @@ class PointcloudTest(unittest.TestCase):
 
         with self.assertRaises(ExtensionTypeError):
             PointcloudExtension.ext(RandomObject())  # type: ignore
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = PointcloudExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["thumbnail"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = PointcloudExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = PointcloudExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+        self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = PointcloudExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+        item = pystac.Item.from_file(plain_item_uri)
+        self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["thumbnail"]
+
+        _ = PointcloudExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)

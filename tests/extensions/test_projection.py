@@ -406,6 +406,43 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ProjectionExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["B8"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ProjectionExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = ProjectionExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = ProjectionExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["B8"]
+
+        _ = ProjectionExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
 
 class ProjectionSummariesTest(unittest.TestCase):
     def setUp(self) -> None:

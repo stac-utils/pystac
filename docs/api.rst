@@ -127,6 +127,14 @@ CommonMetadata
    :members:
    :undoc-members:
 
+ItemCollection
+--------------
+Represents a GeoJSON FeatureCollection in which all Features are STAC Items
+
+.. autoclass:: pystac.ItemCollection
+   :members:
+   :show-inheritance:
+
 Links
 -----
 
@@ -156,11 +164,18 @@ RelType
 IO
 --
 
+StacIO
+~~~~~~
+
+.. autoclass:: pystac.StacIO
+   :members:
+   :undoc-members:
+
 STAC_IO
 ~~~~~~~
 
-STAC_IO is the utility mechanism that PySTAC uses for reading and writing. Users of
-PySTAC can hook into PySTAC by overriding members to utilize their own IO methods.
+.. deprecated:: 1.0.0-beta.1
+   Use :class:`pystac.StacIO` instead. This class will be removed in v1.0.0.
 
 .. autoclass:: pystac.stac_io.STAC_IO
    :members:
@@ -275,20 +290,37 @@ SummariesEOExtension
    :undoc-members:
    :show-inheritance:
 
+File Info Extension
+-------------------
+
+These classes are representations of the :stac-ext:`File Info Extension Spec <file>`.
+
+ByteOrder
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.ByteOrder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+MappingObject
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.MappingObject
+   :members:
+
+FileExtension
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.file.FileExtension
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Label Extension
 ---------------
 
 These classes are representations of the :stac-ext:`Label Extension Spec <label>`.
-
-LabelItemExt
-~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.label.LabelItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
 
 LabelRelType
 ~~~~~~~~~~~~
@@ -332,6 +364,14 @@ LabelStatistics
    :members:
    :undoc-members:
 
+LabelExtension
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.label.LabelExtension
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Pointcloud Extension
 --------------------
 
@@ -373,6 +413,43 @@ AssetProjectionExtension
 .. autoclass:: pystac.extensions.projection.AssetProjectionExtension
    :members:
    :show-inheritance:
+
+Raster Extension
+----------------
+
+DataType
+~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.DataType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Statistics
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.Statistics
+   :members:
+
+Histogram
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.Histogram
+   :members:
+
+RasterBand
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.RasterBand
+   :members:
+
+RasterExtension
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.raster.RasterExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
 
 Scientific Extension
 --------------------
@@ -453,30 +530,10 @@ SatItemExt
 ..    :undoc-members:
 ..    :show-inheritance:
 
-Single File STAC Extension
---------------------------
-
-These classes are representations of the :stac-ext:`Single File STAC Extension
-<single-file-stac>`.
-
-**TEMPORARILY REMOVED**
-
-.. .. automodule:: pystac.extensions.single_file_stac
-..    :members: create_single_file_stac
-
-SingleFileSTACCatalogExt
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.single_file_stac.SingleFileSTACCatalogExt
-..    :members:
-..    :undoc-members:
-
 Version Extension
 -----------------
 
-Implements the :stac-ext:`Version Extension <version>`.
+Implements the :stac-ext:`Versioning Indicators Extension <version>`.
 
 VersionRelType
 ~~~~~~~~~~~~~~
@@ -485,25 +542,26 @@ VersionRelType
    :members:
    :show-inheritance:
 
-VersionCollectionExt
+VersionExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.VersionExtension
+   :members:
+   :show-inheritance:
+
+CollectionVersionExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.version.CollectionVersionExtension
+   :members:
+   :show-inheritance:
+
+ItemVersionExtension
 ~~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.version.VersionCollectionExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
-
-VersionItemExt
-~~~~~~~~~~~~~~
-
-**TEMPORARILY REMOVED**
-
-.. .. autoclass:: pystac.extensions.version.VersionItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+.. autoclass:: pystac.extensions.version.ItemVersionExtension
+   :members:
+   :show-inheritance:
 
 View Geometry Extension
 -----------------------

@@ -7,13 +7,11 @@
     {
       "rel": "item",
       "href": "./3c67b59c-2e6f-47fb-ba3c-0dd106941096.json",
-      "type": "application/json",
-      "label:assets": []
+      "type": "application/json"
     },
     {
       "rel": "license",
-      "href": "http://www.apache.org/licenses/LICENSE-2.0",
-      "label:assets": []
+      "href": "http://www.apache.org/licenses/LICENSE-2.0"
     },
     {
       "rel": "root",
@@ -24,8 +22,7 @@
       "rel": "parent",
       "href": "../collection.json",
       "type": "application/json",
-      "title": "Layer Collection",
-      "label:assets": []
+      "title": "Layer Collection"
     }
   ],
   "stac_extensions": [],

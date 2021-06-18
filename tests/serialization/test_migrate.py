@@ -10,7 +10,7 @@ from pystac.serialization import (
     merge_common_properties,
     migrate_to_latest,
 )
-from pystac.utils import str_to_datetime
+from pystac.utils import str_to_datetime, get_required
 
 from tests.utils import TestCases
 
@@ -49,16 +49,10 @@ class MigrateTest(unittest.TestCase):
                         e_id.endswith(".json"), f"{e_id} is not a JSON schema URI"
                     )
 
-                # Test that PySTAC can read it without errors.
-                if info.object_type != pystac.STACObjectType.ITEMCOLLECTION:
-                    self.assertIsInstance(
-                        pystac.read_dict(migrated_d, href=path), pystac.STACObject
-                    )
-
     def test_migrates_removed_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.7.0/extensions/sar/" "examples/sentinel1.json"
+                "data-files/examples/0.8.1/extensions/sar/examples/sentinel1.json"
             )
         )
         self.assertFalse("dtr" in item.stac_extensions)
@@ -89,3 +83,16 @@ class MigrateTest(unittest.TestCase):
 
         self.assertTrue(ItemAssetsExtension.has_extension(collection))
         self.assertIn("item_assets", collection.extra_fields)
+
+    def test_migrates_pre_1_0_0_rc1_stats_summary(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path(
+                "data-files/examples/1.0.0-beta.2/collection-spec/"
+                "examples/sentinel2.json"
+            )
+        )
+        datetime_summary = get_required(
+            collection.summaries.get_range("datetime"), collection.summaries, "datetime"
+        )
+        self.assertEqual(datetime_summary.minimum, "2015-06-23T00:00:00Z")
+        self.assertEqual(datetime_summary.maximum, "2019-07-10T13:44:56Z")

@@ -3,173 +3,104 @@
 https://github.com/stac-extensions/file
 """
 
-import enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import (
     OldExtensionShortIDs,
     STACJSONDescription,
     STACVersionID,
 )
-from pystac.utils import map_opt
+from pystac.utils import get_required
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
-SCHEMA_URI = "https://stac-extensions.github.io/file/v1.0.0/schema.json"
+PREFIX = "file:"
+BYTE_ORDER_PROP = PREFIX + "byte_order"
+CHECKSUM_PROP = PREFIX + "checksum"
+HEADER_SIZE_PROP = PREFIX + "header_size"
+SIZE_PROP = PREFIX + "size"
+VALUES_PROP = PREFIX + "values"
 
-DATA_TYPE_PROP = "file:data_type"
-SIZE_PROP = "file:size"
-NODATA_PROP = "file:nodata"
-CHECKSUM_PROP = "file:checksum"
 
+class ByteOrder(str, Enum):
+    """List of allows values for the ``"file:byte_order"`` field defined by the
+    :stac-ext:`File Info Extension <file>`."""
 
-class FileDataType(str, enum.Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    INT8 = "int8"
-    INT16 = "int16"
-    INT32 = "int32"
-    INT64 = "int64"
-    UINT8 = "uint8"
-    UINT16 = "uint16"
-    UINT32 = "uint32"
-    UINT64 = "uint64"
-    FLOAT16 = "float16"
-    FLOAT32 = "float32"
-    FLOAT64 = "float64"
-    CINT16 = "cint16"
-    CINT32 = "cint32"
-    CFLOAT32 = "cfloat32"
-    CFLOAT64 = "cfloat64"
-    OTHER = "other"
+    LITTLE_ENDIAN = "little-endian"
+    BIG_ENDIAN = "big-endian"
 
 
-class FileExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
-    """FileItemExt is the extension of the Item in the file extension which
-    adds file related details such as checksum, data type and size for assets.
+class MappingObject:
+    """Represents a value map used by assets that are used as classification layers, and
+    give details about the values in the asset and their meanings."""
 
-    Args:
-        item : The item to be extended.
+    properties: Dict[str, Any]
 
-    Attributes:
-        item : The Item that is being extended.
+    def __init__(self, properties: Dict[str, Any]) -> None:
+        self.properties = properties
 
-    Note:
-        Using FileItemExt to directly wrap an item will add the 'file' extension ID to
-        the item's stac_extensions.
-    """
-
-    def apply(
-        self,
-        data_type: Optional[FileDataType] = None,
-        size: Optional[int] = None,
-        nodata: Optional[List[Any]] = None,
-        checksum: Optional[str] = None,
-    ) -> None:
-        """Applies file extension properties to the extended Item.
+    def apply(self, values: List[Any], summary: str) -> None:
+        """Sets the properties for this :class:`~MappingObject` instance.
 
         Args:
-            data_type : The data type of the file.
-            size : size of the file in bytes.
-            nodata : Value(s) for no-data.
-            checksum : Multihash for the corresponding file,
-                encoded as hexadecimal (base 16) string with lowercase letters.
+            values : The value(s) in the file. At least one array element is required.
+            summary : A short description of the value(s).
         """
-        self.data_type = data_type
-        self.size = size
-        self.nodata = nodata
-        self.checksum = checksum
-
-    @property
-    def data_type(self) -> Optional[FileDataType]:
-        """Get or sets the data_type of the file.
-
-        Returns:
-            FileDataType
-        """
-        return map_opt(
-            lambda s: FileDataType(s), self._get_property(DATA_TYPE_PROP, str)
-        )
-
-    @data_type.setter
-    def data_type(self, v: Optional[FileDataType]) -> None:
-        self._set_property(DATA_TYPE_PROP, str(v))
-
-    @property
-    def size(self) -> Optional[int]:
-        """Get or sets the size in bytes of the file
-
-        Returns:
-            int or None
-        """
-        return self._get_property(SIZE_PROP, int)
-
-    @size.setter
-    def size(self, v: Optional[int]) -> None:
-        self._set_property(SIZE_PROP, v)
-
-    @property
-    def nodata(self) -> Optional[List[Any]]:
-        """Get or sets the no data values"""
-        return self._get_property(NODATA_PROP, List[Any])
-
-    @nodata.setter
-    def nodata(self, v: Optional[List[Any]]) -> None:
-        self._set_property(NODATA_PROP, v)
-
-    @property
-    def checksum(self) -> Optional[str]:
-        """Get or sets the checksum
-
-        Returns:
-            str or None
-        """
-        return self._get_property(CHECKSUM_PROP, str)
-
-    @checksum.setter
-    def checksum(self, v: Optional[str]) -> None:
-        self._set_property(CHECKSUM_PROP, v)
+        self.values = values
+        self.summary = summary
 
     @classmethod
-    def get_schema_uri(cls) -> str:
-        return SCHEMA_URI
+    def create(cls, values: List[Any], summary: str) -> "MappingObject":
+        """Creates a new :class:`~MappingObject` instance.
 
-    @staticmethod
-    def ext(obj: T) -> "FileExtension[T]":
-        if isinstance(obj, pystac.Item):
-            return cast(FileExtension[T], ItemFileExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            return cast(FileExtension[T], AssetFileExtension(obj))
-        else:
-            raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
-            )
+        Args:
+            values : The value(s) in the file. At least one array element is required.
+            summary : A short description of the value(s).
+        """
+        m = cls({})
+        m.apply(values=values, summary=summary)
+        return m
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesFileExtension":
-        return SummariesFileExtension(obj)
+    @property
+    def values(self) -> List[Any]:
+        """Gets or sets the list of value(s) in the file. At least one array element is
+        required."""
+        return get_required(self.properties["values"], self, "values")
+
+    @values.setter
+    def values(self, v: List[Any]) -> None:
+        self.properties["values"] = v
+
+    @property
+    def summary(self) -> str:
+        """Gets or sets the short description of the value(s)."""
+        return get_required(self.properties["summary"], self, "summary")
+
+    @summary.setter
+    def summary(self, v: str) -> None:
+        self.properties["summary"] = v
 
 
-class ItemFileExtension(FileExtension[pystac.Item]):
-    def __init__(self, item: pystac.Item):
-        self.item = item
-        self.properties = item.properties
+class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
+    """A class that can be used to extend the properties of an :class:`~pystac.Asset`
+    with properties from the :stac-ext:`File Info Extension <file>`.
 
-    def __repr__(self) -> str:
-        return "<ItemFileExtension Item id={}>".format(self.item.id)
+    To create an instance of :class:`FileExtension`, use the
+    :meth:`FileExtension.ext` method. For example:
 
+    .. code-block:: python
 
-class AssetFileExtension(FileExtension[pystac.Asset]):
+       >>> asset: pystac.Asset = ...
+       >>> file_ext = FileExtension.ext(asset)
+    """
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -179,46 +110,104 @@ class AssetFileExtension(FileExtension[pystac.Asset]):
     def __repr__(self) -> str:
         return "<AssetFileExtension Asset href={}>".format(self.asset_href)
 
+    def apply(
+        self,
+        byte_order: Optional[ByteOrder] = None,
+        checksum: Optional[str] = None,
+        header_size: Optional[int] = None,
+        size: Optional[int] = None,
+        values: Optional[List[MappingObject]] = None,
+    ) -> None:
+        """Applies file extension properties to the extended Item.
 
-class SummariesFileExtension(SummariesExtension):
-    @property
-    def data_type(self) -> Optional[List[FileDataType]]:
-        """Get or sets the data_type of the file.
-
-        Returns:
-            FileDataType
+        Args:
+            byte_order : Optional byte order of integer values in the file. One of
+                ``"big-endian"`` or ``"little-endian"``.
+            checksum : Optional multihash for the corresponding file,
+                encoded as hexadecimal (base 16) string with lowercase letters.
+            header_size : Optional header size of the file, in bytes.
+            size : Optional size of the file, in bytes.
+            values : Optional list of :class:`~MappingObject` instances that lists the
+                values that are in the file and describe their meaning. See the
+                :stac-ext:`Mapping Object <file#mapping-object>` docs for an example.
+                If given, at least one array element is required.
         """
-
-        return map_opt(
-            lambda x: [FileDataType(t) for t in x],
-            self.summaries.get_list(DATA_TYPE_PROP),
-        )
-
-    @data_type.setter
-    def data_type(self, v: Optional[List[FileDataType]]) -> None:
-        self._set_summary(DATA_TYPE_PROP, map_opt(lambda x: [str(t) for t in x], v))
+        self.byte_order = byte_order
+        self.checksum = checksum
+        self.header_size = header_size
+        self.size = size
+        self.values = values
 
     @property
-    def size(self) -> Optional[pystac.RangeSummary[int]]:
-        """Get or sets the size in bytes of the file
+    def byte_order(self) -> Optional[ByteOrder]:
+        """Gets or sets the byte order of integer values in the file. One of big-endian
+        or little-endian."""
+        return self._get_property(BYTE_ORDER_PROP, ByteOrder)
 
-        Returns:
-            int or None
-        """
-        return self.summaries.get_range(SIZE_PROP)
+    @byte_order.setter
+    def byte_order(self, v: Optional[ByteOrder]) -> None:
+        self._set_property(BYTE_ORDER_PROP, v)
+
+    @property
+    def checksum(self) -> Optional[str]:
+        """Get or sets the multihash for the corresponding file, encoded as hexadecimal
+        (base 16) string with lowercase letters."""
+        return self._get_property(CHECKSUM_PROP, str)
+
+    @checksum.setter
+    def checksum(self, v: Optional[str]) -> None:
+        self._set_property(CHECKSUM_PROP, v)
+
+    @property
+    def header_size(self) -> Optional[int]:
+        """Get or sets the header size of the file, in bytes."""
+        return self._get_property(HEADER_SIZE_PROP, int)
+
+    @header_size.setter
+    def header_size(self, v: Optional[int]) -> None:
+        self._set_property(HEADER_SIZE_PROP, v)
+
+    @property
+    def size(self) -> Optional[int]:
+        """Get or sets the size of the file, in bytes."""
+        return self._get_property(SIZE_PROP, int)
 
     @size.setter
-    def size(self, v: Optional[pystac.RangeSummary[int]]) -> None:
-        self._set_summary(SIZE_PROP, v)
+    def size(self, v: Optional[int]) -> None:
+        self._set_property(SIZE_PROP, v)
 
     @property
-    def nodata(self) -> Optional[List[Any]]:
-        """Get or sets the list of no data values"""
-        return self.summaries.get_list(NODATA_PROP)
+    def values(self) -> Optional[List[MappingObject]]:
+        """Get or sets the list of :class:`~MappingObject` instances that lists the
+        values that are in the file and describe their meaning. See the
+        :stac-ext:`Mapping Object <file#mapping-object>` docs for an example. If given,
+        at least one array element is required."""
+        return self._get_property(VALUES_PROP, List[MappingObject])
 
-    @nodata.setter
-    def nodata(self, v: Optional[List[Any]]) -> None:
-        self._set_summary(NODATA_PROP, v)
+    @values.setter
+    def values(self, v: Optional[List[MappingObject]]) -> None:
+        self._set_property(VALUES_PROP, v)
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI
+
+    @classmethod
+    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "FileExtension":
+        """Extends the given STAC Object with properties from the :stac-ext:`File Info
+        Extension <file>`.
+
+        This extension can be applied to instances of :class:`~pystac.Asset`.
+        """
+        if isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
+            return cls(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"File Info extension does not apply to type {type(obj)}"
+            )
 
 
 class FileExtensionHooks(ExtensionHooks):

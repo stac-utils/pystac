@@ -220,6 +220,43 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ViewExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ViewExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["blue"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ViewExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = ViewExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ViewExtension.get_schema_uri())
+        self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = ViewExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(ViewExtension.get_schema_uri())
+        self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["blue"]
+
+        _ = ViewExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+
 
 class ViewSummariestest(unittest.TestCase):
     def setUp(self) -> None:

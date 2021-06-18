@@ -9,6 +9,11 @@ import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
+from pystac.serialization import (
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 from pystac.stac_object import STACObject
 from pystac.utils import (
     is_absolute_href,
@@ -87,10 +92,10 @@ class CommonMetadata:
         else:
             start_datetime = asset.properties.get("start_datetime")
 
-        if start_datetime:
-            start_datetime = str_to_datetime(start_datetime)
+        if start_datetime is None:
+            return None
 
-        return start_datetime
+        return str_to_datetime(start_datetime)
 
     def set_start_datetime(
         self, start_datetime: Optional[Datetime], asset: Optional[Asset] = None
@@ -138,10 +143,10 @@ class CommonMetadata:
         else:
             end_datetime = asset.properties.get("end_datetime")
 
-        if end_datetime:
-            end_datetime = str_to_datetime(end_datetime)
+        if end_datetime is None:
+            return None
 
-        return end_datetime
+        return str_to_datetime(end_datetime)
 
     def set_end_datetime(
         self, end_datetime: Optional[Datetime], asset: Optional[Asset] = None
@@ -231,10 +236,10 @@ class CommonMetadata:
         else:
             providers = asset.properties.get("providers")
 
-        if providers is not None:
-            providers = [Provider.from_dict(d) for d in providers]
+        if providers is None:
+            return None
 
-        return providers
+        return [Provider.from_dict(d) for d in providers]
 
     def set_providers(
         self, providers: Optional[List[Provider]], asset: Optional[Asset] = None
@@ -494,10 +499,10 @@ class CommonMetadata:
         else:
             created = asset.properties.get("created")
 
-        if created:
-            created = str_to_datetime(created)
+        if created is None:
+            return None
 
-        return created
+        return str_to_datetime(created)
 
     def set_created(
         self, created: Optional[Datetime], asset: Optional[Asset] = None
@@ -560,10 +565,10 @@ class CommonMetadata:
         else:
             updated = asset.properties.get("updated")
 
-        if updated:
-            updated = str_to_datetime(updated)
+        if updated is None:
+            return None
 
-        return updated
+        return str_to_datetime(updated)
 
     def set_updated(
         self, updated: Optional[Datetime], asset: Optional[Asset] = None
@@ -910,14 +915,20 @@ class Item(STACObject):
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "Item":
         if migrate:
-            result = pystac.read_dict(d, href=href, root=root)
-            if not isinstance(result, Item):
-                raise pystac.STACError(f"{result} is not a Catalog")
-            return result
+            info = identify_stac_object(d)
+            d = migrate_to_latest(d, info)
 
-        d = deepcopy(d)
+        if not cls.matches_object_type(d):
+            raise pystac.STACTypeError(
+                f"{d} does not represent a {cls.__name__} instance"
+            )
+
+        if preserve_dict:
+            d = deepcopy(d)
+
         id = d.pop("id")
         geometry = d.pop("geometry")
         properties = d.pop("properties")
@@ -980,3 +991,7 @@ class Item(STACObject):
         if not isinstance(result, Item):
             raise pystac.STACTypeError(f"{result} is not a {Item}.")
         return result
+
+    @classmethod
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        return identify_stac_object_type(d) == STACObjectType.ITEM

@@ -1,58 +1,54 @@
 import os
-from imp import load_source
 from setuptools import setup, find_packages
 from glob import glob
 
-__version__ = load_source('pystac.version', 'pystac/version.py').__version__  # type: ignore
-
-from os.path import (
-    basename,
-    splitext
-)
+from os.path import basename, splitext
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'README.md')) as readme_file:
+with open(os.path.join(here, "README.md")) as readme_file:
     readme = readme_file.read()
 
 setup(
-    name='pystac',
-    version=__version__,
-    description=("Python library for working with Spatiotemporal Asset Catalog (STAC)."),
+    name="pystac",
+    description=(
+        "Python library for working with Spatiotemporal Asset Catalog (STAC)."
+    ),
     long_description=readme,
     long_description_content_type="text/markdown",
-    author="Azavea",
-    author_email='info@azavea.com',
-    url='https://github.com/azavea/pystac.git',
+    author="stac-utils",
+    author_email="stac@radiant.earth",
+    url="https://github.com/stac-utils/pystac",
     packages=find_packages(),
-    py_modules=[splitext(basename(path))[0] for path in glob('pystac/*.py')],
+    py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     include_package_data=False,
+    python_requires=">=3.6",
     install_requires=[
         "python-dateutil>=2.7.0",
         'typing_extensions >= 3.7; python_version < "3.8"',
     ],
-    extras_require={
-        "validation": ["jsonschema>=3.0"],
-        "orjson": ["orjson>=3.5"]
-    },
+    extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
+    license_files=["LICENSE"],
     zip_safe=False,
-    keywords=[
-        'pystac',
-        'imagery',
-        'raster',
-        'catalog',
-        'STAC'
-    ],
+    keywords=["pystac", "imagery", "raster", "catalog", "STAC"],
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
-    test_suite='tests'
+    project_urls={
+        "Tracker": "https://github.com/stac-utils/pystac/issues",
+        "Documentation": "https://pystac.readthedocs.io/en/latest/",
+        "GitHub Discussions": (
+            "https://github.com/radiantearth/stac-spec/discussions/categories/pystac"
+        ),
+    },
+    test_suite="tests",
 )

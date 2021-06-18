@@ -18,7 +18,6 @@ class STACObjectType(str, Enum):
     CATALOG = "CATALOG"
     COLLECTION = "COLLECTION"
     ITEM = "ITEM"
-    ITEMCOLLECTION = "ITEMCOLLECTION"
 
 
 class STACObject(ABC):
@@ -56,7 +55,7 @@ class STACObject(ABC):
         """
         import pystac.validation
 
-        return pystac.validation.validate(self)  # type:ignore
+        return pystac.validation.validate(self)
 
     def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.
@@ -64,7 +63,7 @@ class STACObject(ABC):
         Args:
              link : The link to add.
         """
-        link.set_owner(cast(STACObject, self))
+        link.set_owner(self)
         self.links.append(link)
 
     def add_links(self, links: List[Link]) -> None:
@@ -179,18 +178,14 @@ class STACObject(ABC):
         """
         root_link = self.get_root_link()
         if root_link is not None and root_link.is_resolved():
-            cast(pystac.Catalog, root_link.target)._resolved_objects.remove(
-                cast(STACObject, self)
-            )
+            cast(pystac.Catalog, root_link.target)._resolved_objects.remove(self)
 
         self.remove_links(pystac.RelType.SELF)
         if href is not None:
             self.add_link(Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
-            cast(pystac.Catalog, root_link.target)._resolved_objects.cache(
-                cast(STACObject, self)
-            )
+            cast(pystac.Catalog, root_link.target)._resolved_objects.cache(self)
 
     def get_root(self) -> Optional["Catalog_Type"]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
@@ -468,13 +463,17 @@ class STACObject(ABC):
             The specific STACObject implementation class that is represented
             by the JSON read from the file located at HREF.
         """
+        if cls == STACObject:
+            return pystac.read_file(href)
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
-        o = stac_io.read_stac_object(href)
+        d = stac_io.read_json(href)
+        o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
 
         # Set the self HREF, if it's not already set to something else.
         if o.get_self_href() is None:
@@ -496,6 +495,7 @@ class STACObject(ABC):
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "STACObject":
         """Parses this STACObject from the passed in dictionary.
 
@@ -508,8 +508,26 @@ class STACObject(ABC):
                 previously resolved instances of the STAC object.
             migrate: Use True if this dict represents JSON from an older STAC object,
                 so that migrations are run against it.
+            preserve_dict: If False, the dict parameter ``d`` may be modified
+                during this method call. Otherwise the dict is not mutated.
+                Defaults to True, which results results in a deepcopy of the
+                parameter. Set to False when possible to avoid the performance
+                hit of a deepcopy.
 
         Returns:
             STACObject: The STACObject parsed from this dict.
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        """Returns a boolean indicating whether the given dictionary represents a valid
+        instance of this :class:`~STACObject` sub-class.
+
+        Args:
+            d : A dictionary to identify
+        """
+        raise NotImplementedError(
+            "identify_dict must be implemented by the STACObject subclass."
+        )

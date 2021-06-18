@@ -7,15 +7,117 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: build
+  test:
+    name: test
     runs-on: ${{ matrix.os }}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8"]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version:
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache dependencies (Linux)
+        if: startsWith(runner.os, 'Linux')
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+      
+      - name: Cache dependencies (macOS)
+        if: startsWith(runner.os, 'macOS')
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+          
+      - name: Cache dependencies (Windows)
+        if: startsWith(runner.os, 'Windows')
+        uses: actions/cache@v2
+        with:
+          path: ~\AppData\Local\pip\Cache
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install -e ".[validation]"
+      
+      - name: Execute test suite
+        run: ./scripts/test
+        shell: bash
+        env:
+          TMPDIR: "${{ matrix.os == 'windows-latest' && 'D:\\a\\_temp' || '' }}"
+
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          # Cache based on OS, Python version, and dependency hash
+          key: pip-test-${{ runner.os }}-python3.8-${{ hashFiles('requirements-test.txt') }}
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install -e ".[validation]"
+      
+      - name: Execute test suite
+        # --fail-under=0 ensures we publish the coverage regardless of whether it meets
+        # the minimum so we can use Codecov to evaluate gaps
+        run: |
+          coverage run --source=pystac/ -m unittest discover tests/
+          coverage xml --fail-under=0
+      
+      - name: Upload All coverage to Codecov
+        uses: codecov/codecov-action@v1
+        if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          fail_ci_if_error: false 
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      # Allow other matrix jobs to complete if 1 fails
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.6"
+          - "3.7"
+          - "3.8"
+
     steps:
       - uses: actions/checkout@v2
 
@@ -29,27 +131,27 @@ jobs:
         with:
           path: ~/.cache/pip
           # Cache based on OS, Python version, and dependency hash
-          key: pip-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-dev.txt') }}
-
-      - name: Execute linters and test suites
-        run: ./scripts/cibuild
+          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
       
-      - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v1
-        # Only upload this once...
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8'}}
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
-          fail_ci_if_error: false 
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-test.txt
+
+      - name: Execute linters & type checkers
+        run: pre-commit run --all-files
+
   vanilla:
     runs-on: ubuntu-latest
-    steps:
+    steps:  
       - uses: actions/checkout@v2
+      
       - uses: actions/setup-python@v2
         with:
           python-version: "3.8"
+
       - name: Install without orjson
         run: pip install '.[validation]'
+      
       - name: Run unittests
         run: python -m unittest discover tests

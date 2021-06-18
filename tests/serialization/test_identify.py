@@ -47,6 +47,32 @@ class IdentifyTest(unittest.TestCase):
                     set(actual.extensions), set(example.extensions), msg=msg
                 )
 
+    def test_identify_non_stac_type(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        self.assertIsNone(identify_stac_object_type(plain_feature_dict))
+
+    def test_identify_non_stac_raises_error(self) -> None:
+        plain_feature_dict = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {"type": "Point", "coordinates": [0, 0]},
+        }
+
+        with self.assertRaises(pystac.STACTypeError) as ctx:
+            identify_stac_object(plain_feature_dict)
+
+        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+
+    def test_identify_invalid_with_stac_version(self) -> None:
+        not_stac = {"stac_version": "0.9.0", "type": "Custom"}
+
+        self.assertIsNone(identify_stac_object_type(not_stac))
+
 
 class VersionTest(unittest.TestCase):
     def test_version_ordering(self) -> None:
@@ -55,13 +81,10 @@ class VersionTest(unittest.TestCase):
         self.assertFalse(STACVersionID("0.9.0") != STACVersionID("0.9.0"))
         self.assertFalse(STACVersionID("0.9.0") > STACVersionID("0.9.0"))
         self.assertTrue(STACVersionID("1.0.0-beta.2") < "1.0.0")
-        self.assertTrue(STACVersionID("0.9.1") > "0.9.0")  # type:ignore
-        self.assertFalse(STACVersionID("0.9.0") > "0.9.0")  # type:ignore
-        self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")  # type:ignore
-        self.assertTrue(
-            STACVersionID("1.0.0-beta.1")  # type:ignore
-            <= STACVersionID("1.0.0-beta.2")  # type:ignore
-        )
+        self.assertTrue(STACVersionID("0.9.1") > "0.9.0")
+        self.assertFalse(STACVersionID("0.9.0") > "0.9.0")
+        self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")
+        self.assertTrue(STACVersionID("1.0.0-beta.1") <= STACVersionID("1.0.0-beta.2"))
         self.assertFalse(STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2"))
 
     def test_version_range_ordering(self) -> None:

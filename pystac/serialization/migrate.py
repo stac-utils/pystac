@@ -13,47 +13,40 @@ if TYPE_CHECKING:
     from pystac import STACObjectType as STACObjectType_Type
 
 
-def _migrate_links(d: Dict[str, Any], version: STACVersionID) -> None:
-    if version < "0.6":
-        if "links" in d:
-            if isinstance(d["links"], dict):
-                d["links"] = list(d["links"].values())
-
-
 def _migrate_catalog(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    _migrate_links(d, version)
-
     if version < "0.8":
         d["stac_extensions"] = list(info.extensions)
+
+
+def _migrate_collection_summaries(
+    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> None:
+    if version < "1.0.0-rc.1":
+        for prop, summary in d.get("summaries", {}).items():
+            if isinstance(summary, dict) and "min" in summary and "max" in summary:
+                d["summaries"][prop] = {
+                    "minimum": summary["min"],
+                    "maximum": summary["max"],
+                }
 
 
 def _migrate_collection(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     _migrate_catalog(d, version, info)
+    _migrate_collection_summaries(d, version, info)
 
 
 def _migrate_item(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    _migrate_links(d, version)
-
-    if version < "0.8":
-        d["stac_extensions"] = list(info.extensions)
-
-
-def _migrate_itemcollection(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
-) -> None:
-    if version < "0.9.0":
-        d["stac_extensions"] = list(info.extensions)
+    # No migrations necessary for supported STAC versions (>=0.8)
+    pass
 
 
 # Extensions
-
-
 def _migrate_item_assets(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> Optional[Set[str]]:
@@ -94,7 +87,6 @@ def _get_object_migrations() -> Dict[
         pystac.STACObjectType.CATALOG: _migrate_catalog,
         pystac.STACObjectType.COLLECTION: _migrate_collection,
         pystac.STACObjectType.ITEM: _migrate_item,
-        pystac.STACObjectType.ITEMCOLLECTION: _migrate_itemcollection,
     }
 
 

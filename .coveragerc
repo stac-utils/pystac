@@ -1,5 +1,5 @@
 [report]
-fail_under = 89
+fail_under = 91
 
 [run]
 source = pystac

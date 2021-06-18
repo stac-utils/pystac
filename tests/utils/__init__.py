@@ -1,12 +1,12 @@
 # flake8: noqa
 
-from typing import Any, Dict, Type
+from typing import Any, Dict, TYPE_CHECKING, Type
 import unittest
 from tests.utils.test_cases import (
-    TestCases,  # type:ignore
-    ARBITRARY_GEOM,  # type:ignore
-    ARBITRARY_BBOX,  # type:ignore
-    ARBITRARY_EXTENT,  # type:ignore
+    TestCases,
+    ARBITRARY_GEOM,
+    ARBITRARY_BBOX,
+    ARBITRARY_EXTENT,
 )
 
 from copy import deepcopy
@@ -14,7 +14,10 @@ from datetime import datetime
 from dateutil.parser import parse
 
 import pystac
-from tests.utils.stac_io_mock import MockStacIO  #  type:ignore
+from tests.utils.stac_io_mock import MockStacIO
+
+if TYPE_CHECKING:
+    import tempfile as TemporaryDirectory_Type
 
 
 def assert_to_from_dict(

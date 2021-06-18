@@ -59,7 +59,7 @@ class TimestampsTest(unittest.TestCase):
             self.assertNotIn(p, item.properties)
 
     def test_validate_timestamps(self) -> None:
-        item = pystac.read_file(self.example_uri)
+        item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
     def test_expires(self) -> None:
@@ -185,3 +185,40 @@ class TimestampsTest(unittest.TestCase):
 
         # Validate
         timestamps_item.validate()
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = TimestampsExtension.ext(item)
+
+        # Should raise exception if owning Item does not include extension URI
+        asset = item.assets["blue"]
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = TimestampsExtension.ext(asset)
+
+        # Should succeed if Asset has no owner
+        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        _ = TimestampsExtension.ext(ownerless_asset)
+
+    def test_item_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+        self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = TimestampsExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_asset_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+        self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+        asset = item.assets["blue"]
+
+        _ = TimestampsExtension.ext(asset, add_if_missing=True)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)

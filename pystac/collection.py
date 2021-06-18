@@ -1,5 +1,6 @@
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
+from pystac.errors import STACTypeError
 from typing import (
     Any,
     Dict,
@@ -23,6 +24,11 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
+from pystac.serialization import (
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 from pystac.summaries import Summaries
 
 if TYPE_CHECKING:
@@ -581,16 +587,20 @@ class Collection(Catalog):
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
+        preserve_dict: bool = True,
     ) -> "Collection":
         if migrate:
-            result = pystac.read_dict(d, href=href, root=root)
-            if not isinstance(result, Collection):
-                raise pystac.STACError(f"{result} is not a Catalog")
-            return result
+            info = identify_stac_object(d)
+            d = migrate_to_latest(d, info)
+
+        if not cls.matches_object_type(d):
+            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
 
         catalog_type = CatalogType.determine_type(d)
 
-        d = deepcopy(d)
+        if preserve_dict:
+            d = deepcopy(d)
+
         id = d.pop("id")
         description = d.pop("description")
         license = d.pop("license")
@@ -610,7 +620,7 @@ class Collection(Catalog):
 
         d.pop("stac_version")
 
-        collection = Collection(
+        collection = cls(
             id=id,
             description=description,
             extent=extent,
@@ -676,3 +686,7 @@ class Collection(Catalog):
         if not isinstance(result, Collection):
             raise pystac.STACTypeError(f"{result} is not a {Collection}.")
         return result
+
+    @classmethod
+    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        return identify_stac_object_type(d) == STACObjectType.COLLECTION

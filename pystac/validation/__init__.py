@@ -85,9 +85,9 @@ def validate_dict(
 
     stac_version_id = STACVersionID(stac_version)
 
-    # If the version is before 1.0.0-rc.1, substitute extension short IDs for
+    # If the version is before 1.0.0-rc.2, substitute extension short IDs for
     # their schemas.
-    if stac_version_id < "1.0.0-rc.1":
+    if stac_version_id < "1.0.0-rc.2":
 
         def _get_uri(ext: str) -> Optional[str]:
             return OldExtensionSchemaUriMap.get_extension_schema_uri(
@@ -162,7 +162,7 @@ class RegisteredValidator:
     def get_validator(cls) -> STACValidator:
         if cls._validator is None:
             try:
-                import jsonschema  # type:ignore
+                import jsonschema
             except ImportError:
                 raise Exception(
                     'Cannot validate with default validator because package "jsonschema" '

@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/eo
 """
 
-import re
 from typing import (
     Any,
     Dict,
@@ -290,7 +289,7 @@ class EOExtension(
     .. code-block:: python
 
        >>> item: pystac.Item = ...
-       >>> view_ext = ViewExtension.ext(item)
+       >>> eo_ext = EOExtension.ext(item)
     """
 
     def apply(
@@ -347,8 +346,8 @@ class EOExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "EOExtension[T]":
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "EOExtension[T]":
         """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
         Extension <eo>`.
 
@@ -360,8 +359,14 @@ class EOExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
+            cls.validate_has_extension(obj)
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
@@ -437,6 +442,16 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
+    def _get_bands(self) -> Optional[List[Band]]:
+        if BANDS_PROP not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: Band(band),
+                cast(List[Dict[str, Any]], self.properties.get(BANDS_PROP)),
+            )
+        )
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -488,36 +503,6 @@ class EOExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        if version < "0.5":
-            if "eo:crs" in obj["properties"]:
-                # Try to pull out the EPSG code.
-                # Otherwise, just leave it alone.
-                wkt = obj["properties"]["eo:crs"]
-                matches = list(re.finditer(r'AUTHORITY\[[^\]]*\"(\d+)"\]', wkt))
-                if len(matches) > 0:
-                    epsg_code = matches[-1].group(1)
-                    obj["properties"].pop("eo:crs")
-                    obj["properties"]["eo:epsg"] = int(epsg_code)
-
-        if version < "0.6":
-            # Change eo:bands from a dict to a list. eo:bands on an asset
-            # is an index instead of a dict key. eo:bands is in properties.
-            bands_dict = obj["eo:bands"]
-            keys_to_indices: Dict[str, int] = {}
-            bands: List[Dict[str, Any]] = []
-            for i, (k, band) in enumerate(bands_dict.items()):
-                keys_to_indices[k] = i
-                bands.append(band)
-
-            obj.pop("eo:bands")
-            obj["properties"]["eo:bands"] = bands
-            for k, asset in obj["assets"].items():
-                if "eo:bands" in asset:
-                    asset_band_indices: List[int] = []
-                    for bk in asset["eo:bands"]:
-                        asset_band_indices.append(keys_to_indices[bk])
-                    asset["eo:bands"] = sorted(asset_band_indices)
-
         if version < "0.9":
             # Some eo fields became common_metadata
             if (

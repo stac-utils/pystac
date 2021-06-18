@@ -14,16 +14,21 @@ from typing import (
 )
 import warnings
 
-from urllib.parse import urlparse
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
-import pystac.serialization
+from pystac.utils import safe_urlparse
+from pystac.serialization import (
+    merge_common_properties,
+    identify_stac_object_type,
+    identify_stac_object,
+    migrate_to_latest,
+)
 
 # Use orjson if available
 try:
-    import orjson  # type: ignore
+    import orjson
 except ImportError:
     orjson = None  # type: ignore[assignment]
 
@@ -74,10 +79,12 @@ class StacIO(ABC):
         raise NotImplementedError("write_text not implemented")
 
     def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+        result: Dict[str, Any]
         if orjson is not None:
-            return orjson.loads(txt)
+            result = orjson.loads(txt)
         else:
-            return json.loads(txt)
+            result = json.loads(txt)
+        return result
 
     def _json_dumps(
         self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]
@@ -92,15 +99,43 @@ class StacIO(ABC):
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
+        preserve_dict: bool = True,
     ) -> "STACObject_Type":
-        result = pystac.serialization.stac_object_from_dict(d, href, root)
-        if isinstance(result, pystac.Catalog):
-            # Set the stac_io instance for usage by io operations
-            # where this catalog is the root.
-            result._stac_io = self
-        return result
+        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+            collection_cache = None
+            if root is not None:
+                collection_cache = root._resolved_objects.as_collection_cache()
 
-    def read_json(self, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+            # Merge common properties in case this is an older STAC object.
+            merge_common_properties(
+                d, json_href=href, collection_cache=collection_cache
+            )
+
+        info = identify_stac_object(d)
+        d = migrate_to_latest(d, info)
+
+        if info.object_type == pystac.STACObjectType.CATALOG:
+            result = pystac.Catalog.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
+            result._stac_io = self
+            return result
+
+        if info.object_type == pystac.STACObjectType.COLLECTION:
+            return pystac.Collection.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
+
+        if info.object_type == pystac.STACObjectType.ITEM:
+            return pystac.Item.from_dict(
+                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+            )
+
+        raise ValueError(f"Unknown STAC object type {info.object_type}")
+
+    def read_json(
+        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+    ) -> Dict[str, Any]:
         """Read a dict from the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -113,7 +148,7 @@ class StacIO(ABC):
             dict: A dict representation of the JSON contained in the file at the
             given source.
         """
-        txt = self.read_text(source)
+        txt = self.read_text(source, *args, **kwargs)
         return self._json_loads(txt, source)
 
     def read_stac_object(
@@ -136,7 +171,7 @@ class StacIO(ABC):
         """
         d = self.read_json(source)
         href = source if isinstance(source, str) else source.get_absolute_href()
-        return self.stac_object_from_dict(d, href=href, root=root)
+        return self.stac_object_from_dict(d, href=href, root=root, preserve_dict=False)
 
     def save_json(
         self, dest: Union[str, "Link_Type"], json_dict: Dict[str, Any]
@@ -180,16 +215,18 @@ class DefaultStacIO(StacIO):
         return self.read_text_from_href(href, *args, **kwargs)
 
     def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
-        parsed = urlparse(href)
+        parsed = safe_urlparse(href)
+        href_contents: str
         if parsed.scheme != "":
             try:
                 with urlopen(href) as f:
-                    return f.read().decode("utf-8")
+                    href_contents = f.read().decode("utf-8")
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
         else:
-            with open(href) as f:
-                return f.read()
+            with open(href, encoding="utf-8") as f:
+                href_contents = f.read()
+        return href_contents
 
     def write_text(
         self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
@@ -209,7 +246,7 @@ class DefaultStacIO(StacIO):
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
-        with open(href, "w") as f:
+        with open(href, "w", encoding="utf-8") as f:
             f.write(txt)
 
 
@@ -225,9 +262,10 @@ class DuplicateKeyReportingMixin(StacIO):
     """
 
     def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
-        return json.loads(
+        result: Dict[str, Any] = json.loads(
             txt, object_pairs_hook=self.duplicate_object_names_report_builder(source)
         )
+        return result
 
     @staticmethod
     def duplicate_object_names_report_builder(
@@ -264,22 +302,28 @@ class STAC_IO:
     """
 
     @staticmethod
-    def read_text_method(uri: str) -> str:
+    def issue_deprecation_warning() -> None:
         warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
+            "STAC_IO is deprecated and will be removed in v1.0.0. "
+            "Please use instances of StacIO (e.g. StacIO.default()) instead.",
             DeprecationWarning,
         )
+
+    def __init__(self) -> None:
+        STAC_IO.issue_deprecation_warning()
+
+    def __init_subclass__(cls) -> None:
+        STAC_IO.issue_deprecation_warning()
+
+    @staticmethod
+    def read_text_method(uri: str) -> str:
+        STAC_IO.issue_deprecation_warning()
         return StacIO.default().read_text(uri)
 
     @staticmethod
     def write_text_method(uri: str, txt: str) -> None:
         """Default method for writing text."""
-        warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
-            DeprecationWarning,
-        )
+        STAC_IO.issue_deprecation_warning()
         return StacIO.default().write_text(uri, txt)
 
     @staticmethod
@@ -288,12 +332,31 @@ class STAC_IO:
         href: Optional[str] = None,
         root: Optional["Catalog_Type"] = None,
     ) -> "STACObject_Type":
-        warnings.warn(
-            "STAC_IO is deprecated. "
-            "Please use instances of StacIO (e.g. StacIO.default()).",
-            DeprecationWarning,
-        )
-        return pystac.serialization.stac_object_from_dict(d, href, root)
+        STAC_IO.issue_deprecation_warning()
+        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+            collection_cache = None
+            if root is not None:
+                collection_cache = root._resolved_objects.as_collection_cache()
+
+            # Merge common properties in case this is an older STAC object.
+            merge_common_properties(
+                d, json_href=href, collection_cache=collection_cache
+            )
+
+        info = identify_stac_object(d)
+
+        d = migrate_to_latest(d, info)
+
+        if info.object_type == pystac.STACObjectType.CATALOG:
+            return pystac.Catalog.from_dict(d, href=href, root=root, migrate=False)
+
+        if info.object_type == pystac.STACObjectType.COLLECTION:
+            return pystac.Collection.from_dict(d, href=href, root=root, migrate=False)
+
+        if info.object_type == pystac.STACObjectType.ITEM:
+            return pystac.Item.from_dict(d, href=href, root=root, migrate=False)
+
+        raise ValueError(f"Unknown STAC object type {info.object_type}")
 
     # This is set in __init__.py
     _STAC_OBJECT_CLASSES = None
@@ -349,7 +412,9 @@ class STAC_IO:
             STAC_IO in order to enable additional URI types, replace that member
             with your own implementation.
         """
-        return json.loads(STAC_IO.read_text(uri))
+        STAC_IO.issue_deprecation_warning()
+        result: Dict[str, Any] = json.loads(STAC_IO.read_text(uri))
+        return result
 
     @classmethod
     def read_stac_object(

@@ -1,9 +1,10 @@
+from copy import deepcopy
 import os
 from datetime import datetime
 import json
+import tempfile
 from typing import Any, Dict, List
 import unittest
-from tempfile import TemporaryDirectory
 
 import pystac
 from pystac import Asset, Item, Provider
@@ -18,16 +19,17 @@ class ItemTest(unittest.TestCase):
     def get_example_item_dict(self) -> Dict[str, Any]:
         m = TestCases.get_path("data-files/item/sample-item.json")
         with open(m) as f:
-            item_dict = json.load(f)
+            item_dict: Dict[str, Any] = json.load(f)
         return item_dict
 
     def test_to_from_dict(self) -> None:
         self.maxDiff = None
 
         item_dict = self.get_example_item_dict()
+        param_dict = deepcopy(item_dict)
 
-        assert_to_from_dict(self, Item, item_dict)
-        item = Item.from_dict(item_dict)
+        assert_to_from_dict(self, Item, param_dict)
+        item = Item.from_dict(param_dict)
         self.assertEqual(item.id, "CS3-20160503_132131_05")
 
         # test asset creation additional field(s)
@@ -36,6 +38,14 @@ class ItemTest(unittest.TestCase):
             "http://cool-sat.com/catalog/products/analytic.json",
         )
         self.assertEqual(len(item.assets["thumbnail"].properties), 0)
+
+        # test that the parameter is preserved
+        self.assertEqual(param_dict, item_dict)
+
+        # assert that the parameter is not preserved with
+        # non-default parameter
+        _ = Item.from_dict(param_dict, preserve_dict=False)
+        self.assertNotEqual(param_dict, item_dict)
 
     def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
         cat = TestCases.test_case_2()
@@ -73,7 +83,7 @@ class ItemTest(unittest.TestCase):
 
         item.extra_fields["test"] = "extra"
 
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             p = os.path.join(tmp_dir, "item.json")
             item.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:
@@ -215,6 +225,14 @@ class ItemTest(unittest.TestCase):
 
         item.make_asset_hrefs_relative()
         self.assertEqual(asset.get_absolute_href(), original_href)
+
+    def test_from_invalid_dict_raises_exception(self) -> None:
+        stac_io = pystac.StacIO.default()
+        catalog_dict = stac_io.read_json(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        with self.assertRaises(pystac.STACTypeError):
+            _ = pystac.Item.from_dict(catalog_dict)
 
 
 class CommonMetadataTest(unittest.TestCase):
@@ -698,3 +716,27 @@ class CommonMetadataTest(unittest.TestCase):
         new_a1_value = cm.get_updated(item.assets["analytic"])
         self.assertEqual(new_a1_value, set_value)
         self.assertEqual(cm.updated, item_value)
+
+
+class ItemSubClassTest(unittest.TestCase):
+    """This tests cases related to creating classes inheriting from pystac.Catalog to
+    ensure that inheritance, class methods, etc. function as expected."""
+
+    SAMPLE_ITEM = TestCases.get_path("data-files/item/sample-item.json")
+
+    class BasicCustomItem(pystac.Item):
+        pass
+
+    def setUp(self) -> None:
+        self.stac_io = pystac.StacIO.default()
+
+    def test_from_dict_returns_subclass(self) -> None:
+        item_dict = self.stac_io.read_json(self.SAMPLE_ITEM)
+        custom_item = self.BasicCustomItem.from_dict(item_dict)
+
+        self.assertIsInstance(custom_item, self.BasicCustomItem)
+
+    def test_from_file_returns_subclass(self) -> None:
+        custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
+
+        self.assertIsInstance(custom_item, self.BasicCustomItem)

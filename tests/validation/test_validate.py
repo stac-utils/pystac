@@ -5,7 +5,7 @@ from typing import Any, Dict
 from pystac.utils import get_opt
 import shutil
 import unittest
-from tempfile import TemporaryDirectory
+import tempfile
 
 import jsonschema
 
@@ -43,13 +43,13 @@ class ValidateTest(unittest.TestCase):
                 valid = example.valid
 
                 if stac_version < "0.8":
-                    with open(path) as f:
+                    with open(path, encoding="utf-8") as f:
                         stac_json = json.load(f)
 
                     self.assertEqual(len(pystac.validation.validate_dict(stac_json)), 0)
                 else:
                     with self.subTest(path):
-                        with open(path) as f:
+                        with open(path, encoding="utf-8") as f:
                             stac_json = json.load(f)
 
                         # Check if common properties need to be merged
@@ -99,7 +99,7 @@ class ValidateTest(unittest.TestCase):
         # Modify a 0.8.1 collection in a catalog to be invalid with a
         # since-renamed extension and make sure it catches the validation error.
 
-        with TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory() as tmp_dir:
             dst_dir = os.path.join(tmp_dir, "catalog")
             # Copy test case 7 to the temporary directory
             catalog_href = get_opt(TestCases.test_case_7().get_self_href())
@@ -114,10 +114,14 @@ class ValidateTest(unittest.TestCase):
 
             # Modify a contained collection to add an extension for which the
             # collection is invalid.
-            with open(os.path.join(dst_dir, "acc/collection.json")) as f:
+            with open(
+                os.path.join(dst_dir, "acc/collection.json"), encoding="utf-8"
+            ) as f:
                 col = json.load(f)
             col["stac_extensions"] = ["asset"]
-            with open(os.path.join(dst_dir, "acc/collection.json"), "w") as f:
+            with open(
+                os.path.join(dst_dir, "acc/collection.json"), "w", encoding="utf-8"
+            ) as f:
                 json.dump(col, f)
 
             stac_dict = pystac.StacIO.default().read_json(new_cat_href)

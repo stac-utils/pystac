@@ -72,7 +72,7 @@ class PointcloudSchema:
         Returns:
             int
         """
-        result = self.properties.get("size")
+        result: Optional[int] = self.properties.get("size")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have size property: {self.properties}"
@@ -93,7 +93,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema does not have name property: {self.properties}"
@@ -111,7 +111,7 @@ class PointcloudSchema:
         Returns:
             str
         """
-        result = self.properties.get("type")
+        result: Optional[str] = self.properties.get("type")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud schema has no type property: {self.properties}"
@@ -226,7 +226,7 @@ class PointcloudStatistic:
         Returns:
             str
         """
-        result = self.properties.get("name")
+        result: Optional[str] = self.properties.get("name")
         if result is None:
             raise pystac.STACError(
                 f"Pointcloud statistics does not have name property: {self.properties}"
@@ -522,15 +522,21 @@ class PointcloudExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-    @staticmethod
-    def ext(obj: T) -> "PointcloudExtension[T]":
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "PointcloudExtension[T]":
         if isinstance(obj, pystac.Item):
+            if add_if_missing:
+                cls.add_to(obj)
+            cls.validate_has_extension(obj)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
         elif isinstance(obj, pystac.Asset):
+            if add_if_missing and isinstance(obj.owner, pystac.Item):
+                cls.add_to(obj.owner)
+            cls.validate_has_extension(obj)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Pointcloud extension does not apply to type {type(obj)}"
             )
 
 

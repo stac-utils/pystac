@@ -14,6 +14,7 @@ from pystac.extensions.scientific import (
     ScientificRelType,
     remove_link,
 )
+from tests.utils import TestCases
 
 URL_TEMPLATE = "http://example.com/catalog/%s.json"
 
@@ -73,6 +74,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.item = make_item()
+        self.example_item_uri = TestCases.get_path("data-files/scientific/item.json")
 
     def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.item))
@@ -206,6 +208,23 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Item does not include extension URI
+        item = pystac.Item.from_file(self.example_item_uri)
+        item.stac_extensions.remove(ScientificExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ScientificExtension.ext(item)
+
+    def test_ext_add_to(self) -> None:
+        item = pystac.Item.from_file(self.example_item_uri)
+        item.stac_extensions.remove(ScientificExtension.get_schema_uri())
+        self.assertNotIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+
+        _ = ScientificExtension.ext(item, add_if_missing=True)
+
+        self.assertIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+
 
 def make_collection() -> pystac.Collection:
     asset_id = "my/thing"
@@ -227,6 +246,9 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.collection = make_collection()
+        self.example_collection_uri = TestCases.get_path(
+            "data-files/scientific/collection.json"
+        )
 
     def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.collection))
@@ -364,6 +386,25 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(1, len(links))
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
+
+    def test_extension_not_implemented(self) -> None:
+        # Should raise exception if Collection does not include extension URI
+        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
+
+        with self.assertRaises(pystac.ExtensionNotImplemented):
+            _ = ScientificExtension.ext(collection)
+
+    def test_ext_add_to(self) -> None:
+        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
+        self.assertNotIn(
+            ScientificExtension.get_schema_uri(), collection.stac_extensions
+        )
+
+        _ = ScientificExtension.ext(collection, add_if_missing=True)
+
+        self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
 
 
 class SummariesScientificTest(unittest.TestCase):

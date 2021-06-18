@@ -35,6 +35,11 @@ class ExtensionAlreadyExistsError(Exception):
     pass
 
 
+class ExtensionNotImplemented(Exception):
+    """Attempted to extend a STAC object that does not implement the given
+    extension."""
+
+
 class RequiredPropertyMissing(Exception):
     """This error is raised when a required value was expected
     to be there but was missing or None. This will happen, for example,
