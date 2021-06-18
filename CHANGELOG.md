@@ -4,6 +4,18 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+### Deprecated
+
+## [v1.0.0-rc.1]
+
+### Added
+
 - License file included in distribution ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Links to Issues, Discussions, and documentation sites ([#409](https://github.com/stac-utils/pystac/pull/409))
 - Python minimum version set to `>=3.6` ([#409](https://github.com/stac-utils/pystac/pull/409))
@@ -25,6 +37,8 @@
 - `*Extension.ext` methods now have an optional `add_if_missing` argument, which will
   add the extension schema URI to the object's `stac_extensions` list if it is not
   present ([#450](https://github.com/stac-utils/pystac/pull/450))
+- `from_file` and `from_dict` methods on `STACObject` sub-classes always return instance
+  of calling class ([#451](https://github.com/stac-utils/pystac/pull/451))
 
 ### Fixed
 
@@ -37,9 +51,7 @@
   ([#455](https://github.com/stac-utils/pystac/pull/455))
 - Schema URI base for STAC 1.0.0-beta.1 ([#455](https://github.com/stac-utils/pystac/pull/455))
 
-### Removed
-
-## [1.0.0-beta.3]
+## [v1.0.0-beta.3]
 
 ### Added
 
@@ -60,7 +72,7 @@
 
 - Two v0.6.0 examples from the test suite ([#373](https://github.com/stac-utils/pystac/pull/373))
 
-## [1.0.0-beta.2]
+## [v1.0.0-beta.2]
 
 ### Changed
 
@@ -368,7 +380,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..main>
+[v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
 [v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
 [v1.0.0-beta.1]: <https://github.com/stac-utils/pystac/compare/v0.5.6..v1.0.0-beta.1>
