@@ -1,8 +1,11 @@
 """Tests for pystac.extensions.sar."""
 
 import datetime
+from random import choice
 from typing import List
 import unittest
+
+from string import ascii_letters
 
 import pystac
 from pystac.extensions import sar
@@ -179,6 +182,16 @@ class SarItemExtTest(unittest.TestCase):
         _ = SarExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(SarExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_return_none_when_observation_direction_is_not_set(self) -> None:
+        extension = SarExtension.ext(self.item)
+        extension.apply(
+            choice(ascii_letters),
+            choice(list(sar.FrequencyBand)),
+            [],
+            choice(ascii_letters),
+        )
+        self.assertIsNone(extension.observation_direction)
 
 
 if __name__ == "__main__":
