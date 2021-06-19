@@ -270,7 +270,7 @@ class ViewTest(unittest.TestCase):
         )
 
 
-class ViewSummariestest(unittest.TestCase):
+class ViewSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
         example_uri = TestCases.get_path(
