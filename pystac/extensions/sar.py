@@ -318,7 +318,7 @@ class SarExtension(
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"SAR extension does not apply to type {type(obj)}"
+                f"SAR extension does not apply to type '{type(obj).__name__}'"
             )
 
 

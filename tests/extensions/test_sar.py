@@ -8,6 +8,7 @@ import unittest
 from string import ascii_letters
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions import sar
 from pystac.extensions.sar import SarExtension
 from tests.utils import TestCases
@@ -192,6 +193,16 @@ class SarItemExtTest(unittest.TestCase):
             choice(ascii_letters),
         )
         self.assertIsNone(extension.observation_direction)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^SAR extension does not apply to type 'object'$",
+            SarExtension.ext,
+            object(),
+        )
 
 
 if __name__ == "__main__":
