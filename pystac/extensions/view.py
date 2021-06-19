@@ -167,7 +167,7 @@ class ViewExtension(
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"View extension does not apply to type {type(obj)}"
+                f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod
