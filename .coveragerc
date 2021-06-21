@@ -1,10 +1,11 @@
 [report]
-fail_under = 95
+fail_under = 93
 exclude_lines =
     if TYPE_CHECKING:
 
 
 [run]
+branch = true
 source =
     pystac
     tests
