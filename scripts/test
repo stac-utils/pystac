@@ -11,5 +11,5 @@ echo " -- RUNNING UNIT TESTS --"
 echo
 
 # Test suite with coverage enabled
-coverage run --source=pystac/ -m unittest discover tests/
+coverage run -m unittest discover tests
 coverage xml
