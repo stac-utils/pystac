@@ -1,4 +1,6 @@
+from copy import deepcopy
 import json
+from pystac.item_collection import ItemCollection
 import unittest
 import pystac
 
@@ -149,3 +151,15 @@ class TestItemCollection(unittest.TestCase):
             pystac.ItemCollection.is_item_collection(itemcollection_dict),
             msg="Did not correctly identify valid STAC 0.9 ItemCollection.",
         )
+
+    def test_from_dict_preserves_dict(self) -> None:
+        param_dict = deepcopy(self.item_collection_dict)
+
+        # test that the parameter is preserved
+        _ = ItemCollection.from_dict(param_dict)
+        self.assertEqual(param_dict, self.item_collection_dict)
+
+        # assert that the parameter is not preserved with
+        # non-default parameter
+        _ = ItemCollection.from_dict(param_dict, preserve_dict=False)
+        self.assertNotEqual(param_dict, self.item_collection_dict)

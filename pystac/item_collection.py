@@ -134,16 +134,26 @@ class ItemCollection(Collection[pystac.Item]):
         )
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "ItemCollection":
+    def from_dict(
+        cls, d: Dict[str, Any], preserve_dict: bool = True
+    ) -> "ItemCollection":
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
         Arguments:
             d : The dictionary from which the :class:`~ItemCollection` will be created
+            preserve_dict: If False, the dict parameter ``d`` may be modified
+                during this method call. Otherwise the dict is not mutated.
+                Defaults to True, which results results in a deepcopy of the
+                parameter. Set to False when possible to avoid the performance
+                hit of a deepcopy.
         """
         if not cls.is_item_collection(d):
             raise STACTypeError("Dict is not a valid ItemCollection")
 
-        items = [pystac.Item.from_dict(item) for item in d.get("features", [])]
+        items = [
+            pystac.Item.from_dict(item, preserve_dict=preserve_dict)
+            for item in d.get("features", [])
+        ]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
 
         return cls(items=items, extra_fields=extra_fields)
@@ -166,7 +176,7 @@ class ItemCollection(Collection[pystac.Item]):
 
         d = stac_io.read_json(href)
 
-        return cls.from_dict(d)
+        return cls.from_dict(d, preserve_dict=False)
 
     def save_object(
         self,

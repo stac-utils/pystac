@@ -4,6 +4,8 @@
 
 ### Added
 
+- Add a `preserve_dict` parameter to `ItemCollection.from_dict` and set it to False when using `ItemCollection.from_file`. ([#468](https://github.com/stac-utils/pystac/pull/468))
+
 ### Changed
 
 ### Fixed
