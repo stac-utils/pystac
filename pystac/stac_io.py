@@ -293,10 +293,6 @@ class DefaultStacIO(StacIO):
             f.write(txt)
 
 
-class DuplicateObjectKeyError(Exception):
-    pass
-
-
 class DuplicateKeyReportingMixin(StacIO):
     """A mixin for StacIO implementations that will report
     on duplicate keys in the JSON being read in.
