@@ -46,14 +46,19 @@ class StacIO(ABC):
     ) -> str:
         """Read text from the given URI.
 
-        The source to read from can be specified
-        as a string or a Link. If it's a string, it's the URL of the HREF from which to
-        read. When reading links, PySTAC will pass in the entire link body.
-        This enables implementations to utilize additional link information,
-        e.g. the "post" information in a pagination link from a STAC API search.
+        The source to read from can be specified as a string or a
+        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
+        which to read. Using a :class:`~pystac.Link` enables implementations to use
+        additional link information, such as paging information contained in the
+        extended links described in the `STAC API spec 
+        <https://github.com/radiantearth/stac-api-spec/tree/master/item-search#paging>`__.
 
         Args:
             source : The source to read from.
+            *args : Arbitrary positional arguments that may be utilized by the concrete
+                implementation.
+            **kwargs : Arbitrary keyword arguments that may be utilized by the concrete
+                implementation.
 
         Returns:
             str: The text contained in the file at the location specified by the uri.
@@ -66,10 +71,10 @@ class StacIO(ABC):
     ) -> None:
         """Write the given text to a file at the given URI.
 
-        The destination to write to from can be specified
-        as a string or a Link. If it's a string, it's the URL of the HREF from which to
-        read. When writing based on links links, PySTAC will pass in the entire
-        link body.
+        The destination to write to from can be specified as a string or a
+        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
+        which to read. Using a :class:`~pystac.Link` enables implementations to use
+        additional link information.
 
         Args:
             dest : The destination to write to.
@@ -122,6 +127,21 @@ class StacIO(ABC):
         root: Optional["Catalog_Type"] = None,
         preserve_dict: bool = True,
     ) -> "STACObject_Type":
+        """Deserializes a :class:`~pystac.STACObject` sub-class instance from a
+        dictionary.
+
+        Args:
+
+            d : The dictionary to deserialize
+            href : Optional href to associate with the STAC object
+            root : Optional root :class:`~pystac.Catalog` to associate with the
+                STAC object.
+            preserve_dict: If ``False``, the dict parameter ``d`` may be modified
+                during this method call. Otherwise the dict is not mutated.
+                Defaults to ``True``, which results results in a deepcopy of the
+                parameter. Set to ``False`` when possible to avoid the performance
+                hit of a deepcopy.
+        """
         if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
             collection_cache = None
             if root is not None:
@@ -244,8 +264,11 @@ class StacIO(ABC):
 
 class DefaultStacIO(StacIO):
     def read_text(
-        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+        self, source: Union[str, "Link_Type"], *_: Any, **__: Any
     ) -> str:
+        """A concrete implementation of :meth:`StacIO.read_text <pystac.StacIO.read_text>`. Converts the
+        ``source`` argument to a string (if it is not already) and delegates to
+        :meth:`DefaultStacIO.read_text_from_href` for opening and reading the file."""
         href: Optional[str]
         if isinstance(source, str):
             href = source
@@ -253,9 +276,19 @@ class DefaultStacIO(StacIO):
             href = source.get_absolute_href()
             if href is None:
                 raise IOError(f"Could not get an absolute HREF from link {source}")
-        return self.read_text_from_href(href, *args, **kwargs)
+        return self.read_text_from_href(href)
 
-    def read_text_from_href(self, href: str, *args: Any, **kwargs: Any) -> str:
+    def read_text_from_href(self, href: str) -> str:
+        """Reads file as a UTF-8 string.
+
+        If ``href`` has a "scheme" (e.g. if it starts with "https://") then this will
+        use :func:`urllib.request.urlopen` to open the file and read the contents;
+        otherwise, :func:`open` will be used to open a local file.
+
+        Args:
+
+            href : The URI of the file to open.
+        """
         parsed = safe_urlparse(href)
         href_contents: str
         if parsed.scheme != "":
@@ -270,8 +303,11 @@ class DefaultStacIO(StacIO):
         return href_contents
 
     def write_text(
-        self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
+        self, dest: Union[str, "Link_Type"], txt: str, *_: Any, **__: Any
     ) -> None:
+        """A concrete implementation of :meth:`StacIO.write_text <pystac.StacIO.write_text>`. Converts the
+        ``dest`` argument to a string (if it is not already) and delegates to
+        :meth:`DefaultStacIO.write_text_from_href` for opening and reading the file."""
         href: Optional[str]
         if isinstance(dest, str):
             href = dest
@@ -279,11 +315,21 @@ class DefaultStacIO(StacIO):
             href = dest.get_absolute_href()
             if href is None:
                 raise IOError(f"Could not get an absolute HREF from link {dest}")
-        return self.write_text_to_href(href, txt, *args, **kwargs)
+        return self.write_text_to_href(href, txt)
 
     def write_text_to_href(
-        self, href: str, txt: str, *args: Any, **kwargs: Any
+        self, href: str, txt: str
     ) -> None:
+        """Writes text to file using UTF-8 encoding.
+
+        This implementation uses :func:`open` and therefore can only write to the local
+        file system.
+
+        Args:
+
+            href : The path to which the file will be written.
+            txt : The string content to write to the file.
+        """
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -292,16 +338,16 @@ class DefaultStacIO(StacIO):
 
 
 class DuplicateKeyReportingMixin(StacIO):
-    """A mixin for StacIO implementations that will report
+    """A mixin for :class:`pystac.StacIO` implementations that will report
     on duplicate keys in the JSON being read in.
 
     See https://github.com/stac-utils/pystac/issues/313
     """
 
     def json_loads(self, txt: str, *_: Any, **__: Any) -> Dict[str, Any]:
-        """Overwrites :meth:`StacIO.json_loads` as the internal method used by
-        :class:`DuplicateKeyReportingMixin` for deserializing a JSON string to a
-        dictionary while checking for duplicate object keys.
+        """Overwrites :meth:`StacIO.json_loads <pystac.StacIO.json_loads>` as the
+        internal method used by :class:`DuplicateKeyReportingMixin` for deserializing
+        a JSON string to a dictionary while checking for duplicate object keys.
 
         Raises:
 
@@ -315,8 +361,9 @@ class DuplicateKeyReportingMixin(StacIO):
     def read_json(
         self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
     ) -> Dict[str, Any]:
-        """Overwrites :meth:`StacIO.read_json` for deserializing a JSON file to a
-        dictionary while checking for duplicate object keys.
+        """Overwrites :meth:`StacIO.read_json <pystac.StacIO.read_json>` for
+        deserializing a JSON file to a dictionary while checking for duplicate object
+        keys.
 
         Raises:
 

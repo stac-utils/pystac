@@ -225,72 +225,96 @@ written (e.g. if you are working with self-contained catalogs).
 
 .. _using stac_io:
 
-Using STAC_IO
+I/O in PySTAC
 =============
 
-The :class:`~pystac.STAC_IO` class is the way PySTAC reads and writes text from file
-locations. Since PySTAC aims to be dependency-free, there is no default mechanisms to
-read and write from anything but the local file system. However, users of PySTAC may
-want to read and write from other file systems, such as HTTP or cloud object storage.
-STAC_IO allows users to hook into PySTAC and define their own reading and writing
-primitives to allow for those use cases.
+The :class:`pystac.StacIO` class defines fundamental methods for I/O
+operations within PySTAC, including serialization and deserialization to and from
+JSON files and conversion to and from Python dictionaries. This is an abstract class
+and should not be instantiated directly. However, PySTAC provides a
+:class:`pystac.stac_io.DefaultStacIO` class with minimal implementations of these
+methods. This default implementation provides support for reading and writing files
+from the local filesystem as well as HTTP URIs (using ``urllib``). This class is
+created automatically by all of the object-specific I/O methods (e.g.
+:meth:`pystac.Catalog.from_file`), so most users will not need to instantiate this
+class themselves.
 
-To enable reading from other types of file systems, it is recommended that in the
-`__init__.py` of the client module, or at the beginning of the script using PySTAC, you
-overwrite the :func:`STAC_IO.read_text_method <pystac.STAC_IO.read_text_method>` and
-:func:`STAC_IO.write_text_method <pystac.STAC_IO.write_text_method>` members of STAC_IO
-with functions that read and write however you need. For example, this code will allow
+If you require custom logic for I/O operations or would like to use a 3rd-party library
+for I/O operations (e.g. ``requests``), you can create a sub-class of
+:class:`pystac.StacIO` (or :class:`pystac.DefaultStacIO`) and customize the methods as
+you see fit. You can then pass instances of this custom sub-class into the ``stac_io``
+argument of most object-specific I/O methods. You can also use
+:meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
+sub-class the default :class:`pystac.StacIO` implementation throughout the library.
+
+For example, this code will allow
 for reading from AWS's S3 cloud object storage using `boto3
-<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`_:
+<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__:
 
 .. code-block:: python
 
    from urllib.parse import urlparse
    import boto3
-   from pystac import STAC_IO
+   from pystac import Link
+   from pystac.stac_io import DefaultStacIO, StacIO
 
-   def my_read_method(uri):
-       parsed = urlparse(uri)
-       if parsed.scheme == 's3':
-           bucket = parsed.netloc
-           key = parsed.path[1:]
-           s3 = boto3.resource('s3')
-           obj = s3.Object(bucket, key)
-           return obj.get()['Body'].read().decode('utf-8')
-       else:
-           return STAC_IO.default_read_text_method(uri)
+   class CustomStacIO(DefaultStacIO):
+      def __init__():
+         self.s3 = boto3.resource("s3")
 
-   def my_write_method(uri, txt):
-       parsed = urlparse(uri)
-       if parsed.scheme == 's3':
-           bucket = parsed.netloc
-           key = parsed.path[1:]
-           s3 = boto3.resource("s3")
-           s3.Object(bucket, key).put(Body=txt)
-       else:
-           STAC_IO.default_write_text_method(uri, txt)
+      def read_text(
+         self, source: Union[str, Link], *args: Any, **kwargs: Any
+      ) -> str:
+         parsed = urlparse(uri)
+         if parsed.scheme == "s3":
+            bucket = parsed.netloc
+            key = parsed.path[1:]
+            
+            obj = self.s3.Object(bucket, key)
+            return obj.get()["Body"].read().decode("utf-8")
+         else:
+            return super().read_text(source, *args, **kwargs)
 
-   STAC_IO.read_text_method = my_read_method
-   STAC_IO.write_text_method = my_write_method
+      def write_text(
+         self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+      ) -> None:
+         parsed = urlparse(uri)
+         if parsed.scheme == "s3":
+            bucket = parsed.netloc
+            key = parsed.path[1:]
+            s3 = boto3.resource("s3")
+            s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+         else:
+            super().write_text(dest, txt, *args, **kwargs)
 
-If you are only going to read from another source, e.g. HTTP, you could only replace the
-read method. For example, using the `requests library
-<https://requests.kennethreitz.org/en/master>`_:
+   StacIO.set_default(CustomStacIO)
+   
+
+If you only need to customize read operations you can inherit from
+:class:`~pystac.stac_io.DefaultStacIO` and only overwrite the read method. For example,
+to take advantage of connection pooling using a `requests.Session
+<https://requests.kennethreitz.org/en/master>`__:
 
 .. code-block:: python
 
    from urllib.parse import urlparse
    import requests
-   from pystac import STAC_IO
+   from pystac.stac_io import DefaultStacIO, StacIO
 
-   def my_read_method(uri):
-       parsed = urlparse(uri)
-       if parsed.scheme.startswith('http'):
-           return requests.get(uri).text
-       else:
-           return STAC_IO.default_read_text_method(uri)
-
-   STAC_IO.read_text_method = my_read_method
+   class ConnectionPoolingIO(DefaultStacIO):
+      def __init__():
+         self.session = requests.Session()
+      
+      def read_text(
+         self, source: Union[str, Link], *args: Any, **kwargs: Any
+      ) -> str:
+         parsed = urlparse(uri)
+         if parsed.scheme.startswith("http"):
+            return self.session.get(uri).text
+         else:
+            return super().read_text(source, *args, **kwargs)
+   
+   StacIO.set_default(ConnectionPoolingIO)
 
 Validation
 ==========
