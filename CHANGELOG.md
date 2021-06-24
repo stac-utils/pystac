@@ -4,9 +4,21 @@
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Removed
+
+### Deprecated
+
+## [v1.0.0-rc.2]
+
+### Added
+
 - Add a `preserve_dict` parameter to `ItemCollection.from_dict` and set it to False when
   using `ItemCollection.from_file`.
-  ([#468](https://github.com/stac-utils/pystac/pull/468)) 
+  ([#468](https://github.com/stac-utils/pystac/pull/468))
 - `StacIO.json_dumps` and `StacIO.json_loads` methods for JSON
   serialization/deserialization. These were "private" methods, but are now "public" and
   documented ([#471](https://github.com/stac-utils/pystac/pull/471))
@@ -15,12 +27,6 @@
 
 - `pystac.stac_io.DuplicateObjectKeyError` moved to `pystac.DuplicateObjectKeyError`
   ([#471](https://github.com/stac-utils/pystac/pull/471))
-
-### Fixed
-
-### Removed
-
-### Deprecated
 
 ## [v1.0.0-rc.1]
 
@@ -391,7 +397,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..main>
+[v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
 [v1.0.0-beta.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.1..v1.0.0-beta.2>
