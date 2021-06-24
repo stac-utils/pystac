@@ -4,7 +4,7 @@ import warnings
 import tempfile
 
 import pystac
-from pystac.stac_io import STAC_IO, StacIO
+from pystac.stac_io import STAC_IO, StacIO, DefaultStacIO, DuplicateKeyReportingMixin
 from tests.utils import TestCases
 
 
@@ -117,3 +117,31 @@ class StacIOTest(unittest.TestCase):
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         self.assertIsInstance(catalog, pystac.Catalog)
+
+    def test_report_duplicate_keys(self) -> None:
+        # Directly from dict
+        class ReportingStacIO(DefaultStacIO, DuplicateKeyReportingMixin):
+            pass
+
+        stac_io = ReportingStacIO()
+        test_json = """{
+            "key": "value_1",
+            "key": "value_2"
+        }"""
+
+        with self.assertRaises(pystac.DuplicateObjectKeyError) as excinfo:
+            stac_io.json_loads(test_json)
+        self.assertEqual(str(excinfo.exception), 'Found duplicate object name "key"')
+
+        # From file
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            src_href = os.path.join(tmp_dir, "test.json")
+            with open(src_href, "w") as dst:
+                dst.write(test_json)
+
+            with self.assertRaises(pystac.DuplicateObjectKeyError) as excinfo:
+                stac_io.read_json(src_href)
+            self.assertEqual(
+                str(excinfo.exception),
+                f'Found duplicate object name "key" in {src_href}',
+            )

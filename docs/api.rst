@@ -171,6 +171,20 @@ StacIO
    :members:
    :undoc-members:
 
+DefaultStacIO
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.stac_io.DefaultStacIO
+   :members:
+   :show-inheritance:
+
+DuplicateKeyReportingMixin
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.stac_io.DuplicateKeyReportingMixin
+   :members:
+   :show-inheritance:
+
 STAC_IO
 ~~~~~~~
 
@@ -213,10 +227,46 @@ STACError
 
 .. autoclass:: pystac.STACError
 
+STACTypeError
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.STACTypeError
+
+DuplicateObjectKeyError
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.DuplicateObjectKeyError
+
+ExtensionAlreadyExistsError
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.ExtensionAlreadyExistsError
+
 ExtensionTypeError
 ~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.ExtensionTypeError
+
+ExtensionNotImplemented
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.ExtensionNotImplemented
+
+ExtensionTypeError
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.ExtensionTypeError
+
+RequiredPropertyMissing
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.RequiredPropertyMissing
+
+STACValidationError
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.STACValidationError
+
 
 Extensions
 ----------
