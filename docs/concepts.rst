@@ -269,7 +269,7 @@ for reading from AWS's S3 cloud object storage using `boto3
          if parsed.scheme == "s3":
             bucket = parsed.netloc
             key = parsed.path[1:]
-            
+
             obj = self.s3.Object(bucket, key)
             return obj.get()["Body"].read().decode("utf-8")
          else:
@@ -288,7 +288,7 @@ for reading from AWS's S3 cloud object storage using `boto3
             super().write_text(dest, txt, *args, **kwargs)
 
    StacIO.set_default(CustomStacIO)
-   
+
 
 If you only need to customize read operations you can inherit from
 :class:`~pystac.stac_io.DefaultStacIO` and only overwrite the read method. For example,
@@ -304,7 +304,7 @@ to take advantage of connection pooling using a `requests.Session
    class ConnectionPoolingIO(DefaultStacIO):
       def __init__():
          self.session = requests.Session()
-      
+
       def read_text(
          self, source: Union[str, Link], *args: Any, **kwargs: Any
       ) -> str:
@@ -313,7 +313,7 @@ to take advantage of connection pooling using a `requests.Session
             return self.session.get(uri).text
          else:
             return super().read_text(source, *args, **kwargs)
-   
+
    StacIO.set_default(ConnectionPoolingIO)
 
 Validation

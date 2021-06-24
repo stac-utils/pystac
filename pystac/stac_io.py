@@ -50,7 +50,7 @@ class StacIO(ABC):
         :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
         which to read. Using a :class:`~pystac.Link` enables implementations to use
         additional link information, such as paging information contained in the
-        extended links described in the `STAC API spec 
+        extended links described in the `STAC API spec
         <https://github.com/radiantearth/stac-api-spec/tree/master/item-search#paging>`__.
 
         Args:
@@ -263,12 +263,11 @@ class StacIO(ABC):
 
 
 class DefaultStacIO(StacIO):
-    def read_text(
-        self, source: Union[str, "Link_Type"], *_: Any, **__: Any
-    ) -> str:
-        """A concrete implementation of :meth:`StacIO.read_text <pystac.StacIO.read_text>`. Converts the
-        ``source`` argument to a string (if it is not already) and delegates to
-        :meth:`DefaultStacIO.read_text_from_href` for opening and reading the file."""
+    def read_text(self, source: Union[str, "Link_Type"], *_: Any, **__: Any) -> str:
+        """A concrete implementation of :meth:`StacIO.read_text
+        <pystac.StacIO.read_text>`. Converts the ``source`` argument to a string (if it
+        is not already) and delegates to :meth:`DefaultStacIO.read_text_from_href` for
+        opening and reading the file."""
         href: Optional[str]
         if isinstance(source, str):
             href = source
@@ -305,9 +304,10 @@ class DefaultStacIO(StacIO):
     def write_text(
         self, dest: Union[str, "Link_Type"], txt: str, *_: Any, **__: Any
     ) -> None:
-        """A concrete implementation of :meth:`StacIO.write_text <pystac.StacIO.write_text>`. Converts the
-        ``dest`` argument to a string (if it is not already) and delegates to
-        :meth:`DefaultStacIO.write_text_from_href` for opening and reading the file."""
+        """A concrete implementation of :meth:`StacIO.write_text
+        <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
+        is not already) and delegates to :meth:`DefaultStacIO.write_text_from_href` for
+        opening and reading the file."""
         href: Optional[str]
         if isinstance(dest, str):
             href = dest
@@ -317,9 +317,7 @@ class DefaultStacIO(StacIO):
                 raise IOError(f"Could not get an absolute HREF from link {dest}")
         return self.write_text_to_href(href, txt)
 
-    def write_text_to_href(
-        self, href: str, txt: str
-    ) -> None:
+    def write_text_to_href(self, href: str, txt: str) -> None:
         """Writes text to file using UTF-8 encoding.
 
         This implementation uses :func:`open` and therefore can only write to the local
