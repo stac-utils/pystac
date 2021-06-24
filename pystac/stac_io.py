@@ -3,7 +3,6 @@ import os
 import json
 from typing import (
     Any,
-    Callable,
     Dict,
     List,
     Optional,
@@ -18,7 +17,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
-from pystac.utils import safe_urlparse, get_opt
+from pystac.utils import safe_urlparse
 from pystac.serialization import (
     merge_common_properties,
     identify_stac_object_type,
@@ -105,8 +104,7 @@ class StacIO(ABC):
         This method may be overwritten in :class:`StacIO` sub-classes to provide custom
         serialization logic. The method accepts arbitrary keyword arguments. These are
         not used by the default implementation, but may be used by sub-class
-        implementations (see :meth:`DuplicateKeyReportingMixin.json_dumps` as an
-        example).
+        implementations.
 
         Args:
 
@@ -300,36 +298,51 @@ class DuplicateKeyReportingMixin(StacIO):
     See https://github.com/stac-utils/pystac/issues/313
     """
 
-    def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        source: Union[str, "Link_Type"] = get_opt(kwargs.get("source"))
+    def json_loads(self, txt: str, *_: Any, **__: Any) -> Dict[str, Any]:
+        """Overwrites :meth:`StacIO.json_loads` as the internal method used by
+        :class:`DuplicateKeyReportingMixin` for deserializing a JSON string to a
+        dictionary while checking for duplicate object keys.
+
+        Raises:
+
+            pystac.DuplicateObjectKeyError : If a duplicate object key is found.
+        """
         result: Dict[str, Any] = json.loads(
-            txt, object_pairs_hook=self.duplicate_object_names_report_builder(source)
+            txt, object_pairs_hook=self._report_duplicate_object_names
         )
         return result
 
-    @staticmethod
-    def duplicate_object_names_report_builder(
-        source: Union[str, "Link_Type"]
-    ) -> Callable[[List[Tuple[str, Any]]], Dict[str, Any]]:
-        def report_duplicate_object_names(
-            object_pairs: List[Tuple[str, Any]]
-        ) -> Dict[str, Any]:
-            result: Dict[str, Any] = {}
-            for key, value in object_pairs:
-                if key in result:
-                    url = (
-                        source
-                        if isinstance(source, str)
-                        else source.get_absolute_href()
-                    )
-                    raise DuplicateObjectKeyError(
-                        f"Found duplicate object name “{key}” in “{url}”"
-                    )
-                else:
-                    result[key] = value
-            return result
+    def read_json(
+        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Overwrites :meth:`StacIO.read_json` for deserializing a JSON file to a
+        dictionary while checking for duplicate object keys.
 
-        return report_duplicate_object_names
+        Raises:
+
+            pystac.DuplicateObjectKeyError : If a duplicate object key is found.
+        """
+        txt = self.read_text(source, *args, **kwargs)
+        try:
+            return self.json_loads(txt, source=source)
+        except pystac.DuplicateObjectKeyError as e:
+            url = source if isinstance(source, str) else source.get_absolute_href()
+            msg = str(e) + f" in {url}"
+            raise pystac.DuplicateObjectKeyError(msg)
+
+    @staticmethod
+    def _report_duplicate_object_names(
+        object_pairs: List[Tuple[str, Any]]
+    ) -> Dict[str, Any]:
+        result: Dict[str, Any] = {}
+        for key, value in object_pairs:
+            if key in result:
+                raise pystac.DuplicateObjectKeyError(
+                    f'Found duplicate object name "{key}"'
+                )
+            else:
+                result[key] = value
+        return result
 
 
 class STAC_IO:
