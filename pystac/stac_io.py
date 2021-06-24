@@ -18,7 +18,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
-from pystac.utils import safe_urlparse
+from pystac.utils import safe_urlparse, get_opt
 from pystac.serialization import (
     merge_common_properties,
     identify_stac_object_type,
@@ -78,7 +78,19 @@ class StacIO(ABC):
         """
         raise NotImplementedError("write_text not implemented")
 
-    def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+    def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        """Method used internally by :class:`StacIO` instances to deserialize a
+        dictionary from a JSON string.
+
+        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        deserialization logic. The method accepts arbitrary keyword arguments. These are
+        not used by the default implementation, but may be used by sub-class
+        implementations.
+
+        Args:
+
+            txt : The JSON string to deserialize to a dictionary.
+        """
         result: Dict[str, Any]
         if orjson is not None:
             result = orjson.loads(txt)
@@ -86,9 +98,20 @@ class StacIO(ABC):
             result = json.loads(txt)
         return result
 
-    def _json_dumps(
-        self, json_dict: Dict[str, Any], source: Union[str, "Link_Type"]
-    ) -> str:
+    def json_dumps(self, json_dict: Dict[str, Any], *args: Any, **kwargs: Any) -> str:
+        """Method used internally by :class:`StacIO` instances to serialize a dictionary
+        to a JSON string.
+
+        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        serialization logic. The method accepts arbitrary keyword arguments. These are
+        not used by the default implementation, but may be used by sub-class
+        implementations (see :meth:`DuplicateKeyReportingMixin.json_dumps` as an
+        example).
+
+        Args:
+
+            json_dict : The dictionary to serialize
+        """
         if orjson is not None:
             return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2).decode("utf-8")
         else:
@@ -143,16 +166,24 @@ class StacIO(ABC):
 
         Args:
             source : The source from which to read.
+            *args : Additional positional arguments to be passed to
+                :meth:`StacIO.read_text`.
+            **kwargs : Additional keyword arguments to be passed to
+                :meth:`StacIO.read_text`.
 
         Returns:
             dict: A dict representation of the JSON contained in the file at the
             given source.
         """
         txt = self.read_text(source, *args, **kwargs)
-        return self._json_loads(txt, source)
+        return self.json_loads(txt)
 
     def read_stac_object(
-        self, source: Union[str, "Link_Type"], root: Optional["Catalog_Type"] = None
+        self,
+        source: Union[str, "Link_Type"],
+        root: Optional["Catalog_Type"] = None,
+        *args: Any,
+        **kwargs: Any,
     ) -> "STACObject_Type":
         """Read a STACObject from a JSON file at the given source.
 
@@ -164,17 +195,25 @@ class StacIO(ABC):
             root : Optional root of the catalog for this object.
                 If provided, the root's resolved object cache can be used to search for
                 previously resolved instances of the STAC object.
+            *args : Additional positional arguments to be passed to
+                :meth:`StacIO.read_json`.
+            **kwargs : Additional keyword arguments to be passed to
+                :meth:`StacIO.read_json`.
 
         Returns:
             STACObject: The deserialized STACObject from the serialized JSON
             contained in the file at the given uri.
         """
-        d = self.read_json(source)
+        d = self.read_json(source, *args, **kwargs)
         href = source if isinstance(source, str) else source.get_absolute_href()
         return self.stac_object_from_dict(d, href=href, root=root, preserve_dict=False)
 
     def save_json(
-        self, dest: Union[str, "Link_Type"], json_dict: Dict[str, Any]
+        self,
+        dest: Union[str, "Link_Type"],
+        json_dict: Dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         """Write a dict to the given URI as JSON.
 
@@ -184,8 +223,12 @@ class StacIO(ABC):
         Args:
             dest : The destination file to write the text to.
             json_dict : The JSON dict to write.
+            *args : Additional positional arguments to be passed to
+                :meth:`StacIO.json_dumps`.
+            **kwargs : Additional keyword arguments to be passed to
+                :meth:`StacIO.json_dumps`.
         """
-        txt = self._json_dumps(json_dict, dest)
+        txt = self.json_dumps(json_dict, *args, **kwargs)
         self.write_text(dest, txt)
 
     @classmethod
@@ -261,7 +304,8 @@ class DuplicateKeyReportingMixin(StacIO):
     See https://github.com/stac-utils/pystac/issues/313
     """
 
-    def _json_loads(self, txt: str, source: Union[str, "Link_Type"]) -> Dict[str, Any]:
+    def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+        source: Union[str, "Link_Type"] = get_opt(kwargs.get("source"))
         result: Dict[str, Any] = json.loads(
             txt, object_pairs_hook=self.duplicate_object_names_report_builder(source)
         )
