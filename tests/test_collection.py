@@ -183,7 +183,7 @@ class CollectionTest(unittest.TestCase):
         collection = pystac.Collection.from_dict(data)
         collection.validate()
 
-    def test_to_dict_preserves_dict(self) -> None:
+    def test_from_dict_preserves_dict(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:
             collection_dict = json.load(f)
