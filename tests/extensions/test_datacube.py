@@ -1,6 +1,7 @@
+from typing import cast
 import unittest
 import pystac
-from pystac.extensions.datacube import DatacubeExtension
+from pystac.extensions.datacube import AdditionalDimension, DatacubeExtension
 
 from tests.utils import TestCases
 
@@ -13,6 +14,31 @@ class DatacubeTest(unittest.TestCase):
     def test_validate_datacube(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
+
+    def test_get_set(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        item.validate()
+        ext = DatacubeExtension.ext(item)
+        dim = ext.dimensions["x"]
+
+        assert dim.dim_type == "spatial"
+
+        spectral = ext.dimensions["spectral"]
+        spectral = cast(AdditionalDimension, spectral)
+
+        assert spectral.values == ["red", "green", "blue"]
+
+        del dim.properties["type"]
+
+        with self.assertRaises(pystac.errors.RequiredPropertyMissing):
+            dim.dim_type
+
+        dim.dim_type = "spatial"
+        dim.description = None
+
+        assert "description" not in dim.properties
+        dim.dim_type = None  # type: ignore
+        assert "type" in dim.properties
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
@@ -50,3 +76,15 @@ class DatacubeTest(unittest.TestCase):
         _ = DatacubeExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(DatacubeExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_clear_step(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        ext = DatacubeExtension.ext(item)
+        dim = ext.dimensions["pressure_levels"]
+        assert isinstance(dim, AdditionalDimension)
+
+        assert dim.step == 100
+        dim.step = None
+        assert "step" in dim.properties
+        dim.clear_step()
+        assert "step" not in dim.properties

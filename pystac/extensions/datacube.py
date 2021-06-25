@@ -4,7 +4,18 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Protocol,
+    Set,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac.extensions.base import (
@@ -30,33 +41,65 @@ DIM_STEP_PROP = "step"
 DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
 
+U = TypeVar("U")
+
+
+class HasProperties(Protocol[U]):
+    @property
+    def properties(self) -> Dict[str, U]:
+        """A dictionary with the properties for the object."""
+
+
+class _Property(Generic[U]):
+    """
+    A descriptor managing the properties of an object.
+
+    Args:
+        key : The key within the managed object's ``properties`` dictionary to use.
+        obj : The key this object is contained with (e.g. ``"cube:variables"``)
+        required : Whether the property is required.
+        clear_if_none : Whether setting a value of `None` clears the value from
+            the ``properties`` dictionary.
+    """
+
+    def __init__(
+        self,
+        key: str,
+        obj: Union[str, Any] = None,
+        required: bool = False,
+        clear_if_none: Optional[bool] = None,
+    ):
+        self.key = key
+        self.obj = obj
+        self.required = required
+        if clear_if_none is None:
+            clear_if_none = not required
+        self.clear_if_none = clear_if_none
+
+    def __get__(self, instance: HasProperties[U], owner: Any = None) -> Optional[U]:
+        properties: Dict[str, U] = getattr(instance, "properties")
+        if self.required:
+            return get_required(properties.get(self.key), self.obj, self.key)
+        else:
+            return properties.get(self.key)
+
+    def __set__(self, obj: HasProperties[U], value: U) -> None:
+        properties = getattr(obj, "properties")
+        if value is None and self.clear_if_none:
+            properties.pop(self.key, None)
+        else:
+            properties[self.key] = value
+
 
 class Dimension(ABC):
     properties: Dict[str, Any]
+    dim_type: _Property[str] = _Property(
+        DIM_TYPE_PROP, "cube:dimensions", required=True
+    )
+    description: _Property[Optional[str]] = _Property(DIM_DESC_PROP)
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
-
-    @property
-    def dim_type(self) -> str:
-        return get_required(
-            self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
-        )
-
-    @dim_type.setter
-    def dim_type(self, v: str) -> None:
-        self.properties[DIM_TYPE_PROP] = v
-
-    @property
-    def description(self) -> Optional[str]:
-        return self.properties.get(DIM_DESC_PROP)
-
-    @description.setter
-    def description(self, v: Optional[str]) -> None:
-        if v is None:
-            self.properties.pop(DIM_DESC_PROP, None)
-        else:
-            self.properties[DIM_DESC_PROP] = v
 
     def to_dict(self) -> Dict[str, Any]:
         return self.properties
@@ -85,103 +128,34 @@ class Dimension(ABC):
 
 
 class HorizontalSpatialDimension(Dimension):
-    @property
-    def axis(self) -> str:
-        return get_required(
-            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
-        )
-
-    @axis.setter
-    def axis(self, v: str) -> None:
-        self.properties[DIM_TYPE_PROP] = v
-
-    @property
-    def extent(self) -> List[float]:
-        return get_required(
-            self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
-        )
-
-    @extent.setter
-    def extent(self, v: List[float]) -> None:
-        self.properties[DIM_EXTENT_PROP] = v
-
-    @property
-    def values(self) -> Optional[List[float]]:
-        return self.properties.get(DIM_VALUES_PROP)
-
-    @values.setter
-    def values(self, v: Optional[List[float]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_VALUES_PROP, None)
-        else:
-            self.properties[DIM_VALUES_PROP] = v
-
-    @property
-    def step(self) -> Optional[float]:
-        return self.properties.get(DIM_STEP_PROP)
-
-    @step.setter
-    def step(self, v: Optional[float]) -> None:
-        self.properties[DIM_STEP_PROP] = v
+    axis: _Property[str] = _Property(DIM_AXIS_PROP, "cube:dimensions", required=True)
+    extent: _Property[List[float]] = _Property(
+        DIM_EXTENT_PROP, "cube:dimensions", required=True
+    )
+    values: _Property[Optional[List[float]]] = _Property(DIM_VALUES_PROP)
+    step: _Property[Optional[float]] = _Property(DIM_STEP_PROP, clear_if_none=False)
+    reference_system: _Property[
+        Optional[Union[str, float, Dict[str, Any]]]
+    ] = _Property(DIM_REF_SYS_PROP)
 
     def clear_step(self) -> None:
         """Setting step to None sets it to the null value,
         which means irregularly spaced steps. Use clear_step
         to remove it from the properties."""
         self.properties.pop(DIM_STEP_PROP, None)
-
-    @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
-        return self.properties.get(DIM_REF_SYS_PROP)
-
-    @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_REF_SYS_PROP, None)
-        else:
-            self.properties[DIM_REF_SYS_PROP] = v
 
 
 class VerticalSpatialDimension(Dimension):
-    @property
-    def axis(self) -> str:
-        return get_required(
-            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
-        )
-
-    @axis.setter
-    def axis(self, v: str) -> None:
-        self.properties[DIM_TYPE_PROP] = v
-
-    @property
-    def extent(self) -> Optional[List[Optional[float]]]:
-        return self.properties.get(DIM_EXTENT_PROP)
-
-    @extent.setter
-    def extent(self, v: Optional[List[Optional[float]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_EXTENT_PROP, None)
-        else:
-            self.properties[DIM_EXTENT_PROP] = v
-
-    @property
-    def values(self) -> Optional[Union[List[float], List[str]]]:
-        return self.properties.get(DIM_VALUES_PROP)
-
-    @values.setter
-    def values(self, v: Optional[Union[List[float], List[str]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_VALUES_PROP, None)
-        else:
-            self.properties[DIM_VALUES_PROP] = v
-
-    @property
-    def step(self) -> Optional[float]:
-        return self.properties.get(DIM_STEP_PROP)
-
-    @step.setter
-    def step(self, v: Optional[float]) -> None:
-        self.properties[DIM_STEP_PROP] = v
+    axis: _Property[str] = _Property(DIM_AXIS_PROP, required=True)
+    extent: _Property[Optional[List[Optional[float]]]] = _Property(DIM_EXTENT_PROP)
+    values: _Property[Optional[Union[List[float], List[str]]]] = _Property(
+        DIM_VALUES_PROP
+    )
+    step: _Property[Optional[float]] = _Property(DIM_STEP_PROP, clear_if_none=False)
+    unit: _Property[Optional[str]] = _Property(DIM_UNIT_PROP)
+    reference_system: _Property[
+        Optional[Union[str, float, Dict[str, Any]]]
+    ] = _Property(DIM_REF_SYS_PROP)
 
     def clear_step(self) -> None:
         """Setting step to None sets it to the null value,
@@ -189,59 +163,11 @@ class VerticalSpatialDimension(Dimension):
         to remove it from the properties."""
         self.properties.pop(DIM_STEP_PROP, None)
 
-    @property
-    def unit(self) -> Optional[str]:
-        return self.properties.get(DIM_UNIT_PROP)
-
-    @unit.setter
-    def unit(self, v: Optional[str]) -> None:
-        if v is None:
-            self.properties.pop(DIM_UNIT_PROP, None)
-        else:
-            self.properties[DIM_UNIT_PROP] = v
-
-    @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
-        return self.properties.get(DIM_REF_SYS_PROP)
-
-    @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_REF_SYS_PROP, None)
-        else:
-            self.properties[DIM_REF_SYS_PROP] = v
-
 
 class TemporalDimension(Dimension):
-    @property
-    def extent(self) -> Optional[List[Optional[str]]]:
-        return self.properties.get(DIM_EXTENT_PROP)
-
-    @extent.setter
-    def extent(self, v: Optional[List[Optional[str]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_EXTENT_PROP, None)
-        else:
-            self.properties[DIM_EXTENT_PROP] = v
-
-    @property
-    def values(self) -> Optional[List[str]]:
-        return self.properties.get(DIM_VALUES_PROP)
-
-    @values.setter
-    def values(self, v: Optional[List[str]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_VALUES_PROP, None)
-        else:
-            self.properties[DIM_VALUES_PROP] = v
-
-    @property
-    def step(self) -> Optional[str]:
-        return self.properties.get(DIM_STEP_PROP)
-
-    @step.setter
-    def step(self, v: Optional[str]) -> None:
-        self.properties[DIM_STEP_PROP] = v
+    extent: _Property[Optional[List[Optional[str]]]] = _Property(DIM_EXTENT_PROP)
+    values: _Property[Optional[List[str]]] = _Property(DIM_VALUES_PROP)
+    step: _Property[Optional[str]] = _Property(DIM_STEP_PROP, clear_if_none=False)
 
     def clear_step(self) -> None:
         """Setting step to None sets it to the null value,
@@ -251,63 +177,21 @@ class TemporalDimension(Dimension):
 
 
 class AdditionalDimension(Dimension):
-    @property
-    def extent(self) -> Optional[List[Optional[float]]]:
-        return self.properties.get(DIM_EXTENT_PROP)
-
-    @extent.setter
-    def extent(self, v: Optional[List[Optional[float]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_EXTENT_PROP, None)
-        else:
-            self.properties[DIM_EXTENT_PROP] = v
-
-    @property
-    def values(self) -> Optional[Union[List[str], List[float]]]:
-        return self.properties.get(DIM_VALUES_PROP)
-
-    @values.setter
-    def values(self, v: Optional[Union[List[str], List[float]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_VALUES_PROP, None)
-        else:
-            self.properties[DIM_VALUES_PROP] = v
-
-    @property
-    def step(self) -> Optional[float]:
-        return self.properties.get(DIM_STEP_PROP)
-
-    @step.setter
-    def step(self, v: Optional[float]) -> None:
-        self.properties[DIM_STEP_PROP] = v
+    extent: _Property[Optional[List[Optional[float]]]] = _Property(DIM_EXTENT_PROP)
+    values: _Property[Optional[Union[List[str], List[float]]]] = _Property(
+        DIM_VALUES_PROP
+    )
+    step: _Property[Optional[float]] = _Property(DIM_STEP_PROP, clear_if_none=False)
+    unit: _Property[Optional[str]] = _Property(DIM_UNIT_PROP)
+    reference_system: _Property[
+        Optional[Union[str, float, Dict[str, Any]]]
+    ] = _Property(DIM_REF_SYS_PROP)
 
     def clear_step(self) -> None:
         """Setting step to None sets it to the null value,
         which means irregularly spaced steps. Use clear_step
         to remove it from the properties."""
         self.properties.pop(DIM_STEP_PROP, None)
-
-    @property
-    def unit(self) -> Optional[str]:
-        return self.properties.get(DIM_UNIT_PROP)
-
-    @unit.setter
-    def unit(self, v: Optional[str]) -> None:
-        if v is None:
-            self.properties.pop(DIM_UNIT_PROP, None)
-        else:
-            self.properties[DIM_UNIT_PROP] = v
-
-    @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
-        return self.properties.get(DIM_REF_SYS_PROP)
-
-    @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_REF_SYS_PROP, None)
-        else:
-            self.properties[DIM_REF_SYS_PROP] = v
 
 
 class DatacubeExtension(
