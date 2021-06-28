@@ -39,6 +39,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: actions-rs/toolchain@v1
+        # No wheels exist for orjson on Python 3.10 on MacOS or Windows, and the Linux
+        #  wheels are sometimes not uploaded until after the package is initially
+        # published. This sets up the Rust nightly toolchain so we can build the orjson
+        # wheel.
         if: ${{ startsWith(matrix.python-version, '3.10')}}
         with:
           toolchain: nightly

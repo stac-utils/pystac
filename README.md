@@ -37,6 +37,10 @@ optional `orjson` requirements:
 > pip install pystac[orjson]
 ```
 
+> *`orjson` wheels are only available for Linux in Python 3.10. If you are using the
+> `orjson` extra with Python 3.10 you will need to have the Rust nightly toolchain
+> installed as your default toolchain in order to build the package wheel.*
+
 From source repository:
 
 ```bash
