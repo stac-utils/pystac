@@ -10,6 +10,9 @@ PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://sta
 
 ## Installation
 
+PySTAC requires Python>=3.6. Support for Python>=3.10 should be considered experimental
+until further notice.
+
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
 
