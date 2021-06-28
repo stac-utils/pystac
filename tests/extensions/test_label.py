@@ -10,6 +10,7 @@ from pystac.extensions.label import (
     LabelExtension,
     LabelClasses,
     LabelCount,
+    LabelMethod,
     LabelOverview,
     LabelStatistics,
     LabelTask,
@@ -522,3 +523,20 @@ class LabelSummariesTest(unittest.TestCase):
         label_tasks_summary_ext = label_ext_summaries.label_tasks
         assert label_tasks_summary_ext is not None
         self.assertListEqual(label_tasks, label_tasks_summary_ext)
+
+    def test_label_methods_summary(self) -> None:
+        label_methods: List[Union[LabelMethod, str]] = [LabelMethod.AUTOMATED]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_methods = label_methods
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_methods_summary = summaries.get_list("label:methods")
+        assert label_methods_summary is not None
+        self.assertListEqual(label_methods, label_methods_summary)
+
+        label_methods_summary_ext = label_ext_summaries.label_methods
+        assert label_methods_summary_ext is not None
+        self.assertListEqual(label_methods, label_methods_summary_ext)
