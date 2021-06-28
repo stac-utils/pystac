@@ -372,17 +372,30 @@ class Provider:
             licensor, producer, processor or host.
         url : Optional homepage on which the provider describes the dataset
             and publishes contact information.
-
-    Attributes:
-        name : The name of the organization or the individual.
-        description : Optional multi-line description to add further provider
-            information such as processing details for processors and producers,
-            hosting details for hosts or basic contact information.
-        roles : Optional roles of the provider. Any of
-            licensor, producer, processor or host.
-        url : Optional homepage on which the provider describes the dataset
-            and publishes contact information.
+        extra_fields : Optional dictionary containing additional top-level fields
+            defined on the Provider object.
+    object.
     """
+
+    name: str
+    """The name of the organization or the individual."""
+
+    description: Optional[str]
+    """Optional multi-line description to add further provider
+    information such as processing details for processors and producers,
+    hosting details for hosts or basic contact information."""
+
+    roles: Optional[List[str]]
+    """Optional roles of the provider. Any of
+    licensor, producer, processor or host."""
+
+    url: Optional[str]
+    """Optional homepage on which the provider describes the dataset
+    and publishes contact information."""
+
+    extra_fields: Dict[str, Any]
+    """Dictionary containing additional top-level fields defined on the Provider
+    object."""
 
     def __init__(
         self,
@@ -390,11 +403,13 @@ class Provider:
         description: Optional[str] = None,
         roles: Optional[List[str]] = None,
         url: Optional[str] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
     ):
         self.name = name
         self.description = description
         self.roles = roles
         self.url = url
+        self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Provider.
@@ -410,6 +425,8 @@ class Provider:
         if self.url is not None:
             d["url"] = self.url
 
+        d.update(self.extra_fields)
+
         return d
 
     @staticmethod
@@ -417,13 +434,20 @@ class Provider:
         """Constructs an Provider from a dict.
 
         Returns:
-            TemporalExtent: The Provider deserialized from the JSON dict.
+            Provider: The Provider deserialized from the JSON dict.
         """
         return Provider(
             name=d["name"],
             description=d.get("description"),
-            roles=d.get("roles"),
+            roles=d.get(
+                "roles",
+            ),
             url=d.get("url"),
+            extra_fields={
+                k: v
+                for k, v in d.items()
+                if k not in {"name", "description", "roles", "url"}
+            },
         )
 
 
