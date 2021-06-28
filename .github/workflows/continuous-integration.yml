@@ -38,6 +38,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - uses: actions-rs/toolchain@v1
+        if: ${{ startsWith(matrix.python-version, '3.10')}}
+        with:
+          toolchain: nightly
+          override: true
+          default: true
+          profile: minimal
+
       - name: Cache dependencies (Linux)
         if: startsWith(runner.os, 'Linux')
         uses: actions/cache@v2
