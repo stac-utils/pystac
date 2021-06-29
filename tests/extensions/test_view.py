@@ -258,7 +258,7 @@ class ViewTest(unittest.TestCase):
         self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
 
 
-class ViewSummariestest(unittest.TestCase):
+class ViewSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
         example_uri = TestCases.get_path(
