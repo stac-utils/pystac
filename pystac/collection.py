@@ -117,7 +117,7 @@ class SpatialExtent:
         Args:
             coordinates : Coordinates to derive the bbox from.
             extra_fields : Dictionary containing additional top-level fields defined on
-                the Spatial Extent object.
+                the SpatialExtent object.
 
         Returns:
             SpatialExtent: A SpatialExtent with a single bbox that covers the
@@ -438,7 +438,6 @@ class Provider:
             and publishes contact information.
         extra_fields : Optional dictionary containing additional top-level fields
             defined on the Provider object.
-    object.
     """
 
     name: str
