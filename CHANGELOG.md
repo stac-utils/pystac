@@ -5,6 +5,11 @@
 ### Added
 
 - (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
+-  `LabelTask` enum in `pystac.extensions.label` with recommended values for
+  `"label:tasks"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
+-  `LabelMethod` enum in `pystac.extensions.label` with recommended values for
+  `"label:methods"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
+- Label Extension summaries ([#484](https://github.com/stac-utils/pystac/pull/484))
 
 ### Changed
 

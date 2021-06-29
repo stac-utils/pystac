@@ -2,15 +2,18 @@ import json
 import os
 import unittest
 import tempfile
+from typing import List, Union
 
 import pystac
-from pystac import Catalog, Item, CatalogType
+from pystac import Catalog, Collection, Item, CatalogType
 from pystac.extensions.label import (
     LabelExtension,
     LabelClasses,
     LabelCount,
+    LabelMethod,
     LabelOverview,
     LabelStatistics,
+    LabelTask,
     LabelType,
     LabelRelType,
 )
@@ -28,6 +31,59 @@ class LabelTypeTest(unittest.TestCase):
 class LabelRelTypeTest(unittest.TestCase):
     def test_rel_types(self) -> None:
         self.assertEqual(str(LabelRelType.SOURCE), "source")
+
+
+class LabelTaskTest(unittest.TestCase):
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(LabelTask.REGRESSION), "regression")
+        self.assertEqual(str(LabelTask.CLASSIFICATION), "classification")
+        self.assertEqual(str(LabelTask.DETECTION), "detection")
+        self.assertEqual(str(LabelTask.SEGMENTATION), "segmentation")
+
+
+class LabelCountTest(unittest.TestCase):
+    def test_label_count_equality(self) -> None:
+        count1 = LabelCount.create(name="prop", count=1)
+        count2 = LabelCount.create(name="prop", count=1)
+        count3 = LabelCount.create(name="other", count=1)
+        count4 = LabelCount.create(name="prop", count=2)
+
+        self.assertEqual(count1, count2)
+        self.assertNotEqual(count1, count3)
+        self.assertNotEqual(count1, count4)
+        self.assertNotEqual(count1, 42)
+
+
+class LabelOverviewTest(unittest.TestCase):
+    def test_label_count_equality(self) -> None:
+        stats1 = LabelStatistics.create(name="prop", value=42.3)
+        count1 = LabelCount.create(name="prop", count=1)
+
+        overview1 = LabelOverview.create(
+            property_key="first", counts=[count1], statistics=[stats1]
+        )
+        overview2 = LabelOverview.create(
+            property_key="first", counts=[count1], statistics=[stats1]
+        )
+        overview3 = LabelOverview.create(property_key="first", counts=[count1])
+        overview4 = LabelOverview.create(property_key="first", statistics=[stats1])
+        self.assertEqual(overview1, overview2)
+        self.assertNotEqual(overview1, overview3)
+        self.assertNotEqual(overview1, overview4)
+        self.assertNotEqual(overview1, 42)
+
+
+class LabelStatisticsTest(unittest.TestCase):
+    def test_label_statistics_equality(self) -> None:
+        stats1 = LabelStatistics.create(name="prop", value=42.3)
+        stats2 = LabelStatistics.create(name="prop", value=42.3)
+        stats3 = LabelStatistics.create(name="other", value=42.3)
+        stats4 = LabelStatistics.create(name="prop", value=73.4)
+
+        self.assertEqual(stats1, stats2)
+        self.assertNotEqual(stats1, stats3)
+        self.assertNotEqual(stats1, stats4)
+        self.assertNotEqual(stats1, 42)
 
 
 class LabelTest(unittest.TestCase):
@@ -385,3 +441,102 @@ class LabelTest(unittest.TestCase):
         _ = LabelExtension.ext(item, add_if_missing=True)
 
         self.assertIn(LabelExtension.get_schema_uri(), item.stac_extensions)
+
+
+class LabelSummariesTest(unittest.TestCase):
+    EXAMPLE_COLLECTION = TestCases.get_path(
+        "data-files/label/spacenet-roads/roads_collection.json"
+    )
+
+    def test_label_properties_summary(self) -> None:
+        label_properties = ["road_type", "lane_number", "paved"]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_properties = label_properties
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_properties_summary = summaries.get_list("label:properties")
+        assert label_properties_summary is not None
+        self.assertListEqual(label_properties, label_properties_summary)
+
+        label_properties_summary_ext = label_ext_summaries.label_properties
+        assert label_properties_summary_ext is not None
+        self.assertListEqual(label_properties, label_properties_summary_ext)
+
+    def test_label_classes_summary(self) -> None:
+        label_classes = [
+            LabelClasses(
+                {"name": "road_type", "classes": ["1", "2", "3", "4", "5", "6"]}
+            ),
+            LabelClasses({"name": "lane_number", "classes": ["1", "2", "3", "4", "5"]}),
+            LabelClasses({"name": "paved", "classes": ["0", "1"]}),
+        ]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_classes = label_classes
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_classes_summary = summaries.get_list("label:classes")
+        assert label_classes_summary is not None
+        self.assertListEqual(
+            [lc.to_dict() for lc in label_classes], label_classes_summary
+        )
+
+        label_classes_summary_ext = label_ext_summaries.label_classes
+        assert label_classes_summary_ext is not None
+        self.assertListEqual(label_classes, label_classes_summary_ext)
+
+    def test_label_type_summary(self) -> None:
+        label_types = [LabelType.VECTOR]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_type = label_types
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_type_summary = summaries.get_list("label:type")
+        assert label_type_summary is not None
+        self.assertListEqual(label_types, label_type_summary)
+
+        label_type_summary_ext = label_ext_summaries.label_type
+        assert label_type_summary_ext is not None
+        self.assertListEqual(label_types, label_type_summary_ext)
+
+    def test_label_task_summary(self) -> None:
+        label_tasks: List[Union[LabelTask, str]] = [LabelTask.REGRESSION]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_tasks = label_tasks
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_tasks_summary = summaries.get_list("label:tasks")
+        assert label_tasks_summary is not None
+        self.assertListEqual(label_tasks, label_tasks_summary)
+
+        label_tasks_summary_ext = label_ext_summaries.label_tasks
+        assert label_tasks_summary_ext is not None
+        self.assertListEqual(label_tasks, label_tasks_summary_ext)
+
+    def test_label_methods_summary(self) -> None:
+        label_methods: List[Union[LabelMethod, str]] = [LabelMethod.AUTOMATED]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_methods = label_methods
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_methods_summary = summaries.get_list("label:methods")
+        assert label_methods_summary is not None
+        self.assertListEqual(label_methods, label_methods_summary)
+
+        label_methods_summary_ext = label_ext_summaries.label_methods
+        assert label_methods_summary_ext is not None
+        self.assertListEqual(label_methods, label_methods_summary_ext)
