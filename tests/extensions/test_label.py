@@ -5,13 +5,14 @@ import tempfile
 from typing import List, Union
 
 import pystac
-from pystac import Catalog, Item, CatalogType
+from pystac import Catalog, Collection, Item, CatalogType
 from pystac.extensions.label import (
     LabelExtension,
     LabelClasses,
     LabelCount,
     LabelOverview,
     LabelStatistics,
+    LabelTask,
     LabelType,
     LabelRelType,
 )
@@ -439,3 +440,85 @@ class LabelTest(unittest.TestCase):
         _ = LabelExtension.ext(item, add_if_missing=True)
 
         self.assertIn(LabelExtension.get_schema_uri(), item.stac_extensions)
+
+
+class LabelSummariesTest(unittest.TestCase):
+    EXAMPLE_COLLECTION = TestCases.get_path(
+        "data-files/label/spacenet-roads/roads_collection.json"
+    )
+
+    def test_label_properties_summary(self) -> None:
+        label_properties = ["road_type", "lane_number", "paved"]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_properties = label_properties
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_properties_summary = summaries.get_list("label:properties")
+        assert label_properties_summary is not None
+        self.assertListEqual(label_properties, label_properties_summary)
+
+        label_properties_summary_ext = label_ext_summaries.label_properties
+        assert label_properties_summary_ext is not None
+        self.assertListEqual(label_properties, label_properties_summary_ext)
+
+    def test_label_classes_summary(self) -> None:
+        label_classes = [
+            LabelClasses(
+                {"name": "road_type", "classes": ["1", "2", "3", "4", "5", "6"]}
+            ),
+            LabelClasses({"name": "lane_number", "classes": ["1", "2", "3", "4", "5"]}),
+            LabelClasses({"name": "paved", "classes": ["0", "1"]}),
+        ]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_classes = label_classes
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_classes_summary = summaries.get_list("label:classes")
+        assert label_classes_summary is not None
+        self.assertListEqual(
+            [lc.to_dict() for lc in label_classes], label_classes_summary
+        )
+
+        label_classes_summary_ext = label_ext_summaries.label_classes
+        assert label_classes_summary_ext is not None
+        self.assertListEqual(label_classes, label_classes_summary_ext)
+
+    def test_label_type_summary(self) -> None:
+        label_types = [LabelType.VECTOR]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_type = label_types
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_type_summary = summaries.get_list("label:type")
+        assert label_type_summary is not None
+        self.assertListEqual(label_types, label_type_summary)
+
+        label_type_summary_ext = label_ext_summaries.label_type
+        assert label_type_summary_ext is not None
+        self.assertListEqual(label_types, label_type_summary_ext)
+
+    def test_label_task_summary(self) -> None:
+        label_tasks: List[Union[LabelTask, str]] = [LabelTask.REGRESSION]
+        collection = Collection.from_file(self.EXAMPLE_COLLECTION)
+        label_ext_summaries = LabelExtension.summaries(collection)
+
+        label_ext_summaries.label_tasks = label_tasks
+
+        summaries = collection.summaries
+        assert summaries is not None
+        label_tasks_summary = summaries.get_list("label:tasks")
+        assert label_tasks_summary is not None
+        self.assertListEqual(label_tasks, label_tasks_summary)
+
+        label_tasks_summary_ext = label_ext_summaries.label_tasks
+        assert label_tasks_summary_ext is not None
+        self.assertListEqual(label_tasks, label_tasks_summary_ext)
