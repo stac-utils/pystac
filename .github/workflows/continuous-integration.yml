@@ -111,11 +111,14 @@ jobs:
           pip install -e ".[validation]"
       
       - name: Execute test suite
-        # --fail-under=0 ensures we publish the coverage regardless of whether it meets
-        # the minimum so we can use Codecov to evaluate gaps
-        run: |
-          coverage run --source=pystac/ -m unittest discover tests/
-          coverage xml --fail-under=0
+        run: ./scripts/test
+        env:
+          CHECK_COVERAGE: true
+
+      - name: Prepare ./coverage.xml
+        # Ignore the configured fail-under to ensure we upload the coverage report. We
+        # will trigger a failure for coverage drops in a later job
+        run: coverage xml --fail-under 0
       
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -124,6 +127,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           fail_ci_if_error: false 
+
+      - name: Check for coverage drop
+        # This will use the configured fail-under, causing this job to fail if the
+        # coverage drops.
+        run: coverage report
 
   lint:
     runs-on: ubuntu-latest
