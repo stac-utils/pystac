@@ -939,7 +939,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_reading_iterating_and_writing_works_as_expected(self) -> None:
         """Test case to cover issue #88"""
-        stac_uri = "tests/data-files/catalogs/test-case-6/catalog.json"
+        stac_uri = TestCases.get_path("data-files/catalogs/test-case-6/catalog.json")
         cat = Catalog.from_file(stac_uri)
 
         # Iterate over the items. This was causing failure in
