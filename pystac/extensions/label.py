@@ -52,6 +52,18 @@ class LabelType(str, Enum):
     """Convenience attribute for checking if values are valid label types"""
 
 
+class LabelTask(str, Enum):
+    """Enumerates recommended label tasks."""
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    REGRESSION = "regression"
+    CLASSIFICATION = "classification"
+    DETECTION = "detection"
+    SEGMENTATION = "segmentation"
+
+
 class LabelClasses:
     """Defines the list of possible class names (e.g., tree, building, car, hippo).
 
@@ -403,7 +415,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         label_type: LabelType,
         label_properties: Optional[List[str]] = None,
         label_classes: Optional[List[LabelClasses]] = None,
-        label_tasks: Optional[List[str]] = None,
+        label_tasks: Optional[List[Union[LabelTask, str]]] = None,
         label_methods: Optional[List[str]] = None,
         label_overviews: Optional[List[LabelOverview]] = None,
     ) -> None:
@@ -499,14 +511,14 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             self.obj.properties[CLASSES_PROP] = classes
 
     @property
-    def label_tasks(self) -> Optional[List[str]]:
+    def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
         """Gets or set a list of tasks these labels apply to. Usually a subset of 'regression',
         'classification', 'detection', or 'segmentation', but may be arbitrary
         values."""
         return self.obj.properties.get(TASKS_PROP)
 
     @label_tasks.setter
-    def label_tasks(self, v: Optional[List[str]]) -> None:
+    def label_tasks(self, v: Optional[List[Union[LabelTask, str]]]) -> None:
         if v is None:
             self.obj.properties.pop(TASKS_PROP, None)
         else:
