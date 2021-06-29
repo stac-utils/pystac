@@ -185,16 +185,6 @@ DuplicateKeyReportingMixin
    :members:
    :show-inheritance:
 
-STAC_IO
-~~~~~~~
-
-.. deprecated:: 1.0.0-beta.1
-   Use :class:`pystac.StacIO` instead. This class will be removed in v1.0.0.
-
-.. autoclass:: pystac.stac_io.STAC_IO
-   :members:
-   :undoc-members:
-
 Layout
 ------
 
