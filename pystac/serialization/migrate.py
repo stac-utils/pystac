@@ -7,7 +7,6 @@ from pystac.serialization.identify import (
     OldExtensionShortIDs,
     STACJSONDescription,
     STACVersionID,
-    STACType,
 )
 
 if TYPE_CHECKING:
@@ -17,7 +16,7 @@ if TYPE_CHECKING:
 def _migrate_catalog(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    d["type"] = STACType.CATALOG
+    d["type"] = pystac.STACObjectType.CATALOG
 
 
 def _migrate_collection_summaries(
@@ -35,7 +34,7 @@ def _migrate_collection_summaries(
 def _migrate_collection(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    d["type"] = STACType.COLLECTION
+    d["type"] = pystac.STACObjectType.COLLECTION
     _migrate_collection_summaries(d, version, info)
 
 

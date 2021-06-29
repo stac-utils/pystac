@@ -31,15 +31,6 @@ class OldExtensionShortIDs(Enum):
     FILE = "file"
 
 
-class STACType(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
-    CATALOG = "Catalog"
-    COLLECTION = "Collection"
-    ITEM = "Feature"
-
-
 @total_ordering
 class STACVersionID:
     """Defines STAC versions in an object that is orderable based on version number.
@@ -206,11 +197,11 @@ def identify_stac_object_type(
             return None
 
         # Try to match the "type" attribute
-        if obj_type == STACType.CATALOG:
+        if obj_type == pystac.STACObjectType.CATALOG:
             return pystac.STACObjectType.CATALOG
-        elif obj_type == STACType.COLLECTION:
+        elif obj_type == pystac.STACObjectType.COLLECTION:
             return pystac.STACObjectType.COLLECTION
-        elif obj_type == STACType.ITEM:
+        elif obj_type == pystac.STACObjectType.ITEM:
             return pystac.STACObjectType.ITEM
         else:
             return None
