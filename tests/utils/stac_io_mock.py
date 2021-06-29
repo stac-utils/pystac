@@ -5,8 +5,8 @@ import pystac
 
 
 class MockStacIO(pystac.StacIO):
-    """Creates a mock that records STAC_IO calls for testing and allows
-    clients to replace STAC_IO functionality, all within a context scope.
+    """Creates a mock that records StacIO calls for testing and allows
+    clients to replace StacIO functionality, all within a context scope.
     """
 
     def __init__(self) -> None:
