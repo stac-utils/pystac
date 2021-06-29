@@ -2,15 +2,14 @@
 
 https://github.com/stac-extensions/datacube
 """
-
 from abc import ABC
+import sys
 from typing import (
     Any,
     Dict,
     Generic,
     List,
     Optional,
-    Protocol,
     Set,
     TypeVar,
     Union,
@@ -24,6 +23,11 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
