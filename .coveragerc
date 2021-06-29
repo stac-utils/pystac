@@ -1,5 +1,8 @@
 [report]
 fail_under = 91
+exclude_lines =
+    if TYPE_CHECKING:
+
 
 [run]
 source =
