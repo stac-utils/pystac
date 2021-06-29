@@ -2,4 +2,6 @@
 fail_under = 91
 
 [run]
-source = pystac
+source =
+    pystac
+    tests
