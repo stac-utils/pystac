@@ -53,7 +53,7 @@ class LabelType(str, Enum):
 
 
 class LabelTask(str, Enum):
-    """Enumerates recommended label tasks."""
+    """Enumerates recommended values for "label:tasks" field."""
 
     def __str__(self) -> str:
         return str(self.value)
@@ -62,6 +62,16 @@ class LabelTask(str, Enum):
     CLASSIFICATION = "classification"
     DETECTION = "detection"
     SEGMENTATION = "segmentation"
+
+
+class LabelMethod(str, Enum):
+    """Enumerates recommended values for "label:methods" field."""
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    AUTOMATED = "automated"
+    MANUAL = "manual"
 
 
 class LabelClasses:
@@ -452,7 +462,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         label_properties: Optional[List[str]] = None,
         label_classes: Optional[List[LabelClasses]] = None,
         label_tasks: Optional[List[Union[LabelTask, str]]] = None,
-        label_methods: Optional[List[str]] = None,
+        label_methods: Optional[List[Union[LabelMethod, str]]] = None,
         label_overviews: Optional[List[LabelOverview]] = None,
     ) -> None:
         """Applies label extension properties to the extended Item.
@@ -561,14 +571,14 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             self.obj.properties[TASKS_PROP] = v
 
     @property
-    def label_methods(self) -> Optional[List[str]]:
+    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
         """Gets or set a list of methods used for labeling.
 
         Usually a subset of 'automated' or 'manual', but may be arbitrary values."""
         return self.obj.properties.get("label:methods")
 
     @label_methods.setter
-    def label_methods(self, v: Optional[List[str]]) -> None:
+    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
         if v is None:
             self.obj.properties.pop("label:methods", None)
         else:
@@ -769,7 +779,7 @@ class SummariesLabelExtension(SummariesExtension):
         self._set_summary(TASKS_PROP, v)
 
     @property
-    def label_methods(self) -> Optional[List[str]]:
+    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
         """Get or sets the summary of :attr:`LabelExtension.label_methods` values
         for this Collection.
         """
@@ -777,7 +787,7 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(METHODS_PROP)
 
     @label_methods.setter
-    def label_methods(self, v: Optional[List[str]]) -> None:
+    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
         self._set_summary(METHODS_PROP, v)
 
 
