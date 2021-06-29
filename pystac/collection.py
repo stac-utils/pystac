@@ -330,24 +330,9 @@ class Extent:
         Returns:
             Extent: The Extent deserialized from the JSON dict.
         """
-
-        # Handle pre-0.8 spatial extents
-        spatial_extent = d["spatial"]
-        if isinstance(spatial_extent, list):
-            spatial_extent_dict: Dict[str, Any] = {"bbox": [spatial_extent]}
-        else:
-            spatial_extent_dict = spatial_extent
-
-        # Handle pre-0.8 temporal extents
-        temporal_extent = d["temporal"]
-        if isinstance(temporal_extent, list):
-            temporal_extent_dict: Dict[str, Any] = {"interval": [temporal_extent]}
-        else:
-            temporal_extent_dict = temporal_extent
-
         return Extent(
-            spatial=SpatialExtent.from_dict(spatial_extent_dict),
-            temporal=TemporalExtent.from_dict(temporal_extent_dict),
+            spatial=SpatialExtent.from_dict(d["spatial"]),
+            temporal=TemporalExtent.from_dict(d["temporal"]),
             extra_fields={
                 k: v for k, v in d.items() if k not in {"spatial", "temporal"}
             },
