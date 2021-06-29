@@ -4,6 +4,8 @@
 
 ### Added
 
+- (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
+
 ### Changed
 
 ### Fixed
