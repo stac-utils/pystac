@@ -133,6 +133,15 @@ class LabelClasses:
             ",".join([str(x) for x in self.classes])
         )
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelClasses):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
+
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this instance."""
         return self.properties
@@ -192,6 +201,15 @@ class LabelCount:
         """Returns the dictionary representing the JSON of this instance."""
         return self.properties
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelCount):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
+
 
 class LabelStatistics:
     """Contains statistics for regression/continuous numeric value data.
@@ -245,6 +263,15 @@ class LabelStatistics:
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this LabelStatistics."""
         return self.properties
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelStatistics):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
 
 
 class LabelOverview:
@@ -390,6 +417,15 @@ class LabelOverview:
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this LabelOverview."""
         return self.properties
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelOverview):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
 
 
 class LabelExtension(ExtensionManagementMixin[pystac.Item]):

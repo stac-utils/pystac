@@ -2,6 +2,7 @@ import json
 import os
 import unittest
 import tempfile
+from typing import List, Union
 
 import pystac
 from pystac import Catalog, Item, CatalogType
@@ -28,6 +29,59 @@ class LabelTypeTest(unittest.TestCase):
 class LabelRelTypeTest(unittest.TestCase):
     def test_rel_types(self) -> None:
         self.assertEqual(str(LabelRelType.SOURCE), "source")
+
+
+class LabelTaskTest(unittest.TestCase):
+    def test_rel_types(self) -> None:
+        self.assertEqual(str(LabelTask.REGRESSION), "regression")
+        self.assertEqual(str(LabelTask.CLASSIFICATION), "classification")
+        self.assertEqual(str(LabelTask.DETECTION), "detection")
+        self.assertEqual(str(LabelTask.SEGMENTATION), "segmentation")
+
+
+class LabelCountTest(unittest.TestCase):
+    def test_label_count_equality(self) -> None:
+        count1 = LabelCount.create(name="prop", count=1)
+        count2 = LabelCount.create(name="prop", count=1)
+        count3 = LabelCount.create(name="other", count=1)
+        count4 = LabelCount.create(name="prop", count=2)
+
+        self.assertEqual(count1, count2)
+        self.assertNotEqual(count1, count3)
+        self.assertNotEqual(count1, count4)
+        self.assertNotEqual(count1, 42)
+
+
+class LabelOverviewTest(unittest.TestCase):
+    def test_label_count_equality(self) -> None:
+        stats1 = LabelStatistics.create(name="prop", value=42.3)
+        count1 = LabelCount.create(name="prop", count=1)
+
+        overview1 = LabelOverview.create(
+            property_key="first", counts=[count1], statistics=[stats1]
+        )
+        overview2 = LabelOverview.create(
+            property_key="first", counts=[count1], statistics=[stats1]
+        )
+        overview3 = LabelOverview.create(property_key="first", counts=[count1])
+        overview4 = LabelOverview.create(property_key="first", statistics=[stats1])
+        self.assertEqual(overview1, overview2)
+        self.assertNotEqual(overview1, overview3)
+        self.assertNotEqual(overview1, overview4)
+        self.assertNotEqual(overview1, 42)
+
+
+class LabelStatisticsTest(unittest.TestCase):
+    def test_label_statistics_equality(self) -> None:
+        stats1 = LabelStatistics.create(name="prop", value=42.3)
+        stats2 = LabelStatistics.create(name="prop", value=42.3)
+        stats3 = LabelStatistics.create(name="other", value=42.3)
+        stats4 = LabelStatistics.create(name="prop", value=73.4)
+
+        self.assertEqual(stats1, stats2)
+        self.assertNotEqual(stats1, stats3)
+        self.assertNotEqual(stats1, stats4)
+        self.assertNotEqual(stats1, 42)
 
 
 class LabelTest(unittest.TestCase):
