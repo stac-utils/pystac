@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from datetime import datetime as Datetime
 from pystac.errors import STACTypeError
 from typing import (
@@ -318,8 +318,8 @@ class Extent:
             Extent: The clone of this extent.
         """
         return Extent(
-            spatial=copy(self.spatial),
-            temporal=copy(self.temporal),
+            spatial=self.spatial.clone(),
+            temporal=self.temporal.clone(),
             extra_fields=deepcopy(self.extra_fields),
         )
 
