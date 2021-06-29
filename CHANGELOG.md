@@ -10,6 +10,9 @@
 
 ### Removed
 
+- `STAC_IO` class in favor of `StacIO`. This was deprecated in v1.0.0-beta.1 and has
+  been removed in this release. ([#490](https://github.com/stac-utils/pystac/pull/490))
+
 ### Deprecated
 
 ## [v1.0.0-rc.2]
@@ -131,7 +134,7 @@
 - Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
 - Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
 
-# Deprecated
+### Deprecated
 
 - Deprecated `STAC_IO` in favor of new `StacIO` class. `STAC_IO` will be removed in
   v1.0.0. ([#309](https://github.com/stac-utils/pystac/pull/309))
