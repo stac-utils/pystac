@@ -17,8 +17,6 @@ if TYPE_CHECKING:
 def _migrate_catalog(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    if version < "0.8":
-        d["stac_extensions"] = list(info.extensions)
     d["type"] = STACType.CATALOG
 
 
@@ -37,7 +35,6 @@ def _migrate_collection_summaries(
 def _migrate_collection(
     d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    _migrate_catalog(d, version, info)
     d["type"] = STACType.COLLECTION
     _migrate_collection_summaries(d, version, info)
 

@@ -87,7 +87,7 @@ class STACVersionRange:
 
     def __init__(
         self,
-        min_version: Union[str, STACVersionID] = "0.4.0",
+        min_version: Union[str, STACVersionID] = "0.8.0",
         max_version: Optional[Union[str, STACVersionID]] = None,
     ):
         if isinstance(min_version, str):
