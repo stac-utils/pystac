@@ -86,6 +86,14 @@ TemporalExtent
    :members:
    :undoc-members:
 
+ProviderRole
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.ProviderRole
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Provider
 ~~~~~~~~
 

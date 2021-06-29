@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime as Datetime
+from enum import Enum
 from pystac.errors import STACTypeError
 from typing import (
     Any,
@@ -408,6 +409,18 @@ class Extent:
         return Extent(spatial=spatial, temporal=temporal, extra_fields=extra_fields)
 
 
+class ProviderRole(str, Enum):
+    """Enumerates the allows values of the Provider "role" field."""
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    LICENSOR = "licensor"
+    PRODUCER = "producer"
+    PROCESSOR = "processor"
+    HOST = "host"
+
+
 class Provider:
     """Provides information about a provider of STAC data. A provider is any of the
     organizations that captured or processed the content of the collection and therefore
@@ -436,7 +449,7 @@ class Provider:
     information such as processing details for processors and producers,
     hosting details for hosts or basic contact information."""
 
-    roles: Optional[List[str]]
+    roles: Optional[List[ProviderRole]]
     """Optional roles of the provider. Any of
     licensor, producer, processor or host."""
 
@@ -452,7 +465,7 @@ class Provider:
         self,
         name: str,
         description: Optional[str] = None,
-        roles: Optional[List[str]] = None,
+        roles: Optional[List[ProviderRole]] = None,
         url: Optional[str] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
     ):

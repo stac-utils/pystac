@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 import unittest
 
 import pystac
-from pystac import Asset, Item, Provider
+from pystac import Asset, Item, Provider, ProviderRole
 from pystac.validation import validate_dict
 import pystac.serialization.common_properties
 from pystac.item import CommonMetadata
@@ -532,7 +532,7 @@ class CommonMetadataTest(unittest.TestCase):
             pystac.Provider(
                 name="USGS",
                 url="https://landsat.usgs.gov/",
-                roles=["producer", "licensor"],
+                roles=[ProviderRole.PRODUCER, ProviderRole.LICENSOR],
             )
         ]
 
@@ -546,7 +546,9 @@ class CommonMetadataTest(unittest.TestCase):
         # Set
         set_value = [
             pystac.Provider(
-                name="John Snow", url="https://cholera.com/", roles=["producer"]
+                name="John Snow",
+                url="https://cholera.com/",
+                roles=[ProviderRole.PRODUCER],
             )
         ]
         cm.set_providers(set_value, item.assets["analytic"])

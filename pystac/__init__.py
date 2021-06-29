@@ -32,6 +32,7 @@ from pystac.collection import (
     SpatialExtent,
     TemporalExtent,
     Provider,
+    ProviderRole,
     Summaries,
 )
 from pystac.summaries import RangeSummary
