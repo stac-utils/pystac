@@ -10,8 +10,13 @@ PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://sta
 
 ## Installation
 
-PySTAC requires Python>=3.6. Support for Python>=3.10 should be considered experimental
-until further notice.
+PySTAC requires Python>=3.7. This project follows the recommendations of
+[NEP-29](https://numpy.org/neps/nep-0029-deprecation_policy.html) in deprecating support
+for Python versions. This means that users can expect support for Python 3.7 to be
+removed in next major or minor release after Dec 26, 2021.
+
+*Support for Python>=3.10 should be considered experimental
+until further notice.*
 
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
