@@ -46,14 +46,25 @@ class SpatialExtent:
             array must be 2*n where n is the number of dimensions. For example, a
             2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
 
-    Attributes:
-        bboxes : A list of bboxes that represent the spatial
-            extent of the collection. Each bbox can be 2D or 3D. The length of the bbox
-            array must be 2*n where n is the number of dimensions. For example, a
-            2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]
+        extra_fields : Dictionary containing additional top-level fields defined on the
+            Spatial Extent object.
     """
 
-    def __init__(self, bboxes: Union[List[List[float]], List[float]]) -> None:
+    bboxes: List[List[float]]
+    """A list of bboxes that represent the spatial
+    extent of the collection. Each bbox can be 2D or 3D. The length of the bbox
+    array must be 2*n where n is the number of dimensions. For example, a
+    2D Collection with only one bbox would be [[xmin, ymin, xmax, ymax]]"""
+
+    extra_fields: Dict[str, Any]
+    """Dictionary containing additional top-level fields defined on the Spatial
+    Extent object."""
+
+    def __init__(
+        self,
+        bboxes: Union[List[List[float]], List[float]],
+        extra_fields: Optional[Dict[str, Any]] = None,
+    ) -> None:
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
         if isinstance(bboxes, list) and isinstance(bboxes[0], float):
@@ -61,13 +72,15 @@ class SpatialExtent:
         else:
             self.bboxes = cast(List[List[float]], bboxes)
 
+        self.extra_fields = extra_fields or {}
+
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this SpatialExtent.
 
         Returns:
             dict: A serialization of the SpatialExtent that can be written out as JSON.
         """
-        d = {"bbox": self.bboxes}
+        d = {"bbox": self.bboxes, **self.extra_fields}
         return d
 
     def clone(self) -> "SpatialExtent":
@@ -76,19 +89,25 @@ class SpatialExtent:
         Returns:
             SpatialExtent: The clone of this object.
         """
-        return SpatialExtent(deepcopy(self.bboxes))
+        return SpatialExtent(
+            bboxes=deepcopy(self.bboxes), extra_fields=deepcopy(self.extra_fields)
+        )
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "SpatialExtent":
-        """Constructs an SpatialExtent from a dict.
+        """Constructs a SpatialExtent from a dict.
 
         Returns:
             SpatialExtent: The SpatialExtent deserialized from the JSON dict.
         """
-        return SpatialExtent(bboxes=d["bbox"])
+        return SpatialExtent(
+            bboxes=d["bbox"], extra_fields={k: v for k, v in d.items() if k != "bbox"}
+        )
 
     @staticmethod
-    def from_coordinates(coordinates: List[Any]) -> "SpatialExtent":
+    def from_coordinates(
+        coordinates: List[Any], extra_fields: Optional[Dict[str, Any]] = None
+    ) -> "SpatialExtent":
         """Constructs a SpatialExtent from a set of coordinates.
 
         This method will only produce a single bbox that covers all points
@@ -96,6 +115,8 @@ class SpatialExtent:
 
         Args:
             coordinates : Coordinates to derive the bbox from.
+            extra_fields : Dictionary containing additional top-level fields defined on
+                the Spatial Extent object.
 
         Returns:
             SpatialExtent: A SpatialExtent with a single bbox that covers the
@@ -133,7 +154,9 @@ class SpatialExtent:
                 f"Could not determine bounds from coordinate sequence {coordinates}"
             )
 
-        return SpatialExtent([[xmin, ymin, xmax, ymax]])
+        return SpatialExtent(
+            bboxes=[[xmin, ymin, xmax, ymax]], extra_fields=extra_fields
+        )
 
 
 class TemporalExtent:
@@ -141,23 +164,30 @@ class TemporalExtent:
 
     Args:
         intervals :  A list of two datetimes wrapped in a list,
-        representing the temporal extent of a Collection. Open date ranges are supported
-        by setting either the start (the first element of the interval) or the end (the
-        second element of the interval) to None.
+            representing the temporal extent of a Collection. Open date ranges are
+            supported by setting either the start (the first element of the interval)
+            or the end (the second element of the interval) to None.
 
-
-    Attributes:
-        intervals :  A list of two datetimes wrapped in a list,
-        representing the temporal extent of a Collection. Open date ranges are
-        represented by either the start (the first element of the interval) or the
-        end (the second element of the interval) being None.
-
+        extra_fields : Dictionary containing additional top-level fields defined on the
+            Temporal Extent object.
     Note:
         Datetimes are required to be in UTC.
     """
 
+    intervals: List[List[Optional[Datetime]]]
+    """A list of two datetimes wrapped in a list,
+    representing the temporal extent of a Collection. Open date ranges are
+    represented by either the start (the first element of the interval) or the
+    end (the second element of the interval) being None."""
+
+    extra_fields: Dict[str, Any]
+    """Dictionary containing additional top-level fields defined on the Temporal
+    Extent object."""
+
     def __init__(
-        self, intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]]
+        self,
+        intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]],
+        extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
@@ -166,6 +196,8 @@ class TemporalExtent:
             self.intervals = [cast(List[Optional[Datetime]], intervals)]
         else:
             self.intervals = cast(List[List[Optional[Datetime]]], intervals)
+
+        self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this TemporalExtent.
@@ -186,7 +218,7 @@ class TemporalExtent:
 
             encoded_intervals.append([start, end])
 
-        d = {"interval": encoded_intervals}
+        d = {"interval": encoded_intervals, **self.extra_fields}
         return d
 
     def clone(self) -> "TemporalExtent":
@@ -195,7 +227,9 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The clone of this object.
         """
-        return TemporalExtent(intervals=deepcopy(self.intervals))
+        return TemporalExtent(
+            intervals=deepcopy(self.intervals), extra_fields=deepcopy(self.extra_fields)
+        )
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "TemporalExtent":
@@ -215,7 +249,10 @@ class TemporalExtent:
                 end = dateutil.parser.parse(i[1])
             parsed_intervals.append([start, end])
 
-        return TemporalExtent(intervals=parsed_intervals)
+        return TemporalExtent(
+            intervals=parsed_intervals,
+            extra_fields={k: v for k, v in d.items() if k != "interval"},
+        )
 
     @staticmethod
     def from_now() -> "TemporalExtent":
@@ -236,15 +273,29 @@ class Extent:
     Args:
         spatial : Potential spatial extent covered by the collection.
         temporal : Potential temporal extent covered by the collection.
-
-    Attributes:
-        spatial : Potential spatial extent covered by the collection.
-        temporal : Potential temporal extent covered by the collection.
+        extra_fields : Dictionary containing additional top-level fields defined on the
+            Extent object.
     """
 
-    def __init__(self, spatial: SpatialExtent, temporal: TemporalExtent):
+    spatial: SpatialExtent
+    """Potential spatial extent covered by the collection."""
+
+    temporal: TemporalExtent
+    """Potential temporal extent covered by the collection."""
+
+    extra_fields: Dict[str, Any]
+    """Dictionary containing additional top-level fields defined on the Extent
+    object."""
+
+    def __init__(
+        self,
+        spatial: SpatialExtent,
+        temporal: TemporalExtent,
+        extra_fields: Optional[Dict[str, Any]] = None,
+    ):
         self.spatial = spatial
         self.temporal = temporal
+        self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Extent.
@@ -252,7 +303,11 @@ class Extent:
         Returns:
             dict: A serialization of the Extent that can be written out as JSON.
         """
-        d = {"spatial": self.spatial.to_dict(), "temporal": self.temporal.to_dict()}
+        d = {
+            "spatial": self.spatial.to_dict(),
+            "temporal": self.temporal.to_dict(),
+            **self.extra_fields,
+        }
 
         return d
 
@@ -262,7 +317,11 @@ class Extent:
         Returns:
             Extent: The clone of this extent.
         """
-        return Extent(spatial=copy(self.spatial), temporal=copy(self.temporal))
+        return Extent(
+            spatial=copy(self.spatial),
+            temporal=copy(self.temporal),
+            extra_fields=deepcopy(self.extra_fields),
+        )
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Extent":
@@ -287,16 +346,23 @@ class Extent:
             temporal_extent_dict = temporal_extent
 
         return Extent(
-            SpatialExtent.from_dict(spatial_extent_dict),
-            TemporalExtent.from_dict(temporal_extent_dict),
+            spatial=SpatialExtent.from_dict(spatial_extent_dict),
+            temporal=TemporalExtent.from_dict(temporal_extent_dict),
+            extra_fields={
+                k: v for k, v in d.items() if k not in {"spatial", "temporal"}
+            },
         )
 
     @staticmethod
-    def from_items(items: Iterable["Item_Type"]) -> "Extent":
+    def from_items(
+        items: Iterable["Item_Type"], extra_fields: Optional[Dict[str, Any]] = None
+    ) -> "Extent":
         """Create an Extent based on the datetimes and bboxes of a list of items.
 
         Args:
             items : A list of items to derive the extent from.
+            extra_fields : Optional dictionary containing additional top-level fields
+                defined on the Extent object.
 
         Returns:
             Extent: An Extent that spatially and temporally covers all of the
@@ -354,7 +420,7 @@ class Extent:
         )
         temporal = TemporalExtent([[start_timestamp, end_timestamp]])
 
-        return Extent(spatial, temporal)
+        return Extent(spatial=spatial, temporal=temporal, extra_fields=extra_fields)
 
 
 class Provider:

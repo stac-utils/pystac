@@ -252,6 +252,9 @@ class CollectionTest(unittest.TestCase):
 
 
 class ExtentTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
@@ -318,6 +321,49 @@ class ExtentTest(unittest.TestCase):
 
         self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
         self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+
+    def test_to_from_dict(self) -> None:
+        spatial_dict = {
+            "bbox": [
+                [
+                    172.91173669923782,
+                    1.3438851951615003,
+                    172.95469614953714,
+                    1.3690476620161975,
+                ]
+            ],
+            "extension:field": "spatial value",
+        }
+        temporal_dict = {
+            "interval": [
+                ["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]
+            ],
+            "extension:field": "temporal value",
+        }
+        extent_dict = {
+            "spatial": spatial_dict,
+            "temporal": temporal_dict,
+            "extension:field": "extent value",
+        }
+        expected_extent_extra_fields = {
+            "extension:field": extent_dict["extension:field"],
+        }
+        expected_spatial_extra_fields = {
+            "extension:field": spatial_dict["extension:field"],
+        }
+        expected_temporal_extra_fields = {
+            "extension:field": temporal_dict["extension:field"],
+        }
+
+        extent = Extent.from_dict(extent_dict)
+
+        self.assertDictEqual(expected_extent_extra_fields, extent.extra_fields)
+        self.assertDictEqual(expected_spatial_extra_fields, extent.spatial.extra_fields)
+        self.assertDictEqual(
+            expected_temporal_extra_fields, extent.temporal.extra_fields
+        )
+
+        self.assertDictEqual(extent_dict, extent.to_dict())
 
 
 class CollectionSubClassTest(unittest.TestCase):
