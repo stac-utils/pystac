@@ -56,6 +56,31 @@ class IdentifyTest(unittest.TestCase):
 
         self.assertIsNone(identify_stac_object_type(plain_feature_dict))
 
+    def test_identify_invalid_stac_object_with_version(self) -> None:
+        # Has stac_version but is not a valid STAC object
+        invalid_dict = {
+            "id": "concepts",
+            "title": "Concepts catalogs",
+            "links": [
+                {
+                    "rel": "self",
+                    "type": "application/json",
+                    "href": "https://tamn.snapplanet.io/catalogs/concepts",
+                },
+                {
+                    "rel": "root",
+                    "type": "application/json",
+                    "href": "https://tamn.snapplanet.io",
+                },
+            ],
+            "stac_version": "1.0.0",
+        }
+
+        with self.assertRaises(pystac.STACTypeError) as ctx:
+            identify_stac_object(invalid_dict)
+
+        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+
     def test_identify_non_stac_raises_error(self) -> None:
         plain_feature_dict = {
             "type": "Feature",

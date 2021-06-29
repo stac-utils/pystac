@@ -31,6 +31,15 @@ class OldExtensionShortIDs(Enum):
     FILE = "file"
 
 
+class STACType(str, Enum):
+    def __str__(self) -> str:
+        return str(self.value)
+
+    CATALOG = "Catalog"
+    COLLECTION = "Collection"
+    ITEM = "Feature"
+
+
 @total_ordering
 class STACVersionID:
     """Defines STAC versions in an object that is orderable based on version number.
@@ -180,17 +189,34 @@ def identify_stac_object_type(
     Args:
         json_dict : The dict of JSON to identify.
     """
-    # Try to identify using 'type' property, if present
-    if "type" in json_dict:
-        # Try to find 'type' property in known STACObjectType values
-        for t in pystac.STACObjectType:
-            if json_dict["type"].lower() == t.value.lower():
-                return t
-
+    stac_version = (
+        STACVersionID(json_dict["stac_version"])
+        if "stac_version" in json_dict
+        else None
+    )
     obj_type = json_dict.get("type")
 
+    # Try to identify using 'type' property for v1.0.0-rc.1 and higher
+    introduced_type_attribute = STACVersionID("1.0.0-rc.1")
+    if stac_version is not None and stac_version >= introduced_type_attribute:
+
+        # Since v1.0.0-rc.1 requires a "type" field for all STAC objects, any object
+        # that is missing this attribute is not a valid STAC object.
+        if obj_type is None:
+            return None
+
+        # Try to match the "type" attribute
+        if obj_type == STACType.CATALOG:
+            return pystac.STACObjectType.CATALOG
+        elif obj_type == STACType.COLLECTION:
+            return pystac.STACObjectType.COLLECTION
+        elif obj_type == STACType.ITEM:
+            return pystac.STACObjectType.ITEM
+        else:
+            return None
+
     # For pre-1.0 objects for version 0.8.* or later 'stac_version' must be present
-    if "stac_version" in json_dict:
+    if stac_version is not None:
         # Pre-1.0 STAC objects with 'type' == "Feature" are Items
         if obj_type == "Feature":
             return pystac.STACObjectType.ITEM
