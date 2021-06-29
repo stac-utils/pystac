@@ -39,6 +39,10 @@ or the entire project using:
 
     ./scripts/test
 
+The last command will also check test coverage. To view the coverage report, you can run
+`coverage report` (to view the report in the terminal) or `coverage html` (to generate
+an HTML report that can be opened in a browser).
+
 More details on using ``unittest`` are `here
 <https://docs.python.org/3/library/unittest.html>`_.
 
