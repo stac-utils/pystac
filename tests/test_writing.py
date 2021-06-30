@@ -59,10 +59,7 @@ class STACWritingTest(unittest.TestCase):
         ) -> None:
             cat_dict = pystac.StacIO.default().read_json(href)
             cat = pystac.read_file(href)
-            if not isinstance(cat, pystac.Catalog):
-                raise pystac.STACTypeError(
-                    f"File at {href} is a {cat.STAC_OBJECT_TYPE} not a Catalog."
-                )
+            assert isinstance(cat, pystac.Catalog)
 
             rels = set([link["rel"] for link in cat_dict["links"]])
             self.assertEqual("self" in rels, should_include_self)
