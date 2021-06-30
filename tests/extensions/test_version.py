@@ -473,7 +473,3 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         _ = VersionExtension.ext(collection, add_if_missing=True)
 
         self.assertIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
-
-
-if __name__ == "__main__":
-    unittest.main()
