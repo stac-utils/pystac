@@ -109,7 +109,7 @@ class SatExtension(
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Satellite extension does not apply to type {type(obj)}"
             )
 
 
