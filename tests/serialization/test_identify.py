@@ -1,5 +1,4 @@
 import unittest
-from urllib.error import HTTPError
 
 import pystac
 from pystac.cache import CollectionCache
@@ -24,12 +23,9 @@ class IdentifyTest(unittest.TestCase):
                 path = example.path
                 d = pystac.StacIO.default().read_json(path)
                 if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
-                    try:
-                        merge_common_properties(
-                            d, json_href=path, collection_cache=collection_cache
-                        )
-                    except HTTPError:
-                        pass
+                    merge_common_properties(
+                        d, json_href=path, collection_cache=collection_cache
+                    )
 
                 actual = identify_stac_object(d)
                 # Explicitly cover __repr__ functions in tests
