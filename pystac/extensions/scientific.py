@@ -248,7 +248,7 @@ class ScientificExtension(
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Scientific extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod

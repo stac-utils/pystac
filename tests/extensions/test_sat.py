@@ -5,6 +5,7 @@ from typing import Any, Dict
 import unittest
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions import sat
 from pystac.extensions.sat import SatExtension
 from tests.utils import TestCases
@@ -160,3 +161,13 @@ class SatTest(unittest.TestCase):
         _ = SatExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(SatExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Satellite extension does not apply to type 'object'$",
+            SatExtension.ext,
+            object(),
+        )

@@ -126,7 +126,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Item Assets extension does not apply to type {type(obj)}"
+                f"Item Assets extension does not apply to type '{type(obj).__name__}'"
             )
 
 

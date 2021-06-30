@@ -261,7 +261,7 @@ class ProjectionExtension(
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Projection extension does not apply to type {type(obj)}"
+                f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod

@@ -3,6 +3,7 @@ import unittest
 from datetime import datetime
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
 from tests.utils import TestCases, assert_to_from_dict
@@ -222,3 +223,13 @@ class TimestampsTest(unittest.TestCase):
         _ = TimestampsExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Timestamps extension does not apply to type 'object'$",
+            TimestampsExtension.ext,
+            object(),
+        )

@@ -710,7 +710,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Label extension does not apply to type {type(obj)}"
+                f"Label extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod
