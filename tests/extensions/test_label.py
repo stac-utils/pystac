@@ -5,7 +5,7 @@ import tempfile
 from typing import List, Union
 
 import pystac
-from pystac import Catalog, Collection, Item, CatalogType
+from pystac import Catalog, Collection, ExtensionTypeError, Item, CatalogType
 from pystac.extensions.label import (
     LabelExtension,
     LabelClasses,
@@ -540,3 +540,13 @@ class LabelSummariesTest(unittest.TestCase):
         label_methods_summary_ext = label_ext_summaries.label_methods
         assert label_methods_summary_ext is not None
         self.assertListEqual(label_methods, label_methods_summary_ext)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Label extension does not apply to type 'object'$",
+            LabelExtension.ext,
+            object(),
+        )

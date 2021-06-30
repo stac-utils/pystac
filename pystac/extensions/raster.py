@@ -706,7 +706,7 @@ class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Raster extension does not apply to type {type(obj)}"
+                f"Raster extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod

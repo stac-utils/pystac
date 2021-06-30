@@ -2,7 +2,7 @@ import json
 import unittest
 
 import pystac
-from pystac import Item
+from pystac import ExtensionTypeError, Item
 from pystac.utils import get_opt
 from pystac.extensions.raster import (
     Histogram,
@@ -222,3 +222,13 @@ class RasterTest(unittest.TestCase):
         _ = RasterExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(RasterExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Raster extension does not apply to type 'object'$",
+            RasterExtension.ext,
+            object(),
+        )

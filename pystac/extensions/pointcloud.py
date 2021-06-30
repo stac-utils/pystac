@@ -536,7 +536,7 @@ class PointcloudExtension(
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Pointcloud extension does not apply to type {type(obj)}"
+                f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
 

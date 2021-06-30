@@ -5,6 +5,7 @@ import unittest
 from typing import List, Optional
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions import version
 from pystac.extensions.version import VersionExtension, VersionRelType
 from tests.utils import TestCases
@@ -25,6 +26,18 @@ def make_item(year: int) -> pystac.Item:
     VersionExtension.add_to(item)
 
     return item
+
+
+class VersionExtensionTest(unittest.TestCase):
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Version extension does not apply to type 'object'$",
+            VersionExtension.ext,
+            object(),
+        )
 
 
 class ItemVersionExtensionTest(unittest.TestCase):

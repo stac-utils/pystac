@@ -219,7 +219,7 @@ class VersionExtension(
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Version extension does not apply to type {type(obj)}"
+                f"Version extension does not apply to type '{type(obj).__name__}'"
             )
 
 

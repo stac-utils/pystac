@@ -370,7 +370,7 @@ class EOExtension(
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"EO extension does not apply to type {type(obj)}"
+                f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod

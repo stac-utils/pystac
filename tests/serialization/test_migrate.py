@@ -1,3 +1,4 @@
+from pystac import ExtensionTypeError
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.view import ViewExtension
 import unittest
@@ -96,3 +97,13 @@ class MigrateTest(unittest.TestCase):
         )
         self.assertEqual(datetime_summary.minimum, "2015-06-23T00:00:00Z")
         self.assertEqual(datetime_summary.maximum, "2019-07-10T13:44:56Z")
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Item Assets extension does not apply to type 'object'$",
+            ItemAssetsExtension.ext,
+            object(),
+        )

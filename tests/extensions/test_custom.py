@@ -62,7 +62,7 @@ class CustomExtension(
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
         raise pystac.ExtensionTypeError(
-            f"Custom extension does not apply to {type(obj)}"
+            f"Custom extension does not apply to {type(obj).__name__}"
         )
 
     @staticmethod

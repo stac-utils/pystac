@@ -206,7 +206,7 @@ class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"File Info extension does not apply to type {type(obj)}"
+                f"File Info extension does not apply to type '{type(obj).__name__}'"
             )
 
 

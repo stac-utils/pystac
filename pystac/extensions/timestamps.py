@@ -130,7 +130,7 @@ class TimestampsExtension(
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Timestamps extension does not apply to type {type(obj)}"
+                f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
 

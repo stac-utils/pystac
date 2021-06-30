@@ -1,6 +1,8 @@
 """Tests for pystac.tests.extensions.scientific."""
 
 import datetime
+
+from pystac import ExtensionTypeError
 from pystac.link import Link
 from pystac.collection import Summaries
 import unittest
@@ -405,6 +407,16 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         _ = ScientificExtension.ext(collection, add_if_missing=True)
 
         self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Scientific extension does not apply to type 'object'$",
+            ScientificExtension.ext,
+            object(),
+        )
 
 
 class SummariesScientificTest(unittest.TestCase):

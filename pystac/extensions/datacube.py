@@ -356,7 +356,7 @@ class DatacubeExtension(
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Datacube extension does not apply to type {type(obj)}"
+                f"Datacube extension does not apply to type '{type(obj).__name__}'"
             )
 
 
