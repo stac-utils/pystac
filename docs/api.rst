@@ -518,21 +518,21 @@ SatExtension
    :show-inheritance:
 
 ItemSatExtension
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.extensions.sat.ItemSatExtension
    :members:
    :show-inheritance:
 
 AssetSatExtension
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.extensions.sat.AssetSatExtension
    :members:
    :show-inheritance:
 
 SummariesSatExtension
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.extensions.sat.SummariesSatExtension
    :members:
