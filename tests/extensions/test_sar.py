@@ -203,7 +203,3 @@ class SarItemExtTest(unittest.TestCase):
             SarExtension.ext,
             object(),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

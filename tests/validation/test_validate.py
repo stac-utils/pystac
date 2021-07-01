@@ -42,35 +42,27 @@ class ValidateTest(unittest.TestCase):
                 path = example.path
                 valid = example.valid
 
-                if stac_version < "0.8":
+                with self.subTest(path):
                     with open(path, encoding="utf-8") as f:
                         stac_json = json.load(f)
 
-                    self.assertEqual(len(pystac.validation.validate_dict(stac_json)), 0)
-                else:
-                    with self.subTest(path):
-                        with open(path, encoding="utf-8") as f:
-                            stac_json = json.load(f)
+                    # Check if common properties need to be merged
+                    if stac_version < "1.0":
+                        if example.object_type == pystac.STACObjectType.ITEM:
+                            collection_cache = CollectionCache()
+                            merge_common_properties(stac_json, collection_cache, path)
 
-                        # Check if common properties need to be merged
-                        if stac_version < "1.0":
-                            if example.object_type == pystac.STACObjectType.ITEM:
-                                collection_cache = CollectionCache()
-                                merge_common_properties(
-                                    stac_json, collection_cache, path
+                    if valid:
+                        pystac.validation.validate_dict(stac_json)
+                    else:
+                        with self.assertRaises(pystac.STACValidationError):
+                            try:
+                                pystac.validation.validate_dict(stac_json)
+                            except pystac.STACValidationError as e:
+                                self.assertIsInstance(
+                                    e.source, jsonschema.ValidationError
                                 )
-
-                        if valid:
-                            pystac.validation.validate_dict(stac_json)
-                        else:
-                            with self.assertRaises(pystac.STACValidationError):
-                                try:
-                                    pystac.validation.validate_dict(stac_json)
-                                except pystac.STACValidationError as e:
-                                    self.assertIsInstance(
-                                        e.source, jsonschema.ValidationError
-                                    )
-                                    raise e
+                                raise e
 
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.

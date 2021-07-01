@@ -456,7 +456,3 @@ class SummariesScientificTest(unittest.TestCase):
 
         assert new_dois is not None
         self.assertListEqual([PUB2_DOI], new_dois)
-
-
-if __name__ == "__main__":
-    unittest.main()
