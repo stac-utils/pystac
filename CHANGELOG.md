@@ -15,6 +15,10 @@
 
 ### Fixed
 
+- Bug in `pystac.serialization.identify_stac_object_type` where invalid objects with
+  `stac_version == 1.0.0` were incorrectly identified as Catalogs
+  ([#487](https://github.com/stac-utils/pystac/pull/487))
+
 ### Removed
 
 - `STAC_IO` class in favor of `StacIO`. This was deprecated in v1.0.0-beta.1 and has

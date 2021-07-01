@@ -15,9 +15,9 @@ class STACObjectType(str, Enum):
     def __str__(self) -> str:
         return str(self.value)
 
-    CATALOG = "CATALOG"
-    COLLECTION = "COLLECTION"
-    ITEM = "ITEM"
+    CATALOG = "Catalog"
+    COLLECTION = "Collection"
+    ITEM = "Feature"
 
 
 class STACObject(ABC):
