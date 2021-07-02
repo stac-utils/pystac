@@ -18,6 +18,9 @@
 - Bug in `pystac.serialization.identify_stac_object_type` where invalid objects with
   `stac_version == 1.0.0` were incorrectly identified as Catalogs
   ([#487](https://github.com/stac-utils/pystac/pull/487))
+- `Link` constructor classes (e.g. `Link.from_dict`, `Link.canonical`, etc.) now return
+  the calling class instead of always returning the `Link` class
+  ([#512](https://github.com/stac-utils/pystac/pull/512))
 
 ### Removed
 
