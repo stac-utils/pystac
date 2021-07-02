@@ -619,15 +619,15 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             assets : Optional list of assets that determine what
                 assets in the source item this label item data applies to.
         """
-        properties = None
+        extra_fields = None
         if assets is not None:
-            properties = {"label:assets": assets}
+            extra_fields = {"label:assets": assets}
         link = pystac.Link(
             "source",
             source_item,
             title=title,
             media_type=pystac.MediaType.JSON,
-            properties=properties,
+            extra_fields=extra_fields,
         )
         self.obj.add_link(link)
 

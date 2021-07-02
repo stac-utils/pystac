@@ -43,7 +43,7 @@ class Link:
         media_type : Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         title : Optional title for this link.
-        properties : Optional, additional properties for this link. This is used
+        extra_fields : Optional, additional fields for this link. This is used
             by extensions as a way to serialize and deserialize properties on link
             object JSON.
     """
@@ -64,8 +64,8 @@ class Link:
     title: Optional[str]
     """Optional title for this link."""
 
-    properties: Optional[Dict[str, Any]]
-    """Optional, additional properties for this link. This is used by extensions as a
+    extra_fields: Dict[str, Any]
+    """Optional, additional fields for this link. This is used by extensions as a
     way to serialize and deserialize properties on link object JSON."""
 
     owner: Optional["STACObject_Type"]
@@ -79,13 +79,13 @@ class Link:
         target: Union[str, "STACObject_Type"],
         media_type: Optional[str] = None,
         title: Optional[str] = None,
-        properties: Optional[Dict[str, Any]] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.rel = rel
         self.target = target
         self.media_type = media_type
         self.title = title
-        self.properties = properties
+        self.extra_fields = extra_fields or {}
         self.owner = None
 
     def set_owner(self, owner: Optional["STACObject_Type"]) -> "Link":
@@ -260,9 +260,8 @@ class Link:
         if self.title is not None:
             d["title"] = self.title
 
-        if self.properties:
-            for k, v in self.properties.items():
-                d[k] = v
+        for k, v in self.extra_fields.items():
+            d[k] = v
 
         return d
 
@@ -299,16 +298,16 @@ class Link:
         media_type = d.pop("type", None)
         title = d.pop("title", None)
 
-        properties = None
+        extra_fields = None
         if any(d):
-            properties = d
+            extra_fields = d
 
         return Link(
             rel=rel,
             target=href,
             media_type=media_type,
             title=title,
-            properties=properties,
+            extra_fields=extra_fields,
         )
 
     @staticmethod
