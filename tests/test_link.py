@@ -135,3 +135,43 @@ class StaticLinkTest(unittest.TestCase):
         link = pystac.Link.canonical(self.collection)
         expected = {"rel": "canonical", "href": None, "type": "application/json"}
         self.assertEqual(expected, link.to_dict())
+
+
+class LinkInheritanceTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.collection = pystac.Collection(
+            "collection id", "desc", extent=ARBITRARY_EXTENT
+        )
+        self.item = pystac.Item(
+            id="test-item",
+            geometry=None,
+            bbox=None,
+            datetime=TEST_DATETIME,
+            properties={},
+        )
+
+    class CustomLink(pystac.Link):
+        pass
+
+    def test_from_dict(self) -> None:
+        link = self.CustomLink.from_dict(
+            {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2}
+        )
+        self.assertIsInstance(link, self.CustomLink)
+
+    def test_collection(self) -> None:
+        link = self.CustomLink.collection(self.collection)
+        self.assertIsInstance(link, self.CustomLink)
+
+    def test_child(self) -> None:
+        link = self.CustomLink.child(self.collection)
+        self.assertIsInstance(link, self.CustomLink)
+
+    def test_canonical_item(self) -> None:
+        link = self.CustomLink.canonical(self.item)
+        self.assertIsInstance(link, self.CustomLink)
+
+    def test_canonical_collection(self) -> None:
+        link = self.CustomLink.canonical(self.collection)
+        self.assertIsInstance(link, self.CustomLink)
