@@ -14,6 +14,9 @@
 - Define equality and `__repr__` of `RangeSummary` instances based on `to_dict`
   representation ([#513](https://github.com/stac-utils/pystac/pull/513))
 - Sat Extension summaries ([#509](https://github.com/stac-utils/pystac/pull/509))
+- `Catalog.get_collections` for getting all child
+  `Collections` for a catalog, and `Catalog.get_all_collections` for recursively getting
+  all child `Collections` for a catalog and its children ([#511](https://github.com/stac-utils/pystac/pull/))
 
 ### Changed
 
