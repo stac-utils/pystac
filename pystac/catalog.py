@@ -471,7 +471,8 @@ class Catalog(STACObject):
         return d
 
     def clone(self) -> "Catalog":
-        clone = Catalog(
+        cls = self.__class__
+        clone = cls(
             id=self.id,
             description=self.description,
             title=self.title,
