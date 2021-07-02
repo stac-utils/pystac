@@ -388,3 +388,9 @@ class CollectionSubClassTest(unittest.TestCase):
         custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
 
         self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+
+    def test_clone(self) -> None:
+        custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
+        cloned_collection = custom_collection.clone()
+
+        self.assertIsInstance(cloned_collection, self.BasicCustomCollection)

@@ -638,7 +638,8 @@ class Collection(Catalog):
         return d
 
     def clone(self) -> "Collection":
-        clone = Collection(
+        cls = self.__class__
+        clone = cls(
             id=self.id,
             description=self.description,
             extent=self.extent.clone(),
