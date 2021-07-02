@@ -127,7 +127,8 @@ class Asset:
         Returns:
             Asset: The clone of this asset.
         """
-        return Asset(
+        cls = self.__class__
+        return cls(
             href=self.href,
             title=self.title,
             description=self.description,
@@ -139,8 +140,8 @@ class Asset:
     def __repr__(self) -> str:
         return "<Asset href={}>".format(self.href)
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Asset":
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "Asset":
         """Constructs an Asset from a dict.
 
         Returns:
@@ -156,7 +157,7 @@ class Asset:
         if any(d):
             properties = d
 
-        return Asset(
+        return cls(
             href=href,
             media_type=media_type,
             title=title,
