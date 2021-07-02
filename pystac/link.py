@@ -46,26 +46,32 @@ class Link:
         properties : Optional, additional properties for this link. This is used
             by extensions as a way to serialize and deserialize properties on link
             object JSON.
-
-    Attributes:
-        rel : The relation of the link (e.g. 'child', 'item'). Registered rel Types
-            are preferred. See :class:`~pystac.RelType` for common media types.
-        target : The target of the link. If the link is
-            unresolved, or the link is to something that is not a STACObject,
-            the target is an HREF. If resolved, the target is a STACObject.
-        media_type : Optional description of the media type.
-            Registered Media Types are preferred. See
-            :class:`~pystac.MediaType` for common media types.
-        title : Optional title for this link.
-        properties : Optional, additional properties for this link.
-            This is used by extensions as a way to serialize and deserialize properties
-            on link object JSON.
-        owner : The owner of this link. The link will use
-            its owner's root catalog
-            :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve
-            objects, and will create absolute HREFs from relative HREFs against
-            the owner's self HREF.
     """
+
+    rel: Union[str, pystac.RelType]
+    """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
+    preferred. See :class:`~pystac.RelType` for common media types."""
+
+    target: Union[str, "STACObject_Type"]
+    """The target of the link. If the link is unresolved, or the link is to something
+    that is not a STACObject, the target is an HREF. If resolved, the target is a
+    STACObject."""
+
+    media_type: Optional[str]
+    """Optional description of the media type. Registered Media Types are preferred.
+    See :class:`~pystac.MediaType` for common media types."""
+
+    title: Optional[str]
+    """Optional title for this link."""
+
+    properties: Optional[Dict[str, Any]]
+    """Optional, additional properties for this link. This is used by extensions as a
+    way to serialize and deserialize properties on link object JSON."""
+
+    owner: Optional["STACObject_Type"]
+    """The owner of this link. The link will use its owner's root catalog
+    :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve objects, and
+    will create absolute HREFs from relative HREFs against the owner's self HREF."""
 
     def __init__(
         self,
@@ -76,11 +82,11 @@ class Link:
         properties: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.rel = rel
-        self.target: Union[str, "STACObject_Type"] = target  # An object or an href
+        self.target = target
         self.media_type = media_type
         self.title = title
         self.properties = properties
-        self.owner: Optional["STACObject_Type"] = None
+        self.owner = None
 
     def set_owner(self, owner: Optional["STACObject_Type"]) -> "Link":
         """Sets the owner of this link.
