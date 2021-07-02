@@ -1,7 +1,6 @@
 from copy import copy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
-import pystac
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
@@ -24,7 +23,7 @@ class Asset:
             are preferred. See :class:`~pystac.MediaType` for common media types.
         roles : Optional, Semantic roles (i.e. thumbnail, overview,
             data, metadata) of the asset.
-        properties : Optional, additional properties for this asset. This is used
+        extra_fields : Optional, additional fields for this asset. This is used
             by extensions as a way to serialize and deserialize properties on asset
             object JSON.
     """
@@ -48,12 +47,12 @@ class Asset:
     """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
     asset."""
 
-    owner: Optional[Union[pystac.Item, pystac.Collection]]
+    owner: Optional[Union["Item_Type", "Collection_Type"]]
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
-    properties: Optional[Dict[str, Any]]
-    """Optional, additional properties for this asset. This is used by extensions as a
+    extra_fields: Dict[str, Any]
+    """Optional, additional fields for this asset. This is used by extensions as a
     way to serialize and deserialize properties on asset object JSON."""
 
     def __init__(
@@ -63,18 +62,14 @@ class Asset:
         description: Optional[str] = None,
         media_type: Optional[str] = None,
         roles: Optional[List[str]] = None,
-        properties: Optional[Dict[str, Any]] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.href = href
         self.title = title
         self.description = description
         self.media_type = media_type
         self.roles = roles
-
-        if properties is not None:
-            self.properties = properties
-        else:
-            self.properties = {}
+        self.extra_fields = extra_fields or {}
 
         # The Item which owns this Asset.
         self.owner = None
@@ -125,8 +120,8 @@ class Asset:
         if self.description is not None:
             d["description"] = self.description
 
-        if self.properties is not None and len(self.properties) > 0:
-            for k, v in self.properties.items():
+        if self.extra_fields is not None and len(self.extra_fields) > 0:
+            for k, v in self.extra_fields.items():
                 d[k] = v
 
         if self.roles is not None:
@@ -146,7 +141,7 @@ class Asset:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            properties=self.properties,
+            extra_fields=self.extra_fields,
         )
 
     def __repr__(self) -> str:
@@ -175,5 +170,5 @@ class Asset:
             title=title,
             description=description,
             roles=roles,
-            properties=properties,
+            extra_fields=properties,
         )

@@ -146,7 +146,7 @@ class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
 class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 

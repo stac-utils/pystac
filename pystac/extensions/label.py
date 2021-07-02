@@ -665,7 +665,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         self.obj.add_asset(
             "labels",
             pystac.Asset(
-                href=href, title=title, media_type=media_type, properties=properties
+                href=href, title=title, media_type=media_type, extra_fields=properties
             ),
         )
 

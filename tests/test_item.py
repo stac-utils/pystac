@@ -34,10 +34,10 @@ class ItemTest(unittest.TestCase):
 
         # test asset creation additional field(s)
         self.assertEqual(
-            item.assets["analytic"].properties["product"],
+            item.assets["analytic"].extra_fields["product"],
             "http://cool-sat.com/catalog/products/analytic.json",
         )
-        self.assertEqual(len(item.assets["thumbnail"].properties), 0)
+        self.assertEqual(len(item.assets["thumbnail"].extra_fields), 0)
 
         # test that the parameter is preserved
         self.assertEqual(param_dict, item_dict)

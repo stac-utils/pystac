@@ -161,7 +161,7 @@ class EOTest(unittest.TestCase):
         EOExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
-        self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].extra_fields["eo:bands"]), 3)
 
     def test_cloud_cover(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
