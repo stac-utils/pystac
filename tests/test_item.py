@@ -743,6 +743,12 @@ class ItemSubClassTest(unittest.TestCase):
 
         self.assertIsInstance(custom_item, self.BasicCustomItem)
 
+    def test_clone(self) -> None:
+        custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
+        cloned_item = custom_item.clone()
+
+        self.assertIsInstance(cloned_item, self.BasicCustomItem)
+
 
 class AssetSubClassTest(unittest.TestCase):
     class CustomAsset(Asset):
