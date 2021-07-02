@@ -175,3 +175,10 @@ class LinkInheritanceTest(unittest.TestCase):
     def test_canonical_collection(self) -> None:
         link = self.CustomLink.canonical(self.collection)
         self.assertIsInstance(link, self.CustomLink)
+
+    def test_clone(self) -> None:
+        link = self.CustomLink.from_dict(
+            {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2}
+        )
+        cloned_link = link.clone()
+        self.assertIsInstance(cloned_link, self.CustomLink)

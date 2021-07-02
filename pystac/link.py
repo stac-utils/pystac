@@ -269,8 +269,8 @@ class Link:
         Returns:
             Link: The cloned link.
         """
-
-        return Link(
+        cls = self.__class__
+        return cls(
             rel=self.rel,
             target=self.target,
             media_type=self.media_type,
