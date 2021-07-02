@@ -27,21 +27,34 @@ class Asset:
         properties : Optional, additional properties for this asset. This is used
             by extensions as a way to serialize and deserialize properties on asset
             object JSON.
-
-    Attributes:
-        href : Link to the asset object. Relative and absolute links are both
-            allowed.
-        title : Optional displayed title for clients and users.
-        description : A description of the Asset providing additional details,
-            such as how it was processed or created. CommonMark 0.29 syntax MAY be
-            used for rich text representation.
-        media_type : Optional description of the media type. Registered Media Types
-            are preferred. See :class:`~pystac.MediaType` for common media types.
-        properties : Optional, additional properties for this asset. This is used
-            by extensions as a way to serialize and deserialize properties on asset
-            object JSON.
-        owner: The Item or Collection this asset belongs to, or None if it has no owner.
     """
+
+    href: str
+    """Link to the asset object. Relative and absolute links are both allowed."""
+
+    title: Optional[str]
+    """Optional displayed title for clients and users."""
+
+    description: Optional[str]
+    """A description of the Asset providing additional details, such as how it was
+    processed or created. CommonMark 0.29 syntax MAY be used for rich text
+    representation."""
+
+    media_type: Optional[str]
+    """Optional description of the media type. Registered Media Types are preferred.
+    See :class:`~pystac.MediaType` for common media types."""
+
+    roles: Optional[List[str]]
+    """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
+    asset."""
+
+    owner: Optional[Union[pystac.Item, pystac.Collection]]
+    """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
+    to, or ``None`` if it has no owner."""
+
+    properties: Optional[Dict[str, Any]]
+    """Optional, additional properties for this asset. This is used by extensions as a
+    way to serialize and deserialize properties on asset object JSON."""
 
     def __init__(
         self,
@@ -64,7 +77,7 @@ class Asset:
             self.properties = {}
 
         # The Item which owns this Asset.
-        self.owner: Optional[Union[pystac.Item, pystac.Collection]] = None
+        self.owner = None
 
     def set_owner(self, obj: Union["Collection_Type", "Item_Type"]) -> None:
         """Sets the owning item of this Asset.
