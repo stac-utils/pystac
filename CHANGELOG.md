@@ -10,6 +10,9 @@
 -  `LabelMethod` enum in `pystac.extensions.label` with recommended values for
   `"label:methods"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
 - Label Extension summaries ([#484](https://github.com/stac-utils/pystac/pull/484))
+- Timestamps Extension summaries ([#513](https://github.com/stac-utils/pystac/pull/513))
+- Define equality and `__repr__` of `RangeSummary` instances based on `to_dict`
+  representation ([#513](https://github.com/stac-utils/pystac/pull/513))
 
 ### Changed
 
