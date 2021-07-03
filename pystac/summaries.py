@@ -59,6 +59,15 @@ class RangeSummary(Generic[T]):
         maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
 
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, RangeSummary):
+            return NotImplemented
+
+        return self.to_dict() == o.to_dict()
+
+    def __repr__(self) -> str:
+        return self.to_dict().__repr__()
+
 
 FIELDS_JSON_URL = (
     "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json"
