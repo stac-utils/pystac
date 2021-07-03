@@ -4,12 +4,14 @@ https://github.com/stac-extensions/timestamps
 """
 
 from datetime import datetime as Datetime
+from pystac.summaries import RangeSummary
 from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
@@ -139,6 +141,11 @@ class TimestampsExtension(
                 f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesTimestampsExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesTimestampsExtension(obj)
+
 
 class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
     """A concrete implementation of :class:`TimestampsExtension` on an
@@ -190,6 +197,88 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetTimestampsExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesTimestampsExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Timestamps Extension <timestamps>`.
+    """
+
+    @property
+    def published(self) -> Optional[RangeSummary[Datetime]]:
+        """Get or sets the summary of :attr:`TimestampsExtension.published` values
+        for this Collection.
+        """
+
+        return map_opt(
+            lambda s: RangeSummary(
+                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+            ),
+            self.summaries.get_range(PUBLISHED_PROP),
+        )
+
+    @published.setter
+    def published(self, v: Optional[RangeSummary[Datetime]]) -> None:
+        self._set_summary(
+            PUBLISHED_PROP,
+            map_opt(
+                lambda s: RangeSummary(
+                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+                ),
+                v,
+            ),
+        )
+
+    @property
+    def expires(self) -> Optional[RangeSummary[Datetime]]:
+        """Get or sets the summary of :attr:`TimestampsExtension.expires` values
+        for this Collection.
+        """
+
+        return map_opt(
+            lambda s: RangeSummary(
+                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+            ),
+            self.summaries.get_range(EXPIRES_PROP),
+        )
+
+    @expires.setter
+    def expires(self, v: Optional[RangeSummary[Datetime]]) -> None:
+        self._set_summary(
+            EXPIRES_PROP,
+            map_opt(
+                lambda s: RangeSummary(
+                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+                ),
+                v,
+            ),
+        )
+
+    @property
+    def unpublished(self) -> Optional[RangeSummary[Datetime]]:
+        """Get or sets the summary of :attr:`TimestampsExtension.unpublished` values
+        for this Collection.
+        """
+
+        return map_opt(
+            lambda s: RangeSummary(
+                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+            ),
+            self.summaries.get_range(UNPUBLISHED_PROP),
+        )
+
+    @unpublished.setter
+    def unpublished(self, v: Optional[RangeSummary[Datetime]]) -> None:
+        self._set_summary(
+            UNPUBLISHED_PROP,
+            map_opt(
+                lambda s: RangeSummary(
+                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+                ),
+                v,
+            ),
+        )
 
 
 class TimestampsExtensionHooks(ExtensionHooks):
