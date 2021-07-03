@@ -4,7 +4,7 @@ https://github.com/stac-extensions/timestamps
 """
 
 from datetime import datetime as Datetime
-from typing import Generic, Optional, Set, TypeVar, cast
+from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -26,8 +26,18 @@ UNPUBLISHED_PROP = "unpublished"
 class TimestampsExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """TimestampsItemExt is the extension of an Item in that
-    allows to specify additional timestamps for assets and metadata.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
+    :stac-ext:`Timestamps Extension <timestamps>`. This class is generic over the type
+    of STAC Object to be extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Asset`).
+
+    To create a concrete instance of :class:`TimestampsExtension`, use the
+    :meth:`TimestampsExtension.ext` method. For example:
+
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> ts_ext = TimestampsExtension.ext(item)
     """
 
     def apply(
@@ -52,18 +62,13 @@ class TimestampsExtension(
 
     @property
     def published(self) -> Optional[Datetime]:
-        """Get or sets a datetime objects that represent
-            the date and time that the corresponding data
-            was published the first time.
+        """Gets or sets a datetime object that represents the date and time that the
+        corresponding data was published the first time.
 
-        'Published'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data
-        linked to the Asset Object. If it comes from the Item properties, it's
-        referencing to the timestamp valid for the metadata.
-
-        Returns:
-            datetime
+        'Published' has a different meaning depending on where it is used. If available
+        in the asset properties, it refers to the timestamps valid for the actual data
+        linked to the Asset Object. If it comes from the Item properties, it refers to
+        timestamp valid for the metadata.
         """
         return map_opt(str_to_datetime, self._get_property(PUBLISHED_PROP, str))
 
@@ -73,18 +78,13 @@ class TimestampsExtension(
 
     @property
     def expires(self) -> Optional[Datetime]:
-        """Get or sets a datetime objects that represent
-            the date and time the corresponding data
-            expires (is not valid any longer).
+        """Gets or sets a datetime object that represents the date and time the
+        corresponding data expires (is not valid any longer).
 
-        'Unpublished'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data
-        linked to the Asset Object. If it comes from the Item properties, it's
-        referencing to the timestamp valid for the metadata.
-
-        Returns:
-            datetime
+        'Unpublished' has a different meaning depending on where it is used. If
+        available in the asset properties, it refers to the timestamps valid for the
+        actual data linked to the Asset Object. If it comes from the Item properties,
+        it refers to to the timestamp valid for the metadata.
         """
         return map_opt(str_to_datetime, self._get_property(EXPIRES_PROP, str))
 
@@ -94,17 +94,13 @@ class TimestampsExtension(
 
     @property
     def unpublished(self) -> Optional[Datetime]:
-        """Get or sets a datetime objects that represent
-        the Date and time the corresponding data was unpublished.
+        """Gets or sets a datetime object that represents the date and time the
+        corresponding data was unpublished.
 
-        'Unpublished'
-        has a different meaning depending on where it is used. If available in
-        the asset properties, it refers to the timestamps valid for the actual data
-        linked to the Asset Object. If it comes from the Item properties, it's
-        referencing to the timestamp valid for the metadata.
-
-        Returns:
-            datetime
+        'Unpublished' has a different meaning depending on where it is used. If
+        available in the asset properties, it refers to the timestamps valid for the
+        actual data linked to the Asset Object. If it comes from the Item properties,
+        it's referencing to the timestamp valid for the metadata.
         """
         return map_opt(str_to_datetime, self._get_property(UNPUBLISHED_PROP, str))
 
@@ -118,6 +114,16 @@ class TimestampsExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "TimestampsExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Timestamps
+        Extension <timestamps>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             if add_if_missing:
                 cls.add_to(obj)
@@ -135,15 +141,47 @@ class TimestampsExtension(
 
 
 class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
+    """A concrete implementation of :class:`TimestampsExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    defined in the :stac-ext:`Timestamps Extension <timestamps>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`TimestampsExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemtimestampsExtension Item id={}>".format(self.item.id)
+        return "<ItemTimestampsExtension Item id={}>".format(self.item.id)
 
 
 class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
+    """A concrete implementation of :class:`TimestampsExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties
+    defined in the :stac-ext:`Timestamps Extension <timestamps>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`TimestampsExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
@@ -151,7 +189,7 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssettimestampsExtension Asset href={}>".format(self.asset_href)
+        return "<AssetTimestampsExtension Asset href={}>".format(self.asset_href)
 
 
 class TimestampsExtensionHooks(ExtensionHooks):

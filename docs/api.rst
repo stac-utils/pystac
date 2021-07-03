@@ -536,17 +536,29 @@ ItemScientificExtension
 Timestamps Extension
 --------------------
 
-Implements the :stac-ext:`Timestamps Extension <timestamps>`.
+These classes are representations of the :stac-ext:`Timestamps Extension Spec
+<timestamps>`.
 
-TimestampsItemExt
-~~~~~~~~~~~~~~~~~
+TimestampsExtension
+~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.timestamps.TimestampsExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemTimestampsExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.ItemTimestampsExtension
+   :members:
+   :show-inheritance:
+
+AssetTimestampsExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.AssetTimestampsExtension
+   :members:
+   :show-inheritance:
 
 SAR Extension
 -------------
