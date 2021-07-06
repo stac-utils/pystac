@@ -169,9 +169,7 @@ class ItemTest(unittest.TestCase):
         )
 
     def test_read_eo_item_owns_asset(self) -> None:
-        item = next(
-            x for x in TestCases.test_case_1().get_all_items() if isinstance(x, Item)
-        )
+        item = next(iter(TestCases.test_case_1().get_all_items()))
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
