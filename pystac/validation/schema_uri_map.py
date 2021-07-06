@@ -28,7 +28,7 @@ class SchemaUriMap(ABC):
         Returns:
             str: The URI of the schema, or None if not found.
         """
-        pass
+        raise NotImplementedError
 
 
 class DefaultSchemaUriMap(SchemaUriMap):

@@ -14,7 +14,7 @@ class ExtensionHooks(ABC):
     @abstractmethod
     def schema_uri(self) -> str:
         """The schema_uri for the current version of this extension"""
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
@@ -24,13 +24,13 @@ class ExtensionHooks(ABC):
         property. Override with a class attribute so that the set of previous
         IDs is only created once.
         """
-        pass
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def stac_object_types(self) -> Set[pystac.STACObjectType]:
         """A set of STACObjectType for which migration logic will be applied."""
-        pass
+        raise NotImplementedError
 
     @lru_cache()
     def _get_stac_object_types(self) -> Set[str]:
