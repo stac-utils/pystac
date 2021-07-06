@@ -528,6 +528,4 @@ class STACObject(ABC):
         Args:
             d : A dictionary to identify
         """
-        raise NotImplementedError(
-            "identify_dict must be implemented by the STACObject subclass."
-        )
+        raise NotImplementedError

@@ -62,7 +62,7 @@ class StacIO(ABC):
         Returns:
             str: The text contained in the file at the location specified by the uri.
         """
-        raise NotImplementedError("read_text not implemented")
+        raise NotImplementedError
 
     @abstractmethod
     def write_text(
@@ -79,7 +79,7 @@ class StacIO(ABC):
             dest : The destination to write to.
             txt : The text to write.
         """
-        raise NotImplementedError("write_text not implemented")
+        raise NotImplementedError
 
     def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Method used internally by :class:`StacIO` instances to deserialize a
