@@ -77,7 +77,6 @@ class DefaultSchemaUriMap(SchemaUriMap):
     def _append_base_uri_if_needed(cls, uri: str, stac_version: str) -> Optional[str]:
         # Only append the base URI if it's not already an absolute URI
         if "://" not in uri:
-            base_uri = None
             for version_range, f in cls.BASE_URIS:
                 if version_range.contains(stac_version):
                     base_uri = f(stac_version)
@@ -91,7 +90,6 @@ class DefaultSchemaUriMap(SchemaUriMap):
     def get_object_schema_uri(
         self, object_type: STACObjectType, stac_version: str
     ) -> Optional[str]:
-        uri = None
         is_latest = stac_version == pystac.get_stac_version()
 
         if object_type not in self.DEFAULT_SCHEMA_MAP:
@@ -315,7 +313,6 @@ class OldExtensionSchemaUriMap:
     ) -> Optional[str]:
         # Only append the base URI if it's not already an absolute URI
         if "://" not in uri:
-            base_uri = None
             for version_range, f in cls.get_base_uris():
                 if version_range.contains(stac_version):
                     base_uri = f(stac_version)
