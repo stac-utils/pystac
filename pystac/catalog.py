@@ -626,7 +626,6 @@ class Catalog(STACObject):
         template: str,
         defaults: Optional[Dict[str, Any]] = None,
         parent_ids: Optional[List[str]] = None,
-        **kwargs: Any,
     ) -> List["Catalog"]:
         """Walks through the catalog and generates subcatalogs
         for items based on the template string.
