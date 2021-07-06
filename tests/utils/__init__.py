@@ -1,5 +1,3 @@
-# flake8: noqa
-
 from typing import Any, Dict, TYPE_CHECKING, Type
 import unittest
 from tests.utils.test_cases import (

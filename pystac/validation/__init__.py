@@ -1,4 +1,3 @@
-# flake8: noqa
 from typing import Dict, List, Any, Optional, cast, TYPE_CHECKING
 
 import pystac
@@ -47,8 +46,9 @@ def validate_dict(
 ) -> List[Any]:
     """Validate a stac object serialized as JSON into a dict.
 
-    This method delegates to the call to :meth:`pystac.validation.STACValidator.validate`
-    for the STACValidator registered via :meth:`~pystac.validation.set_validator` or
+    This method delegates to the call to
+    :meth:`pystac.validation.STACValidator.validate` for the STACValidator registered
+    via :meth:`~pystac.validation.set_validator` or
     :class:`~pystac.validation.JsonSchemaSTACValidator` by default.
 
     Args:
@@ -56,8 +56,9 @@ def validate_dict(
         stac_object_type : The stac object type of the object encoded in stac_dict.
             One of :class:`~pystac.STACObjectType`. If not supplied, this will use
             PySTAC's identification logic to identify the object type.
-        stac_version : The version of STAC to validate the object against. If not supplied,
-            this will use PySTAC's identification logic to identify the stac version
+        stac_version : The version of STAC to validate the object against. If not
+            supplied, this will use PySTAC's identification logic to identify the stac
+            version
         extensions : Extension IDs for this stac object. If not supplied,
             PySTAC's identification logic to identify the extensions.
         href : Optional HREF of the STAC object being validated.
@@ -120,8 +121,8 @@ def validate_all(
             the StacIO.default() instance is used.
 
     Raises:
-        STACValidationError: This will raise a STACValidationError if this or any contained
-            catalog, collection or item has a validation error.
+        STACValidationError: This will raise a STACValidationError if this or any
+            contained catalog, collection or item has a validation error.
     """
     if stac_io is None:
         stac_io = pystac.StacIO.default()
@@ -165,9 +166,10 @@ class RegisteredValidator:
                 import jsonschema
             except ImportError:
                 raise Exception(
-                    'Cannot validate with default validator because package "jsonschema" '
-                    "is not installed. Install pystac with the validation optional requirements "
-                    "(e.g. pip install pystac[validation]) to install jsonschema"
+                    "Cannot validate with default validator because package"
+                    ' "jsonschema" is not installed. Install pystac with the validation'
+                    " optional requirements (e.g. pip install pystac[validation]) to"
+                    " install jsonschema"
                 )
             cls._validator = JsonSchemaSTACValidator()
 
