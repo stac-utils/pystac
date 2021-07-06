@@ -16,9 +16,6 @@ from dateutil.parser import parse
 import pystac
 from tests.utils.stac_io_mock import MockStacIO
 
-if TYPE_CHECKING:
-    import tempfile as TemporaryDirectory_Type
-
 
 def assert_to_from_dict(
     test_class: unittest.TestCase,
