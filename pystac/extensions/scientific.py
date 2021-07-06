@@ -42,9 +42,6 @@ class ScientificRelType(str, Enum):
     <scientific#relation-types>` documentation for details.
     """
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     CITE_AS = "cite-as"
     """Used to indicate a link to the publication referenced by the ``sci:doi``
     field."""

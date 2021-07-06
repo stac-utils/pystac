@@ -30,9 +30,6 @@ class VersionRelType(str, Enum):
     <https://github.com/stac-extensions/version#relation-types>`__ documentation
     for details."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     LATEST = "latest-version"
     """Indicates a link pointing to a resource containing the latest version."""
 

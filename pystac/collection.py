@@ -412,9 +412,6 @@ class Extent:
 class ProviderRole(str, Enum):
     """Enumerates the allows values of the Provider "role" field."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     LICENSOR = "licensor"
     PRODUCER = "producer"
     PROCESSOR = "processor"

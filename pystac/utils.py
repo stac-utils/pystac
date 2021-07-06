@@ -40,9 +40,6 @@ def safe_urlparse(href: str) -> URLParseResult:
 class JoinType(str, Enum):
     """Allowed join types for the :func:`_join` function."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     @staticmethod
     def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
         """Determines the appropriate join type based on the scheme of the parsed

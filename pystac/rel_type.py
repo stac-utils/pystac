@@ -12,9 +12,6 @@ class RelType(str, Enum):
     specific to those STAC objects.
     """
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     ALTERNATE = "alternate"
     CANONICAL = "canonical"
     CHILD = "child"

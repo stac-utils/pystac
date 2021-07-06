@@ -32,18 +32,12 @@ class LabelRelType(str, Enum):
     documentation for details.
     """
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     SOURCE = "source"
     """Used to indicate a link to the source item to which a label item applies."""
 
 
 class LabelType(str, Enum):
     """Enumerates valid label types ("raster" or "vector")."""
-
-    def __str__(self) -> str:
-        return str(self.value)
 
     VECTOR = "vector"
     RASTER = "raster"
@@ -55,9 +49,6 @@ class LabelType(str, Enum):
 class LabelTask(str, Enum):
     """Enumerates recommended values for "label:tasks" field."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     REGRESSION = "regression"
     CLASSIFICATION = "classification"
     DETECTION = "detection"
@@ -66,9 +57,6 @@ class LabelTask(str, Enum):
 
 class LabelMethod(str, Enum):
     """Enumerates recommended values for "label:methods" field."""
-
-    def __str__(self) -> str:
-        return str(self.value)
 
     AUTOMATED = "automated"
     MANUAL = "manual"

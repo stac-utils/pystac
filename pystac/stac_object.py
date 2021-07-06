@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 
 
 class STACObjectType(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     CATALOG = "Catalog"
     COLLECTION = "Collection"
     ITEM = "Feature"

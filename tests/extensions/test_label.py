@@ -24,21 +24,21 @@ from tests.utils import TestCases, assert_to_from_dict
 
 class LabelTypeTest(unittest.TestCase):
     def test_to_str(self) -> None:
-        self.assertEqual(str(LabelType.VECTOR), "vector")
-        self.assertEqual(str(LabelType.RASTER), "raster")
+        self.assertEqual(LabelType.VECTOR.value, "vector")
+        self.assertEqual(LabelType.RASTER.value, "raster")
 
 
 class LabelRelTypeTest(unittest.TestCase):
     def test_rel_types(self) -> None:
-        self.assertEqual(str(LabelRelType.SOURCE), "source")
+        self.assertEqual(LabelRelType.SOURCE.value, "source")
 
 
 class LabelTaskTest(unittest.TestCase):
     def test_rel_types(self) -> None:
-        self.assertEqual(str(LabelTask.REGRESSION), "regression")
-        self.assertEqual(str(LabelTask.CLASSIFICATION), "classification")
-        self.assertEqual(str(LabelTask.DETECTION), "detection")
-        self.assertEqual(str(LabelTask.SEGMENTATION), "segmentation")
+        self.assertEqual(LabelTask.REGRESSION.value, "regression")
+        self.assertEqual(LabelTask.CLASSIFICATION.value, "classification")
+        self.assertEqual(LabelTask.DETECTION.value, "detection")
+        self.assertEqual(LabelTask.SEGMENTATION.value, "segmentation")
 
 
 class LabelCountTest(unittest.TestCase):
