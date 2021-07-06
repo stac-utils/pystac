@@ -1,7 +1,6 @@
 from copy import copy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
-import pystac
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
@@ -64,7 +63,7 @@ class Asset:
             self.properties = {}
 
         # The Item which owns this Asset.
-        self.owner: Optional[Union[pystac.Item, pystac.Collection]] = None
+        self.owner: Optional[Union["Collection_Type", "Item_Type"]] = None
 
     def set_owner(self, obj: Union["Collection_Type", "Item_Type"]) -> None:
         """Sets the owning item of this Asset.
