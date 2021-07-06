@@ -191,8 +191,7 @@ class ItemTest(unittest.TestCase):
 
         item_dict = item.to_dict()
         self.assertIsNone(item_dict["geometry"])
-        with self.assertRaises(KeyError):
-            item_dict["bbox"]
+        self.assertNotIn("bbox", item_dict)
 
     def test_0_9_item_with_no_extensions_does_not_read_collection_data(self) -> None:
         item_json = pystac.StacIO.default().read_json(
