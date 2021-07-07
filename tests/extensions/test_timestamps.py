@@ -4,6 +4,7 @@ from datetime import datetime
 
 import pystac
 from pystac import ExtensionTypeError
+from pystac.summaries import RangeSummary
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
 from tests.utils import TestCases, assert_to_from_dict
@@ -232,4 +233,107 @@ class TimestampsTest(unittest.TestCase):
             r"^Timestamps extension does not apply to type 'object'$",
             TimestampsExtension.ext,
             object(),
+        )
+
+    def test_item_repr(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+
+        self.assertEqual(
+            TimestampsExtension.ext(item).__repr__(),
+            f"<ItemTimestampsExtension Item id={item.id}>",
+        )
+
+    def test_asset_repr(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        asset = item.assets["blue"]
+
+        self.assertEqual(
+            TimestampsExtension.ext(asset).__repr__(),
+            f"<AssetTimestampsExtension Asset href={asset.href}>",
+        )
+
+
+class TimestampsSummariesTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+
+    @staticmethod
+    def collection() -> pystac.Collection:
+        return pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/multi-extent.json")
+        )
+
+    def test_published(self) -> None:
+        collection = self.collection()
+        summaries_ext = TimestampsExtension.summaries(collection)
+        published_range = RangeSummary(
+            str_to_datetime("2020-01-01T00:00:00.000Z"),
+            str_to_datetime("2020-01-02T00:00:00.000Z"),
+        )
+
+        summaries_ext.published = published_range
+
+        self.assertEqual(
+            summaries_ext.published,
+            published_range,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertDictEqual(
+            summaries_dict["published"],
+            {
+                "minimum": datetime_to_str(published_range.minimum),
+                "maximum": datetime_to_str(published_range.maximum),
+            },
+        )
+
+    def test_expires(self) -> None:
+        collection = self.collection()
+        summaries_ext = TimestampsExtension.summaries(collection)
+        expires_range = RangeSummary(
+            str_to_datetime("2020-01-01T00:00:00.000Z"),
+            str_to_datetime("2020-01-02T00:00:00.000Z"),
+        )
+
+        summaries_ext.expires = expires_range
+
+        self.assertEqual(
+            summaries_ext.expires,
+            expires_range,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertDictEqual(
+            summaries_dict["expires"],
+            {
+                "minimum": datetime_to_str(expires_range.minimum),
+                "maximum": datetime_to_str(expires_range.maximum),
+            },
+        )
+
+    def test_unpublished(self) -> None:
+        collection = self.collection()
+        summaries_ext = TimestampsExtension.summaries(collection)
+        unpublished_range = RangeSummary(
+            str_to_datetime("2020-01-01T00:00:00.000Z"),
+            str_to_datetime("2020-01-02T00:00:00.000Z"),
+        )
+
+        summaries_ext.unpublished = unpublished_range
+
+        self.assertEqual(
+            summaries_ext.unpublished,
+            unpublished_range,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertDictEqual(
+            summaries_dict["unpublished"],
+            {
+                "minimum": datetime_to_str(unpublished_range.minimum),
+                "maximum": datetime_to_str(unpublished_range.maximum),
+            },
         )
