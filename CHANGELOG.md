@@ -16,6 +16,10 @@
 
 ### Changed
 
+- Renamed `Asset.properties` -> `Asset.extra_fields` and `Link.properties` ->
+  `Link.extra_fields` for consistency with other STAC objects
+  ([#510](https://github.com/stac-utils/pystac/pull/510))
+
 ### Fixed
 
 - Bug in `pystac.serialization.identify_stac_object_type` where invalid objects with

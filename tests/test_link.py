@@ -58,7 +58,7 @@ class LinkTest(unittest.TestCase):
         rel = "my rel"
         target = "../elsewhere"
         mime_type = "example/stac_thing"
-        link = pystac.Link(rel, target, mime_type, "a title", properties={"a": "b"})
+        link = pystac.Link(rel, target, mime_type, "a title", extra_fields={"a": "b"})
         expected_dict = {
             "rel": rel,
             "href": target,

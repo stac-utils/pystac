@@ -76,7 +76,7 @@ class AssetDefinition:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            properties={
+            extra_fields={
                 k: v
                 for k, v in self.properties.items()
                 if k
