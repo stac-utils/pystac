@@ -66,11 +66,11 @@ class Band:
                 of accepted common names <eo#common-band-names>`.
             description : Description to fully explain the band.
             center_wavelength : The center wavelength of the band, in micrometers (μm).
-            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
-                as measured at half the maximum transmission, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the
+                band, as measured at half the maximum transmission, in micrometers (μm).
             solar_illumination: The solar illumination of the band,
                 as measured at half the maximum transmission, in W/m2/micrometers.
-        """  # noqa
+        """
         self.name = name
         self.common_name = common_name
         self.description = description
@@ -98,11 +98,11 @@ class Band:
                 accepted common names <eo#common-band-names>`.
             description : Description to fully explain the band.
             center_wavelength : The center wavelength of the band, in micrometers (μm).
-            full_width_half_max : Full width at half maximum (FWHM). The width of the band,
-                as measured at half the maximum transmission, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the
+                band, as measured at half the maximum transmission, in micrometers (μm).
             solar_illumination: The solar illumination of the band,
                 as measured at half the maximum transmission, in W/m2/micrometers.
-        """  # noqa
+        """
         b = cls({})
         b.apply(
             name=name,
@@ -135,7 +135,7 @@ class Band:
 
         Returns:
             Optional[str]
-        """  # noqa
+        """
         return self.properties.get("common_name")
 
     @common_name.setter
@@ -234,7 +234,7 @@ class Band:
         Returns:
             Tuple[float, float] or None: The band range for this name as (min, max), or
             None if this is not a recognized common name.
-        """  # noqa E501
+        """
         name_to_range = {
             "coastal": (0.40, 0.45),
             "blue": (0.45, 0.50),
@@ -265,9 +265,9 @@ class Band:
                 accepted common names <eo#common-band-names>`.
 
         Returns:
-            str or None: If a recognized common name, returns a description including the
-            band range. Otherwise returns None.
-        """  # noqa E501
+            str or None: If a recognized common name, returns a description including
+            the band range. Otherwise returns None.
+        """
         r = Band.band_range(common_name)
         if r is not None:
             return "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])

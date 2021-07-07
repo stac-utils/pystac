@@ -99,7 +99,7 @@ def _get_removed_extension_migrations() -> Dict[
             ]
         ],
     ],
-]:  # noqa
+]:
     """Handles removed extensions.
 
     This does not handle renamed extension or extensions that were absorbed
