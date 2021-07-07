@@ -1,8 +1,6 @@
 import json
-from typing import Any, Dict
 import unittest
-
-# from copy import deepcopy
+from typing import Any, Dict
 
 import pystac
 from pystac.asset import Asset
@@ -14,6 +12,8 @@ from pystac.extensions.pointcloud import (
     PointcloudStatistic,
 )
 from tests.utils import TestCases, assert_to_from_dict
+
+# from copy import deepcopy
 
 
 class PointcloudTest(unittest.TestCase):

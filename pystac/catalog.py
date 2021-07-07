@@ -1,39 +1,40 @@
 import os
 from copy import deepcopy
 from enum import Enum
-from pystac.errors import STACTypeError
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
     Iterable,
     List,
     Optional,
-    TYPE_CHECKING,
     Tuple,
     Union,
     cast,
 )
 
 import pystac
-from pystac.stac_object import STACObject, STACObjectType
+from pystac.cache import ResolvedObjectCache
+from pystac.errors import STACTypeError
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
     LayoutTemplate,
 )
 from pystac.link import Link
-from pystac.cache import ResolvedObjectCache
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
+from pystac.stac_object import STACObject, STACObjectType
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
-    from pystac.item import Asset as Asset_Type, Item as Item_Type
     from pystac.collection import Collection as Collection_Type
+    from pystac.item import Asset as Asset_Type
+    from pystac.item import Item as Item_Type
 
 
 class CatalogType(str, Enum):

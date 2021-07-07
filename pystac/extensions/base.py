@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
+from typing import Any, Dict, Generic, Iterable, List, Optional, Type, TypeVar, Union
 
 import pystac
 

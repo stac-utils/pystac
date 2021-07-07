@@ -6,10 +6,7 @@ https://github.com/stac-extensions/pointcloud
 from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import map_opt
 

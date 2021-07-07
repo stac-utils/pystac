@@ -1,17 +1,17 @@
-from copy import deepcopy
-import os
-from datetime import datetime
 import json
+import os
 import tempfile
-from typing import Any, Dict, List
 import unittest
+from copy import deepcopy
+from datetime import datetime
+from typing import Any, Dict, List
 
 import pystac
-from pystac import Asset, Item, Provider, ProviderRole
-from pystac.validation import validate_dict
 import pystac.serialization.common_properties
+from pystac import Asset, Item, Provider, ProviderRole
 from pystac.item import CommonMetadata
-from pystac.utils import datetime_to_str, get_opt, str_to_datetime, is_absolute_href
+from pystac.utils import datetime_to_str, get_opt, is_absolute_href, str_to_datetime
+from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
 
 

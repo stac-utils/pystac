@@ -3,28 +3,18 @@
 https://github.com/stac-extensions/eo
 """
 
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    TypeVar,
-    cast,
-)
+from typing import Any, Dict, Generic, Iterable, List, Optional, Tuple, TypeVar, cast
 
 import pystac
-from pystac.summaries import RangeSummary
+from pystac.extensions import view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions import view
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

@@ -3,15 +3,12 @@
 https://github.com/stac-extensions/version
 """
 from enum import Enum
-from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item)
 

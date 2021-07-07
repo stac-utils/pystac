@@ -1,14 +1,13 @@
 from copy import deepcopy
 from datetime import datetime
 from enum import Enum
-from pystac.errors import STACTypeError
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Iterable,
     List,
     Optional,
-    TYPE_CHECKING,
     Tuple,
     TypeVar,
     Union,
@@ -19,18 +18,19 @@ import dateutil.parser
 from dateutil import tz
 
 import pystac
-from pystac import STACObjectType, CatalogType
+from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
+from pystac.errors import STACTypeError
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
-from pystac.utils import datetime_to_str
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
 from pystac.summaries import Summaries
+from pystac.utils import datetime_to_str
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type

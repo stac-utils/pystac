@@ -1,6 +1,6 @@
 from enum import Enum
 from functools import total_ordering
-from typing import Any, Dict, Optional, Set, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Set, Union
 
 import pystac
 from pystac.version import STACVersion

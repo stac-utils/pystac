@@ -3,9 +3,9 @@ import unittest
 
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.extensions.eo import Band, EOExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
-from pystac.extensions.eo import EOExtension, Band
 from tests.utils import TestCases, assert_to_from_dict
 
 

@@ -1,22 +1,21 @@
-import sys
 import numbers
+import sys
 from enum import Enum
 from functools import lru_cache
-
-import pystac
-from pystac.utils import get_required
-
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
+    Iterable,
     List,
     Optional,
-    Union,
     TypeVar,
-    Iterable,
-    TYPE_CHECKING,
+    Union,
 )
+
+import pystac
+from pystac.utils import get_required
 
 if sys.version_info >= (3, 8):
     from typing import Protocol

@@ -1,24 +1,24 @@
+import csv
 import os
 from datetime import datetime
-import csv
 from typing import Any, Dict, List
 
 import pystac
 from pystac import (
+    Asset,
     Catalog,
     Collection,
-    Item,
-    Asset,
     Extent,
-    TemporalExtent,
-    SpatialExtent,
+    Item,
     MediaType,
+    SpatialExtent,
+    TemporalExtent,
 )
 from pystac.extensions.label import (
-    LabelExtension,
-    LabelOverview,
     LabelClasses,
     LabelCount,
+    LabelExtension,
+    LabelOverview,
     LabelType,
 )
 

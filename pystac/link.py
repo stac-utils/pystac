@@ -1,14 +1,14 @@
 from copy import copy
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
 import pystac
-from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.item import Item as Item_Type
     from pystac.catalog import Catalog as Catalog_Type
     from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 HIERARCHICAL_LINKS = [
     pystac.RelType.ROOT,

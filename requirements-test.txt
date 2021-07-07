@@ -1,6 +1,7 @@
 mypy==0.910
 flake8==3.9.2
 black==21.6b0
+isort==5.9.1
 
 codespell==2.1.0
 

@@ -1,6 +1,5 @@
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
-from pystac.catalog import Catalog
 from typing import Any, Dict, List, Optional, Union, cast
 
 import dateutil.parser
@@ -8,21 +7,22 @@ import dateutil.parser
 import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
+from pystac.catalog import Catalog
+from pystac.collection import Collection, Provider
 from pystac.link import Link
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
 from pystac.stac_object import STACObject
 from pystac.utils import (
+    datetime_to_str,
     is_absolute_href,
     make_absolute_href,
     make_relative_href,
-    datetime_to_str,
     str_to_datetime,
 )
-from pystac.collection import Collection, Provider
 
 
 class CommonMetadata:

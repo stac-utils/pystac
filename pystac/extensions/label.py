@@ -4,12 +4,12 @@ https://github.com/stac-extensions/label
 """
 
 from enum import Enum
-from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
 from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
 import pystac
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"

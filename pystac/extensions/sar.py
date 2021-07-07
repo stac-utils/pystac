@@ -7,9 +7,9 @@ import enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
