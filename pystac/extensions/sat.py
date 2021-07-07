@@ -4,6 +4,7 @@ https://github.com/stac-extensions/sat
 """
 
 import enum
+from datetime import datetime as Datetime
 from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
@@ -12,15 +13,20 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import map_opt
+from pystac.utils import str_to_datetime, datetime_to_str, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
 PREFIX: str = "sat:"
-ORBIT_STATE: str = PREFIX + "orbit_state"
-RELATIVE_ORBIT: str = PREFIX + "relative_orbit"
+PLATFORM_INTERNATIONAL_DESIGNATOR_PROP: str = (
+    PREFIX + "platform_international_designator"
+)
+ABSOLUTE_ORBIT_PROP: str = PREFIX + "absolute_orbit"
+ORBIT_STATE_PROP: str = PREFIX + "orbit_state"
+RELATIVE_ORBIT_PROP: str = PREFIX + "relative_orbit"
+ANX_DATETIME_PROP: str = PREFIX + "anx_datetime"
 
 
 class OrbitState(str, enum.Enum):
@@ -51,6 +57,9 @@ class SatExtension(
         self,
         orbit_state: Optional[OrbitState] = None,
         relative_orbit: Optional[int] = None,
+        absolute_orbit: Optional[int] = None,
+        platform_international_designator: Optional[str] = None,
+        anx_datetime: Optional[Datetime] = None,
     ) -> None:
         """Applies ext extension properties to the extended :class:`~pystac.Item` or
         class:`~pystac.Asset`.
@@ -66,26 +75,58 @@ class SatExtension(
                 the time of acquisition.
         """
 
+        self.platform_international_designator = platform_international_designator
         self.orbit_state = orbit_state
+        self.absolute_orbit = absolute_orbit
         self.relative_orbit = relative_orbit
+        self.anx_datetime = anx_datetime
+
+    @property
+    def platform_international_designator(self) -> Optional[str]:
+        """Gets or sets the International Designator, also known as COSPAR ID, and
+        NSSDCA ID."""
+        return self._get_property(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, str)
+
+    @platform_international_designator.setter
+    def platform_international_designator(self, v: Optional[str]) -> None:
+        self._set_property(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, v)
 
     @property
     def orbit_state(self) -> Optional[OrbitState]:
         """Get or sets an orbit state of the object."""
-        return map_opt(lambda x: OrbitState(x), self._get_property(ORBIT_STATE, str))
+        return map_opt(
+            lambda x: OrbitState(x), self._get_property(ORBIT_STATE_PROP, str)
+        )
 
     @orbit_state.setter
     def orbit_state(self, v: Optional[OrbitState]) -> None:
-        self._set_property(ORBIT_STATE, map_opt(lambda x: x.value, v))
+        self._set_property(ORBIT_STATE_PROP, map_opt(lambda x: x.value, v))
+
+    @property
+    def absolute_orbit(self) -> Optional[int]:
+        """Get or sets a absolute orbit number of the item."""
+        return self._get_property(ABSOLUTE_ORBIT_PROP, int)
+
+    @absolute_orbit.setter
+    def absolute_orbit(self, v: Optional[int]) -> None:
+        self._set_property(ABSOLUTE_ORBIT_PROP, v)
 
     @property
     def relative_orbit(self) -> Optional[int]:
         """Get or sets a relative orbit number of the item."""
-        return self._get_property(RELATIVE_ORBIT, int)
+        return self._get_property(RELATIVE_ORBIT_PROP, int)
 
     @relative_orbit.setter
     def relative_orbit(self, v: Optional[int]) -> None:
-        self._set_property(RELATIVE_ORBIT, v)
+        self._set_property(RELATIVE_ORBIT_PROP, v)
+
+    @property
+    def anx_datetime(self) -> Optional[Datetime]:
+        return map_opt(str_to_datetime, self._get_property(ANX_DATETIME_PROP, str))
+
+    @anx_datetime.setter
+    def anx_datetime(self, v: Optional[Datetime]) -> None:
+        self._set_property(ANX_DATETIME_PROP, map_opt(datetime_to_str, v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
