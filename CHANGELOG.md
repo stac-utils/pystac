@@ -13,6 +13,7 @@
 - Timestamps Extension summaries ([#513](https://github.com/stac-utils/pystac/pull/513))
 - Define equality and `__repr__` of `RangeSummary` instances based on `to_dict`
   representation ([#513](https://github.com/stac-utils/pystac/pull/513))
+- Sat Extension summaries ([#509](https://github.com/stac-utils/pystac/pull/509))
 
 ### Changed
 
@@ -28,6 +29,8 @@
 - `Link` constructor classes (e.g. `Link.from_dict`, `Link.canonical`, etc.) now return
   the calling class instead of always returning the `Link` class
   ([#512](https://github.com/stac-utils/pystac/pull/512))
+- Sat extension now includes all fields defined in v1.0.0
+  ([#509](https://github.com/stac-utils/pystac/pull/509))
 
 ### Removed
 

@@ -499,6 +499,45 @@ RasterExtension
    :show-inheritance:
    :inherited-members:
 
+Satellite Extension
+-------------------
+
+OrbitState
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.OrbitState
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+SatExtension
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.SatExtension
+   :members:
+   :show-inheritance:
+
+ItemSatExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.ItemSatExtension
+   :members:
+   :show-inheritance:
+
+AssetSatExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.AssetSatExtension
+   :members:
+   :show-inheritance:
+
+SummariesSatExtension
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.SummariesSatExtension
+   :members:
+   :show-inheritance:
+
 Scientific Extension
 --------------------
 
