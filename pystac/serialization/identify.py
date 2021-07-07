@@ -118,7 +118,7 @@ class STACVersionRange:
     def contains(self, v: Union[str, STACVersionID]) -> bool:
         if isinstance(v, str):
             v = STACVersionID(v)
-        return self.min_version <= v and v <= self.max_version
+        return self.min_version <= v <= self.max_version
 
     def is_single_version(self) -> bool:
         return self.min_version >= self.max_version
