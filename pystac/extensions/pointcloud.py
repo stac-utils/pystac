@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/pointcloud
 """
 
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -565,8 +565,8 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["pointcloud"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"pointcloud"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()

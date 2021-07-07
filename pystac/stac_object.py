@@ -409,9 +409,10 @@ class STACObject(ABC):
 
         This method mutates the entire catalog tree.
         """
-        link_rels = set(self._object_links()) | set(
-            [pystac.RelType.ROOT, pystac.RelType.PARENT]
-        )
+        link_rels = set(self._object_links()) | {
+            pystac.RelType.ROOT,
+            pystac.RelType.PARENT,
+        }
 
         for link in self.links:
             if link.rel in link_rels:

@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/projection
 """
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -342,8 +342,8 @@ class SummariesProjectionExtension(SummariesExtension):
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["proj", "projection"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"proj", "projection"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()

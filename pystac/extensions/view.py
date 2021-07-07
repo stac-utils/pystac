@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, cast
 
 import pystac
 from pystac.summaries import RangeSummary
@@ -292,8 +292,8 @@ class SummariesViewExtension(SummariesExtension):
 
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["view"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"view"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()

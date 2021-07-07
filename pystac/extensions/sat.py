@@ -6,7 +6,7 @@ https://github.com/stac-extensions/sat
 import enum
 from datetime import datetime as Datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, List, Generic, Iterable, Optional, Set, TypeVar, cast
+from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -292,8 +292,8 @@ class SummariesSatExtension(SummariesExtension):
 
 class SatExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["sat"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"sat"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 SAT_EXTENSION_HOOKS: ExtensionHooks = SatExtensionHooks()
