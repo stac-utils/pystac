@@ -44,7 +44,7 @@ class STACValidator(ABC):
             stac_version : The version of STAC to validate the object against.
             href : Optional HREF of the STAC object being validated.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def validate_extension(
@@ -67,7 +67,7 @@ class STACValidator(ABC):
             extension_id : The extension ID of the extension to validate against.
             href : Optional HREF of the STAC object being validated.
         """
-        pass
+        raise NotImplementedError
 
     def validate(
         self,

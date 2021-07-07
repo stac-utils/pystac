@@ -249,17 +249,17 @@ class HrefLayoutStrategy(ABC):
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool
     ) -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_collection_href(
         self, col: "Collection_Type", parent_dir: str, is_root: bool
     ) -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
-        pass
+        raise NotImplementedError
 
 
 class CustomLayoutStrategy(HrefLayoutStrategy):

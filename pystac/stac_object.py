@@ -424,7 +424,7 @@ class STACObject(ABC):
         STACObjects linked to by this object (not including root, parent or self).
         This can include optional relations (which may not be present).
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
@@ -436,7 +436,7 @@ class STACObject(ABC):
 
             dict: A serialization of the object that can be written out as JSON.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def clone(self) -> "STACObject":
@@ -450,7 +450,7 @@ class STACObject(ABC):
         Returns:
             STACObject: The clone of this object.
         """
-        pass
+        raise NotImplementedError
 
     @classmethod
     def from_file(
@@ -521,7 +521,7 @@ class STACObject(ABC):
         Returns:
             STACObject: The STACObject parsed from this dict.
         """
-        pass
+        raise NotImplementedError
 
     @classmethod
     @abstractmethod
@@ -532,6 +532,4 @@ class STACObject(ABC):
         Args:
             d : A dictionary to identify
         """
-        raise NotImplementedError(
-            "identify_dict must be implemented by the STACObject subclass."
-        )
+        raise NotImplementedError

@@ -35,7 +35,7 @@ class Comparable(Protocol):
 
     @abstractmethod
     def __lt__(self: "T", x: "T") -> bool:
-        pass
+        return NotImplemented
 
 
 T = TypeVar("T", bound=Comparable)
