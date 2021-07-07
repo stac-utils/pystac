@@ -5,12 +5,14 @@ https://github.com/stac-extensions/sat
 
 import enum
 from datetime import datetime as Datetime
-from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
+from pystac.summaries import RangeSummary
+from typing import Dict, Any, List, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import str_to_datetime, datetime_to_str, map_opt
@@ -159,6 +161,11 @@ class SatExtension(
                 f"Satellite extension does not apply to type '{type(obj).__name__}'"
             )
 
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesSatExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesSatExtension(obj)
+
 
 class ItemSatExtension(SatExtension[pystac.Item]):
     """A concrete implementation of :class:`SatExtension` on an :class:`~pystac.Item`
@@ -212,6 +219,75 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetSatExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesSatExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Satellite Extension <sat>`.
+    """
+
+    @property
+    def platform_international_designator(self) -> Optional[List[str]]:
+        """Get or sets the summary of
+        :attr:`SatExtension.platform_international_designator` values for this
+        Collection.
+        """
+
+        return self.summaries.get_list(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP)
+
+    @platform_international_designator.setter
+    def platform_international_designator(self, v: Optional[List[str]]) -> None:
+        self._set_summary(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, v)
+
+    @property
+    def orbit_state(self) -> Optional[List[OrbitState]]:
+        """Get or sets the summary of :attr:`SatExtension.orbit_state` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(ORBIT_STATE_PROP)
+
+    @orbit_state.setter
+    def orbit_state(self, v: Optional[List[OrbitState]]) -> None:
+        self._set_summary(ORBIT_STATE_PROP, v)
+
+    @property
+    def absolute_orbit(self) -> Optional[RangeSummary[int]]:
+        return self.summaries.get_range(ABSOLUTE_ORBIT_PROP)
+
+    @absolute_orbit.setter
+    def absolute_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+        self._set_summary(ABSOLUTE_ORBIT_PROP, v)
+
+    @property
+    def relative_orbit(self) -> Optional[RangeSummary[int]]:
+        return self.summaries.get_range(RELATIVE_ORBIT_PROP)
+
+    @relative_orbit.setter
+    def relative_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+        self._set_summary(RELATIVE_ORBIT_PROP, v)
+
+    @property
+    def anx_datetime(self) -> Optional[RangeSummary[Datetime]]:
+        return map_opt(
+            lambda s: RangeSummary(
+                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+            ),
+            self.summaries.get_range(ANX_DATETIME_PROP),
+        )
+
+    @anx_datetime.setter
+    def anx_datetime(self, v: Optional[RangeSummary[Datetime]]) -> None:
+        self._set_summary(
+            ANX_DATETIME_PROP,
+            map_opt(
+                lambda s: RangeSummary(
+                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+                ),
+                v,
+            ),
+        )
 
 
 class SatExtensionHooks(ExtensionHooks):
