@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datetime import datetime as Datetime
+from datetime import datetime
 from enum import Enum
 from pystac.errors import STACTypeError
 from typing import (
@@ -175,7 +175,7 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
 
-    intervals: List[List[Optional[Datetime]]]
+    intervals: List[List[Optional[datetime]]]
     """A list of two datetimes wrapped in a list,
     representing the temporal extent of a Collection. Open date ranges are
     represented by either the start (the first element of the interval) or the
@@ -187,16 +187,16 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]],
+        intervals: Union[List[List[Optional[datetime]]], List[Optional[datetime]]],
         extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
-        if isinstance(intervals, list) and isinstance(intervals[0], Datetime):
-            self.intervals = [cast(List[Optional[Datetime]], intervals)]
+        if isinstance(intervals, list) and isinstance(intervals[0], datetime):
+            self.intervals = [cast(List[Optional[datetime]], intervals)]
         else:
-            self.intervals = cast(List[List[Optional[Datetime]]], intervals)
+            self.intervals = cast(List[List[Optional[datetime]]], intervals)
 
         self.extra_fields = extra_fields or {}
 
@@ -239,7 +239,7 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The TemporalExtent deserialized from the JSON dict.
         """
-        parsed_intervals: List[List[Optional[Datetime]]] = []
+        parsed_intervals: List[List[Optional[datetime]]] = []
         for i in d["interval"]:
             start = None
             end = None
@@ -264,7 +264,7 @@ class TemporalExtent:
             TemporalExtent: The resulting TemporalExtent.
         """
         return TemporalExtent(
-            intervals=[[Datetime.utcnow().replace(microsecond=0), None]]
+            intervals=[[datetime.utcnow().replace(microsecond=0), None]]
         )
 
 
@@ -360,9 +360,9 @@ class Extent:
             [float("-inf")],
             [float("-inf")],
         ]
-        datetimes: List[Datetime] = []
-        starts: List[Datetime] = []
-        ends: List[Datetime] = []
+        datetimes: List[datetime] = []
+        starts: List[datetime] = []
+        ends: List[datetime] = []
 
         for item in items:
             if item.bbox is not None:
