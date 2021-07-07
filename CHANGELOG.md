@@ -39,6 +39,7 @@
 
 - `STAC_IO` class in favor of `StacIO`. This was deprecated in v1.0.0-beta.1 and has
   been removed in this release. ([#490](https://github.com/stac-utils/pystac/pull/490))
+- Support for Python 3.6 ([#500](https://github.com/stac-utils/pystac/pull/500))
 
 ### Deprecated
 
