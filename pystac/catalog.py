@@ -320,6 +320,14 @@ class Catalog(STACObject):
             self.get_stac_objects(pystac.RelType.CHILD),
         )
 
+    def get_collections(self) -> Iterable["Collection_Type"]:
+        """Return all children of this catalog that are :class:`~pystac.Collection`
+        instances."""
+        return map(
+            lambda x: cast(pystac.Collection, x),
+            self.get_stac_objects(pystac.RelType.CHILD, pystac.Collection),
+        )
+
     def get_child_links(self) -> List[Link]:
         """Return all child links of this catalog.
 

@@ -996,6 +996,13 @@ class CatalogTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Catalog.from_dict(collection_dict)
 
+    def test_get_collections(self) -> None:
+        catalog = TestCases.test_case_2()
+        collections = list(catalog.get_collections())
+
+        self.assertGreater(len(collections), 0)
+        self.assertTrue(all(isinstance(c, pystac.Collection) for c in collections))
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link: pystac.Link, tag: str) -> None:
