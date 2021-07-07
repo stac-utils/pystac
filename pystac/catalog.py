@@ -328,6 +328,13 @@ class Catalog(STACObject):
             self.get_stac_objects(pystac.RelType.CHILD, pystac.Collection),
         )
 
+    def get_all_collections(self) -> Iterable["Collection_Type"]:
+        """Get all collections from this catalog and all subcatalogs. Will traverse
+        any subcatalogs recursively."""
+        yield from self.get_collections()
+        for child in self.get_children():
+            yield from child.get_collections()
+
     def get_child_links(self) -> List[Link]:
         """Return all child links of this catalog.
 
