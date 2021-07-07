@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
@@ -272,7 +272,7 @@ class STACObject(ABC):
             self.add_link(Link.parent(parent))
 
     def get_stac_objects(
-        self, rel: Union[str, pystac.RelType]
+        self, rel: Union[str, pystac.RelType], typ: Optional[Type["STACObject"]] = None
     ) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
@@ -280,17 +280,21 @@ class STACObject(ABC):
         Args:
             rel : The relation to match each :class:`~pystac.Link`'s
                 ``rel`` property against.
+            typ : If not ``None``, objects will only be yielded if they are instances of
+                ``typ``.
 
         Returns:
             Iterable[STACObjects]: A possibly empty iterable of STACObjects that are
-            connected to this object through links with the given ``rel``.
+            connected to this object through links with the given ``rel`` and are of
+            type ``typ`` (if given).
         """
         links = self.links[:]
         for i in range(0, len(links)):
             link = links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
-                yield cast("STACObject", link.target)
+                if typ is None or isinstance(link.target, typ):
+                    yield cast("STACObject", link.target)
 
     def save_object(
         self,
