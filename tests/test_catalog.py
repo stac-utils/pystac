@@ -1153,3 +1153,9 @@ class CatalogSubClassTest(unittest.TestCase):
         custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
 
         self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+
+    def test_clone(self) -> None:
+        custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
+        cloned_catalog = custom_catalog.clone()
+
+        self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)

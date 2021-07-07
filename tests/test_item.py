@@ -739,3 +739,32 @@ class ItemSubClassTest(unittest.TestCase):
         custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
 
         self.assertIsInstance(custom_item, self.BasicCustomItem)
+
+    def test_clone(self) -> None:
+        custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
+        cloned_item = custom_item.clone()
+
+        self.assertIsInstance(cloned_item, self.BasicCustomItem)
+
+
+class AssetSubClassTest(unittest.TestCase):
+    class CustomAsset(Asset):
+        pass
+
+    def setUp(self) -> None:
+        self.maxDiff = None
+        with open(TestCases.get_path("data-files/item/sample-item.json")) as src:
+            item_dict = json.load(src)
+
+        self.asset_dict = item_dict["assets"]["analytic"]
+
+    def test_from_dict(self) -> None:
+        asset = self.CustomAsset.from_dict(self.asset_dict)
+
+        self.assertIsInstance(asset, self.CustomAsset)
+
+    def test_clone(self) -> None:
+        asset = self.CustomAsset.from_dict(self.asset_dict)
+        cloned_asset = asset.clone()
+
+        self.assertIsInstance(cloned_asset, self.CustomAsset)

@@ -885,7 +885,8 @@ class Item(STACObject):
         return d
 
     def clone(self) -> "Item":
-        clone = Item(
+        cls = self.__class__
+        clone = cls(
             id=self.id,
             geometry=deepcopy(self.geometry),
             bbox=copy(self.bbox),

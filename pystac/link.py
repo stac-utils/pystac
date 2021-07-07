@@ -269,16 +269,16 @@ class Link:
         Returns:
             Link: The cloned link.
         """
-
-        return Link(
+        cls = self.__class__
+        return cls(
             rel=self.rel,
             target=self.target,
             media_type=self.media_type,
             title=self.title,
         )
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Link":
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "Link":
         """Deserializes a Link from a dict.
 
         Args:
@@ -297,7 +297,7 @@ class Link:
         if any(d):
             properties = d
 
-        return Link(
+        return cls(
             rel=rel,
             target=href,
             media_type=media_type,
@@ -305,47 +305,48 @@ class Link:
             properties=properties,
         )
 
-    @staticmethod
-    def root(c: "Catalog_Type") -> "Link":
+    @classmethod
+    def root(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a root Catalog or Collection."""
-        return Link(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def parent(c: "Catalog_Type") -> "Link":
+    @classmethod
+    def parent(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
-        return Link(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def collection(c: "Collection_Type") -> "Link":
+    @classmethod
+    def collection(cls, c: "Collection_Type") -> "Link":
         """Creates a link to an item's Collection."""
-        return Link(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def self_href(href: str) -> "Link":
+    @classmethod
+    def self_href(cls, href: str) -> "Link":
         """Creates a self link to a file's location."""
-        return Link(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def child(c: "Catalog_Type", title: Optional[str] = None) -> "Link":
+    @classmethod
+    def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
-        return Link(
+        return cls(
             pystac.RelType.CHILD, c, title=title, media_type=pystac.MediaType.JSON
         )
 
-    @staticmethod
-    def item(item: "Item_Type", title: Optional[str] = None) -> "Link":
+    @classmethod
+    def item(cls, item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
-        return Link(
+        return cls(
             pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
         )
 
-    @staticmethod
+    @classmethod
     def canonical(
+        cls,
         item_or_collection: Union["Item_Type", "Collection_Type"],
         title: Optional[str] = None,
     ) -> "Link":
         """Creates a canonical link to an Item or Collection."""
-        return Link(
+        return cls(
             pystac.RelType.CANONICAL,
             item_or_collection,
             title=title,
