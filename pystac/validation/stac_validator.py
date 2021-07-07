@@ -153,7 +153,7 @@ class JsonSchemaSTACValidator(STACValidator):
             base_uri=schema_uri, referrer=schema, store=self.schema_cache
         )
 
-        return (schema, resolver)
+        return schema, resolver
 
     def _validate_from_uri(self, stac_dict: Dict[str, Any], schema_uri: str) -> None:
         schema, resolver = self.get_schema_from_uri(schema_uri)

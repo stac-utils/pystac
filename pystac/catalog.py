@@ -760,7 +760,7 @@ class Catalog(STACObject):
         children = self.get_children()
         items = self.get_items()
 
-        yield (self, children, items)
+        yield self, children, items
         for child in self.get_children():
             yield from child.walk()
 
