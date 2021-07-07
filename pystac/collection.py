@@ -521,7 +521,7 @@ class Collection(Catalog):
     Args:
         id : Identifier for the collection. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the
-            collection. `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY
+            collection. `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY
             be used for rich text representation.
         extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
