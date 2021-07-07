@@ -4,7 +4,7 @@ https://github.com/stac-extensions/sat
 """
 
 import enum
-from typing import Generic, Optional, Set, TypeVar, cast
+from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -18,11 +18,12 @@ T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
-ORBIT_STATE: str = "sat:orbit_state"
-RELATIVE_ORBIT: str = "sat:relative_orbit"
+PREFIX: str = "sat:"
+ORBIT_STATE: str = PREFIX + "orbit_state"
+RELATIVE_ORBIT: str = PREFIX + "relative_orbit"
 
 
-class OrbitState(enum.Enum):
+class OrbitState(str, enum.Enum):
     ASCENDING = "ascending"
     DESCENDING = "descending"
     GEOSTATIONARY = "geostationary"
@@ -31,17 +32,19 @@ class OrbitState(enum.Enum):
 class SatExtension(
     Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 ):
-    """SatItemExt extends Item to add sat properties to a STAC Item.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
+    :stac-ext:`Satellite Extension <sat>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
 
-    Args:
-        item : The item to be extended.
+    To create a concrete instance of :class:`SatExtension`, use the
+    :meth:`SatExtension.ext` method. For example:
 
-    Attributes:
-        item : The item that is being extended.
+    .. code-block:: python
 
-    Note:
-        Using SatItemExt to directly wrap an item will add the 'sat'
-        extension ID to the item's stac_extensions.
+       >>> item: pystac.Item = ...
+       >>> sat_ext = SatExtension.ext(item)
     """
 
     def apply(
@@ -49,7 +52,8 @@ class SatExtension(
         orbit_state: Optional[OrbitState] = None,
         relative_orbit: Optional[int] = None,
     ) -> None:
-        """Applies ext extension properties to the extended Item.
+        """Applies ext extension properties to the extended :class:`~pystac.Item` or
+        class:`~pystac.Asset`.
 
         Must specify at least one of orbit_state or relative_orbit in order
         for the sat extension to properties to be valid.
@@ -67,11 +71,7 @@ class SatExtension(
 
     @property
     def orbit_state(self) -> Optional[OrbitState]:
-        """Get or sets an orbit state of the item.
-
-        Returns:
-            OrbitState or None
-        """
+        """Get or sets an orbit state of the object."""
         return map_opt(lambda x: OrbitState(x), self._get_property(ORBIT_STATE, str))
 
     @orbit_state.setter
@@ -80,11 +80,7 @@ class SatExtension(
 
     @property
     def relative_orbit(self) -> Optional[int]:
-        """Get or sets a relative orbit number of the item.
-
-        Returns:
-            int or None
-        """
+        """Get or sets a relative orbit number of the item."""
         return self._get_property(RELATIVE_ORBIT, int)
 
     @relative_orbit.setter
@@ -97,6 +93,16 @@ class SatExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "SatExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Satellite
+        Extension <sat>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
             if add_if_missing:
                 cls.add_to(obj)
@@ -114,6 +120,21 @@ class SatExtension(
 
 
 class ItemSatExtension(SatExtension[pystac.Item]):
+    """A concrete implementation of :class:`SatExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`Satellite Extension <sat>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`SatExtension.ext` on an :class:`~pystac.Item` to
+    extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -123,6 +144,25 @@ class ItemSatExtension(SatExtension[pystac.Item]):
 
 
 class AssetSatExtension(SatExtension[pystac.Asset]):
+    """A concrete implementation of :class:`SatExtension` on an :class:`~pystac.Asset`
+    that extends the properties of the Asset to include properties defined in the
+    :stac-ext:`Satellite Extension <sat>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`SatExtension.ext` on an :class:`~pystac.Asset` to
+    extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.properties
