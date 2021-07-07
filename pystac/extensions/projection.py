@@ -46,9 +46,6 @@ class ProjectionExtension(
        >>> proj_ext = ProjectionExtension.ext(item)
     """
 
-    def __init__(self, item: pystac.Item) -> None:
-        self.item = item
-
     def apply(
         self,
         epsg: Optional[int],
