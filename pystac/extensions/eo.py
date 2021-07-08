@@ -27,7 +27,7 @@ from pystac.extensions import view
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.Collection)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 PREFIX: str = "eo:"
@@ -276,7 +276,7 @@ class Band:
 class EOExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item, pystac.Collection, pystac.Asset],
+    ExtensionManagementMixin[T],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
