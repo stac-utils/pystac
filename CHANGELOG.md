@@ -4,6 +4,16 @@
 
 ### Added
 
+### Removed
+
+### Changed
+
+### Deprecated
+
+## [v1.0.0-rc.3]
+
+### Added
+
 - (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
 -  `LabelTask` enum in `pystac.extensions.label` with recommended values for
   `"label:tasks"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
@@ -40,8 +50,6 @@
 - `STAC_IO` class in favor of `StacIO`. This was deprecated in v1.0.0-beta.1 and has
   been removed in this release. ([#490](https://github.com/stac-utils/pystac/pull/490))
 - Support for Python 3.6 ([#500](https://github.com/stac-utils/pystac/pull/500))
-
-### Deprecated
 
 ## [v1.0.0-rc.2]
 
@@ -428,7 +436,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..main>
+[v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>
