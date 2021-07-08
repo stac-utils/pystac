@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING, Union
 
-import pystac
+from pystac.rel_type import RelType
+from pystac.stac_object import STACObjectType
+from pystac.errors import ExtensionAlreadyExistsError
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
@@ -28,7 +30,7 @@ class ExtensionHooks(ABC):
 
     @property
     @abstractmethod
-    def stac_object_types(self) -> Set[pystac.STACObjectType]:
+    def stac_object_types(self) -> Set[STACObjectType]:
         """A set of STACObjectType for which migration logic will be applied."""
         raise NotImplementedError
 
@@ -39,7 +41,7 @@ class ExtensionHooks(ABC):
 
     def get_object_links(
         self, obj: "STACObject_Type"
-    ) -> Optional[List[Union[str, pystac.RelType]]]:
+    ) -> Optional[List[Union[str, RelType]]]:
         return None
 
     def migrate(
@@ -70,7 +72,7 @@ class RegisteredExtensionHooks:
     def add_extension_hooks(self, hooks: ExtensionHooks) -> None:
         e_id = hooks.schema_uri
         if e_id in self.hooks:
-            raise pystac.ExtensionAlreadyExistsError(
+            raise ExtensionAlreadyExistsError(
                 "ExtensionDefinition with id '{}' already exists.".format(e_id)
             )
 
@@ -82,8 +84,8 @@ class RegisteredExtensionHooks:
 
     def get_extended_object_links(
         self, obj: "STACObject_Type"
-    ) -> List[Union[str, pystac.RelType]]:
-        result: Optional[List[Union[str, pystac.RelType]]] = None
+    ) -> List[Union[str, RelType]]:
+        result: Optional[List[Union[str, RelType]]] = None
         for ext in obj.stac_extensions:
             if ext in self.hooks:
                 ext_result = self.hooks[ext].get_object_links(obj)

@@ -5,7 +5,11 @@ https://github.com/stac-extensions/pointcloud
 from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, cast, Union
 
-import pystac
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.stac_object import STACObjectType
+from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
+from pystac.item import Item
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -15,7 +19,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import map_opt, get_required
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", Item, Asset)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 PREFIX: str = "pc:"
@@ -90,7 +94,7 @@ class Schema:
         """Gets or sets the size value."""
         result: Optional[int] = self.properties.get("size")
         if result is None:
-            raise pystac.STACError(
+            raise STACError(
                 f"Pointcloud schema does not have size property: {self.properties}"
             )
         return result
@@ -98,7 +102,7 @@ class Schema:
     @size.setter
     def size(self, v: int) -> None:
         if not isinstance(v, int):
-            raise pystac.STACError("size must be an int! Invalid input: {}".format(v))
+            raise STACError("size must be an int! Invalid input: {}".format(v))
 
         self.properties["size"] = v
 
@@ -107,7 +111,7 @@ class Schema:
         """Gets or sets the name property for this Schema."""
         result: Optional[str] = self.properties.get("name")
         if result is None:
-            raise pystac.STACError(
+            raise STACError(
                 f"Pointcloud schema does not have name property: {self.properties}"
             )
         return result
@@ -219,7 +223,7 @@ class Statistic:
         """Gets or sets the name property."""
         result: Optional[str] = self.properties.get("name")
         if result is None:
-            raise pystac.STACError(
+            raise STACError(
                 f"Pointcloud statistics does not have name property: {self.properties}"
             )
         return result
@@ -331,20 +335,20 @@ class Statistic:
 class PointcloudExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union[Item, Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
+    :class:`~Item` or :class:`~Asset` with properties from the
     :stac-ext:`Point Cloud Extension <pointcloud>`. This class is generic over the type
-    of STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Asset`).
+    of STAC Object to be extended (e.g. :class:`~Item`,
+    :class:`~Asset`).
 
     To create a concrete instance of :class:`PointcloudExtension`, use the
     :meth:`PointcloudExtension.ext` method. For example:
 
     .. code-block:: python
 
-       >>> item: pystac.Item = ...
+       >>> item: Item = ...
        >>> pc_ext = PointcloudExtension.ext(item)
     """
 
@@ -383,7 +387,7 @@ class PointcloudExtension(
         """Gets or sets the number of points in the Item."""
         result = self._get_property(COUNT_PROP, int)
         if result is None:
-            raise pystac.RequiredPropertyMissing(self, COUNT_PROP)
+            raise RequiredPropertyMissing(self, COUNT_PROP)
         return result
 
     @count.setter
@@ -408,7 +412,7 @@ class PointcloudExtension(
         """Gets or sets the content encoding or format of the data."""
         result = self._get_property(ENCODING_PROP, str)
         if result is None:
-            raise pystac.RequiredPropertyMissing(self, ENCODING_PROP)
+            raise RequiredPropertyMissing(self, ENCODING_PROP)
         return result
 
     @encoding.setter
@@ -422,7 +426,7 @@ class PointcloudExtension(
         """
         result = self._get_property(SCHEMAS_PROP, List[Dict[str, Any]])
         if result is None:
-            raise pystac.RequiredPropertyMissing(self, SCHEMAS_PROP)
+            raise RequiredPropertyMissing(self, SCHEMAS_PROP)
         return [Schema(s) for s in result]
 
     @schemas.setter
@@ -460,46 +464,46 @@ class PointcloudExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Point Cloud
         Extension <pointcloud>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        This extension can be applied to instances of :class:`~Item` or
+        :class:`~Asset`.
 
         Raises:
 
-            pystac.ExtensionTypeError : If an invalid object type is passed.
+            ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
-                raise pystac.ExtensionTypeError(
+        elif isinstance(obj, Asset):
+            if obj.owner is not None and not isinstance(obj.owner, Item):
+                raise ExtensionTypeError(
                     "Pointcloud extension does not apply to Collection Assets."
                 )
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: Collection, add_if_missing: bool = False
     ) -> "SummariesPointcloudExtension":
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesPointcloudExtension(obj)
 
 
-class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
-    """A concrete implementation of :class:`PointcloudExtension` on an :class:`~pystac.Item`
+class ItemPointcloudExtension(PointcloudExtension[Item]):
+    """A concrete implementation of :class:`PointcloudExtension` on an :class:`~Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`Point Cloud Extension <pointcloud>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`PointcloudExtension.ext` on an :class:`~pystac.Item` to extend it.
+    :meth:`PointcloudExtension.ext` on an :class:`~Item` to extend it.
     """
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: Item):
         self.item = item
         self.properties = item.properties
 
@@ -507,19 +511,19 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
         return "<ItemPointcloudExtension Item id={}>".format(self.item.id)
 
 
-class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
+class AssetPointcloudExtension(PointcloudExtension[Asset]):
     """A concrete implementation of :class:`PointcloudExtension` on an
-    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    :class:`~Asset` that extends the Asset fields to include properties defined
     in the :stac-ext:`Point Cloud Extension <pointcloud>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`PointcloudExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    :meth:`PointcloudExtension.ext` on an :class:`~Asset` to extend it.
     """
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, Item):
             self.additional_read_properties = [asset.owner.properties]
             self.repr_id = f"href={asset.href} item.id={asset.owner.id}"
         else:
@@ -531,7 +535,7 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
 class SummariesPointcloudExtension(SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    the ``summaries`` field of a :class:`~Collection` to include properties
     defined in the :stac-ext:`Point Cloud Extension <pointcloud>`.
     """
 
@@ -585,7 +589,7 @@ class SummariesPointcloudExtension(SummariesExtension):
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"pointcloud"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
 
 POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()

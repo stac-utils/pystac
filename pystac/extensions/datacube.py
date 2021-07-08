@@ -6,7 +6,11 @@ https://github.com/stac-extensions/datacube
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
-import pystac
+from pystac.asset import Asset
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection
+from pystac.errors import ExtensionTypeError, RequiredPropertyMissing
+from pystac.item import Item
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -14,7 +18,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
+T = TypeVar("T", Collection, Item, Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
 
@@ -65,11 +69,11 @@ class Dimension(ABC):
     def from_dict(d: Dict[str, Any]) -> "Dimension":
         dim_type = d.get(DIM_TYPE_PROP)
         if dim_type is None:
-            raise pystac.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
+            raise RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
         if dim_type == "spatial":
             axis = d.get(DIM_AXIS_PROP)
             if axis is None:
-                raise pystac.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
+                raise RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
             if axis == "z":
                 return VerticalSpatialDimension(d)
             else:
@@ -313,7 +317,7 @@ class AdditionalDimension(Dimension):
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union[Collection, Item]],
 ):
     def apply(self, dimensions: Dict[str, Dimension]) -> None:
         self.dimensions = dimensions
@@ -339,26 +343,26 @@ class DatacubeExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "DatacubeExtension[T]":
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        elif isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Datacube extension does not apply to type '{type(obj).__name__}'"
             )
 
 
-class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
-    collection: pystac.Collection
+class CollectionDatacubeExtension(DatacubeExtension[Collection]):
+    collection: Collection
     properties: Dict[str, Any]
 
-    def __init__(self, collection: pystac.Collection):
+    def __init__(self, collection: Collection):
         self.collection = collection
         self.properties = collection.extra_fields
 
@@ -366,11 +370,11 @@ class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
         return "<CollectionDatacubeExtension Item id={}>".format(self.collection.id)
 
 
-class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
-    item: pystac.Item
+class ItemDatacubeExtension(DatacubeExtension[Item]):
+    item: Item
     properties: Dict[str, Any]
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: Item):
         self.item = item
         self.properties = item.properties
 
@@ -378,15 +382,15 @@ class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
         return "<ItemDatacubeExtension Item id={}>".format(self.item.id)
 
 
-class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
+class AssetDatacubeExtension(DatacubeExtension[Asset]):
     asset_href: str
     properties: Dict[str, Any]
     additional_read_properties: Optional[List[Dict[str, Any]]]
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, Item):
             self.additional_read_properties = [asset.owner.properties]
         else:
             self.additional_read_properties = None
@@ -399,8 +403,8 @@ class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"datacube"}
     stac_object_types = {
-        pystac.STACObjectType.COLLECTION,
-        pystac.STACObjectType.ITEM,
+        STACObjectType.COLLECTION,
+        STACObjectType.ITEM,
     }
 
 

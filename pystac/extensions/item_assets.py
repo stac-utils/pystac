@@ -5,7 +5,10 @@ https://github.com/stac-extensions/item-assets
 
 from typing import Any, Dict, List, Optional
 
-import pystac
+from pystac.asset import Asset
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -69,8 +72,8 @@ class AssetDefinition:
         else:
             self.properties[ASSET_ROLES_PROP] = v
 
-    def create_asset(self, href: str) -> pystac.Asset:
-        return pystac.Asset(
+    def create_asset(self, href: str) -> Asset:
+        return Asset(
             href=href,
             title=self.title,
             description=self.description,
@@ -90,8 +93,8 @@ class AssetDefinition:
         )
 
 
-class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
-    def __init__(self, collection: pystac.Collection) -> None:
+class ItemAssetsExtension(ExtensionManagementMixin[Collection]):
+    def __init__(self, collection: Collection) -> None:
         self.collection = collection
 
     @property
@@ -116,13 +119,13 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 
     @classmethod
     def ext(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: Collection, add_if_missing: bool = False
     ) -> "ItemAssetsExtension":
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Item Assets extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -130,7 +133,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"asset", "item-assets"}
-    stac_object_types = {pystac.STACObjectType.COLLECTION}
+    stac_object_types = {STACObjectType.COLLECTION}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

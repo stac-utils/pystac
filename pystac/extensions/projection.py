@@ -6,7 +6,11 @@ https://github.com/stac-extensions/projection
 import json
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
-import pystac
+from pystac.asset import Asset
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection
+from pystac.errors import ExtensionTypeError
+from pystac.item import Item
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import (
     ExtensionManagementMixin,
@@ -14,7 +18,7 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", Item, Asset)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
 PREFIX: str = "proj:"
@@ -33,19 +37,19 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 class ProjectionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union[Item, Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` with properties from the :stac-ext:`Projection
+    :class:`~Item` with properties from the :stac-ext:`Projection
     Extension <projection>`. This class is generic over the type of STAC Object to be
-    extended (e.g. :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    extended (e.g. :class:`~Item`, :class:`~Collection`).
 
     To create a concrete instance of :class:`ProjectionExtension`, use the
     :meth:`ProjectionExtension.ext` method. For example:
 
     .. code-block:: python
 
-       >>> item: pystac.Item = ...
+       >>> item: Item = ...
        >>> proj_ext = ProjectionExtension.ext(item)
     """
 
@@ -264,49 +268,49 @@ class ProjectionExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Projection
         Extension <projection>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        This extension can be applied to instances of :class:`~Item` or
+        :class:`~Asset`.
 
         Raises:
 
-            pystac.ExtensionTypeError : If an invalid object type is passed.
+            ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        elif isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: Collection, add_if_missing: bool = False
     ) -> "SummariesProjectionExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesProjectionExtension(obj)
 
 
-class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
-    """A concrete implementation of :class:`ProjectionExtension` on an :class:`~pystac.Item`
+class ItemProjectionExtension(ProjectionExtension[Item]):
+    """A concrete implementation of :class:`ProjectionExtension` on an :class:`~Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`Projection Extension <projection>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`ProjectionExtension.ext` on an :class:`~pystac.Item` to extend it.
+    :meth:`ProjectionExtension.ext` on an :class:`~Item` to extend it.
     """
 
-    item: pystac.Item
-    """The :class:`~pystac.Item` being extended."""
+    item: Item
+    """The :class:`~Item` being extended."""
 
     properties: Dict[str, Any]
-    """The :class:`~pystac.Item` properties, including extension properties."""
+    """The :class:`~Item` properties, including extension properties."""
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: Item):
         self.item = item
         self.properties = item.properties
 
@@ -314,29 +318,29 @@ class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
         return "<ItemProjectionExtension Item id={}>".format(self.item.id)
 
 
-class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
+class AssetProjectionExtension(ProjectionExtension[Asset]):
     """A concrete implementation of :class:`ProjectionExtension` on an
-    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    :class:`~Asset` that extends the Asset fields to include properties defined
     in the :stac-ext:`Projection Extension <projection>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`ProjectionExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    :meth:`ProjectionExtension.ext` on an :class:`~Asset` to extend it.
     """
 
     asset_href: str
-    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+    """The ``href`` value of the :class:`~Asset` being extended."""
 
     properties: Dict[str, Any]
-    """The :class:`~pystac.Asset` fields, including extension properties."""
+    """The :class:`~Asset` fields, including extension properties."""
 
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
     """If present, this will be a list containing 1 dictionary representing the
-    properties of the owning :class:`~pystac.Item`."""
+    properties of the owning :class:`~Item`."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -345,7 +349,7 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
 
 class SummariesProjectionExtension(SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    the ``summaries`` field of a :class:`~Collection` to include properties
     defined in the :stac-ext:`Projection Extension <projection>`.
     """
 
@@ -364,7 +368,7 @@ class SummariesProjectionExtension(SummariesExtension):
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"proj", "projection"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
 
 PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()

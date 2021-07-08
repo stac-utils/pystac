@@ -12,27 +12,33 @@ from typing import (
     Union,
 )
 
-import pystac
+from pystac.asset import Asset
+from pystac.errors import STACError
+from pystac.summaries import Summaries
+from pystac.stac_object import STACObject
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented
+from pystac.summaries import RangeSummary
 
 
 class SummariesExtension:
-    """Base class for extending the properties in :attr:`pystac.Collection.summaries`
+    """Base class for extending the properties in :attr:`Collection.summaries`
     to include properties defined by a STAC Extension.
 
     This class should generally not be instantiated directly. Instead, create an
     extension-specific class that inherits from this class and instantiate that. See
-    :class:`~pystac.extensions.eo.SummariesEOExtension` for an example."""
+    :class:`~extensions.eo.SummariesEOExtension` for an example."""
 
-    summaries: pystac.Summaries
-    """The summaries for the :class:`~pystac.Collection` being extended."""
+    summaries: Summaries
+    """The summaries for the :class:`~Collection` being extended."""
 
-    def __init__(self, collection: pystac.Collection) -> None:
+    def __init__(self, collection: Collection) -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], RangeSummary[Any], Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -44,12 +50,12 @@ P = TypeVar("P")
 
 
 class PropertiesExtension(ABC):
-    """Abstract base class for extending the properties of an :class:`~pystac.Item`
+    """Abstract base class for extending the properties of an :class:`~Item`
     to include properties defined by a STAC Extension.
 
     This class should not be instantiated directly. Instead, create an
     extension-specific class that inherits from this class and instantiate that. See
-    :class:`~pystac.extensions.eo.PropertiesEOExtension` for an example.
+    :class:`~extensions.eo.PropertiesEOExtension` for an example.
     """
 
     properties: Dict[str, Any]
@@ -62,8 +68,8 @@ class PropertiesExtension(ABC):
     additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
     """Additional read-only properties accessible from the extended object.
 
-    These are used when extending an :class:`~pystac.Asset` to give access to the
-    properties of the owning :class:`~pystac.Item`. If a property exists in both
+    These are used when extending an :class:`~Asset` to give access to the
+    properties of the owning :class:`~Item`. If a property exists in both
     ``additional_read_properties`` and ``properties``, the value in
     ``additional_read_properties`` will take precedence.
     """
@@ -88,18 +94,18 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound=STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
     """Abstract base class with methods for adding and removing extensions from STAC
     Objects. This class is generic over the type of object being extended (e.g.
-    :class:`~pystac.Item`).
+    :class:`~Item`).
 
     Concrete extension implementations should inherit from this class and either
     provide a concrete type or a bounded type variable.
 
-    See :class:`~pystac.extensions.eo.EOExtension` for an example implementation.
+    See :class:`~extensions.eo.EOExtension` for an example implementation.
     """
 
     @classmethod
@@ -111,7 +117,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def add_to(cls, obj: S) -> None:
         """Add the schema URI for this extension to the
-        :attr:`~pystac.STACObject.stac_extensions` list for the given object, if it is
+        :attr:`~STACObject.stac_extensions` list for the given object, if it is
         not already present."""
         if obj.stac_extensions is None:
             obj.stac_extensions = [cls.get_schema_uri()]
@@ -121,7 +127,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def remove_from(cls, obj: S) -> None:
         """Remove the schema URI for this extension from the
-        :attr:`pystac.STACObject.stac_extensions` list for the given object."""
+        :attr:`STACObject.stac_extensions` list for the given object."""
         if obj.stac_extensions is not None:
             obj.stac_extensions = [
                 uri for uri in obj.stac_extensions if uri != cls.get_schema_uri()
@@ -130,18 +136,16 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
-        :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
+        :attr:`STACObject.stac_extensions` for this extension's schema URI."""
         return (
             obj.stac_extensions is not None
             and cls.get_schema_uri() in obj.stac_extensions
         )
 
     @classmethod
-    def validate_owner_has_extension(
-        cls, asset: pystac.Asset, add_if_missing: bool
-    ) -> None:
-        """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
-        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+    def validate_owner_has_extension(cls, asset: Asset, add_if_missing: bool) -> None:
+        """Given an :class:`~Asset`, checks if the asset's owner has this
+        extension's schema URI in its :attr:`~STACObject.stac_extensions` list.
         If ``add_if_missing`` is ``True``, the schema URI will be added to the owner.
 
         Raises:
@@ -150,17 +154,15 @@ class ExtensionManagementMixin(Generic[S], ABC):
         """
         if asset.owner is None:
             if add_if_missing:
-                raise pystac.STACError(
-                    "Can only add schema URIs to Assets with an owner."
-                )
+                raise STACError("Can only add schema URIs to Assets with an owner.")
             else:
                 return
         return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
 
     @classmethod
     def validate_has_extension(cls, obj: S, add_if_missing: bool) -> None:
-        """Given a :class:`~pystac.STACObject`, checks if the object has this
-        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+        """Given a :class:`~STACObject`, checks if the object has this
+        extension's schema URI in its :attr:`~STACObject.stac_extensions` list.
         If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
 
         Args:
@@ -172,6 +174,6 @@ class ExtensionManagementMixin(Generic[S], ABC):
             cls.add_to(obj)
 
         if cls.get_schema_uri() not in obj.stac_extensions:
-            raise pystac.ExtensionNotImplemented(
+            raise ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )
