@@ -391,7 +391,6 @@ class LabelOverview:
         """
         assert self.property_key == other.property_key
 
-        new_counts = None
         if self.counts is None:
             new_counts = other.counts
         else:

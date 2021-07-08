@@ -57,7 +57,7 @@ class PropertiesExtension(ABC):
     ``additional_read_properties`` will take precedence.
     """
 
-    def _get_property(self, prop_name: str, typ: Type[P]) -> Optional[P]:
+    def _get_property(self, prop_name: str, _typ: Type[P]) -> Optional[P]:
         maybe_property: Optional[P] = self.properties.get(prop_name)
         if maybe_property is not None:
             return maybe_property
