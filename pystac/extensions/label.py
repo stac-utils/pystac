@@ -5,7 +5,7 @@ https://github.com/stac-extensions/label
 
 from enum import Enum
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
-from typing import Any, Dict, Iterable, List, Optional, Set, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -793,8 +793,8 @@ class SummariesLabelExtension(SummariesExtension):
 
 class LabelExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["label"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"label"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def get_object_links(
         self, so: pystac.STACObject

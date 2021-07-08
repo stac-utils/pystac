@@ -4,7 +4,7 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -403,10 +403,11 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["datacube"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
-    )
+    prev_extension_ids = {"datacube"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
 
 
 DATACUBE_EXTENSION_HOOKS: ExtensionHooks = DatacubeExtensionHooks()

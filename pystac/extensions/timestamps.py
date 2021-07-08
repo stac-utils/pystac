@@ -5,7 +5,7 @@ https://github.com/stac-extensions/timestamps
 
 from datetime import datetime as Datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, Generic, Iterable, Optional, Set, TypeVar, cast
+from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -283,8 +283,8 @@ class SummariesTimestampsExtension(SummariesExtension):
 
 class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["timestamps"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"timestamps"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 TIMESTAMPS_EXTENSION_HOOKS: ExtensionHooks = TimestampsExtensionHooks()

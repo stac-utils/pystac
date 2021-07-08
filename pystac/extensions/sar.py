@@ -4,7 +4,7 @@ https://github.com/stac-extensions/sar
 """
 
 import enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -344,8 +344,8 @@ class AssetSarExtension(SarExtension[pystac.Asset]):
 
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["sar"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"sar"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

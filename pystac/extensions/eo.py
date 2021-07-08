@@ -10,7 +10,6 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Set,
     Tuple,
     TypeVar,
     cast,
@@ -498,8 +497,8 @@ class SummariesEOExtension(SummariesExtension):
 
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["eo"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"eo"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

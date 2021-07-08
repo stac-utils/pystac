@@ -9,7 +9,7 @@ https://doi.org/10.1000/182
 
 import copy
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 from urllib import parse
 
 import pystac
@@ -350,10 +350,8 @@ class SummariesScientificExtension(SummariesExtension):
 
 class ScientificExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["scientific"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
-    )
+    prev_extension_ids = {"scientific"}
+    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
 
 SCIENTIFIC_EXTENSION_HOOKS: ExtensionHooks = ScientificExtensionHooks()
