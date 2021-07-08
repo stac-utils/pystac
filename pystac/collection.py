@@ -18,10 +18,11 @@ from typing import (
 import dateutil.parser
 from dateutil import tz
 
-import pystac
-from pystac import STACObjectType, CatalogType
+from pystac.rel_type import RelType
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObjectType
 from pystac.asset import Asset
-from pystac.catalog import Catalog
+from pystac.catalog import Catalog, CatalogType
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -653,7 +654,7 @@ class Collection(Catalog):
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == pystac.RelType.ROOT:
+            if link.rel == RelType.ROOT:
                 # Collection __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -721,11 +722,11 @@ class Collection(Catalog):
         )
 
         for link in links:
-            if link["rel"] == pystac.RelType.ROOT:
+            if link["rel"] == RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                collection.remove_links(pystac.RelType.ROOT)
+                collection.remove_links(RelType.ROOT)
 
-            if link["rel"] != pystac.RelType.SELF or href is None:
+            if link["rel"] != RelType.SELF or href is None:
                 collection.add_link(Link.from_dict(link))
 
         if assets is not None:
@@ -764,12 +765,10 @@ class Collection(Catalog):
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> "Collection":
+    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "Collection":
         result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
-            raise pystac.STACTypeError(f"{result} is not a {Collection}.")
+            raise STACTypeError(f"{result} is not a {Collection}.")
         return result
 
     @classmethod
