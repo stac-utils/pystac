@@ -250,9 +250,7 @@ class Link:
             dict: A serialization of the Link that can be written out as JSON.
         """
 
-        d: Dict[str, Any] = {"rel": self.rel}
-
-        d["href"] = self.get_href()
+        d: Dict[str, Any] = {"rel": self.rel, "href": self.get_href()}
 
         if self.media_type is not None:
             d["type"] = self.media_type
