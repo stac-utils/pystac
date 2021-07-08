@@ -94,7 +94,7 @@ class ProjectionExtension(
 
         A Coordinate Reference System (CRS) is the data reference system (sometimes
         called a 'projection') used by the asset data, and can usually be referenced
-        using an `EPSG code <http://epsg.io/>`_.
+        using an `EPSG code <https://epsg.io/>`_.
         If the asset data does not have a CRS, such as in the case of non-rectified
         imagery with Ground Control Points, ``epsg`` should be set to ``None``.
         It should also be set to ``None`` if a CRS exists, but for which there is no
@@ -112,7 +112,7 @@ class ProjectionExtension(
         that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
-        `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
+        `WKT2 string <https://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
         If the data does not have a CRS, such as in the case of non-rectified imagery
         with Ground Control Points, ``wkt2`` should be set to ``None``. It should also
         be set to ``None`` if a CRS exists, but for which a WKT2 string does not exist.

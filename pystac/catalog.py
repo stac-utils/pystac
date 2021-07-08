@@ -113,8 +113,8 @@ class Catalog(STACObject):
     Args:
         id : Identifier for the catalog. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the catalog.
-            `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY be used for rich text
-            representation.
+            `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY be used for rich
+            text representation.
         title : Optional short descriptive one-line title for the catalog.
         stac_extensions : Optional list of extensions the Catalog implements.
         href : Optional HREF for this catalog, which be set as the
