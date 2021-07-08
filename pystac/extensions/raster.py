@@ -20,17 +20,11 @@ BANDS_PROP = "raster:bands"
 
 
 class Sampling(str, enum.Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     AREA = "area"
     POINT = "point"
 
 
 class DataType(str, enum.Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     INT8 = "int8"
     INT16 = "int16"
     INT32 = "int32"

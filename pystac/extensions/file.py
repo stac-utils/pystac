@@ -30,9 +30,6 @@ class ByteOrder(str, Enum):
     """List of allows values for the ``"file:byte_order"`` field defined by the
     :stac-ext:`File Info Extension <file>`."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     LITTLE_ENDIAN = "little-endian"
     BIG_ENDIAN = "big-endian"
 

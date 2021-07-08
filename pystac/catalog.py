@@ -37,9 +37,6 @@ if TYPE_CHECKING:
 
 
 class CatalogType(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download an online catalog from and be able to use it on their

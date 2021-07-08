@@ -9,8 +9,8 @@ from pystac.extensions.file import FileExtension, ByteOrder, MappingObject
 
 class ByteOrderTest(unittest.TestCase):
     def test_to_str(self) -> None:
-        self.assertEqual(str(ByteOrder.LITTLE_ENDIAN), "little-endian")
-        self.assertEqual(str(ByteOrder.BIG_ENDIAN), "big-endian")
+        self.assertEqual(ByteOrder.LITTLE_ENDIAN.value, "little-endian")
+        self.assertEqual(ByteOrder.BIG_ENDIAN.value, "big-endian")
 
 
 class MappingObjectTest(unittest.TestCase):
