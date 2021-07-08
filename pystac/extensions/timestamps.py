@@ -25,9 +25,7 @@ EXPIRES_PROP = "expires"
 UNPUBLISHED_PROP = "unpublished"
 
 
-class TimestampsExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class TimestampsExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`Timestamps Extension <timestamps>`. This class is generic over the type

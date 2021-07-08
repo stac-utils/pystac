@@ -9,7 +9,7 @@ https://doi.org/10.1000/182
 
 import copy
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 from urllib import parse
 
 import pystac
@@ -98,7 +98,7 @@ def remove_link(links: List[pystac.Link], doi: Optional[str]) -> None:
 class ScientificExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin,
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the

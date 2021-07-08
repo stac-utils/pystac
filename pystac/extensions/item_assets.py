@@ -90,7 +90,7 @@ class AssetDefinition:
         )
 
 
-class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+class ItemAssetsExtension(ExtensionManagementMixin):
     def __init__(self, collection: pystac.Collection) -> None:
         self.collection = collection
 

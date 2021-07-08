@@ -37,9 +37,7 @@ class OrbitState(str, enum.Enum):
     GEOSTATIONARY = "geostationary"
 
 
-class SatExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class SatExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`Satellite Extension <sat>`. This class is generic over the type of

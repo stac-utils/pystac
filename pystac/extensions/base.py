@@ -1,7 +1,32 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
+import sys
+from typing import (
+    Iterable,
+    List,
+    Optional,
+    Dict,
+    Any,
+    Type,
+    TypeVar,
+    Union,
+)
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 import pystac
+
+
+class HasExtensions(Protocol):
+    @property
+    def stac_extensions(self) -> List[str]:
+        """List of extension URIs"""
+
+    @stac_extensions.setter
+    def stac_extensions(self, v: List[str]) -> None:
+        pass
 
 
 class SummariesExtension:
@@ -77,10 +102,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
-
-
-class ExtensionManagementMixin(Generic[S], ABC):
+class ExtensionManagementMixin(ABC):
     """Abstract base class with methods for adding and removing extensions from STAC
     Objects. This class is generic over the type of object being extended (e.g.
     :class:`~pystac.Item`).
@@ -98,7 +120,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         raise NotImplementedError
 
     @classmethod
-    def add_to(cls, obj: S) -> None:
+    def add_to(cls, obj: HasExtensions) -> None:
         """Add the schema URI for this extension to the
         :attr:`~pystac.STACObject.stac_extensions` list for the given object, if it is
         not already present."""
@@ -108,7 +130,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
             obj.stac_extensions.append(cls.get_schema_uri())
 
     @classmethod
-    def remove_from(cls, obj: S) -> None:
+    def remove_from(cls, obj: HasExtensions) -> None:
         """Remove the schema URI for this extension from the
         :attr:`pystac.STACObject.stac_extensions` list for the given object."""
         if obj.stac_extensions is not None:
@@ -117,7 +139,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
             ]
 
     @classmethod
-    def has_extension(cls, obj: S) -> bool:
+    def has_extension(cls, obj: HasExtensions) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
         return (
@@ -126,7 +148,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         )
 
     @classmethod
-    def validate_has_extension(cls, obj: Union[S, pystac.Asset]) -> None:
+    def validate_has_extension(cls, obj: Union[HasExtensions, pystac.Asset]) -> None:
         """Given a :class:`~pystac.STACObject` or :class:`pystac.Asset` instance, checks
         if the object (or its owner in the case of an Asset) has this extension's schema
         URI in it's :attr:`~pystac.STACObject.stac_extensions` list."""

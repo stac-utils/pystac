@@ -57,9 +57,7 @@ class ObservationDirection(enum.Enum):
     RIGHT = "right"
 
 
-class SarExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class SarExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """SarItemExt extends Item to add sar properties to a STAC Item.
 
     Args:

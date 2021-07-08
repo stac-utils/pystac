@@ -273,9 +273,7 @@ class Band:
         return None
 
 
-class EOExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class EOExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of

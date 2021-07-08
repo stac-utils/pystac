@@ -1,7 +1,7 @@
 """Tests creating a custom extension"""
 
 from pystac.summaries import RangeSummary
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
 import unittest
 
 import pystac
@@ -24,7 +24,7 @@ TEST_LINK_REL = "test-link"
 class CustomExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Catalog, pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin,
 ):
     def __init__(self, obj: Optional[pystac.STACObject]) -> None:
         self.obj = obj

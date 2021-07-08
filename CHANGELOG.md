@@ -6,6 +6,11 @@
 
 ### Removed
 
+### Fixed
+
+- Allow `ExtensionManagementMixin` to be added to any object with a `stac_extensions`
+  property. ([#545](https://github.com/stac-utils/pystac/pull/545))
+
 ### Changed
 
 ### Deprecated
@@ -26,7 +31,7 @@
 - Sat Extension summaries ([#509](https://github.com/stac-utils/pystac/pull/509))
 - `Catalog.get_collections` for getting all child
   `Collections` for a catalog, and `Catalog.get_all_collections` for recursively getting
-  all child `Collections` for a catalog and its children ([#511](https://github.com/stac-utils/pystac/pull/))
+  all child `Collections` for a catalog and its children ([#511](https://github.com/stac-utils/pystac/pull/511))
 
 ### Changed
 

@@ -365,9 +365,7 @@ class PointcloudStatistic:
         return self.properties
 
 
-class PointcloudExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class PointcloudExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """PointcloudItemExt is the extension of an Item in the PointCloud Extension.
     The Pointclout extension adds pointcloud information to STAC Items.
 

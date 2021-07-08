@@ -26,9 +26,7 @@ SUN_AZIMUTH_PROP: str = PREFIX + "sun_azimuth"
 SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 
-class ViewExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class ViewExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
     Extension <view>`. This class is generic over the type of STAC Object to be

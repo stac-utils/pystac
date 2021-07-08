@@ -4,7 +4,7 @@ https://github.com/stac-extensions/version
 """
 from enum import Enum
 from pystac.utils import get_required, map_opt
-from typing import Generic, List, Optional, TypeVar, Union, cast
+from typing import Generic, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -45,7 +45,7 @@ class VersionRelType(str, Enum):
 class VersionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin,
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the

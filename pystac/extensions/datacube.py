@@ -313,7 +313,7 @@ class AdditionalDimension(Dimension):
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin,
 ):
     def apply(self, dimensions: Dict[str, Dimension]) -> None:
         self.dimensions = dimensions

@@ -85,7 +85,7 @@ class MappingObject:
         self.properties["summary"] = v
 
 
-class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
+class FileExtension(PropertiesExtension, ExtensionManagementMixin):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     with properties from the :stac-ext:`File Info Extension <file>`.
 

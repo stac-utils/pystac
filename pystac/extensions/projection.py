@@ -29,9 +29,7 @@ SHAPE_PROP: str = PREFIX + "shape"
 TRANSFORM_PROP: str = PREFIX + "transform"
 
 
-class ProjectionExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
-):
+class ProjectionExtension(Generic[T], PropertiesExtension, ExtensionManagementMixin):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection
     Extension <projection>`. This class is generic over the type of STAC Object to be
