@@ -220,13 +220,14 @@ class ProjectionExtension(
         """Get or sets the the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
-        projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array of 9
-        elements in row major order. Since the last row is always 0,0,1 it can be omitted, in
-        which case only 6 elements are recorded. This mapping can be obtained from
-        GDAL `GetGeoTransform <https://gdal.org/api/gdaldataset_cpp.html#_CPPv4N11GDALDataset15GetGeoTransformEPd>`_
-        or the
-        Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api/rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
-        """  # noqa: E501
+        projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array
+        of 9 elements in row major order. Since the last row is always 0,0,1 it can be
+        omitted, in which case only 6 elements are recorded. This mapping can be
+        obtained from GDAL `GetGeoTransform <https://gdal.org/api/gdaldataset_cpp.html\
+#_CPPv4N11GDALDataset15GetGeoTransformEPd>`_
+        or the Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api\
+/rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
+        """
         return self._get_property(TRANSFORM_PROP, List[float])
 
     @transform.setter

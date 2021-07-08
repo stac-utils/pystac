@@ -46,8 +46,9 @@ class CatalogType(str, Enum):
     local computer, so all links need to be relative.
 
     See:
-        :stac-spec:`The best practices documentation on self-contained catalogs <best-practices.md#self-contained-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on self-contained catalogs
+            <best-practices.md#self-contained-catalogs>`
+    """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
     """
@@ -55,17 +56,19 @@ class CatalogType(str, Enum):
     both in the links objects and in the asset hrefs.
 
     See:
-        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on published catalogs
+            <best-practices.md#published-catalogs>`
+    """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
     """
-    Relative Published Catalog is a catalog that uses relative links for everything,
-    but includes an absolute self link at the root catalog, to identify its online location.
+    Relative Published Catalog is a catalog that uses relative links for everything, but
+    includes an absolute self link at the root catalog, to identify its online location.
 
     See:
-        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on published catalogs
+            <best-practices.md#published-catalogs>`
+    """
 
     @classmethod
     def determine_type(cls, stac_json: Dict[str, Any]) -> Optional["CatalogType"]:
@@ -564,11 +567,13 @@ class Catalog(STACObject):
         Args:
             root_href : The absolute HREF that all links will be normalized against.
             strategy : The layout strategy to use in setting the HREFS
-                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
+                for this catalog. Defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`
 
         See:
-            :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>` for the canonical layout of a STAC.
-        """  # noqa E501
+            :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>`
+            for the canonical layout of a STAC.
+        """
         if strategy is None:
             _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
         else:
