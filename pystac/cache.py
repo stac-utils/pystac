@@ -23,14 +23,14 @@ def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:
     """
     href = stac_object.get_self_href()
     if href is not None:
-        return (href, True)
+        return href, True
     else:
         ids: List[str] = []
         obj: Optional[pystac.STACObject] = stac_object
         while obj is not None:
             ids.append(obj.id)
             obj = obj.get_parent()
-        return ("/".join(ids), False)
+        return "/".join(ids), False
 
 
 class ResolvedObjectCache:

@@ -5,11 +5,15 @@ set -e
 if [[ -z ${CI} ]]; then
     pre-commit run --all-files
 fi
-
-echo
-echo " -- RUNNING UNIT TESTS --"
 echo
 
-# Test suite with coverage enabled
-coverage run --source=pystac/ -m unittest discover tests/
-coverage xml
+if [[ -z ${CI} || -n ${CHECK_COVERAGE} ]]; then
+    echo " -- RUNNING UNIT TESTS (WITH COVERAGE) --"
+    # Test suite with coverage enabled
+    coverage run -m unittest discover tests
+else
+    echo " -- RUNNING UNIT TESTS (WITHOUT COVERAGE) --"
+    python -m unittest discover tests
+fi
+
+echo

@@ -9,7 +9,7 @@ https://doi.org/10.1000/182
 
 import copy
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 from urllib import parse
 
 import pystac
@@ -41,9 +41,6 @@ class ScientificRelType(str, Enum):
     See the :stac-ext:`Scientific Citation Extension Relation types
     <scientific#relation-types>` documentation for details.
     """
-
-    def __str__(self) -> str:
-        return str(self.value)
 
     CITE_AS = "cite-as"
     """Used to indicate a link to the publication referenced by the ``sci:doi``
@@ -248,7 +245,7 @@ class ScientificExtension(
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Scientific extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod
@@ -350,10 +347,8 @@ class SummariesScientificExtension(SummariesExtension):
 
 class ScientificExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["scientific"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
-    )
+    prev_extension_ids = {"scientific"}
+    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
 
 SCIENTIFIC_EXTENSION_HOOKS: ExtensionHooks = ScientificExtensionHooks()

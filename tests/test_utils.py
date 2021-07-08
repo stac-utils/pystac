@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 from pystac import utils
 
 from pystac.utils import make_relative_href, make_absolute_href, is_absolute_href
+from tests.utils import TestCases
 
 
 class UtilsTest(unittest.TestCase):
@@ -273,7 +274,9 @@ class UtilsTest(unittest.TestCase):
 
     def test_geojson_bbox(self) -> None:
         # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON
-        with open("tests/data-files/geojson/sample.geojson") as sample_geojson:
+        with open(
+            TestCases.get_path("data-files/geojson/sample.geojson")
+        ) as sample_geojson:
             all_features = json.load(sample_geojson)
             geom_dicts = [f["geometry"] for f in all_features["features"]]
             for geom in geom_dicts:

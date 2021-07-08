@@ -35,7 +35,7 @@ class Comparable(Protocol):
 
     @abstractmethod
     def __lt__(self: "T", x: "T") -> bool:
-        pass
+        return NotImplemented
 
 
 T = TypeVar("T", bound=Comparable)
@@ -58,6 +58,15 @@ class RangeSummary(Generic[T]):
         minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
         maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
+
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, RangeSummary):
+            return NotImplemented
+
+        return self.to_dict() == o.to_dict()
+
+    def __repr__(self) -> str:
+        return self.to_dict().__repr__()
 
 
 FIELDS_JSON_URL = (

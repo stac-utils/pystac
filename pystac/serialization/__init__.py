@@ -1,4 +1,3 @@
-# flake8: noqa
 from pystac.serialization.identify import (
     STACVersionRange,
     identify_stac_object,

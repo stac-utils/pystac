@@ -2,7 +2,7 @@ import json
 import unittest
 
 import pystac
-from pystac import Item
+from pystac import ExtensionTypeError, Item
 from pystac.utils import get_opt
 from pystac.extensions.raster import (
     Histogram,
@@ -137,13 +137,15 @@ class RasterTest(unittest.TestCase):
         RasterExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
-        self.assertEqual(len(item.assets["test"].properties["raster:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].extra_fields["raster:bands"]), 3)
         self.assertEqual(
-            item.assets["test"].properties["raster:bands"][1]["statistics"]["minimum"],
+            item.assets["test"].extra_fields["raster:bands"][1]["statistics"][
+                "minimum"
+            ],
             -1,
         )
         self.assertEqual(
-            item.assets["test"].properties["raster:bands"][1]["histogram"]["min"],
+            item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"],
             3848.354901960784,
         )
 
@@ -195,7 +197,9 @@ class RasterTest(unittest.TestCase):
         )
         RasterExtension.ext(item.assets["test"]).apply(new_bands)
         self.assertEqual(
-            item.assets["test"].properties["raster:bands"][0]["statistics"]["minimum"],
+            item.assets["test"].extra_fields["raster:bands"][0]["statistics"][
+                "minimum"
+            ],
             1,
         )
 
@@ -222,3 +226,13 @@ class RasterTest(unittest.TestCase):
         _ = RasterExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(RasterExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Raster extension does not apply to type 'object'$",
+            RasterExtension.ext,
+            object(),
+        )

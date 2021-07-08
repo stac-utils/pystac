@@ -2,7 +2,7 @@ import json
 import unittest
 
 import pystac
-from pystac import Item
+from pystac import ExtensionTypeError, Item
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
@@ -161,7 +161,7 @@ class EOTest(unittest.TestCase):
         EOExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
-        self.assertEqual(len(item.assets["test"].properties["eo:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].extra_fields["eo:bands"]), 3)
 
     def test_cloud_cover(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
@@ -298,3 +298,13 @@ class EOTest(unittest.TestCase):
         _ = EOExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^EO extension does not apply to type 'object'$",
+            EOExtension.ext,
+            object(),
+        )

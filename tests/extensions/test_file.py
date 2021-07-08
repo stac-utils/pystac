@@ -2,14 +2,15 @@ import json
 import unittest
 
 import pystac
+from pystac import ExtensionTypeError
 from tests.utils import TestCases, assert_to_from_dict
 from pystac.extensions.file import FileExtension, ByteOrder, MappingObject
 
 
 class ByteOrderTest(unittest.TestCase):
     def test_to_str(self) -> None:
-        self.assertEqual(str(ByteOrder.LITTLE_ENDIAN), "little-endian")
-        self.assertEqual(str(ByteOrder.BIG_ENDIAN), "big-endian")
+        self.assertEqual(ByteOrder.LITTLE_ENDIAN.value, "little-endian")
+        self.assertEqual(ByteOrder.BIG_ENDIAN.value, "big-endian")
 
 
 class MappingObjectTest(unittest.TestCase):
@@ -218,3 +219,13 @@ class FileTest(unittest.TestCase):
         _ = FileExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(FileExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^File Info extension does not apply to type 'object'$",
+            FileExtension.ext,
+            object(),
+        )

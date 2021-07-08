@@ -22,7 +22,7 @@ setup(
     packages=find_packages(),
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     include_package_data=False,
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     install_requires=[
         "python-dateutil>=2.7.0",
         'typing_extensions >= 3.7; python_version < "3.8"',
@@ -38,7 +38,6 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",

@@ -9,11 +9,41 @@ import tempfile
 import pystac
 from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
-from pystac import Collection, Item, Extent, SpatialExtent, TemporalExtent, CatalogType
+from pystac import (
+    Collection,
+    Item,
+    Extent,
+    SpatialExtent,
+    TemporalExtent,
+    CatalogType,
+    Provider,
+)
 from pystac.utils import datetime_to_str, get_required
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
+
+
+class ProviderTest(unittest.TestCase):
+    def test_to_from_dict(self) -> None:
+        provider_dict = {
+            "name": "Remote Data, Inc",
+            "description": "Producers of awesome spatiotemporal assets",
+            "roles": ["producer", "processor"],
+            "url": "http://remotedata.io",
+            "extension:field": "some value",
+        }
+        expected_extra_fields = {"extension:field": provider_dict["extension:field"]}
+
+        provider = Provider.from_dict(provider_dict)
+
+        self.assertEqual(provider_dict["name"], provider.name)
+        self.assertEqual(provider_dict["description"], provider.description)
+        self.assertEqual(provider_dict["roles"], provider.roles)
+        self.assertEqual(provider_dict["url"], provider.url)
+        self.assertDictEqual(expected_extra_fields, provider.extra_fields)
+
+        self.assertDictEqual(provider_dict, provider.to_dict())
 
 
 class CollectionTest(unittest.TestCase):
@@ -222,6 +252,9 @@ class CollectionTest(unittest.TestCase):
 
 
 class ExtentTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
@@ -289,6 +322,49 @@ class ExtentTest(unittest.TestCase):
         self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
         self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
 
+    def test_to_from_dict(self) -> None:
+        spatial_dict = {
+            "bbox": [
+                [
+                    172.91173669923782,
+                    1.3438851951615003,
+                    172.95469614953714,
+                    1.3690476620161975,
+                ]
+            ],
+            "extension:field": "spatial value",
+        }
+        temporal_dict = {
+            "interval": [
+                ["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]
+            ],
+            "extension:field": "temporal value",
+        }
+        extent_dict = {
+            "spatial": spatial_dict,
+            "temporal": temporal_dict,
+            "extension:field": "extent value",
+        }
+        expected_extent_extra_fields = {
+            "extension:field": extent_dict["extension:field"],
+        }
+        expected_spatial_extra_fields = {
+            "extension:field": spatial_dict["extension:field"],
+        }
+        expected_temporal_extra_fields = {
+            "extension:field": temporal_dict["extension:field"],
+        }
+
+        extent = Extent.from_dict(extent_dict)
+
+        self.assertDictEqual(expected_extent_extra_fields, extent.extra_fields)
+        self.assertDictEqual(expected_spatial_extra_fields, extent.spatial.extra_fields)
+        self.assertDictEqual(
+            expected_temporal_extra_fields, extent.temporal.extra_fields
+        )
+
+        self.assertDictEqual(extent_dict, extent.to_dict())
+
 
 class CollectionSubClassTest(unittest.TestCase):
     """This tests cases related to creating classes inheriting from pystac.Catalog to
@@ -312,3 +388,9 @@ class CollectionSubClassTest(unittest.TestCase):
         custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
 
         self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+
+    def test_clone(self) -> None:
+        custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
+        cloned_collection = custom_collection.clone()
+
+        self.assertIsInstance(cloned_collection, self.BasicCustomCollection)

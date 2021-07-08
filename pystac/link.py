@@ -43,29 +43,35 @@ class Link:
         media_type : Optional description of the media type. Registered Media Types
             are preferred. See :class:`~pystac.MediaType` for common media types.
         title : Optional title for this link.
-        properties : Optional, additional properties for this link. This is used
+        extra_fields : Optional, additional fields for this link. This is used
             by extensions as a way to serialize and deserialize properties on link
             object JSON.
-
-    Attributes:
-        rel : The relation of the link (e.g. 'child', 'item'). Registered rel Types
-            are preferred. See :class:`~pystac.RelType` for common media types.
-        target : The target of the link. If the link is
-            unresolved, or the link is to something that is not a STACObject,
-            the target is an HREF. If resolved, the target is a STACObject.
-        media_type : Optional description of the media type.
-            Registered Media Types are preferred. See
-            :class:`~pystac.MediaType` for common media types.
-        title : Optional title for this link.
-        properties : Optional, additional properties for this link.
-            This is used by extensions as a way to serialize and deserialize properties
-            on link object JSON.
-        owner : The owner of this link. The link will use
-            its owner's root catalog
-            :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve
-            objects, and will create absolute HREFs from relative HREFs against
-            the owner's self HREF.
     """
+
+    rel: Union[str, pystac.RelType]
+    """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
+    preferred. See :class:`~pystac.RelType` for common media types."""
+
+    target: Union[str, "STACObject_Type"]
+    """The target of the link. If the link is unresolved, or the link is to something
+    that is not a STACObject, the target is an HREF. If resolved, the target is a
+    STACObject."""
+
+    media_type: Optional[str]
+    """Optional description of the media type. Registered Media Types are preferred.
+    See :class:`~pystac.MediaType` for common media types."""
+
+    title: Optional[str]
+    """Optional title for this link."""
+
+    extra_fields: Dict[str, Any]
+    """Optional, additional fields for this link. This is used by extensions as a
+    way to serialize and deserialize properties on link object JSON."""
+
+    owner: Optional["STACObject_Type"]
+    """The owner of this link. The link will use its owner's root catalog
+    :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve objects, and
+    will create absolute HREFs from relative HREFs against the owner's self HREF."""
 
     def __init__(
         self,
@@ -73,14 +79,14 @@ class Link:
         target: Union[str, "STACObject_Type"],
         media_type: Optional[str] = None,
         title: Optional[str] = None,
-        properties: Optional[Dict[str, Any]] = None,
+        extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.rel = rel
-        self.target: Union[str, "STACObject_Type"] = target  # An object or an href
+        self.target = target
         self.media_type = media_type
         self.title = title
-        self.properties = properties
-        self.owner: Optional["STACObject_Type"] = None
+        self.extra_fields = extra_fields or {}
+        self.owner = None
 
     def set_owner(self, owner: Optional["STACObject_Type"]) -> "Link":
         """Sets the owner of this link.
@@ -244,9 +250,7 @@ class Link:
             dict: A serialization of the Link that can be written out as JSON.
         """
 
-        d: Dict[str, Any] = {"rel": self.rel}
-
-        d["href"] = self.get_href()
+        d: Dict[str, Any] = {"rel": self.rel, "href": self.get_href()}
 
         if self.media_type is not None:
             d["type"] = self.media_type
@@ -254,9 +258,8 @@ class Link:
         if self.title is not None:
             d["title"] = self.title
 
-        if self.properties:
-            for k, v in self.properties.items():
-                d[k] = v
+        for k, v in self.extra_fields.items():
+            d[k] = v
 
         return d
 
@@ -269,16 +272,16 @@ class Link:
         Returns:
             Link: The cloned link.
         """
-
-        return Link(
+        cls = self.__class__
+        return cls(
             rel=self.rel,
             target=self.target,
             media_type=self.media_type,
             title=self.title,
         )
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Link":
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "Link":
         """Deserializes a Link from a dict.
 
         Args:
@@ -293,59 +296,60 @@ class Link:
         media_type = d.pop("type", None)
         title = d.pop("title", None)
 
-        properties = None
+        extra_fields = None
         if any(d):
-            properties = d
+            extra_fields = d
 
-        return Link(
+        return cls(
             rel=rel,
             target=href,
             media_type=media_type,
             title=title,
-            properties=properties,
+            extra_fields=extra_fields,
         )
 
-    @staticmethod
-    def root(c: "Catalog_Type") -> "Link":
+    @classmethod
+    def root(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a root Catalog or Collection."""
-        return Link(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def parent(c: "Catalog_Type") -> "Link":
+    @classmethod
+    def parent(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
-        return Link(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def collection(c: "Collection_Type") -> "Link":
+    @classmethod
+    def collection(cls, c: "Collection_Type") -> "Link":
         """Creates a link to an item's Collection."""
-        return Link(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def self_href(href: str) -> "Link":
+    @classmethod
+    def self_href(cls, href: str) -> "Link":
         """Creates a self link to a file's location."""
-        return Link(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
+        return cls(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
 
-    @staticmethod
-    def child(c: "Catalog_Type", title: Optional[str] = None) -> "Link":
+    @classmethod
+    def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
-        return Link(
+        return cls(
             pystac.RelType.CHILD, c, title=title, media_type=pystac.MediaType.JSON
         )
 
-    @staticmethod
-    def item(item: "Item_Type", title: Optional[str] = None) -> "Link":
+    @classmethod
+    def item(cls, item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
-        return Link(
+        return cls(
             pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
         )
 
-    @staticmethod
+    @classmethod
     def canonical(
+        cls,
         item_or_collection: Union["Item_Type", "Collection_Type"],
         title: Optional[str] = None,
     ) -> "Link":
         """Creates a canonical link to an Item or Collection."""
-        return Link(
+        return cls(
             pystac.RelType.CANONICAL,
             item_or_collection,
             title=title,

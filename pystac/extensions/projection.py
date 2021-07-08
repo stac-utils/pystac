@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/projection
 """
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -45,9 +45,6 @@ class ProjectionExtension(
        >>> item: pystac.Item = ...
        >>> proj_ext = ProjectionExtension.ext(item)
     """
-
-    def __init__(self, item: pystac.Item) -> None:
-        self.item = item
 
     def apply(
         self,
@@ -97,7 +94,7 @@ class ProjectionExtension(
 
         A Coordinate Reference System (CRS) is the data reference system (sometimes
         called a 'projection') used by the asset data, and can usually be referenced
-        using an `EPSG code <http://epsg.io/>`_.
+        using an `EPSG code <https://epsg.io/>`_.
         If the asset data does not have a CRS, such as in the case of non-rectified
         imagery with Ground Control Points, ``epsg`` should be set to ``None``.
         It should also be set to ``None`` if a CRS exists, but for which there is no
@@ -115,7 +112,7 @@ class ProjectionExtension(
         that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
-        `WKT2 string <http://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
+        `WKT2 string <https://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
         If the data does not have a CRS, such as in the case of non-rectified imagery
         with Ground Control Points, ``wkt2`` should be set to ``None``. It should also
         be set to ``None`` if a CRS exists, but for which a WKT2 string does not exist.
@@ -220,13 +217,14 @@ class ProjectionExtension(
         """Get or sets the the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
-        projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array of 9
-        elements in row major order. Since the last row is always 0,0,1 it can be omitted, in
-        which case only 6 elements are recorded. This mapping can be obtained from
-        GDAL `GetGeoTransform <https://gdal.org/api/gdaldataset_cpp.html#_CPPv4N11GDALDataset15GetGeoTransformEPd>`_
-        or the
-        Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api/rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
-        """  # noqa: E501
+        projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array
+        of 9 elements in row major order. Since the last row is always 0,0,1 it can be
+        omitted, in which case only 6 elements are recorded. This mapping can be
+        obtained from GDAL `GetGeoTransform <https://gdal.org/api/gdaldataset_cpp.html\
+#_CPPv4N11GDALDataset15GetGeoTransformEPd>`_
+        or the Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api\
+/rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
+        """
         return self._get_property(TRANSFORM_PROP, List[float])
 
     @transform.setter
@@ -261,7 +259,7 @@ class ProjectionExtension(
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Projection extension does not apply to type {type(obj)}"
+                f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod
@@ -314,7 +312,7 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -342,8 +340,8 @@ class SummariesProjectionExtension(SummariesExtension):
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["proj", "projection"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"proj", "projection"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()

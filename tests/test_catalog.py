@@ -939,7 +939,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_reading_iterating_and_writing_works_as_expected(self) -> None:
         """Test case to cover issue #88"""
-        stac_uri = "tests/data-files/catalogs/test-case-6/catalog.json"
+        stac_uri = TestCases.get_path("data-files/catalogs/test-case-6/catalog.json")
         cat = Catalog.from_file(stac_uri)
 
         # Iterate over the items. This was causing failure in
@@ -995,6 +995,20 @@ class CatalogTest(unittest.TestCase):
         )
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Catalog.from_dict(collection_dict)
+
+    def test_get_collections(self) -> None:
+        catalog = TestCases.test_case_2()
+        collections = list(catalog.get_collections())
+
+        self.assertGreater(len(collections), 0)
+        self.assertTrue(all(isinstance(c, pystac.Collection) for c in collections))
+
+    def test_get_all_collections(self) -> None:
+        catalog = TestCases.test_case_1()
+        all_collections = list(catalog.get_all_collections())
+
+        self.assertGreater(len(all_collections), 0)
+        self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
 
 
 class FullCopyTest(unittest.TestCase):
@@ -1153,3 +1167,9 @@ class CatalogSubClassTest(unittest.TestCase):
         custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
 
         self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+
+    def test_clone(self) -> None:
+        custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
+        cloned_catalog = custom_catalog.clone()
+
+        self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)

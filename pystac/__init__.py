@@ -2,7 +2,6 @@
 PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
 
-# flake8: noqa
 from pystac.errors import (
     STACError,
     STACTypeError,
@@ -32,6 +31,7 @@ from pystac.collection import (
     SpatialExtent,
     TemporalExtent,
     Provider,
+    ProviderRole,
     Summaries,
 )
 from pystac.summaries import RangeSummary
@@ -112,12 +112,12 @@ def write_file(
     """Writes a STACObject to a file.
 
     This will write only the Catalog, Collection or Item ``obj``. It will not attempt
-    to write any other objects that are linked to ``obj``; if you'd like functionality to
-    save off catalogs recursively see :meth:`Catalog.save <pystac.Catalog.save>`.
+    to write any other objects that are linked to ``obj``; if you'd like functionality
+    to save off catalogs recursively see :meth:`Catalog.save <pystac.Catalog.save>`.
 
-    This method will write the JSON of the object to the object's assigned "self" link or
-    to the dest_href if provided. To set the self link, see :meth:`STACObject.set_self_href
-    <pystac.STACObject.set_self_href>`.
+    This method will write the JSON of the object to the object's assigned "self" link
+    or to the dest_href if provided. To set the self link, see
+    :meth:`STACObject.set_self_href <pystac.STACObject.set_self_href>`.
 
     Convenience method for :meth:`STACObject.from_file <pystac.STACObject.from_file>`
 

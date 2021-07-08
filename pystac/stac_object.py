@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, cast, TYPE_CHECKING, Union
+from typing import Any, Dict, Iterable, List, Optional, Type, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
@@ -12,12 +12,9 @@ if TYPE_CHECKING:
 
 
 class STACObjectType(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
-    CATALOG = "CATALOG"
-    COLLECTION = "COLLECTION"
-    ITEM = "ITEM"
+    CATALOG = "Catalog"
+    COLLECTION = "Collection"
+    ITEM = "Feature"
 
 
 class STACObject(ABC):
@@ -272,7 +269,7 @@ class STACObject(ABC):
             self.add_link(Link.parent(parent))
 
     def get_stac_objects(
-        self, rel: Union[str, pystac.RelType]
+        self, rel: Union[str, pystac.RelType], typ: Optional[Type["STACObject"]] = None
     ) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
@@ -280,17 +277,21 @@ class STACObject(ABC):
         Args:
             rel : The relation to match each :class:`~pystac.Link`'s
                 ``rel`` property against.
+            typ : If not ``None``, objects will only be yielded if they are instances of
+                ``typ``.
 
         Returns:
             Iterable[STACObjects]: A possibly empty iterable of STACObjects that are
-            connected to this object through links with the given ``rel``.
+            connected to this object through links with the given ``rel`` and are of
+            type ``typ`` (if given).
         """
         links = self.links[:]
         for i in range(0, len(links)):
             link = links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
-                yield cast("STACObject", link.target)
+                if typ is None or isinstance(link.target, typ):
+                    yield cast("STACObject", link.target)
 
     def save_object(
         self,
@@ -405,9 +406,10 @@ class STACObject(ABC):
 
         This method mutates the entire catalog tree.
         """
-        link_rels = set(self._object_links()) | set(
-            [pystac.RelType.ROOT, pystac.RelType.PARENT]
-        )
+        link_rels = set(self._object_links()) | {
+            pystac.RelType.ROOT,
+            pystac.RelType.PARENT,
+        }
 
         for link in self.links:
             if link.rel in link_rels:
@@ -420,7 +422,7 @@ class STACObject(ABC):
         STACObjects linked to by this object (not including root, parent or self).
         This can include optional relations (which may not be present).
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
@@ -432,7 +434,7 @@ class STACObject(ABC):
 
             dict: A serialization of the object that can be written out as JSON.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def clone(self) -> "STACObject":
@@ -446,7 +448,7 @@ class STACObject(ABC):
         Returns:
             STACObject: The clone of this object.
         """
-        pass
+        raise NotImplementedError
 
     @classmethod
     def from_file(
@@ -517,7 +519,7 @@ class STACObject(ABC):
         Returns:
             STACObject: The STACObject parsed from this dict.
         """
-        pass
+        raise NotImplementedError
 
     @classmethod
     @abstractmethod
@@ -528,6 +530,4 @@ class STACObject(ABC):
         Args:
             d : A dictionary to identify
         """
-        raise NotImplementedError(
-            "identify_dict must be implemented by the STACObject subclass."
-        )
+        raise NotImplementedError

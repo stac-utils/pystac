@@ -4,7 +4,7 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -356,7 +356,7 @@ class DatacubeExtension(
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Datacube extension does not apply to type {type(obj)}"
+                f"Datacube extension does not apply to type '{type(obj).__name__}'"
             )
 
 
@@ -391,7 +391,7 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
         else:
@@ -403,10 +403,11 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["datacube"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
-    )
+    prev_extension_ids = {"datacube"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
 
 
 DATACUBE_EXTENSION_HOOKS: ExtensionHooks = DatacubeExtensionHooks()

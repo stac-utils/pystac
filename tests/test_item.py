@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 import unittest
 
 import pystac
-from pystac import Asset, Item, Provider
+from pystac import Asset, Item, Provider, ProviderRole
 from pystac.validation import validate_dict
 import pystac.serialization.common_properties
 from pystac.item import CommonMetadata
@@ -34,10 +34,10 @@ class ItemTest(unittest.TestCase):
 
         # test asset creation additional field(s)
         self.assertEqual(
-            item.assets["analytic"].properties["product"],
+            item.assets["analytic"].extra_fields["product"],
             "http://cool-sat.com/catalog/products/analytic.json",
         )
-        self.assertEqual(len(item.assets["thumbnail"].properties), 0)
+        self.assertEqual(len(item.assets["thumbnail"].extra_fields), 0)
 
         # test that the parameter is preserved
         self.assertEqual(param_dict, item_dict)
@@ -169,9 +169,7 @@ class ItemTest(unittest.TestCase):
         )
 
     def test_read_eo_item_owns_asset(self) -> None:
-        item = next(
-            x for x in TestCases.test_case_1().get_all_items() if isinstance(x, Item)
-        )
+        item = next(iter(TestCases.test_case_1().get_all_items()))
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
@@ -191,8 +189,7 @@ class ItemTest(unittest.TestCase):
 
         item_dict = item.to_dict()
         self.assertIsNone(item_dict["geometry"])
-        with self.assertRaises(KeyError):
-            item_dict["bbox"]
+        self.assertNotIn("bbox", item_dict)
 
     def test_0_9_item_with_no_extensions_does_not_read_collection_data(self) -> None:
         item_json = pystac.StacIO.default().read_json(
@@ -532,7 +529,7 @@ class CommonMetadataTest(unittest.TestCase):
             pystac.Provider(
                 name="USGS",
                 url="https://landsat.usgs.gov/",
-                roles=["producer", "licensor"],
+                roles=[ProviderRole.PRODUCER, ProviderRole.LICENSOR],
             )
         ]
 
@@ -546,7 +543,9 @@ class CommonMetadataTest(unittest.TestCase):
         # Set
         set_value = [
             pystac.Provider(
-                name="John Snow", url="https://cholera.com/", roles=["producer"]
+                name="John Snow",
+                url="https://cholera.com/",
+                roles=[ProviderRole.PRODUCER],
             )
         ]
         cm.set_providers(set_value, item.assets["analytic"])
@@ -740,3 +739,32 @@ class ItemSubClassTest(unittest.TestCase):
         custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
 
         self.assertIsInstance(custom_item, self.BasicCustomItem)
+
+    def test_clone(self) -> None:
+        custom_item = self.BasicCustomItem.from_file(self.SAMPLE_ITEM)
+        cloned_item = custom_item.clone()
+
+        self.assertIsInstance(cloned_item, self.BasicCustomItem)
+
+
+class AssetSubClassTest(unittest.TestCase):
+    class CustomAsset(Asset):
+        pass
+
+    def setUp(self) -> None:
+        self.maxDiff = None
+        with open(TestCases.get_path("data-files/item/sample-item.json")) as src:
+            item_dict = json.load(src)
+
+        self.asset_dict = item_dict["assets"]["analytic"]
+
+    def test_from_dict(self) -> None:
+        asset = self.CustomAsset.from_dict(self.asset_dict)
+
+        self.assertIsInstance(asset, self.CustomAsset)
+
+    def test_clone(self) -> None:
+        asset = self.CustomAsset.from_dict(self.asset_dict)
+        cloned_asset = asset.clone()
+
+        self.assertIsInstance(cloned_asset, self.CustomAsset)

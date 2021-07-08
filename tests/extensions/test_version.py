@@ -5,6 +5,7 @@ import unittest
 from typing import List, Optional
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions import version
 from pystac.extensions.version import VersionExtension, VersionRelType
 from tests.utils import TestCases
@@ -27,6 +28,18 @@ def make_item(year: int) -> pystac.Item:
     return item
 
 
+class VersionExtensionTest(unittest.TestCase):
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Version extension does not apply to type 'object'$",
+            VersionExtension.ext,
+            object(),
+        )
+
+
 class ItemVersionExtensionTest(unittest.TestCase):
     version: str = "1.2.3"
 
@@ -36,9 +49,9 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.example_item_uri = TestCases.get_path("data-files/version/item.json")
 
     def test_rel_types(self) -> None:
-        self.assertEqual(str(VersionRelType.LATEST), "latest-version")
-        self.assertEqual(str(VersionRelType.PREDECESSOR), "predecessor-version")
-        self.assertEqual(str(VersionRelType.SUCCESSOR), "successor-version")
+        self.assertEqual(VersionRelType.LATEST.value, "latest-version")
+        self.assertEqual(VersionRelType.PREDECESSOR.value, "predecessor-version")
+        self.assertEqual(VersionRelType.SUCCESSOR.value, "successor-version")
 
     def test_stac_extensions(self) -> None:
         self.assertTrue(VersionExtension.has_extension(self.item))
@@ -460,7 +473,3 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         _ = VersionExtension.ext(collection, add_if_missing=True)
 
         self.assertIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
-
-
-if __name__ == "__main__":
-    unittest.main()

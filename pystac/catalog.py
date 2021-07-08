@@ -37,17 +37,15 @@ if TYPE_CHECKING:
 
 
 class CatalogType(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download an online catalog from and be able to use it on their
     local computer, so all links need to be relative.
 
     See:
-        :stac-spec:`The best practices documentation on self-contained catalogs <best-practices.md#self-contained-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on self-contained catalogs
+            <best-practices.md#self-contained-catalogs>`
+    """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
     """
@@ -55,17 +53,19 @@ class CatalogType(str, Enum):
     both in the links objects and in the asset hrefs.
 
     See:
-        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on published catalogs
+            <best-practices.md#published-catalogs>`
+    """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
     """
-    Relative Published Catalog is a catalog that uses relative links for everything,
-    but includes an absolute self link at the root catalog, to identify its online location.
+    Relative Published Catalog is a catalog that uses relative links for everything, but
+    includes an absolute self link at the root catalog, to identify its online location.
 
     See:
-        :stac-spec:`The best practices documentation on published catalogs <best-practices.md#published-catalogs>`
-    """  # noqa E501
+        :stac-spec:`The best practices documentation on published catalogs
+            <best-practices.md#published-catalogs>`
+    """
 
     @classmethod
     def determine_type(cls, stac_json: Dict[str, Any]) -> Optional["CatalogType"]:
@@ -110,8 +110,8 @@ class Catalog(STACObject):
     Args:
         id : Identifier for the catalog. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the catalog.
-            `CommonMark 0.28 syntax <http://commonmark.org/>`_ MAY be used for rich text
-            representation.
+            `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY be used for rich
+            text representation.
         title : Optional short descriptive one-line title for the catalog.
         stac_extensions : Optional list of extensions the Catalog implements.
         href : Optional HREF for this catalog, which be set as the
@@ -320,6 +320,21 @@ class Catalog(STACObject):
             self.get_stac_objects(pystac.RelType.CHILD),
         )
 
+    def get_collections(self) -> Iterable["Collection_Type"]:
+        """Return all children of this catalog that are :class:`~pystac.Collection`
+        instances."""
+        return map(
+            lambda x: cast(pystac.Collection, x),
+            self.get_stac_objects(pystac.RelType.CHILD, pystac.Collection),
+        )
+
+    def get_all_collections(self) -> Iterable["Collection_Type"]:
+        """Get all collections from this catalog and all subcatalogs. Will traverse
+        any subcatalogs recursively."""
+        yield from self.get_collections()
+        for child in self.get_children():
+            yield from child.get_collections()
+
     def get_child_links(self) -> List[Link]:
         """Return all child links of this catalog.
 
@@ -471,7 +486,8 @@ class Catalog(STACObject):
         return d
 
     def clone(self) -> "Catalog":
-        clone = Catalog(
+        cls = self.__class__
+        clone = cls(
             id=self.id,
             description=self.description,
             title=self.title,
@@ -548,11 +564,13 @@ class Catalog(STACObject):
         Args:
             root_href : The absolute HREF that all links will be normalized against.
             strategy : The layout strategy to use in setting the HREFS
-                for this catalog. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`
+                for this catalog. Defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`
 
         See:
-            :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>` for the canonical layout of a STAC.
-        """  # noqa E501
+            :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>`
+            for the canonical layout of a STAC.
+        """
         if strategy is None:
             _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
         else:
@@ -760,7 +778,7 @@ class Catalog(STACObject):
         children = self.get_children()
         items = self.get_items()
 
-        yield (self, children, items)
+        yield self, children, items
         for child in self.get_children():
             yield from child.walk()
 

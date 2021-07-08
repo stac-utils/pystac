@@ -4,7 +4,7 @@ https://github.com/stac-extensions/sar
 """
 
 import enum
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -318,7 +318,7 @@ class SarExtension(
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"SAR extension does not apply to type {type(obj)}"
+                f"SAR extension does not apply to type '{type(obj).__name__}'"
             )
 
 
@@ -334,7 +334,7 @@ class ItemSarExtension(SarExtension[pystac.Item]):
 class AssetSarExtension(SarExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -344,8 +344,8 @@ class AssetSarExtension(SarExtension[pystac.Asset]):
 
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["sar"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"sar"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

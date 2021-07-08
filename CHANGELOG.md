@@ -4,13 +4,52 @@
 
 ### Added
 
+### Removed
+
 ### Changed
+
+### Deprecated
+
+## [v1.0.0-rc.3]
+
+### Added
+
+- (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
+-  `LabelTask` enum in `pystac.extensions.label` with recommended values for
+  `"label:tasks"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
+-  `LabelMethod` enum in `pystac.extensions.label` with recommended values for
+  `"label:methods"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
+- Label Extension summaries ([#484](https://github.com/stac-utils/pystac/pull/484))
+- Timestamps Extension summaries ([#513](https://github.com/stac-utils/pystac/pull/513))
+- Define equality and `__repr__` of `RangeSummary` instances based on `to_dict`
+  representation ([#513](https://github.com/stac-utils/pystac/pull/513))
+- Sat Extension summaries ([#509](https://github.com/stac-utils/pystac/pull/509))
+- `Catalog.get_collections` for getting all child
+  `Collections` for a catalog, and `Catalog.get_all_collections` for recursively getting
+  all child `Collections` for a catalog and its children ([#511](https://github.com/stac-utils/pystac/pull/))
+
+### Changed
+
+- Renamed `Asset.properties` -> `Asset.extra_fields` and `Link.properties` ->
+  `Link.extra_fields` for consistency with other STAC objects
+  ([#510](https://github.com/stac-utils/pystac/pull/510))
 
 ### Fixed
 
+- Bug in `pystac.serialization.identify_stac_object_type` where invalid objects with
+  `stac_version == 1.0.0` were incorrectly identified as Catalogs
+  ([#487](https://github.com/stac-utils/pystac/pull/487))
+- `Link` constructor classes (e.g. `Link.from_dict`, `Link.canonical`, etc.) now return
+  the calling class instead of always returning the `Link` class
+  ([#512](https://github.com/stac-utils/pystac/pull/512))
+- Sat extension now includes all fields defined in v1.0.0
+  ([#509](https://github.com/stac-utils/pystac/pull/509))
+
 ### Removed
 
-### Deprecated
+- `STAC_IO` class in favor of `StacIO`. This was deprecated in v1.0.0-beta.1 and has
+  been removed in this release. ([#490](https://github.com/stac-utils/pystac/pull/490))
+- Support for Python 3.6 ([#500](https://github.com/stac-utils/pystac/pull/500))
 
 ## [v1.0.0-rc.2]
 
@@ -131,7 +170,7 @@
 - Removed `LinkMixin`, and implemented those methods on `STACObject` directly. STACObject was the only class using LinkMixin and this should not effect users ([#309](https://github.com/stac-utils/pystac/pull/309)
 - Removed `single-file-stac` extension; this extension is being removed in favor of ItemCollection usage ([#309](https://github.com/stac-utils/pystac/pull/309)
 
-# Deprecated
+### Deprecated
 
 - Deprecated `STAC_IO` in favor of new `StacIO` class. `STAC_IO` will be removed in
   v1.0.0. ([#309](https://github.com/stac-utils/pystac/pull/309))
@@ -397,7 +436,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..main>
+[v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
 [v1.0.0-beta.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.2..v1.0.0-beta.3>

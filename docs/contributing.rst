@@ -39,6 +39,10 @@ or the entire project using:
 
     ./scripts/test
 
+The last command will also check test coverage. To view the coverage report, you can run
+`coverage report` (to view the report in the terminal) or `coverage html` (to generate
+an HTML report that can be opened in a browser).
+
 More details on using ``unittest`` are `here
 <https://docs.python.org/3/library/unittest.html>`_.
 
@@ -53,7 +57,7 @@ PySTAC uses
 - `black <https://github.com/psf/black>`_ for Python code formatting
 - `codespell <https://github.com/codespell-project/codespell/>`_ to check code for common misspellings
 - `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in the docs
-- `flake8 <http://flake8.pycqa.org/en/latest/>`_ for Python style checks
+- `flake8 <https://flake8.pycqa.org/en/latest/>`_ for Python style checks
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
 
 Run all of these with ``pre-commit run --all-files`` or a single one using

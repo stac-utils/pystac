@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, cast
 
 import pystac
 from pystac.summaries import RangeSummary
@@ -167,7 +167,7 @@ class ViewExtension(
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"View extension does not apply to type {type(obj)}"
+                f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod
@@ -220,7 +220,7 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -292,8 +292,8 @@ class SummariesViewExtension(SummariesExtension):
 
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["view"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"view"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()

@@ -87,10 +87,10 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or "start_datetime" not in asset.properties:
+        if asset is None or "start_datetime" not in asset.extra_fields:
             start_datetime = self.properties.get("start_datetime")
         else:
-            start_datetime = asset.properties.get("start_datetime")
+            start_datetime = asset.extra_fields.get("start_datetime")
 
         if start_datetime is None:
             return None
@@ -110,7 +110,7 @@ class CommonMetadata:
                 None if start_datetime is None else datetime_to_str(start_datetime)
             )
         else:
-            asset.properties["start_datetime"] = (
+            asset.extra_fields["start_datetime"] = (
                 None if start_datetime is None else datetime_to_str(start_datetime)
             )
 
@@ -138,10 +138,10 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or "end_datetime" not in asset.properties:
+        if asset is None or "end_datetime" not in asset.extra_fields:
             end_datetime = self.properties.get("end_datetime")
         else:
-            end_datetime = asset.properties.get("end_datetime")
+            end_datetime = asset.extra_fields.get("end_datetime")
 
         if end_datetime is None:
             return None
@@ -161,7 +161,7 @@ class CommonMetadata:
                 None if end_datetime is None else datetime_to_str(end_datetime)
             )
         else:
-            asset.properties["end_datetime"] = (
+            asset.extra_fields["end_datetime"] = (
                 None if end_datetime is None else datetime_to_str(end_datetime)
             )
 
@@ -188,10 +188,10 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or "license" not in asset.properties:
+        if asset is None or "license" not in asset.extra_fields:
             return self.properties.get("license")
         else:
-            return asset.properties.get("license")
+            return asset.extra_fields.get("license")
 
     def set_license(
         self, license: Optional[str], asset: Optional[Asset] = None
@@ -204,7 +204,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["license"] = license
         else:
-            asset.properties["license"] = license
+            asset.extra_fields["license"] = license
 
     # Providers
     @property
@@ -231,10 +231,10 @@ class CommonMetadata:
         Returns:
             List[Provider]
         """
-        if asset is None or "providers" not in asset.properties:
+        if asset is None or "providers" not in asset.extra_fields:
             providers = self.properties.get("providers")
         else:
-            providers = asset.properties.get("providers")
+            providers = asset.extra_fields.get("providers")
 
         if providers is None:
             return None
@@ -257,10 +257,10 @@ class CommonMetadata:
                 self.properties["providers"] = providers_dicts
         else:
             if providers is None:
-                asset.properties.pop("providers", None)
+                asset.extra_fields.pop("providers", None)
             else:
                 providers_dicts = [d.to_dict() for d in providers]
-                asset.properties["providers"] = providers_dicts
+                asset.extra_fields["providers"] = providers_dicts
 
     # Instrument
     @property
@@ -286,10 +286,10 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or "platform" not in asset.properties:
+        if asset is None or "platform" not in asset.extra_fields:
             return self.properties.get("platform")
         else:
-            return asset.properties.get("platform")
+            return asset.extra_fields.get("platform")
 
     def set_platform(
         self, platform: Optional[str], asset: Optional[Asset] = None
@@ -302,7 +302,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["platform"] = platform
         else:
-            asset.properties["platform"] = platform
+            asset.extra_fields["platform"] = platform
 
     @property
     def instruments(self) -> Optional[List[str]]:
@@ -326,10 +326,10 @@ class CommonMetadata:
         Returns:
             Optional[List[str]]
         """
-        if asset is None or "instruments" not in asset.properties:
+        if asset is None or "instruments" not in asset.extra_fields:
             return self.properties.get("instruments")
         else:
-            return asset.properties.get("instruments")
+            return asset.extra_fields.get("instruments")
 
     def set_instruments(
         self, instruments: Optional[List[str]], asset: Optional[Asset] = None
@@ -342,7 +342,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["instruments"] = instruments
         else:
-            asset.properties["instruments"] = instruments
+            asset.extra_fields["instruments"] = instruments
 
     @property
     def constellation(self) -> Optional[str]:
@@ -366,10 +366,10 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or "constellation" not in asset.properties:
+        if asset is None or "constellation" not in asset.extra_fields:
             return self.properties.get("constellation")
         else:
-            return asset.properties.get("constellation")
+            return asset.extra_fields.get("constellation")
 
     def set_constellation(
         self, constellation: Optional[str], asset: Optional[Asset] = None
@@ -382,7 +382,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["constellation"] = constellation
         else:
-            asset.properties["constellation"] = constellation
+            asset.extra_fields["constellation"] = constellation
 
     @property
     def mission(self) -> Optional[str]:
@@ -406,10 +406,10 @@ class CommonMetadata:
         Returns:
             str
         """
-        if asset is None or "mission" not in asset.properties:
+        if asset is None or "mission" not in asset.extra_fields:
             return self.properties.get("mission")
         else:
-            return asset.properties.get("mission")
+            return asset.extra_fields.get("mission")
 
     def set_mission(
         self, mission: Optional[str], asset: Optional[Asset] = None
@@ -422,7 +422,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["mission"] = mission
         else:
-            asset.properties["mission"] = mission
+            asset.extra_fields["mission"] = mission
 
     @property
     def gsd(self) -> Optional[float]:
@@ -446,10 +446,10 @@ class CommonMetadata:
         Returns:
             float
         """
-        if asset is None or "gsd" not in asset.properties:
+        if asset is None or "gsd" not in asset.extra_fields:
             return self.properties.get("gsd")
         else:
-            return asset.properties.get("gsd")
+            return asset.extra_fields.get("gsd")
 
     def set_gsd(self, gsd: Optional[float], asset: Optional[Asset] = None) -> None:
         """Set an Item or an Asset gsd.
@@ -460,7 +460,7 @@ class CommonMetadata:
         if asset is None:
             self.properties["gsd"] = gsd
         else:
-            asset.properties["gsd"] = gsd
+            asset.extra_fields["gsd"] = gsd
 
     # Metadata
     @property
@@ -494,10 +494,10 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or "created" not in asset.properties:
+        if asset is None or "created" not in asset.extra_fields:
             created = self.properties.get("created")
         else:
-            created = asset.properties.get("created")
+            created = asset.extra_fields.get("created")
 
         if created is None:
             return None
@@ -517,7 +517,7 @@ class CommonMetadata:
                 None if created is None else datetime_to_str(created)
             )
         else:
-            asset.properties["created"] = (
+            asset.extra_fields["created"] = (
                 None if created is None else datetime_to_str(created)
             )
 
@@ -560,10 +560,10 @@ class CommonMetadata:
         Returns:
             datetime
         """
-        if asset is None or "updated" not in asset.properties:
+        if asset is None or "updated" not in asset.extra_fields:
             updated = self.properties.get("updated")
         else:
-            updated = asset.properties.get("updated")
+            updated = asset.extra_fields.get("updated")
 
         if updated is None:
             return None
@@ -583,7 +583,7 @@ class CommonMetadata:
                 None if updated is None else datetime_to_str(updated)
             )
         else:
-            asset.properties["updated"] = (
+            asset.extra_fields["updated"] = (
                 None if updated is None else datetime_to_str(updated)
             )
 
@@ -731,10 +731,10 @@ class Item(STACObject):
         Returns:
             datetime or None
         """
-        if asset is None or "datetime" not in asset.properties:
+        if asset is None or "datetime" not in asset.extra_fields:
             return self.datetime
         else:
-            asset_dt = asset.properties.get("datetime")
+            asset_dt = asset.extra_fields.get("datetime")
             if asset_dt is None:
                 return None
             else:
@@ -749,7 +749,7 @@ class Item(STACObject):
         if asset is None:
             self.datetime = datetime
         else:
-            asset.properties["datetime"] = datetime_to_str(datetime)
+            asset.extra_fields["datetime"] = datetime_to_str(datetime)
 
     def get_assets(self) -> Dict[str, Asset]:
         """Get this item's assets.
@@ -885,7 +885,8 @@ class Item(STACObject):
         return d
 
     def clone(self) -> "Item":
-        clone = Item(
+        cls = self.__class__
+        clone = cls(
             id=self.id,
             geometry=deepcopy(self.geometry),
             bbox=copy(self.bbox),

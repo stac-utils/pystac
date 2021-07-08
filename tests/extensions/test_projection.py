@@ -4,6 +4,7 @@ import unittest
 from copy import deepcopy
 
 import pystac
+from pystac import ExtensionTypeError
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
@@ -442,6 +443,16 @@ class ProjectionTest(unittest.TestCase):
         _ = ProjectionExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Projection extension does not apply to type 'object'$",
+            ProjectionExtension.ext,
+            object(),
+        )
 
 
 class ProjectionSummariesTest(unittest.TestCase):

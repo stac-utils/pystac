@@ -86,6 +86,14 @@ TemporalExtent
    :members:
    :undoc-members:
 
+ProviderRole
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.ProviderRole
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Provider
 ~~~~~~~~
 
@@ -184,16 +192,6 @@ DuplicateKeyReportingMixin
 .. autoclass:: pystac.stac_io.DuplicateKeyReportingMixin
    :members:
    :show-inheritance:
-
-STAC_IO
-~~~~~~~
-
-.. deprecated:: 1.0.0-beta.1
-   Use :class:`pystac.StacIO` instead. This class will be removed in v1.0.0.
-
-.. autoclass:: pystac.stac_io.STAC_IO
-   :members:
-   :undoc-members:
 
 Layout
 ------
@@ -501,6 +499,45 @@ RasterExtension
    :show-inheritance:
    :inherited-members:
 
+Satellite Extension
+-------------------
+
+OrbitState
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.OrbitState
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+SatExtension
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.SatExtension
+   :members:
+   :show-inheritance:
+
+ItemSatExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.ItemSatExtension
+   :members:
+   :show-inheritance:
+
+AssetSatExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.AssetSatExtension
+   :members:
+   :show-inheritance:
+
+SummariesSatExtension
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sat.SummariesSatExtension
+   :members:
+   :show-inheritance:
+
 Scientific Extension
 --------------------
 
@@ -538,17 +575,29 @@ ItemScientificExtension
 Timestamps Extension
 --------------------
 
-Implements the :stac-ext:`Timestamps Extension <timestamps>`.
+These classes are representations of the :stac-ext:`Timestamps Extension Spec
+<timestamps>`.
 
-TimestampsItemExt
-~~~~~~~~~~~~~~~~~
+TimestampsExtension
+~~~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.timestamps.TimestampsExtension
+   :members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.timestamps.TimestampsItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+ItemTimestampsExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.ItemTimestampsExtension
+   :members:
+   :show-inheritance:
+
+AssetTimestampsExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.timestamps.AssetTimestampsExtension
+   :members:
+   :show-inheritance:
 
 SAR Extension
 -------------

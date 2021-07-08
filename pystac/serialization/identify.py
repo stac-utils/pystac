@@ -78,7 +78,7 @@ class STACVersionRange:
 
     def __init__(
         self,
-        min_version: Union[str, STACVersionID] = "0.4.0",
+        min_version: Union[str, STACVersionID] = "0.8.0",
         max_version: Optional[Union[str, STACVersionID]] = None,
     ):
         if isinstance(min_version, str):
@@ -118,7 +118,7 @@ class STACVersionRange:
     def contains(self, v: Union[str, STACVersionID]) -> bool:
         if isinstance(v, str):
             v = STACVersionID(v)
-        return self.min_version <= v and v <= self.max_version
+        return self.min_version <= v <= self.max_version
 
     def is_single_version(self) -> bool:
         return self.min_version >= self.max_version
@@ -180,17 +180,34 @@ def identify_stac_object_type(
     Args:
         json_dict : The dict of JSON to identify.
     """
-    # Try to identify using 'type' property, if present
-    if "type" in json_dict:
-        # Try to find 'type' property in known STACObjectType values
-        for t in pystac.STACObjectType:
-            if json_dict["type"].lower() == t.value.lower():
-                return t
-
+    stac_version = (
+        STACVersionID(json_dict["stac_version"])
+        if "stac_version" in json_dict
+        else None
+    )
     obj_type = json_dict.get("type")
 
+    # Try to identify using 'type' property for v1.0.0-rc.1 and higher
+    introduced_type_attribute = STACVersionID("1.0.0-rc.1")
+    if stac_version is not None and stac_version >= introduced_type_attribute:
+
+        # Since v1.0.0-rc.1 requires a "type" field for all STAC objects, any object
+        # that is missing this attribute is not a valid STAC object.
+        if obj_type is None:
+            return None
+
+        # Try to match the "type" attribute
+        if obj_type == pystac.STACObjectType.CATALOG:
+            return pystac.STACObjectType.CATALOG
+        elif obj_type == pystac.STACObjectType.COLLECTION:
+            return pystac.STACObjectType.COLLECTION
+        elif obj_type == pystac.STACObjectType.ITEM:
+            return pystac.STACObjectType.ITEM
+        else:
+            return None
+
     # For pre-1.0 objects for version 0.8.* or later 'stac_version' must be present
-    if "stac_version" in json_dict:
+    if stac_version is not None:
         # Pre-1.0 STAC objects with 'type' == "Feature" are Items
         if obj_type == "Feature":
             return pystac.STACObjectType.ITEM

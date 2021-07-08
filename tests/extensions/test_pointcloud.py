@@ -270,7 +270,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.add_asset("data", asset)
         ext = AssetPointcloudExtension(asset)
         self.assertEqual(ext.asset_href, asset.href)
-        self.assertEqual(ext.properties, asset.properties)
+        self.assertEqual(ext.properties, asset.extra_fields)
         self.assertEqual(ext.additional_read_properties, [pc_item.properties])
 
     def test_ext(self) -> None:
@@ -291,8 +291,12 @@ class PointcloudTest(unittest.TestCase):
         class RandomObject:
             pass
 
-        with self.assertRaises(ExtensionTypeError):
-            PointcloudExtension.ext(RandomObject())  # type: ignore
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^Pointcloud extension does not apply to type 'RandomObject'$",
+            PointcloudExtension.ext,
+            RandomObject(),
+        )
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI

@@ -62,7 +62,7 @@ class CustomExtension(
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
         raise pystac.ExtensionTypeError(
-            f"Custom extension does not apply to {type(obj)}"
+            f"Custom extension does not apply to {type(obj).__name__}"
         )
 
     @staticmethod
@@ -94,7 +94,7 @@ class ItemCustomExtension(CustomExtension[pystac.Item]):
 class AssetCustomExtension(CustomExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset) -> None:
         self.catalog = asset
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner:
             if isinstance(asset.owner, pystac.Item):
                 self.additional_read_properties = [asset.owner.properties]

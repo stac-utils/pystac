@@ -44,7 +44,7 @@ class STACValidator(ABC):
             stac_version : The version of STAC to validate the object against.
             href : Optional HREF of the STAC object being validated.
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def validate_extension(
@@ -67,7 +67,7 @@ class STACValidator(ABC):
             extension_id : The extension ID of the extension to validate against.
             href : Optional HREF of the STAC object being validated.
         """
-        pass
+        raise NotImplementedError
 
     def validate(
         self,
@@ -153,7 +153,7 @@ class JsonSchemaSTACValidator(STACValidator):
             base_uri=schema_uri, referrer=schema, store=self.schema_cache
         )
 
-        return (schema, resolver)
+        return schema, resolver
 
     def _validate_from_uri(self, stac_dict: Dict[str, Any], schema_uri: str) -> None:
         schema, resolver = self.get_schema_from_uri(schema_uri)

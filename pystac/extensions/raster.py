@@ -20,17 +20,11 @@ BANDS_PROP = "raster:bands"
 
 
 class Sampling(str, enum.Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     AREA = "area"
     POINT = "point"
 
 
 class DataType(str, enum.Enum):
-    def __str__(self) -> str:
-        return str(self.value)
-
     INT8 = "int8"
     INT16 = "int16"
     INT32 = "int32"
@@ -75,7 +69,7 @@ class Statistics:
             mean : Mean value of all the pixels in the band.
             stddev : Standard Deviation value of all the pixels in the band.
             valid_percent : Percentage of valid (not nodata) pixel.
-        """  # noqa
+        """
         self.minimum = minimum
         self.maximum = maximum
         self.mean = mean
@@ -100,7 +94,7 @@ class Statistics:
             mean : Mean value of all the pixels in the band.
             stddev : Standard Deviation value of all the pixels in the band.
             valid_percent : Percentage of valid (not nodata) pixel.
-        """  # noqa
+        """
         b = cls({})
         b.apply(
             minimum=minimum,
@@ -236,7 +230,7 @@ class Histogram:
                 Also the mean value of the last bucket.
             buckets : Array of integer indicating the number
                 of pixels included in the bucket.
-        """  # noqa
+        """
         self.count = count
         self.min = min
         self.max = max
@@ -261,7 +255,7 @@ class Histogram:
                 Also the mean value of the last bucket.
             buckets : Array of integer indicating the number
                 of pixels included in the bucket.
-        """  # noqa
+        """
         b = cls({})
         b.apply(
             count=count,
@@ -370,22 +364,26 @@ class RasterBand:
 
         Args:
             nodata : Pixel values used to identify pixels that are nodata in the assets.
-            sampling : One of area or point. Indicates whether a pixel value should be assumed
-                to represent a sampling over the region of the pixel or a point sample at the center of the pixel.
+            sampling : One of area or point. Indicates whether a pixel value should be
+                assumed to represent a sampling over the region of the pixel or a point
+                sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in
+                <https://github.com/stac-extensions/raster/#data-types>.
             bits_per_sample : The actual number of bits used for this band.
-                Normally only present when the number of bits is non-standard for the datatype,
-                such as when a 1 bit TIFF is represented as byte
-            spatial_resolution : Average spatial resolution (in meters) of the pixels in the band.
+                Normally only present when the number of bits is non-standard for the
+                datatype, such as when a 1 bit TIFF is represented as byte
+            spatial_resolution : Average spatial resolution (in meters) of the pixels in
+                the band.
             statistics: Statistics of all the pixels in the band
             unit: unit denomination of the pixel value
             scale: multiplicator factor of the pixel value to transform into the value
                 (i.e. translate digital number to reflectance).
-            offset: number to be added to the pixel value (after scaling) to transform into the value
-                (i.e. translate digital number to reflectance).
-            histogram: Histogram distribution information of the pixels values in the band
-        """  # noqa
+            offset: number to be added to the pixel value (after scaling) to transform
+                into the value (i.e. translate digital number to reflectance).
+            histogram: Histogram distribution information of the pixels values in the
+                band
+        """
         self.nodata = nodata
         self.sampling = sampling
         self.data_type = data_type
@@ -416,22 +414,26 @@ class RasterBand:
 
         Args:
             nodata : Pixel values used to identify pixels that are nodata in the assets.
-            sampling : One of area or point. Indicates whether a pixel value should be assumed
-                to represent a sampling over the region of the pixel or a point sample at the center of the pixel.
+            sampling : One of area or point. Indicates whether a pixel value should be
+                assumed to represent a sampling over the region of the pixel or a point
+                sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in
+                <https://github.com/stac-extensions/raster/#data-types>.
             bits_per_sample : The actual number of bits used for this band.
-                Normally only present when the number of bits is non-standard for the datatype,
-                such as when a 1 bit TIFF is represented as byte
-            spatial_resolution : Average spatial resolution (in meters) of the pixels in the band.
+                Normally only present when the number of bits is non-standard for the
+                datatype, such as when a 1 bit TIFF is represented as byte
+            spatial_resolution : Average spatial resolution (in meters) of the pixels in
+                the band.
             statistics: Statistics of all the pixels in the band
             unit: unit denomination of the pixel value
             scale: multiplicator factor of the pixel value to transform into the value
                 (i.e. translate digital number to reflectance).
-            offset: number to be added to the pixel value (after scaling) to transform into the value
-                (i.e. translate digital number to reflectance).
-            histogram: Histogram distribution information of the pixels values in the band
-        """  # noqa
+            offset: number to be added to the pixel value (after scaling) to transform
+                into the value (i.e. translate digital number to reflectance).
+            histogram: Histogram distribution information of the pixels values in the
+                band
+        """
         b = cls({})
         b.apply(
             nodata=nodata,
@@ -471,7 +473,7 @@ class RasterBand:
 
         Returns:
             Optional[Sampling]
-        """  # noqa
+        """
         return self.properties.get("sampling")
 
     @sampling.setter
@@ -647,7 +649,7 @@ class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -706,7 +708,7 @@ class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Raster extension does not apply to type {type(obj)}"
+                f"Raster extension does not apply to type '{type(obj).__name__}'"
             )
 
     @staticmethod

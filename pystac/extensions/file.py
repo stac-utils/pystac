@@ -4,7 +4,7 @@ https://github.com/stac-extensions/file
 """
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -29,9 +29,6 @@ VALUES_PROP = PREFIX + "values"
 class ByteOrder(str, Enum):
     """List of allows values for the ``"file:byte_order"`` field defined by the
     :stac-ext:`File Info Extension <file>`."""
-
-    def __str__(self) -> str:
-        return str(self.value)
 
     LITTLE_ENDIAN = "little-endian"
     BIG_ENDIAN = "big-endian"
@@ -103,7 +100,7 @@ class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -206,14 +203,14 @@ class FileExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"File Info extension does not apply to type {type(obj)}"
+                f"File Info extension does not apply to type '{type(obj).__name__}'"
             )
 
 
 class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["file"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"file"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

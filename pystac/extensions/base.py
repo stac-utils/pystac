@@ -95,7 +95,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @abstractmethod
     def get_schema_uri(cls) -> str:
         """Gets the schema URI associated with this extension."""
-        pass
+        raise NotImplementedError
 
     @classmethod
     def add_to(cls, obj: S) -> None:

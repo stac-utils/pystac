@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/item-assets
 """
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin
@@ -76,18 +76,16 @@ class AssetDefinition:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            properties={
+            extra_fields={
                 k: v
                 for k, v in self.properties.items()
                 if k
-                not in set(
-                    [
-                        ASSET_TITLE_PROP,
-                        ASSET_DESC_PROP,
-                        ASSET_TYPE_PROP,
-                        ASSET_ROLES_PROP,
-                    ]
-                )
+                not in {
+                    ASSET_TITLE_PROP,
+                    ASSET_DESC_PROP,
+                    ASSET_TYPE_PROP,
+                    ASSET_ROLES_PROP,
+                }
             },
         )
 
@@ -126,16 +124,14 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Item Assets extension does not apply to type {type(obj)}"
+                f"Item Assets extension does not apply to type '{type(obj).__name__}'"
             )
 
 
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["asset", "item-assets"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION]
-    )
+    prev_extension_ids = {"asset", "item-assets"}
+    stac_object_types = {pystac.STACObjectType.COLLECTION}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

@@ -6,9 +6,18 @@
 [![Gitter](https://badges.gitter.im/SpatioTemporal-Asset-Catalog/python.svg)](https://gitter.im/SpatioTemporal-Asset-Catalog/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-PySTAC is a library for working with [SpatialTemporal Asset Catalog](https://stacspec.org) in Python 3.
+PySTAC is a library for working with [SpatioTemporal Asset Catalog](https://stacspec.org) in Python 3.
 
 ## Installation
+
+PySTAC requires Python >= 3.7. This project follows the recommendations of
+[NEP-29](https://numpy.org/neps/nep-0029-deprecation_policy.html) in deprecating support
+for Python versions. This means that users can expect support for Python 3.7 to be
+removed from the `main` branch after Dec 26, 2021 and therefore from the next release
+after that date.
+
+*Support for Python >= 3.10 should be considered experimental
+until further notice.*
 
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
@@ -33,6 +42,10 @@ optional `orjson` requirements:
 ```bash
 > pip install pystac[orjson]
 ```
+
+> *`orjson` wheels are only available for Linux in Python 3.10. If you are using the
+> `orjson` extra with Python 3.10 you will need to have the Rust nightly toolchain
+> installed as your default toolchain in order to build the package wheel.*
 
 From source repository:
 

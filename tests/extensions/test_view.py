@@ -1,4 +1,6 @@
 import json
+
+from pystac import ExtensionTypeError
 from pystac.collection import Collection
 import unittest
 
@@ -257,8 +259,18 @@ class ViewTest(unittest.TestCase):
 
         self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
 
+    def test_should_raise_exception_when_passing_invalid_extension_object(
+        self,
+    ) -> None:
+        self.assertRaisesRegex(
+            ExtensionTypeError,
+            r"^View extension does not apply to type 'object'$",
+            ViewExtension.ext,
+            object(),
+        )
 
-class ViewSummariestest(unittest.TestCase):
+
+class ViewSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
         example_uri = TestCases.get_path(

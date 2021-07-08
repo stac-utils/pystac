@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/pointcloud
 """
 
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -536,7 +536,7 @@ class PointcloudExtension(
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"Pointcloud extension does not apply to type {type(obj)}"
+                f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
 
@@ -552,7 +552,7 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
 class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.properties
+        self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
             self.repr_id = f"href={asset.href} item.id={asset.owner.id}"
@@ -565,8 +565,8 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["pointcloud"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"pointcloud"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
 
 POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()

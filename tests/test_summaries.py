@@ -2,7 +2,7 @@ import socket
 from typing import Any
 import unittest
 
-from pystac.summaries import Summarizer, Summaries
+from pystac.summaries import RangeSummary, Summarizer, Summaries
 from tests.utils import TestCases
 
 
@@ -58,3 +58,21 @@ class SummariesTest(unittest.TestCase):
         coll = TestCases.test_case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         self.assertFalse(summaries.is_empty())
+
+
+class RangeSummaryTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+
+    def test_repr(self) -> None:
+        rs = RangeSummary(5, 10)
+        self.assertEqual("{'minimum': 5, 'maximum': 10}", rs.__repr__())
+
+    def test_equality(self) -> None:
+        rs_1 = RangeSummary(5, 10)
+        rs_2 = RangeSummary(5, 10)
+        rs_3 = RangeSummary(5, 11)
+
+        self.assertEqual(rs_1, rs_2)
+        self.assertNotEqual(rs_1, rs_3)
+        self.assertNotEqual(rs_1, (5, 10))

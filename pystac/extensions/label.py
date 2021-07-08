@@ -4,13 +4,13 @@ https://github.com/stac-extensions/label
 """
 
 from enum import Enum
-from pystac.extensions.base import ExtensionManagementMixin
-from typing import Any, Dict, Iterable, List, Optional, Set, Union, cast
+from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
+from typing import Any, Dict, Iterable, List, Optional, Union, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required
+from pystac.utils import get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
@@ -32,9 +32,6 @@ class LabelRelType(str, Enum):
     documentation for details.
     """
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     SOURCE = "source"
     """Used to indicate a link to the source item to which a label item applies."""
 
@@ -42,14 +39,27 @@ class LabelRelType(str, Enum):
 class LabelType(str, Enum):
     """Enumerates valid label types ("raster" or "vector")."""
 
-    def __str__(self) -> str:
-        return str(self.value)
-
     VECTOR = "vector"
     RASTER = "raster"
 
     ALL = [VECTOR, RASTER]
     """Convenience attribute for checking if values are valid label types"""
+
+
+class LabelTask(str, Enum):
+    """Enumerates recommended values for "label:tasks" field."""
+
+    REGRESSION = "regression"
+    CLASSIFICATION = "classification"
+    DETECTION = "detection"
+    SEGMENTATION = "segmentation"
+
+
+class LabelMethod(str, Enum):
+    """Enumerates recommended values for "label:methods" field."""
+
+    AUTOMATED = "automated"
+    MANUAL = "manual"
 
 
 class LabelClasses:
@@ -121,6 +131,15 @@ class LabelClasses:
             ",".join([str(x) for x in self.classes])
         )
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelClasses):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
+
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this instance."""
         return self.properties
@@ -180,6 +199,15 @@ class LabelCount:
         """Returns the dictionary representing the JSON of this instance."""
         return self.properties
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelCount):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
+
 
 class LabelStatistics:
     """Contains statistics for regression/continuous numeric value data.
@@ -233,6 +261,15 @@ class LabelStatistics:
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary representing the JSON of this LabelStatistics."""
         return self.properties
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelStatistics):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
 
 
 class LabelOverview:
@@ -379,6 +416,15 @@ class LabelOverview:
         """Returns the dictionary representing the JSON of this LabelOverview."""
         return self.properties
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, LabelOverview):
+            o = o.to_dict()
+
+        if not isinstance(o, dict):
+            return NotImplemented
+
+        return self.to_dict() == o
+
 
 class LabelExtension(ExtensionManagementMixin[pystac.Item]):
     """A class that can be used to extend the properties of an
@@ -403,8 +449,8 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         label_type: LabelType,
         label_properties: Optional[List[str]] = None,
         label_classes: Optional[List[LabelClasses]] = None,
-        label_tasks: Optional[List[str]] = None,
-        label_methods: Optional[List[str]] = None,
+        label_tasks: Optional[List[Union[LabelTask, str]]] = None,
+        label_methods: Optional[List[Union[LabelMethod, str]]] = None,
         label_overviews: Optional[List[LabelOverview]] = None,
     ) -> None:
         """Applies label extension properties to the extended Item.
@@ -499,28 +545,28 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             self.obj.properties[CLASSES_PROP] = classes
 
     @property
-    def label_tasks(self) -> Optional[List[str]]:
+    def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
         """Gets or set a list of tasks these labels apply to. Usually a subset of 'regression',
         'classification', 'detection', or 'segmentation', but may be arbitrary
         values."""
         return self.obj.properties.get(TASKS_PROP)
 
     @label_tasks.setter
-    def label_tasks(self, v: Optional[List[str]]) -> None:
+    def label_tasks(self, v: Optional[List[Union[LabelTask, str]]]) -> None:
         if v is None:
             self.obj.properties.pop(TASKS_PROP, None)
         else:
             self.obj.properties[TASKS_PROP] = v
 
     @property
-    def label_methods(self) -> Optional[List[str]]:
+    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
         """Gets or set a list of methods used for labeling.
 
         Usually a subset of 'automated' or 'manual', but may be arbitrary values."""
         return self.obj.properties.get("label:methods")
 
     @label_methods.setter
-    def label_methods(self, v: Optional[List[str]]) -> None:
+    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
         if v is None:
             self.obj.properties.pop("label:methods", None)
         else:
@@ -561,15 +607,15 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             assets : Optional list of assets that determine what
                 assets in the source item this label item data applies to.
         """
-        properties = None
+        extra_fields = None
         if assets is not None:
-            properties = {"label:assets": assets}
+            extra_fields = {"label:assets": assets}
         link = pystac.Link(
             "source",
             source_item,
             title=title,
             media_type=pystac.MediaType.JSON,
-            properties=properties,
+            extra_fields=extra_fields,
         )
         self.obj.add_link(link)
 
@@ -607,7 +653,7 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
         self.obj.add_asset(
             "labels",
             pystac.Asset(
-                href=href, title=title, media_type=media_type, properties=properties
+                href=href, title=title, media_type=media_type, extra_fields=properties
             ),
         )
 
@@ -652,14 +698,91 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"Label extension does not apply to type {type(obj)}"
+                f"Label extension does not apply to type '{type(obj).__name__}'"
             )
+
+    @staticmethod
+    def summaries(obj: pystac.Collection) -> "SummariesLabelExtension":
+        """Returns the extended summaries object for the given collection."""
+        return SummariesLabelExtension(obj)
+
+
+class SummariesLabelExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Label Extension <label>`.
+    """
+
+    @property
+    def label_properties(self) -> Optional[List[str]]:
+        """Get or sets the summary of :attr:`LabelExtension.label_properties` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(PROPERTIES_PROP)
+
+    @label_properties.setter
+    def label_properties(self, v: Optional[List[LabelClasses]]) -> None:
+        self._set_summary(PROPERTIES_PROP, v)
+
+    @property
+    def label_classes(self) -> Optional[List[LabelClasses]]:
+        """Get or sets the summary of :attr:`LabelExtension.label_classes` values
+        for this Collection.
+        """
+
+        return map_opt(
+            lambda classes: [LabelClasses(c) for c in classes],
+            self.summaries.get_list(CLASSES_PROP),
+        )
+
+    @label_classes.setter
+    def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
+        self._set_summary(
+            CLASSES_PROP, map_opt(lambda classes: [c.to_dict() for c in classes], v)
+        )
+
+    @property
+    def label_type(self) -> Optional[List[LabelType]]:
+        """Get or sets the summary of :attr:`LabelExtension.label_type` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(TYPE_PROP)
+
+    @label_type.setter
+    def label_type(self, v: Optional[List[LabelType]]) -> None:
+        self._set_summary(TYPE_PROP, v)
+
+    @property
+    def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
+        """Get or sets the summary of :attr:`LabelExtension.label_tasks` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(TASKS_PROP)
+
+    @label_tasks.setter
+    def label_tasks(self, v: Optional[List[Union[LabelTask, str]]]) -> None:
+        self._set_summary(TASKS_PROP, v)
+
+    @property
+    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
+        """Get or sets the summary of :attr:`LabelExtension.label_methods` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(METHODS_PROP)
+
+    @label_methods.setter
+    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
+        self._set_summary(METHODS_PROP, v)
 
 
 class LabelExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["label"])
-    stac_object_types: Set[pystac.STACObjectType] = set([pystac.STACObjectType.ITEM])
+    prev_extension_ids = {"label"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
 
     def get_object_links(
         self, so: pystac.STACObject

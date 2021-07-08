@@ -2,6 +2,8 @@ from copy import deepcopy
 import json
 from pystac.item_collection import ItemCollection
 import unittest
+from os.path import relpath
+
 import pystac
 
 from tests.utils import TestCases
@@ -101,7 +103,11 @@ class TestItemCollection(unittest.TestCase):
 
     def test_from_relative_path(self) -> None:
         _ = pystac.ItemCollection.from_file(
-            "./tests/data-files/item-collection/sample-item-collection.json"
+            relpath(
+                TestCases.get_path(
+                    "data-files/item-collection/sample-item-collection.json"
+                )
+            )
         )
 
     def test_from_list_of_dicts(self) -> None:

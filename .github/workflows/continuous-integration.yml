@@ -14,15 +14,16 @@ jobs:
   test:
     name: test
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ startsWith(matrix.python-version, '3.10')}}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
       fail-fast: false
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
           - "3.9"
+          - "3.10.0-beta.3"
         os:
           - ubuntu-latest
           - windows-latest
@@ -35,6 +36,18 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+
+      - uses: actions-rs/toolchain@v1
+        # No wheels exist for orjson on Python 3.10 on MacOS or Windows, and the Linux
+        #  wheels are sometimes not uploaded until after the package is initially
+        # published. This sets up the Rust nightly toolchain so we can build the orjson
+        # wheel.
+        if: ${{ startsWith(matrix.python-version, '3.10')}}
+        with:
+          toolchain: nightly
+          override: true
+          default: true
+          profile: minimal
 
       - name: Cache dependencies (Linux)
         if: startsWith(runner.os, 'Linux')
@@ -97,11 +110,14 @@ jobs:
           pip install -e ".[validation]"
       
       - name: Execute test suite
-        # --fail-under=0 ensures we publish the coverage regardless of whether it meets
-        # the minimum so we can use Codecov to evaluate gaps
-        run: |
-          coverage run --source=pystac/ -m unittest discover tests/
-          coverage xml --fail-under=0
+        run: ./scripts/test
+        env:
+          CHECK_COVERAGE: true
+
+      - name: Prepare ./coverage.xml
+        # Ignore the configured fail-under to ensure we upload the coverage report. We
+        # will trigger a failure for coverage drops in a later job
+        run: coverage xml --fail-under 0
       
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -111,6 +127,11 @@ jobs:
           file: ./coverage.xml
           fail_ci_if_error: false 
 
+      - name: Check for coverage drop
+        # This will use the configured fail-under, causing this job to fail if the
+        # coverage drops.
+        run: coverage report
+
   lint:
     runs-on: ubuntu-latest
     strategy:
@@ -118,9 +139,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.6"
           - "3.7"
           - "3.8"
+          - "3.9"
+          - "3.10.0-beta.3"
 
     steps:
       - uses: actions/checkout@v2

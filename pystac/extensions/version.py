@@ -4,7 +4,7 @@ https://github.com/stac-extensions/version
 """
 from enum import Enum
 from pystac.utils import get_required, map_opt
-from typing import Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -29,9 +29,6 @@ class VersionRelType(str, Enum):
     See the `Version Extension Relation types
     <https://github.com/stac-extensions/version#relation-types>`__ documentation
     for details."""
-
-    def __str__(self) -> str:
-        return str(self.value)
 
     LATEST = "latest-version"
     """Indicates a link pointing to a resource containing the latest version."""
@@ -219,7 +216,7 @@ class VersionExtension(
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
-                f"File extension does not apply to type {type(obj)}"
+                f"Version extension does not apply to type '{type(obj).__name__}'"
             )
 
 
@@ -264,10 +261,8 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
 
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(["version"])
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM]
-    )
+    prev_extension_ids = {"version"}
+    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
     def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
         if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
