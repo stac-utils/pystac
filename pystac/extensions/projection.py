@@ -30,7 +30,9 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 
 
 class ProjectionExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item, pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection

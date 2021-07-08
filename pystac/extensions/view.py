@@ -27,7 +27,9 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 
 class ViewExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item, pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
