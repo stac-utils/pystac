@@ -274,7 +274,9 @@ class Band:
 
 
 class EOExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item, pystac.Collection, pystac.Asset],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -296,7 +298,7 @@ class EOExtension(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
         """Applies label extension properties to the extended :class:`~pystac.Item` or
-        :class:`~pystac.Collection`.
+        :class:`~pystac.Asset`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
