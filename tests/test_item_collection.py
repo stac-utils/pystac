@@ -169,3 +169,10 @@ class TestItemCollection(unittest.TestCase):
         # non-default parameter
         _ = ItemCollection.from_dict(param_dict, preserve_dict=False)
         self.assertNotEqual(param_dict, self.item_collection_dict)
+
+    def test_from_dict_sets_root(self) -> None:
+        param_dict = deepcopy(self.item_collection_dict)
+        catalog = pystac.Catalog(id="test", description="test desc")
+        item_collection = ItemCollection.from_dict(param_dict, root=catalog)
+        for item in item_collection.items:
+            self.assertEqual(item.get_root(), catalog)
