@@ -448,6 +448,13 @@ class LabelSummariesTest(unittest.TestCase):
         "data-files/label/spacenet-roads/roads_collection.json"
     )
 
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.EXAMPLE_COLLECTION)
+        col.stac_extensions = []
+        _ = LabelExtension.summaries(col)
+
+        self.assertIn(LabelExtension.get_schema_uri(), col.stac_extensions)
+
     def test_label_properties_summary(self) -> None:
         label_properties = ["road_type", "lane_number", "paved"]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)

@@ -14,6 +14,7 @@ from pystac.extensions.scientific import (
     Publication,
     ScientificExtension,
     ScientificRelType,
+    SummariesScientificExtension,
     remove_link,
 )
 from tests.utils import TestCases
@@ -456,3 +457,10 @@ class SummariesScientificTest(unittest.TestCase):
 
         assert new_dois is not None
         self.assertListEqual([PUB2_DOI], new_dois)
+
+    def test_summaries_adds_uri(self) -> None:
+        collection = self.collection.clone()
+        collection.stac_extensions = []
+        _ = SummariesScientificExtension(collection)
+
+        self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)

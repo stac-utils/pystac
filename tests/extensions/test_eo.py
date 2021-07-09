@@ -214,6 +214,13 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(col_dict["summaries"]["eo:bands"]), 1)
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col.stac_extensions = []
+        _ = EOExtension.summaries(col)
+
+        self.assertIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(

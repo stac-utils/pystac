@@ -11,6 +11,7 @@ from pystac.extensions.raster import (
     Sampling,
     DataType,
     Statistics,
+    SummariesRasterExtension,
 )
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -236,3 +237,12 @@ class RasterTest(unittest.TestCase):
             RasterExtension.ext,
             object(),
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(
+            TestCases.get_path("data-files/label/spacenet-roads/roads_collection.json")
+        )
+        col.stac_extensions = []
+        _ = SummariesRasterExtension(col)
+
+        self.assertIn(RasterExtension.get_schema_uri(), col.stac_extensions)

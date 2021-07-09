@@ -471,6 +471,10 @@ class SummariesEOExtension(SummariesExtension):
     defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
 
+    def __init__(self, collection: pystac.Collection):
+        EOExtension.add_to(collection)
+        super().__init__(collection)
+
     @property
     def bands(self) -> Optional[List[Band]]:
         """Get or sets the summary of :attr:`EOExtension.bands` values

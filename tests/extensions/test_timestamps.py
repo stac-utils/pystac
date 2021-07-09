@@ -5,7 +5,10 @@ from datetime import datetime
 import pystac
 from pystac import ExtensionTypeError
 from pystac.summaries import RangeSummary
-from pystac.extensions.timestamps import TimestampsExtension
+from pystac.extensions.timestamps import (
+    SummariesTimestampsExtension,
+    TimestampsExtension,
+)
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -337,3 +340,10 @@ class TimestampsSummariesTest(unittest.TestCase):
                 "maximum": datetime_to_str(unpublished_range.maximum),
             },
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        collection = self.collection()
+        collection.stac_extensions = []
+        _ = SummariesTimestampsExtension(collection)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), collection.stac_extensions)

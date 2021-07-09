@@ -724,6 +724,10 @@ class SummariesRasterExtension(SummariesExtension):
     defined in the :stac-ext:`Raster Extension <raster>`.
     """
 
+    def __init__(self, collection: pystac.Collection) -> None:
+        RasterExtension.add_to(collection)
+        super().__init__(collection)
+
     @property
     def bands(self) -> Optional[List[RasterBand]]:
         """Get or sets a list of :class:`~pystac.Band` objects that represent

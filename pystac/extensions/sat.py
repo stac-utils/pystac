@@ -229,6 +229,10 @@ class SummariesSatExtension(SummariesExtension):
     defined in the :stac-ext:`Satellite Extension <sat>`.
     """
 
+    def __init__(self, collection: pystac.Collection) -> None:
+        SatExtension.add_to(collection)
+        super().__init__(collection)
+
     @property
     def platform_international_designator(self) -> Optional[List[str]]:
         """Get or sets the summary of

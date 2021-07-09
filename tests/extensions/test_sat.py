@@ -9,7 +9,7 @@ import pystac
 from pystac.utils import str_to_datetime, datetime_to_str
 from pystac import ExtensionTypeError
 from pystac.extensions import sat
-from pystac.extensions.sat import OrbitState, SatExtension
+from pystac.extensions.sat import OrbitState, SatExtension, SummariesSatExtension
 from tests.utils import TestCases
 
 
@@ -329,3 +329,10 @@ class SatSummariesTest(unittest.TestCase):
                 "maximum": datetime_to_str(anx_datetime_range.maximum),
             },
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        col = self.collection()
+        col.stac_extensions = []
+        _ = SummariesSatExtension(col)
+
+        self.assertIn(SatExtension.get_schema_uri(), col.stac_extensions)

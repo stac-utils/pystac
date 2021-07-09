@@ -328,6 +328,10 @@ class SummariesProjectionExtension(SummariesExtension):
     defined in the :stac-ext:`Projection Extension <projection>`.
     """
 
+    def __init__(self, collection: pystac.Collection) -> None:
+        ProjectionExtension.add_to(collection)
+        super().__init__(collection)
+
     @property
     def epsg(self) -> Optional[List[int]]:
         """Get or sets the summary of :attr:`ProjectionExtension.epsg` values

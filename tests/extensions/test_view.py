@@ -6,7 +6,7 @@ import unittest
 
 import pystac
 from pystac.summaries import RangeSummary
-from pystac.extensions.view import ViewExtension
+from pystac.extensions.view import SummariesViewExtension, ViewExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -355,3 +355,10 @@ class ViewSummariesTest(unittest.TestCase):
         self.assertDictEqual(
             {"minimum": -10, "maximum": 38}, view_summaries.sun_elevation.to_dict()
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        collection = self.collection.clone()
+        collection.stac_extensions = []
+        _ = SummariesViewExtension(collection)
+
+        self.assertIn(ViewExtension.get_schema_uri(), collection.stac_extensions)

@@ -712,6 +712,10 @@ class SummariesLabelExtension(SummariesExtension):
     defined in the :stac-ext:`Label Extension <label>`.
     """
 
+    def __init__(self, collection: pystac.Collection) -> None:
+        LabelExtension.add_to(collection)
+        super().__init__(collection)
+
     @property
     def label_properties(self) -> Optional[List[str]]:
         """Get or sets the summary of :attr:`LabelExtension.label_properties` values
