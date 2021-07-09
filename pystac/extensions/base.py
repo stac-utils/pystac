@@ -26,7 +26,7 @@ class HasExtensions(Protocol):
 
     @stac_extensions.setter
     def stac_extensions(self, v: List[str]) -> None:
-        pass
+        """Setter for stac_extensions property."""
 
 
 class SummariesExtension:
