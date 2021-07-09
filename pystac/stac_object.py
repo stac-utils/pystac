@@ -505,9 +505,9 @@ class STACObject(ABC):
             d : The dict to parse.
             href : Optional href that is the file location of the object being
                 parsed.
-            root : Optional root of the catalog for this object.
-                If provided, the root's resolved object cache can be used to search for
-                previously resolved instances of the STAC object.
+            root : Optional root catalog for this object.
+                If provided, the root of the returned STACObject will be set
+                to this parameter.
             migrate: Use True if this dict represents JSON from an older STAC object,
                 so that migrations are run against it.
             preserve_dict: If False, the dict parameter ``d`` may be modified
