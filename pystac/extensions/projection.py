@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/projection
 """
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -32,7 +32,7 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 class ProjectionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item, pystac.Collection],
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection

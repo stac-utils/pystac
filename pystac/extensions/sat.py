@@ -6,7 +6,7 @@ https://github.com/stac-extensions/sat
 import enum
 from datetime import datetime as Datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, cast
+from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -40,7 +40,7 @@ class OrbitState(str, enum.Enum):
 class SatExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item, pystac.Collection],
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the

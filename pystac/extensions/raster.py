@@ -4,7 +4,7 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
 from pystac.extensions.base import (
@@ -626,7 +626,7 @@ class RasterBand:
 
 
 class RasterExtension(
-    PropertiesExtension, ExtensionManagementMixin[pystac.Item, pystac.Collection]
+    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from

@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.summaries import RangeSummary
@@ -29,7 +29,7 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 class ViewExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item, pystac.Collection],
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry

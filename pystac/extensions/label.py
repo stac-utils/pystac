@@ -425,7 +425,7 @@ class LabelOverview:
         return self.to_dict() == o
 
 
-class LabelExtension(ExtensionManagementMixin[pystac.Item, pystac.Collection]):
+class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]):
     """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 

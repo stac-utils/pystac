@@ -5,7 +5,7 @@ https://github.com/stac-extensions/timestamps
 
 from datetime import datetime as datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, cast
+from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -28,7 +28,7 @@ UNPUBLISHED_PROP = "unpublished"
 class TimestampsExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item, pystac.Collection],
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
