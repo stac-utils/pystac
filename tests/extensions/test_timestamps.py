@@ -347,3 +347,8 @@ class TimestampsSummariesTest(unittest.TestCase):
         _ = SummariesTimestampsExtension(collection)
 
         self.assertIn(TimestampsExtension.get_schema_uri(), collection.stac_extensions)
+
+        TimestampsExtension.remove_from(collection)
+        self.assertNotIn(
+            TimestampsExtension.get_schema_uri(), collection.stac_extensions
+        )

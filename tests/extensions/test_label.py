@@ -455,6 +455,9 @@ class LabelSummariesTest(unittest.TestCase):
 
         self.assertIn(LabelExtension.get_schema_uri(), col.stac_extensions)
 
+        LabelExtension.remove_from(col)
+        self.assertNotIn(LabelExtension.get_schema_uri(), col.stac_extensions)
+
     def test_label_properties_summary(self) -> None:
         label_properties = ["road_type", "lane_number", "paved"]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)

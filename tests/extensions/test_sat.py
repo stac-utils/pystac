@@ -336,3 +336,6 @@ class SatSummariesTest(unittest.TestCase):
         _ = SummariesSatExtension(col)
 
         self.assertIn(SatExtension.get_schema_uri(), col.stac_extensions)
+
+        SatExtension.remove_from(col)
+        self.assertNotIn(SatExtension.get_schema_uri(), col.stac_extensions)

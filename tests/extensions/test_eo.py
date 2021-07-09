@@ -221,6 +221,9 @@ class EOTest(unittest.TestCase):
 
         self.assertIn(EOExtension.get_schema_uri(), col.stac_extensions)
 
+        EOExtension.remove_from(col)
+        self.assertNotIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(

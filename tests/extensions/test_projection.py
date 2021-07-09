@@ -490,3 +490,6 @@ class ProjectionSummariesTest(unittest.TestCase):
         _ = ProjectionExtension.summaries(col)
 
         self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+
+        ProjectionExtension.remove_from(col)
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)

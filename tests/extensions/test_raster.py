@@ -246,3 +246,6 @@ class RasterTest(unittest.TestCase):
         _ = SummariesRasterExtension(col)
 
         self.assertIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+
+        RasterExtension.remove_from(col)
+        self.assertNotIn(RasterExtension.get_schema_uri(), col.stac_extensions)

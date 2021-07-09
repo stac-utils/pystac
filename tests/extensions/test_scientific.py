@@ -464,3 +464,8 @@ class SummariesScientificTest(unittest.TestCase):
         _ = SummariesScientificExtension(collection)
 
         self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
+
+        ScientificExtension.remove_from(collection)
+        self.assertNotIn(
+            ScientificExtension.get_schema_uri(), collection.stac_extensions
+        )

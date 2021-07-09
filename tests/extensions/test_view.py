@@ -362,3 +362,6 @@ class ViewSummariesTest(unittest.TestCase):
         _ = SummariesViewExtension(collection)
 
         self.assertIn(ViewExtension.get_schema_uri(), collection.stac_extensions)
+
+        ViewExtension.remove_from(collection)
+        self.assertNotIn(ViewExtension.get_schema_uri(), collection.stac_extensions)
