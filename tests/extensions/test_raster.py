@@ -11,7 +11,6 @@ from pystac.extensions.raster import (
     Sampling,
     DataType,
     Statistics,
-    SummariesRasterExtension,
 )
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -250,7 +249,7 @@ class RasterTest(unittest.TestCase):
             col,
             False,
         )
-        _ = SummariesRasterExtension(col)
+        _ = RasterExtension.summaries(col, True)
 
         self.assertIn(RasterExtension.get_schema_uri(), col.stac_extensions)
 
