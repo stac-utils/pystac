@@ -5,10 +5,7 @@ from datetime import datetime
 import pystac
 from pystac import ExtensionTypeError
 from pystac.summaries import RangeSummary
-from pystac.extensions.timestamps import (
-    SummariesTimestampsExtension,
-    TimestampsExtension,
-)
+from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -268,7 +265,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_published(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         published_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -293,7 +290,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_expires(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         expires_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -318,7 +315,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_unpublished(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         unpublished_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -344,7 +341,14 @@ class TimestampsSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection()
         collection.stac_extensions = []
-        _ = SummariesTimestampsExtension(collection)
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            TimestampsExtension.summaries,
+            collection,
+            False,
+        )
+        _ = TimestampsExtension.summaries(collection, True)
 
         self.assertIn(TimestampsExtension.get_schema_uri(), collection.stac_extensions)
 
