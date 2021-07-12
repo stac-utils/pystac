@@ -732,6 +732,9 @@ class Collection(Catalog):
             for asset_key, asset_dict in assets.items():
                 collection.add_asset(asset_key, Asset.from_dict(asset_dict))
 
+        if root:
+            collection.set_root(root)
+
         return collection
 
     def get_assets(self) -> Dict[str, Asset]:
