@@ -12,6 +12,7 @@ from typing import (
     Optional,
     Tuple,
     TypeVar,
+    Union,
     cast,
 )
 
@@ -274,7 +275,9 @@ class Band:
 
 
 class EOExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -296,7 +299,7 @@ class EOExtension(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
         """Applies label extension properties to the extended :class:`~pystac.Item` or
-        :class:`~pystac.Collection`.
+        :class:`~pystac.Asset`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
@@ -373,9 +376,15 @@ class EOExtension(
                 f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesEOExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesEOExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesEOExtension(obj)
 
 

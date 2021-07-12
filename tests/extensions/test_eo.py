@@ -214,6 +214,23 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(col_dict["summaries"]["eo:bands"]), 1)
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            EOExtension.summaries,
+            col,
+            False,
+        )
+        _ = EOExtension.summaries(col, add_if_missing=True)
+
+        self.assertIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
+        EOExtension.remove_from(col)
+        self.assertNotIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(

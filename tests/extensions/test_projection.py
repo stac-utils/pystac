@@ -505,3 +505,20 @@ class ProjectionSummariesTest(unittest.TestCase):
         col_dict = col.to_dict()
         self.assertEqual(len(col_dict["summaries"]["proj:epsg"]), 1)
         self.assertEqual(col_dict["summaries"]["proj:epsg"][0], 4326)
+
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            ProjectionExtension.summaries,
+            col,
+            False,
+        )
+        _ = ProjectionExtension.summaries(col, True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+
+        ProjectionExtension.remove_from(col)
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)

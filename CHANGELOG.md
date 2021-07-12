@@ -14,6 +14,10 @@
 
 - The `from_dict` method on STACObjects will set the object's root link when a `root` parameter is present. An ItemCollection `from_dict` with a root parameter will set the root on each of it's Items. ([#549](https://github.com/stac-utils/pystac/pull/549))
 
+### Fixed
+
+- Added `Collections` as a type that can be extended for extensions whose fields can appear in collection summaries ([#547](https://github.com/stac-utils/pystac/pull/547))
+
 ### Deprecated
 
 ## [v1.0.0-rc.3]

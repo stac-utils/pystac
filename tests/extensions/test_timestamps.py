@@ -265,7 +265,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_published(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         published_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -290,7 +290,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_expires(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         expires_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -315,7 +315,7 @@ class TimestampsSummariesTest(unittest.TestCase):
 
     def test_unpublished(self) -> None:
         collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection)
+        summaries_ext = TimestampsExtension.summaries(collection, True)
         unpublished_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -336,4 +336,23 @@ class TimestampsSummariesTest(unittest.TestCase):
                 "minimum": datetime_to_str(unpublished_range.minimum),
                 "maximum": datetime_to_str(unpublished_range.maximum),
             },
+        )
+
+    def test_summaries_adds_uri(self) -> None:
+        collection = self.collection()
+        collection.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            TimestampsExtension.summaries,
+            collection,
+            False,
+        )
+        _ = TimestampsExtension.summaries(collection, True)
+
+        self.assertIn(TimestampsExtension.get_schema_uri(), collection.stac_extensions)
+
+        TimestampsExtension.remove_from(collection)
+        self.assertNotIn(
+            TimestampsExtension.get_schema_uri(), collection.stac_extensions
         )

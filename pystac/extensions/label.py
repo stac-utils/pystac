@@ -425,7 +425,7 @@ class LabelOverview:
         return self.to_dict() == o
 
 
-class LabelExtension(ExtensionManagementMixin[pystac.Item]):
+class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]):
     """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
@@ -700,9 +700,15 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item]):
                 f"Label extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesLabelExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesLabelExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesLabelExtension(obj)
 
 

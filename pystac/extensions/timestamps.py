@@ -5,7 +5,7 @@ https://github.com/stac-extensions/timestamps
 
 from datetime import datetime as datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, cast
+from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -26,7 +26,9 @@ UNPUBLISHED_PROP = "unpublished"
 
 
 class TimestampsExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -141,9 +143,15 @@ class TimestampsExtension(
                 f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesTimestampsExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesTimestampsExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesTimestampsExtension(obj)
 
 

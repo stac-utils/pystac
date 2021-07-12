@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.summaries import RangeSummary
@@ -27,7 +27,9 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 
 class ViewExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
@@ -170,9 +172,15 @@ class ViewExtension(
                 f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesViewExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesViewExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesViewExtension(obj)
 
 

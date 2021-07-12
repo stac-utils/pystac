@@ -4,7 +4,7 @@ https://github.com/stac-extensions/projection
 """
 
 import json
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -31,7 +31,9 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 
 
 class ProjectionExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection
@@ -284,9 +286,15 @@ class ProjectionExtension(
                 f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesProjectionExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesProjectionExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesProjectionExtension(obj)
 
 
