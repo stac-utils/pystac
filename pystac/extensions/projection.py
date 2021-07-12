@@ -286,9 +286,15 @@ class ProjectionExtension(
                 f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesProjectionExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesProjectionExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesProjectionExtension(obj)
 
 
