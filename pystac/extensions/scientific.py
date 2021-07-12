@@ -322,10 +322,6 @@ class SummariesScientificExtension(SummariesExtension):
     defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
     """
 
-    def __init__(self, collection: pystac.Collection) -> None:
-        ScientificExtension.add_to(collection)
-        super().__init__(collection)
-
     @property
     def citation(self) -> Optional[List[str]]:
         """Get or sets the summary of :attr:`ScientificExtension.citation` values

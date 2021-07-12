@@ -236,10 +236,6 @@ class SummariesViewExtension(SummariesExtension):
     defined in the :stac-ext:`View Object Extension <view>`.
     """
 
-    def __init__(self, collection: pystac.Collection) -> None:
-        ViewExtension.add_to(collection)
-        super().__init__(collection)
-
     @property
     def off_nadir(self) -> Optional[RangeSummary[float]]:
         """Get or sets the summary of :attr:`ViewExtension.off_nadir` values for

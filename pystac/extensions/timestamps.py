@@ -207,10 +207,6 @@ class SummariesTimestampsExtension(SummariesExtension):
     defined in the :stac-ext:`Timestamps Extension <timestamps>`.
     """
 
-    def __init__(self, collection: pystac.Collection) -> None:
-        TimestampsExtension.add_to(collection)
-        super().__init__(collection)
-
     @property
     def published(self) -> Optional[RangeSummary[datetime]]:
         """Get or sets the summary of :attr:`TimestampsExtension.published` values
