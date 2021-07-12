@@ -376,9 +376,15 @@ class EOExtension(
                 f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesEOExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesEOExtension":
         """Returns the extended summaries object for the given collection."""
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
         return SummariesEOExtension(obj)
 
 
@@ -470,10 +476,6 @@ class SummariesEOExtension(SummariesExtension):
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
-
-    def __init__(self, collection: pystac.Collection):
-        EOExtension.add_to(collection)
-        super().__init__(collection)
 
     @property
     def bands(self) -> Optional[List[Band]]:
