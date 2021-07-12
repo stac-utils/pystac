@@ -14,7 +14,6 @@ from pystac.extensions.scientific import (
     Publication,
     ScientificExtension,
     ScientificRelType,
-    SummariesScientificExtension,
     remove_link,
 )
 from tests.utils import TestCases
@@ -461,7 +460,14 @@ class SummariesScientificTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection.clone()
         collection.stac_extensions = []
-        _ = SummariesScientificExtension(collection)
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            ScientificExtension.summaries,
+            collection,
+            False,
+        )
+        _ = ScientificExtension.summaries(collection, True)
 
         self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
 
