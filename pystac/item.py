@@ -970,6 +970,9 @@ class Item(STACObject):
             asset.set_owner(item)
             item.assets[k] = asset
 
+        if root:
+            item.set_root(root)
+
         return item
 
     @property

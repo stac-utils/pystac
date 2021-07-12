@@ -47,6 +47,12 @@ class ItemTest(unittest.TestCase):
         _ = Item.from_dict(param_dict, preserve_dict=False)
         self.assertNotEqual(param_dict, item_dict)
 
+    def test_from_dict_set_root(self) -> None:
+        item_dict = self.get_example_item_dict()
+        catalog = pystac.Catalog(id="test", description="test desc")
+        item = Item.from_dict(item_dict, root=catalog)
+        self.assertIs(item.get_root(), catalog)
+
     def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
         cat = TestCases.test_case_2()
         for item in cat.get_all_items():

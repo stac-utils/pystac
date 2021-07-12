@@ -99,6 +99,14 @@ class CatalogTest(unittest.TestCase):
         _ = Catalog.from_dict(param_dict, preserve_dict=False)
         self.assertNotEqual(param_dict, catalog_dict)
 
+    def test_from_dict_set_root(self) -> None:
+        path = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        with open(path) as f:
+            cat_dict = json.load(f)
+        root_cat = pystac.Catalog(id="test", description="test desc")
+        collection = Catalog.from_dict(cat_dict, root=root_cat)
+        self.assertIs(collection.get_root(), root_cat)
+
     def test_read_remote(self) -> None:
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
         catalog_url = (

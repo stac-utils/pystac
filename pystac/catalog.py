@@ -963,6 +963,9 @@ class Catalog(STACObject):
             if link["rel"] != pystac.RelType.SELF or href is None:
                 cat.add_link(Link.from_dict(link))
 
+        if root:
+            cat.set_root(root)
+
         return cat
 
     def full_copy(

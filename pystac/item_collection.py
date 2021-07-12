@@ -135,7 +135,10 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_dict(
-        cls, d: Dict[str, Any], preserve_dict: bool = True
+        cls,
+        d: Dict[str, Any],
+        preserve_dict: bool = True,
+        root: Optional[pystac.Catalog] = None,
     ) -> "ItemCollection":
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
@@ -151,7 +154,7 @@ class ItemCollection(Collection[pystac.Item]):
             raise STACTypeError("Dict is not a valid ItemCollection")
 
         items = [
-            pystac.Item.from_dict(item, preserve_dict=preserve_dict)
+            pystac.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
             for item in d.get("features", [])
         ]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
