@@ -3,6 +3,7 @@
 https://github.com/stac-extensions/projection
 """
 
+import json
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -145,6 +146,27 @@ class ProjectionExtension(
     @projjson.setter
     def projjson(self, v: Optional[Dict[str, Any]]) -> None:
         self._set_property(PROJJSON_PROP, v)
+
+    @property
+    def crs_string(self) -> Optional[str]:
+        """Returns the coordinate reference system (CRS) string for the extension.
+
+        This string can be used to feed, e.g., ``rasterio.crs.CRS.from_string``.
+        The string is determined by the following heuristic:
+
+        1. If an EPSG code is set, return "EPSG:{code}", else
+        2. If wkt2 is set, return the WKT string, else,
+        3. If projjson is set, return the projjson as a string, else,
+        4. Return None
+        """
+        if self.epsg:
+            return f"EPSG:{self.epsg}"
+        elif self.wkt2:
+            return self.wkt2
+        elif self.projjson:
+            return json.dumps(self.projjson)
+        else:
+            return None
 
     @property
     def geometry(self) -> Optional[Dict[str, Any]]:

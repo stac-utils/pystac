@@ -222,6 +222,28 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
+    def test_crs_string(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        ProjectionExtension.remove_from(item)
+        for key in list(item.properties.keys()):
+            if key.startswith("proj:"):
+                item.properties.pop(key)
+        self.assertIsNone(item.properties.get("proj:epsg"))
+        self.assertIsNone(item.properties.get("proj:wkt2"))
+        self.assertIsNone(item.properties.get("proj:projjson"))
+
+        projection = ProjectionExtension.ext(item, add_if_missing=True)
+        self.assertIsNone(projection.crs_string)
+
+        projection.projjson = PROJJSON
+        self.assertEqual(projection.crs_string, json.dumps(PROJJSON))
+
+        projection.wkt2 = WKT2
+        self.assertEqual(projection.crs_string, WKT2)
+
+        projection.epsg = 4326
+        self.assertEqual(projection.crs_string, "EPSG:4326")
+
     def test_geometry(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 

@@ -4,6 +4,10 @@
 
 ### Added
 
+- `ProjectionExtension.crs_string` to provide a single string to describe the coordinate reference system (CRS).
+  Useful because projections can be defined by EPSG code, WKT, or projjson.
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
+
 ### Removed
 
 ### Changed
