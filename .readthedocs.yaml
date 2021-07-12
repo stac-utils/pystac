@@ -5,7 +5,8 @@
 version: 2
 
 formats:
-  - pdf
+  # Temporarily disabling PDF downloads due to problem with nbsphinx in LateX builds
+  # - pdf
   - epub
 
 python:
