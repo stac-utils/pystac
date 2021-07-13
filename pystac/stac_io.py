@@ -98,7 +98,7 @@ class StacIO(ABC):
         if orjson is not None:
             result = orjson.loads(txt)
         else:
-            result = json.loads(txt)
+            result = json.loads(txt, *args, **kwargs)
         return result
 
     def json_dumps(self, json_dict: Dict[str, Any], *args: Any, **kwargs: Any) -> str:
@@ -115,9 +115,11 @@ class StacIO(ABC):
             json_dict : The dictionary to serialize
         """
         if orjson is not None:
-            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2).decode("utf-8")
+            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2, **kwargs).decode(
+                "utf-8"
+            )
         else:
-            return json.dumps(json_dict, indent=2)
+            return json.dumps(json_dict, *args, indent=2, **kwargs)
 
     def stac_object_from_dict(
         self,
