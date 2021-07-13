@@ -1,5 +1,7 @@
 import datetime
+import os.path
 import unittest
+from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
 
 import pystac
@@ -81,6 +83,17 @@ class LinkTest(unittest.TestCase):
     def test_resolve_stac_object_no_root_and_target_is_item(self) -> None:
         link = pystac.Link("my rel", target=self.item)
         link.resolve_stac_object()
+
+    def test_resolved_self_href(self) -> None:
+        catalog = pystac.Catalog(id="test", description="test desc")
+        with TemporaryDirectory() as temporary_directory:
+            catalog.normalize_and_save(temporary_directory)
+            path = os.path.join(temporary_directory, "catalog.json")
+            catalog = pystac.Catalog.from_file(path)
+            link = catalog.get_single_link(pystac.RelType.SELF)
+            assert link
+            link.resolve_stac_object()
+            self.assertEqual(link.get_absolute_href(), path)
 
 
 class StaticLinkTest(unittest.TestCase):

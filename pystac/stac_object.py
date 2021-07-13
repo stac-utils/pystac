@@ -159,7 +159,7 @@ class STACObject(ABC):
         """
         self_link = self.get_single_link(pystac.RelType.SELF)
         if self_link:
-            return cast(str, self_link.target)
+            return self_link.get_target_str()
         else:
             return None
 
