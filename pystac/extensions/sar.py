@@ -570,26 +570,42 @@ class SarExtensionHooks(ExtensionHooks):
                 PREFIX + "platform" in obj["properties"]
                 and "platform" not in obj["properties"]
             ):
-                obj["properties"]["platform"] = obj["properties"][PREFIX + "platform"]
-                del obj["properties"][PREFIX + "platform"]
+                obj["properties"]["platform"] = obj["properties"].pop(
+                    PREFIX + "platform"
+                )
 
             if (
                 PREFIX + "instrument" in obj["properties"]
                 and "instruments" not in obj["properties"]
             ):
                 obj["properties"]["instruments"] = [
-                    obj["properties"][PREFIX + "instrument"]
+                    obj["properties"].pop(PREFIX + "instrument")
                 ]
-                del obj["properties"][PREFIX + "instrument"]
 
             if (
                 PREFIX + "constellation" in obj["properties"]
                 and "constellation" not in obj["properties"]
             ):
-                obj["properties"]["constellation"] = obj["properties"][
+                obj["properties"]["constellation"] = obj["properties"].pop(
                     PREFIX + "constellation"
+                )
+
+            # Some SAR fields changed property names
+            if (
+                PREFIX + "type" in obj["properties"]
+                and PRODUCT_TYPE_PROP not in obj["properties"]
+            ):
+                obj["properties"][PRODUCT_TYPE_PROP] = obj["properties"].pop(
+                    PREFIX + "type"
+                )
+
+            if (
+                PREFIX + "polarization" in obj["properties"]
+                and POLARIZATIONS_PROP not in obj["properties"]
+            ):
+                obj["properties"][POLARIZATIONS_PROP] = [
+                    obj["properties"].pop(PREFIX + "polarization")
                 ]
-                del obj["properties"][PREFIX + "constellation"]
 
         super().migrate(obj, version, info)
 
