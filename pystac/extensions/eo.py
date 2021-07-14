@@ -283,8 +283,7 @@ class EOExtension(
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of
     STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.
-    Asset`).
+    :class:`~pystac.Asset`).
 
     To create a concrete instance of :class:`EOExtension`, use the
     :meth:`EOExtension.ext` method. For example:
