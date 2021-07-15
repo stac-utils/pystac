@@ -9,8 +9,10 @@ import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.summaries import RangeSummary
 from pystac.utils import map_opt, get_required
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
@@ -320,9 +322,16 @@ class Statistic:
         """Returns a JSON-like dictionary representing this ``Statistic``."""
         return self.properties
 
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Statistic):
+            return NotImplemented
+        return self.to_dict() == o.to_dict()
+
 
 class PointcloudExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -473,6 +482,16 @@ class PointcloudExtension(
                 f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesPointcloudExtension":
+        if not add_if_missing:
+            cls.validate_has_extension(obj)
+        else:
+            cls.add_to(obj)
+        return SummariesPointcloudExtension(obj)
+
 
 class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
     """A concrete implementation of :class:`PointcloudExtension` on an :class:`~pystac.Item`
@@ -511,6 +530,59 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return f"<AssetPointcloudExtension Asset {self.repr_id}>"
+
+
+class SummariesPointcloudExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`Point Cloud Extension <pointcloud>`.
+    """
+
+    @property
+    def count(self) -> Optional[RangeSummary[int]]:
+        return self.summaries.get_range(COUNT_PROP)
+
+    @count.setter
+    def count(self, v: Optional[RangeSummary[int]]) -> None:
+        self._set_summary(COUNT_PROP, v)
+
+    @property
+    def type(self) -> Optional[List[Union[PhenomenologyType, str]]]:
+        return self.summaries.get_list(TYPE_PROP)
+
+    @type.setter
+    def type(self, v: Optional[List[Union[PhenomenologyType, str]]]) -> None:
+        self._set_summary(TYPE_PROP, v)
+
+    @property
+    def encoding(self) -> Optional[List[str]]:
+        return self.summaries.get_list(ENCODING_PROP)
+
+    @encoding.setter
+    def encoding(self, v: Optional[List[str]]) -> None:
+        self._set_summary(ENCODING_PROP, v)
+
+    @property
+    def density(self) -> Optional[RangeSummary[float]]:
+        return self.summaries.get_range(DENSITY_PROP)
+
+    @density.setter
+    def density(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(DENSITY_PROP, v)
+
+    @property
+    def statistics(self) -> Optional[List[Statistic]]:
+        return map_opt(
+            lambda stats: [Statistic(d) for d in stats],
+            self.summaries.get_list(STATISTICS_PROP),
+        )
+
+    @statistics.setter
+    def statistics(self, v: Optional[List[Statistic]]) -> None:
+        self._set_summary(
+            STATISTICS_PROP,
+            map_opt(lambda stats: [s.to_dict() for s in stats], v),
+        )
 
 
 class PointcloudExtensionHooks(ExtensionHooks):
