@@ -138,8 +138,14 @@ class ExtensionManagementMixin(Generic[S], ABC):
             add_if_missing : Whether to add the schema URI to the object if the URI is
                 not already present.
 
+        Raises:
+            STACError : If ``add_if_missing`` is ``True`` and ``extensible`` is None.
         """
         if add_if_missing:
+            if extensible is None:
+                raise pystac.STACError(
+                    "Can only add schema URIs to Assets with an owner."
+                )
             cls.add_to(extensible)
 
         if extensible is None:
