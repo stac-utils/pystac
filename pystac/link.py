@@ -191,8 +191,17 @@ class Link:
             self._target_object = target
 
     def get_target_str(self) -> Optional[str]:
-        """Returns this link's target as a string."""
-        return self._target_href
+        """Returns this link's target as a string.
+
+        If a string href was provided, returns that. If not, tries to resolve
+        the self link of the target object.
+        """
+        if self._target_href:
+            return self._target_href
+        elif self._target_object:
+            return self._target_object.get_self_href()
+        else:
+            return None
 
     def __repr__(self) -> str:
         return "<Link rel={} target={}>".format(self.rel, self.target)
