@@ -499,8 +499,63 @@ RasterExtension
    :show-inheritance:
    :inherited-members:
 
+SAR Extension
+-------------
+These classes are representations of the :stac-ext:`SAR Extension Spec
+<sar>`.
+
+FrequencyBand
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.FrequencyBand
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Polarization
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.Polarization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ObservationDirection
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.ObservationDirection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SarExtension
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.SarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+ItemSarExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.ItemSarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AssetSarExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.AssetSarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 Satellite Extension
 -------------------
+These classes are representations of the :stac-ext:`Satellite Extension Spec
+<sat>`.
 
 OrbitState
 ~~~~~~~~~~
