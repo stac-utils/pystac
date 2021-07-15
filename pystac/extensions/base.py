@@ -126,15 +126,26 @@ class ExtensionManagementMixin(Generic[S], ABC):
         )
 
     @classmethod
-    def validate_has_extension(cls, obj: Union[S, pystac.Asset]) -> None:
-        """Given a :class:`~pystac.STACObject` or :class:`pystac.Asset` instance, checks
-        if the object (or its owner in the case of an Asset) has this extension's schema
-        URI in it's :attr:`~pystac.STACObject.stac_extensions` list."""
-        extensible = obj.owner if isinstance(obj, pystac.Asset) else obj
-        if (
-            extensible is not None
-            and cls.get_schema_uri() not in extensible.stac_extensions
-        ):
+    def validate_has_extension(
+        cls, extensible: Optional[S], add_if_missing: bool
+    ) -> None:
+        """Given a :class:`~pystac.STACObject`, checks if the object has this
+        extension's schema URI in it's :attr:`~pystac.STACObject.stac_extensions` list.
+        If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
+
+        Args:
+            extensible : The object to validate.
+            add_if_missing : Whether to add the schema URI to the object if the URI is
+                not already present.
+
+        """
+        if add_if_missing:
+            cls.add_to(extensible)
+
+        if extensible is None:
+            return
+
+        if cls.get_schema_uri() not in extensible.stac_extensions:
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )

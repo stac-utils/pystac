@@ -315,14 +315,15 @@ class SarExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
+                raise pystac.ExtensionTypeError(
+                    "SAR extension does not apply to Assets owned by anything "
+                    "other than an Item."
+                )
+            cls.validate_has_extension(obj.owner, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

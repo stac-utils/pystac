@@ -129,14 +129,10 @@ class TimestampsExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj.owner, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
@@ -148,10 +144,7 @@ class TimestampsExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesTimestampsExtension":
         """Returns the extended summaries object for the given collection."""
-        if not add_if_missing:
-            cls.validate_has_extension(obj)
-        else:
-            cls.add_to(obj)
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesTimestampsExtension(obj)
 
 
