@@ -486,10 +486,7 @@ class PointcloudExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesPointcloudExtension":
-        if not add_if_missing:
-            cls.validate_has_extension(obj)
-        else:
-            cls.add_to(obj)
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesPointcloudExtension(obj)
 
 
