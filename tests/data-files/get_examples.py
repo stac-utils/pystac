@@ -10,8 +10,10 @@ import tempfile
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError
 
-import pystac
-from pystac.serialization import identify_stac_object
+from pystac.version import get_stac_version
+from pystac.stac_object import STACObjectType
+from pystac.stac_io import StacIO
+from pystac.serialization.identify import identify_stac_object
 
 
 def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
@@ -23,7 +25,7 @@ def remove_bad_collection(js: Dict[str, Any]) -> Dict[str, Any]:
             if rel is not None and rel == "collection":
                 href: str = link["href"]
                 try:
-                    json.loads(pystac.StacIO.default().read_text(href))
+                    json.loads(StacIO.default().read_text(href))
                     filtered_links.append(link)
                 except (HTTPError, FileNotFoundError, json.decoder.JSONDecodeError):
                     print("===REMOVING UNREADABLE COLLECTION AT {}".format(href))
@@ -46,7 +48,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     stac_repo = "https://github.com/radiantearth/stac-spec"
-    stac_spec_tag = "v{}".format(pystac.get_stac_version())
+    stac_spec_tag = "v{}".format(get_stac_version())
 
     examples_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "examples"))
 
@@ -87,7 +89,7 @@ if __name__ == "__main__":
                             and example_version > args.previous_version
                         ):
                             relpath = "{}/{}".format(
-                                pystac.get_stac_version(),
+                                get_stac_version(),
                                 path.replace("{}/".format(tmp_dir), ""),
                             )
                             target_path = os.path.join(examples_dir, relpath)
@@ -98,7 +100,7 @@ if __name__ == "__main__":
 
                             # Handle the case where there are collection links that
                             # don't exist.
-                            if info.object_type == pystac.STACObjectType.ITEM:
+                            if info.object_type == STACObjectType.ITEM:
                                 js = remove_bad_collection(js)
 
                             d = os.path.dirname(target_path)

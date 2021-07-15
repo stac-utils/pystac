@@ -6,13 +6,20 @@ import tempfile
 from typing import Any, Dict, List
 import unittest
 
-import pystac
-from pystac import Asset, Item, Provider, ProviderRole
+from pystac.asset import Asset
+from pystac.catalog import Catalog
+from pystac.serialization.common_properties import merge_common_properties
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection, ProviderRole
+from pystac.errors import STACError, STACTypeError
+from pystac.item import Item
+from pystac.stac_io import StacIO
+from pystac.collection import Provider
 from pystac.validation import validate_dict
-import pystac.serialization.common_properties
 from pystac.item import CommonMetadata
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime, is_absolute_href
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class ItemTest(unittest.TestCase):
@@ -49,7 +56,7 @@ class ItemTest(unittest.TestCase):
 
     def test_from_dict_set_root(self) -> None:
         item_dict = self.get_example_item_dict()
-        catalog = pystac.Catalog(id="test", description="test desc")
+        catalog = Catalog(id="test", description="test desc")
         item = Item.from_dict(item_dict, root=catalog)
         self.assertIs(item.get_root(), catalog)
 
@@ -83,9 +90,7 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(expected_href, actual_href)
 
     def test_extra_fields(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item.json")
-        )
+        item = Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
 
         item.extra_fields["test"] = "extra"
 
@@ -97,13 +102,13 @@ class ItemTest(unittest.TestCase):
             self.assertTrue("test" in item_json)
             self.assertEqual(item_json["test"], "extra")
 
-            read_item = pystac.Item.from_file(p)
+            read_item = Item.from_file(p)
             self.assertTrue("test" in read_item.extra_fields)
             self.assertEqual(read_item.extra_fields["test"], "extra")
 
     def test_clearing_collection(self) -> None:
         collection = TestCases.test_case_4().get_child("acc")
-        assert isinstance(collection, pystac.Collection)
+        assert isinstance(collection, Collection)
         item = next(iter(collection.get_all_items()))
         self.assertEqual(item.collection_id, collection.id)
         item.set_collection(None)
@@ -123,11 +128,9 @@ class ItemTest(unittest.TestCase):
         self.assertEqual("2016-05-03T13:22:30.040000Z", formatted_time)
 
     def test_null_datetime(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item.json")
-        )
+        item = Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
 
-        with self.assertRaises(pystac.STACError):
+        with self.assertRaises(STACError):
             Item(
                 "test",
                 geometry=item.geometry,
@@ -150,7 +153,7 @@ class ItemTest(unittest.TestCase):
         null_dt_item.validate()
 
     def test_get_set_asset_datetime(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         item_datetime = item.datetime
@@ -187,7 +190,7 @@ class ItemTest(unittest.TestCase):
         with open(m) as f:
             item_dict = json.load(f)
 
-        validate_dict(item_dict, pystac.STACObjectType.ITEM)
+        validate_dict(item_dict, STACObjectType.ITEM)
 
         item = Item.from_dict(item_dict)
         self.assertIsInstance(item, Item)
@@ -198,15 +201,13 @@ class ItemTest(unittest.TestCase):
         self.assertNotIn("bbox", item_dict)
 
     def test_0_9_item_with_no_extensions_does_not_read_collection_data(self) -> None:
-        item_json = pystac.StacIO.default().read_json(
+        item_json = StacIO.default().read_json(
             TestCases.get_path("data-files/examples/hand-0.9.0/010100/010100.json")
         )
         assert item_json.get("stac_extensions") is None
         assert item_json.get("stac_version") == "0.9.0"
 
-        did_merge = pystac.serialization.common_properties.merge_common_properties(
-            item_json
-        )
+        did_merge = merge_common_properties(item_json)
         self.assertFalse(did_merge)
 
     def test_clone_sets_asset_owner(self) -> None:
@@ -230,12 +231,12 @@ class ItemTest(unittest.TestCase):
         self.assertEqual(asset.get_absolute_href(), original_href)
 
     def test_from_invalid_dict_raises_exception(self) -> None:
-        stac_io = pystac.StacIO.default()
+        stac_io = StacIO.default()
         catalog_dict = stac_io.read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
-        with self.assertRaises(pystac.STACTypeError):
-            _ = pystac.Item.from_dict(catalog_dict)
+        with self.assertRaises(STACTypeError):
+            _ = Item.from_dict(catalog_dict)
 
 
 class CommonMetadataTest(unittest.TestCase):
@@ -456,7 +457,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(x.properties["gsd"], example_gsd)
 
     def test_asset_start_datetime(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -479,7 +480,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.start_datetime, item_value)
 
     def test_asset_end_datetime(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -502,7 +503,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.end_datetime, item_value)
 
     def test_asset_license(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -525,14 +526,14 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.license, item_value)
 
     def test_asset_providers(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
 
         item_value = get_opt(cm.providers)
         a2_known_value = [
-            pystac.Provider(
+            Provider(
                 name="USGS",
                 url="https://landsat.usgs.gov/",
                 roles=[ProviderRole.PRODUCER, ProviderRole.LICENSOR],
@@ -548,7 +549,7 @@ class CommonMetadataTest(unittest.TestCase):
 
         # Set
         set_value = [
-            pystac.Provider(
+            Provider(
                 name="John Snow",
                 url="https://cholera.com/",
                 roles=[ProviderRole.PRODUCER],
@@ -562,7 +563,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(get_opt(cm.providers)[0].to_dict(), item_value[0].to_dict())
 
     def test_asset_platform(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -585,7 +586,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.platform, item_value)
 
     def test_asset_instruments(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -608,7 +609,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.instruments, item_value)
 
     def test_asset_constellation(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -631,7 +632,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.constellation, item_value)
 
     def test_asset_mission(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -654,7 +655,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.mission, item_value)
 
     def test_asset_gsd(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -677,7 +678,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.gsd, item_value)
 
     def test_asset_created(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -700,7 +701,7 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(cm.created, item_value)
 
     def test_asset_updated(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
         cm = item.common_metadata
@@ -730,11 +731,11 @@ class ItemSubClassTest(unittest.TestCase):
 
     SAMPLE_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 
-    class BasicCustomItem(pystac.Item):
+    class BasicCustomItem(Item):
         pass
 
     def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
+        self.stac_io = StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
         item_dict = self.stac_io.read_json(self.SAMPLE_ITEM)

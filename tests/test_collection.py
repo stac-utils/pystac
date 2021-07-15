@@ -6,20 +6,17 @@ from datetime import datetime
 from dateutil import tz
 import tempfile
 
-import pystac
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection, Extent, TemporalExtent
+from pystac.errors import STACTypeError
+from pystac.item import Item
+from pystac.stac_io import StacIO
+from pystac.catalog import Catalog, CatalogType
+from pystac.collection import Provider, SpatialExtent
 from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
-from pystac import (
-    Collection,
-    Item,
-    Extent,
-    SpatialExtent,
-    TemporalExtent,
-    CatalogType,
-    Provider,
-)
 from pystac.utils import datetime_to_str, get_required
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
+from tests.utils.test_cases import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
@@ -64,14 +61,14 @@ class CollectionTest(unittest.TestCase):
 
     def test_save_uses_previous_catalog_type(self) -> None:
         collection = TestCases.test_case_8()
-        assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
+        assert collection.STAC_OBJECT_TYPE == STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
         with tempfile.TemporaryDirectory() as tmp_dir:
             collection.normalize_hrefs(tmp_dir)
             href = collection.self_href
             collection.save()
 
-            collection2 = pystac.Collection.from_file(href)
+            collection2 = Collection.from_file(href)
             self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_clone_uses_previous_catalog_type(self) -> None:
@@ -88,12 +85,12 @@ class CollectionTest(unittest.TestCase):
         assert col1 is not None
         col1.validate()
         self.assertIsInstance(col1, Collection)
-        validate_dict(col1.to_dict(), pystac.STACObjectType.COLLECTION)
+        validate_dict(col1.to_dict(), STACObjectType.COLLECTION)
 
         multi_ext_uri = TestCases.get_path("data-files/collections/multi-extent.json")
         with open(multi_ext_uri) as f:
             multi_ext_dict = json.load(f)
-        validate_dict(multi_ext_dict, pystac.STACObjectType.COLLECTION)
+        validate_dict(multi_ext_dict, STACObjectType.COLLECTION)
         self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
 
         multi_ext_col = Collection.from_file(multi_ext_uri)
@@ -123,7 +120,7 @@ class CollectionTest(unittest.TestCase):
             self.assertTrue("test" in col_json)
             self.assertEqual(col_json["test"], "extra")
 
-            read_col = pystac.Collection.from_file(p)
+            read_col = Collection.from_file(p)
             self.assertTrue("test" in read_col.extra_fields)
             self.assertEqual(read_col.extra_fields["test"], "extra")
 
@@ -197,7 +194,7 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(collection.get_self_href(), test_href)
 
     def test_collection_with_href_caches_by_href(self) -> None:
-        collection = pystac.Collection.from_file(
+        collection = Collection.from_file(
             TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
         )
         cache = collection._resolved_objects
@@ -210,7 +207,7 @@ class CollectionTest(unittest.TestCase):
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:
             data = json.load(f)
-        collection = pystac.Collection.from_dict(data)
+        collection = Collection.from_dict(data)
         collection.validate()
 
     def test_from_dict_preserves_dict(self) -> None:
@@ -232,12 +229,12 @@ class CollectionTest(unittest.TestCase):
         path = TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
         with open(path) as f:
             collection_dict = json.load(f)
-        catalog = pystac.Catalog(id="test", description="test desc")
+        catalog = Catalog(id="test", description="test desc")
         collection = Collection.from_dict(collection_dict, root=catalog)
         self.assertIs(collection.get_root(), catalog)
 
     def test_schema_summary(self) -> None:
-        collection = pystac.Collection.from_file(
+        collection = Collection.from_file(
             TestCases.get_path(
                 "data-files/examples/1.0.0/collection-only/collection-with-schemas.json"
             )
@@ -251,12 +248,12 @@ class CollectionTest(unittest.TestCase):
         self.assertIsInstance(instruments_schema, dict)
 
     def test_from_invalid_dict_raises_exception(self) -> None:
-        stac_io = pystac.StacIO.default()
+        stac_io = StacIO.default()
         catalog_dict = stac_io.read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
-        with self.assertRaises(pystac.STACTypeError):
-            _ = pystac.Collection.from_dict(catalog_dict)
+        with self.assertRaises(STACTypeError):
+            _ = Collection.from_dict(catalog_dict)
 
 
 class ExtentTest(unittest.TestCase):
@@ -381,11 +378,11 @@ class CollectionSubClassTest(unittest.TestCase):
 
     MULTI_EXTENT = TestCases.get_path("data-files/collections/multi-extent.json")
 
-    class BasicCustomCollection(pystac.Collection):
+    class BasicCustomCollection(Collection):
         pass
 
     def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
+        self.stac_io = StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
         collection_dict = self.stac_io.read_json(self.MULTI_EXTENT)

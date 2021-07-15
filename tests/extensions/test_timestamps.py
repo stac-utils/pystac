@@ -2,12 +2,15 @@ import json
 import unittest
 from datetime import datetime
 
-import pystac
-from pystac import ExtensionTypeError
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
 from pystac.summaries import RangeSummary
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.utils import get_opt, str_to_datetime, datetime_to_str
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class TimestampsTest(unittest.TestCase):
@@ -22,7 +25,7 @@ class TimestampsTest(unittest.TestCase):
         self.sample_datetime = str_to_datetime(self.sample_datetime_str)
 
     def test_to_from_dict(self) -> None:
-        assert_to_from_dict(self, pystac.Item, self.item_dict)
+        assert_to_from_dict(self, Item, self.item_dict)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -61,11 +64,11 @@ class TimestampsTest(unittest.TestCase):
             self.assertNotIn(p, item.properties)
 
     def test_validate_timestamps(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.validate()
 
     def test_expires(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+        timestamps_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("expires", timestamps_item.properties)
@@ -107,7 +110,7 @@ class TimestampsTest(unittest.TestCase):
         timestamps_item.validate()
 
     def test_published(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+        timestamps_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("published", timestamps_item.properties)
@@ -149,7 +152,7 @@ class TimestampsTest(unittest.TestCase):
         timestamps_item.validate()
 
     def test_unpublished(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+        timestamps_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertNotIn("unpublished", timestamps_item.properties)
@@ -190,24 +193,24 @@ class TimestampsTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = TimestampsExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["blue"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = TimestampsExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = TimestampsExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
         self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
 
@@ -216,7 +219,7 @@ class TimestampsTest(unittest.TestCase):
         self.assertIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
         self.assertNotIn(TimestampsExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["blue"]
@@ -236,7 +239,7 @@ class TimestampsTest(unittest.TestCase):
         )
 
     def test_item_repr(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
 
         self.assertEqual(
             TimestampsExtension.ext(item).__repr__(),
@@ -244,7 +247,7 @@ class TimestampsTest(unittest.TestCase):
         )
 
     def test_asset_repr(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         asset = item.assets["blue"]
 
         self.assertEqual(
@@ -258,8 +261,8 @@ class TimestampsSummariesTest(unittest.TestCase):
         self.maxDiff = None
 
     @staticmethod
-    def collection() -> pystac.Collection:
-        return pystac.Collection.from_file(
+    def collection() -> Collection:
+        return Collection.from_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
 
@@ -342,7 +345,7 @@ class TimestampsSummariesTest(unittest.TestCase):
         collection = self.collection()
         collection.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             TimestampsExtension.summaries,
             collection,

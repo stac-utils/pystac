@@ -4,9 +4,11 @@ from pystac.item_collection import ItemCollection
 import unittest
 from os.path import relpath
 
-import pystac
-
-from tests.utils import TestCases
+from pystac.catalog import Catalog
+from pystac.errors import STACTypeError
+from pystac.item import Item
+from pystac.stac_io import StacIO
+from tests.utils.test_cases import TestCases
 
 
 class TestItemCollection(unittest.TestCase):
@@ -24,19 +26,17 @@ class TestItemCollection(unittest.TestCase):
         self.maxDiff = None
         with open(self.ITEM_COLLECTION) as src:
             self.item_collection_dict = json.load(src)
-        self.items = [
-            pystac.Item.from_dict(f) for f in self.item_collection_dict["features"]
-        ]
-        self.stac_io = pystac.StacIO.default()
+        self.items = [Item.from_dict(f) for f in self.item_collection_dict["features"]]
+        self.stac_io = StacIO.default()
 
     def test_item_collection_length(self) -> None:
-        item_collection = pystac.ItemCollection(items=self.items)
+        item_collection = ItemCollection(items=self.items)
 
         self.assertEqual(len(item_collection), len(self.items))
 
     def test_item_collection_iter(self) -> None:
         expected_ids = [item.id for item in self.items]
-        item_collection = pystac.ItemCollection(items=self.items)
+        item_collection = ItemCollection(items=self.items)
 
         actual_ids = [item.id for item in item_collection]
 
@@ -44,25 +44,25 @@ class TestItemCollection(unittest.TestCase):
 
     def test_item_collection_get_item_by_index(self) -> None:
         expected_id = self.items[0].id
-        item_collection = pystac.ItemCollection(items=self.items)
+        item_collection = ItemCollection(items=self.items)
 
         self.assertEqual(item_collection[0].id, expected_id)
 
     def test_item_collection_contains(self) -> None:
-        item = pystac.Item.from_file(self.SIMPLE_ITEM)
-        item_collection = pystac.ItemCollection(items=[item])
+        item = Item.from_file(self.SIMPLE_ITEM)
+        item_collection = ItemCollection(items=[item])
 
         self.assertIn(item, item_collection)
 
     def test_item_collection_extra_fields(self) -> None:
-        item_collection = pystac.ItemCollection(
+        item_collection = ItemCollection(
             items=self.items, extra_fields={"custom_field": "My value"}
         )
 
         self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")
 
     def test_item_collection_to_dict(self) -> None:
-        item_collection = pystac.ItemCollection(
+        item_collection = ItemCollection(
             items=self.items, extra_fields={"custom_field": "My value"}
         )
 
@@ -78,13 +78,13 @@ class TestItemCollection(unittest.TestCase):
             "features": features,
             "custom_field": "My value",
         }
-        item_collection = pystac.ItemCollection.from_dict(d)
+        item_collection = ItemCollection.from_dict(d)
         expected = len(features)
         self.assertEqual(expected, len(item_collection.items))
         self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")
 
     def test_clone_item_collection(self) -> None:
-        item_collection_1 = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
+        item_collection_1 = ItemCollection.from_file(self.ITEM_COLLECTION)
         item_collection_2 = item_collection_1.clone()
 
         item_ids_1 = [item.id for item in item_collection_1]
@@ -98,11 +98,11 @@ class TestItemCollection(unittest.TestCase):
     def test_raise_error_for_invalid_object(self) -> None:
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
 
-        with self.assertRaises(pystac.STACTypeError):
-            _ = pystac.ItemCollection.from_dict(item_dict)
+        with self.assertRaises(STACTypeError):
+            _ = ItemCollection.from_dict(item_dict)
 
     def test_from_relative_path(self) -> None:
-        _ = pystac.ItemCollection.from_file(
+        _ = ItemCollection.from_file(
             relpath(
                 TestCases.get_path(
                     "data-files/item-collection/sample-item-collection.json"
@@ -112,24 +112,24 @@ class TestItemCollection(unittest.TestCase):
 
     def test_from_list_of_dicts(self) -> None:
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
-        item_collection = pystac.ItemCollection(items=[item_dict])
+        item_collection = ItemCollection(items=[item_dict])
 
         self.assertEqual(item_collection[0].id, item_dict.get("id"))
 
     def test_add_item_collections(self) -> None:
-        item_1 = pystac.Item.from_file(self.SIMPLE_ITEM)
-        item_2 = pystac.Item.from_file(self.EXTENDED_ITEM)
-        item_3 = pystac.Item.from_file(self.CORE_ITEM)
+        item_1 = Item.from_file(self.SIMPLE_ITEM)
+        item_2 = Item.from_file(self.EXTENDED_ITEM)
+        item_3 = Item.from_file(self.CORE_ITEM)
 
-        item_collection_1 = pystac.ItemCollection(items=[item_1, item_2])
-        item_collection_2 = pystac.ItemCollection(items=[item_2, item_3])
+        item_collection_1 = ItemCollection(items=[item_1, item_2])
+        item_collection_2 = ItemCollection(items=[item_2, item_3])
 
         combined = item_collection_1 + item_collection_2
 
         self.assertEqual(len(combined), 3)
 
     def test_add_other_raises_error(self) -> None:
-        item_collection = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
+        item_collection = ItemCollection.from_file(self.ITEM_COLLECTION)
 
         with self.assertRaises(TypeError):
             _ = item_collection + 2
@@ -139,10 +139,10 @@ class TestItemCollection(unittest.TestCase):
             "data-files/examples/0.8.1/item-spec/"
             "examples/itemcollection-sample-full.json"
         )
-        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+        itemcollection_dict = StacIO.default().read_json(itemcollection_path)
 
         self.assertTrue(
-            pystac.ItemCollection.is_item_collection(itemcollection_dict),
+            ItemCollection.is_item_collection(itemcollection_dict),
             msg="Did not correctly identify valid STAC 0.8 ItemCollection.",
         )
 
@@ -151,10 +151,10 @@ class TestItemCollection(unittest.TestCase):
             "data-files/examples/0.9.0/item-spec/"
             "examples/itemcollection-sample-full.json"
         )
-        itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+        itemcollection_dict = StacIO.default().read_json(itemcollection_path)
 
         self.assertTrue(
-            pystac.ItemCollection.is_item_collection(itemcollection_dict),
+            ItemCollection.is_item_collection(itemcollection_dict),
             msg="Did not correctly identify valid STAC 0.9 ItemCollection.",
         )
 
@@ -172,7 +172,7 @@ class TestItemCollection(unittest.TestCase):
 
     def test_from_dict_sets_root(self) -> None:
         param_dict = deepcopy(self.item_collection_dict)
-        catalog = pystac.Catalog(id="test", description="test desc")
+        catalog = Catalog(id="test", description="test desc")
         item_collection = ItemCollection.from_dict(param_dict, root=catalog)
         for item in item_collection.items:
             self.assertEqual(item.get_root(), catalog)

@@ -1,10 +1,16 @@
 """Tests creating a custom extension"""
-
-from pystac.summaries import RangeSummary
 from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
 
-import pystac
+from pystac import EXTENSION_HOOKS
+from pystac.link import Link
+from pystac.asset import Asset
+from pystac.summaries import RangeSummary
+from pystac.stac_object import STACObject, STACObjectType
+from pystac.collection import Collection
+from pystac.errors import ExtensionAlreadyExistsError, ExtensionTypeError
+from pystac.item import Item
+from pystac.catalog import Catalog
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.base import (
     ExtensionManagementMixin,
@@ -13,7 +19,7 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 
-T = TypeVar("T", pystac.Catalog, pystac.Collection, pystac.Item, pystac.Asset)
+T = TypeVar("T", Catalog, Collection, Item, Asset)
 
 SCHEMA_URI = "https://example.com/v2.0/custom-schema.json"
 
@@ -24,9 +30,9 @@ TEST_LINK_REL = "test-link"
 class CustomExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Catalog, pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union[Catalog, Collection, Item]],
 ):
-    def __init__(self, obj: Optional[pystac.STACObject]) -> None:
+    def __init__(self, obj: Optional[STACObject]) -> None:
         self.obj = obj
 
     def apply(self, test_prop: Optional[str]) -> None:
@@ -40,11 +46,11 @@ class CustomExtension(
     def test_prop(self, v: Optional[str]) -> None:
         self._set_property(TEST_PROP, v)
 
-    def add_link(self, target: pystac.STACObject) -> None:
+    def add_link(self, target: STACObject) -> None:
         if self.obj is not None:
-            self.obj.add_link(pystac.Link(TEST_LINK_REL, target))
+            self.obj.add_link(Link(TEST_LINK_REL, target))
         else:
-            raise pystac.ExtensionAlreadyExistsError(f"{self} does not support links")
+            raise ExtensionAlreadyExistsError(f"{self} does not support links")
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -52,53 +58,53 @@ class CustomExtension(
 
     @staticmethod
     def custom_ext(obj: T) -> "CustomExtension[T]":
-        if isinstance(obj, pystac.Asset):
+        if isinstance(obj, Asset):
             return cast(CustomExtension[T], AssetCustomExtension(obj))
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, Item):
             return cast(CustomExtension[T], ItemCustomExtension(obj))
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, Collection):
             return cast(CustomExtension[T], CollectionCustomExtension(obj))
-        if isinstance(obj, pystac.Catalog):
+        if isinstance(obj, Catalog):
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
-        raise pystac.ExtensionTypeError(
+        raise ExtensionTypeError(
             f"Custom extension does not apply to {type(obj).__name__}"
         )
 
     @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesCustomExtension":
+    def summaries(obj: Collection) -> "SummariesCustomExtension":
         return SummariesCustomExtension(obj)
 
 
-class CatalogCustomExtension(CustomExtension[pystac.Catalog]):
-    def __init__(self, catalog: pystac.Catalog) -> None:
+class CatalogCustomExtension(CustomExtension[Catalog]):
+    def __init__(self, catalog: Catalog) -> None:
         self.catalog = catalog
         self.properties = catalog.extra_fields
         super().__init__(catalog)
 
 
-class CollectionCustomExtension(CustomExtension[pystac.Collection]):
-    def __init__(self, collection: pystac.Collection) -> None:
+class CollectionCustomExtension(CustomExtension[Collection]):
+    def __init__(self, collection: Collection) -> None:
         self.catalog = collection
         self.properties = collection.extra_fields
         super().__init__(collection)
 
 
-class ItemCustomExtension(CustomExtension[pystac.Item]):
-    def __init__(self, item: pystac.Item) -> None:
+class ItemCustomExtension(CustomExtension[Item]):
+    def __init__(self, item: Item) -> None:
         self.catalog = item
         self.properties = item.properties
         super().__init__(item)
 
 
-class AssetCustomExtension(CustomExtension[pystac.Asset]):
-    def __init__(self, asset: pystac.Asset) -> None:
+class AssetCustomExtension(CustomExtension[Asset]):
+    def __init__(self, asset: Asset) -> None:
         self.catalog = asset
         self.properties = asset.extra_fields
         if asset.owner:
-            if isinstance(asset.owner, pystac.Item):
+            if isinstance(asset.owner, Item):
                 self.additional_read_properties = [asset.owner.properties]
-            elif isinstance(asset.owner, pystac.Collection):
+            elif isinstance(asset.owner, Collection):
                 self.additional_read_properties = [asset.owner.extra_fields]
         super().__init__(None)
 
@@ -118,21 +124,21 @@ class CustomExtensionHooks(ExtensionHooks):
     prev_extension_ids: Set[str] = set(
         ["custom", "https://example.com/v1.0/custom-schema.json"]
     )
-    stac_object_types: Set[pystac.STACObjectType] = set(
+    stac_object_types: Set[STACObjectType] = set(
         [
-            pystac.STACObjectType.CATALOG,
-            pystac.STACObjectType.COLLECTION,
-            pystac.STACObjectType.ITEM,
+            STACObjectType.CATALOG,
+            STACObjectType.COLLECTION,
+            STACObjectType.ITEM,
         ]
     )
 
-    def get_object_links(self, obj: pystac.STACObject) -> Optional[List[str]]:
+    def get_object_links(self, obj: STACObject) -> Optional[List[str]]:
         return [TEST_LINK_REL]
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        if version < "1.0.0-rc2" and info.object_type == pystac.STACObjectType.ITEM:
+        if version < "1.0.0-rc2" and info.object_type == STACObjectType.ITEM:
             if "test:old-prop-name" in obj["properties"]:
                 obj["properties"][TEST_PROP] = obj["properties"]["test:old-prop-name"]
         super().migrate(obj, version, info)
@@ -140,10 +146,10 @@ class CustomExtensionHooks(ExtensionHooks):
 
 class CustomExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
-        pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
+        EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
 
     def tearDown(self) -> None:
-        pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
+        EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
 
     # TODO: Test custom extensions and extension hooks
 

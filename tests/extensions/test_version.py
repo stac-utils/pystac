@@ -4,23 +4,27 @@ import datetime
 import unittest
 from typing import List, Optional
 
-import pystac
-from pystac import ExtensionTypeError
+from pystac.collection import Collection, Extent, TemporalExtent
+from pystac.errors import (
+    ExtensionNotImplemented,
+    ExtensionTypeError,
+    STACValidationError,
+)
+from pystac.item import Item
+from pystac.collection import SpatialExtent
 from pystac.extensions import version
 from pystac.extensions.version import VersionExtension, VersionRelType
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
 
 
-def make_item(year: int) -> pystac.Item:
+def make_item(year: int) -> Item:
     """Create basic test items that are only slightly different."""
     asset_id = f"USGS/GAP/CONUS/{year}"
     start = datetime.datetime(year, 1, 2)
 
-    item = pystac.Item(
-        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
-    )
+    item = Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(item)
@@ -118,7 +122,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.item.validate()
 
     def test_fail_validate(self) -> None:
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             self.item.validate()
 
     def test_all_links(self) -> None:
@@ -234,14 +238,14 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(VersionExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = VersionExtension.ext(item)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(VersionExtension.get_schema_uri())
         self.assertNotIn(VersionExtension.get_schema_uri(), item.stac_extensions)
 
@@ -250,17 +254,17 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIn(VersionExtension.get_schema_uri(), item.stac_extensions)
 
 
-def make_collection(year: int) -> pystac.Collection:
+def make_collection(year: int) -> Collection:
     asset_id = f"my/collection/of/things/{year}"
     start = datetime.datetime(2014, 8, 10)
     end = datetime.datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = pystac.SpatialExtent(bboxes)
+    spatial_extent = SpatialExtent(bboxes)
     intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
-    temporal_extent = pystac.TemporalExtent(intervals)
-    extent = pystac.Extent(spatial_extent, temporal_extent)
+    temporal_extent = TemporalExtent(intervals)
+    extent = Extent(spatial_extent, temporal_extent)
 
-    collection = pystac.Collection(asset_id, "desc", extent)
+    collection = Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(collection)
@@ -345,7 +349,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.collection.validate()
 
     def test_fail_validate(self) -> None:
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             self.collection.validate()
 
     def test_validate_all(self) -> None:
@@ -363,9 +367,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
         # Fetch two collections from the catalog
         col1 = cat.get_child("area-1-1", recursive=True)
-        assert isinstance(col1, pystac.Collection)
+        assert isinstance(col1, Collection)
         col2 = cat.get_child("area-2-2", recursive=True)
-        assert isinstance(col2, pystac.Collection)
+        assert isinstance(col2, Collection)
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Collection
@@ -459,14 +463,14 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Collection does not include extension URI
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = VersionExtension.ext(collection)
 
     def test_ext_add_to(self) -> None:
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
         self.assertNotIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
 

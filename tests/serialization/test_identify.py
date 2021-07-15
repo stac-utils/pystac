@@ -1,15 +1,18 @@
 import unittest
 
-import pystac
+from pystac.stac_object import STACObjectType
+from pystac.errors import STACTypeError
+from pystac.stac_io import StacIO
 from pystac.cache import CollectionCache
-from pystac.serialization import (
+from pystac.serialization.common_properties import merge_common_properties
+from pystac.serialization.identify import (
+    STACVersionRange,
+    STACVersionID,
     identify_stac_object,
     identify_stac_object_type,
-    merge_common_properties,
 )
-from pystac.serialization.identify import STACVersionRange, STACVersionID
 
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class IdentifyTest(unittest.TestCase):
@@ -21,8 +24,8 @@ class IdentifyTest(unittest.TestCase):
         for example in self.examples:
             with self.subTest(example.path):
                 path = example.path
-                d = pystac.StacIO.default().read_json(path)
-                if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+                d = StacIO.default().read_json(path)
+                if identify_stac_object_type(d) == STACObjectType.ITEM:
                     merge_common_properties(
                         d, json_href=path, collection_cache=collection_cache
                     )
@@ -72,7 +75,7 @@ class IdentifyTest(unittest.TestCase):
             "stac_version": "1.0.0",
         }
 
-        with self.assertRaises(pystac.STACTypeError) as ctx:
+        with self.assertRaises(STACTypeError) as ctx:
             identify_stac_object(invalid_dict)
 
         self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
@@ -84,7 +87,7 @@ class IdentifyTest(unittest.TestCase):
             "geometry": {"type": "Point", "coordinates": [0, 0]},
         }
 
-        with self.assertRaises(pystac.STACTypeError) as ctx:
+        with self.assertRaises(STACTypeError) as ctx:
             identify_stac_object(plain_feature_dict)
 
         self.assertIn("JSON does not represent a STAC object", str(ctx.exception))

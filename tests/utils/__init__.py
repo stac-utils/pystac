@@ -1,5 +1,7 @@
 from typing import Any, Dict, TYPE_CHECKING, Type
 import unittest
+
+from pystac.stac_object import STACObject
 from tests.utils.test_cases import (
     TestCases,
     ARBITRARY_GEOM,
@@ -11,13 +13,12 @@ from copy import deepcopy
 from datetime import datetime
 from dateutil.parser import parse
 
-import pystac
 from tests.utils.stac_io_mock import MockStacIO
 
 
 def assert_to_from_dict(
     test_class: unittest.TestCase,
-    stac_object_class: Type[pystac.STACObject],
+    stac_object_class: Type[STACObject],
     d: Dict[str, Any],
 ) -> None:
     def _parse_times(a_dict: Dict[str, Any]) -> None:

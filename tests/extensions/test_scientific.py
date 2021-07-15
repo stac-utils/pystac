@@ -1,14 +1,16 @@
-"""Tests for pystac.tests.extensions.scientific."""
+"""Tests for pystac.extensions.scientific."""
 
 import datetime
 
-from pystac import ExtensionTypeError
-from pystac.link import Link
-from pystac.collection import Summaries
 import unittest
 from typing import List, Optional
 
-import pystac
+from pystac.summaries import Summaries
+from pystac.link import Link
+from pystac.collection import Collection, Extent, TemporalExtent
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
+from pystac.collection import SpatialExtent
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
@@ -16,7 +18,7 @@ from pystac.extensions.scientific import (
     ScientificRelType,
     remove_link,
 )
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 URL_TEMPLATE = "http://example.com/catalog/%s.json"
 
@@ -38,12 +40,10 @@ PUBLICATIONS = [
 ]
 
 
-def make_item() -> pystac.Item:
+def make_item() -> Item:
     asset_id = "USGS/GAP/CONUS/2011"
     start = datetime.datetime(2011, 1, 2)
-    item = pystac.Item(
-        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
-    )
+    item = Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % 2011)
 
     ScientificExtension.add_to(item)
@@ -212,14 +212,14 @@ class ItemScientificExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = ScientificExtension.ext(item)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(ScientificExtension.get_schema_uri())
         self.assertNotIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
 
@@ -228,16 +228,16 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
 
 
-def make_collection() -> pystac.Collection:
+def make_collection() -> Collection:
     asset_id = "my/thing"
     start = datetime.datetime(2018, 8, 24)
     end = start + datetime.timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = pystac.SpatialExtent(bboxes)
+    spatial_extent = SpatialExtent(bboxes)
     intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
-    temporal_extent = pystac.TemporalExtent(intervals)
-    extent = pystac.Extent(spatial_extent, temporal_extent)
-    collection = pystac.Collection(asset_id, "desc", extent)
+    temporal_extent = TemporalExtent(intervals)
+    extent = Extent(spatial_extent, temporal_extent)
+    collection = Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % 2019)
 
     ScientificExtension.add_to(collection)
@@ -391,14 +391,14 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Collection does not include extension URI
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = ScientificExtension.ext(collection)
 
     def test_ext_add_to(self) -> None:
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
         self.assertNotIn(
             ScientificExtension.get_schema_uri(), collection.stac_extensions
@@ -461,7 +461,7 @@ class SummariesScientificTest(unittest.TestCase):
         collection = self.collection.clone()
         collection.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             ScientificExtension.summaries,
             collection,

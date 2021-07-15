@@ -1,13 +1,15 @@
 import json
 
-from pystac import ExtensionTypeError
-from pystac.collection import Collection
 import unittest
 
-import pystac
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
 from pystac.summaries import RangeSummary
 from pystac.extensions.view import ViewExtension
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class ViewTest(unittest.TestCase):
@@ -18,7 +20,7 @@ class ViewTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        assert_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, Item, d)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -40,12 +42,12 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
 
     def test_validate_view(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         self.assertTrue(ViewExtension.has_extension(item))
         item.validate()
 
     def test_off_nadir(self) -> None:
-        view_item = pystac.Item.from_file(self.example_uri)
+        view_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:off_nadir", view_item.properties)
@@ -79,7 +81,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_incidence_angle(self) -> None:
-        view_item = pystac.Item.from_file(self.example_uri)
+        view_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:incidence_angle", view_item.properties)
@@ -117,7 +119,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_azimuth(self) -> None:
-        view_item = pystac.Item.from_file(self.example_uri)
+        view_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:azimuth", view_item.properties)
@@ -151,7 +153,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_azimuth(self) -> None:
-        view_item = pystac.Item.from_file(self.example_uri)
+        view_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_azimuth", view_item.properties)
@@ -187,7 +189,7 @@ class ViewTest(unittest.TestCase):
         view_item.validate()
 
     def test_sun_elevation(self) -> None:
-        view_item = pystac.Item.from_file(self.example_uri)
+        view_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("view:sun_elevation", view_item.properties)
@@ -224,24 +226,24 @@ class ViewTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = ViewExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["blue"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = ViewExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = ViewExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
         self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
 
@@ -250,7 +252,7 @@ class ViewTest(unittest.TestCase):
         self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
         self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["blue"]
@@ -362,7 +364,7 @@ class ViewSummariesTest(unittest.TestCase):
         collection = self.collection.clone()
         collection.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             ViewExtension.summaries,
             collection,

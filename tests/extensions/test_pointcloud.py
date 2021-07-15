@@ -3,8 +3,9 @@ from typing import Any, Dict
 import unittest
 
 # from copy import deepcopy
-
-import pystac
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, STACValidationError
+from pystac.item import Item
 from pystac.asset import Asset
 from pystac.errors import ExtensionTypeError, STACError
 from pystac.extensions.pointcloud import (
@@ -16,7 +17,8 @@ from pystac.extensions.pointcloud import (
     Statistic,
 )
 from pystac.summaries import RangeSummary
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class PointcloudTest(unittest.TestCase):
@@ -30,7 +32,7 @@ class PointcloudTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.example_uri) as f:
             d = json.load(f)
-        assert_to_from_dict(self, pystac.Item, d)
+        assert_to_from_dict(self, Item, d)
 
     def test_apply(self) -> None:
         item = next(iter(TestCases.test_case_2().get_all_items()))
@@ -47,11 +49,11 @@ class PointcloudTest(unittest.TestCase):
         self.assertTrue(PointcloudExtension.has_extension(item))
 
     def test_validate_pointcloud(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.validate()
 
     def test_count(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:count", pc_item.properties)
@@ -68,12 +70,12 @@ class PointcloudTest(unittest.TestCase):
         # Cannot test validation errors until the pointcloud schema.json syntax is fixed
         # Ensure setting bad count fails validation
 
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
             pc_item.validate()
 
     def test_type(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:type", pc_item.properties)
@@ -88,7 +90,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate()
 
     def test_encoding(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:encoding", pc_item.properties)
@@ -103,7 +105,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate()
 
     def test_schemas(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:schemas", pc_item.properties)
@@ -121,7 +123,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate()
 
     def test_statistics(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
 
         # Get
         self.assertIn("pc:statistics", pc_item.properties)
@@ -154,7 +156,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate
 
     def test_density(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+        pc_item = Item.from_file(self.example_uri)
         # Get
         self.assertIn("pc:density", pc_item.properties)
         pc_density = PointcloudExtension.ext(pc_item).density
@@ -255,7 +257,7 @@ class PointcloudTest(unittest.TestCase):
             empty_stat.name
 
     def test_statistics_accessor_when_no_stats(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        pc_item = Item.from_file(self.example_uri_no_statistics)
         self.assertEqual(PointcloudExtension.ext(pc_item).statistics, None)
 
     def test_asset_extension(self) -> None:
@@ -269,7 +271,7 @@ class PointcloudTest(unittest.TestCase):
             ["data"],
             {"foo": "bar"},
         )
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        pc_item = Item.from_file(self.example_uri_no_statistics)
         pc_item.add_asset("data", asset)
         ext = AssetPointcloudExtension(asset)
         self.assertEqual(ext.asset_href, asset.href)
@@ -277,7 +279,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(ext.additional_read_properties, [pc_item.properties])
 
     def test_ext(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+        pc_item = Item.from_file(self.example_uri_no_statistics)
         PointcloudExtension.ext(pc_item)
         asset = Asset(
             "https://github.com/PDAL/PDAL/blob"
@@ -304,24 +306,24 @@ class PointcloudTest(unittest.TestCase):
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
         plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
+        item = Item.from_file(plain_item_uri)
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = PointcloudExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["thumbnail"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = PointcloudExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = PointcloudExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
         plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
+        item = Item.from_file(plain_item_uri)
         self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
 
         _ = PointcloudExtension.ext(item, add_if_missing=True)
@@ -330,7 +332,7 @@ class PointcloudTest(unittest.TestCase):
 
     def test_asset_ext_add_to(self) -> None:
         plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
+        item = Item.from_file(plain_item_uri)
         self.assertNotIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["thumbnail"]
 
@@ -342,7 +344,7 @@ class PointcloudTest(unittest.TestCase):
 class PointcloudSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
-        self.collection = pystac.Collection.from_file(
+        self.collection = Collection.from_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
 

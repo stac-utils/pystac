@@ -7,8 +7,10 @@ import unittest
 
 from string import ascii_letters
 
-import pystac
-from pystac import ExtensionTypeError
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError, STACError
+from pystac.item import Item
 from pystac.extensions import sar
 from pystac.extensions.sar import (
     FrequencyBand,
@@ -17,15 +19,13 @@ from pystac.extensions.sar import (
     SarExtension,
 )
 from pystac.summaries import RangeSummary
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
-def make_item() -> pystac.Item:
+def make_item() -> Item:
     asset_id = "my/items/2011"
     start = datetime.datetime(2020, 11, 7)
-    item = pystac.Item(
-        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
-    )
+    item = Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
 
     SarExtension.add_to(item)
     return item
@@ -145,7 +145,7 @@ class SarItemExtTest(unittest.TestCase):
         # Skip type hint as we are passing in an incorrect polarization.
         polarizations = sar.Polarization.HV
         product_type: str = "Some product"
-        with self.assertRaises(pystac.STACError):
+        with self.assertRaises(STACError):
             SarExtension.ext(self.item).apply(
                 mode,
                 frequency_band,
@@ -155,24 +155,24 @@ class SarItemExtTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item = Item.from_file(self.sentinel_example_uri)
         item.stac_extensions.remove(SarExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = SarExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["measurement"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = SarExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = SarExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item = Item.from_file(self.sentinel_example_uri)
         item.stac_extensions.remove(SarExtension.get_schema_uri())
         self.assertNotIn(SarExtension.get_schema_uri(), item.stac_extensions)
 
@@ -181,7 +181,7 @@ class SarItemExtTest(unittest.TestCase):
         self.assertIn(SarExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.sentinel_example_uri)
+        item = Item.from_file(self.sentinel_example_uri)
         item.stac_extensions.remove(SarExtension.get_schema_uri())
         self.assertNotIn(SarExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["measurement"]
@@ -214,7 +214,7 @@ class SarItemExtTest(unittest.TestCase):
 class SarSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
-        self.collection = pystac.Collection.from_file(
+        self.collection = Collection.from_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
 

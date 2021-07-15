@@ -3,17 +3,13 @@ from datetime import datetime
 import csv
 from typing import Any, Dict, List
 
-import pystac
-from pystac import (
-    Catalog,
-    Collection,
-    Item,
-    Asset,
-    Extent,
-    TemporalExtent,
-    SpatialExtent,
-    MediaType,
-)
+from pystac.media_type import MediaType
+from pystac.asset import Asset
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection, Extent, TemporalExtent
+from pystac.item import Item
+from pystac.catalog import Catalog
+from pystac.collection import SpatialExtent
 from pystac.extensions.label import (
     LabelExtension,
     LabelOverview,
@@ -79,7 +75,7 @@ class ExampleInfo:
     def __init__(
         self,
         path: str,
-        object_type: pystac.STACObjectType,
+        object_type: STACObjectType,
         stac_version: str,
         extensions: List[str],
         valid: bool,
@@ -119,7 +115,7 @@ class TestCases:
                 examples.append(
                     ExampleInfo(
                         path=path,
-                        object_type=pystac.STACObjectType(object_type),
+                        object_type=STACObjectType(object_type),
                         stac_version=stac_version,
                         extensions=extensions,
                         valid=valid,

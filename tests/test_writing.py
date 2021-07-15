@@ -2,12 +2,17 @@ import unittest
 import tempfile
 from typing import Any, List
 
-import pystac
-from pystac import Collection, CatalogType, HIERARCHICAL_LINKS
+from pystac import EXTENSION_HOOKS, read_file
+from pystac.link import HIERARCHICAL_LINKS
+from pystac.stac_object import STACObjectType
+from pystac.collection import Collection
+from pystac.item import Item
+from pystac.stac_io import StacIO
+from pystac.catalog import Catalog, CatalogType
 from pystac.utils import is_absolute_href, make_absolute_href
 from pystac.validation import validate_dict
 
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class STACWritingTest(unittest.TestCase):
@@ -15,7 +20,7 @@ class STACWritingTest(unittest.TestCase):
     and ensure that links are correctly set to relative or absolute.
     """
 
-    def validate_catalog(self, catalog: pystac.Catalog) -> int:
+    def validate_catalog(self, catalog: Catalog) -> int:
         catalog.validate()
         validated_count = 1
 
@@ -29,20 +34,18 @@ class STACWritingTest(unittest.TestCase):
         return validated_count
 
     def validate_file(self, path: str, object_type: str) -> List[Any]:
-        d = pystac.StacIO.default().read_json(path)
-        return validate_dict(d, pystac.STACObjectType(object_type))
+        d = StacIO.default().read_json(path)
+        return validate_dict(d, STACObjectType(object_type))
 
-    def validate_link_types(
-        self, root_href: str, catalog_type: pystac.CatalogType
-    ) -> None:
+    def validate_link_types(self, root_href: str, catalog_type: CatalogType) -> None:
         def validate_item_link_type(
             href: str, link_type: str, should_include_self: bool
         ) -> None:
-            item_dict = pystac.StacIO.default().read_json(href)
-            item = pystac.Item.from_file(href)
+            item_dict = StacIO.default().read_json(href)
+            item = Item.from_file(href)
             rel_links = [
                 *HIERARCHICAL_LINKS,
-                *pystac.EXTENSION_HOOKS.get_extended_object_links(item),
+                *EXTENSION_HOOKS.get_extended_object_links(item),
             ]
             for link in item.get_links():
                 if not link.rel == "self":
@@ -57,9 +60,9 @@ class STACWritingTest(unittest.TestCase):
         def validate_catalog_link_type(
             href: str, link_type: str, should_include_self: bool
         ) -> None:
-            cat_dict = pystac.StacIO.default().read_json(href)
-            cat = pystac.read_file(href)
-            assert isinstance(cat, pystac.Catalog)
+            cat_dict = StacIO.default().read_json(href)
+            cat = read_file(href)
+            assert isinstance(cat, Catalog)
 
             rels = set([link["rel"] for link in cat_dict["links"]])
             self.assertEqual("self" in rels, should_include_self)
@@ -89,9 +92,7 @@ class STACWritingTest(unittest.TestCase):
 
         validate_catalog_link_type(root_href, link_type, root_should_include_href)
 
-    def do_test(
-        self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType
-    ) -> None:
+    def do_test(self, catalog: Catalog, catalog_type: CatalogType) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             self.validate_catalog(catalog)
@@ -103,13 +104,13 @@ class STACWritingTest(unittest.TestCase):
 
             for parent, _, items in catalog.walk():
                 if issubclass(type(parent), Collection):
-                    stac_object_type = pystac.STACObjectType.COLLECTION
+                    stac_object_type = STACObjectType.COLLECTION
                 else:
-                    stac_object_type = pystac.STACObjectType.CATALOG
+                    stac_object_type = STACObjectType.CATALOG
                 self.validate_file(parent.self_href, stac_object_type)
 
                 for item in items:
-                    self.validate_file(item.self_href, pystac.STACObjectType.ITEM)
+                    self.validate_file(item.self_href, STACObjectType.ITEM)
 
     def test_testcases(self) -> None:
         for catalog in TestCases.all_test_catalogs():

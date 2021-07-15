@@ -3,7 +3,8 @@ from typing import Callable
 from pystac.collection import Collection
 import unittest
 
-import pystac
+from pystac.item import Item
+from pystac.catalog import Catalog
 from pystac.utils import join_path_or_url, JoinType
 from pystac.layout import (
     LayoutTemplate,
@@ -12,7 +13,7 @@ from pystac.layout import (
     BestPracticesLayoutStrategy,
     TemplateError,
 )
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
+from tests.utils.test_cases import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 
 class LayoutTemplateTest(unittest.TestCase):
@@ -25,7 +26,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate("${year}/${month}/${day}/${date}/item.json")
 
-        item = pystac.Item(
+        item = Item(
             "test",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
@@ -54,7 +55,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate("${year}/${month}/${day}/${date}/item.json")
 
-        item = pystac.Item(
+        item = Item(
             "test",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
@@ -110,7 +111,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate("${test.prop}/${ext:extra.test.prop}/item.json")
 
-        item = pystac.Item(
+        item = Item(
             "test",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
@@ -135,7 +136,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         template = LayoutTemplate("${ext:prop}/item.json")
 
-        item = pystac.Item(
+        item = Item(
             "test",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
@@ -160,7 +161,7 @@ class LayoutTemplateTest(unittest.TestCase):
         self.assertEqual(path, "yes/collection.json")
 
     def test_docstring_examples(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path(
                 "data-files/examples/1.0.0-beta.2/item-spec/"
                 "examples/landsat8-sample.json"
@@ -184,8 +185,8 @@ class LayoutTemplateTest(unittest.TestCase):
 
 
 class CustomLayoutStrategyTest(unittest.TestCase):
-    def get_custom_catalog_func(self) -> Callable[[pystac.Catalog, str, bool], str]:
-        def fn(cat: pystac.Catalog, parent_dir: str, is_root: bool) -> str:
+    def get_custom_catalog_func(self) -> Callable[[Catalog, str, bool], str]:
+        def fn(cat: Catalog, parent_dir: str, is_root: bool) -> str:
             # Use JoinType.URL since we always use this in cases where we are using
             # URLs
             return join_path_or_url(
@@ -196,8 +197,8 @@ class CustomLayoutStrategyTest(unittest.TestCase):
 
     def get_custom_collection_func(
         self,
-    ) -> Callable[[pystac.Collection, str, bool], str]:
-        def fn(col: pystac.Collection, parent_dir: str, is_root: bool) -> str:
+    ) -> Callable[[Collection, str, bool], str]:
+        def fn(col: Collection, parent_dir: str, is_root: bool) -> str:
             # Use JoinType.URL since we always use this in cases where we are using
             # URLs
             return join_path_or_url(
@@ -206,8 +207,8 @@ class CustomLayoutStrategyTest(unittest.TestCase):
 
         return fn
 
-    def get_custom_item_func(self) -> Callable[[pystac.Item, str], str]:
-        def fn(item: pystac.Item, parent_dir: str) -> str:
+    def get_custom_item_func(self) -> Callable[[Item, str], str]:
+        def fn(item: Item, parent_dir: str) -> str:
             # Use JoinType.URL since we always use this in cases where we are using
             # URLs
             return join_path_or_url(
@@ -218,7 +219,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
 
     def test_produces_layout_for_catalog(self) -> None:
         strategy = CustomLayoutStrategy(catalog_func=self.get_custom_catalog_func())
-        cat = pystac.Catalog(id="test", description="test desc")
+        cat = Catalog(id="test", description="test desc")
         href = strategy.get_href(cat, parent_dir="http://example.com", is_root=True)
         self.assertEqual(href, "http://example.com/cat/True/test.json")
 
@@ -229,7 +230,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
             item_func=self.get_custom_item_func(),
             fallback_strategy=fallback,
         )
-        cat = pystac.Catalog(id="test", description="test desc")
+        cat = Catalog(id="test", description="test desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
         expected = fallback.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, expected)
@@ -289,14 +290,14 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
 
     def test_produces_layout_for_catalog(self) -> None:
         strategy = TemplateLayoutStrategy(catalog_template=self.TEST_CATALOG_TEMPLATE)
-        cat = pystac.Catalog(id="test", description="test-desc")
+        cat = Catalog(id="test", description="test-desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/cat/test/test-desc/catalog.json")
 
     def test_produces_layout_for_catalog_with_filename(self) -> None:
         template = "cat/${id}/${description}/${id}.json"
         strategy = TemplateLayoutStrategy(catalog_template=template)
-        cat = pystac.Catalog(id="test", description="test-desc")
+        cat = Catalog(id="test", description="test-desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/cat/test/test-desc/test.json")
 
@@ -307,7 +308,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
             item_template=self.TEST_ITEM_TEMPLATE,
             fallback_strategy=fallback,
         )
-        cat = pystac.Catalog(id="test", description="test desc")
+        cat = Catalog(id="test", description="test desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
         expected = fallback.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, expected)
@@ -389,14 +390,14 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
         self.strategy = BestPracticesLayoutStrategy()
 
     def test_produces_layout_for_root_catalog(self) -> None:
-        cat = pystac.Catalog(id="test", description="test desc")
+        cat = Catalog(id="test", description="test desc")
         href = self.strategy.get_href(
             cat, parent_dir="http://example.com", is_root=True
         )
         self.assertEqual(href, "http://example.com/catalog.json")
 
     def test_produces_layout_for_child_catalog(self) -> None:
-        cat = pystac.Catalog(id="test", description="test desc")
+        cat = Catalog(id="test", description="test desc")
         href = self.strategy.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/test/catalog.json")
 

@@ -7,23 +7,22 @@ import unittest
 from datetime import datetime
 from collections import defaultdict
 
-import pystac
-from pystac import (
-    Catalog,
-    Collection,
-    CatalogType,
-    Item,
-    Asset,
-    MediaType,
-    HIERARCHICAL_LINKS,
-)
+from pystac.media_type import MediaType
+from pystac.collection import Collection
+from pystac.link import HIERARCHICAL_LINKS, Link
+from pystac.asset import Asset
+from pystac.stac_object import STACObject
+from pystac.errors import STACError, STACTypeError, STACValidationError
+from pystac.item import Item
+from pystac.stac_io import StacIO
+from pystac.catalog import Catalog, CatalogType
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.utils import is_absolute_href, join_path_or_url, JoinType
-from tests.utils import (
+from tests.utils.stac_io_mock import MockStacIO
+from tests.utils.test_cases import (
     TestCases,
     ARBITRARY_GEOM,
     ARBITRARY_BBOX,
-    MockStacIO,
 )
 
 
@@ -32,9 +31,7 @@ class CatalogTypeTest(unittest.TestCase):
         cat = TestCases.test_case_1()
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
-            cat_json = pystac.StacIO.default().read_json(
-                os.path.join(tmp_dir, "catalog.json")
-            )
+            cat_json = StacIO.default().read_json(os.path.join(tmp_dir, "catalog.json"))
 
         catalog_type = CatalogType.determine_type(cat_json)
         self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
@@ -43,15 +40,13 @@ class CatalogTypeTest(unittest.TestCase):
         cat = TestCases.test_case_2()
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
-            cat_json = pystac.StacIO.default().read_json(
-                os.path.join(tmp_dir, "catalog.json")
-            )
+            cat_json = StacIO.default().read_json(os.path.join(tmp_dir, "catalog.json"))
 
         catalog_type = CatalogType.determine_type(cat_json)
         self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
 
     def test_determine_type_for_self_contained(self) -> None:
-        cat_json = pystac.StacIO.default().read_json(
+        cat_json = StacIO.default().read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         catalog_type = CatalogType.determine_type(cat_json)
@@ -103,7 +98,7 @@ class CatalogTest(unittest.TestCase):
         path = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         with open(path) as f:
             cat_dict = json.load(f)
-        root_cat = pystac.Catalog(id="test", description="test desc")
+        root_cat = Catalog(id="test", description="test desc")
         collection = Catalog.from_dict(cat_dict, root=root_cat)
         self.assertIs(collection.get_root(), root_cat)
 
@@ -215,13 +210,13 @@ class CatalogTest(unittest.TestCase):
     def test_add_child_throws_if_item(self) -> None:
         cat = TestCases.test_case_1()
         item = next(iter(cat.get_all_items()))
-        with self.assertRaises(pystac.STACError):
+        with self.assertRaises(STACError):
             cat.add_child(item)  # type:ignore
 
     def test_add_item_throws_if_child(self) -> None:
         cat = TestCases.test_case_1()
         child = next(iter(cat.get_children()))
-        with self.assertRaises(pystac.STACError):
+        with self.assertRaises(STACError):
             cat.add_item(child)  # type:ignore
 
     def test_get_child_returns_none_if_not_found(self) -> None:
@@ -315,7 +310,7 @@ class CatalogTest(unittest.TestCase):
             href = catalog.self_href
             catalog.save()
 
-            cat2 = pystac.Catalog.from_file(href)
+            cat2 = Catalog.from_file(href)
             self.assertEqual(cat2.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_clone_uses_previous_catalog_type(self) -> None:
@@ -333,7 +328,7 @@ class CatalogTest(unittest.TestCase):
             self.assertTrue(self_href.startswith("http://example.com"))
             for link in root.links:
                 if link.is_resolved():
-                    target_href = cast(pystac.STACObject, link.target).self_href
+                    target_href = cast(STACObject, link.target).self_href
                 else:
                     target_href = link.absolute_href
                 self.assertTrue(
@@ -389,9 +384,9 @@ class CatalogTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
-            catalog.save(pystac.CatalogType.SELF_CONTAINED)
+            catalog.save(CatalogType.SELF_CONTAINED)
 
-            cat2 = pystac.Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
+            cat2 = Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
             for child in cat2.get_children():
                 actual = len(list(child.get_all_items()))
                 expected = item_counts[child.id]
@@ -512,7 +507,7 @@ class CatalogTest(unittest.TestCase):
             self.assertEqual(len(subcats), 2, msg=" for item '{}'".format(item.id))
 
     def test_map_items(self) -> None:
-        def item_mapper(item: pystac.Item) -> pystac.Item:
+        def item_mapper(item: Item) -> Item:
             item.properties["ITEM_MAPPER"] = "YEP"
             return item
 
@@ -533,7 +528,7 @@ class CatalogTest(unittest.TestCase):
                 self.assertFalse("ITEM_MAPPER" in item.properties)
 
     def test_map_items_multiple(self) -> None:
-        def item_mapper(item: pystac.Item) -> List[pystac.Item]:
+        def item_mapper(item: Item) -> List[Item]:
             item2 = item.clone()
             item2.id = item2.id + "_2"
             item.properties["ITEM_MAPPER_1"] = "YEP"
@@ -597,11 +592,11 @@ class CatalogTest(unittest.TestCase):
         item2.add_asset("ortho", Asset(href="/some/other/ortho.tif"))
         kitten.add_item(item2)
 
-        def modify_item_title(item: pystac.Item) -> pystac.Item:
+        def modify_item_title(item: Item) -> Item:
             item.properties["title"] = "Some title"
             return item
 
-        def create_label_item(item: pystac.Item) -> List[pystac.Item]:
+        def create_label_item(item: Item) -> List[Item]:
             # Assumes the GEOJSON labels are in the
             # same location as the image
             img_href = item.assets["ortho"].href
@@ -639,7 +634,7 @@ class CatalogTest(unittest.TestCase):
     def test_map_assets_single(self) -> None:
         changed_asset = "d43bead8-e3f8-4c51-95d6-e24e750a402b"
 
-        def asset_mapper(key: str, asset: pystac.Asset) -> pystac.Asset:
+        def asset_mapper(key: str, asset: Asset) -> Asset:
             if key == changed_asset:
                 asset.title = "NEW TITLE"
 
@@ -668,9 +663,7 @@ class CatalogTest(unittest.TestCase):
     def test_map_assets_tup(self) -> None:
         changed_assets: List[str] = []
 
-        def asset_mapper(
-            key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Tuple[str, pystac.Asset]]:
+        def asset_mapper(key: str, asset: Asset) -> Union[Asset, Tuple[str, Asset]]:
             if asset.media_type and "geotiff" in asset.media_type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
@@ -705,9 +698,7 @@ class CatalogTest(unittest.TestCase):
     def test_map_assets_multi(self) -> None:
         changed_assets = []
 
-        def asset_mapper(
-            key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Dict[str, pystac.Asset]]:
+        def asset_mapper(key: str, asset: Asset) -> Union[Asset, Dict[str, Asset]]:
             if asset.media_type and "geotiff" in asset.media_type:
                 changed_assets.append(key)
                 mod1 = asset.clone()
@@ -827,7 +818,7 @@ class CatalogTest(unittest.TestCase):
             self.assertTrue("custom_field" in cat_json)
             self.assertEqual(cat_json["custom_field"], "Special content")
 
-            read_cat = pystac.Catalog.from_file(p)
+            read_cat = Catalog.from_file(p)
             self.assertTrue("custom_field" in read_cat.extra_fields)
             self.assertEqual(read_cat.extra_fields["custom_field"], "Special content")
 
@@ -846,11 +837,11 @@ class CatalogTest(unittest.TestCase):
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_hrefs(tmp_dir)
-            cat.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+            cat.save(catalog_type=CatalogType.SELF_CONTAINED)
 
-            cat2 = pystac.Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
+            cat2 = Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
 
-            with self.assertRaises(pystac.STACValidationError):
+            with self.assertRaises(STACValidationError):
                 cat2.validate_all()
 
     def test_set_hrefs_manually(self) -> None:
@@ -981,7 +972,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_handles_children_with_same_id(self) -> None:
         # This catalog has the root and child collection share an ID.
-        cat = pystac.Catalog.from_file(
+        cat = Catalog.from_file(
             TestCases.get_path("data-files/invalid/shared-id/catalog.json")
         )
         items = list(cat.get_all_items())
@@ -997,32 +988,32 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(cache.id_keys_to_objects), 0)
 
     def testfrom_invalid_dict_raises_exception(self) -> None:
-        stac_io = pystac.StacIO.default()
+        stac_io = StacIO.default()
         collection_dict = stac_io.read_json(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
-        with self.assertRaises(pystac.STACTypeError):
-            _ = pystac.Catalog.from_dict(collection_dict)
+        with self.assertRaises(STACTypeError):
+            _ = Catalog.from_dict(collection_dict)
 
     def test_get_collections(self) -> None:
         catalog = TestCases.test_case_2()
         collections = list(catalog.get_collections())
 
         self.assertGreater(len(collections), 0)
-        self.assertTrue(all(isinstance(c, pystac.Collection) for c in collections))
+        self.assertTrue(all(isinstance(c, Collection) for c in collections))
 
     def test_get_all_collections(self) -> None:
         catalog = TestCases.test_case_1()
         all_collections = list(catalog.get_all_collections())
 
         self.assertGreater(len(all_collections), 0)
-        self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
+        self.assertTrue(all(isinstance(c, Collection) for c in all_collections))
 
 
 class FullCopyTest(unittest.TestCase):
-    def check_link(self, link: pystac.Link, tag: str) -> None:
+    def check_link(self, link: Link, tag: str) -> None:
         if link.is_resolved():
-            target_href: str = cast(pystac.STACObject, link.target).self_href
+            target_href: str = cast(STACObject, link.target).self_href
         else:
             target_href = str(link.target)
         self.assertTrue(
@@ -1160,11 +1151,11 @@ class CatalogSubClassTest(unittest.TestCase):
 
     TEST_CASE_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
 
-    class BasicCustomCatalog(pystac.Catalog):
+    class BasicCustomCatalog(Catalog):
         pass
 
     def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
+        self.stac_io = StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
         catalog_dict = self.stac_io.read_json(self.TEST_CASE_1)

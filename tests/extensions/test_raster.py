@@ -1,8 +1,11 @@
 import json
 import unittest
 
-import pystac
-from pystac import ExtensionTypeError, Item
+from pystac.collection import Collection
+from pystac.media_type import MediaType
+from pystac.asset import Asset
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
 from pystac.utils import get_opt
 from pystac.extensions.raster import (
     Histogram,
@@ -12,7 +15,8 @@ from pystac.extensions.raster import (
     DataType,
     Statistics,
 )
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class RasterTest(unittest.TestCase):
@@ -33,14 +37,14 @@ class RasterTest(unittest.TestCase):
         assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_raster(self) -> None:
-        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
-        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
+        item = Item.from_file(self.PLANET_EXAMPLE_URI)
+        item2 = Item.from_file(self.SENTINEL2_EXAMPLE_URI)
 
         item.validate()
         item2.validate()
 
     def test_asset_bands(self) -> None:
-        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item = Item.from_file(self.PLANET_EXAMPLE_URI)
 
         # Get
         data_asset = item.assets["data"]
@@ -75,7 +79,7 @@ class RasterTest(unittest.TestCase):
         self.assertIs(None, asset_bands)
 
         # Set
-        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
+        item2 = Item.from_file(self.SENTINEL2_EXAMPLE_URI)
         b2_asset = item2.assets["B02"]
         self.assertEqual(
             get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum,
@@ -133,7 +137,7 @@ class RasterTest(unittest.TestCase):
                 histogram=new_histograms[2],
             ),
         ]
-        asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
+        asset = Asset(href="some/path.tif", media_type=MediaType.GEOTIFF)
         RasterExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
@@ -205,21 +209,21 @@ class RasterTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item = Item.from_file(self.PLANET_EXAMPLE_URI)
         item.stac_extensions.remove(RasterExtension.get_schema_uri())
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["data"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = RasterExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = RasterExtension.ext(ownerless_asset)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item = Item.from_file(self.PLANET_EXAMPLE_URI)
         item.stac_extensions.remove(RasterExtension.get_schema_uri())
         asset = item.assets["data"]
 
@@ -238,12 +242,12 @@ class RasterTest(unittest.TestCase):
         )
 
     def test_summaries_adds_uri(self) -> None:
-        col = pystac.Collection.from_file(
+        col = Collection.from_file(
             TestCases.get_path("data-files/label/spacenet-roads/roads_collection.json")
         )
         col.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             RasterExtension.summaries,
             col,

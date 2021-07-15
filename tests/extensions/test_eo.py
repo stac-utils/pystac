@@ -1,12 +1,17 @@
 import json
 import unittest
 
-import pystac
-from pystac import ExtensionTypeError, Item
+from pystac.media_type import MediaType
+from pystac.link import Link
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class BandsTest(unittest.TestCase):
@@ -72,13 +77,13 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(eo_uris), 1)
 
     def test_validate_eo(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item2 = Item.from_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
     def test_bands(self) -> None:
-        item = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = Item.from_file(self.BANDS_IN_ITEM_URI)
 
         # Get
         self.assertIn("eo:bands", item.properties)
@@ -104,12 +109,12 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_asset_bands_s2(self) -> None:
-        item = pystac.Item.from_file(self.S2_ITEM_URI)
+        item = Item.from_file(self.S2_ITEM_URI)
         mtd_asset = item.get_assets()["mtd"]
         self.assertIsNone(EOExtension.ext(mtd_asset).bands)
 
     def test_asset_bands(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
 
@@ -157,14 +162,14 @@ class EOTest(unittest.TestCase):
                 solar_illumination=2000,
             ),
         ]
-        asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
+        asset = Asset(href="some/path.tif", media_type=MediaType.GEOTIFF)
         EOExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
         self.assertEqual(len(item.assets["test"].extra_fields["eo:bands"]), 3)
 
     def test_cloud_cover(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
         # Get
         self.assertIn("eo:cloud_cover", item.properties)
@@ -191,7 +196,7 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_summaries(self) -> None:
-        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col = Collection.from_file(self.EO_COLLECTION_URI)
         eo_summaries = EOExtension.summaries(col)
 
         # Get
@@ -215,10 +220,10 @@ class EOTest(unittest.TestCase):
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
     def test_summaries_adds_uri(self) -> None:
-        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col = Collection.from_file(self.EO_COLLECTION_URI)
         col.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             EOExtension.summaries,
             col,
@@ -232,7 +237,7 @@ class EOTest(unittest.TestCase):
         self.assertNotIn(EOExtension.get_schema_uri(), col.stac_extensions)
 
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
-        eo_item = pystac.Item.from_file(
+        eo_item = Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.8.1/item-spec/examples/" "landsat8-sample.json"
             )
@@ -242,7 +247,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
 
     def test_reads_asset_bands_in_pre_1_0_version(self) -> None:
-        item = pystac.Item.from_file(
+        item = Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
             )
@@ -254,7 +259,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(get_opt(bands)[0].common_name, "cirrus")
 
     def test_reads_gsd_in_pre_1_0_version(self) -> None:
-        eo_item = pystac.Item.from_file(
+        eo_item = Item.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
             )
@@ -263,7 +268,7 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_item.common_metadata.gsd, 30.0)
 
     def test_item_apply(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = Item.from_file(self.LANDSAT_EXAMPLE_URI)
         eo_ext = EOExtension.ext(item)
         test_band = Band.create(name="test")
 
@@ -277,30 +282,30 @@ class EOTest(unittest.TestCase):
         self.assertEqual(eo_ext.cloud_cover, 15)
 
     def test_extend_invalid_object(self) -> None:
-        link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
+        link = Link("child", "https://some-domain.com/some/path/to.json")
 
-        with self.assertRaises(pystac.ExtensionTypeError):
+        with self.assertRaises(ExtensionTypeError):
             EOExtension.ext(link)  # type: ignore
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(self.PLAIN_ITEM)
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = EOExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["thumbnail"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = EOExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = EOExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(self.PLAIN_ITEM)
         self.assertNotIn(EOExtension.get_schema_uri(), item.stac_extensions)
 
         _ = EOExtension.ext(item, add_if_missing=True)
@@ -308,7 +313,7 @@ class EOTest(unittest.TestCase):
         self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(self.PLAIN_ITEM)
         self.assertNotIn(EOExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["thumbnail"]
 

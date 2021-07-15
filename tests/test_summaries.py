@@ -3,7 +3,7 @@ from typing import Any
 import unittest
 
 from pystac.summaries import RangeSummary, Summarizer, Summaries
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class SummariesTest(unittest.TestCase):

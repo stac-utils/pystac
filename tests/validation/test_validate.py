@@ -2,6 +2,8 @@ from datetime import datetime
 import json
 import os
 from typing import Any, Dict
+
+from pystac import read_file
 from pystac.utils import get_opt
 import shutil
 import unittest
@@ -9,21 +11,24 @@ import tempfile
 
 import jsonschema
 
-import pystac
-import pystac.validation
+from pystac.stac_object import STACObjectType
+from pystac.errors import STACValidationError
+from pystac.item import Item
+from pystac.validation import validate_all, validate_dict
+from pystac.stac_io import StacIO
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class ValidateTest(unittest.TestCase):
     def test_validate_current_version(self) -> None:
-        catalog = pystac.read_file(
+        catalog = read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
         )
         catalog.validate()
 
-        collection = pystac.read_file(
+        collection = read_file(
             TestCases.get_path(
                 "data-files/catalogs/test-case-1/"
                 "/country-1/area-1-1/"
@@ -32,7 +37,7 @@ class ValidateTest(unittest.TestCase):
         )
         collection.validate()
 
-        item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
+        item = read_file(TestCases.get_path("data-files/item/sample-item.json"))
         item.validate()
 
     def test_validate_examples(self) -> None:
@@ -48,17 +53,17 @@ class ValidateTest(unittest.TestCase):
 
                     # Check if common properties need to be merged
                     if stac_version < "1.0":
-                        if example.object_type == pystac.STACObjectType.ITEM:
+                        if example.object_type == STACObjectType.ITEM:
                             collection_cache = CollectionCache()
                             merge_common_properties(stac_json, collection_cache, path)
 
                     if valid:
-                        pystac.validation.validate_dict(stac_json)
+                        validate_dict(stac_json)
                     else:
-                        with self.assertRaises(pystac.STACValidationError):
+                        with self.assertRaises(STACValidationError):
                             try:
-                                pystac.validation.validate_dict(stac_json)
-                            except pystac.STACValidationError as e:
+                                validate_dict(stac_json)
+                            except STACValidationError as e:
                                 self.assertIsInstance(
                                     e.source, jsonschema.ValidationError
                                 )
@@ -73,10 +78,10 @@ class ValidateTest(unittest.TestCase):
 
         item.geometry = {"type": "INVALID"}
 
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             try:
                 item.validate()
-            except pystac.STACValidationError as e:
+            except STACValidationError as e:
                 self.assertTrue(get_opt(item.get_self_href()) in str(e))
                 raise e
 
@@ -84,9 +89,9 @@ class ValidateTest(unittest.TestCase):
         for test_case in TestCases.all_test_catalogs():
             catalog_href = test_case.get_self_href()
             if catalog_href is not None:
-                stac_dict = pystac.StacIO.default().read_json(catalog_href)
+                stac_dict = StacIO.default().read_json(catalog_href)
 
-                pystac.validation.validate_all(stac_dict, catalog_href)
+                validate_all(stac_dict, catalog_href)
 
         # Modify a 0.8.1 collection in a catalog to be invalid with a
         # since-renamed extension and make sure it catches the validation error.
@@ -100,9 +105,7 @@ class ValidateTest(unittest.TestCase):
             new_cat_href = os.path.join(dst_dir, "catalog.json")
 
             # Make sure it's valid before modification
-            pystac.validation.validate_all(
-                pystac.StacIO.default().read_json(new_cat_href), new_cat_href
-            )
+            validate_all(StacIO.default().read_json(new_cat_href), new_cat_href)
 
             # Modify a contained collection to add an extension for which the
             # collection is invalid.
@@ -116,10 +119,10 @@ class ValidateTest(unittest.TestCase):
             ) as f:
                 json.dump(col, f)
 
-            stac_dict = pystac.StacIO.default().read_json(new_cat_href)
+            stac_dict = StacIO.default().read_json(new_cat_href)
 
-            with self.assertRaises(pystac.STACValidationError):
-                pystac.validation.validate_all(stac_dict, new_cat_href)
+            with self.assertRaises(STACValidationError):
+                validate_all(stac_dict, new_cat_href)
 
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
@@ -141,7 +144,7 @@ class ValidateTest(unittest.TestCase):
             ),
         }
 
-        item = pystac.Item(
+        item = Item(
             id="test-item",
             geometry=geom,
             bbox=[-115.308, 36.126, -115.305, 36.129],

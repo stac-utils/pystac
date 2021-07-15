@@ -1,9 +1,10 @@
 import unittest
-import pystac
-from pystac import ExtensionTypeError
+from pystac.asset import Asset
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
 from pystac.extensions.datacube import DatacubeExtension
 
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class DatacubeTest(unittest.TestCase):
@@ -12,29 +13,29 @@ class DatacubeTest(unittest.TestCase):
         self.example_uri = TestCases.get_path("data-files/datacube/item.json")
 
     def test_validate_datacube(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.validate()
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(DatacubeExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = DatacubeExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["data"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = DatacubeExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
         _ = DatacubeExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(DatacubeExtension.get_schema_uri())
         self.assertNotIn(DatacubeExtension.get_schema_uri(), item.stac_extensions)
 
@@ -43,7 +44,7 @@ class DatacubeTest(unittest.TestCase):
         self.assertIn(DatacubeExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+        item = Item.from_file(self.example_uri)
         item.stac_extensions.remove(DatacubeExtension.get_schema_uri())
         self.assertNotIn(DatacubeExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["data"]

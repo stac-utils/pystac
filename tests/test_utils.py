@@ -8,7 +8,7 @@ from datetime import datetime, timezone, timedelta
 from pystac import utils
 
 from pystac.utils import make_relative_href, make_absolute_href, is_absolute_href
-from tests.utils import TestCases
+from tests.utils.test_cases import TestCases
 
 
 class UtilsTest(unittest.TestCase):

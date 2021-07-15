@@ -1,9 +1,12 @@
 import json
 import unittest
 
-import pystac
-from pystac import ExtensionTypeError
-from tests.utils import TestCases, assert_to_from_dict
+from pystac.asset import Asset
+from pystac.collection import Collection
+from pystac.errors import ExtensionNotImplemented, ExtensionTypeError
+from pystac.item import Item
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 from pystac.extensions.file import FileExtension, ByteOrder, MappingObject
 
 
@@ -59,18 +62,18 @@ class FileTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.FILE_ITEM_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        assert_to_from_dict(self, pystac.Item, item_dict)
+        assert_to_from_dict(self, Item, item_dict)
 
     def test_validate_item(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         item.validate()
 
     def test_validate_collection(self) -> None:
-        collection = pystac.Collection.from_file(self.FILE_COLLECTION_EXAMPLE_URI)
+        collection = Collection.from_file(self.FILE_COLLECTION_EXAMPLE_URI)
         collection.validate()
 
     def test_item_asset_size(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -83,7 +86,7 @@ class FileTest(unittest.TestCase):
         item.validate()
 
     def test_item_asset_header_size(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["measurement"]
 
         # Get
@@ -96,7 +99,7 @@ class FileTest(unittest.TestCase):
         item.validate()
 
     def test_item_asset_checksum(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
 
         # Get
@@ -113,7 +116,7 @@ class FileTest(unittest.TestCase):
 
     def test_item_asset_byte_order(self) -> None:
         # Get
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
         file_ext = FileExtension.ext(asset)
 
@@ -129,7 +132,7 @@ class FileTest(unittest.TestCase):
 
     def test_item_asset_values(self) -> None:
         # Set/get
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
         file_ext = FileExtension.ext(asset)
         values = [MappingObject.create([0], summary="clouds")]
@@ -139,7 +142,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(file_ext.values, values)
 
     def test_item_asset_apply(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
         file_ext = FileExtension.ext(asset)
 
@@ -170,7 +173,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(file_ext.byte_order, new_byte_order)
 
     def test_repr(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
         file_ext = FileExtension.ext(asset)
 
@@ -183,7 +186,7 @@ class FileTest(unittest.TestCase):
             "data-files/examples/1.0.0-beta.2/"
             "extensions/checksum/examples/sentinel1.json"
         )
-        item = pystac.Item.from_file(example_path)
+        item = Item.from_file(example_path)
 
         self.assertTrue(FileExtension.has_extension(item))
         self.assertEqual(
@@ -192,26 +195,26 @@ class FileTest(unittest.TestCase):
         )
 
     def test_extension_type_error(self) -> None:
-        item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
+        item = Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
 
-        with self.assertRaises(pystac.ExtensionTypeError):
+        with self.assertRaises(ExtensionTypeError):
             _ = FileExtension.ext(item)  # type: ignore
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(self.PLAIN_ITEM)
         asset = item.assets["thumbnail"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = FileExtension.ext(asset)
 
         # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+        ownerless_asset = Asset.from_dict(asset.to_dict())
 
         _ = FileExtension.ext(ownerless_asset)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(self.PLAIN_ITEM)
         asset = item.assets["thumbnail"]
 
         self.assertNotIn(FileExtension.get_schema_uri(), item.stac_extensions)

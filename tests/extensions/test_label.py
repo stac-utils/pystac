@@ -4,8 +4,14 @@ import unittest
 import tempfile
 from typing import List, Union
 
-import pystac
-from pystac import Catalog, Collection, ExtensionTypeError, Item, CatalogType
+from pystac.stac_object import STACObjectType
+from pystac.errors import ExtensionNotImplemented
+from pystac.validation import validate_dict
+from pystac.stac_io import StacIO
+from pystac.collection import Collection
+from pystac.errors import ExtensionTypeError
+from pystac.item import Item
+from pystac.catalog import Catalog, CatalogType
 from pystac.extensions.label import (
     LabelExtension,
     LabelClasses,
@@ -17,9 +23,9 @@ from pystac.extensions.label import (
     LabelType,
     LabelRelType,
 )
-import pystac.validation
 from pystac.utils import get_opt
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
+from tests.utils.test_cases import TestCases
 
 
 class LabelTypeTest(unittest.TestCase):
@@ -116,7 +122,7 @@ class LabelTest(unittest.TestCase):
         label_example_2.validate()
 
     def test_from_file_pre_081(self) -> None:
-        d = pystac.StacIO.default().read_json(self.label_example_1_uri)
+        d = StacIO.default().read_json(self.label_example_1_uri)
 
         d["stac_version"] = "0.8.0-rc1"
         d["properties"]["label:property"] = d["properties"]["label:properties"]
@@ -127,7 +133,7 @@ class LabelTest(unittest.TestCase):
         d["properties"].pop("label:methods")
         d["properties"]["label:task"] = d["properties"]["label:tasks"]
         d["properties"].pop("label:tasks")
-        label_example_1 = pystac.Item.from_dict(d, migrate=True)
+        label_example_1 = Item.from_dict(d, migrate=True)
 
         self.assertEqual(len(LabelExtension.ext(label_example_1).label_tasks or []), 2)
 
@@ -146,9 +152,7 @@ class LabelTest(unittest.TestCase):
     def test_validate_label(self) -> None:
         with open(self.label_example_1_uri, encoding="utf-8") as f:
             label_example_1_dict = json.load(f)
-        pystac.validation.validate_dict(
-            label_example_1_dict, pystac.STACObjectType.ITEM
-        )
+        validate_dict(label_example_1_dict, STACObjectType.ITEM)
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
@@ -171,7 +175,7 @@ class LabelTest(unittest.TestCase):
             self.assertEqual(item.assets[asset_key].owner, item)
 
     def test_label_description(self) -> None:
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:description", label_item.properties)
@@ -186,7 +190,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_type(self) -> None:
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:type", label_item.properties)
@@ -199,8 +203,8 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_properties(self) -> None:
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
-        label_item2 = pystac.Item.from_file(self.label_example_2_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
+        label_item2 = Item.from_file(self.label_example_2_uri)
 
         # Get
         self.assertIn("label:properties", label_item.properties)
@@ -216,7 +220,7 @@ class LabelTest(unittest.TestCase):
 
     def test_label_classes(self) -> None:
         # Get
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
         label_classes = LabelExtension.ext(label_item).label_classes
 
         self.assertEqual(len(get_opt(label_classes)), 2)
@@ -249,7 +253,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_tasks(self) -> None:
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:tasks", label_item.properties)
@@ -262,7 +266,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_methods(self) -> None:
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
 
         # Get
         self.assertIn("label:methods", label_item.properties)
@@ -278,11 +282,11 @@ class LabelTest(unittest.TestCase):
 
     def test_label_overviews(self) -> None:
         # Get
-        label_item = pystac.Item.from_file(self.label_example_1_uri)
+        label_item = Item.from_file(self.label_example_1_uri)
         label_ext = LabelExtension.ext(label_item)
         label_overviews = get_opt(label_ext.label_overviews)
 
-        label_item2 = pystac.Item.from_file(self.label_example_2_uri)
+        label_item2 = Item.from_file(self.label_example_2_uri)
         label_ext2 = LabelExtension.ext(label_item2)
         label_overviews2 = get_opt(label_ext2.label_overviews)
 
@@ -419,22 +423,22 @@ class LabelTest(unittest.TestCase):
             _ = overview_1.merge_counts(overview_2)
 
     def test_extension_type_error(self) -> None:
-        collection = pystac.Collection.from_file(
+        collection = Collection.from_file(
             TestCases.get_path("data-files/collections/with-assets.json")
         )
-        with self.assertRaises(pystac.ExtensionTypeError):
+        with self.assertRaises(ExtensionTypeError):
             _ = LabelExtension.ext(collection)  # type: ignore
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.label_example_1_uri)
+        item = Item.from_file(self.label_example_1_uri)
         item.stac_extensions.remove(LabelExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = LabelExtension.ext(item)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.label_example_1_uri)
+        item = Item.from_file(self.label_example_1_uri)
         item.stac_extensions.remove(LabelExtension.get_schema_uri())
         self.assertNotIn(LabelExtension.get_schema_uri(), item.stac_extensions)
 
@@ -449,10 +453,10 @@ class LabelSummariesTest(unittest.TestCase):
     )
 
     def test_summaries_adds_uri(self) -> None:
-        col = pystac.Collection.from_file(self.EXAMPLE_COLLECTION)
+        col = Collection.from_file(self.EXAMPLE_COLLECTION)
         col.stac_extensions = []
         self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
+            ExtensionNotImplemented,
             r"Could not find extension schema URI.*",
             LabelExtension.summaries,
             col,
