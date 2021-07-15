@@ -335,10 +335,7 @@ class SarExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesSarExtension":
         """Returns the extended summaries object for the given collection."""
-        if not add_if_missing:
-            cls.validate_has_extension(obj)
-        else:
-            cls.add_to(obj)
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesSarExtension(obj)
 
 
