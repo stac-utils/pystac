@@ -9,9 +9,11 @@ from pystac.asset import Asset
 from pystac.errors import ExtensionTypeError, STACError
 from pystac.extensions.pointcloud import (
     AssetPointcloudExtension,
+    PhenomenologyType,
     PointcloudExtension,
-    PointcloudSchema,
-    PointcloudStatistic,
+    Schema,
+    SchemaType,
+    Statistic,
 )
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -37,9 +39,9 @@ class PointcloudTest(unittest.TestCase):
         PointcloudExtension.add_to(item)
         PointcloudExtension.ext(item).apply(
             1000,
-            "lidar",
+            PhenomenologyType.LIDAR,
             "laszip",
-            [PointcloudSchema({"name": "X", "size": 8, "type": "floating"})],
+            [Schema({"name": "X", "size": 8, "type": "floating"})],
         )
         self.assertTrue(PointcloudExtension.has_extension(item))
 
@@ -108,7 +110,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(pc_schemas, pc_item.properties["pc:schemas"])
 
         # Set
-        schema = [PointcloudSchema({"name": "X", "size": 8, "type": "floating"})]
+        schema = [Schema({"name": "X", "size": 8, "type": "floating"})]
         PointcloudExtension.ext(pc_item).schemas = schema
         self.assertEqual(
             [s.to_dict() for s in schema], pc_item.properties["pc:schemas"]
@@ -129,7 +131,7 @@ class PointcloudTest(unittest.TestCase):
 
         # Set
         stats = [
-            PointcloudStatistic(
+            Statistic(
                 {
                     "average": 1,
                     "count": 1,
@@ -169,7 +171,7 @@ class PointcloudTest(unittest.TestCase):
             "size": 8,
             "type": "floating",
         }
-        schema = PointcloudSchema(props)
+        schema = Schema(props)
         self.assertEqual(props, schema.properties)
 
         # test all getters and setters
@@ -181,7 +183,7 @@ class PointcloudTest(unittest.TestCase):
             setattr(schema, k, val)
             self.assertEqual(getattr(schema, k), val)
 
-        schema = PointcloudSchema.create("intensity", 16, "unsigned")
+        schema = Schema.create("intensity", 16, SchemaType.UNSIGNED)
         self.assertEqual(schema.name, "intensity")
         self.assertEqual(schema.size, 16)
         self.assertEqual(schema.type, "unsigned")
@@ -189,7 +191,7 @@ class PointcloudTest(unittest.TestCase):
         with self.assertRaises(STACError):
             schema.size = 0.5  # type: ignore
 
-        empty_schema = PointcloudSchema({})
+        empty_schema = Schema({})
         with self.assertRaises(STACError):
             empty_schema.size
         with self.assertRaises(STACError):
@@ -208,7 +210,7 @@ class PointcloudTest(unittest.TestCase):
             "stddev": 1,
             "variance": 1,
         }
-        stat = PointcloudStatistic(props)
+        stat = Statistic(props)
         self.assertEqual(props, stat.properties)
 
         # test all getters and setters
@@ -220,7 +222,7 @@ class PointcloudTest(unittest.TestCase):
             setattr(stat, k, val)
             self.assertEqual(getattr(stat, k), val)
 
-        stat = PointcloudStatistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
+        stat = Statistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
         self.assertEqual(stat.name, "foo")
         self.assertEqual(stat.position, 1)
         self.assertEqual(stat.average, 2)
@@ -247,7 +249,7 @@ class PointcloudTest(unittest.TestCase):
         stat.variance = None
         self.assertNotIn("variance", stat.properties)
 
-        empty_stat = PointcloudStatistic({})
+        empty_stat = Statistic({})
         with self.assertRaises(STACError):
             empty_stat.name
 
