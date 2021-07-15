@@ -423,17 +423,62 @@ LabelExtension
 Pointcloud Extension
 --------------------
 
-Implements the :stac-ext:`Point Cloud Extension <pointcloud>`.
+These classes are representations of the :stac-ext:`Pointcloud Extension Spec
+<pointcloud>`.
 
-PointcloudItemExt
+PhenomenologyType
 ~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.pointcloud.PhenomenologyType
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+SchemaType
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.SchemaType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Schema
+~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.Schema
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+Statistic
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.Statistic
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+PointcloudExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.PointcloudExtension
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+ItemPointcloudExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.ItemPointcloudExtension
+   :members:
+   :show-inheritance:
+
+AssetPointcloudExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.AssetPointcloudExtension
+   :members:
+   :show-inheritance:
 
 Projection Extension
 --------------------

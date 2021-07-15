@@ -12,12 +12,19 @@
   `sar:polarizations` for pre-0.9 catalogs
   ([#556](https://github.com/stac-utils/pystac/pull/556))
 - Migration from `eo:epsg` -> `proj:epsg` for pre-0.9 catalogs ([#557](https://github.com/stac-utils/pystac/pull/557))
+- Collection summaries for Point Cloud Extension ([#558](https://github.com/stac-utils/pystac/pull/558))
+- `PhenomenologyType` enum for recommended values of `pc:type` & `SchemaType` enum for
+  valid values of `type` in [Point Cloud Schema
+  Objects](https://github.com/stac-extensions/pointcloud#schema-object)
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
 
 ### Removed
 
 ### Changed
 
 - The `from_dict` method on STACObjects will set the object's root link when a `root` parameter is present. An ItemCollection `from_dict` with a root parameter will set the root on each of it's Items. ([#549](https://github.com/stac-utils/pystac/pull/549))
+- `PointcloudSchema` -> `Schema`, `PointcloudStatistic` -> `Statistic` for consistency
+  with naming convention in other extensions ([#548](https://github.com/stac-utils/pystac/pull/548))
 
 ### Fixed
 
