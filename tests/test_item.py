@@ -724,8 +724,9 @@ class CommonMetadataTest(unittest.TestCase):
 
 
 class ItemSubClassTest(unittest.TestCase):
-    """This tests cases related to creating classes inheriting from pystac.Catalog to
-    ensure that inheritance, class methods, etc. function as expected."""
+    """This tests cases related to creating classes inheriting from
+    pystac.catalog.Catalog to ensure that inheritance, class methods, etc. function as
+    expected."""
 
     SAMPLE_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 

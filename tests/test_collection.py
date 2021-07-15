@@ -375,8 +375,9 @@ class ExtentTest(unittest.TestCase):
 
 
 class CollectionSubClassTest(unittest.TestCase):
-    """This tests cases related to creating classes inheriting from pystac.Catalog to
-    ensure that inheritance, class methods, etc. function as expected."""
+    """This tests cases related to creating classes inheriting from
+    pystac.catalog.Catalog to ensure that inheritance, class methods, etc. function as
+    expected."""
 
     MULTI_EXTENT = TestCases.get_path("data-files/collections/multi-extent.json")
 

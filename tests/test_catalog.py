@@ -1154,8 +1154,9 @@ class FullCopyTest(unittest.TestCase):
 
 
 class CatalogSubClassTest(unittest.TestCase):
-    """This tests cases related to creating classes inheriting from pystac.Catalog to
-    ensure that inheritance, class methods, etc. function as expected."""
+    """This tests cases related to creating classes inheriting from
+    pystac.catalog.Catalog to ensure that inheritance, class methods, etc. function as
+    expected."""
 
     TEST_CASE_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
 
