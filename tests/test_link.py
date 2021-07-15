@@ -95,6 +95,24 @@ class LinkTest(unittest.TestCase):
             link.resolve_stac_object()
             self.assertEqual(link.get_absolute_href(), path)
 
+    def test_target_getter_setter(self) -> None:
+        link = pystac.Link("my rel", target="./foo/bar.json")
+        self.assertEqual(link.target, "./foo/bar.json")
+        self.assertEqual(link.get_target_str(), "./foo/bar.json")
+
+        link.target = self.item
+        self.assertEqual(link.target, self.item)
+        self.assertEqual(link.get_target_str(), self.item.get_self_href())
+
+        link.target = "./bar/foo.json"
+        self.assertEqual(link.target, "./bar/foo.json")
+
+    def test_get_target_str_no_href(self) -> None:
+        self.item.remove_links("self")
+        link = pystac.Link("self", target=self.item)
+        self.item.add_link(link)
+        self.assertIsNone(link.get_target_str())
+
 
 class StaticLinkTest(unittest.TestCase):
     def setUp(self) -> None:

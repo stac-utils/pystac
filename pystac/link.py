@@ -203,6 +203,10 @@ class Link:
         else:
             return None
 
+    def has_target_href(self) -> bool:
+        """Returns true if this link has a string href in its target information."""
+        return self._target_href is not None
+
     def __repr__(self) -> str:
         return "<Link rel={} target={}>".format(self.rel, self.target)
 
