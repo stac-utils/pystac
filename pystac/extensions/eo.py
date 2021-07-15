@@ -364,7 +364,7 @@ class EOExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

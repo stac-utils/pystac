@@ -530,10 +530,9 @@ class PointcloudExtension(
         elif isinstance(obj, pystac.Asset):
             if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
                 raise pystac.ExtensionTypeError(
-                    "Pointcloud extension does not apply to Assets owned by anything "
-                    "other than an Item."
+                    "Pointcloud extension does not apply to Collection Assets."
                 )
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

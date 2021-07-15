@@ -346,7 +346,7 @@ class DatacubeExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

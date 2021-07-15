@@ -132,7 +132,7 @@ class TimestampsExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

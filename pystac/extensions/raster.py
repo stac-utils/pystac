@@ -704,7 +704,7 @@ class RasterExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Asset):
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(

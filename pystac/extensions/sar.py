@@ -320,10 +320,9 @@ class SarExtension(
         elif isinstance(obj, pystac.Asset):
             if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
                 raise pystac.ExtensionTypeError(
-                    "SAR extension does not apply to Assets owned by anything "
-                    "other than an Item."
+                    "SAR extension does not apply to Collection Assets."
                 )
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(

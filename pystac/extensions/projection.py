@@ -275,7 +275,7 @@ class ProjectionExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_has_extension(obj.owner, add_if_missing)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
