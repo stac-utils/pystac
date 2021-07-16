@@ -23,6 +23,8 @@
 ### Changed
 
 - The `from_dict` method on STACObjects will set the object's root link when a `root` parameter is present. An ItemCollection `from_dict` with a root parameter will set the root on each of it's Items. ([#549](https://github.com/stac-utils/pystac/pull/549))
+- Calling `ExtensionManagementMixin.validate_has_extension` with `add_if_missing = True`
+  on an ownerless `Asset` will raise a `STACError` ([#554](https://github.com/stac-utils/pystac/pull/554))
 - `PointcloudSchema` -> `Schema`, `PointcloudStatistic` -> `Statistic` for consistency
   with naming convention in other extensions ([#548](https://github.com/stac-utils/pystac/pull/548))
 

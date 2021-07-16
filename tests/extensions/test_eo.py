@@ -317,6 +317,14 @@ class EOTest(unittest.TestCase):
 
         self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
 
+    def test_asset_ext_add_to_ownerless_asset(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        asset_dict = item.assets["thumbnail"].to_dict()
+        asset = pystac.Asset.from_dict(asset_dict)
+
+        with self.assertRaises(pystac.STACError):
+            _ = EOExtension.ext(asset, add_if_missing=True)
+
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:

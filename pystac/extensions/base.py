@@ -1,5 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Iterable, List, Optional, Dict, Any, Type, TypeVar, Union
+from typing import (
+    cast,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Dict,
+    Any,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import pystac
 
@@ -126,15 +137,41 @@ class ExtensionManagementMixin(Generic[S], ABC):
         )
 
     @classmethod
-    def validate_has_extension(cls, obj: Union[S, pystac.Asset]) -> None:
-        """Given a :class:`~pystac.STACObject` or :class:`pystac.Asset` instance, checks
-        if the object (or its owner in the case of an Asset) has this extension's schema
-        URI in it's :attr:`~pystac.STACObject.stac_extensions` list."""
-        extensible = obj.owner if isinstance(obj, pystac.Asset) else obj
-        if (
-            extensible is not None
-            and cls.get_schema_uri() not in extensible.stac_extensions
-        ):
+    def validate_owner_has_extension(
+        cls, asset: pystac.Asset, add_if_missing: bool
+    ) -> None:
+        """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
+        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+        If ``add_if_missing`` is ``True``, the schema URI will be added to the owner.
+
+        Raises:
+            STACError : If ``add_if_missing`` is ``True`` and ``asset.owner`` is
+                ``None``.
+        """
+        if asset.owner is None:
+            if add_if_missing:
+                raise pystac.STACError(
+                    "Can only add schema URIs to Assets with an owner."
+                )
+            else:
+                return
+        return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
+
+    @classmethod
+    def validate_has_extension(cls, obj: S, add_if_missing: bool) -> None:
+        """Given a :class:`~pystac.STACObject`, checks if the object has this
+        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+        If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
+
+        Args:
+            obj : The object to validate.
+            add_if_missing : Whether to add the schema URI to the object if it is
+                not already present.
+        """
+        if add_if_missing:
+            cls.add_to(obj)
+
+        if cls.get_schema_uri() not in obj.stac_extensions:
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )

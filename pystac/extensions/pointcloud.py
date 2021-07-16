@@ -468,14 +468,14 @@ class PointcloudExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
+                raise pystac.ExtensionTypeError(
+                    "Pointcloud extension does not apply to Collection Assets."
+                )
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
@@ -486,10 +486,7 @@ class PointcloudExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesPointcloudExtension":
-        if not add_if_missing:
-            cls.validate_has_extension(obj)
-        else:
-            cls.add_to(obj)
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesPointcloudExtension(obj)
 
 

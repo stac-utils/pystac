@@ -119,8 +119,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "ItemAssetsExtension":
         if isinstance(obj, pystac.Collection):
-            if add_if_missing:
-                cls.add_to(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
