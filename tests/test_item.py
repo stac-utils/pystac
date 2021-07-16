@@ -238,8 +238,9 @@ class ItemTest(unittest.TestCase):
             _ = pystac.Item.from_dict(catalog_dict)
 
 
-class CommonMetadataTest(unittest.TestCase):
+class ItemCommonMetadataTest(unittest.TestCase):
     def setUp(self) -> None:
+        # TODO: Update these to use 1.0.0 examples
         self.URI_1 = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
         )
@@ -455,96 +456,111 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(x.common_metadata.gsd, example_gsd)
         self.assertEqual(x.properties["gsd"], example_gsd)
 
-    def test_asset_start_datetime(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
 
-        item_value = cm.start_datetime
-        a2_known_value = str_to_datetime("2017-05-01T13:22:30.040Z")
+class AssetCommonMetadataTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+
+    def test_datetime(self) -> None:
+        expected_datetime = "2017-05-01T13:22:30.040Z"
+        asset = pystac.Asset.from_dict({"href": "test", "datetime": expected_datetime})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_start_datetime(item.assets["analytic"])
-        a2_value = cm.get_start_datetime(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.datetime, str_to_datetime(expected_datetime))
+
+        # Set
+        set_value = str_to_datetime("2014-05-02T13:22:30.040Z")
+        asset_cm.datetime = set_value
+
+        self.assertEqual(asset_cm.datetime, set_value)
+        self.assertEqual(asset.to_dict()["datetime"], datetime_to_str(set_value))
+
+        # Does not pop
+        asset_cm.datetime = None
+        self.assertIn("datetime", asset.to_dict())
+        self.assertIsNone(asset.to_dict()["datetime"])
+
+    def test_start_datetime(self) -> None:
+        expected_start_datetime = "2017-05-01T13:22:30.040Z"
+        asset = pystac.Asset.from_dict(
+            {"href": "test", "start_datetime": expected_start_datetime}
+        )
+        asset_cm = CommonMetadata(asset.extra_fields)
+
+        # Get
+        self.assertEqual(
+            asset_cm.start_datetime, str_to_datetime(expected_start_datetime)
+        )
+
+        # Set
+        set_value = str_to_datetime("2014-05-02T13:22:30.040Z")
+        asset_cm.start_datetime = set_value
+
+        self.assertEqual(asset_cm.start_datetime, set_value)
+        self.assertEqual(asset.to_dict()["start_datetime"], datetime_to_str(set_value))
+
+        # Pop
+        asset_cm.start_datetime = None
+        self.assertNotIn("start_datetime", asset.to_dict())
+
+    def test_end_datetime(self) -> None:
+        expected_end_datetime = "2017-05-02T13:22:30.040Z"
+        asset = pystac.Asset.from_dict(
+            {"href": "test", "end_datetime": expected_end_datetime}
+        )
+        asset_cm = CommonMetadata(asset.extra_fields)
+
+        # Get
+        self.assertEqual(asset_cm.end_datetime, str_to_datetime(expected_end_datetime))
 
         # Set
         set_value = str_to_datetime("2014-05-01T13:22:30.040Z")
-        cm.set_start_datetime(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_start_datetime(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.start_datetime, item_value)
+        asset_cm.end_datetime = set_value
 
-    def test_asset_end_datetime(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.end_datetime, set_value)
+        self.assertEqual(asset.to_dict()["end_datetime"], datetime_to_str(set_value))
 
-        item_value = cm.end_datetime
-        a2_known_value = str_to_datetime("2017-05-02T13:22:30.040Z")
+        # Pop
+        asset_cm.end_datetime = None
+        self.assertNotIn("end_datetime", asset.to_dict())
 
-        # Get
-        a1_value = cm.get_end_datetime(item.assets["analytic"])
-        a2_value = cm.get_end_datetime(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
-
-        # Set
-        set_value = str_to_datetime("2014-05-01T13:22:30.040Z")
-        cm.set_end_datetime(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_end_datetime(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.end_datetime, item_value)
-
-    def test_asset_license(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
-
-        item_value = cm.license
-        a2_known_value = "CC-BY-4.0"
+    def test_license(self) -> None:
+        expected_license = "CC-BY-4.0"
+        asset = pystac.Asset.from_dict({"href": "test", "license": expected_license})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_license(item.assets["analytic"])
-        a2_value = cm.get_license(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.license, expected_license)
 
         # Set
         set_value = "various"
-        cm.set_license(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_license(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.license, item_value)
+        asset_cm.license = set_value
 
-    def test_asset_providers(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.license, set_value)
+        self.assertEqual(asset.to_dict()["license"], set_value)
 
-        item_value = get_opt(cm.providers)
-        a2_known_value = [
-            pystac.Provider(
-                name="USGS",
-                url="https://landsat.usgs.gov/",
-                roles=[ProviderRole.PRODUCER, ProviderRole.LICENSOR],
-            )
+        # Pop
+        asset_cm.license = None
+        self.assertNotIn("license", asset.to_dict())
+
+    def test_providers(self) -> None:
+        expected_providers = [
+            {
+                "name": "USGS",
+                "url": "https://landsat.usgs.gov/",
+                "roles": [ProviderRole.PRODUCER, ProviderRole.LICENSOR],
+            }
         ]
+        asset = pystac.Asset.from_dict(
+            {"href": "test", "providers": expected_providers}
+        )
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value: List[Provider] = get_opt(cm.get_providers(item.assets["analytic"]))
-        a2_value: List[Provider] = get_opt(cm.get_providers(item.assets["thumbnail"]))
-        self.assertEqual(a1_value[0].to_dict(), item_value[0].to_dict())
-        self.assertNotEqual(a2_value[0].to_dict(), item_value[0].to_dict())
-        self.assertEqual(a2_value[0].to_dict(), a2_known_value[0].to_dict())
+        self.assertEqual(
+            asset_cm.providers, [Provider.from_dict(p) for p in expected_providers]
+        )
 
         # Set
         set_value = [
@@ -554,173 +570,151 @@ class CommonMetadataTest(unittest.TestCase):
                 roles=[ProviderRole.PRODUCER],
             )
         ]
-        cm.set_providers(set_value, item.assets["analytic"])
-        new_a1_value: List[Provider] = get_opt(
-            cm.get_providers(item.assets["analytic"])
-        )
-        self.assertEqual(new_a1_value[0].to_dict(), set_value[0].to_dict())
-        self.assertEqual(get_opt(cm.providers)[0].to_dict(), item_value[0].to_dict())
+        asset_cm.providers = set_value
 
-    def test_asset_platform(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.providers, set_value)
+        self.assertEqual(asset.to_dict()["providers"], [p.to_dict() for p in set_value])
 
-        item_value = cm.platform
-        a2_known_value = "shoes"
+        # Pop
+        asset_cm.providers = None
+        self.assertNotIn("providers", asset.to_dict())
+
+    def test_platform(self) -> None:
+        expected_platform = "shoes"
+        asset = pystac.Asset.from_dict({"href": "test", "platform": expected_platform})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_platform(item.assets["analytic"])
-        a2_value = cm.get_platform(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.platform, expected_platform)
 
         # Set
         set_value = "brick"
-        cm.set_platform(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_platform(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.platform, item_value)
+        asset_cm.platform = set_value
 
-    def test_asset_instruments(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
+        self.assertEqual(asset_cm.platform, set_value)
+        self.assertEqual(asset.to_dict()["platform"], set_value)
+
+        # Pop
+        asset_cm.platform = None
+        self.assertNotIn("platform", asset.to_dict())
+
+    def test_instruments(self) -> None:
+        expected_instruments = ["caliper"]
+        asset = pystac.Asset.from_dict(
+            {"href": "test", "instruments": expected_instruments}
         )
-        cm = item.common_metadata
-
-        item_value = cm.instruments
-        a2_known_value = ["caliper"]
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_instruments(item.assets["analytic"])
-        a2_value = cm.get_instruments(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.instruments, expected_instruments)
 
         # Set
         set_value = ["horns"]
-        cm.set_instruments(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_instruments(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.instruments, item_value)
+        asset_cm.instruments = set_value
 
-    def test_asset_constellation(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
+        self.assertEqual(asset_cm.instruments, set_value)
+        self.assertEqual(asset.to_dict()["instruments"], set_value)
+
+        # Pop
+        asset_cm.instruments = None
+        self.assertNotIn("instruments", asset.to_dict())
+
+    def test_constellation(self) -> None:
+        expected_constellation = "little dipper"
+        asset = pystac.Asset.from_dict(
+            {"href": "test", "constellation": expected_constellation}
         )
-        cm = item.common_metadata
-
-        item_value = cm.constellation
-        a2_known_value = "little dipper"
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_constellation(item.assets["analytic"])
-        a2_value = cm.get_constellation(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.constellation, expected_constellation)
 
         # Set
         set_value = "orion"
-        cm.set_constellation(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_constellation(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.constellation, item_value)
+        asset_cm.constellation = set_value
 
-    def test_asset_mission(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.constellation, set_value)
+        self.assertEqual(asset.to_dict()["constellation"], set_value)
 
-        item_value = cm.mission
-        a2_known_value = "possible"
+        # Pop
+        asset_cm.constellation = None
+        self.assertNotIn("constellation", asset.to_dict())
+
+    def test_mission(self) -> None:
+        expected_mission = "possible"
+        asset = pystac.Asset.from_dict({"href": "test", "mission": expected_mission})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_mission(item.assets["analytic"])
-        a2_value = cm.get_mission(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.mission, expected_mission)
 
         # Set
         set_value = "critical"
-        cm.set_mission(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_mission(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.mission, item_value)
+        asset_cm.mission = set_value
 
-    def test_asset_gsd(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.mission, set_value)
+        self.assertEqual(asset.to_dict()["mission"], set_value)
 
-        item_value = cm.gsd
-        a2_known_value = 40
+        # Pop
+        asset_cm.mission = None
+        self.assertNotIn("mission", asset.to_dict())
+
+    def test_gsd(self) -> None:
+        expected_gsd = 40
+        asset = pystac.Asset.from_dict({"href": "test", "gsd": expected_gsd})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_gsd(item.assets["analytic"])
-        a2_value = cm.get_gsd(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.gsd, expected_gsd)
 
         # Set
         set_value = 100
-        cm.set_gsd(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_gsd(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.gsd, item_value)
+        asset_cm.gsd = set_value
 
-    def test_asset_created(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
+        self.assertEqual(asset_cm.gsd, set_value)
+        self.assertEqual(asset.to_dict()["gsd"], set_value)
 
-        item_value = cm.created
-        a2_known_value = str_to_datetime("2017-05-17T13:22:30.040Z")
+        # Pop
+        asset_cm.gsd = None
+        self.assertNotIn("gsd", asset.to_dict())
 
-        # Get
-        a1_value = cm.get_created(item.assets["analytic"])
-        a2_value = cm.get_created(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
-
-        # Set
-        set_value = str_to_datetime("2014-05-17T13:22:30.040Z")
-        cm.set_created(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_created(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.created, item_value)
-
-    def test_asset_updated(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-        cm = item.common_metadata
-
-        item_value = cm.updated
-        a2_known_value = str_to_datetime("2017-05-18T13:22:30.040Z")
+    def test_created(self) -> None:
+        expected_created = "2017-05-18T13:22:30.040000Z"
+        asset = pystac.Asset.from_dict({"href": "test", "created": expected_created})
+        asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
-        a1_value = cm.get_updated(item.assets["analytic"])
-        a2_value = cm.get_updated(item.assets["thumbnail"])
-        self.assertEqual(a1_value, item_value)
-        self.assertNotEqual(a2_value, item_value)
-        self.assertEqual(a2_value, a2_known_value)
+        self.assertEqual(asset_cm.created, str_to_datetime(expected_created))
 
         # Set
-        set_value = str_to_datetime("2014-05-18T13:22:30.040Z")
-        cm.set_updated(set_value, item.assets["analytic"])
-        new_a1_value = cm.get_updated(item.assets["analytic"])
-        self.assertEqual(new_a1_value, set_value)
-        self.assertEqual(cm.updated, item_value)
+        set_value = str_to_datetime("2017-06-18T13:22:30.040Z")
+        asset_cm.created = set_value
+
+        self.assertEqual(asset_cm.created, set_value)
+        self.assertEqual(asset.to_dict()["created"], datetime_to_str(set_value))
+
+        # Pop
+        asset_cm.created = None
+        self.assertNotIn("created", asset.to_dict())
+
+    def test_updated(self) -> None:
+        expected_updated = "2017-05-18T13:22:30.040000Z"
+        asset = pystac.Asset.from_dict({"href": "test", "updated": expected_updated})
+        asset_cm = CommonMetadata(asset.extra_fields)
+
+        # Get
+        self.assertEqual(asset_cm.updated, str_to_datetime(expected_updated))
+
+        # Set
+        set_value = str_to_datetime("2017-06-18T13:22:30.040Z")
+        asset_cm.updated = set_value
+
+        self.assertEqual(asset_cm.updated, set_value)
+        self.assertEqual(asset.to_dict()["updated"], datetime_to_str(set_value))
+
+        # Pop
+        asset_cm.created = None
+        self.assertNotIn("created", asset.to_dict())
 
 
 class ItemSubClassTest(unittest.TestCase):
