@@ -6,6 +6,7 @@ from pystac import Asset, CommonMetadata, Item, Provider, ProviderRole
 from pystac.utils import str_to_datetime, datetime_to_str, get_opt
 from tests.utils import TestCases
 
+
 class ItemCommonMetadataTest(unittest.TestCase):
     def setUp(self) -> None:
         # TODO: Update these to use 1.0.0 examples
@@ -30,6 +31,27 @@ class ItemCommonMetadataTest(unittest.TestCase):
                 }
             ],
         }
+
+    def test_datetime_stays_in_sync(self) -> None:
+        item = self.ITEM_2.clone()
+        item_cm = CommonMetadata(item.properties)
+
+        self.assertEqual(item.datetime, item_cm.datetime)
+
+        # Set from Item.datetime
+        new_datetime_1 = str_to_datetime("2021-01-01T00:00:00Z")
+        assert new_datetime_1 != item.datetime
+        item.datetime = new_datetime_1
+
+        self.assertEqual(item.properties["datetime"], datetime_to_str(new_datetime_1))
+        self.assertEqual(item_cm.datetime, new_datetime_1)
+
+        # Set from CommonMetadata
+        new_datetime_2 = str_to_datetime("2022-01-01T00:00:00Z")
+        item_cm.datetime = new_datetime_2
+
+        self.assertEqual(item.properties["datetime"], datetime_to_str(new_datetime_2))
+        self.assertEqual(item.datetime, new_datetime_2)
 
     def test_datetimes(self) -> None:
         # save dict of original item to check that `common_metadata`
@@ -274,9 +296,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
 
     def test_end_datetime(self) -> None:
         expected_end_datetime = "2017-05-02T13:22:30.040Z"
-        asset = Asset.from_dict(
-            {"href": "test", "end_datetime": expected_end_datetime}
-        )
+        asset = Asset.from_dict({"href": "test", "end_datetime": expected_end_datetime})
         asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
@@ -320,9 +340,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
                 "roles": [ProviderRole.PRODUCER, ProviderRole.LICENSOR],
             }
         ]
-        asset = Asset.from_dict(
-            {"href": "test", "providers": expected_providers}
-        )
+        asset = Asset.from_dict({"href": "test", "providers": expected_providers})
         asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
@@ -368,9 +386,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
 
     def test_instruments(self) -> None:
         expected_instruments = ["caliper"]
-        asset = Asset.from_dict(
-            {"href": "test", "instruments": expected_instruments}
-        )
+        asset = Asset.from_dict({"href": "test", "instruments": expected_instruments})
         asset_cm = CommonMetadata(asset.extra_fields)
 
         # Get
@@ -483,4 +499,3 @@ class AssetCommonMetadataTest(unittest.TestCase):
         # Pop
         asset_cm.created = None
         self.assertNotIn("created", asset.to_dict())
-

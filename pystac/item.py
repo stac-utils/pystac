@@ -21,6 +21,7 @@ from pystac.utils import (
     make_relative_href,
     datetime_to_str,
     str_to_datetime,
+    map_opt,
 )
 from pystac.collection import Collection
 from pystac.common_metadata import CommonMetadata
@@ -97,25 +98,25 @@ class Item(STACObject):
         self.geometry = geometry
         self.bbox = bbox
         self.properties = properties
+        self.datetime = datetime
+
+        if self.datetime is None and (
+            self.common_metadata.start_datetime is None
+            or self.common_metadata.end_datetime is None
+        ):
+            raise STACError(
+                "Invalid Item: If datetime is None, "
+                "a start_datetime and end_datetime "
+                "must be supplied in "
+                "the properties."
+            )
+
         if extra_fields is None:
             self.extra_fields = {}
         else:
             self.extra_fields = extra_fields
 
         self.assets: Dict[str, Asset] = {}
-
-        self.datetime: Optional[Datetime] = None
-        if datetime is None:
-            if "start_datetime" not in properties or "end_datetime" not in properties:
-                raise STACError(
-                    "Invalid Item: If datetime is None, "
-                    "a start_datetime and end_datetime "
-                    "must be supplied in "
-                    "the properties."
-                )
-            self.datetime = None
-        else:
-            self.datetime = datetime
 
         if href is not None:
             self.set_self_href(href)
@@ -159,6 +160,14 @@ class Item(STACObject):
                     abs_href = make_absolute_href(asset_href, prev_href)
                     new_relative_href = make_relative_href(abs_href, new_href)
                     asset.href = new_relative_href
+
+    @property
+    def datetime(self) -> Optional[Datetime]:
+        return map_opt(str_to_datetime, self.properties.get("datetime"))
+
+    @datetime.setter
+    def datetime(self, v: Optional[Datetime]) -> None:
+        self.properties["datetime"] = map_opt(datetime_to_str, v)
 
     def get_datetime(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
         """Gets an Item or an Asset datetime.
