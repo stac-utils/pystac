@@ -23,4 +23,3 @@ class ProviderTest(unittest.TestCase):
         self.assertDictEqual(expected_extra_fields, provider.extra_fields)
 
         self.assertDictEqual(provider_dict, provider.to_dict())
-
