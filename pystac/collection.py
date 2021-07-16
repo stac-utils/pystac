@@ -510,6 +510,11 @@ class Provider:
             },
         )
 
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Provider):
+            return NotImplemented
+        return self.to_dict() == o.to_dict()
+
 
 class Collection(Catalog):
     """A Collection extends the Catalog spec with additional metadata that helps
