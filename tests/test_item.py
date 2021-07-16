@@ -10,7 +10,7 @@ import pystac
 from pystac import Asset, Item, Provider, ProviderRole
 from pystac.validation import validate_dict
 import pystac.serialization.common_properties
-from pystac.item import CommonMetadata
+from pystac.common_metadata import CommonMetadata
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime, is_absolute_href
 from tests.utils import TestCases, assert_to_from_dict
 
