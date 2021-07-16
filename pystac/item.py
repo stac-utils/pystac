@@ -178,10 +178,10 @@ class Item(STACObject):
         Returns:
             datetime or None
         """
-        if asset is None or "datetime" not in asset.extra_fields:
+        if asset is None or "datetime" not in asset.fields:
             return self.datetime
         else:
-            asset_dt = asset.extra_fields.get("datetime")
+            asset_dt = asset.fields.get("datetime")
             if asset_dt is None:
                 return None
             else:
@@ -196,7 +196,7 @@ class Item(STACObject):
         if asset is None:
             self.datetime = datetime
         else:
-            asset.extra_fields["datetime"] = datetime_to_str(datetime)
+            asset.fields["datetime"] = datetime_to_str(datetime)
 
     def get_assets(self) -> Dict[str, Asset]:
         """Get this item's assets.

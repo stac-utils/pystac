@@ -254,7 +254,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_datetime(self) -> None:
         expected_datetime = "2017-05-01T13:22:30.040Z"
         asset = Asset.from_dict({"href": "test", "datetime": expected_datetime})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.datetime, str_to_datetime(expected_datetime))
@@ -276,7 +276,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
         asset = Asset.from_dict(
             {"href": "test", "start_datetime": expected_start_datetime}
         )
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(
@@ -297,7 +297,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_end_datetime(self) -> None:
         expected_end_datetime = "2017-05-02T13:22:30.040Z"
         asset = Asset.from_dict({"href": "test", "end_datetime": expected_end_datetime})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.end_datetime, str_to_datetime(expected_end_datetime))
@@ -316,7 +316,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_license(self) -> None:
         expected_license = "CC-BY-4.0"
         asset = Asset.from_dict({"href": "test", "license": expected_license})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.license, expected_license)
@@ -341,7 +341,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
             }
         ]
         asset = Asset.from_dict({"href": "test", "providers": expected_providers})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(
@@ -368,7 +368,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_platform(self) -> None:
         expected_platform = "shoes"
         asset = Asset.from_dict({"href": "test", "platform": expected_platform})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.platform, expected_platform)
@@ -387,7 +387,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_instruments(self) -> None:
         expected_instruments = ["caliper"]
         asset = Asset.from_dict({"href": "test", "instruments": expected_instruments})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.instruments, expected_instruments)
@@ -408,7 +408,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
         asset = Asset.from_dict(
             {"href": "test", "constellation": expected_constellation}
         )
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.constellation, expected_constellation)
@@ -427,7 +427,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_mission(self) -> None:
         expected_mission = "possible"
         asset = Asset.from_dict({"href": "test", "mission": expected_mission})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.mission, expected_mission)
@@ -446,7 +446,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_gsd(self) -> None:
         expected_gsd = 40
         asset = Asset.from_dict({"href": "test", "gsd": expected_gsd})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.gsd, expected_gsd)
@@ -465,7 +465,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_created(self) -> None:
         expected_created = "2017-05-18T13:22:30.040000Z"
         asset = Asset.from_dict({"href": "test", "created": expected_created})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.created, str_to_datetime(expected_created))
@@ -484,7 +484,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
     def test_updated(self) -> None:
         expected_updated = "2017-05-18T13:22:30.040000Z"
         asset = Asset.from_dict({"href": "test", "updated": expected_updated})
-        asset_cm = CommonMetadata(asset.extra_fields)
+        asset_cm = CommonMetadata(asset.fields)
 
         # Get
         self.assertEqual(asset_cm.updated, str_to_datetime(expected_updated))

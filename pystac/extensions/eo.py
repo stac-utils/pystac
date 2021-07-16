@@ -408,10 +408,10 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         # get assets with eo:bands even if not in item
         if bands is None:
             asset_bands: List[Dict[str, Any]] = []
-            for _, value in self.item.get_assets().items():
-                if BANDS_PROP in value.extra_fields:
+            for _, asset in self.item.get_assets().items():
+                if BANDS_PROP in asset.fields:
                     asset_bands.extend(
-                        cast(List[Dict[str, Any]], value.extra_fields.get(BANDS_PROP))
+                        cast(List[Dict[str, Any]], asset.fields.get(BANDS_PROP))
                     )
             if any(asset_bands):
                 bands = asset_bands
@@ -455,7 +455,7 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.extra_fields
+        self.properties = asset.fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 

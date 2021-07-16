@@ -137,15 +137,13 @@ class RasterTest(unittest.TestCase):
         RasterExtension.ext(asset).bands = new_bands
         item.add_asset("test", asset)
 
-        self.assertEqual(len(item.assets["test"].extra_fields["raster:bands"]), 3)
+        self.assertEqual(len(item.assets["test"].fields["raster:bands"]), 3)
         self.assertEqual(
-            item.assets["test"].extra_fields["raster:bands"][1]["statistics"][
-                "minimum"
-            ],
+            item.assets["test"].fields["raster:bands"][1]["statistics"]["minimum"],
             -1,
         )
         self.assertEqual(
-            item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"],
+            item.assets["test"].fields["raster:bands"][1]["histogram"]["min"],
             3848.354901960784,
         )
 
@@ -197,9 +195,7 @@ class RasterTest(unittest.TestCase):
         )
         RasterExtension.ext(item.assets["test"]).apply(new_bands)
         self.assertEqual(
-            item.assets["test"].extra_fields["raster:bands"][0]["statistics"][
-                "minimum"
-            ],
+            item.assets["test"].fields["raster:bands"][0]["statistics"]["minimum"],
             1,
         )
 
