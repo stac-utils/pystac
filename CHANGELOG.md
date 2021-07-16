@@ -11,6 +11,7 @@
 - Migration for `sar:type` -> `sar:product_type` and `sar:polarization` ->
   `sar:polarizations` for pre-0.9 catalogs
   ([#556](https://github.com/stac-utils/pystac/pull/556))
+- Migration from `eo:epsg` -> `proj:epsg` for pre-0.9 catalogs ([#557](https://github.com/stac-utils/pystac/pull/557))
 - Collection summaries for Point Cloud Extension ([#558](https://github.com/stac-utils/pystac/pull/558))
 - `PhenomenologyType` enum for recommended values of `pc:type` & `SchemaType` enum for
   valid values of `type` in [Point Cloud Schema

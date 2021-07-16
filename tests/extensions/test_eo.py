@@ -6,6 +6,7 @@ from pystac import ExtensionTypeError, Item
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
+from pystac.extensions.projection import ProjectionExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -325,3 +326,23 @@ class EOTest(unittest.TestCase):
             EOExtension.ext,
             object(),
         )
+
+
+class EOMigrationTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.item_0_8_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/examples/sentinel2-sample.json"
+        )
+
+    def test_migration(self) -> None:
+        with open(self.item_0_8_path) as src:
+            item_dict = json.load(src)
+
+        self.assertIn("eo:epsg", item_dict["properties"])
+
+        item = Item.from_file(self.item_0_8_path)
+
+        self.assertNotIn("eo:epsg", item.properties)
+        self.assertIn("proj:epsg", item.properties)
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
