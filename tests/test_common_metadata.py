@@ -60,7 +60,7 @@ class ItemCommonMetadataTest(unittest.TestCase):
         start_datetime_str = self.ITEM_1.properties["start_datetime"]
         self.assertIsInstance(start_datetime_str, str)
 
-        common_metadata = self.ITEM_1.common_metadata
+        common_metadata = CommonMetadata.ext(self.ITEM_1)
         self.assertIsInstance(common_metadata, CommonMetadata)
         self.assertIsInstance(common_metadata.start_datetime, datetime)
         self.assertDictEqual(before, self.ITEM_1.to_dict())
@@ -68,66 +68,71 @@ class ItemCommonMetadataTest(unittest.TestCase):
 
     def test_common_metadata_start_datetime(self) -> None:
         x = self.ITEM_1.clone()
+        common_metadata = CommonMetadata.ext(x)
         start_datetime_str = "2018-01-01T13:21:30Z"
         start_datetime_dt = str_to_datetime(start_datetime_str)
         example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        self.assertEqual(x.common_metadata.start_datetime, start_datetime_dt)
+        self.assertEqual(common_metadata.start_datetime, start_datetime_dt)
         self.assertEqual(x.properties["start_datetime"], start_datetime_str)
 
-        x.common_metadata.start_datetime = example_datetime_dt
+        common_metadata.start_datetime = example_datetime_dt
 
-        self.assertEqual(x.common_metadata.start_datetime, example_datetime_dt)
+        self.assertEqual(common_metadata.start_datetime, example_datetime_dt)
         self.assertEqual(x.properties["start_datetime"], example_datetime_str)
 
     def test_common_metadata_end_datetime(self) -> None:
         x = self.ITEM_1.clone()
+        common_metadata = CommonMetadata.ext(x)
         end_datetime_str = "2018-01-01T13:31:30Z"
         end_datetime_dt = str_to_datetime(end_datetime_str)
         example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        self.assertEqual(x.common_metadata.end_datetime, end_datetime_dt)
+        self.assertEqual(common_metadata.end_datetime, end_datetime_dt)
         self.assertEqual(x.properties["end_datetime"], end_datetime_str)
 
-        x.common_metadata.end_datetime = example_datetime_dt
+        common_metadata.end_datetime = example_datetime_dt
 
-        self.assertEqual(x.common_metadata.end_datetime, example_datetime_dt)
+        self.assertEqual(common_metadata.end_datetime, example_datetime_dt)
         self.assertEqual(x.properties["end_datetime"], example_datetime_str)
 
     def test_common_metadata_created(self) -> None:
         x = self.ITEM_2.clone()
+        common_metadata = CommonMetadata.ext(x)
         created_str = "2016-05-04T00:00:01Z"
         created_dt = str_to_datetime(created_str)
         example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        self.assertEqual(x.common_metadata.created, created_dt)
+        self.assertEqual(common_metadata.created, created_dt)
         self.assertEqual(x.properties["created"], created_str)
 
-        x.common_metadata.created = example_datetime_dt
+        common_metadata.created = example_datetime_dt
 
-        self.assertEqual(x.common_metadata.created, example_datetime_dt)
+        self.assertEqual(common_metadata.created, example_datetime_dt)
         self.assertEqual(x.properties["created"], example_datetime_str)
 
     def test_common_metadata_updated(self) -> None:
         x = self.ITEM_2.clone()
+        common_metadata = CommonMetadata.ext(x)
         updated_str = "2017-01-01T00:30:55Z"
         updated_dt = str_to_datetime(updated_str)
         example_datetime_str = "2020-01-01T00:00:00Z"
         example_datetime_dt = str_to_datetime(example_datetime_str)
 
-        self.assertEqual(x.common_metadata.updated, updated_dt)
+        self.assertEqual(common_metadata.updated, updated_dt)
         self.assertEqual(x.properties["updated"], updated_str)
 
-        x.common_metadata.updated = example_datetime_dt
+        common_metadata.updated = example_datetime_dt
 
-        self.assertEqual(x.common_metadata.updated, example_datetime_dt)
+        self.assertEqual(common_metadata.updated, example_datetime_dt)
         self.assertEqual(x.properties["updated"], example_datetime_str)
 
     def test_common_metadata_providers(self) -> None:
         x = self.ITEM_2.clone()
+        common_metadata = CommonMetadata.ext(x)
 
         providers_dict_list: List[Dict[str, Any]] = [
             {
@@ -154,8 +159,8 @@ class ItemCommonMetadataTest(unittest.TestCase):
             Provider.from_dict(d) for d in example_providers_dict_list
         ]
 
-        for i in range(len(get_opt(x.common_metadata.providers))):
-            p1 = get_opt(x.common_metadata.providers)[i]
+        for i in range(len(get_opt(common_metadata.providers))):
+            p1 = get_opt(common_metadata.providers)[i]
             p2 = providers_object_list[i]
             self.assertIsInstance(p1, Provider)
             self.assertIsInstance(p2, Provider)
@@ -167,10 +172,10 @@ class ItemCommonMetadataTest(unittest.TestCase):
             self.assertIsInstance(pd2, dict)
             self.assertDictEqual(pd1, pd2)
 
-        x.common_metadata.providers = example_providers_object_list
+        common_metadata.providers = example_providers_object_list
 
-        for i in range(len(x.common_metadata.providers)):
-            p1 = x.common_metadata.providers[i]
+        for i in range(len(common_metadata.providers)):
+            p1 = common_metadata.providers[i]
             p2 = example_providers_object_list[i]
             self.assertIsInstance(p1, Provider)
             self.assertIsInstance(p2, Provider)
@@ -184,66 +189,67 @@ class ItemCommonMetadataTest(unittest.TestCase):
 
     def test_common_metadata_basics(self) -> None:
         x = self.ITEM_2.clone()
+        common_metadata = CommonMetadata.ext(x)
 
         # Title
         title = "A CS3 item"
         example_title = "example title"
-        self.assertEqual(x.common_metadata.title, title)
-        x.common_metadata.title = example_title
-        self.assertEqual(x.common_metadata.title, example_title)
+        self.assertEqual(common_metadata.title, title)
+        common_metadata.title = example_title
+        self.assertEqual(common_metadata.title, example_title)
         self.assertEqual(x.properties["title"], example_title)
 
         # Description
         example_description = "example description"
-        self.assertIsNone(x.common_metadata.description)
-        x.common_metadata.description = example_description
-        self.assertEqual(x.common_metadata.description, example_description)
+        self.assertIsNone(common_metadata.description)
+        common_metadata.description = example_description
+        self.assertEqual(common_metadata.description, example_description)
         self.assertEqual(x.properties["description"], example_description)
 
         # License
         license = "PDDL-1.0"
         example_license = "example license"
-        self.assertEqual(x.common_metadata.license, license)
-        x.common_metadata.license = example_license
-        self.assertEqual(x.common_metadata.license, example_license)
+        self.assertEqual(common_metadata.license, license)
+        common_metadata.license = example_license
+        self.assertEqual(common_metadata.license, example_license)
         self.assertEqual(x.properties["license"], example_license)
 
         # Platform
         platform = "coolsat2"
         example_platform = "example_platform"
-        self.assertEqual(x.common_metadata.platform, platform)
-        x.common_metadata.platform = example_platform
-        self.assertEqual(x.common_metadata.platform, example_platform)
+        self.assertEqual(common_metadata.platform, platform)
+        common_metadata.platform = example_platform
+        self.assertEqual(common_metadata.platform, example_platform)
         self.assertEqual(x.properties["platform"], example_platform)
 
         # Instruments
         instruments = ["cool_sensor_v1"]
         example_instruments = ["example instrument 1", "example instrument 2"]
-        self.assertListEqual(x.common_metadata.instruments or [], instruments)
-        x.common_metadata.instruments = example_instruments
-        self.assertListEqual(x.common_metadata.instruments, example_instruments)
+        self.assertListEqual(common_metadata.instruments or [], instruments)
+        common_metadata.instruments = example_instruments
+        self.assertListEqual(common_metadata.instruments, example_instruments)
         self.assertListEqual(x.properties["instruments"], example_instruments)
 
         # Constellation
         example_constellation = "example constellation"
-        self.assertIsNone(x.common_metadata.constellation)
-        x.common_metadata.constellation = example_constellation
-        self.assertEqual(x.common_metadata.constellation, example_constellation)
+        self.assertIsNone(common_metadata.constellation)
+        common_metadata.constellation = example_constellation
+        self.assertEqual(common_metadata.constellation, example_constellation)
         self.assertEqual(x.properties["constellation"], example_constellation)
 
         # Mission
         example_mission = "example mission"
-        self.assertIsNone(x.common_metadata.mission)
-        x.common_metadata.mission = example_mission
-        self.assertEqual(x.common_metadata.mission, example_mission)
+        self.assertIsNone(common_metadata.mission)
+        common_metadata.mission = example_mission
+        self.assertEqual(common_metadata.mission, example_mission)
         self.assertEqual(x.properties["mission"], example_mission)
 
         # GSD
         gsd = 0.512
         example_gsd = 0.75
-        self.assertEqual(x.common_metadata.gsd, gsd)
-        x.common_metadata.gsd = example_gsd
-        self.assertEqual(x.common_metadata.gsd, example_gsd)
+        self.assertEqual(common_metadata.gsd, gsd)
+        common_metadata.gsd = example_gsd
+        self.assertEqual(common_metadata.gsd, example_gsd)
         self.assertEqual(x.properties["gsd"], example_gsd)
 
 

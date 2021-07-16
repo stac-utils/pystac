@@ -7,6 +7,7 @@ from dateutil import tz
 import tempfile
 
 import pystac
+from pystac.common_metadata import CommonMetadata
 from pystac.extensions.eo import EOExtension
 from pystac.validation import validate_dict
 from pystac import (
@@ -154,7 +155,7 @@ class CollectionTest(unittest.TestCase):
         self.assertEqual(
             [
                 [
-                    item2.common_metadata.start_datetime,
+                    CommonMetadata.ext(item2).start_datetime,
                     base_extent.temporal.intervals[0][1],
                 ]
             ],

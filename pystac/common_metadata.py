@@ -1,6 +1,8 @@
 from datetime import datetime as Datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
+import pystac
+from pystac.errors import STACError
 from pystac.utils import map_opt, str_to_datetime, datetime_to_str
 from pystac.provider import Provider
 
@@ -34,6 +36,15 @@ class CommonMetadata:
             self.fields.pop(prop_name, None)
         else:
             self.fields[prop_name] = v
+
+    @classmethod
+    def ext(cls, obj: Union["pystac.Asset", "pystac.Item"]) -> "CommonMetadata":
+        if isinstance(obj, pystac.Asset):
+            return CommonMetadata(obj.fields)
+        elif isinstance(obj, pystac.Item):
+            return CommonMetadata(obj.properties)
+        else:
+            raise STACError("CommonMetadata only applies to Item and Asset instances.")
 
     # Basics
     @property

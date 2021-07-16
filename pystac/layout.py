@@ -4,6 +4,7 @@ from string import Formatter
 from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
 
 import pystac
+from pystac.common_metadata import CommonMetadata
 from pystac.utils import safe_urlparse, join_path_or_url, JoinType
 
 if TYPE_CHECKING:
@@ -98,7 +99,7 @@ class LayoutTemplate:
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
-                    dt = stac_object.common_metadata.start_datetime
+                    dt = CommonMetadata.ext(stac_object).start_datetime
                 if dt is None:
                     raise TemplateError(
                         "Item {} does not have a datetime or "
@@ -133,7 +134,9 @@ class LayoutTemplate:
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
-        prop_source: Optional[Union[pystac.STACObject, Dict[str, Any]]] = None
+        prop_source: Optional[
+            Union[pystac.STACObject, Dict[str, Any], CommonMetadata]
+        ] = None
         error = TemplateError(
             "Cannot find property {} on {} for template {}".format(
                 template_var, stac_object, self.template
@@ -144,6 +147,15 @@ class LayoutTemplate:
 
             if hasattr(stac_object, props[0]):
                 prop_source = stac_object
+
+            if props[0] == "common_metadata":
+                if not (
+                    isinstance(stac_object, pystac.Asset)
+                    or isinstance(stac_object, pystac.Item)
+                ):
+                    raise error
+                prop_source = CommonMetadata.ext(stac_object)
+                props = props[1:]
 
             if prop_source is None and hasattr(stac_object, "properties"):
                 obj_props: Optional[
@@ -163,7 +175,8 @@ class LayoutTemplate:
                 raise error
 
             v: Any = prop_source
-            for prop in template_var.split("."):
+            for prop in props:
+                # for prop in template_var.split("."):
                 if type(v) is dict:
                     if prop not in v:
                         raise error

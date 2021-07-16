@@ -18,9 +18,10 @@ import dateutil.parser
 from dateutil import tz
 
 import pystac
-from pystac import STACObjectType, CatalogType
+from pystac import STACObjectType
 from pystac.asset import Asset
-from pystac.catalog import Catalog
+from pystac.catalog import Catalog, CatalogType
+from pystac.common_metadata import CommonMetadata
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -365,15 +366,16 @@ class Extent:
         ends: List[datetime] = []
 
         for item in items:
+            common_metadata = CommonMetadata.ext(item)
             if item.bbox is not None:
                 for i in range(0, 4):
                     bounds_values[i].append(item.bbox[i])
             if item.datetime is not None:
                 datetimes.append(item.datetime)
-            if item.common_metadata.start_datetime is not None:
-                starts.append(item.common_metadata.start_datetime)
-            if item.common_metadata.end_datetime is not None:
-                ends.append(item.common_metadata.end_datetime)
+            if common_metadata.start_datetime is not None:
+                starts.append(common_metadata.start_datetime)
+            if common_metadata.end_datetime is not None:
+                ends.append(common_metadata.end_datetime)
 
         if not any(datetimes + starts):
             start_timestamp = None

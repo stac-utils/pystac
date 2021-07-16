@@ -2,7 +2,9 @@ import json
 import unittest
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac.item import Item
+from pystac.errors import ExtensionTypeError
+from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
@@ -239,8 +241,9 @@ class EOTest(unittest.TestCase):
             )
         )
 
-        self.assertEqual(eo_item.common_metadata.platform, "landsat-8")
-        self.assertEqual(eo_item.common_metadata.instruments, ["oli_tirs"])
+        common_metadata = CommonMetadata.ext(eo_item)
+        self.assertEqual(common_metadata.platform, "landsat-8")
+        self.assertEqual(common_metadata.instruments, ["oli_tirs"])
 
     def test_reads_asset_bands_in_pre_1_0_version(self) -> None:
         item = pystac.Item.from_file(
@@ -261,7 +264,7 @@ class EOTest(unittest.TestCase):
             )
         )
 
-        self.assertEqual(eo_item.common_metadata.gsd, 30.0)
+        self.assertEqual(CommonMetadata.ext(eo_item).gsd, 30.0)
 
     def test_item_apply(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)

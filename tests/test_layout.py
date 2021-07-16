@@ -4,6 +4,7 @@ from pystac.collection import Collection
 import unittest
 
 import pystac
+from pystac.common_metadata import CommonMetadata
 from pystac.utils import join_path_or_url, JoinType
 from pystac.layout import (
     LayoutTemplate,
@@ -166,7 +167,7 @@ class LayoutTemplateTest(unittest.TestCase):
                 "examples/landsat8-sample.json"
             )
         )
-        item.common_metadata.license = "CC-BY-3.0"
+        CommonMetadata.ext(item).license = "CC-BY-3.0"
         # Uses the year, month and day of the item
         template1 = LayoutTemplate("${year}/${month}/${day}")
         path1 = template1.substitute(item)

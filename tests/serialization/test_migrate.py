@@ -1,4 +1,5 @@
-from pystac import ExtensionTypeError
+from pystac.errors import ExtensionTypeError
+from pystac.common_metadata import CommonMetadata
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.view import ViewExtension
 import unittest
@@ -58,7 +59,7 @@ class MigrateTest(unittest.TestCase):
         )
         self.assertFalse("dtr" in item.stac_extensions)
         self.assertEqual(
-            item.common_metadata.start_datetime,
+            CommonMetadata.ext(item).start_datetime,
             str_to_datetime("2018-11-03T23:58:55.121559Z"),
         )
 

@@ -1,7 +1,6 @@
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
-from pystac.catalog import Catalog
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast, TYPE_CHECKING
 
 import dateutil.parser
 
@@ -24,7 +23,9 @@ from pystac.utils import (
     map_opt,
 )
 from pystac.collection import Collection
-from pystac.common_metadata import CommonMetadata
+
+if TYPE_CHECKING:
+    from pystac.catalog import Catalog as Catalog_Type
 
 
 class Item(STACObject):
@@ -101,8 +102,8 @@ class Item(STACObject):
         self.datetime = datetime
 
         if self.datetime is None and (
-            self.common_metadata.start_datetime is None
-            or self.common_metadata.end_datetime is None
+            self.properties.get("start_datetime") is None
+            or self.properties.get("end_datetime") is None
         ):
             raise STACError(
                 "Invalid Item: If datetime is None, "
@@ -361,7 +362,7 @@ class Item(STACObject):
         cls,
         d: Dict[str, Any],
         href: Optional[str] = None,
-        root: Optional[Catalog] = None,
+        root: Optional["Catalog_Type"] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> "Item":
@@ -422,17 +423,10 @@ class Item(STACObject):
 
         return item
 
-    @property
-    def common_metadata(self) -> CommonMetadata:
-        """Access the item's common metadat fields as a CommonMetadata object
-
-        Returns:
-            CommonMetada: contains all common metadata fields in the items properties
-        """
-        return CommonMetadata(self.properties)
-
     def full_copy(
-        self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
+        self,
+        root: Optional["Catalog_Type"] = None,
+        parent: Optional["Catalog_Type"] = None,
     ) -> "Item":
         return cast(Item, super().full_copy(root, parent))
 
