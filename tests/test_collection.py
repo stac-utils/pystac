@@ -16,34 +16,11 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
     CatalogType,
-    Provider,
 )
 from pystac.utils import datetime_to_str, get_required
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
-
-
-class ProviderTest(unittest.TestCase):
-    def test_to_from_dict(self) -> None:
-        provider_dict = {
-            "name": "Remote Data, Inc",
-            "description": "Producers of awesome spatiotemporal assets",
-            "roles": ["producer", "processor"],
-            "url": "http://remotedata.io",
-            "extension:field": "some value",
-        }
-        expected_extra_fields = {"extension:field": provider_dict["extension:field"]}
-
-        provider = Provider.from_dict(provider_dict)
-
-        self.assertEqual(provider_dict["name"], provider.name)
-        self.assertEqual(provider_dict["description"], provider.description)
-        self.assertEqual(provider_dict["roles"], provider.roles)
-        self.assertEqual(provider_dict["url"], provider.url)
-        self.assertDictEqual(expected_extra_fields, provider.extra_fields)
-
-        self.assertDictEqual(provider_dict, provider.to_dict())
 
 
 class CollectionTest(unittest.TestCase):
