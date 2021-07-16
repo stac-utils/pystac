@@ -31,6 +31,7 @@
 ### Fixed
 
 - Added `Collections` as a type that can be extended for extensions whose fields can appear in collection summaries ([#547](https://github.com/stac-utils/pystac/pull/547))
+- Allow resolved self links when getting an object's self href ([#555](https://github.com/stac-utils/pystac/pull/555))
 
 ### Deprecated
 

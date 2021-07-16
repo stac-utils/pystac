@@ -1,5 +1,5 @@
 from copy import copy
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union, cast
+from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import pystac
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
@@ -52,11 +52,6 @@ class Link:
     """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
     preferred. See :class:`~pystac.RelType` for common media types."""
 
-    target: Union[str, "STACObject_Type"]
-    """The target of the link. If the link is unresolved, or the link is to something
-    that is not a STACObject, the target is an HREF. If resolved, the target is a
-    STACObject."""
-
     media_type: Optional[str]
     """Optional description of the media type. Registered Media Types are preferred.
     See :class:`~pystac.MediaType` for common media types."""
@@ -82,7 +77,12 @@ class Link:
         extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.rel = rel
-        self.target = target
+        if isinstance(target, str):
+            self._target_href: Optional[str] = target
+            self._target_object = None
+        else:
+            self._target_href = None
+            self._target_object = target
         self.media_type = media_type
         self.title = title
         self.extra_fields = extra_fields or {}
@@ -119,10 +119,10 @@ class Link:
             In all other cases, this method will return an absolute HREF.
         """
         # get the self href
-        if self.is_resolved():
-            href = cast(pystac.STACObject, self.target).get_self_href()
+        if self._target_object:
+            href = self._target_object.get_self_href()
         else:
-            href = cast(Optional[str], self.target)
+            href = self._target_href
 
         if href and is_absolute_href(href) and self.owner and self.owner.get_root():
             root = self.owner.get_root()
@@ -158,15 +158,54 @@ class Link:
             from this link; however, if the link is relative, has no owner,
             and has an unresolved target, this will return a relative HREF.
         """
-        if self.is_resolved():
-            href = cast(pystac.STACObject, self.target).get_self_href()
+        if self._target_object:
+            href = self._target_object.get_self_href()
         else:
-            href = cast(Optional[str], self.target)
+            href = self._target_href
 
         if href is not None and self.owner is not None:
             href = make_absolute_href(href, self.owner.get_self_href())
 
         return href
+
+    @property
+    def target(self) -> Union[str, "STACObject_Type"]:
+        """The target of the link. If the link is unresolved, or the link is to something
+        that is not a STACObject, the target is an HREF. If resolved, the target is a
+        STACObject."""
+        if self._target_object:
+            return self._target_object
+        elif self._target_href:
+            return self._target_href
+        else:
+            raise ValueError("No target defined for link.")
+
+    @target.setter
+    def target(self, target: Union[str, "STACObject_Type"]) -> None:
+        """Sets this link's target to a string or a STAC object."""
+        if isinstance(target, str):
+            self._target_href = target
+            self._target_object = None
+        else:
+            self._target_href = None
+            self._target_object = target
+
+    def get_target_str(self) -> Optional[str]:
+        """Returns this link's target as a string.
+
+        If a string href was provided, returns that. If not, tries to resolve
+        the self link of the target object.
+        """
+        if self._target_href:
+            return self._target_href
+        elif self._target_object:
+            return self._target_object.get_self_href()
+        else:
+            return None
+
+    def has_target_href(self) -> bool:
+        """Returns true if this link has a string href in its target information."""
+        return self._target_href is not None
 
     def __repr__(self) -> str:
         return "<Link rel={} target={}>".format(self.rel, self.target)
@@ -180,8 +219,10 @@ class Link:
                 If provided, the root's resolved object cache is used to search for
                 previously resolved instances of the STAC object.
         """
-        if isinstance(self.target, str):
-            target_href = self.target
+        if self._target_object:
+            pass
+        elif self._target_href:
+            target_href = self._target_href
 
             # If it's a relative link, base it off the parent.
             if not is_absolute_href(target_href):
@@ -221,17 +262,17 @@ class Link:
                 if root is not None:
                     obj = root._resolved_objects.get_or_cache(obj)
                     obj.set_root(root)
+            self._target_object = obj
         else:
-            obj = self.target
-
-        self.target = obj
+            raise ValueError("Cannot resolve STAC object without a target")
 
         if (
             self.owner
             and self.rel in [pystac.RelType.CHILD, pystac.RelType.ITEM]
             and isinstance(self.owner, pystac.Catalog)
         ):
-            self.target.set_parent(self.owner)
+            assert self._target_object
+            self._target_object.set_parent(self.owner)
 
         return self
 
@@ -241,7 +282,7 @@ class Link:
         Returns:
             bool: True if this link is resolved.
         """
-        return not isinstance(self.target, str)
+        return self._target_object is not None
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
