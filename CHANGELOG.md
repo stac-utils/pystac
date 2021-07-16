@@ -32,6 +32,8 @@
 
 - Added `Collections` as a type that can be extended for extensions whose fields can appear in collection summaries ([#547](https://github.com/stac-utils/pystac/pull/547))
 - Allow resolved self links when getting an object's self href ([#555](https://github.com/stac-utils/pystac/pull/555))
+- Fixed type annotation on SummariesLabelExtension.label_properties setter ([#562](https://github.com/stac-utils/pystac/pull/562))
+- Allow comparable types with alternate parameter naming of __lt__ method to pass structural type linting for RangeSummary ([#562](https://github.com/stac-utils/pystac/pull/562))
 
 ### Deprecated
 
