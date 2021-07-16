@@ -107,4 +107,3 @@ class Provider:
         if not isinstance(o, Provider):
             return NotImplemented
         return self.to_dict() == o.to_dict()
-
