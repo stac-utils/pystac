@@ -2,7 +2,7 @@ from datetime import datetime as Datetime
 from typing import Any, Dict, List, Optional
 
 from pystac.utils import map_opt, str_to_datetime, datetime_to_str
-from pystac.collection import Provider
+from pystac.provider import Provider
 
 
 class CommonMetadata:
@@ -199,4 +199,3 @@ class CommonMetadata:
     @updated.setter
     def updated(self, v: Optional[Datetime]) -> None:
         self._set_field("updated", map_opt(datetime_to_str, v))
-
