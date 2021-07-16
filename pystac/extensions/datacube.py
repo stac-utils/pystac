@@ -12,7 +12,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required, map_opt
+from pystac.utils import get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
@@ -63,13 +63,13 @@ class Dimension(ABC):
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Dimension":
-        dim_type = d.get(DIM_TYPE_PROP)
-        if dim_type is None:
-            raise pystac.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
+        dim_type: str = get_required(
+            d.get(DIM_TYPE_PROP), "cube_dimension", DIM_TYPE_PROP
+        )
         if dim_type == "spatial":
-            axis = d.get(DIM_AXIS_PROP)
-            if axis is None:
-                raise pystac.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
+            axis: str = get_required(
+                d.get(DIM_AXIS_PROP), "cube_dimension", DIM_AXIS_PROP
+            )
             if axis == "z":
                 return VerticalSpatialDimension(d)
             else:
@@ -320,14 +320,10 @@ class DatacubeExtension(
 
     @property
     def dimensions(self) -> Dict[str, Dimension]:
-        return get_required(
-            map_opt(
-                lambda d: {k: Dimension.from_dict(v) for k, v in d.items()},
-                self._get_property(DIMENSIONS_PROP, Dict[str, Any]),
-            ),
-            self,
-            DIMENSIONS_PROP,
+        result = get_required(
+            self._get_property(DIMENSIONS_PROP, Dict[str, Any]), self, DIMENSIONS_PROP
         )
+        return {k: Dimension.from_dict(v) for k, v in result.items()}
 
     @dimensions.setter
     def dimensions(self, v: Dict[str, Dimension]) -> None:

@@ -6,7 +6,7 @@ import unittest
 
 import pystac
 from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError
+from pystac.errors import ExtensionTypeError, STACError, RequiredPropertyMissing
 from pystac.extensions.pointcloud import (
     AssetPointcloudExtension,
     PhenomenologyType,
@@ -193,12 +193,10 @@ class PointcloudTest(unittest.TestCase):
             schema.size = 0.5  # type: ignore
 
         empty_schema = Schema({})
-        with self.assertRaises(STACError):
-            empty_schema.size
-        with self.assertRaises(STACError):
-            empty_schema.name
-        with self.assertRaises(STACError):
-            empty_schema.type
+        for required_prop in {"size", "name", "type"}:
+            with self.subTest(attr=required_prop):
+                with self.assertRaises(RequiredPropertyMissing):
+                    getattr(empty_schema, required_prop)
 
     def test_pointcloud_statistics(self) -> None:
         props: Dict[str, Any] = {
@@ -251,7 +249,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertNotIn("variance", stat.properties)
 
         empty_stat = Statistic({})
-        with self.assertRaises(STACError):
+        with self.assertRaises(RequiredPropertyMissing):
             empty_stat.name
 
     def test_statistics_accessor_when_no_stats(self) -> None:

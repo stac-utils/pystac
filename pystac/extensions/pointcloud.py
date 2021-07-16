@@ -88,12 +88,7 @@ class Schema:
     @property
     def size(self) -> int:
         """Gets or sets the size value."""
-        result: Optional[int] = self.properties.get("size")
-        if result is None:
-            raise pystac.STACError(
-                f"Pointcloud schema does not have size property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("size"), self, "size")
 
     @size.setter
     def size(self, v: int) -> None:
@@ -105,12 +100,7 @@ class Schema:
     @property
     def name(self) -> str:
         """Gets or sets the name property for this Schema."""
-        result: Optional[str] = self.properties.get("name")
-        if result is None:
-            raise pystac.STACError(
-                f"Pointcloud schema does not have name property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -128,7 +118,9 @@ class Schema:
 
     def __repr__(self) -> str:
         return "<Schema name={} size={} type={}>".format(
-            self.name, self.size, self.type
+            self.properties.get("name"),
+            self.properties.get("size"),
+            self.properties.get("type"),
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -217,12 +209,7 @@ class Statistic:
     @property
     def name(self) -> str:
         """Gets or sets the name property."""
-        result: Optional[str] = self.properties.get("name")
-        if result is None:
-            raise pystac.STACError(
-                f"Pointcloud statistics does not have name property: {self.properties}"
-            )
-        return result
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -381,10 +368,7 @@ class PointcloudExtension(
     @property
     def count(self) -> int:
         """Gets or sets the number of points in the Item."""
-        result = self._get_property(COUNT_PROP, int)
-        if result is None:
-            raise pystac.RequiredPropertyMissing(self, COUNT_PROP)
-        return result
+        return get_required(self._get_property(COUNT_PROP, int), self, COUNT_PROP)
 
     @count.setter
     def count(self, v: int) -> None:
@@ -393,11 +377,7 @@ class PointcloudExtension(
     @property
     def type(self) -> Union[PhenomenologyType, str]:
         """Gets or sets the phenomenology type for the point cloud."""
-        return get_required(
-            self._get_property(TYPE_PROP, str),
-            self,
-            TYPE_PROP,
-        )
+        return get_required(self._get_property(TYPE_PROP, str), self, TYPE_PROP)
 
     @type.setter
     def type(self, v: Union[PhenomenologyType, str]) -> None:
@@ -406,10 +386,7 @@ class PointcloudExtension(
     @property
     def encoding(self) -> str:
         """Gets or sets the content encoding or format of the data."""
-        result = self._get_property(ENCODING_PROP, str)
-        if result is None:
-            raise pystac.RequiredPropertyMissing(self, ENCODING_PROP)
-        return result
+        return get_required(self._get_property(ENCODING_PROP, str), self, ENCODING_PROP)
 
     @encoding.setter
     def encoding(self, v: str) -> None:
@@ -420,9 +397,9 @@ class PointcloudExtension(
         """Gets or sets the list of :class:`Schema` instances defining
         dimensions and types for the data.
         """
-        result = self._get_property(SCHEMAS_PROP, List[Dict[str, Any]])
-        if result is None:
-            raise pystac.RequiredPropertyMissing(self, SCHEMAS_PROP)
+        result = get_required(
+            self._get_property(SCHEMAS_PROP, List[Dict[str, Any]]), self, SCHEMAS_PROP
+        )
         return [Schema(s) for s in result]
 
     @schemas.setter

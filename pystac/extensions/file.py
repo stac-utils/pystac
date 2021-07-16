@@ -69,7 +69,7 @@ class MappingObject:
     def values(self) -> List[Any]:
         """Gets or sets the list of value(s) in the file. At least one array element is
         required."""
-        return get_required(self.properties["values"], self, "values")
+        return get_required(self.properties.get("values"), self, "values")
 
     @values.setter
     def values(self, v: List[Any]) -> None:
@@ -78,7 +78,7 @@ class MappingObject:
     @property
     def summary(self) -> str:
         """Gets or sets the short description of the value(s)."""
-        return get_required(self.properties["summary"], self, "summary")
+        return get_required(self.properties.get("summary"), self, "summary")
 
     @summary.setter
     def summary(self, v: str) -> None:

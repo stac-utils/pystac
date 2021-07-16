@@ -289,10 +289,9 @@ class SarExtension(
     @property
     def observation_direction(self) -> Optional[ObservationDirection]:
         """Gets or sets an observation direction for the item."""
-        result = self._get_property(OBSERVATION_DIRECTION_PROP, str)
-        if result is None:
-            return None
-        return ObservationDirection(result)
+        return map_opt(
+            ObservationDirection, self._get_property(OBSERVATION_DIRECTION_PROP, str)
+        )
 
     @observation_direction.setter
     def observation_direction(self, v: Optional[ObservationDirection]) -> None:
