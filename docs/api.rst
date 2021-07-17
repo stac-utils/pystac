@@ -294,6 +294,106 @@ ExtensionManagementMixin
    :members:
    :show-inheritance:
 
+Datacube Extension
+------------------
+
+These classes are representations of the :stac-ext:`EO Extension Spec <eo>`.
+
+DimensionType
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.DimensionType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+HorizontalSpatialDimensionAxis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.HorizontalSpatialDimensionAxis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+VerticalSpatialDimensionAxis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VerticalSpatialDimensionAxis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Dimension
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.Dimension
+   :members:
+   :show-inheritance:
+
+HorizontalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.HorizontalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+VerticalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VerticalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+TemporalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.TemporalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AdditionalDimension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.AdditionalDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+DatacubeExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.DatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+CollectionDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.CollectionDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+ItemDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.ItemDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AssetDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.AssetDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 Electro-Optical Extension
 -------------------------
 
@@ -365,6 +465,27 @@ FileExtension
    :show-inheritance:
    :undoc-members:
 
+Item Assets Extension
+---------------------
+
+These classes are representations of the :stac-ext:`Item Assets Extension Spec
+<item-assets>`.
+
+AssetDefinition
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.item_assets.AssetDefinition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ItemAssetsExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.item_assets.ItemAssetsExtension
+   :members:
+   :show-inheritance:
+
 Label Extension
 ---------------
 
@@ -423,17 +544,62 @@ LabelExtension
 Pointcloud Extension
 --------------------
 
-Implements the :stac-ext:`Point Cloud Extension <pointcloud>`.
+These classes are representations of the :stac-ext:`Pointcloud Extension Spec
+<pointcloud>`.
 
-PointcloudItemExt
+PhenomenologyType
 ~~~~~~~~~~~~~~~~~
 
-**TEMPORARILY REMOVED**
+.. autoclass:: pystac.extensions.pointcloud.PhenomenologyType
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. .. autoclass:: pystac.extensions.pointcloud.PointcloudItemExt
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+SchemaType
+~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.SchemaType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Schema
+~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.Schema
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+Statistic
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.Statistic
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+PointcloudExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.PointcloudExtension
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+ItemPointcloudExtension
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.ItemPointcloudExtension
+   :members:
+   :show-inheritance:
+
+AssetPointcloudExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.pointcloud.AssetPointcloudExtension
+   :members:
+   :show-inheritance:
 
 Projection Extension
 --------------------
@@ -499,8 +665,63 @@ RasterExtension
    :show-inheritance:
    :inherited-members:
 
+SAR Extension
+-------------
+These classes are representations of the :stac-ext:`SAR Extension Spec
+<sar>`.
+
+FrequencyBand
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.FrequencyBand
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Polarization
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.Polarization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ObservationDirection
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.ObservationDirection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+SarExtension
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.SarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+ItemSarExtension
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.ItemSarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AssetSarExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.sar.AssetSarExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 Satellite Extension
 -------------------
+These classes are representations of the :stac-ext:`Satellite Extension Spec
+<sat>`.
 
 OrbitState
 ~~~~~~~~~~

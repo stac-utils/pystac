@@ -231,7 +231,7 @@ class SatSummariesTest(unittest.TestCase):
 
     def test_platform_international_designation(self) -> None:
         collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection)
+        summaries_ext = SatExtension.summaries(collection, True)
         platform_international_designator_list = ["2018-080A"]
 
         summaries_ext.platform_international_designator = ["2018-080A"]
@@ -250,7 +250,7 @@ class SatSummariesTest(unittest.TestCase):
 
     def test_orbit_state(self) -> None:
         collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection)
+        summaries_ext = SatExtension.summaries(collection, True)
         orbit_state_list = [OrbitState.ASCENDING]
 
         summaries_ext.orbit_state = orbit_state_list
@@ -269,7 +269,7 @@ class SatSummariesTest(unittest.TestCase):
 
     def test_absolute_orbit(self) -> None:
         collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection)
+        summaries_ext = SatExtension.summaries(collection, True)
         absolute_orbit_range = RangeSummary(2000, 3000)
 
         summaries_ext.absolute_orbit = absolute_orbit_range
@@ -288,7 +288,7 @@ class SatSummariesTest(unittest.TestCase):
 
     def test_relative_orbit(self) -> None:
         collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection)
+        summaries_ext = SatExtension.summaries(collection, True)
         relative_orbit_range = RangeSummary(50, 100)
 
         summaries_ext.relative_orbit = relative_orbit_range
@@ -307,7 +307,7 @@ class SatSummariesTest(unittest.TestCase):
 
     def test_anx_datetime(self) -> None:
         collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection)
+        summaries_ext = SatExtension.summaries(collection, True)
         anx_datetime_range = RangeSummary(
             str_to_datetime("2020-01-01T00:00:00.000Z"),
             str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -329,3 +329,20 @@ class SatSummariesTest(unittest.TestCase):
                 "maximum": datetime_to_str(anx_datetime_range.maximum),
             },
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        col = self.collection()
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            SatExtension.summaries,
+            col,
+            False,
+        )
+        _ = SatExtension.summaries(col, True)
+
+        self.assertIn(SatExtension.get_schema_uri(), col.stac_extensions)
+
+        SatExtension.remove_from(col)
+        self.assertNotIn(SatExtension.get_schema_uri(), col.stac_extensions)

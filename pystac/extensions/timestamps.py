@@ -5,7 +5,7 @@ https://github.com/stac-extensions/timestamps
 
 from datetime import datetime as datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, cast
+from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -26,7 +26,9 @@ UNPUBLISHED_PROP = "unpublished"
 
 
 class TimestampsExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -127,23 +129,22 @@ class TimestampsExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesTimestampsExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesTimestampsExtension":
         """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesTimestampsExtension(obj)
 
 

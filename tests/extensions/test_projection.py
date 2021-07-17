@@ -222,6 +222,28 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
+    def test_crs_string(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        ProjectionExtension.remove_from(item)
+        for key in list(item.properties.keys()):
+            if key.startswith("proj:"):
+                item.properties.pop(key)
+        self.assertIsNone(item.properties.get("proj:epsg"))
+        self.assertIsNone(item.properties.get("proj:wkt2"))
+        self.assertIsNone(item.properties.get("proj:projjson"))
+
+        projection = ProjectionExtension.ext(item, add_if_missing=True)
+        self.assertIsNone(projection.crs_string)
+
+        projection.projjson = PROJJSON
+        self.assertEqual(projection.crs_string, json.dumps(PROJJSON))
+
+        projection.wkt2 = WKT2
+        self.assertEqual(projection.crs_string, WKT2)
+
+        projection.epsg = 4326
+        self.assertEqual(projection.crs_string, "EPSG:4326")
+
     def test_geometry(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -483,3 +505,20 @@ class ProjectionSummariesTest(unittest.TestCase):
         col_dict = col.to_dict()
         self.assertEqual(len(col_dict["summaries"]["proj:epsg"]), 1)
         self.assertEqual(col_dict["summaries"]["proj:epsg"][0], 4326)
+
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.example_uri)
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            ProjectionExtension.summaries,
+            col,
+            False,
+        )
+        _ = ProjectionExtension.summaries(col, True)
+
+        self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+
+        ProjectionExtension.remove_from(col)
+        self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)

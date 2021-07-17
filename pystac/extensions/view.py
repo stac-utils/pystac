@@ -3,7 +3,7 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.summaries import RangeSummary
@@ -27,7 +27,9 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 
 class ViewExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
@@ -156,23 +158,22 @@ class ViewExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], ItemViewExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesViewExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesViewExtension":
         """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesViewExtension(obj)
 
 

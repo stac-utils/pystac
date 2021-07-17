@@ -30,14 +30,13 @@ from pystac.collection import (
     Extent,
     SpatialExtent,
     TemporalExtent,
-    Provider,
-    ProviderRole,
     Summaries,
 )
+from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary
-from pystac.item import Item, Asset, CommonMetadata
+from pystac.item import Item, Asset
 from pystac.item_collection import ItemCollection
-
+from pystac.provider import ProviderRole, Provider
 import pystac.validation
 
 import pystac.extensions.hooks

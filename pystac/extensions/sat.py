@@ -6,7 +6,7 @@ https://github.com/stac-extensions/sat
 import enum
 from datetime import datetime as Datetime
 from pystac.summaries import RangeSummary
-from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, cast
+from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -38,7 +38,9 @@ class OrbitState(str, enum.Enum):
 
 
 class SatExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -147,23 +149,22 @@ class SatExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], ItemSatExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"Satellite extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesSatExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesSatExtension":
         """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesSatExtension(obj)
 
 

@@ -12,6 +12,7 @@ from typing import (
     Optional,
     Tuple,
     TypeVar,
+    Union,
     cast,
 )
 
@@ -23,7 +24,7 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions import view
+from pystac.extensions import view, projection
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
@@ -120,7 +121,7 @@ class Band:
         Returns:
             str
         """
-        return get_required(self.properties["name"], self, "name")
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -274,14 +275,15 @@ class Band:
 
 
 class EOExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
     :stac-ext:`Electro-Optical Extension <eo>`. This class is generic over the type of
     STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.
-    Asset`).
+    :class:`~pystac.Asset`).
 
     To create a concrete instance of :class:`EOExtension`, use the
     :meth:`EOExtension.ext` method. For example:
@@ -296,7 +298,7 @@ class EOExtension(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
         """Applies label extension properties to the extended :class:`~pystac.Item` or
-        :class:`~pystac.Collection`.
+        :class:`~pystac.Asset`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
@@ -359,23 +361,22 @@ class EOExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesEOExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesEOExtension":
         """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesEOExtension(obj)
 
 
@@ -548,6 +549,22 @@ class EOExtensionHooks(ExtensionHooks):
                             "eo:{}".format(field)
                         ]
                         del obj["properties"]["eo:{}".format(field)]
+
+            # eo:epsg became proj:epsg
+            eo_epsg = PREFIX + "epsg"
+            proj_epsg = projection.PREFIX + "epsg"
+            if eo_epsg in obj["properties"] and proj_epsg not in obj["properties"]:
+                obj["properties"][proj_epsg] = obj["properties"].pop(eo_epsg)
+                obj["stac_extensions"] = obj.get("stac_extensions", [])
+                if (
+                    projection.ProjectionExtension.get_schema_uri()
+                    not in obj["stac_extensions"]
+                ):
+                    obj["stac_extensions"].append(
+                        projection.ProjectionExtension.get_schema_uri()
+                    )
+                if not any(prop.startswith(PREFIX) for prop in obj["properties"]):
+                    obj["stac_extensions"].remove(EOExtension.get_schema_uri())
 
         if version < "1.0.0-beta.1" and info.object_type == pystac.STACObjectType.ITEM:
             # gsd moved from eo to common metadata

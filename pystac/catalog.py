@@ -626,7 +626,6 @@ class Catalog(STACObject):
         template: str,
         defaults: Optional[Dict[str, Any]] = None,
         parent_ids: Optional[List[str]] = None,
-        **kwargs: Any,
     ) -> List["Catalog"]:
         """Walks through the catalog and generates subcatalogs
         for items based on the template string.
@@ -963,6 +962,9 @@ class Catalog(STACObject):
 
             if link["rel"] != pystac.RelType.SELF or href is None:
                 cat.add_link(Link.from_dict(link))
+
+        if root:
+            cat.set_root(root)
 
         return cat
 

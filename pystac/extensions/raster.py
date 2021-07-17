@@ -4,7 +4,7 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
 from pystac.extensions.base import (
@@ -272,7 +272,7 @@ class Histogram:
         Returns:
             int
         """
-        return get_required(self.properties["count"], self, "count")
+        return get_required(self.properties.get("count"), self, "count")
 
     @count.setter
     def count(self, v: int) -> None:
@@ -285,7 +285,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties["min"], self, "min")
+        return get_required(self.properties.get("min"), self, "min")
 
     @min.setter
     def min(self, v: float) -> None:
@@ -298,7 +298,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties["max"], self, "max")
+        return get_required(self.properties.get("max"), self, "max")
 
     @max.setter
     def max(self, v: float) -> None:
@@ -312,7 +312,7 @@ class Histogram:
         Returns:
             List[int]
         """
-        return get_required(self.properties["buckets"], self, "buckets")
+        return get_required(self.properties.get("buckets"), self, "buckets")
 
     @buckets.setter
     def buckets(self, v: List[int]) -> None:
@@ -625,7 +625,9 @@ class RasterBand:
         return self.properties
 
 
-class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]):
+class RasterExtension(
+    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
+):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from
     the :stac-ext:`Raster Extension <raster>`. This class is generic over
@@ -702,17 +704,18 @@ class RasterExtension(PropertiesExtension, ExtensionManagementMixin[pystac.Item]
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(
                 f"Raster extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesRasterExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesRasterExtension":
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
 
 

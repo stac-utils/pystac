@@ -6,6 +6,7 @@ from pystac import ExtensionTypeError, Item
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
 from pystac.extensions.eo import EOExtension, Band
+from pystac.extensions.projection import ProjectionExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -214,6 +215,23 @@ class EOTest(unittest.TestCase):
         self.assertEqual(len(col_dict["summaries"]["eo:bands"]), 1)
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
 
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            EOExtension.summaries,
+            col,
+            False,
+        )
+        _ = EOExtension.summaries(col, add_if_missing=True)
+
+        self.assertIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
+        EOExtension.remove_from(col)
+        self.assertNotIn(EOExtension.get_schema_uri(), col.stac_extensions)
+
     def test_read_pre_09_fields_into_common_metadata(self) -> None:
         eo_item = pystac.Item.from_file(
             TestCases.get_path(
@@ -299,6 +317,14 @@ class EOTest(unittest.TestCase):
 
         self.assertIn(EOExtension.get_schema_uri(), item.stac_extensions)
 
+    def test_asset_ext_add_to_ownerless_asset(self) -> None:
+        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        asset_dict = item.assets["thumbnail"].to_dict()
+        asset = pystac.Asset.from_dict(asset_dict)
+
+        with self.assertRaises(pystac.STACError):
+            _ = EOExtension.ext(asset, add_if_missing=True)
+
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:
@@ -308,3 +334,23 @@ class EOTest(unittest.TestCase):
             EOExtension.ext,
             object(),
         )
+
+
+class EOMigrationTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.item_0_8_path = TestCases.get_path(
+            "data-files/examples/0.8.1/item-spec/examples/sentinel2-sample.json"
+        )
+
+    def test_migration(self) -> None:
+        with open(self.item_0_8_path) as src:
+            item_dict = json.load(src)
+
+        self.assertIn("eo:epsg", item_dict["properties"])
+
+        item = Item.from_file(self.item_0_8_path)
+
+        self.assertNotIn("eo:epsg", item.properties)
+        self.assertIn("proj:epsg", item.properties)
+        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)

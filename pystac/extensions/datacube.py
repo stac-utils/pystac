@@ -4,6 +4,7 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
+from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -12,13 +13,14 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required, map_opt
+from pystac.utils import get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
 
-DIMENSIONS_PROP = "cube:dimensions"
+PREFIX: str = "cube:"
+DIMENSIONS_PROP = PREFIX + "dimensions"
 
 # Dimension properties
 DIM_TYPE_PROP = "type"
@@ -31,24 +33,60 @@ DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
 
 
+class DimensionType(str, Enum):
+    """Dimension object types for spatial and temporal Dimension Objects."""
+
+    SPATIAL = "spatial"
+    TEMPORAL = "temporal"
+
+
+class HorizontalSpatialDimensionAxis(str, Enum):
+    """Allowed values for ``axis`` field of :class:`HorizontalSpatialDimension`
+    object."""
+
+    X = "x"
+    Y = "y"
+
+
+class VerticalSpatialDimensionAxis(str, Enum):
+    """Allowed values for ``axis`` field of :class:`VerticalSpatialDimension`
+    object."""
+
+    Z = "z"
+
+
 class Dimension(ABC):
+    """Object representing a dimension of the datacube. The fields contained in
+    Dimension Object vary by ``type``. See the :stac-ext:`Datacube Dimension Object
+    <datacube#dimension-object>` docs for details.
+    """
+
     properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
     @property
-    def dim_type(self) -> str:
+    def dim_type(self) -> Union[DimensionType, str]:
+        """The type of the dimension. Must be ``"spatial"`` for :stac-ext:`Horizontal
+        Spatial Dimension Objects <datacube#horizontal-spatial-dimension-object>` or
+        :stac-ext:`Vertical Spatial Dimension Objects
+        <datacube#vertical-spatial-dimension-object>`, and ``"temporal"`` for
+        :stac-ext:`Temporal Dimension Objects <datacube#temporal-dimension-object>`. May
+        be an arbitrary string for :stac-ext:`Additional Dimension Objects
+        <datacube#additional-dimension-object>`."""
         return get_required(
             self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
         )
 
     @dim_type.setter
-    def dim_type(self, v: str) -> None:
+    def dim_type(self, v: Union[DimensionType, str]) -> None:
         self.properties[DIM_TYPE_PROP] = v
 
     @property
     def description(self) -> Optional[str]:
+        """Detailed multi-line description to explain the dimension. `CommonMark 0.29
+        <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
         return self.properties.get(DIM_DESC_PROP)
 
     @description.setter
@@ -63,18 +101,18 @@ class Dimension(ABC):
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Dimension":
-        dim_type = d.get(DIM_TYPE_PROP)
-        if dim_type is None:
-            raise pystac.RequiredPropertyMissing("cube_dimension", DIM_TYPE_PROP)
-        if dim_type == "spatial":
-            axis = d.get(DIM_AXIS_PROP)
-            if axis is None:
-                raise pystac.RequiredPropertyMissing("cube_dimension", DIM_AXIS_PROP)
+        dim_type: str = get_required(
+            d.get(DIM_TYPE_PROP), "cube_dimension", DIM_TYPE_PROP
+        )
+        if dim_type == DimensionType.SPATIAL:
+            axis: str = get_required(
+                d.get(DIM_AXIS_PROP), "cube_dimension", DIM_AXIS_PROP
+            )
             if axis == "z":
                 return VerticalSpatialDimension(d)
             else:
                 return HorizontalSpatialDimension(d)
-        elif dim_type == "temporal":
+        elif dim_type == DimensionType.TEMPORAL:
             # The v1.0.0 spec says that AdditionalDimensions can have
             # type 'temporal', but it is unclear how to differentiate that
             # from a temporal dimension. Just key off of type for now.
@@ -86,17 +124,20 @@ class Dimension(ABC):
 
 class HorizontalSpatialDimension(Dimension):
     @property
-    def axis(self) -> str:
+    def axis(self) -> HorizontalSpatialDimensionAxis:
+        """Axis of the spatial dimension. Must be one of ``"x"`` or ``"y"``."""
         return get_required(
             self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
         )
 
     @axis.setter
-    def axis(self, v: str) -> None:
+    def axis(self, v: HorizontalSpatialDimensionAxis) -> None:
         self.properties[DIM_TYPE_PROP] = v
 
     @property
     def extent(self) -> List[float]:
+        """Extent (lower and upper bounds) of the dimension as two-dimensional array.
+        Open intervals with ``None`` are not allowed."""
         return get_required(
             self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
         )
@@ -107,6 +148,7 @@ class HorizontalSpatialDimension(Dimension):
 
     @property
     def values(self) -> Optional[List[float]]:
+        """Optional set of all potential values."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
@@ -118,6 +160,7 @@ class HorizontalSpatialDimension(Dimension):
 
     @property
     def step(self) -> Optional[float]:
+        """The space between the values. Use ``None`` for irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
@@ -132,6 +175,11 @@ class HorizontalSpatialDimension(Dimension):
 
     @property
     def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
+        """The spatial reference system for the data, specified as `numerical EPSG code
+        <http://www.epsg-registry.org/>`__, `WKT2 (ISO 19162) string
+        <http://docs.opengeospatial.org/is/18-010r7/18-010r7.html>`__ or `PROJJSON
+        object <https://proj.org/specifications/projjson.html>`__.
+        Defaults to EPSG code 4326."""
         return self.properties.get(DIM_REF_SYS_PROP)
 
     @reference_system.setter
@@ -144,17 +192,22 @@ class HorizontalSpatialDimension(Dimension):
 
 class VerticalSpatialDimension(Dimension):
     @property
-    def axis(self) -> str:
+    def axis(self) -> VerticalSpatialDimensionAxis:
+        """Axis of the spatial dimension. Always ``"z"``."""
         return get_required(
             self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
         )
 
     @axis.setter
-    def axis(self, v: str) -> None:
+    def axis(self, v: VerticalSpatialDimensionAxis) -> None:
         self.properties[DIM_TYPE_PROP] = v
 
     @property
     def extent(self) -> Optional[List[Optional[float]]]:
+        """If the dimension consists of `ordinal
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`__ values,
+        the extent (lower and upper bounds) of the values as two-dimensional array. Use
+        null for open intervals."""
         return self.properties.get(DIM_EXTENT_PROP)
 
     @extent.setter
@@ -166,6 +219,9 @@ class VerticalSpatialDimension(Dimension):
 
     @property
     def values(self) -> Optional[Union[List[float], List[str]]]:
+        """A set of all potential values, especially useful for `nominal
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`__ values."""
+
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
@@ -177,6 +233,9 @@ class VerticalSpatialDimension(Dimension):
 
     @property
     def step(self) -> Optional[float]:
+        """If the dimension consists of `interval
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Interval_scale>`__ values,
+        the space between the values. Use null for irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
@@ -191,6 +250,8 @@ class VerticalSpatialDimension(Dimension):
 
     @property
     def unit(self) -> Optional[str]:
+        """The unit of measurement for the data, preferably compliant to `UDUNITS-2
+        <https://ncics.org/portfolio/other-resources/udunits2/>`__ units (singular)."""
         return self.properties.get(DIM_UNIT_PROP)
 
     @unit.setter
@@ -202,6 +263,11 @@ class VerticalSpatialDimension(Dimension):
 
     @property
     def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
+        """The spatial reference system for the data, specified as `numerical EPSG code
+        <http://www.epsg-registry.org/>`__, `WKT2 (ISO 19162) string
+        <http://docs.opengeospatial.org/is/18-010r7/18-010r7.html>`__ or `PROJJSON
+        object <https://proj.org/specifications/projjson.html>`__.
+        Defaults to EPSG code 4326."""
         return self.properties.get(DIM_REF_SYS_PROP)
 
     @reference_system.setter
@@ -215,6 +281,10 @@ class VerticalSpatialDimension(Dimension):
 class TemporalDimension(Dimension):
     @property
     def extent(self) -> Optional[List[Optional[str]]]:
+        """Extent (lower and upper bounds) of the dimension as two-dimensional array.
+        The dates and/or times must be strings compliant to `ISO 8601
+        <https://en.wikipedia.org/wiki/ISO_8601>`__. ``None`` is allowed for open date
+        ranges."""
         return self.properties.get(DIM_EXTENT_PROP)
 
     @extent.setter
@@ -226,6 +296,9 @@ class TemporalDimension(Dimension):
 
     @property
     def values(self) -> Optional[List[str]]:
+        """If the dimension consists of set of specific values they can be listed here.
+        The dates and/or times must be strings compliant to `ISO 8601
+        <https://en.wikipedia.org/wiki/ISO_8601>`__."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
@@ -237,6 +310,9 @@ class TemporalDimension(Dimension):
 
     @property
     def step(self) -> Optional[str]:
+        """The space between the temporal instances as `ISO 8601 duration
+        <https://en.wikipedia.org/wiki/ISO_8601#Durations>`__, e.g. P1D. Use null for
+        irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
@@ -253,6 +329,10 @@ class TemporalDimension(Dimension):
 class AdditionalDimension(Dimension):
     @property
     def extent(self) -> Optional[List[Optional[float]]]:
+        """If the dimension consists of `ordinal
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`__ values,
+        the extent (lower and upper bounds) of the values as two-dimensional array. Use
+        null for open intervals."""
         return self.properties.get(DIM_EXTENT_PROP)
 
     @extent.setter
@@ -264,6 +344,8 @@ class AdditionalDimension(Dimension):
 
     @property
     def values(self) -> Optional[Union[List[str], List[float]]]:
+        """A set of all potential values, especially useful for `nominal
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`__ values."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
@@ -275,6 +357,9 @@ class AdditionalDimension(Dimension):
 
     @property
     def step(self) -> Optional[float]:
+        """If the dimension consists of `interval
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Interval_scale>`__ values,
+        the space between the values. Use null for irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
@@ -289,6 +374,8 @@ class AdditionalDimension(Dimension):
 
     @property
     def unit(self) -> Optional[str]:
+        """The unit of measurement for the data, preferably compliant to `UDUNITS-2
+        units <https://ncics.org/portfolio/other-resources/udunits2/>`__ (singular)."""
         return self.properties.get(DIM_UNIT_PROP)
 
     @unit.setter
@@ -300,6 +387,7 @@ class AdditionalDimension(Dimension):
 
     @property
     def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
+        """The reference system for the data."""
         return self.properties.get(DIM_REF_SYS_PROP)
 
     @reference_system.setter
@@ -315,19 +403,40 @@ class DatacubeExtension(
     PropertiesExtension,
     ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
 ):
+    """An abstract class that can be used to extend the properties of a
+    :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
+    properties from the :stac-ext:`Datacube Extension <datacube>`. This class is
+    generic over the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Asset`).
+
+    To create a concrete instance of :class:`DatacubeExtension`, use the
+    :meth:`DatacubeExtension.ext` method. For example:
+
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> dc_ext = DatacubeExtension.ext(item)
+    """
+
     def apply(self, dimensions: Dict[str, Dimension]) -> None:
+        """Applies label extension properties to the extended
+        :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
+
+        Args:
+            bands : A list of available bands where each item is a :class:`~Band`
+                object. If given, requires at least one band.
+            dimensions : Dictionary mapping dimension name to a :class:`Dimension`
+                object.
+        """
         self.dimensions = dimensions
 
     @property
     def dimensions(self) -> Dict[str, Dimension]:
-        return get_required(
-            map_opt(
-                lambda d: {k: Dimension.from_dict(v) for k, v in d.items()},
-                self._get_property(DIMENSIONS_PROP, Dict[str, Any]),
-            ),
-            self,
-            DIMENSIONS_PROP,
+        """Dictionary mapping dimension name to a :class:`Dimension` object."""
+        result = get_required(
+            self._get_property(DIMENSIONS_PROP, Dict[str, Any]), self, DIMENSIONS_PROP
         )
+        return {k: Dimension.from_dict(v) for k, v in result.items()}
 
     @dimensions.setter
     def dimensions(self, v: Dict[str, Dimension]) -> None:
@@ -339,20 +448,24 @@ class DatacubeExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "DatacubeExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`Datacube
+        Extension <datacube>`.
+
+        This extension can be applied to instances of :class:`~pystac.Collection`,
+        :class:`~pystac.Item` or :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Collection):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and obj.owner is not None:
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
@@ -361,6 +474,14 @@ class DatacubeExtension(
 
 
 class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
+    """A concrete implementation of :class:`DatacubeExtension` on an
+    :class:`~pystac.Collection` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Datacube Extension <datacube>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`DatacubeExtension.ext` on an :class:`~pystac.Collection` to extend it.
+    """
+
     collection: pystac.Collection
     properties: Dict[str, Any]
 
@@ -373,6 +494,14 @@ class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
 
 
 class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
+    """A concrete implementation of :class:`DatacubeExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    defined in the :stac-ext:`Datacube Extension <datacube>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`DatacubeExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
     item: pystac.Item
     properties: Dict[str, Any]
 
@@ -385,6 +514,14 @@ class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
 
 
 class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
+    """A concrete implementation of :class:`DatacubeExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    in the :stac-ext:`Datacube Extension <datacube>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`EOExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
     asset_href: str
     properties: Dict[str, Any]
     additional_read_properties: Optional[List[Dict[str, Any]]]

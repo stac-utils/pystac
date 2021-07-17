@@ -1,8 +1,2 @@
-ipython==7.25.0
-Sphinx==4.0.3
-sphinxcontrib-fulltoc==1.2.0
-nbsphinx==0.8.6
-
-jinja2<4.0
-
+-r ./requirements-docs.txt
 -r ./requirements-test.txt

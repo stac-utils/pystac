@@ -236,3 +236,22 @@ class RasterTest(unittest.TestCase):
             RasterExtension.ext,
             object(),
         )
+
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(
+            TestCases.get_path("data-files/label/spacenet-roads/roads_collection.json")
+        )
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            RasterExtension.summaries,
+            col,
+            False,
+        )
+        _ = RasterExtension.summaries(col, True)
+
+        self.assertIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+
+        RasterExtension.remove_from(col)
+        self.assertNotIn(RasterExtension.get_schema_uri(), col.stac_extensions)

@@ -4,34 +4,40 @@ https://github.com/stac-extensions/sar
 """
 
 import enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast, Union
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.summaries import RangeSummary
+from pystac.extensions.base import (
+    ExtensionManagementMixin,
+    PropertiesExtension,
+    SummariesExtension,
+)
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
+PREFIX: str = "sar:"
 
 # Required
-INSTRUMENT_MODE: str = "sar:instrument_mode"
-FREQUENCY_BAND: str = "sar:frequency_band"
-POLARIZATIONS: str = "sar:polarizations"
-PRODUCT_TYPE: str = "sar:product_type"
+INSTRUMENT_MODE_PROP: str = PREFIX + "instrument_mode"
+FREQUENCY_BAND_PROP: str = PREFIX + "frequency_band"
+POLARIZATIONS_PROP: str = PREFIX + "polarizations"
+PRODUCT_TYPE_PROP: str = PREFIX + "product_type"
 
 # Not required
-CENTER_FREQUENCY: str = "sar:center_frequency"
-RESOLUTION_RANGE: str = "sar:resolution_range"
-RESOLUTION_AZIMUTH: str = "sar:resolution_azimuth"
-PIXEL_SPACING_RANGE: str = "sar:pixel_spacing_range"
-PIXEL_SPACING_AZIMUTH: str = "sar:pixel_spacing_azimuth"
-LOOKS_RANGE: str = "sar:looks_range"
-LOOKS_AZIMUTH: str = "sar:looks_azimuth"
-LOOKS_EQUIVALENT_NUMBER: str = "sar:looks_equivalent_number"
-OBSERVATION_DIRECTION: str = "sar:observation_direction"
+CENTER_FREQUENCY_PROP: str = PREFIX + "center_frequency"
+RESOLUTION_RANGE_PROP: str = PREFIX + "resolution_range"
+RESOLUTION_AZIMUTH_PROP: str = PREFIX + "resolution_azimuth"
+PIXEL_SPACING_RANGE_PROP: str = PREFIX + "pixel_spacing_range"
+PIXEL_SPACING_AZIMUTH_PROP: str = PREFIX + "pixel_spacing_azimuth"
+LOOKS_RANGE_PROP: str = PREFIX + "looks_range"
+LOOKS_AZIMUTH_PROP: str = PREFIX + "looks_azimuth"
+LOOKS_EQUIVALENT_NUMBER_PROP: str = PREFIX + "looks_equivalent_number"
+OBSERVATION_DIRECTION_PROP: str = PREFIX + "observation_direction"
 
 
 class FrequencyBand(str, enum.Enum):
@@ -45,32 +51,36 @@ class FrequencyBand(str, enum.Enum):
     KA = "Ka"
 
 
-class Polarization(enum.Enum):
+class Polarization(str, enum.Enum):
     HH = "HH"
     VV = "VV"
     HV = "HV"
     VH = "VH"
 
 
-class ObservationDirection(enum.Enum):
+class ObservationDirection(str, enum.Enum):
     LEFT = "left"
     RIGHT = "right"
 
 
 class SarExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
-    """SarItemExt extends Item to add sar properties to a STAC Item.
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
+    :stac-ext:`SAR Extension <sar>`. This class is generic over the type of
+    STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Asset`).
 
-    Args:
-        item : The item to be extended.
+    To create a concrete instance of :class:`SARExtension`, use the
+    :meth:`SARExtension.ext` method. For example:
 
-    Attributes:
-        item : The item that is being extended.
+    .. code-block:: python
 
-    Note:
-        Using SarItemExt to directly wrap an item will add the 'sar'
-        extension ID to the item's stac_extensions.
+       >>> item: pystac.Item = ...
+       >>> sar_ext = SARExtension.ext(item)
     """
 
     def apply(
@@ -149,156 +159,143 @@ class SarExtension(
 
     @property
     def instrument_mode(self) -> str:
-        """Get or sets an instrument mode string for the item.
-
-        Returns:
-            str
-        """
+        """Gets or sets an instrument mode string for the item."""
         return get_required(
-            self._get_property(INSTRUMENT_MODE, str), self, INSTRUMENT_MODE
+            self._get_property(INSTRUMENT_MODE_PROP, str), self, INSTRUMENT_MODE_PROP
         )
 
     @instrument_mode.setter
     def instrument_mode(self, v: str) -> None:
-        self._set_property(INSTRUMENT_MODE, v, pop_if_none=False)
+        self._set_property(INSTRUMENT_MODE_PROP, v, pop_if_none=False)
 
     @property
     def frequency_band(self) -> FrequencyBand:
-        """Get or sets a FrequencyBand for the item.
-
-        Returns:
-            FrequencyBand
-        """
+        """Gets or sets a FrequencyBand for the item."""
         return get_required(
             map_opt(
-                lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND, str)
+                lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND_PROP, str)
             ),
             self,
-            FREQUENCY_BAND,
+            FREQUENCY_BAND_PROP,
         )
 
     @frequency_band.setter
     def frequency_band(self, v: FrequencyBand) -> None:
-        self._set_property(FREQUENCY_BAND, v.value, pop_if_none=False)
+        self._set_property(FREQUENCY_BAND_PROP, v.value, pop_if_none=False)
 
     @property
     def polarizations(self) -> List[Polarization]:
-        """Get or sets a list of polarizations for the item.
-
-        Returns:
-            List[Polarization]
-        """
+        """Gets or sets a list of polarizations for the item."""
         return get_required(
             map_opt(
                 lambda values: [Polarization(v) for v in values],
-                self._get_property(POLARIZATIONS, List[str]),
+                self._get_property(POLARIZATIONS_PROP, List[str]),
             ),
             self,
-            POLARIZATIONS,
+            POLARIZATIONS_PROP,
         )
 
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
         if not isinstance(values, list):
             raise pystac.STACError(f'polarizations must be a list. Invalid "{values}"')
-        self._set_property(POLARIZATIONS, [v.value for v in values], pop_if_none=False)
+        self._set_property(
+            POLARIZATIONS_PROP, [v.value for v in values], pop_if_none=False
+        )
 
     @property
     def product_type(self) -> str:
-        """Get or sets a product type string for the item.
-
-        Returns:
-            str
-        """
-        return get_required(self._get_property(PRODUCT_TYPE, str), self, PRODUCT_TYPE)
+        """Gets or sets a product type string for the item."""
+        return get_required(
+            self._get_property(PRODUCT_TYPE_PROP, str), self, PRODUCT_TYPE_PROP
+        )
 
     @product_type.setter
     def product_type(self, v: str) -> None:
-        self._set_property(PRODUCT_TYPE, v, pop_if_none=False)
+        self._set_property(PRODUCT_TYPE_PROP, v, pop_if_none=False)
 
     @property
     def center_frequency(self) -> Optional[float]:
-        """Get or sets a center frequency for the item."""
-        return self._get_property(CENTER_FREQUENCY, float)
+        """Gets or sets a center frequency for the item."""
+        return self._get_property(CENTER_FREQUENCY_PROP, float)
 
     @center_frequency.setter
     def center_frequency(self, v: Optional[float]) -> None:
-        self._set_property(CENTER_FREQUENCY, v)
+        self._set_property(CENTER_FREQUENCY_PROP, v)
 
     @property
     def resolution_range(self) -> Optional[float]:
-        """Get or sets a resolution range for the item."""
-        return self._get_property(RESOLUTION_RANGE, float)
+        """Gets or sets a resolution range for the item."""
+        return self._get_property(RESOLUTION_RANGE_PROP, float)
 
     @resolution_range.setter
     def resolution_range(self, v: Optional[float]) -> None:
-        self._set_property(RESOLUTION_RANGE, v)
+        self._set_property(RESOLUTION_RANGE_PROP, v)
 
     @property
     def resolution_azimuth(self) -> Optional[float]:
-        """Get or sets a resolution azimuth for the item."""
-        return self._get_property(RESOLUTION_AZIMUTH, float)
+        """Gets or sets a resolution azimuth for the item."""
+        return self._get_property(RESOLUTION_AZIMUTH_PROP, float)
 
     @resolution_azimuth.setter
     def resolution_azimuth(self, v: Optional[float]) -> None:
-        self._set_property(RESOLUTION_AZIMUTH, v)
+        self._set_property(RESOLUTION_AZIMUTH_PROP, v)
 
     @property
     def pixel_spacing_range(self) -> Optional[float]:
-        """Get or sets a pixel spacing range for the item."""
-        return self._get_property(PIXEL_SPACING_RANGE, float)
+        """Gets or sets a pixel spacing range for the item."""
+        return self._get_property(PIXEL_SPACING_RANGE_PROP, float)
 
     @pixel_spacing_range.setter
     def pixel_spacing_range(self, v: Optional[float]) -> None:
-        self._set_property(PIXEL_SPACING_RANGE, v)
+        self._set_property(PIXEL_SPACING_RANGE_PROP, v)
 
     @property
     def pixel_spacing_azimuth(self) -> Optional[float]:
-        """Get or sets a pixel spacing azimuth for the item."""
-        return self._get_property(PIXEL_SPACING_AZIMUTH, float)
+        """Gets or sets a pixel spacing azimuth for the item."""
+        return self._get_property(PIXEL_SPACING_AZIMUTH_PROP, float)
 
     @pixel_spacing_azimuth.setter
     def pixel_spacing_azimuth(self, v: Optional[float]) -> None:
-        self._set_property(PIXEL_SPACING_AZIMUTH, v)
+        self._set_property(PIXEL_SPACING_AZIMUTH_PROP, v)
 
     @property
     def looks_range(self) -> Optional[int]:
-        """Get or sets a looks range for the item."""
-        return self._get_property(LOOKS_RANGE, int)
+        """Gets or sets a looks range for the item."""
+        return self._get_property(LOOKS_RANGE_PROP, int)
 
     @looks_range.setter
     def looks_range(self, v: Optional[int]) -> None:
-        self._set_property(LOOKS_RANGE, v)
+        self._set_property(LOOKS_RANGE_PROP, v)
 
     @property
     def looks_azimuth(self) -> Optional[int]:
-        """Get or sets a looks azimuth for the item."""
-        return self._get_property(LOOKS_AZIMUTH, int)
+        """Gets or sets a looks azimuth for the item."""
+        return self._get_property(LOOKS_AZIMUTH_PROP, int)
 
     @looks_azimuth.setter
     def looks_azimuth(self, v: Optional[int]) -> None:
-        self._set_property(LOOKS_AZIMUTH, v)
+        self._set_property(LOOKS_AZIMUTH_PROP, v)
 
     @property
     def looks_equivalent_number(self) -> Optional[float]:
-        """Get or sets a looks equivalent number for the item."""
-        return self._get_property(LOOKS_EQUIVALENT_NUMBER, float)
+        """Gets or sets a looks equivalent number for the item."""
+        return self._get_property(LOOKS_EQUIVALENT_NUMBER_PROP, float)
 
     @looks_equivalent_number.setter
     def looks_equivalent_number(self, v: Optional[float]) -> None:
-        self._set_property(LOOKS_EQUIVALENT_NUMBER, v)
+        self._set_property(LOOKS_EQUIVALENT_NUMBER_PROP, v)
 
     @property
     def observation_direction(self) -> Optional[ObservationDirection]:
-        """Get or sets an observation direction for the item."""
-        result = self._get_property(OBSERVATION_DIRECTION, str)
-        if result is None:
-            return None
-        return ObservationDirection(result)
+        """Gets or sets an observation direction for the item."""
+        return map_opt(
+            ObservationDirection, self._get_property(OBSERVATION_DIRECTION_PROP, str)
+        )
 
     @observation_direction.setter
     def observation_direction(self, v: Optional[ObservationDirection]) -> None:
-        self._set_property(OBSERVATION_DIRECTION, map_opt(lambda x: x.value, v))
+        self._set_property(OBSERVATION_DIRECTION_PROP, map_opt(lambda x: x.value, v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -306,23 +303,55 @@ class SarExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "SarExtension[T]":
+        """Extends the given STAC Object with properties from the :stac-ext:`SAR
+        Extension <sar>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
+                raise pystac.ExtensionTypeError(
+                    "SAR extension does not apply to Collection Assets."
+                )
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"SAR extension does not apply to type '{type(obj).__name__}'"
             )
 
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesSarExtension":
+        """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
+        return SummariesSarExtension(obj)
+
 
 class ItemSarExtension(SarExtension[pystac.Item]):
+    """A concrete implementation of :class:`SARExtension` on an :class:`~pystac.Item`
+    that extends the properties of the Item to include properties defined in the
+    :stac-ext:`SAR Extension <sar>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`SARExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -332,6 +361,24 @@ class ItemSarExtension(SarExtension[pystac.Item]):
 
 
 class AssetSarExtension(SarExtension[pystac.Asset]):
+    """A concrete implementation of :class:`SARExtension` on an :class:`~pystac.Asset`
+    that extends the Asset fields to include properties defined in the
+    :stac-ext:`SAR Extension <sar>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`SARExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
@@ -340,6 +387,169 @@ class AssetSarExtension(SarExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetSarExtension Asset href={}>".format(self.asset_href)
+
+
+class SummariesSarExtension(SummariesExtension):
+    """A concrete implementation of :class:`~SummariesExtension` that extends
+    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
+    defined in the :stac-ext:`SAR Extension <sar>`.
+    """
+
+    @property
+    def instrument_mode(self) -> Optional[List[str]]:
+        """Get or sets the summary of :attr:`SarExtension.instrument_mode` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(INSTRUMENT_MODE_PROP)
+
+    @instrument_mode.setter
+    def instrument_mode(self, v: Optional[List[str]]) -> None:
+        self._set_summary(INSTRUMENT_MODE_PROP, v)
+
+    @property
+    def frequency_band(self) -> Optional[List[FrequencyBand]]:
+        """Get or sets the summary of :attr:`SarExtension.frequency_band` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(FREQUENCY_BAND_PROP)
+
+    @frequency_band.setter
+    def frequency_band(self, v: Optional[List[FrequencyBand]]) -> None:
+        self._set_summary(FREQUENCY_BAND_PROP, v)
+
+    @property
+    def center_frequency(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.center_frequency` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(CENTER_FREQUENCY_PROP)
+
+    @center_frequency.setter
+    def center_frequency(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(CENTER_FREQUENCY_PROP, v)
+
+    @property
+    def polarizations(self) -> Optional[List[Polarization]]:
+        """Get or sets the summary of :attr:`SarExtension.polarizations` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(POLARIZATIONS_PROP)
+
+    @polarizations.setter
+    def polarizations(self, v: Optional[List[Polarization]]) -> None:
+        self._set_summary(POLARIZATIONS_PROP, v)
+
+    @property
+    def product_type(self) -> Optional[List[str]]:
+        """Get or sets the summary of :attr:`SarExtension.product_type` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(PRODUCT_TYPE_PROP)
+
+    @product_type.setter
+    def product_type(self, v: Optional[List[str]]) -> None:
+        self._set_summary(PRODUCT_TYPE_PROP, v)
+
+    @property
+    def resolution_range(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.resolution_range` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(RESOLUTION_RANGE_PROP)
+
+    @resolution_range.setter
+    def resolution_range(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(RESOLUTION_RANGE_PROP, v)
+
+    @property
+    def resolution_azimuth(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.resolution_azimuth` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(RESOLUTION_AZIMUTH_PROP)
+
+    @resolution_azimuth.setter
+    def resolution_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(RESOLUTION_AZIMUTH_PROP, v)
+
+    @property
+    def pixel_spacing_range(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.pixel_spacing_range` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(PIXEL_SPACING_RANGE_PROP)
+
+    @pixel_spacing_range.setter
+    def pixel_spacing_range(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(PIXEL_SPACING_RANGE_PROP, v)
+
+    @property
+    def pixel_spacing_azimuth(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.pixel_spacing_azimuth` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(PIXEL_SPACING_AZIMUTH_PROP)
+
+    @pixel_spacing_azimuth.setter
+    def pixel_spacing_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(PIXEL_SPACING_AZIMUTH_PROP, v)
+
+    @property
+    def looks_range(self) -> Optional[RangeSummary[int]]:
+        """Get or sets the summary of :attr:`SarExtension.looks_range` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(LOOKS_RANGE_PROP)
+
+    @looks_range.setter
+    def looks_range(self, v: Optional[RangeSummary[int]]) -> None:
+        self._set_summary(LOOKS_RANGE_PROP, v)
+
+    @property
+    def looks_azimuth(self) -> Optional[RangeSummary[int]]:
+        """Get or sets the summary of :attr:`SarExtension.looks_azimuth` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(LOOKS_AZIMUTH_PROP)
+
+    @looks_azimuth.setter
+    def looks_azimuth(self, v: Optional[RangeSummary[int]]) -> None:
+        self._set_summary(LOOKS_AZIMUTH_PROP, v)
+
+    @property
+    def looks_equivalent_number(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`SarExtension.looks_equivalent_number` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(LOOKS_EQUIVALENT_NUMBER_PROP)
+
+    @looks_equivalent_number.setter
+    def looks_equivalent_number(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(LOOKS_EQUIVALENT_NUMBER_PROP, v)
+
+    @property
+    def observation_direction(self) -> Optional[List[ObservationDirection]]:
+        """Get or sets the summary of :attr:`SarExtension.observation_direction` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(OBSERVATION_DIRECTION_PROP)
+
+    @observation_direction.setter
+    def observation_direction(self, v: Optional[List[ObservationDirection]]) -> None:
+        self._set_summary(OBSERVATION_DIRECTION_PROP, v)
 
 
 class SarExtensionHooks(ExtensionHooks):
@@ -353,27 +563,45 @@ class SarExtensionHooks(ExtensionHooks):
         if version < "0.9":
             # Some sar fields became common_metadata
             if (
-                "sar:platform" in obj["properties"]
+                PREFIX + "platform" in obj["properties"]
                 and "platform" not in obj["properties"]
             ):
-                obj["properties"]["platform"] = obj["properties"]["sar:platform"]
-                del obj["properties"]["sar:platform"]
+                obj["properties"]["platform"] = obj["properties"].pop(
+                    PREFIX + "platform"
+                )
 
             if (
-                "sar:instrument" in obj["properties"]
+                PREFIX + "instrument" in obj["properties"]
                 and "instruments" not in obj["properties"]
             ):
-                obj["properties"]["instruments"] = [obj["properties"]["sar:instrument"]]
-                del obj["properties"]["sar:instrument"]
+                obj["properties"]["instruments"] = [
+                    obj["properties"].pop(PREFIX + "instrument")
+                ]
 
             if (
-                "sar:constellation" in obj["properties"]
+                PREFIX + "constellation" in obj["properties"]
                 and "constellation" not in obj["properties"]
             ):
-                obj["properties"]["constellation"] = obj["properties"][
-                    "sar:constellation"
+                obj["properties"]["constellation"] = obj["properties"].pop(
+                    PREFIX + "constellation"
+                )
+
+            # Some SAR fields changed property names
+            if (
+                PREFIX + "type" in obj["properties"]
+                and PRODUCT_TYPE_PROP not in obj["properties"]
+            ):
+                obj["properties"][PRODUCT_TYPE_PROP] = obj["properties"].pop(
+                    PREFIX + "type"
+                )
+
+            if (
+                PREFIX + "polarization" in obj["properties"]
+                and POLARIZATIONS_PROP not in obj["properties"]
+            ):
+                obj["properties"][POLARIZATIONS_PROP] = [
+                    obj["properties"].pop(PREFIX + "polarization")
                 ]
-                del obj["properties"]["sar:constellation"]
 
         super().migrate(obj, version, info)
 

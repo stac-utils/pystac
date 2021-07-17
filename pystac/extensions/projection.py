@@ -3,7 +3,8 @@
 https://github.com/stac-extensions/projection
 """
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast
+import json
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.hooks import ExtensionHooks
@@ -30,7 +31,9 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 
 
 class ProjectionExtension(
-    Generic[T], PropertiesExtension, ExtensionManagementMixin[pystac.Item]
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection
@@ -145,6 +148,27 @@ class ProjectionExtension(
         self._set_property(PROJJSON_PROP, v)
 
     @property
+    def crs_string(self) -> Optional[str]:
+        """Returns the coordinate reference system (CRS) string for the extension.
+
+        This string can be used to feed, e.g., ``rasterio.crs.CRS.from_string``.
+        The string is determined by the following heuristic:
+
+        1. If an EPSG code is set, return "EPSG:{code}", else
+        2. If wkt2 is set, return the WKT string, else,
+        3. If projjson is set, return the projjson as a string, else,
+        4. Return None
+        """
+        if self.epsg:
+            return f"EPSG:{self.epsg}"
+        elif self.wkt2:
+            return self.wkt2
+        elif self.projjson:
+            return json.dumps(self.projjson)
+        else:
+            return None
+
+    @property
     def geometry(self) -> Optional[Dict[str, Any]]:
         """Get or sets a Polygon GeoJSON dict representing the footprint of this item.
 
@@ -248,23 +272,22 @@ class ProjectionExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            if add_if_missing:
-                cls.add_to(obj)
-            cls.validate_has_extension(obj)
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if add_if_missing and isinstance(obj.owner, pystac.Item):
-                cls.add_to(obj.owner)
-            cls.validate_has_extension(obj)
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(
                 f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesProjectionExtension":
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> "SummariesProjectionExtension":
         """Returns the extended summaries object for the given collection."""
+        cls.validate_has_extension(obj, add_if_missing)
         return SummariesProjectionExtension(obj)
 
 

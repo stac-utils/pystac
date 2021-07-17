@@ -228,6 +228,14 @@ class CollectionTest(unittest.TestCase):
         _ = Collection.from_dict(param_dict, preserve_dict=False)
         self.assertNotEqual(param_dict, collection_dict)
 
+    def test_from_dict_set_root(self) -> None:
+        path = TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
+        with open(path) as f:
+            collection_dict = json.load(f)
+        catalog = pystac.Catalog(id="test", description="test desc")
+        collection = Collection.from_dict(collection_dict, root=catalog)
+        self.assertIs(collection.get_root(), catalog)
+
     def test_schema_summary(self) -> None:
         collection = pystac.Collection.from_file(
             TestCases.get_path(

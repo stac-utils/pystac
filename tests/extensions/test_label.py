@@ -448,10 +448,27 @@ class LabelSummariesTest(unittest.TestCase):
         "data-files/label/spacenet-roads/roads_collection.json"
     )
 
+    def test_summaries_adds_uri(self) -> None:
+        col = pystac.Collection.from_file(self.EXAMPLE_COLLECTION)
+        col.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            LabelExtension.summaries,
+            col,
+            False,
+        )
+        _ = LabelExtension.summaries(col, True)
+
+        self.assertIn(LabelExtension.get_schema_uri(), col.stac_extensions)
+
+        LabelExtension.remove_from(col)
+        self.assertNotIn(LabelExtension.get_schema_uri(), col.stac_extensions)
+
     def test_label_properties_summary(self) -> None:
         label_properties = ["road_type", "lane_number", "paved"]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
-        label_ext_summaries = LabelExtension.summaries(collection)
+        label_ext_summaries = LabelExtension.summaries(collection, True)
 
         label_ext_summaries.label_properties = label_properties
 
@@ -474,7 +491,7 @@ class LabelSummariesTest(unittest.TestCase):
             LabelClasses({"name": "paved", "classes": ["0", "1"]}),
         ]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
-        label_ext_summaries = LabelExtension.summaries(collection)
+        label_ext_summaries = LabelExtension.summaries(collection, True)
 
         label_ext_summaries.label_classes = label_classes
 
@@ -493,7 +510,7 @@ class LabelSummariesTest(unittest.TestCase):
     def test_label_type_summary(self) -> None:
         label_types = [LabelType.VECTOR]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
-        label_ext_summaries = LabelExtension.summaries(collection)
+        label_ext_summaries = LabelExtension.summaries(collection, True)
 
         label_ext_summaries.label_type = label_types
 
@@ -510,7 +527,7 @@ class LabelSummariesTest(unittest.TestCase):
     def test_label_task_summary(self) -> None:
         label_tasks: List[Union[LabelTask, str]] = [LabelTask.REGRESSION]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
-        label_ext_summaries = LabelExtension.summaries(collection)
+        label_ext_summaries = LabelExtension.summaries(collection, True)
 
         label_ext_summaries.label_tasks = label_tasks
 
@@ -527,7 +544,7 @@ class LabelSummariesTest(unittest.TestCase):
     def test_label_methods_summary(self) -> None:
         label_methods: List[Union[LabelMethod, str]] = [LabelMethod.AUTOMATED]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
-        label_ext_summaries = LabelExtension.summaries(collection)
+        label_ext_summaries = LabelExtension.summaries(collection, True)
 
         label_ext_summaries.label_methods = label_methods
 

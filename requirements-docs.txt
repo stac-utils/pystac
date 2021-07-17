@@ -1,0 +1,6 @@
+ipython==7.25.0
+Sphinx==4.1.1
+sphinxcontrib-fulltoc==1.2.0
+nbsphinx==0.8.6
+
+jinja2<4.0

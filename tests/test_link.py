@@ -1,5 +1,7 @@
 import datetime
+import os.path
 import unittest
+from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
 
 import pystac
@@ -81,6 +83,35 @@ class LinkTest(unittest.TestCase):
     def test_resolve_stac_object_no_root_and_target_is_item(self) -> None:
         link = pystac.Link("my rel", target=self.item)
         link.resolve_stac_object()
+
+    def test_resolved_self_href(self) -> None:
+        catalog = pystac.Catalog(id="test", description="test desc")
+        with TemporaryDirectory() as temporary_directory:
+            catalog.normalize_and_save(temporary_directory)
+            path = os.path.join(temporary_directory, "catalog.json")
+            catalog = pystac.Catalog.from_file(path)
+            link = catalog.get_single_link(pystac.RelType.SELF)
+            assert link
+            link.resolve_stac_object()
+            self.assertEqual(link.get_absolute_href(), path)
+
+    def test_target_getter_setter(self) -> None:
+        link = pystac.Link("my rel", target="./foo/bar.json")
+        self.assertEqual(link.target, "./foo/bar.json")
+        self.assertEqual(link.get_target_str(), "./foo/bar.json")
+
+        link.target = self.item
+        self.assertEqual(link.target, self.item)
+        self.assertEqual(link.get_target_str(), self.item.get_self_href())
+
+        link.target = "./bar/foo.json"
+        self.assertEqual(link.target, "./bar/foo.json")
+
+    def test_get_target_str_no_href(self) -> None:
+        self.item.remove_links("self")
+        link = pystac.Link("self", target=self.item)
+        self.item.add_link(link)
+        self.assertIsNone(link.get_target_str())
 
 
 class StaticLinkTest(unittest.TestCase):

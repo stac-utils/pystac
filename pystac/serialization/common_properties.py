@@ -29,7 +29,6 @@ def merge_common_properties(
     properties_merged = False
 
     collection: Optional[Union[pystac.Collection, Dict[str, Any]]] = None
-    collection_id: Optional[str] = None
     collection_href: Optional[str] = None
 
     stac_version = item_dict.get("stac_version")
@@ -79,7 +78,6 @@ def merge_common_properties(
                     collection = pystac.StacIO.default().read_json(collection_href)
 
     if collection is not None:
-        collection_id = None
         collection_props: Optional[Dict[str, Any]] = None
         if isinstance(collection, pystac.Collection):
             collection_id = collection.id

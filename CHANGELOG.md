@@ -10,6 +10,47 @@
 
 ### Deprecated
 
+### Fixed
+
+## [v1.0.0]
+
+### Added
+
+- `ProjectionExtension.crs_string` to provide a single string to describe the coordinate reference system (CRS).
+  Useful because projections can be defined by EPSG code, WKT, or projjson.
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
+- SAR Extension summaries([#556](https://github.com/stac-utils/pystac/pull/556))
+- Migration for `sar:type` -> `sar:product_type` and `sar:polarization` ->
+  `sar:polarizations` for pre-0.9 catalogs
+  ([#556](https://github.com/stac-utils/pystac/pull/556))
+- Migration from `eo:epsg` -> `proj:epsg` for pre-0.9 catalogs ([#557](https://github.com/stac-utils/pystac/pull/557))
+- Collection summaries for Point Cloud Extension ([#558](https://github.com/stac-utils/pystac/pull/558))
+- `PhenomenologyType` enum for recommended values of `pc:type` & `SchemaType` enum for
+  valid values of `type` in [Point Cloud Schema
+  Objects](https://github.com/stac-extensions/pointcloud#schema-object)
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
+- `to_dict` and equality definition for `extensions.item_asset.AssetDefinition` ([#564](https://github.com/stac-utils/pystac/pull/564))
+- `Asset.common_metadata` property ([#563](https://github.com/stac-utils/pystac/pull/563))
+
+### Changed
+
+- The `from_dict` method on STACObjects will set the object's root link when a `root` parameter is present. An ItemCollection `from_dict` with a root parameter will set the root on each of it's Items. ([#549](https://github.com/stac-utils/pystac/pull/549))
+- Calling `ExtensionManagementMixin.validate_has_extension` with `add_if_missing = True`
+  on an ownerless `Asset` will raise a `STACError` ([#554](https://github.com/stac-utils/pystac/pull/554))
+- `PointcloudSchema` -> `Schema`, `PointcloudStatistic` -> `Statistic` for consistency
+  with naming convention in other extensions
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
+- `RequiredPropertyMissing` always raised when trying to get a required property that is
+  `None` (`STACError` or `KeyError` was previously being raised in some cases)
+  ([#561](https://github.com/stac-utils/pystac/pull/561))
+
+### Fixed
+
+- Added `Collections` as a type that can be extended for extensions whose fields can appear in collection summaries ([#547](https://github.com/stac-utils/pystac/pull/547))
+- Allow resolved self links when getting an object's self href ([#555](https://github.com/stac-utils/pystac/pull/555))
+- Fixed type annotation on SummariesLabelExtension.label_properties setter ([#562](https://github.com/stac-utils/pystac/pull/562))
+- Allow comparable types with alternate parameter naming of __lt__ method to pass structural type linting for RangeSummary ([#562](https://github.com/stac-utils/pystac/pull/562))
+
 ## [v1.0.0-rc.3]
 
 ### Added
@@ -436,7 +477,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0..main>
+[v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>

@@ -6,13 +6,16 @@ import unittest
 
 import pystac
 from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError
+from pystac.errors import ExtensionTypeError, STACError, RequiredPropertyMissing
 from pystac.extensions.pointcloud import (
     AssetPointcloudExtension,
+    PhenomenologyType,
     PointcloudExtension,
-    PointcloudSchema,
-    PointcloudStatistic,
+    Schema,
+    SchemaType,
+    Statistic,
 )
+from pystac.summaries import RangeSummary
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -37,9 +40,9 @@ class PointcloudTest(unittest.TestCase):
         PointcloudExtension.add_to(item)
         PointcloudExtension.ext(item).apply(
             1000,
-            "lidar",
+            PhenomenologyType.LIDAR,
             "laszip",
-            [PointcloudSchema({"name": "X", "size": 8, "type": "floating"})],
+            [Schema({"name": "X", "size": 8, "type": "floating"})],
         )
         self.assertTrue(PointcloudExtension.has_extension(item))
 
@@ -108,7 +111,7 @@ class PointcloudTest(unittest.TestCase):
         self.assertEqual(pc_schemas, pc_item.properties["pc:schemas"])
 
         # Set
-        schema = [PointcloudSchema({"name": "X", "size": 8, "type": "floating"})]
+        schema = [Schema({"name": "X", "size": 8, "type": "floating"})]
         PointcloudExtension.ext(pc_item).schemas = schema
         self.assertEqual(
             [s.to_dict() for s in schema], pc_item.properties["pc:schemas"]
@@ -129,7 +132,7 @@ class PointcloudTest(unittest.TestCase):
 
         # Set
         stats = [
-            PointcloudStatistic(
+            Statistic(
                 {
                     "average": 1,
                     "count": 1,
@@ -169,7 +172,7 @@ class PointcloudTest(unittest.TestCase):
             "size": 8,
             "type": "floating",
         }
-        schema = PointcloudSchema(props)
+        schema = Schema(props)
         self.assertEqual(props, schema.properties)
 
         # test all getters and setters
@@ -181,7 +184,7 @@ class PointcloudTest(unittest.TestCase):
             setattr(schema, k, val)
             self.assertEqual(getattr(schema, k), val)
 
-        schema = PointcloudSchema.create("intensity", 16, "unsigned")
+        schema = Schema.create("intensity", 16, SchemaType.UNSIGNED)
         self.assertEqual(schema.name, "intensity")
         self.assertEqual(schema.size, 16)
         self.assertEqual(schema.type, "unsigned")
@@ -189,13 +192,11 @@ class PointcloudTest(unittest.TestCase):
         with self.assertRaises(STACError):
             schema.size = 0.5  # type: ignore
 
-        empty_schema = PointcloudSchema({})
-        with self.assertRaises(STACError):
-            empty_schema.size
-        with self.assertRaises(STACError):
-            empty_schema.name
-        with self.assertRaises(STACError):
-            empty_schema.type
+        empty_schema = Schema({})
+        for required_prop in {"size", "name", "type"}:
+            with self.subTest(attr=required_prop):
+                with self.assertRaises(RequiredPropertyMissing):
+                    getattr(empty_schema, required_prop)
 
     def test_pointcloud_statistics(self) -> None:
         props: Dict[str, Any] = {
@@ -208,7 +209,7 @@ class PointcloudTest(unittest.TestCase):
             "stddev": 1,
             "variance": 1,
         }
-        stat = PointcloudStatistic(props)
+        stat = Statistic(props)
         self.assertEqual(props, stat.properties)
 
         # test all getters and setters
@@ -220,7 +221,7 @@ class PointcloudTest(unittest.TestCase):
             setattr(stat, k, val)
             self.assertEqual(getattr(stat, k), val)
 
-        stat = PointcloudStatistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
+        stat = Statistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
         self.assertEqual(stat.name, "foo")
         self.assertEqual(stat.position, 1)
         self.assertEqual(stat.average, 2)
@@ -247,8 +248,8 @@ class PointcloudTest(unittest.TestCase):
         stat.variance = None
         self.assertNotIn("variance", stat.properties)
 
-        empty_stat = PointcloudStatistic({})
-        with self.assertRaises(STACError):
+        empty_stat = Statistic({})
+        with self.assertRaises(RequiredPropertyMissing):
             empty_stat.name
 
     def test_statistics_accessor_when_no_stats(self) -> None:
@@ -334,3 +335,119 @@ class PointcloudTest(unittest.TestCase):
         _ = PointcloudExtension.ext(asset, add_if_missing=True)
 
         self.assertIn(PointcloudExtension.get_schema_uri(), item.stac_extensions)
+
+
+class PointcloudSummariesTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        self.collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/multi-extent.json")
+        )
+
+    def test_count(self) -> None:
+        collection = self.collection.clone()
+        summaries_ext = PointcloudExtension.summaries(collection, True)
+        count_range = RangeSummary(1000, 10000)
+
+        summaries_ext.count = count_range
+
+        self.assertEqual(
+            summaries_ext.count,
+            count_range,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertEqual(
+            summaries_dict["pc:count"],
+            count_range.to_dict(),
+        )
+
+    def test_type(self) -> None:
+        collection = self.collection.clone()
+        summaries_ext = PointcloudExtension.summaries(collection, True)
+        type_list = [PhenomenologyType.LIDAR, "something"]
+
+        summaries_ext.type = type_list
+
+        self.assertEqual(
+            summaries_ext.type,
+            type_list,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertEqual(
+            summaries_dict["pc:type"],
+            type_list,
+        )
+
+    def test_encoding(self) -> None:
+        collection = self.collection.clone()
+        summaries_ext = PointcloudExtension.summaries(collection, True)
+        encoding_list = ["LASzip"]
+
+        summaries_ext.encoding = encoding_list
+
+        self.assertEqual(
+            summaries_ext.encoding,
+            encoding_list,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertEqual(
+            summaries_dict["pc:encoding"],
+            encoding_list,
+        )
+
+    def test_density(self) -> None:
+        collection = self.collection.clone()
+        summaries_ext = PointcloudExtension.summaries(collection, True)
+        density_range = RangeSummary(500.0, 1000.0)
+
+        summaries_ext.density = density_range
+
+        self.assertEqual(
+            summaries_ext.density,
+            density_range,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertEqual(
+            summaries_dict["pc:density"],
+            density_range.to_dict(),
+        )
+
+    def test_statistics(self) -> None:
+        collection = self.collection.clone()
+        summaries_ext = PointcloudExtension.summaries(collection, True)
+        statistics_list = [
+            Statistic(
+                {
+                    "average": 637294.1783,
+                    "count": 10653336,
+                    "maximum": 639003.73,
+                    "minimum": 635577.79,
+                    "name": "X",
+                    "position": 0,
+                    "stddev": 967.9329805,
+                    "variance": 936894.2548,
+                }
+            )
+        ]
+
+        summaries_ext.statistics = statistics_list
+
+        self.assertEqual(
+            summaries_ext.statistics,
+            statistics_list,
+        )
+
+        summaries_dict = collection.to_dict()["summaries"]
+
+        self.assertEqual(
+            summaries_dict["pc:statistics"],
+            [s.to_dict() for s in statistics_list],
+        )

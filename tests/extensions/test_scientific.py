@@ -456,3 +456,22 @@ class SummariesScientificTest(unittest.TestCase):
 
         assert new_dois is not None
         self.assertListEqual([PUB2_DOI], new_dois)
+
+    def test_summaries_adds_uri(self) -> None:
+        collection = self.collection.clone()
+        collection.stac_extensions = []
+        self.assertRaisesRegex(
+            pystac.ExtensionNotImplemented,
+            r"Could not find extension schema URI.*",
+            ScientificExtension.summaries,
+            collection,
+            False,
+        )
+        _ = ScientificExtension.summaries(collection, True)
+
+        self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
+
+        ScientificExtension.remove_from(collection)
+        self.assertNotIn(
+            ScientificExtension.get_schema_uri(), collection.stac_extensions
+        )

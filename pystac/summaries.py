@@ -30,15 +30,31 @@ if TYPE_CHECKING:
 from abc import abstractmethod
 
 
-class Comparable(Protocol):
-    """Protocol for annotating comparable types."""
+class _Comparable_x(Protocol):
+    """Protocol for annotating comparable types.
+
+    For matching __lt__ that takes an 'x' parameter
+    (e.g. float)
+    """
 
     @abstractmethod
     def __lt__(self: "T", x: "T") -> bool:
         return NotImplemented
 
 
-T = TypeVar("T", bound=Comparable)
+class _Comparable_other(Protocol):
+    """Protocol for annotating comparable types.
+
+    For matching __lt___ that takes an 'other' parameter
+    (e.g. datetime)
+    """
+
+    @abstractmethod
+    def __lt__(self: "T", other: "T") -> bool:
+        return NotImplemented
+
+
+T = TypeVar("T", bound=Union[_Comparable_x, _Comparable_other])
 
 
 class RangeSummary(Generic[T]):
