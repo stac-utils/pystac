@@ -5,7 +5,7 @@ import pystac
 from pystac import utils
 
 if TYPE_CHECKING:
-    from pystac.collection import Provider
+    from pystac.provider import Provider
     from pystac.asset import Asset
 
 
@@ -91,11 +91,15 @@ class CommonMetadata:
         """
         if asset is None:
             self.properties["start_datetime"] = (
-                None if start_datetime is None else utils.datetime_to_str(start_datetime)
+                None
+                if start_datetime is None
+                else utils.datetime_to_str(start_datetime)
             )
         else:
             asset.extra_fields["start_datetime"] = (
-                None if start_datetime is None else utils.datetime_to_str(start_datetime)
+                None
+                if start_datetime is None
+                else utils.datetime_to_str(start_datetime)
             )
 
     @property
@@ -206,7 +210,9 @@ class CommonMetadata:
     def providers(self, v: Optional[List["Provider"]]) -> None:
         self.set_providers(v)
 
-    def get_providers(self, asset: Optional["Asset"] = None) -> Optional[List["Provider"]]:
+    def get_providers(
+        self, asset: Optional["Asset"] = None
+    ) -> Optional[List["Provider"]]:
         """Gets an Item or an Asset providers.
 
         If an Asset is supplied and the Item property exists on the Asset,
