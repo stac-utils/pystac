@@ -419,7 +419,7 @@ class Item(STACObject):
         Returns:
             CommonMetada: contains all common metadata fields in the items properties
         """
-        return pystac.CommonMetadata(self.properties)
+        return pystac.CommonMetadata(self)
 
     def full_copy(
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
