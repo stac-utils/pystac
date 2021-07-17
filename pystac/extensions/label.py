@@ -722,7 +722,7 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(PROPERTIES_PROP)
 
     @label_properties.setter
-    def label_properties(self, v: Optional[List[LabelClasses]]) -> None:
+    def label_properties(self, v: Optional[List[str]]) -> None:
         self._set_summary(PROPERTIES_PROP, v)
 
     @property
