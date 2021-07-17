@@ -1,10 +1,9 @@
-import json
 import unittest
 
-from pystac import Collection, collection
+from pystac import Collection
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import TestCases
 
 
 class TestItemAssetsExtension(unittest.TestCase):
@@ -38,6 +37,7 @@ class TestItemAssetsExtension(unittest.TestCase):
                 }
             ),
         )
+
 
 class TestAssetDefinition(unittest.TestCase):
     def setUp(self) -> None:
@@ -81,4 +81,3 @@ class TestAssetDefinition(unittest.TestCase):
 
         self.assertEqual(asset_defn.roles, roles)
         self.assertEqual(asset_defn.to_dict()["roles"], roles)
-
