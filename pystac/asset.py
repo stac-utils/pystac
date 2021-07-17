@@ -6,6 +6,7 @@ from pystac import utils
 
 if TYPE_CHECKING:
     from pystac.collection import Collection as Collection_Type
+    from pystac.common_metadata import CommonMetadata as CommonMetadata_Type
     from pystac.item import Item as Item_Type
 
 
@@ -147,7 +148,7 @@ class Asset:
         )
 
     @property
-    def common_metadata(self) -> common_metadata.CommonMetadata:
+    def common_metadata(self) -> "CommonMetadata_Type":
         """Access the asset's common metadata fields as a
         :class:`~pystac.CommonMetadata` object."""
         return common_metadata.CommonMetadata(self)
