@@ -4,6 +4,18 @@
 
 ### Added
 
+### Removed
+
+### Changed
+
+### Deprecated
+
+### Fixed
+
+## [v1.0.0]
+
+### Added
+
 - `ProjectionExtension.crs_string` to provide a single string to describe the coordinate reference system (CRS).
   Useful because projections can be defined by EPSG code, WKT, or projjson.
   ([#548](https://github.com/stac-utils/pystac/pull/548))
@@ -19,8 +31,6 @@
   ([#548](https://github.com/stac-utils/pystac/pull/548))
 - `to_dict` and equality definition for `extensions.item_asset.AssetDefinition` ([#564](https://github.com/stac-utils/pystac/pull/564))
 - `Asset.common_metadata` property ([#563](https://github.com/stac-utils/pystac/pull/563))
-
-### Removed
 
 ### Changed
 
@@ -40,8 +50,6 @@
 - Allow resolved self links when getting an object's self href ([#555](https://github.com/stac-utils/pystac/pull/555))
 - Fixed type annotation on SummariesLabelExtension.label_properties setter ([#562](https://github.com/stac-utils/pystac/pull/562))
 - Allow comparable types with alternate parameter naming of __lt__ method to pass structural type linting for RangeSummary ([#562](https://github.com/stac-utils/pystac/pull/562))
-
-### Deprecated
 
 ## [v1.0.0-rc.3]
 
@@ -469,7 +477,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0..main>
+[v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
 [v1.0.0-rc.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0-beta.3..v1.0.0-rc.1>
