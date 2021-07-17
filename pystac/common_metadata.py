@@ -29,21 +29,19 @@ class CommonMetadata:
     def __init__(self, object: Union["Asset", "Item"]):
         self.object = object
 
-    def _set_field(
-        self, prop_name: str, v: Optional[Any], pop_if_none: bool = True
-    ) -> None:
+    def _set_field(self, prop_name: str, v: Optional[Any]) -> None:
         if hasattr(self.object, prop_name):
             setattr(self.object, prop_name, v)
         elif hasattr(self.object, "properties"):
             item = cast("Item", self.object)
-            if pop_if_none and v is None:
+            if v is None:
                 item.properties.pop(prop_name, None)
             else:
                 item.properties[prop_name] = v
         elif hasattr(self.object, "extra_fields") and isinstance(
             self.object.extra_fields, Dict
         ):
-            if pop_if_none and v is None:
+            if v is None:
                 self.object.extra_fields.pop(prop_name, None)
             else:
                 self.object.extra_fields[prop_name] = v

@@ -115,7 +115,9 @@ class CommonMetadataTest(unittest.TestCase):
                 "url": "https://cool-sat.com/",
             }
         ]
-        providers_object_list = [pystac.Provider.from_dict(d) for d in providers_dict_list]
+        providers_object_list = [
+            pystac.Provider.from_dict(d) for d in providers_dict_list
+        ]
 
         example_providers_dict_list: List[Dict[str, Any]] = [
             {
@@ -321,7 +323,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         analytic_cm.end_datetime = set_value
 
         self.assertEqual(analytic_cm.end_datetime, set_value)
-        self.assertEqual(analytic.to_dict()["end_datetime"], utils.datetime_to_str(set_value))
+        self.assertEqual(
+            analytic.to_dict()["end_datetime"], utils.datetime_to_str(set_value)
+        )
 
     def test_license(self) -> None:
         item = self.item.clone()
@@ -511,7 +515,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         analytic_cm.created = set_value
 
         self.assertEqual(analytic_cm.created, set_value)
-        self.assertEqual(analytic.to_dict()["created"], utils.datetime_to_str(set_value))
+        self.assertEqual(
+            analytic.to_dict()["created"], utils.datetime_to_str(set_value)
+        )
 
     def test_updated(self) -> None:
         item = self.item.clone()
@@ -533,5 +539,6 @@ class AssetCommonMetadataTest(unittest.TestCase):
         analytic_cm.updated = set_value
 
         self.assertEqual(analytic_cm.updated, set_value)
-        self.assertEqual(analytic.to_dict()["updated"], utils.datetime_to_str(set_value))
-
+        self.assertEqual(
+            analytic.to_dict()["updated"], utils.datetime_to_str(set_value)
+        )
