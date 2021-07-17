@@ -17,6 +17,7 @@
   valid values of `type` in [Point Cloud Schema
   Objects](https://github.com/stac-extensions/pointcloud#schema-object)
   ([#548](https://github.com/stac-utils/pystac/pull/548))
+- `to_dict` and equality definition for `extensions.item_asset.AssetDefinition` ([#564](https://github.com/stac-utils/pystac/pull/564))
 
 ### Removed
 

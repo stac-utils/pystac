@@ -365,6 +365,27 @@ FileExtension
    :show-inheritance:
    :undoc-members:
 
+Item Assets Extension
+---------------------
+
+These classes are representations of the :stac-ext:`Item Assets Extension Spec
+<item-assets>`.
+
+AssetDefinition
+~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.item_assets.AssetDefinition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+ItemAssetsExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.item_assets.ItemAssetsExtension
+   :members:
+   :show-inheritance:
+
 Label Extension
 ---------------
 
