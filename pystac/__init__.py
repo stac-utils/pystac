@@ -34,8 +34,9 @@ from pystac.collection import (
     ProviderRole,
     Summaries,
 )
+from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary
-from pystac.item import Item, Asset, CommonMetadata
+from pystac.item import Item, Asset
 from pystac.item_collection import ItemCollection
 
 import pystac.validation
