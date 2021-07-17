@@ -26,7 +26,11 @@
 - Calling `ExtensionManagementMixin.validate_has_extension` with `add_if_missing = True`
   on an ownerless `Asset` will raise a `STACError` ([#554](https://github.com/stac-utils/pystac/pull/554))
 - `PointcloudSchema` -> `Schema`, `PointcloudStatistic` -> `Statistic` for consistency
-  with naming convention in other extensions ([#548](https://github.com/stac-utils/pystac/pull/548))
+  with naming convention in other extensions
+  ([#548](https://github.com/stac-utils/pystac/pull/548))
+- `RequiredPropertyMissing` always raised when trying to get a required property that is
+  `None` (`STACError` or `KeyError` was previously being raised in some cases)
+  ([#561](https://github.com/stac-utils/pystac/pull/561))
 
 ### Fixed
 
