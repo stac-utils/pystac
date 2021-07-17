@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+
 class ProviderRole(str, Enum):
     """Enumerates the allows values of the Provider "role" field."""
 
@@ -62,6 +63,11 @@ class Provider:
         self.roles = roles
         self.url = url
         self.extra_fields = extra_fields or {}
+
+    def __eq__(self, o: object) -> bool:
+        if not isinstance(o, Provider):
+            return NotImplemented
+        return self.to_dict() == o.to_dict()
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Provider.
