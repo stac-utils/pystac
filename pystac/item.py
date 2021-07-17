@@ -414,11 +414,8 @@ class Item(STACObject):
 
     @property
     def common_metadata(self) -> pystac.CommonMetadata:
-        """Access the item's common metadat fields as a pystac.CommonMetadata object
-
-        Returns:
-            CommonMetada: contains all common metadata fields in the items properties
-        """
+        """Access the item's common metadata fields as a
+        :class:`~pystac.CommonMetadata` object."""
         return pystac.CommonMetadata(self)
 
     def full_copy(

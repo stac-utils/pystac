@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from typing import Any, Dict, List
 
-import pystac
+from pystac import CommonMetadata, Provider, ProviderRole, Item
 from pystac import utils
 
 from tests.utils import TestCases
@@ -13,12 +13,12 @@ class CommonMetadataTest(unittest.TestCase):
         self.URI_1 = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
         )
-        self.ITEM_1 = pystac.Item.from_file(self.URI_1)
+        self.ITEM_1 = Item.from_file(self.URI_1)
 
         self.URI_2 = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
         )
-        self.ITEM_2 = pystac.Item.from_file(self.URI_2)
+        self.ITEM_2 = Item.from_file(self.URI_2)
 
         self.EXAMPLE_CM_DICT: Dict[str, Any] = {
             "start_datetime": "2020-05-21T16:42:24.896Z",
@@ -39,11 +39,11 @@ class CommonMetadataTest(unittest.TestCase):
         start_datetime_str = self.ITEM_1.properties["start_datetime"]
         self.assertIsInstance(start_datetime_str, str)
 
-        common_metadata = self.ITEM_1.common_metadata
-        self.assertIsInstance(common_metadata, pystac.CommonMetadata)
-        self.assertIsInstance(common_metadata.start_datetime, datetime)
+        cm = self.ITEM_1.common_metadata
+        self.assertIsInstance(cm, CommonMetadata)
+        self.assertIsInstance(cm.start_datetime, datetime)
         self.assertDictEqual(before, self.ITEM_1.to_dict())
-        self.assertIsNone(common_metadata.providers)
+        self.assertIsNone(cm.providers)
 
     def test_common_metadata_start_datetime(self) -> None:
         x = self.ITEM_1.clone()
@@ -115,9 +115,7 @@ class CommonMetadataTest(unittest.TestCase):
                 "url": "https://cool-sat.com/",
             }
         ]
-        providers_object_list = [
-            pystac.Provider.from_dict(d) for d in providers_dict_list
-        ]
+        providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
 
         example_providers_dict_list: List[Dict[str, Any]] = [
             {
@@ -132,14 +130,14 @@ class CommonMetadataTest(unittest.TestCase):
             },
         ]
         example_providers_object_list = [
-            pystac.Provider.from_dict(d) for d in example_providers_dict_list
+            Provider.from_dict(d) for d in example_providers_dict_list
         ]
 
         for i in range(len(utils.get_opt(x.common_metadata.providers))):
             p1 = utils.get_opt(x.common_metadata.providers)[i]
             p2 = providers_object_list[i]
-            self.assertIsInstance(p1, pystac.Provider)
-            self.assertIsInstance(p2, pystac.Provider)
+            self.assertIsInstance(p1, Provider)
+            self.assertIsInstance(p2, Provider)
             self.assertDictEqual(p1.to_dict(), p2.to_dict())
 
             pd1 = x.properties["providers"][i]
@@ -153,8 +151,8 @@ class CommonMetadataTest(unittest.TestCase):
         for i in range(len(x.common_metadata.providers)):
             p1 = x.common_metadata.providers[i]
             p2 = example_providers_object_list[i]
-            self.assertIsInstance(p1, pystac.Provider)
-            self.assertIsInstance(p2, pystac.Provider)
+            self.assertIsInstance(p1, Provider)
+            self.assertIsInstance(p2, Provider)
             self.assertDictEqual(p1.to_dict(), p2.to_dict())
 
             pd1 = x.properties["providers"][i]
@@ -231,7 +229,7 @@ class CommonMetadataTest(unittest.TestCase):
 class AssetCommonMetadataTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
-        self.item = pystac.Item.from_file(
+        self.item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
 
@@ -239,9 +237,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.title
         a2_known_value = "Thumbnail"
@@ -261,9 +259,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.description
         a2_known_value = "Thumbnail of the item"
@@ -283,9 +281,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         item_cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = item_cm.start_datetime
         a2_known_value = utils.str_to_datetime("2017-05-01T13:22:30.040Z")
@@ -307,9 +305,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.end_datetime
         a2_known_value = utils.str_to_datetime("2017-05-02T13:22:30.040Z")
@@ -331,9 +329,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.license
         a2_known_value = "CC-BY-4.0"
@@ -353,16 +351,16 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.providers
         a2_known_value = [
-            pystac.Provider(
+            Provider(
                 name="USGS",
                 url="https://landsat.usgs.gov/",
-                roles=[pystac.ProviderRole.PRODUCER, pystac.ProviderRole.LICENSOR],
+                roles=[ProviderRole.PRODUCER, ProviderRole.LICENSOR],
             )
         ]
 
@@ -372,10 +370,10 @@ class AssetCommonMetadataTest(unittest.TestCase):
 
         # Set
         set_value = [
-            pystac.Provider(
+            Provider(
                 name="John Snow",
                 url="https://cholera.com/",
-                roles=[pystac.ProviderRole.PRODUCER],
+                roles=[ProviderRole.PRODUCER],
             )
         ]
         analytic_cm.providers = set_value
@@ -389,9 +387,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.platform
         a2_known_value = "shoes"
@@ -411,9 +409,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.instruments
         a2_known_value = ["caliper"]
@@ -433,9 +431,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.constellation
         a2_known_value = "little dipper"
@@ -455,9 +453,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.mission
         a2_known_value = "possible"
@@ -477,9 +475,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.gsd
         a2_known_value = 40
@@ -499,9 +497,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.created
         a2_known_value = utils.str_to_datetime("2017-05-17T13:22:30.040Z")
@@ -523,9 +521,9 @@ class AssetCommonMetadataTest(unittest.TestCase):
         item = self.item.clone()
         cm = item.common_metadata
         analytic = item.assets["analytic"]
-        analytic_cm = pystac.CommonMetadata(analytic)
+        analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
-        thumbnail_cm = pystac.CommonMetadata(thumbnail)
+        thumbnail_cm = CommonMetadata(thumbnail)
 
         item_value = cm.updated
         a2_known_value = utils.str_to_datetime("2017-05-18T13:22:30.040Z")
