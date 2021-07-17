@@ -294,6 +294,106 @@ ExtensionManagementMixin
    :members:
    :show-inheritance:
 
+Datacube Extension
+------------------
+
+These classes are representations of the :stac-ext:`EO Extension Spec <eo>`.
+
+DimensionType
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.DimensionType
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+HorizontalSpatialDimensionAxis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.HorizontalSpatialDimensionAxis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+VerticalSpatialDimensionAxis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VerticalSpatialDimensionAxis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Dimension
+~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.Dimension
+   :members:
+   :show-inheritance:
+
+HorizontalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.HorizontalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+VerticalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VerticalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+TemporalSpatialDimension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.TemporalSpatialDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AdditionalDimension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.AdditionalDimension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+DatacubeExtension
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.DatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+CollectionDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.CollectionDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+ItemDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.ItemDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+AssetDatacubeExtension
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.AssetDatacubeExtension
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 Electro-Optical Extension
 -------------------------
 
