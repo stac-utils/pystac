@@ -4,6 +4,8 @@
 
 ### Added
 
+- Rich HTML representations for Jupyter Notebook display ([#573](https://github.com/stac-utils/pystac/pull/573)
+
 ### Removed
 
 ### Changed
