@@ -507,9 +507,9 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         template = jinja_env.get_template("Catalog.jinja2")
-        return template.render(catalog=self, catalog_type="Collection")
+        return str(template.render(catalog=self, catalog_type="Collection"))
 
     def add_item(
         self,

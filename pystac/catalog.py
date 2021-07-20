@@ -180,9 +180,9 @@ class Catalog(STACObject):
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         template = jinja_env.get_template("Catalog.jinja2")
-        return template.render(catalog=self, catalog_type="Catalog")
+        return str(template.render(catalog=self, catalog_type="Catalog"))
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)

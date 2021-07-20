@@ -130,9 +130,9 @@ class Item(STACObject):
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         template = jinja_env.get_template("Item.jinja2")
-        return template.render(item=self)
+        return str(template.render(item=self))
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
