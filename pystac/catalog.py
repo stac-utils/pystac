@@ -406,9 +406,12 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return list(map(
-            lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
-        ))
+        return list(
+            map(
+                lambda x: cast(pystac.Item, x),
+                self.get_stac_objects(pystac.RelType.ITEM),
+            )
+        )
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.

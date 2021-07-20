@@ -26,6 +26,7 @@ setup(
     install_requires=[
         "python-dateutil>=2.7.0",
         'typing_extensions >= 3.7; python_version < "3.8"',
+        "Jinja2",
     ],
     extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
