@@ -2,6 +2,7 @@ from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import pystac
+from pystac.html import jinja_env
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
 
 if TYPE_CHECKING:
@@ -209,6 +210,10 @@ class Link:
 
     def __repr__(self) -> str:
         return "<Link rel={} target={}>".format(self.rel, self.target)
+
+    def _repr_html_(self):
+        template = jinja_env.get_template("Link.jinja2")
+        return template.render(link=self)
 
     def resolve_stac_object(self, root: Optional["Catalog_Type"] = None) -> "Link":
         """Resolves a STAC object from the HREF of this link, if the link is not

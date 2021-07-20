@@ -21,6 +21,7 @@ import pystac
 from pystac import STACObjectType, CatalogType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
+from pystac.html import jinja_env
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.utils import datetime_to_str
@@ -505,6 +506,10 @@ class Collection(Catalog):
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
+
+    def _repr_html_(self):
+        template = jinja_env.get_template("Catalog.jinja2")
+        return template.render(catalog=self, catalog_type="Collection")
 
     def add_item(
         self,

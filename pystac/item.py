@@ -8,6 +8,7 @@ import dateutil.parser
 import pystac
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
+from pystac.html import jinja_env
 from pystac.link import Link
 from pystac.serialization import (
     identify_stac_object_type,
@@ -128,6 +129,10 @@ class Item(STACObject):
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
+
+    def _repr_html_(self):
+        template = jinja_env.get_template("Item.jinja2")
+        return template.render(item=self)
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``

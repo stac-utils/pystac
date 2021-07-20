@@ -1,0 +1,32 @@
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
+    <div style="
+        width: 24px;
+        height: 24px;
+        background-color: #e1e1e1;
+        border: 3px solid #9D9D9D;
+        border-radius: 5px;
+        position: absolute;">
+    </div>
+    <div style="margin-left: 48px;">
+        <h4 style="margin-bottom: 0px;">Link</h4>
+        {% if link.title %}
+            <p style="color: #9D9D9D; margin-bottom: 0px;">{{ link.title }}</p>
+        {% endif %}
+        <table style="width: 100%; text-align: left;">
+            <tr><td style="text-align: left;"><strong>Rel:</strong> {{ link.rel }} </td></tr>
+            <tr><td style="text-align: left;"><strong>Target:</strong> {{ link.target }} </td></tr>
+            {% if link.media_type %}
+                <tr><td style="text-align: left;"><strong>Media Type:</strong> {{ link.media_type }} </td></tr>
+            {% endif %}
+            {% if link.extra_fields %}
+                {% for key in link.extra_fields %}
+                    <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ link.extra_fields[key] }} </td></tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+        {% if link.extra_fields %}
+            <table style="width: 100%; text-align: left;">
+            </table>
+        {% endif %}
+    </div>
+</div>

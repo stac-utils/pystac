@@ -17,6 +17,7 @@ from typing import (
 
 import pystac
 from pystac.stac_object import STACObject, STACObjectType
+from pystac.html import jinja_env
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -178,6 +179,10 @@ class Catalog(STACObject):
 
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
+
+    def _repr_html_(self):
+        template = jinja_env.get_template("Catalog.jinja2")
+        return template.render(catalog=self, catalog_type="Catalog")
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)
@@ -401,9 +406,9 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return map(
+        return list(map(
             lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
-        )
+        ))
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
