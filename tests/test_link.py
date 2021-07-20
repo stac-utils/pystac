@@ -1,5 +1,5 @@
 import datetime
-import os.path
+import os
 import unittest
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
@@ -112,6 +112,23 @@ class LinkTest(unittest.TestCase):
         link = pystac.Link("self", target=self.item)
         self.item.add_link(link)
         self.assertIsNone(link.get_target_str())
+
+    def test_relative_self_href(self) -> None:
+        with TemporaryDirectory() as temporary_directory:
+            pystac.write_file(
+                self.item,
+                include_self_link=False,
+                dest_href=os.path.join(temporary_directory, "item.json"),
+            )
+            previous = os.getcwd()
+            try:
+                os.chdir(temporary_directory)
+                item = pystac.read_file("item.json")
+                href = item.get_self_href()
+                assert href
+                self.assertTrue(os.path.isabs(href), f"Not an absolute path: {href}")
+            finally:
+                os.chdir(previous)
 
 
 class StaticLinkTest(unittest.TestCase):
