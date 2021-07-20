@@ -83,10 +83,6 @@
   },
   "links": [
     {
-      "rel": "self",
-      "href": "./item.json"
-    },
-    {
       "rel": "parent",
       "href": "./collection.json",
       "file:checksum": "11146d97123fd2c02dec9a1b6d3b13136dbe600cf966"
