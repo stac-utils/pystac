@@ -151,12 +151,13 @@ class StaticLinkTest(unittest.TestCase):
             {"rel": "r", "href": "t"},
             {"rel": "r", "href": "/t"},
             {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2},
-            # Special case.
-            {"rel": "self", "href": "t"},
         ]
         for d in test_cases:
             d2 = pystac.Link.from_dict(d).to_dict()
             self.assertEqual(d, d2)
+        d = {"rel": "self", "href": "t"}
+        d2 = {"rel": "self", "href": os.path.join(os.getcwd(), "t")}
+        self.assertEqual(pystac.Link.from_dict(d).to_dict(), d2)
 
     def test_from_dict_failures(self) -> None:
         dicts: List[Dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
