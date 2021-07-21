@@ -120,7 +120,7 @@ jobs:
         run: coverage xml --fail-under 0
       
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2.0.1
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
