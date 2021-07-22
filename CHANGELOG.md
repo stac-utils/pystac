@@ -10,11 +10,15 @@
 
 ### Changed
 
-- HREFs in `Link` objects with `rel == "self"` are converted to absolute HREFs ([#574](https://github.com/stac-utils/pystac/pull/574))
+### Fixed
 
 ### Deprecated
 
-### Fixed
+## [v1.0.1]
+
+### Changed
+
+- HREFs in `Link` objects with `rel == "self"` are converted to absolute HREFs ([#574](https://github.com/stac-utils/pystac/pull/574))
 
 ## [v1.0.0]
 
@@ -481,7 +485,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.1..main>
+[v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>
 [v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
 [v1.0.0-rc.2]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.1..v1.0.0-rc.2>
