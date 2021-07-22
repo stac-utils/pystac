@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
+  locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
 
 ### Removed
 
