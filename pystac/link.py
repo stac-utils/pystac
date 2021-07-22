@@ -68,6 +68,9 @@ class Link:
     :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve objects, and
     will create absolute HREFs from relative HREFs against the owner's self HREF."""
 
+    _target_href: Optional[str]
+    _target_object: Optional["STACObject_Type"]
+
     def __init__(
         self,
         rel: Union[str, pystac.RelType],
@@ -79,7 +82,7 @@ class Link:
         self.rel = rel
         if isinstance(target, str):
             if rel == pystac.RelType.SELF:
-                self._target_href: Optional[str] = make_absolute_href(target)
+                self._target_href = make_absolute_href(target)
             else:
                 self._target_href = target
             self._target_object = None
