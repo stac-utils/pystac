@@ -29,7 +29,7 @@ from pystac.serialization import (
     identify_stac_object,
     migrate_to_latest,
 )
-from pystac.utils import is_absolute_href, make_absolute_href
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
     from pystac.item import Asset as Asset_Type, Item as Item_Type
@@ -705,16 +705,22 @@ class Catalog(STACObject):
 
         return result
 
-    def save(self, catalog_type: Optional[CatalogType] = None) -> None:
+    def save(
+        self,
+        catalog_type: Optional[CatalogType] = None,
+        dest_href: Optional[str] = None,
+    ) -> None:
         """Save this catalog and all it's children/item to files determined by the object's
-        self link HREF.
+        self link HREF or a specified path.
 
         Args:
             catalog_type : The catalog type that dictates the structure of
                 the catalog to save. Use a member of :class:`~pystac.CatalogType`.
                 If not supplied, the catalog_type of this catalog will be used.
                 If that attribute is not set, an exception will be raised.
-
+            dest_href : The location where the catalog is to be saved.
+                If not supplied, the catalog's self link HREF is used to determine
+                the location of the catalog file and children's files.
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
             all self links will be included, and hierarchical links be absolute URLs.
@@ -724,6 +730,7 @@ class Catalog(STACObject):
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will
             be included and hierarchical links will be relative URLs.
         """
+
         root = self.get_root()
         if root is None:
             raise Exception("There is no root catalog")
@@ -735,13 +742,27 @@ class Catalog(STACObject):
 
         for child_link in self.get_child_links():
             if child_link.is_resolved():
-                cast(Catalog, child_link.target).save()
+                child = cast(Catalog, child_link.target)
+                if dest_href is not None:
+                    rel_href = make_relative_href(child.self_href, self.self_href)
+                    child_dest_href = make_absolute_href(
+                        rel_href, dest_href, start_is_dir=True
+                    )
+                    child.save(dest_href=child_dest_href)
+                else:
+                    child.save()
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
-                cast(pystac.Item, item_link.target).save_object(
-                    include_self_link=items_include_self_link
-                )
+                item = cast(pystac.Item, item_link.target)
+                if dest_href is not None:
+                    rel_href = make_relative_href(item.self_href, self.self_href)
+                    item_dest_href = make_absolute_href(
+                        rel_href, dest_href, start_is_dir=True
+                    )
+                    item.save_object(include_self_link=True, dest_href=item_dest_href)
+                else:
+                    item.save_object(include_self_link=items_include_self_link)
 
         include_self_link = False
         # include a self link if this is the root catalog
@@ -753,7 +774,15 @@ class Catalog(STACObject):
             if root_link and root_link.get_absolute_href() == self.get_self_href():
                 include_self_link = True
 
-        self.save_object(include_self_link=include_self_link)
+        catalog_dest_href = None
+        if dest_href is not None:
+            rel_href = make_relative_href(self.self_href, self.self_href)
+            catalog_dest_href = make_absolute_href(
+                rel_href, dest_href, start_is_dir=True
+            )
+        self.save_object(
+            include_self_link=include_self_link, dest_href=catalog_dest_href
+        )
         if catalog_type is not None:
             self.catalog_type = catalog_type
 
