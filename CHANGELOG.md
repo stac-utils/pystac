@@ -10,6 +10,8 @@
 
 ### Changed
 
+- HREFs in `Link` objects with `rel == "self"` are converted to absolute HREFs ([#574](https://github.com/stac-utils/pystac/pull/574))
+
 ### Deprecated
 
 ### Fixed
