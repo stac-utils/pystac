@@ -20,9 +20,8 @@ setup(
     author_email="stac@radiant.earth",
     url="https://github.com/stac-utils/pystac",
     packages=find_packages(),
-    package_data={p: ["py.typed"] for p in find_packages()},
+    package_data={"": ["py.typed"]},
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
-    include_package_data=True,
     python_requires=">=3.7",
     install_requires=[
         "python-dateutil>=2.7.0",
