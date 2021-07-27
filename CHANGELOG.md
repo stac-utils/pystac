@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Include type information during packaging for use with e.g. `mypy` ([#579](https://github.com/stac-utils/pystac/pull/579))
 - Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
   locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
 
