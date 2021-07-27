@@ -11,6 +11,8 @@
 
 ### Changed
 
+- Pin the rustc version in Continuous Integration to work around https://github.com/rust-lang/cargo/pull/9727 ([#581](https://github.com/stac-utils/pystac/pull/581))
+
 ### Fixed
 
 ### Deprecated
