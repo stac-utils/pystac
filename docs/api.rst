@@ -346,10 +346,10 @@ VerticalSpatialDimension
    :show-inheritance:
    :inherited-members:
 
-TemporalSpatialDimension
+TemporalDimension
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autoclass:: pystac.extensions.datacube.TemporalSpatialDimension
+.. autoclass:: pystac.extensions.datacube.TemporalDimension
    :members:
    :show-inheritance:
    :inherited-members:
