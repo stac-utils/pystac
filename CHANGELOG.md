@@ -3,19 +3,25 @@
 ## [Unreleased]
 
 ### Added
-- Include type information during packaging for use with e.g. `mypy` ([#579](https://github.com/stac-utils/pystac/pull/579))
-- Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
-  locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
 
 ### Removed
 
 ### Changed
 
-- Pin the rustc version in Continuous Integration to work around https://github.com/rust-lang/cargo/pull/9727 ([#581](https://github.com/stac-utils/pystac/pull/581))
-
 ### Fixed
 
 ### Deprecated
+
+## [v1.1.0]
+
+### Added
+- Include type information during packaging for use with e.g. `mypy` ([#579](https://github.com/stac-utils/pystac/pull/579))
+- Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
+  locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
+
+### Changed
+
+- Pin the rustc version in Continuous Integration to work around https://github.com/rust-lang/cargo/pull/9727 ([#581](https://github.com/stac-utils/pystac/pull/581))
 
 ## [v1.0.1]
 
@@ -488,7 +494,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.1.0..main>
+[v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
 [v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>
 [v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
