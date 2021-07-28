@@ -318,6 +318,20 @@ class CatalogTest(unittest.TestCase):
             cat2 = pystac.Catalog.from_file(href)
             self.assertEqual(cat2.catalog_type, CatalogType.SELF_CONTAINED)
 
+    def test_save_to_provided_href(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = TestCases.test_case_1()
+            href = "http://test.com"
+            folder = os.path.join(tmp_dir, "cat")
+            catalog.normalize_hrefs(href)
+            catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=folder)
+
+            catalog_path = os.path.join(folder, "catalog.json")
+            self.assertTrue(os.path.exists(catalog_path))
+            result_cat = Catalog.from_file(catalog_path)
+            for link in result_cat.get_child_links():
+                self.assertTrue(cast(str, link.target).startswith(href))
+
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.test_case_1()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED

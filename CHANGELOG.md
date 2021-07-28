@@ -483,7 +483,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.0.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.1.0..main>
+[v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
 [v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>
 [v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>
 [v1.0.0-rc.3]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.2..v1.0.0-rc.3>
