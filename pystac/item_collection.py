@@ -1,15 +1,30 @@
 from copy import deepcopy
-from typing import Any, Collection, Dict, Iterable, Iterator, List, Optional, Union
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Union,
+    TYPE_CHECKING,
+)
 
-import pystac
+from pystac import core
 from pystac.errors import STACTypeError
 from pystac.serialization.identify import identify_stac_object_type
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObjectType
 from pystac.utils import is_absolute_href, make_absolute_href
 
-ItemLike = Union[pystac.Item, Dict[str, Any]]
+if TYPE_CHECKING:
+    from pystac.core import Catalog as Catalog_Type, Item as Item_Type
+
+ItemLike = Union["Item_Type", Dict[str, Any]]
 
 
-class ItemCollection(Collection[pystac.Item]):
+class ItemCollection(Collection["Item_Type"]):
     """Implementation of a GeoJSON FeatureCollection whose features are all STAC
     Items.
 
@@ -69,7 +84,7 @@ class ItemCollection(Collection[pystac.Item]):
         # If an item is present in both ItemCollections it will only be added once
     """
 
-    items: List[pystac.Item]
+    items: List["Item_Type"]
     """List of :class:`pystac.Item` instances contained in this ``ItemCollection``."""
 
     extra_fields: Dict[str, Any]
@@ -82,20 +97,20 @@ class ItemCollection(Collection[pystac.Item]):
         extra_fields: Optional[Dict[str, Any]] = None,
         clone_items: bool = False,
     ):
-        def map_item(item_or_dict: ItemLike) -> pystac.Item:
+        def map_item(item_or_dict: ItemLike) -> "Item_Type":
             # Converts dicts to pystac.Items and clones if necessary
-            if isinstance(item_or_dict, pystac.Item):
+            if isinstance(item_or_dict, core.Item):
                 return item_or_dict.clone() if clone_items else item_or_dict
             else:
-                return pystac.Item.from_dict(item_or_dict)
+                return core.Item.from_dict(item_or_dict)
 
         self.items = list(map(map_item, items))
         self.extra_fields = extra_fields or {}
 
-    def __getitem__(self, idx: int) -> pystac.Item:
+    def __getitem__(self, idx: int) -> "Item_Type":
         return self.items[idx]
 
-    def __iter__(self) -> Iterator[pystac.Item]:
+    def __iter__(self) -> Iterator["Item_Type"]:
         return iter(self.items)
 
     def __len__(self) -> int:
@@ -137,7 +152,7 @@ class ItemCollection(Collection[pystac.Item]):
         cls,
         d: Dict[str, Any],
         preserve_dict: bool = True,
-        root: Optional[pystac.Catalog] = None,
+        root: Optional["Catalog_Type"] = None,
     ) -> "ItemCollection":
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
@@ -153,7 +168,7 @@ class ItemCollection(Collection[pystac.Item]):
             raise STACTypeError("Dict is not a valid ItemCollection")
 
         items = [
-            pystac.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
+            core.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
             for item in d.get("features", [])
         ]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
@@ -161,9 +176,7 @@ class ItemCollection(Collection[pystac.Item]):
         return cls(items=items, extra_fields=extra_fields)
 
     @classmethod
-    def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> "ItemCollection":
+    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "ItemCollection":
         """Reads a :class:`ItemCollection` from a JSON file.
 
         Arguments:
@@ -171,7 +184,7 @@ class ItemCollection(Collection[pystac.Item]):
             stac_io : A :class:`~pystac.StacIO` instance to use for file I/O
         """
         if stac_io is None:
-            stac_io = pystac.StacIO.default()
+            stac_io = StacIO.default()
 
         if not is_absolute_href(href):
             href = make_absolute_href(href)
@@ -183,7 +196,7 @@ class ItemCollection(Collection[pystac.Item]):
     def save_object(
         self,
         dest_href: str,
-        stac_io: Optional[pystac.StacIO] = None,
+        stac_io: Optional[StacIO] = None,
     ) -> None:
         """Saves this instance to the ``dest_href`` location.
 
@@ -193,7 +206,7 @@ class ItemCollection(Collection[pystac.Item]):
                 will use the default instance.
         """
         if stac_io is None:
-            stac_io = pystac.StacIO.default()
+            stac_io = StacIO.default()
 
         stac_io.save_json(dest_href, self.to_dict())
 
@@ -219,6 +232,6 @@ class ItemCollection(Collection[pystac.Item]):
         # Prior to STAC 0.9 ItemCollections did not have a stac_version field and could
         #  only be identified by the fact that all of their 'features' are STAC Items.
         return all(
-            identify_stac_object_type(feature) == pystac.STACObjectType.ITEM
+            identify_stac_object_type(feature) == STACObjectType.ITEM
             for feature in d.get("features", [])
         )
