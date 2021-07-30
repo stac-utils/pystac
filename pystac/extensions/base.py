@@ -1,18 +1,28 @@
 from abc import ABC, abstractmethod
 from typing import (
-    cast,
+    Any,
+    Dict,
     Generic,
     Iterable,
     List,
     Optional,
-    Dict,
-    Any,
     Type,
     TypeVar,
     Union,
+    cast,
+    TYPE_CHECKING,
 )
 
-import pystac
+from pystac.errors import STACError, ExtensionNotImplemented
+
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.summaries import (
+        Summaries as Summaries_Type,
+        RangeSummary as RangeSummary_Type,
+    )
 
 
 class SummariesExtension:
@@ -23,16 +33,16 @@ class SummariesExtension:
     extension-specific class that inherits from this class and instantiate that. See
     :class:`~pystac.extensions.eo.SummariesEOExtension` for an example."""
 
-    summaries: pystac.Summaries
+    summaries: "Summaries_Type"
     """The summaries for the :class:`~pystac.Collection` being extended."""
 
-    def __init__(self, collection: pystac.Collection) -> None:
+    def __init__(self, collection: "Collection_Type") -> None:
         self.summaries = collection.summaries
 
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: Optional[Union[List[Any], "RangeSummary_Type[Any]", Dict[str, Any]]],
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -88,7 +98,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound="STACObject_Type")
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
@@ -138,7 +148,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def validate_owner_has_extension(
-        cls, asset: pystac.Asset, add_if_missing: bool
+        cls, asset: "Asset_Type", add_if_missing: bool
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
         extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
@@ -150,9 +160,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         """
         if asset.owner is None:
             if add_if_missing:
-                raise pystac.STACError(
-                    "Can only add schema URIs to Assets with an owner."
-                )
+                raise STACError("Can only add schema URIs to Assets with an owner.")
             else:
                 return
         return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
@@ -172,6 +180,6 @@ class ExtensionManagementMixin(Generic[S], ABC):
             cls.add_to(obj)
 
         if cls.get_schema_uri() not in obj.stac_extensions:
-            raise pystac.ExtensionNotImplemented(
+            raise ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )

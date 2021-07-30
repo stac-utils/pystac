@@ -2,11 +2,11 @@
 Script to download the examples from the stac-spec repository.
 This is used when upgrading to a new version of STAC.
 """
-import os
 import argparse
 import json
-from subprocess import call
+import os
 import tempfile
+from subprocess import call
 from typing import Any, Dict, List, Optional
 from urllib.error import HTTPError
 

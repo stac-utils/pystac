@@ -3,17 +3,22 @@
 https://github.com/stac-extensions/version
 """
 from enum import Enum
-from pystac.utils import get_required, map_opt
-from typing import Generic, List, Optional, TypeVar, Union, cast
+from typing import Generic, List, Optional, TypeVar, Union, cast, TYPE_CHECKING
 
-import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+import pystac.link
+from pystac import core
+from pystac.errors import ExtensionTypeError
+from pystac.media_type import MediaType
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.stac_object import STACObjectType
+from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Collection, pystac.Item)
+if TYPE_CHECKING:
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.stac_object import STACObject as STACObject_Type
+
+T = TypeVar("T", "Collection_Type", "Item_Type")
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 
@@ -45,7 +50,7 @@ class VersionRelType(str, Enum):
 class VersionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
@@ -62,9 +67,9 @@ class VersionExtension(
        >>> version_ext = VersionExtension.ext(item)
     """
 
-    obj: pystac.STACObject
+    obj: "STACObject_Type"
 
-    def __init__(self, obj: pystac.STACObject) -> None:
+    def __init__(self, obj: "STACObject_Type") -> None:
         self.obj = obj
 
     def apply(
@@ -139,9 +144,7 @@ class VersionExtension(
         self.obj.clear_links(VersionRelType.LATEST)
         if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(
-                    VersionRelType.LATEST, item_or_collection, pystac.MediaType.JSON
-                )
+                pystac.Link(VersionRelType.LATEST, item_or_collection, MediaType.JSON)
             )
 
     @property
@@ -163,7 +166,7 @@ class VersionExtension(
                 pystac.Link(
                     VersionRelType.PREDECESSOR,
                     item_or_collection,
-                    pystac.MediaType.JSON,
+                    MediaType.JSON,
                 )
             )
 
@@ -184,7 +187,7 @@ class VersionExtension(
         if item_or_collection is not None:
             self.obj.add_link(
                 pystac.Link(
-                    VersionRelType.SUCCESSOR, item_or_collection, pystac.MediaType.JSON
+                    VersionRelType.SUCCESSOR, item_or_collection, MediaType.JSON
                 )
             )
 
@@ -204,19 +207,19 @@ class VersionExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, core.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Version extension does not apply to type '{type(obj).__name__}'"
             )
 
 
-class CollectionVersionExtension(VersionExtension[pystac.Collection]):
+class CollectionVersionExtension(VersionExtension["Collection_Type"]):
     """A concrete implementation of :class:`VersionExtension` on a
     :class:`~pystac.Collection` that extends the properties of the Collection to
     include properties defined in the :stac-ext:`Versioning Indicators Extension
@@ -226,7 +229,7 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
     :meth:`VersionExtension.ext` on an :class:`~pystac.Collection` to extend it.
     """
 
-    def __init__(self, collection: pystac.Collection):
+    def __init__(self, collection: "Collection_Type"):
         self.collection = collection
         self.properties = collection.extra_fields
         self.links = collection.links
@@ -236,7 +239,7 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
         return "<CollectionVersionExtension Item id={}>".format(self.collection.id)
 
 
-class ItemVersionExtension(VersionExtension[pystac.Item]):
+class ItemVersionExtension(VersionExtension["Item_Type"]):
     """A concrete implementation of :class:`VersionExtension` on an
     :class:`~pystac.Item` that extends the properties of the Item to include properties
     defined in the :stac-ext:`Versioning Indicators Extension <version>`.
@@ -245,7 +248,7 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
     :meth:`VersionExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
         self.links = item.links
@@ -258,10 +261,10 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids = {"version"}
-    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
 
-    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
-        if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
+    def get_object_links(self, so: "STACObject_Type") -> Optional[List[str]]:
+        if isinstance(so, core.Collection) or isinstance(so, core.Item):
             return [
                 VersionRelType.LATEST,
                 VersionRelType.PREDECESSOR,

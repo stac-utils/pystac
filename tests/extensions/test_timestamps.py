@@ -4,9 +4,9 @@ from datetime import datetime
 
 import pystac
 from pystac import ExtensionTypeError
-from pystac.summaries import RangeSummary
 from pystac.extensions.timestamps import TimestampsExtension
-from pystac.utils import get_opt, str_to_datetime, datetime_to_str
+from pystac.summaries import RangeSummary
+from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 from tests.utils import TestCases, assert_to_from_dict
 
 

@@ -4,9 +4,11 @@ https://github.com/stac-extensions/file
 """
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 
-import pystac
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import (
@@ -14,7 +16,12 @@ from pystac.serialization.identify import (
     STACJSONDescription,
     STACVersionID,
 )
+from pystac.stac_object import STACObjectType
 from pystac.utils import get_required
+
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -86,7 +93,7 @@ class MappingObject:
 
 
 class FileExtension(
-    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
+    PropertiesExtension, ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]]
 ):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     with properties from the :stac-ext:`File Info Extension <file>`.
@@ -100,10 +107,10 @@ class FileExtension(
        >>> file_ext = FileExtension.ext(asset)
     """
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -192,17 +199,17 @@ class FileExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "FileExtension":
+    def ext(cls, obj: "Asset_Type", add_if_missing: bool = False) -> "FileExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
-        if isinstance(obj, pystac.Asset):
+        if isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"File Info extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -210,7 +217,7 @@ class FileExtension(
 class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"file"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

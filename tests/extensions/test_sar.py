@@ -1,11 +1,10 @@
 """Tests for pystac.extensions.sar."""
 
 import datetime
-from random import choice
-from typing import List
 import unittest
-
+from random import choice
 from string import ascii_letters
+from typing import List
 
 import pystac
 from pystac import ExtensionTypeError

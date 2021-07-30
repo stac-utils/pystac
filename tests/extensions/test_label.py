@@ -1,23 +1,23 @@
 import json
 import os
-import unittest
 import tempfile
+import unittest
 from typing import List, Union
 
 import pystac
-from pystac import Catalog, Collection, ExtensionTypeError, Item, CatalogType
+import pystac.validation
+from pystac import Catalog, CatalogType, Collection, ExtensionTypeError, Item
 from pystac.extensions.label import (
-    LabelExtension,
     LabelClasses,
     LabelCount,
+    LabelExtension,
     LabelMethod,
     LabelOverview,
+    LabelRelType,
     LabelStatistics,
     LabelTask,
     LabelType,
-    LabelRelType,
 )
-import pystac.validation
 from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
 

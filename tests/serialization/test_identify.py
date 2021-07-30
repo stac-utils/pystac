@@ -7,8 +7,7 @@ from pystac.serialization import (
     identify_stac_object_type,
     merge_common_properties,
 )
-from pystac.serialization.identify import STACVersionRange, STACVersionID
-
+from pystac.serialization.identify import STACVersionID, STACVersionRange
 from tests.utils import TestCases
 
 

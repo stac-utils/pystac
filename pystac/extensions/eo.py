@@ -14,21 +14,30 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    TYPE_CHECKING,
 )
 
-import pystac
-from pystac.summaries import RangeSummary
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError
+from pystac.extensions import projection, view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions import view, projection
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.stac_object import STACObjectType
+from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+
+
+T = TypeVar("T", "Item_Type", "Asset_Type")
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
 PREFIX: str = "eo:"
@@ -277,7 +286,7 @@ class Band:
 class EOExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -360,27 +369,27 @@ class EOExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemEOExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        elif isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesEOExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesEOExtension(obj)
 
 
-class ItemEOExtension(EOExtension[pystac.Item]):
+class ItemEOExtension(EOExtension["Item_Type"]):
     """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`Electro-Optical Extension <eo>`.
@@ -389,13 +398,13 @@ class ItemEOExtension(EOExtension[pystac.Item]):
     :meth:`EOExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    item: pystac.Item
+    item: "Item_Type"
     """The :class:`~pystac.Item` being extended."""
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
 
@@ -424,7 +433,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         return "<ItemEOExtension Item id={}>".format(self.item.id)
 
 
-class AssetEOExtension(EOExtension[pystac.Asset]):
+class AssetEOExtension(EOExtension["Asset_Type"]):
     """A concrete implementation of :class:`EOExtension` on an :class:`~pystac.Asset`
     that extends the Asset fields to include properties defined in the
     :stac-ext:`Electro-Optical Extension <eo>`.
@@ -453,10 +462,10 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
             )
         )
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -499,7 +508,7 @@ class SummariesEOExtension(SummariesExtension):
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"eo"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
@@ -566,7 +575,7 @@ class EOExtensionHooks(ExtensionHooks):
                 if not any(prop.startswith(PREFIX) for prop in obj["properties"]):
                     obj["stac_extensions"].remove(EOExtension.get_schema_uri())
 
-        if version < "1.0.0-beta.1" and info.object_type == pystac.STACObjectType.ITEM:
+        if version < "1.0.0-beta.1" and info.object_type == STACObjectType.ITEM:
             # gsd moved from eo to common metadata
             if "eo:gsd" in obj["properties"]:
                 obj["properties"]["gsd"] = obj["properties"]["eo:gsd"]

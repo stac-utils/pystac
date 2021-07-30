@@ -1,12 +1,11 @@
-import unittest
 import tempfile
+import unittest
 from typing import Any, List
 
 import pystac
-from pystac import Collection, CatalogType, HIERARCHICAL_LINKS
+from pystac import HIERARCHICAL_LINKS, CatalogType, Collection
 from pystac.utils import is_absolute_href, make_absolute_href
 from pystac.validation import validate_dict
-
 from tests.utils import TestCases
 
 

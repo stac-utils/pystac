@@ -3,19 +3,36 @@
 https://github.com/stac-extensions/pointcloud
 """
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, cast, Union
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    TYPE_CHECKING,
+)
 
-import pystac
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError, STACError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.stac_object import STACObjectType
 from pystac.summaries import RangeSummary
-from pystac.utils import map_opt, get_required
+from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+
+T = TypeVar("T", "Item_Type", "Asset_Type")
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 PREFIX: str = "pc:"
@@ -93,7 +110,7 @@ class Schema:
     @size.setter
     def size(self, v: int) -> None:
         if not isinstance(v, int):
-            raise pystac.STACError("size must be an int! Invalid input: {}".format(v))
+            raise STACError("size must be an int! Invalid input: {}".format(v))
 
         self.properties["size"] = v
 
@@ -318,7 +335,7 @@ class Statistic:
 class PointcloudExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -444,30 +461,30 @@ class PointcloudExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
-                raise pystac.ExtensionTypeError(
+        elif isinstance(obj, Asset):
+            if obj.owner is not None and not isinstance(obj.owner, core.Item):
+                raise ExtensionTypeError(
                     "Pointcloud extension does not apply to Collection Assets."
                 )
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesPointcloudExtension":
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesPointcloudExtension(obj)
 
 
-class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
+class ItemPointcloudExtension(PointcloudExtension["Item_Type"]):
     """A concrete implementation of :class:`PointcloudExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`Point Cloud Extension <pointcloud>`.
@@ -476,7 +493,7 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
 
@@ -484,7 +501,7 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
         return "<ItemPointcloudExtension Item id={}>".format(self.item.id)
 
 
-class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
+class AssetPointcloudExtension(PointcloudExtension["Asset_Type"]):
     """A concrete implementation of :class:`PointcloudExtension` on an
     :class:`~pystac.Asset` that extends the Asset fields to include properties defined
     in the :stac-ext:`Point Cloud Extension <pointcloud>`.
@@ -493,10 +510,10 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
             self.repr_id = f"href={asset.href} item.id={asset.owner.id}"
         else:
@@ -562,7 +579,7 @@ class SummariesPointcloudExtension(SummariesExtension):
 class PointcloudExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"pointcloud"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
 
 POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()

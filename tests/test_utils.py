@@ -1,13 +1,12 @@
-import unittest
-import os
 import json
 import ntpath
+import os
 import sys
-from datetime import datetime, timezone, timedelta
+import unittest
+from datetime import datetime, timedelta, timezone
 
 from pystac import utils
-
-from pystac.utils import make_relative_href, make_absolute_href, is_absolute_href
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 from tests.utils import TestCases
 
 

@@ -4,13 +4,20 @@ https://github.com/stac-extensions/item-assets
 """
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
-import pystac
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.stac_object import STACObjectType
 from pystac.utils import get_required
+
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 
@@ -95,10 +102,10 @@ class AssetDefinition:
         """Returns a JSON-like dictionary representing this ``AssetDefinition``."""
         return deepcopy(self.properties)
 
-    def create_asset(self, href: str) -> pystac.Asset:
+    def create_asset(self, href: str) -> "Asset_Type":
         """Creates a new :class:`~pystac.Asset` instance using the fields from this
         ``AssetDefinition`` and the given ``href``."""
-        return pystac.Asset(
+        return Asset(
             href=href,
             title=self.title,
             description=self.description,
@@ -118,8 +125,8 @@ class AssetDefinition:
         )
 
 
-class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
-    def __init__(self, collection: pystac.Collection) -> None:
+class ItemAssetsExtension(ExtensionManagementMixin["Collection_Type"]):
+    def __init__(self, collection: "Collection_Type") -> None:
         self.collection = collection
 
     @property
@@ -146,7 +153,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 
     @classmethod
     def ext(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "ItemAssetsExtension":
         """Extends the given :class:`~pystac.Collection` with properties from the
         :stac-ext:`Item Assets Extension <item-assets>`.
@@ -155,11 +162,11 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, core.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Item Assets extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -167,7 +174,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"asset", "item-assets"}
-    stac_object_types = {pystac.STACObjectType.COLLECTION}
+    stac_object_types = {STACObjectType.COLLECTION}
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

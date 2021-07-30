@@ -3,18 +3,35 @@
 https://github.com/stac-extensions/view
 """
 
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    TYPE_CHECKING,
+)
 
-import pystac
-from pystac.summaries import RangeSummary
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.stac_object import STACObjectType
+from pystac.summaries import RangeSummary
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+
+T = TypeVar("T", "Item_Type", "Asset_Type")
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
 PREFIX: str = "view:"
@@ -29,7 +46,7 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 class ViewExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
@@ -157,27 +174,27 @@ class ViewExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], ItemViewExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        elif isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesViewExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesViewExtension(obj)
 
 
-class ItemViewExtension(ViewExtension[pystac.Item]):
+class ItemViewExtension(ViewExtension["Item_Type"]):
     """A concrete implementation of :class:`ViewExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`View Geometry Extension <view>`.
@@ -186,13 +203,13 @@ class ItemViewExtension(ViewExtension[pystac.Item]):
     :meth:`ViewExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    item: pystac.Item
+    item: "Item_Type"
     """The :class:`~pystac.Item` being extended."""
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
 
@@ -200,7 +217,7 @@ class ItemViewExtension(ViewExtension[pystac.Item]):
         return "<ItemViewExtension Item id={}>".format(self.item.id)
 
 
-class AssetViewExtension(ViewExtension[pystac.Asset]):
+class AssetViewExtension(ViewExtension["Asset_Type"]):
     """A concrete implementation of :class:`ViewExtension` on an :class:`~pystac.Asset`
     that extends the Asset fields to include properties defined in the
     :stac-ext:`View Geometry Extension <view>`.
@@ -219,10 +236,10 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -294,7 +311,7 @@ class SummariesViewExtension(SummariesExtension):
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids = {"view"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
 
 VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()

@@ -1,9 +1,9 @@
 import os
-import unittest
 import tempfile
+import unittest
 
 import pystac
-from pystac.stac_io import StacIO, DefaultStacIO, DuplicateKeyReportingMixin
+from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
 
 

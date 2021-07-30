@@ -1,45 +1,51 @@
 import os
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
-from dateutil import parser, tz
 from enum import Enum
-from pystac.errors import STACTypeError
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
     Iterable,
     List,
     Optional,
-    TYPE_CHECKING,
-    TypeVar,
     Tuple,
+    TypeVar,
     Union,
     cast,
 )
 
+from dateutil import parser, tz
+
 import pystac
+import pystac.link
 from pystac.asset import Asset
+from pystac.cache import ResolvedObjectCache
 from pystac.common_metadata import CommonMetadata
-from pystac.errors import STACError
-from pystac.stac_object import STACObject, STACObjectType
+from pystac.errors import STACError, STACTypeError
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
     LayoutTemplate,
 )
-from pystac.link import Link
 from pystac.provider import Provider
 from pystac.rel_type import RelType
-from pystac.cache import ResolvedObjectCache
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
 from pystac.stac_io import StacIO
+from pystac.stac_object import STACObject, STACObjectType
 from pystac.summaries import Summaries
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href, datetime_to_str, str_to_datetime
+from pystac.utils import (
+    datetime_to_str,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+    str_to_datetime,
+)
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
@@ -179,7 +185,7 @@ class Catalog(STACObject):
 
         self._resolved_objects = ResolvedObjectCache()
 
-        self.add_link(Link.root(self))
+        self.add_link(pystac.link.Link.root(self))
 
         if href is not None:
             self.set_self_href(href)
@@ -237,11 +243,9 @@ class Catalog(STACObject):
             child_href = strategy.get_href(child, os.path.dirname(self_href))
             child.set_self_href(child_href)
 
-        self.add_link(Link.child(child, title=title))
+        self.add_link(pystac.link.Link.child(child, title=title))
 
-    def add_children(
-        self, children: Iterable[Union["Catalog", "Collection"]]
-    ) -> None:
+    def add_children(self, children: Iterable[Union["Catalog", "Collection"]]) -> None:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection` objects.
         This method will set each child's parent to this object, and their root to
         this Catalog's root.
@@ -283,7 +287,7 @@ class Catalog(STACObject):
             item_href = strategy.get_href(item, os.path.dirname(self_href))
             item.set_self_href(item_href)
 
-        self.add_link(Link.item(item, title=title))
+        self.add_link(pystac.link.Link.item(item, title=title))
 
     def add_items(self, items: Iterable["Item"]) -> None:
         """Adds links to multiple :class:`~pystac.Item` s.
@@ -347,7 +351,7 @@ class Catalog(STACObject):
         for child in self.get_children():
             yield from child.get_collections()
 
-    def get_child_links(self) -> List[Link]:
+    def get_child_links(self) -> List["Link_Type"]:
         """Return all child links of this catalog.
 
         Return:
@@ -413,9 +417,7 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return map(
-            lambda x: cast("Item", x), self.get_stac_objects(RelType.ITEM)
-        )
+        return map(lambda x: cast("Item", x), self.get_stac_objects(RelType.ITEM))
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -465,7 +467,7 @@ class Catalog(STACObject):
         for child in self.get_children():
             yield from child.get_all_items()
 
-    def get_item_links(self) -> List[Link]:
+    def get_item_links(self) -> List["Link_Type"]:
         """Return all item links of this catalog.
 
         Return:
@@ -672,7 +674,7 @@ class Catalog(STACObject):
 
         layout_template = LayoutTemplate(template, defaults=defaults)
 
-        keep_item_links: List[Link] = []
+        keep_item_links: List["Link_Type"] = []
         item_links = [lk for lk in self.links if lk.rel == RelType.ITEM]
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
@@ -868,7 +870,7 @@ class Catalog(STACObject):
             for child in catalog.get_children():
                 process_catalog(child)
 
-            item_links: List[Link] = []
+            item_links: List["Link_Type"] = []
             for item_link in catalog.get_item_links():
                 item_link.resolve_stac_object(root=self.get_root())
                 mapped = item_mapper(cast("Item", item_link.target))
@@ -1002,7 +1004,7 @@ class Catalog(STACObject):
                 cat.remove_links(RelType.ROOT)
 
             if link["rel"] != RelType.SELF or href is None:
-                cat.add_link(Link.from_dict(link))
+                cat.add_link(pystac.link.Link.from_dict(link))
 
         if root:
             cat.set_root(root)
@@ -1620,7 +1622,7 @@ class Collection(Catalog):
                 collection.remove_links(RelType.ROOT)
 
             if link["rel"] != RelType.SELF or href is None:
-                collection.add_link(Link.from_dict(link))
+                collection.add_link(pystac.link.Link.from_dict(link))
 
         if assets is not None:
             for asset_key, asset_dict in assets.items():
@@ -1661,9 +1663,7 @@ class Collection(Catalog):
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(
-        cls, href: str, stac_io: Optional[StacIO] = None
-    ) -> "Collection":
+    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "Collection":
         result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
             raise STACTypeError(f"{result} is not a {Collection}.")
@@ -1916,7 +1916,7 @@ class Item(STACObject):
         self.remove_links(RelType.COLLECTION)
         self.collection_id = None
         if collection is not None:
-            self.add_link(Link.collection(collection))
+            self.add_link(pystac.link.Link.collection(collection))
             self.collection_id = collection.id
 
         return self
@@ -2009,9 +2009,7 @@ class Item(STACObject):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(
-                f"{d} does not represent a {cls.__name__} instance"
-            )
+            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
 
         if preserve_dict:
             d = deepcopy(d)
@@ -2046,10 +2044,10 @@ class Item(STACObject):
         has_self_link = False
         for link in links:
             has_self_link |= link["rel"] == RelType.SELF
-            item.add_link(Link.from_dict(link))
+            item.add_link(pystac.link.Link.from_dict(link))
 
         if not has_self_link and href is not None:
-            item.add_link(Link.self_href(href))
+            item.add_link(pystac.link.Link.self_href(href))
 
         for k, v in assets.items():
             asset = Asset.from_dict(v)
@@ -2082,4 +2080,3 @@ class Item(STACObject):
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.ITEM
-

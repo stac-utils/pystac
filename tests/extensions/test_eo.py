@@ -3,10 +3,10 @@ import unittest
 
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.extensions.eo import Band, EOExtension
+from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
-from pystac.extensions.eo import EOExtension, Band
-from pystac.extensions.projection import ProjectionExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 

@@ -1,12 +1,11 @@
 from copy import copy
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from pystac import common_metadata
-from pystac import utils
+from pystac import common_metadata, utils
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type
     from pystac.common_metadata import CommonMetadata as CommonMetadata_Type
+    from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
 
 

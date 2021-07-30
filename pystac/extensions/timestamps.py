@@ -4,19 +4,36 @@ https://github.com/stac-extensions/timestamps
 """
 
 from datetime import datetime as datetime
-from pystac.summaries import RangeSummary
-from typing import Dict, Any, Iterable, Generic, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    TYPE_CHECKING,
+)
 
-import pystac
+from pystac import core
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.stac_object import STACObjectType
+from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+
+T = TypeVar("T", "Item_Type", "Asset_Type")
 
 SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
 
@@ -28,7 +45,7 @@ UNPUBLISHED_PROP = "unpublished"
 class TimestampsExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -128,27 +145,27 @@ class TimestampsExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        elif isinstance(obj, Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesTimestampsExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesTimestampsExtension(obj)
 
 
-class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
+class ItemTimestampsExtension(TimestampsExtension["Item_Type"]):
     """A concrete implementation of :class:`TimestampsExtension` on an
     :class:`~pystac.Item` that extends the properties of the Item to include properties
     defined in the :stac-ext:`Timestamps Extension <timestamps>`.
@@ -157,13 +174,13 @@ class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
     :meth:`TimestampsExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    item: pystac.Item
+    item: "Item_Type"
     """The :class:`~pystac.Item` being extended."""
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
 
@@ -171,7 +188,7 @@ class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
         return "<ItemTimestampsExtension Item id={}>".format(self.item.id)
 
 
-class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
+class AssetTimestampsExtension(TimestampsExtension["Asset_Type"]):
     """A concrete implementation of :class:`TimestampsExtension` on an
     :class:`~pystac.Asset` that extends the Asset fields to include properties
     defined in the :stac-ext:`Timestamps Extension <timestamps>`.
@@ -190,10 +207,10 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -285,7 +302,7 @@ class SummariesTimestampsExtension(SummariesExtension):
 class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"timestamps"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
 
 TIMESTAMPS_EXTENSION_HOOKS: ExtensionHooks = TimestampsExtensionHooks()

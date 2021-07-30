@@ -1,22 +1,27 @@
 from copy import copy
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import pystac
-from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
+from pystac import core
+from pystac.errors import STACError
+from pystac.media_type import MediaType
+from pystac.rel_type import RelType
+from pystac.stac_io import StacIO
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.core import Item as Item_Type
     from pystac.core import Catalog as Catalog_Type
     from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 HIERARCHICAL_LINKS = [
-    pystac.RelType.ROOT,
-    pystac.RelType.CHILD,
-    pystac.RelType.PARENT,
-    pystac.RelType.COLLECTION,
-    pystac.RelType.ITEM,
-    pystac.RelType.ITEMS,
+    RelType.ROOT,
+    RelType.CHILD,
+    RelType.PARENT,
+    RelType.COLLECTION,
+    RelType.ITEM,
+    RelType.ITEMS,
 ]
 
 
@@ -48,7 +53,7 @@ class Link:
             object JSON.
     """
 
-    rel: Union[str, pystac.RelType]
+    rel: Union[str, RelType]
     """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
     preferred. See :class:`~pystac.RelType` for common media types."""
 
@@ -73,7 +78,7 @@ class Link:
 
     def __init__(
         self,
-        rel: Union[str, pystac.RelType],
+        rel: Union[str, RelType],
         target: Union[str, "STACObject_Type"],
         media_type: Optional[str] = None,
         title: Optional[str] = None,
@@ -81,7 +86,7 @@ class Link:
     ) -> None:
         self.rel = rel
         if isinstance(target, str):
-            if rel == pystac.RelType.SELF:
+            if rel == RelType.SELF:
                 self._target_href = make_absolute_href(target)
             else:
                 self._target_href = target
@@ -233,14 +238,14 @@ class Link:
             # If it's a relative link, base it off the parent.
             if not is_absolute_href(target_href):
                 if self.owner is None:
-                    raise pystac.STACError(
+                    raise STACError(
                         "Relative path {} encountered "
                         "without owner or start_href.".format(target_href)
                     )
                 start_href = self.owner.get_self_href()
 
                 if start_href is None:
-                    raise pystac.STACError(
+                    raise STACError(
                         "Relative path {} encountered "
                         'without owner "self" link set.'.format(target_href)
                     )
@@ -248,7 +253,7 @@ class Link:
                 target_href = make_absolute_href(target_href, start_href)
             obj = None
 
-            stac_io: Optional[pystac.StacIO] = None
+            stac_io: Optional[StacIO] = None
 
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
@@ -258,10 +263,10 @@ class Link:
 
                 if stac_io is None:
                     if self.owner is not None:
-                        if isinstance(self.owner, pystac.Catalog):
+                        if isinstance(self.owner, core.Catalog):
                             stac_io = self.owner._stac_io
                     if stac_io is None:
-                        stac_io = pystac.StacIO.default()
+                        stac_io = StacIO.default()
 
                 obj = stac_io.read_stac_object(target_href, root=root)
                 obj.set_self_href(target_href)
@@ -274,8 +279,8 @@ class Link:
 
         if (
             self.owner
-            and self.rel in [pystac.RelType.CHILD, pystac.RelType.ITEM]
-            and isinstance(self.owner, pystac.Catalog)
+            and self.rel in [RelType.CHILD, RelType.ITEM]
+            and isinstance(self.owner, core.Catalog)
         ):
             assert self._target_object
             self._target_object.set_parent(self.owner)
@@ -358,36 +363,32 @@ class Link:
     @classmethod
     def root(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a root Catalog or Collection."""
-        return cls(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
+        return cls(RelType.ROOT, c, media_type=MediaType.JSON)
 
     @classmethod
     def parent(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
-        return cls(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
+        return cls(RelType.PARENT, c, media_type=MediaType.JSON)
 
     @classmethod
     def collection(cls, c: "Collection_Type") -> "Link":
         """Creates a link to an item's Collection."""
-        return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
+        return cls(RelType.COLLECTION, c, media_type=MediaType.JSON)
 
     @classmethod
     def self_href(cls, href: str) -> "Link":
         """Creates a self link to a file's location."""
-        return cls(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
+        return cls(RelType.SELF, href, media_type=MediaType.JSON)
 
     @classmethod
     def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
-        return cls(
-            pystac.RelType.CHILD, c, title=title, media_type=pystac.MediaType.JSON
-        )
+        return cls(RelType.CHILD, c, title=title, media_type=MediaType.JSON)
 
     @classmethod
     def item(cls, item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
-        return cls(
-            pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
-        )
+        return cls(RelType.ITEM, item, title=title, media_type=MediaType.JSON)
 
     @classmethod
     def canonical(
@@ -397,8 +398,8 @@ class Link:
     ) -> "Link":
         """Creates a canonical link to an Item or Collection."""
         return cls(
-            pystac.RelType.CANONICAL,
+            RelType.CANONICAL,
             item_or_collection,
             title=title,
-            media_type=pystac.MediaType.JSON,
+            media_type=MediaType.JSON,
         )

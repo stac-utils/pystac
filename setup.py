@@ -1,8 +1,8 @@
 import os
-from setuptools import setup, find_packages
 from glob import glob
-
 from os.path import basename, splitext
+
+from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 

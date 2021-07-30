@@ -2,49 +2,12 @@
 PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
 
-from pystac.errors import (
-    STACError,
-    STACTypeError,
-    DuplicateObjectKeyError,
-    ExtensionAlreadyExistsError,
-    ExtensionNotImplemented,
-    ExtensionTypeError,
-    RequiredPropertyMissing,
-    STACValidationError,
-)
-
 from typing import Any, Dict, Optional
-from pystac.version import (
-    __version__,
-    get_stac_version,
-    set_stac_version,
-)
-from pystac.asset import Asset
-from pystac.media_type import MediaType
-from pystac.rel_type import RelType
-from pystac.stac_io import StacIO
-from pystac.stac_object import STACObject, STACObjectType
-from pystac.link import Link, HIERARCHICAL_LINKS
-from pystac.core import (
-    Catalog,
-    CatalogType,
-    Collection,
-    Extent,
-    Item,
-    SpatialExtent,
-    TemporalExtent,
-    Summaries,
-)
-from pystac.common_metadata import CommonMetadata
-from pystac.summaries import RangeSummary
-from pystac.item_collection import ItemCollection
-from pystac.provider import ProviderRole, Provider
-import pystac.validation
 
-import pystac.extensions.hooks
 import pystac.extensions.datacube
 import pystac.extensions.eo
 import pystac.extensions.file
+import pystac.extensions.hooks
 import pystac.extensions.item_assets
 import pystac.extensions.label
 import pystac.extensions.pointcloud
@@ -55,6 +18,38 @@ import pystac.extensions.scientific
 import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
+import pystac.validation
+from pystac.asset import Asset
+from pystac.common_metadata import CommonMetadata
+from pystac.core import (
+    Catalog,
+    CatalogType,
+    Collection,
+    Extent,
+    Item,
+    SpatialExtent,
+    Summaries,
+    TemporalExtent,
+)
+from pystac.errors import (
+    DuplicateObjectKeyError,
+    ExtensionAlreadyExistsError,
+    ExtensionNotImplemented,
+    ExtensionTypeError,
+    RequiredPropertyMissing,
+    STACError,
+    STACTypeError,
+    STACValidationError,
+)
+from pystac.item_collection import ItemCollection
+from pystac.link import HIERARCHICAL_LINKS, Link
+from pystac.media_type import MediaType
+from pystac.provider import Provider, ProviderRole
+from pystac.rel_type import RelType
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObject, STACObjectType
+from pystac.summaries import RangeSummary
+from pystac.version import __version__, get_stac_version, set_stac_version
 
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [

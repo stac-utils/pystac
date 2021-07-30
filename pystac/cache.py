@@ -1,12 +1,12 @@
 from collections import ChainMap
 from copy import copy
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
 import pystac
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
     from pystac.core import Collection as Collection_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 
 def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:

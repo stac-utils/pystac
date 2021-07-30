@@ -9,19 +9,37 @@ https://doi.org/10.1000/182
 
 import copy
 from enum import Enum
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+    TYPE_CHECKING,
+)
 from urllib import parse
 
-import pystac
+import pystac.link
+from pystac import core
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.stac_object import STACObjectType
 from pystac.utils import map_opt
 
-T = TypeVar("T", pystac.Collection, pystac.Item)
+if TYPE_CHECKING:
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.link import Link as Link_Type
+    from pystac.stac_object import STACObject as STACObject_Type
+
+T = TypeVar("T", "Collection_Type", "Item_Type")
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
 PREFIX: str = "sci:"
@@ -75,15 +93,15 @@ class Publication:
     def from_dict(d: Dict[str, str]) -> "Publication":
         return Publication(d.get("doi"), d.get("citation"))
 
-    def get_link(self) -> Optional[pystac.Link]:
+    def get_link(self) -> Optional["Link_Type"]:
         """Gets a :class:`~pystac.Link` for the DOI for this publication. If
         :attr:`Publication.doi` is ``None``, this method will also return ``None``."""
         if self.doi is None:
             return None
-        return pystac.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
+        return pystac.link.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], doi: Optional[str]) -> None:
+def remove_link(links: List["Link_Type"], doi: Optional[str]) -> None:
     if doi is None:
         return
     url = doi_to_url(doi)
@@ -98,7 +116,7 @@ def remove_link(links: List[pystac.Link], doi: Optional[str]) -> None:
 class ScientificExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the
@@ -115,7 +133,7 @@ class ScientificExtension(
        >>> sci_ext = ScientificExtension.ext(item)
     """
 
-    def __init__(self, obj: pystac.STACObject) -> None:
+    def __init__(self, obj: "STACObject_Type") -> None:
         self.obj = obj
 
     def apply(
@@ -156,7 +174,7 @@ class ScientificExtension(
         if v is not None:
             self.properties[DOI_PROP] = v
             url = doi_to_url(v)
-            self.obj.add_link(pystac.Link(ScientificRelType.CITE_AS, url))
+            self.obj.add_link(pystac.link.Link(ScientificRelType.CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
@@ -233,27 +251,27 @@ class ScientificExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, core.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ScientificExtension[T], CollectionScientificExtension(obj))
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Scientific extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesScientificExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesScientificExtension(obj)
 
 
-class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
+class CollectionScientificExtension(ScientificExtension["Collection_Type"]):
     """A concrete implementation of :class:`ScientificExtension` on an
     :class:`~pystac.Collection` that extends the properties of the Item to include
     properties defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
@@ -262,18 +280,18 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
     :meth:`ScientificExtension.ext` on an :class:`~pystac.Collection` to extend it.
     """
 
-    collection: pystac.Collection
+    collection: "Collection_Type"
     """The :class:`~pystac.Collection` being extended."""
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Collection` properties, including extension properties."""
 
-    links: List[pystac.Link]
+    links: List["Link_Type"]
     """The list of :class:`~pystac.Link` objects associated with the
     :class:`~pystac.Collection` being extended, including links added by this extension.
     """
 
-    def __init__(self, collection: pystac.Collection):
+    def __init__(self, collection: "Collection_Type"):
         self.collection = collection
         self.properties = collection.extra_fields
         self.links = collection.links
@@ -285,7 +303,7 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
         )
 
 
-class ItemScientificExtension(ScientificExtension[pystac.Item]):
+class ItemScientificExtension(ScientificExtension["Item_Type"]):
     """A concrete implementation of :class:`ScientificExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`Scientific Citation Extension <scientific>`.
@@ -294,18 +312,18 @@ class ItemScientificExtension(ScientificExtension[pystac.Item]):
     :meth:`ScientificExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
-    item: pystac.Item
+    item: "Item_Type"
     """The :class:`~pystac.Item` being extended."""
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
-    links: List[pystac.Link]
+    links: List["Link_Type"]
     """The list of :class:`~pystac.Link` objects associated with the
     :class:`~pystac.Item` being extended, including links added by this extension.
     """
 
-    def __init__(self, item: pystac.Item):
+    def __init__(self, item: "Item_Type"):
         self.item = item
         self.properties = item.properties
         self.links = item.links
@@ -347,7 +365,7 @@ class SummariesScientificExtension(SummariesExtension):
 class ScientificExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"scientific"}
-    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
 
 
 SCIENTIFIC_EXTENSION_HOOKS: ExtensionHooks = ScientificExtensionHooks()

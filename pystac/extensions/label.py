@@ -4,13 +4,23 @@ https://github.com/stac-extensions/label
 """
 
 from enum import Enum
-from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Union, cast, TYPE_CHECKING
 
-import pystac
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
+import pystac.link
+from pystac import core
+from pystac.asset import Asset
+from pystac.media_type import MediaType
+from pystac.errors import STACError, ExtensionTypeError
+from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.stac_object import STACObjectType
 from pystac.utils import get_required, map_opt
+
+if TYPE_CHECKING:
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.rel_type import RelType as RelType_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
@@ -355,9 +365,7 @@ class LabelOverview:
             self.properties.pop("counts", None)
         else:
             if not isinstance(v, list):
-                raise pystac.STACError(
-                    "counts must be a list! Invalid input: {}".format(v)
-                )
+                raise STACError("counts must be a list! Invalid input: {}".format(v))
 
             self.properties["counts"] = [c.to_dict() for c in v]
 
@@ -425,7 +433,7 @@ class LabelOverview:
         return self.to_dict() == o
 
 
-class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]):
+class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]]):
     """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
@@ -438,7 +446,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
        >>> label_ext = LabelExtension.ext(item)
     """
 
-    def __init__(self, item: pystac.Item) -> None:
+    def __init__(self, item: "Item_Type") -> None:
         self.obj = item
         self.schema_uri = SCHEMA_URI
 
@@ -536,7 +544,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             self.obj.properties.pop(CLASSES_PROP, None)
         else:
             if not isinstance(v, list):
-                raise pystac.STACError(
+                raise STACError(
                     "label_classes must be a list! Invalid input: {}".format(v)
                 )
 
@@ -594,7 +602,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
 
     def add_source(
         self,
-        source_item: pystac.Item,
+        source_item: "Item_Type",
         title: Optional[str] = None,
         assets: Optional[List[str]] = None,
     ) -> None:
@@ -609,16 +617,16 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         extra_fields = None
         if assets is not None:
             extra_fields = {"label:assets": assets}
-        link = pystac.Link(
+        link = pystac.link.Link(
             "source",
             source_item,
             title=title,
-            media_type=pystac.MediaType.JSON,
+            media_type=MediaType.JSON,
             extra_fields=extra_fields,
         )
         self.obj.add_link(link)
 
-    def get_sources(self) -> Iterable[pystac.Item]:
+    def get_sources(self) -> Iterable["Item_Type"]:
         """Gets any source items that describe the source imagery used to generate
         this LabelItem.
 
@@ -626,7 +634,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             A possibly empty list of source imagery items. Determined by links of this
             LabelItem that have ``rel=='source'``.
         """
-        return map(lambda x: cast(pystac.Item, x), self.obj.get_stac_objects("source"))
+        return map(lambda x: cast("Item_Type", x), self.obj.get_stac_objects("source"))
 
     def add_labels(
         self,
@@ -651,7 +659,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
 
         self.obj.add_asset(
             "labels",
-            pystac.Asset(
+            Asset(
                 href=href, title=title, media_type=media_type, extra_fields=properties
             ),
         )
@@ -676,7 +684,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             href,
             title=title,
             properties=properties,
-            media_type=pystac.MediaType.GEOJSON,
+            media_type=MediaType.GEOJSON,
         )
 
     @classmethod
@@ -684,23 +692,23 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> "LabelExtension":
+    def ext(cls, obj: "Item_Type", add_if_missing: bool = False) -> "LabelExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`Label
         Extension <label>`.
 
         This extension can be applied to instances of :class:`~pystac.Item`.
         """
-        if isinstance(obj, pystac.Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise pystac.ExtensionTypeError(
+            raise ExtensionTypeError(
                 f"Label extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesLabelExtension":
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
@@ -782,19 +790,19 @@ class SummariesLabelExtension(SummariesExtension):
 class LabelExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"label"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.ITEM}
 
     def get_object_links(
-        self, so: pystac.STACObject
-    ) -> Optional[List[Union[str, pystac.RelType]]]:
-        if isinstance(so, pystac.Item):
+        self, so: "STACObject_Type"
+    ) -> Optional[List[Union[str, "RelType_Type"]]]:
+        if isinstance(so, core.Item):
             return [LabelRelType.SOURCE]
         return None
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        if info.object_type == pystac.STACObjectType.ITEM and version < "1.0.0":
+        if info.object_type == STACObjectType.ITEM and version < "1.0.0":
             props = obj["properties"]
             # Migrate 0.8.0-rc1 non-pluralized forms
             # As it's a common mistake, convert for any pre-1.0.0 version.
