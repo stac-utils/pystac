@@ -6,7 +6,6 @@ from typing import List, Optional
 
 import pystac
 from pystac import ExtensionTypeError
-from pystac.core import Summaries
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
@@ -15,6 +14,7 @@ from pystac.extensions.scientific import (
     remove_link,
 )
 from pystac.link import Link
+from pystac.summaries import Summaries
 from tests.utils import TestCases
 
 URL_TEMPLATE = "http://example.com/catalog/%s.json"

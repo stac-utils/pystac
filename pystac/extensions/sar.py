@@ -17,24 +17,19 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
-from pystac.utils import get_required, map_opt
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
+    from pystac.summaries import RangeSummary as RangeSummary_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 
@@ -84,8 +79,8 @@ class ObservationDirection(str, enum.Enum):
 
 class SarExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -179,7 +174,7 @@ class SarExtension(
     @property
     def instrument_mode(self) -> str:
         """Gets or sets an instrument mode string for the item."""
-        return get_required(
+        return utils.get_required(
             self._get_property(INSTRUMENT_MODE_PROP, str), self, INSTRUMENT_MODE_PROP
         )
 
@@ -190,8 +185,8 @@ class SarExtension(
     @property
     def frequency_band(self) -> FrequencyBand:
         """Gets or sets a FrequencyBand for the item."""
-        return get_required(
-            map_opt(
+        return utils.get_required(
+            utils.map_opt(
                 lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND_PROP, str)
             ),
             self,
@@ -205,8 +200,8 @@ class SarExtension(
     @property
     def polarizations(self) -> List[Polarization]:
         """Gets or sets a list of polarizations for the item."""
-        return get_required(
-            map_opt(
+        return utils.get_required(
+            utils.map_opt(
                 lambda values: [Polarization(v) for v in values],
                 self._get_property(POLARIZATIONS_PROP, List[str]),
             ),
@@ -217,7 +212,7 @@ class SarExtension(
     @polarizations.setter
     def polarizations(self, values: List[Polarization]) -> None:
         if not isinstance(values, list):
-            raise STACError(f'polarizations must be a list. Invalid "{values}"')
+            raise errors.STACError(f'polarizations must be a list. Invalid "{values}"')
         self._set_property(
             POLARIZATIONS_PROP, [v.value for v in values], pop_if_none=False
         )
@@ -225,7 +220,7 @@ class SarExtension(
     @property
     def product_type(self) -> str:
         """Gets or sets a product type string for the item."""
-        return get_required(
+        return utils.get_required(
             self._get_property(PRODUCT_TYPE_PROP, str), self, PRODUCT_TYPE_PROP
         )
 
@@ -308,13 +303,15 @@ class SarExtension(
     @property
     def observation_direction(self) -> Optional[ObservationDirection]:
         """Gets or sets an observation direction for the item."""
-        return map_opt(
+        return utils.map_opt(
             ObservationDirection, self._get_property(OBSERVATION_DIRECTION_PROP, str)
         )
 
     @observation_direction.setter
     def observation_direction(self, v: Optional[ObservationDirection]) -> None:
-        self._set_property(OBSERVATION_DIRECTION_PROP, map_opt(lambda x: x.value, v))
+        self._set_property(
+            OBSERVATION_DIRECTION_PROP, utils.map_opt(lambda x: x.value, v)
+        )
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -335,15 +332,15 @@ class SarExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             if obj.owner is not None and not isinstance(obj.owner, core.Item):
-                raise ExtensionTypeError(
+                raise errors.ExtensionTypeError(
                     "SAR extension does not apply to Collection Assets."
                 )
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"SAR extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -408,7 +405,7 @@ class AssetSarExtension(SarExtension["Asset_Type"]):
         return "<AssetSarExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesSarExtension(SummariesExtension):
+class SummariesSarExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`SAR Extension <sar>`.
@@ -439,7 +436,7 @@ class SummariesSarExtension(SummariesExtension):
         self._set_summary(FREQUENCY_BAND_PROP, v)
 
     @property
-    def center_frequency(self) -> Optional[RangeSummary[float]]:
+    def center_frequency(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.center_frequency` values
         for this Collection.
         """
@@ -447,7 +444,7 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(CENTER_FREQUENCY_PROP)
 
     @center_frequency.setter
-    def center_frequency(self, v: Optional[RangeSummary[float]]) -> None:
+    def center_frequency(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(CENTER_FREQUENCY_PROP, v)
 
     @property
@@ -475,7 +472,7 @@ class SummariesSarExtension(SummariesExtension):
         self._set_summary(PRODUCT_TYPE_PROP, v)
 
     @property
-    def resolution_range(self) -> Optional[RangeSummary[float]]:
+    def resolution_range(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.resolution_range` values
         for this Collection.
         """
@@ -483,11 +480,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(RESOLUTION_RANGE_PROP)
 
     @resolution_range.setter
-    def resolution_range(self, v: Optional[RangeSummary[float]]) -> None:
+    def resolution_range(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(RESOLUTION_RANGE_PROP, v)
 
     @property
-    def resolution_azimuth(self) -> Optional[RangeSummary[float]]:
+    def resolution_azimuth(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.resolution_azimuth` values
         for this Collection.
         """
@@ -495,11 +492,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(RESOLUTION_AZIMUTH_PROP)
 
     @resolution_azimuth.setter
-    def resolution_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def resolution_azimuth(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(RESOLUTION_AZIMUTH_PROP, v)
 
     @property
-    def pixel_spacing_range(self) -> Optional[RangeSummary[float]]:
+    def pixel_spacing_range(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.pixel_spacing_range` values
         for this Collection.
         """
@@ -507,11 +504,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(PIXEL_SPACING_RANGE_PROP)
 
     @pixel_spacing_range.setter
-    def pixel_spacing_range(self, v: Optional[RangeSummary[float]]) -> None:
+    def pixel_spacing_range(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(PIXEL_SPACING_RANGE_PROP, v)
 
     @property
-    def pixel_spacing_azimuth(self) -> Optional[RangeSummary[float]]:
+    def pixel_spacing_azimuth(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.pixel_spacing_azimuth` values
         for this Collection.
         """
@@ -519,11 +516,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(PIXEL_SPACING_AZIMUTH_PROP)
 
     @pixel_spacing_azimuth.setter
-    def pixel_spacing_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def pixel_spacing_azimuth(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(PIXEL_SPACING_AZIMUTH_PROP, v)
 
     @property
-    def looks_range(self) -> Optional[RangeSummary[int]]:
+    def looks_range(self) -> Optional["RangeSummary_Type[int]"]:
         """Get or sets the summary of :attr:`SarExtension.looks_range` values
         for this Collection.
         """
@@ -531,11 +528,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(LOOKS_RANGE_PROP)
 
     @looks_range.setter
-    def looks_range(self, v: Optional[RangeSummary[int]]) -> None:
+    def looks_range(self, v: Optional["RangeSummary_Type[int]"]) -> None:
         self._set_summary(LOOKS_RANGE_PROP, v)
 
     @property
-    def looks_azimuth(self) -> Optional[RangeSummary[int]]:
+    def looks_azimuth(self) -> Optional["RangeSummary_Type[int]"]:
         """Get or sets the summary of :attr:`SarExtension.looks_azimuth` values
         for this Collection.
         """
@@ -543,11 +540,11 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(LOOKS_AZIMUTH_PROP)
 
     @looks_azimuth.setter
-    def looks_azimuth(self, v: Optional[RangeSummary[int]]) -> None:
+    def looks_azimuth(self, v: Optional["RangeSummary_Type[int]"]) -> None:
         self._set_summary(LOOKS_AZIMUTH_PROP, v)
 
     @property
-    def looks_equivalent_number(self) -> Optional[RangeSummary[float]]:
+    def looks_equivalent_number(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`SarExtension.looks_equivalent_number` values
         for this Collection.
         """
@@ -555,7 +552,7 @@ class SummariesSarExtension(SummariesExtension):
         return self.summaries.get_range(LOOKS_EQUIVALENT_NUMBER_PROP)
 
     @looks_equivalent_number.setter
-    def looks_equivalent_number(self, v: Optional[RangeSummary[float]]) -> None:
+    def looks_equivalent_number(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(LOOKS_EQUIVALENT_NUMBER_PROP, v)
 
     @property
@@ -571,13 +568,16 @@ class SummariesSarExtension(SummariesExtension):
         self._set_summary(OBSERVATION_DIRECTION_PROP, v)
 
 
-class SarExtensionHooks(ExtensionHooks):
+class SarExtensionHooks(hooks.ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids = {"sar"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self,
+        obj: Dict[str, Any],
+        version: "STACVersionID_Type",
+        info: "STACJSONDescription_Type",
     ) -> None:
         if version < "0.9":
             # Some sar fields became common_metadata
@@ -625,4 +625,4 @@ class SarExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-SAR_EXTENSION_HOOKS: ExtensionHooks = SarExtensionHooks()
+SAR_EXTENSION_HOOKS: hooks.ExtensionHooks = SarExtensionHooks()

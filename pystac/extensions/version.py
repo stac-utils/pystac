@@ -2,17 +2,11 @@
 
 https://github.com/stac-extensions/version
 """
-from enum import Enum
+import enum
 from typing import TYPE_CHECKING, Generic, List, Optional, TypeVar, Union, cast
 
-import pystac.link
-from pystac import core
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.media_type import MediaType
-from pystac.stac_object import STACObjectType
-from pystac.utils import get_required, map_opt
+from pystac import core, errors, link, media_type, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.core import Collection as Collection_Type
@@ -29,7 +23,7 @@ VERSION: str = "version"
 DEPRECATED: str = "deprecated"
 
 
-class VersionRelType(str, Enum):
+class VersionRelType(str, enum.Enum):
     """A list of rel types defined in the Version Extension.
 
     See the `Version Extension Relation types
@@ -50,8 +44,8 @@ class VersionRelType(str, Enum):
 
 class VersionExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
@@ -108,7 +102,7 @@ class VersionExtension(
     def version(self) -> str:
         """Get or sets a version string of the :class:`~pystac.Item` or
         :class:`pystac.Collection`."""
-        return get_required(self._get_property(VERSION, str), self, VERSION)
+        return utils.get_required(self._get_property(VERSION, str), self, VERSION)
 
     @version.setter
     def version(self, v: str) -> None:
@@ -135,7 +129,7 @@ class VersionExtension(
         """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
         representing the most recent version.
         """
-        return map_opt(
+        return utils.map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.LATEST)), None),
         )
@@ -145,7 +139,9 @@ class VersionExtension(
         self.obj.clear_links(VersionRelType.LATEST)
         if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(VersionRelType.LATEST, item_or_collection, MediaType.JSON)
+                link.Link(
+                    VersionRelType.LATEST, item_or_collection, media_type.MediaType.JSON
+                )
             )
 
     @property
@@ -154,7 +150,7 @@ class VersionExtension(
         representing the resource containing the predecessor version in the version
         history.
         """
-        return map_opt(
+        return utils.map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.PREDECESSOR)), None),
         )
@@ -164,10 +160,10 @@ class VersionExtension(
         self.obj.clear_links(VersionRelType.PREDECESSOR)
         if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(
+                link.Link(
                     VersionRelType.PREDECESSOR,
                     item_or_collection,
-                    MediaType.JSON,
+                    media_type.MediaType.JSON,
                 )
             )
 
@@ -177,7 +173,7 @@ class VersionExtension(
         representing the resource containing the successor version in the version
         history.
         """
-        return map_opt(
+        return utils.map_opt(
             lambda x: cast(T, x),
             next(iter(self.obj.get_stac_objects(VersionRelType.SUCCESSOR)), None),
         )
@@ -187,8 +183,10 @@ class VersionExtension(
         self.obj.clear_links(VersionRelType.SUCCESSOR)
         if item_or_collection is not None:
             self.obj.add_link(
-                pystac.Link(
-                    VersionRelType.SUCCESSOR, item_or_collection, MediaType.JSON
+                link.Link(
+                    VersionRelType.SUCCESSOR,
+                    item_or_collection,
+                    media_type.MediaType.JSON,
                 )
             )
 
@@ -215,7 +213,7 @@ class VersionExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Version extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -259,10 +257,13 @@ class ItemVersionExtension(VersionExtension["Item_Type"]):
         return "<ItemVersionExtension Item id={}>".format(self.item.id)
 
 
-class VersionExtensionHooks(ExtensionHooks):
+class VersionExtensionHooks(hooks.ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids = {"version"}
-    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
+    stac_object_types = {
+        stac_object.STACObjectType.COLLECTION,
+        stac_object.STACObjectType.ITEM,
+    }
 
     def get_object_links(self, so: "STACObject_Type") -> Optional[List[str]]:
         if isinstance(so, core.Collection) or isinstance(so, core.Item):
@@ -274,4 +275,4 @@ class VersionExtensionHooks(ExtensionHooks):
         return None
 
 
-VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()
+VERSION_EXTENSION_HOOKS: hooks.ExtensionHooks = VersionExtensionHooks()

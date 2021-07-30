@@ -1,29 +1,31 @@
+import datetime
+import enum
 import os
 import posixpath
-from datetime import datetime, timezone
-from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
-from urllib.parse import ParseResult as URLParseResult
-from urllib.parse import urljoin, urlparse, urlunparse
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, TypeVar, Union
+from urllib import parse
+
+if TYPE_CHECKING:
+    from datetime import datetime as Datetime_Type
 
 import dateutil.parser
 
-from pystac.errors import RequiredPropertyMissing
+from pystac import errors
 
 # Allow for modifying the path library for testability
 # (i.e. testing Windows path manipulation on non-Windows systems)
 _pathlib = os.path
 
 
-def safe_urlparse(href: str) -> URLParseResult:
+def safe_urlparse(href: str) -> parse.ParseResult:
     """Version of URL parse that takes into account windows paths.
 
     A windows absolute path will be parsed with a scheme from urllib.parse.urlparse.
     This method will take this into account.
     """
-    parsed = urlparse(href)
+    parsed = parse.urlparse(href)
     if parsed.scheme != "" and href.lower().startswith("{}:\\".format(parsed.scheme)):
-        return URLParseResult(
+        return parse.ParseResult(
             scheme="",
             netloc="",
             path="{}:{}".format(
@@ -40,11 +42,11 @@ def safe_urlparse(href: str) -> URLParseResult:
         return parsed
 
 
-class JoinType(str, Enum):
+class JoinType(str, enum.Enum):
     """Allowed join types for the :func:`_join` function."""
 
     @staticmethod
-    def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
+    def from_parsed_uri(parsed_uri: parse.ParseResult) -> "JoinType":
         """Determines the appropriate join type based on the scheme of the parsed
         result."""
         if parsed_uri.scheme == "":
@@ -67,8 +69,8 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
 
 
 def _make_relative_href_url(
-    parsed_source: URLParseResult,
-    parsed_start: URLParseResult,
+    parsed_source: parse.ParseResult,
+    parsed_start: parse.ParseResult,
     start_is_dir: bool = False,
 ) -> str:
 
@@ -95,8 +97,8 @@ def _make_relative_href_url(
 
 
 def _make_relative_href_path(
-    parsed_source: URLParseResult,
-    parsed_start: URLParseResult,
+    parsed_source: parse.ParseResult,
+    parsed_start: parse.ParseResult,
     start_is_dir: bool = False,
 ) -> str:
     # If the start path is not a directory, get the parent directory
@@ -153,14 +155,14 @@ def make_relative_href(
 
 
 def _make_absolute_href_url(
-    parsed_source: URLParseResult,
-    parsed_start: URLParseResult,
+    parsed_source: parse.ParseResult,
+    parsed_start: parse.ParseResult,
     start_is_dir: bool = False,
 ) -> str:
 
     # If the source is already absolute, just return it
     if parsed_source.scheme != "":
-        return urlunparse(parsed_source)
+        return parse.urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     if start_is_dir:
@@ -170,10 +172,10 @@ def _make_absolute_href_url(
         start_dir = parsed_start.path.rsplit("/", 1)[0] + "/"
 
     # Join the start directory to the relative path and find the absolute path
-    abs_path = urljoin(start_dir, parsed_source.path)
+    abs_path = parse.urljoin(start_dir, parsed_source.path)
     abs_path = abs_path.replace("\\", "/")
 
-    return urlunparse(
+    return parse.urlunparse(
         (
             parsed_start.scheme,
             parsed_start.netloc,
@@ -186,14 +188,14 @@ def _make_absolute_href_url(
 
 
 def _make_absolute_href_path(
-    parsed_source: URLParseResult,
-    parsed_start: URLParseResult,
+    parsed_source: parse.ParseResult,
+    parsed_start: parse.ParseResult,
     start_is_dir: bool = False,
 ) -> str:
 
     # If the source is already absolute, just return it
     if _pathlib.isabs(parsed_source.path):
-        return urlunparse(parsed_source)
+        return parse.urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
@@ -256,7 +258,7 @@ def is_absolute_href(href: str) -> bool:
     return parsed.scheme != "" or _pathlib.isabs(parsed.path)
 
 
-def datetime_to_str(dt: datetime) -> str:
+def datetime_to_str(dt: "Datetime_Type") -> str:
     """Convert a python datetime to an ISO8601 string
 
     Args:
@@ -266,7 +268,7 @@ def datetime_to_str(dt: datetime) -> str:
         str: The ISO8601 formatted string representing the datetime.
     """
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
 
     timestamp = dt.isoformat()
     zulu = "+00:00"
@@ -276,7 +278,7 @@ def datetime_to_str(dt: datetime) -> str:
     return timestamp
 
 
-def str_to_datetime(s: str) -> datetime:
+def str_to_datetime(s: str) -> "Datetime_Type":
     return dateutil.parser.parse(s)
 
 
@@ -359,5 +361,5 @@ def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
     the given obj and property
     """
     if option is None:
-        raise RequiredPropertyMissing(obj, prop)
+        raise errors.RequiredPropertyMissing(obj, prop)
     return option

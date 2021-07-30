@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
-from collections import OrderedDict
-from string import Formatter
+import abc
+import collections
+import string
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
-import pystac
-from pystac.utils import JoinType, join_path_or_url, safe_urlparse
+from pystac import core, errors, utils
 
 if TYPE_CHECKING:
     from pystac.core import Catalog as Catalog_Type
@@ -82,7 +81,7 @@ class LayoutTemplate:
 
         # Generate list of template vars
         template_vars: List[str] = []
-        for formatter_parse_result in Formatter().parse(template):
+        for formatter_parse_result in string.Formatter().parse(template):
             v = formatter_parse_result[1]
             if v is not None:
                 if formatter_parse_result[2] != "":
@@ -94,7 +93,7 @@ class LayoutTemplate:
         self, stac_object: "STACObject_Type", template_var: str
     ) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
-            if isinstance(stac_object, pystac.Item):
+            if isinstance(stac_object, core.Item):
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
@@ -133,7 +132,7 @@ class LayoutTemplate:
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
-        prop_source: Optional[Union[pystac.STACObject, Dict[str, Any]]] = None
+        prop_source: Optional[Union["STACObject_Type", Dict[str, Any]]] = None
         error = TemplateError(
             "Cannot find property {} on {} for template {}".format(
                 template_var, stac_object, self.template
@@ -199,7 +198,7 @@ class LayoutTemplate:
                 derived from the stac object and there is no default,
                 this error will be raised.
         """
-        return OrderedDict(
+        return collections.OrderedDict(
             [(k, self._get_template_value(stac_object, k)) for k in self.template_vars]
         )
 
@@ -230,34 +229,34 @@ class LayoutTemplate:
         return s
 
 
-class HrefLayoutStrategy(ABC):
+class HrefLayoutStrategy(abc.ABC):
     """Base class for HREF Layout strategies."""
 
     def get_href(
         self, stac_object: "STACObject_Type", parent_dir: str, is_root: bool = False
     ) -> str:
-        if isinstance(stac_object, pystac.Item):
+        if isinstance(stac_object, core.Item):
             return self.get_item_href(stac_object, parent_dir)
-        elif isinstance(stac_object, pystac.Collection):
+        elif isinstance(stac_object, core.Collection):
             return self.get_collection_href(stac_object, parent_dir, is_root)
-        elif isinstance(stac_object, pystac.Catalog):
+        elif isinstance(stac_object, core.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise pystac.STACError("Unknown STAC object type {}".format(stac_object))
+            raise errors.STACError("Unknown STAC object type {}".format(stac_object))
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool
     ) -> str:
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_collection_href(
         self, col: "Collection_Type", parent_dir: str, is_root: bool
     ) -> str:
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
         raise NotImplementedError
 
@@ -374,51 +373,51 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
         if is_root or self.catalog_template is None:
             return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
         else:
             template_path = self.catalog_template.substitute(cat)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
+                template_path = utils.join_path_or_url(
                     join_type, template_path, cat.DEFAULT_FILE_NAME
                 )
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return utils.join_path_or_url(join_type, parent_dir, template_path)
 
     def get_collection_href(
         self, col: "Collection_Type", parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
         if is_root or self.collection_template is None:
             return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
         else:
             template_path = self.collection_template.substitute(col)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
+                template_path = utils.join_path_or_url(
                     join_type, template_path, col.DEFAULT_FILE_NAME
                 )
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return utils.join_path_or_url(join_type, parent_dir, template_path)
 
     def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
         if self.item_template is None:
             return self.fallback_strategy.get_item_href(item, parent_dir)
         else:
             template_path = self.item_template.substitute(item)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
+                template_path = utils.join_path_or_url(
                     join_type, template_path, "{}.json".format(item.id)
                 )
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return utils.join_path_or_url(join_type, parent_dir, template_path)
 
 
 class BestPracticesLayoutStrategy(HrefLayoutStrategy):
@@ -439,33 +438,37 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
         if is_root:
             cat_root = parent_dir
         else:
-            cat_root = join_path_or_url(join_type, parent_dir, "{}".format(cat.id))
+            cat_root = utils.join_path_or_url(
+                join_type, parent_dir, "{}".format(cat.id)
+            )
 
-        return join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
+        return utils.join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
 
     def get_collection_href(
         self, col: "Collection_Type", parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
         if is_root:
             col_root = parent_dir
         else:
-            col_root = join_path_or_url(join_type, parent_dir, "{}".format(col.id))
+            col_root = utils.join_path_or_url(
+                join_type, parent_dir, "{}".format(col.id)
+            )
 
-        return join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
+        return utils.join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
 
     def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        parsed_parent_dir = utils.safe_urlparse(parent_dir)
+        join_type = utils.JoinType.from_parsed_uri(parsed_parent_dir)
 
-        item_root = join_path_or_url(join_type, parent_dir, "{}".format(item.id))
+        item_root = utils.join_path_or_url(join_type, parent_dir, "{}".format(item.id))
 
-        return join_path_or_url(join_type, item_root, "{}.json".format(item.id))
+        return utils.join_path_or_url(join_type, item_root, "{}.json".format(item.id))

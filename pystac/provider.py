@@ -1,8 +1,8 @@
-from enum import Enum
+import enum
 from typing import Any, Dict, List, Optional
 
 
-class ProviderRole(str, Enum):
+class ProviderRole(str, enum.Enum):
     """Enumerates the allows values of the Provider "role" field."""
 
     LICENSOR = "licensor"

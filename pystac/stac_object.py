@@ -3,15 +3,16 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Type, Union, cast
 
 import pystac
-from pystac import core
-from pystac.errors import STACError
-from pystac.link import Link
-from pystac.rel_type import RelType
-from pystac.stac_io import StacIO
-from pystac.utils import is_absolute_href, make_absolute_href
+from pystac import core, errors
+from pystac import link as link_mod
+from pystac import rel_type
+from pystac import stac_io as stac_io_mod
+from pystac import utils
 
 if TYPE_CHECKING:
     from pystac.core import Catalog as Catalog_Type
+    from pystac.link import Link as Link_Type
+    from pystac.stac_io import StacIO as StacIO_Type
 
 
 class STACObjectType(str, Enum):
@@ -30,7 +31,7 @@ class STACObject(ABC):
     id: str
     """The ID of the STAC Object."""
 
-    links: List[Link]
+    links: List["Link_Type"]
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this STAC Object."""
 
@@ -40,7 +41,7 @@ class STACObject(ABC):
     STAC_OBJECT_TYPE: STACObjectType
 
     def __init__(self, stac_extensions: List[str]) -> None:
-        self.links: List[Link] = []
+        self.links: List["Link_Type"] = []
         self.stac_extensions = stac_extensions
 
     def validate(self) -> List[Any]:
@@ -57,7 +58,7 @@ class STACObject(ABC):
 
         return pystac.validation.validate(self)
 
-    def add_link(self, link: Link) -> None:
+    def add_link(self, link: "Link_Type") -> None:
         """Add a link to this object's set of links.
 
         Args:
@@ -66,7 +67,7 @@ class STACObject(ABC):
         link.set_owner(self)
         self.links.append(link)
 
-    def add_links(self, links: List[Link]) -> None:
+    def add_links(self, links: List["Link_Type"]) -> None:
         """Add links to this object's set of links.
 
         Args:
@@ -76,7 +77,7 @@ class STACObject(ABC):
         for link in links:
             self.add_link(link)
 
-    def remove_links(self, rel: Union[str, RelType]) -> None:
+    def remove_links(self, rel: Union[str, rel_type.RelType]) -> None:
         """Remove links to this object's set of links that match the given ``rel``.
 
         Args:
@@ -85,7 +86,9 @@ class STACObject(ABC):
 
         self.links = [link for link in self.links if link.rel != rel]
 
-    def get_single_link(self, rel: Union[str, RelType]) -> Optional[Link]:
+    def get_single_link(
+        self, rel: Union[str, rel_type.RelType]
+    ) -> Optional["Link_Type"]:
         """Get single link that match the given ``rel``.
 
         Args:
@@ -94,7 +97,9 @@ class STACObject(ABC):
 
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel: Optional[Union[str, RelType]] = None) -> List[Link]:
+    def get_links(
+        self, rel: Optional[Union[str, rel_type.RelType]] = None
+    ) -> List["Link_Type"]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -110,7 +115,7 @@ class STACObject(ABC):
         else:
             return [link for link in self.links if link.rel == rel]
 
-    def clear_links(self, rel: Optional[Union[str, RelType]] = None) -> None:
+    def clear_links(self, rel: Optional[Union[str, rel_type.RelType]] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
 
         Args:
@@ -121,7 +126,7 @@ class STACObject(ABC):
         else:
             self.links = []
 
-    def get_root_link(self) -> Optional[Link]:
+    def get_root_link(self) -> Optional["Link_Type"]:
         """Get the :class:`~pystac.Link` representing
         the root for this object.
 
@@ -129,7 +134,7 @@ class STACObject(ABC):
             :class:`~pystac.Link` or None: The root link for this object,
             or ``None`` if no root link is set.
         """
-        return self.get_single_link(RelType.ROOT)
+        return self.get_single_link(rel_type.RelType.ROOT)
 
     @property
     def self_href(self) -> str:
@@ -160,7 +165,7 @@ class STACObject(ABC):
             have the HREF the file was read from set as it's self HREF. All self
             links have absolute (as opposed to relative) HREFs.
         """
-        self_link = self.get_single_link(RelType.SELF)
+        self_link = self.get_single_link(rel_type.RelType.SELF)
         if self_link and self_link.has_target_href():
             return self_link.get_target_str()
         else:
@@ -180,9 +185,9 @@ class STACObject(ABC):
         if root_link is not None and root_link.is_resolved():
             cast("Catalog_Type", root_link.target)._resolved_objects.remove(self)
 
-        self.remove_links(RelType.SELF)
+        self.remove_links(rel_type.RelType.SELF)
         if href is not None:
-            self.add_link(Link.self_href(href))
+            self.add_link(link_mod.Link.self_href(href))
 
         if root_link is not None and root_link.is_resolved():
             cast("Catalog_Type", root_link.target)._resolved_objects.cache(self)
@@ -215,7 +220,13 @@ class STACObject(ABC):
                 object to set. Passing in None will clear the root.
         """
         root_link_index = next(
-            iter([i for i, link in enumerate(self.links) if link.rel == RelType.ROOT]),
+            iter(
+                [
+                    i
+                    for i, link in enumerate(self.links)
+                    if link.rel == rel_type.RelType.ROOT
+                ]
+            ),
             None,
         )
 
@@ -226,9 +237,9 @@ class STACObject(ABC):
                 cast("Catalog_Type", root_link.target)._resolved_objects.remove(self)
 
         if root is None:
-            self.remove_links(RelType.ROOT)
+            self.remove_links(rel_type.RelType.ROOT)
         else:
-            new_root_link = Link.root(root)
+            new_root_link = link_mod.Link.root(root)
             if root_link_index is not None:
                 self.links[root_link_index] = new_root_link
                 new_root_link.set_owner(self)
@@ -246,7 +257,7 @@ class STACObject(ABC):
                 The parent object for this object,
                 or ``None`` if no root link is set.
         """
-        parent_link = self.get_single_link(RelType.PARENT)
+        parent_link = self.get_single_link(rel_type.RelType.PARENT)
         if parent_link:
             return cast("Catalog_Type", parent_link.resolve_stac_object().target)
         else:
@@ -261,12 +272,14 @@ class STACObject(ABC):
                 object to set. Passing in None will clear the parent.
         """
 
-        self.remove_links(RelType.PARENT)
+        self.remove_links(rel_type.RelType.PARENT)
         if parent is not None:
-            self.add_link(Link.parent(parent))
+            self.add_link(link_mod.Link.parent(parent))
 
     def get_stac_objects(
-        self, rel: Union[str, RelType], typ: Optional[Type["STACObject"]] = None
+        self,
+        rel: Union[str, rel_type.RelType],
+        typ: Optional[Type["STACObject"]] = None,
     ) -> Iterable["STACObject"]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
@@ -294,7 +307,7 @@ class STACObject(ABC):
         self,
         include_self_link: bool = True,
         dest_href: Optional[str] = None,
-        stac_io: Optional[StacIO] = None,
+        stac_io: Optional["StacIO_Type"] = None,
     ) -> None:
         """Saves this STAC Object to it's 'self' HREF.
 
@@ -325,12 +338,12 @@ class STACObject(ABC):
                     stac_io = root_stac_io
 
             if stac_io is None:
-                stac_io = StacIO.default()
+                stac_io = stac_io_mod.StacIO.default()
 
         if dest_href is None:
             self_href = self.get_self_href()
             if self_href is None:
-                raise STACError(
+                raise errors.STACError(
                     "Self HREF must be set before saving without an explicit dest_href."
                 )
             dest_href = self_href
@@ -378,8 +391,8 @@ class STACObject(ABC):
                     if (
                         link.rel
                         in [
-                            RelType.CHILD,
-                            RelType.ITEM,
+                            rel_type.RelType.CHILD,
+                            rel_type.RelType.ITEM,
                         ]
                         and isinstance(clone, core.Catalog)
                     ):
@@ -388,7 +401,7 @@ class STACObject(ABC):
                     if root is not None:
                         root._resolved_objects.cache(copied_target)
                     target = copied_target
-                if link.rel in [RelType.CHILD, RelType.ITEM]:
+                if link.rel in [rel_type.RelType.CHILD, rel_type.RelType.ITEM]:
                     target.set_root(root)
                     if isinstance(clone, core.Catalog):
                         target.set_parent(clone)
@@ -404,8 +417,8 @@ class STACObject(ABC):
         This method mutates the entire catalog tree.
         """
         link_rels = set(self._object_links()) | {
-            RelType.ROOT,
-            RelType.PARENT,
+            rel_type.RelType.ROOT,
+            rel_type.RelType.PARENT,
         }
 
         for link in self.links:
@@ -448,7 +461,9 @@ class STACObject(ABC):
         raise NotImplementedError
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "STACObject":
+    def from_file(
+        cls, href: str, stac_io: Optional["StacIO_Type"] = None
+    ) -> "STACObject":
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -464,10 +479,10 @@ class STACObject(ABC):
             return pystac.read_file(href)
 
         if stac_io is None:
-            stac_io = StacIO.default()
+            stac_io = stac_io_mod.StacIO.default()
 
-        if not is_absolute_href(href):
-            href = make_absolute_href(href)
+        if not utils.is_absolute_href(href):
+            href = utils.make_absolute_href(href)
 
         d = stac_io.read_json(href)
         o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)

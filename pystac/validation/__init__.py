@@ -1,12 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import pystac
-from pystac.rel_type import RelType
-from pystac.serialization.identify import STACVersionID, identify_stac_object
-from pystac.stac_io import StacIO
-from pystac.stac_object import STACObjectType
-from pystac.utils import make_absolute_href
-from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
+from pystac import rel_type
+from pystac import stac_io as stac_io_mod
+from pystac import stac_object, utils
+from pystac.serialization import identify
+from pystac.validation import schema_uri_map
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -76,25 +75,25 @@ def validate_dict(
     """
     info = None
     if stac_object_type is None:
-        info = identify_stac_object(stac_dict)
+        info = identify.identify_stac_object(stac_dict)
         stac_object_type = info.object_type
     if stac_version is None:
         if info is None:
-            info = identify_stac_object(stac_dict)
+            info = identify.identify_stac_object(stac_dict)
         stac_version = str(info.version_range.latest_valid_version())
     if extensions is None:
         if info is None:
-            info = identify_stac_object(stac_dict)
+            info = identify.identify_stac_object(stac_dict)
         extensions = list(info.extensions)
 
-    stac_version_id = STACVersionID(stac_version)
+    stac_version_id = identify.STACVersionID(stac_version)
 
     # If the version is before 1.0.0-rc.2, substitute extension short IDs for
     # their schemas.
     if stac_version_id < "1.0.0-rc.2":
 
         def _get_uri(ext: str) -> Optional[str]:
-            return OldExtensionSchemaUriMap.get_extension_schema_uri(
+            return schema_uri_map.OldExtensionSchemaUriMap.get_extension_schema_uri(
                 ext,
                 stac_object_type,  # type:ignore
                 stac_version_id,
@@ -108,7 +107,7 @@ def validate_dict(
 
 
 def validate_all(
-    stac_dict: Dict[str, Any], href: str, stac_io: Optional[StacIO] = None
+    stac_dict: Dict[str, Any], href: str, stac_io: Optional[stac_io_mod.StacIO] = None
 ) -> None:
     """Validate STAC JSON and all contained catalogs, collections and items.
 
@@ -128,9 +127,9 @@ def validate_all(
             contained catalog, collection or item has a validation error.
     """
     if stac_io is None:
-        stac_io = StacIO.default()
+        stac_io = stac_io_mod.StacIO.default()
 
-    info = identify_stac_object(stac_dict)
+    info = identify.identify_stac_object(stac_dict)
 
     # Validate this object
     validate_dict(
@@ -141,7 +140,7 @@ def validate_all(
         href=href,
     )
 
-    if info.object_type != STACObjectType.ITEM:
+    if info.object_type != stac_object.STACObjectType.ITEM:
         if "links" in stac_dict:
             # Account for 0.6 links
             if isinstance(stac_dict["links"], dict):
@@ -150,8 +149,8 @@ def validate_all(
                 links = cast(List[Dict[str, Any]], stac_dict.get("links"))
             for link in links:
                 rel = link.get("rel")
-                if rel in [RelType.ITEM, RelType.CHILD]:
-                    link_href = make_absolute_href(
+                if rel in [rel_type.RelType.ITEM, rel_type.RelType.CHILD]:
+                    link_href = utils.make_absolute_href(
                         cast(str, link.get("href")), start_href=href
                     )
                     if link_href is not None:

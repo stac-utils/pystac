@@ -17,16 +17,9 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
@@ -51,8 +44,8 @@ TRANSFORM_PROP: str = PREFIX + "transform"
 
 class ProjectionExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Projection
@@ -293,11 +286,11 @@ class ProjectionExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], AssetProjectionExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Projection extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -362,7 +355,7 @@ class AssetProjectionExtension(ProjectionExtension["Asset_Type"]):
         return "<AssetProjectionExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesProjectionExtension(SummariesExtension):
+class SummariesProjectionExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Projection Extension <projection>`.
@@ -380,10 +373,10 @@ class SummariesProjectionExtension(SummariesExtension):
         self._set_summary(EPSG_PROP, v)
 
 
-class ProjectionExtensionHooks(ExtensionHooks):
+class ProjectionExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"proj", "projection"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
 
-PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()
+PROJECTION_EXTENSION_HOOKS: hooks.ExtensionHooks = ProjectionExtensionHooks()

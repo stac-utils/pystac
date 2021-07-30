@@ -1,4 +1,4 @@
-from copy import copy
+import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from pystac import common_metadata, utils
@@ -162,7 +162,7 @@ class Asset:
         Returns:
             Asset: The Asset deserialized from the JSON dict.
         """
-        d = copy(d)
+        d = copy.copy(d)
         href = d.pop("href")
         media_type = d.pop("type", None)
         title = d.pop("title", None)

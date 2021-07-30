@@ -1,7 +1,7 @@
-from enum import Enum
+import enum
 
 
-class MediaType(str, Enum):
+class MediaType(str, enum.Enum):
     """A list of common media types that can be used in STAC Asset and Link metadata."""
 
     COG = "image/tiff; application=geotiff; profile=cloud-optimized"

@@ -1,26 +1,26 @@
-from copy import deepcopy
+import copy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple
 
 import pystac
-from pystac.serialization.identify import (
-    OldExtensionShortIDs,
-    STACJSONDescription,
-    STACVersionID,
-)
-from pystac.version import STACVersion
+from pystac import version as version_mod
+from pystac.serialization import identify
 
 if TYPE_CHECKING:
     from pystac import STACObjectType as STACObjectType_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
 
 
 def _migrate_catalog(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> None:
     d["type"] = pystac.STACObjectType.CATALOG
 
 
 def _migrate_collection_summaries(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> None:
     if version < "1.0.0-rc.1":
         for prop, summary in d.get("summaries", {}).items():
@@ -32,14 +32,14 @@ def _migrate_collection_summaries(
 
 
 def _migrate_collection(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> None:
     d["type"] = pystac.STACObjectType.COLLECTION
     _migrate_collection_summaries(d, version, info)
 
 
 def _migrate_item(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> None:
     # No migrations necessary for supported STAC versions (>=0.8)
     pass
@@ -47,7 +47,7 @@ def _migrate_item(
 
 # Extensions
 def _migrate_item_assets(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> Optional[Set[str]]:
     if version < "1.0.0-beta.2":
         if info.object_type == pystac.STACObjectType.COLLECTION:
@@ -58,7 +58,7 @@ def _migrate_item_assets(
 
 
 def _migrate_datetime_range(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: Dict[str, Any], version: "STACVersionID_Type", info: "STACJSONDescription_Type"
 ) -> Optional[Set[str]]:
     if version < "0.9":
         # Datetime range was removed
@@ -80,7 +80,8 @@ def _migrate_datetime_range(
 
 
 def _get_object_migrations() -> Dict[
-    str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]
+    str,
+    Callable[[Dict[str, Any], "STACVersionID_Type", "STACJSONDescription_Type"], None],
 ]:
     return {
         pystac.STACObjectType.CATALOG: _migrate_catalog,
@@ -95,7 +96,8 @@ def _get_removed_extension_migrations() -> Dict[
         Optional[List["STACObjectType_Type"]],
         Optional[
             Callable[
-                [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]
+                [Dict[str, Any], "STACVersionID_Type", "STACJSONDescription_Type"],
+                Optional[Set[str]],
             ]
         ],
     ],
@@ -114,36 +116,54 @@ def _get_removed_extension_migrations() -> Dict[
     return {
         # -- Removed in 1.0
         # assets in collections became a core property
-        OldExtensionShortIDs.COLLECTION_ASSETS.value: (None, None),
+        identify.OldExtensionShortIDs.COLLECTION_ASSETS.value: (None, None),
         # Extensions that were placed on Collections that applied to
         # the 'commons' properties of their Items, but since the commons
         # property merging has went away these extensions are removed
         # from the collection. Note that a migrated Collection may still
         # have a "properties" in extra_fields with the extension fields.
-        OldExtensionShortIDs.EO.value: ([pystac.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.FILE.value: ([pystac.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.LABEL.value: ([pystac.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.POINTCLOUD.value: (
+        identify.OldExtensionShortIDs.EO.value: (
             [pystac.STACObjectType.COLLECTION],
             None,
         ),
-        OldExtensionShortIDs.PROJECTION.value: (
+        identify.OldExtensionShortIDs.FILE.value: (
             [pystac.STACObjectType.COLLECTION],
             None,
         ),
-        OldExtensionShortIDs.SAR.value: ([pystac.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.SAT.value: ([pystac.STACObjectType.COLLECTION], None),
-        OldExtensionShortIDs.TIMESTAMPS.value: (
+        identify.OldExtensionShortIDs.LABEL.value: (
             [pystac.STACObjectType.COLLECTION],
             None,
         ),
-        OldExtensionShortIDs.VIEW.value: ([pystac.STACObjectType.COLLECTION], None),
+        identify.OldExtensionShortIDs.POINTCLOUD.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        identify.OldExtensionShortIDs.PROJECTION.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        identify.OldExtensionShortIDs.SAR.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        identify.OldExtensionShortIDs.SAT.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        identify.OldExtensionShortIDs.TIMESTAMPS.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
+        identify.OldExtensionShortIDs.VIEW.value: (
+            [pystac.STACObjectType.COLLECTION],
+            None,
+        ),
         # tiled-assets was never a fully published extension;
         # remove reference to the pre-1.0 RC short ID
-        OldExtensionShortIDs.TILED_ASSETS.value: (None, None),
+        identify.OldExtensionShortIDs.TILED_ASSETS.value: (None, None),
         # Single File STAC is a removed concept; is being reworked as of
         # STAC 1.0.0-RC.3. Remove short ID from PySTAC as it's unsupported
-        OldExtensionShortIDs.SINGLE_FILE_STAC.value: (None, None),
+        identify.OldExtensionShortIDs.SINGLE_FILE_STAC.value: (None, None),
         # -- Removed in 0.9.0
         "dtr": (None, _migrate_datetime_range),
         "datetime-range": (None, _migrate_datetime_range),
@@ -157,7 +177,7 @@ def _get_extension_renames() -> Dict[str, str]:
 
 
 def migrate_to_latest(
-    json_dict: Dict[str, Any], info: STACJSONDescription
+    json_dict: Dict[str, Any], info: "STACJSONDescription_Type"
 ) -> Dict[str, Any]:
     """Migrates the STAC JSON to the latest version
 
@@ -171,13 +191,13 @@ def migrate_to_latest(
         dict: A copy of the dict that is migrated to the latest version (the
         version that is pystac.version.STACVersion.DEFAULT_STAC_VERSION)
     """
-    result = deepcopy(json_dict)
+    result = copy.deepcopy(json_dict)
     version = info.version_range.latest_valid_version()
 
     object_migrations = _get_object_migrations()
     removed_extension_migrations = _get_removed_extension_migrations()
 
-    if version != STACVersion.DEFAULT_STAC_VERSION:
+    if version != version_mod.STACVersion.DEFAULT_STAC_VERSION:
         object_migrations[info.object_type](result, version, info)
         if "stac_extensions" not in result:
             # Force stac_extensions property, as it makes
@@ -193,7 +213,7 @@ def migrate_to_latest(
                         migration_fn(result, version, info)
                     result["stac_extensions"].remove(ext)
 
-        result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
+        result["stac_version"] = version_mod.STACVersion.DEFAULT_STAC_VERSION
     else:
         # Ensure stac_extensions property for consistency
         if "stac_extensions" not in result:

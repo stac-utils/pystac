@@ -2,26 +2,27 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import pystac
-from pystac import core
-from pystac.errors import STACError
-from pystac.media_type import MediaType
-from pystac.rel_type import RelType
-from pystac.stac_io import StacIO
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
+from pystac import core, errors
+from pystac import media_type as media_type_mod
+from pystac import rel_type
+from pystac import stac_io as stac_io_mod
+from pystac import utils
 
 if TYPE_CHECKING:
     from pystac.core import Catalog as Catalog_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.rel_type import RelType as RelType_Type
+    from pystac.stac_io import StacIO as StacIO_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 HIERARCHICAL_LINKS = [
-    RelType.ROOT,
-    RelType.CHILD,
-    RelType.PARENT,
-    RelType.COLLECTION,
-    RelType.ITEM,
-    RelType.ITEMS,
+    rel_type.RelType.ROOT,
+    rel_type.RelType.CHILD,
+    rel_type.RelType.PARENT,
+    rel_type.RelType.COLLECTION,
+    rel_type.RelType.ITEM,
+    rel_type.RelType.ITEMS,
 ]
 
 
@@ -53,13 +54,13 @@ class Link:
             object JSON.
     """
 
-    rel: Union[str, RelType]
+    rel: Union[str, "RelType_Type"]
     """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
-    preferred. See :class:`~pystac.RelType` for common media types."""
+    preferred. See :class:`~pystac.rel_type.RelType` for common media types."""
 
     media_type: Optional[str]
     """Optional description of the media type. Registered Media Types are preferred.
-    See :class:`~pystac.MediaType` for common media types."""
+    See :class:`~pystac.media_type_mod.MediaType` for common media types."""
 
     title: Optional[str]
     """Optional title for this link."""
@@ -78,7 +79,7 @@ class Link:
 
     def __init__(
         self,
-        rel: Union[str, RelType],
+        rel: Union[str, "RelType_Type"],
         target: Union[str, "STACObject_Type"],
         media_type: Optional[str] = None,
         title: Optional[str] = None,
@@ -86,8 +87,8 @@ class Link:
     ) -> None:
         self.rel = rel
         if isinstance(target, str):
-            if rel == RelType.SELF:
-                self._target_href = make_absolute_href(target)
+            if rel == rel_type.RelType.SELF:
+                self._target_href = utils.make_absolute_href(target)
             else:
                 self._target_href = target
             self._target_object = None
@@ -135,7 +136,12 @@ class Link:
         else:
             href = self._target_href
 
-        if href and is_absolute_href(href) and self.owner and self.owner.get_root():
+        if (
+            href
+            and utils.is_absolute_href(href)
+            and self.owner
+            and self.owner.get_root()
+        ):
             root = self.owner.get_root()
             rel_links = [
                 *HIERARCHICAL_LINKS,
@@ -145,7 +151,7 @@ class Link:
             if root and root.is_relative() and self.rel in rel_links:
                 owner_href = self.owner.get_self_href()
                 if owner_href is not None:
-                    href = make_relative_href(href, owner_href)
+                    href = utils.make_relative_href(href, owner_href)
 
         return href
 
@@ -175,7 +181,7 @@ class Link:
             href = self._target_href
 
         if href is not None and self.owner is not None:
-            href = make_absolute_href(href, self.owner.get_self_href())
+            href = utils.make_absolute_href(href, self.owner.get_self_href())
 
         return href
 
@@ -236,24 +242,24 @@ class Link:
             target_href = self._target_href
 
             # If it's a relative link, base it off the parent.
-            if not is_absolute_href(target_href):
+            if not utils.is_absolute_href(target_href):
                 if self.owner is None:
-                    raise STACError(
+                    raise errors.STACError(
                         "Relative path {} encountered "
                         "without owner or start_href.".format(target_href)
                     )
                 start_href = self.owner.get_self_href()
 
                 if start_href is None:
-                    raise STACError(
+                    raise errors.STACError(
                         "Relative path {} encountered "
                         'without owner "self" link set.'.format(target_href)
                     )
 
-                target_href = make_absolute_href(target_href, start_href)
+                target_href = utils.make_absolute_href(target_href, start_href)
             obj = None
 
-            stac_io: Optional[StacIO] = None
+            stac_io: Optional["StacIO_Type"] = None
 
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
@@ -266,7 +272,7 @@ class Link:
                         if isinstance(self.owner, core.Catalog):
                             stac_io = self.owner._stac_io
                     if stac_io is None:
-                        stac_io = StacIO.default()
+                        stac_io = stac_io_mod.StacIO.default()
 
                 obj = stac_io.read_stac_object(target_href, root=root)
                 obj.set_self_href(target_href)
@@ -279,7 +285,7 @@ class Link:
 
         if (
             self.owner
-            and self.rel in [RelType.CHILD, RelType.ITEM]
+            and self.rel in [rel_type.RelType.CHILD, rel_type.RelType.ITEM]
             and isinstance(self.owner, core.Catalog)
         ):
             assert self._target_object
@@ -363,32 +369,46 @@ class Link:
     @classmethod
     def root(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a root Catalog or Collection."""
-        return cls(RelType.ROOT, c, media_type=MediaType.JSON)
+        return cls(rel_type.RelType.ROOT, c, media_type=media_type_mod.MediaType.JSON)
 
     @classmethod
     def parent(cls, c: "Catalog_Type") -> "Link":
         """Creates a link to a parent Catalog or Collection."""
-        return cls(RelType.PARENT, c, media_type=MediaType.JSON)
+        return cls(rel_type.RelType.PARENT, c, media_type=media_type_mod.MediaType.JSON)
 
     @classmethod
     def collection(cls, c: "Collection_Type") -> "Link":
         """Creates a link to an item's Collection."""
-        return cls(RelType.COLLECTION, c, media_type=MediaType.JSON)
+        return cls(
+            rel_type.RelType.COLLECTION, c, media_type=media_type_mod.MediaType.JSON
+        )
 
     @classmethod
     def self_href(cls, href: str) -> "Link":
         """Creates a self link to a file's location."""
-        return cls(RelType.SELF, href, media_type=MediaType.JSON)
+        return cls(
+            rel_type.RelType.SELF, href, media_type=media_type_mod.MediaType.JSON
+        )
 
     @classmethod
     def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to a child Catalog or Collection."""
-        return cls(RelType.CHILD, c, title=title, media_type=MediaType.JSON)
+        return cls(
+            rel_type.RelType.CHILD,
+            c,
+            title=title,
+            media_type=media_type_mod.MediaType.JSON,
+        )
 
     @classmethod
     def item(cls, item: "Item_Type", title: Optional[str] = None) -> "Link":
         """Creates a link to an Item."""
-        return cls(RelType.ITEM, item, title=title, media_type=MediaType.JSON)
+        return cls(
+            rel_type.RelType.ITEM,
+            item,
+            title=title,
+            media_type=media_type_mod.MediaType.JSON,
+        )
 
     @classmethod
     def canonical(
@@ -398,8 +418,8 @@ class Link:
     ) -> "Link":
         """Creates a canonical link to an Item or Collection."""
         return cls(
-            RelType.CANONICAL,
+            rel_type.RelType.CANONICAL,
             item_or_collection,
             title=title,
-            media_type=MediaType.JSON,
+            media_type=media_type_mod.MediaType.JSON,
         )

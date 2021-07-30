@@ -1,7 +1,7 @@
+import enum
+import functools
 import numbers
 import sys
-from enum import Enum
-from functools import lru_cache
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -88,12 +88,12 @@ FIELDS_JSON_URL = (
 )
 
 
-@lru_cache(maxsize=None)
+@functools.lru_cache(maxsize=None)
 def _get_fields_json(url: str) -> Dict[str, Any]:
     return pystac.StacIO.default().read_json(url)
 
 
-class SummaryStrategy(Enum):
+class SummaryStrategy(enum.Enum):
     ARRAY = "v"
     RANGE = "r"
     SCHEMA = "s"

@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+import abc
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -13,7 +13,7 @@ from typing import (
     cast,
 )
 
-from pystac.errors import ExtensionNotImplemented, STACError
+from pystac import errors
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
@@ -51,7 +51,7 @@ class SummariesExtension:
 P = TypeVar("P")
 
 
-class PropertiesExtension(ABC):
+class PropertiesExtension(abc.ABC):
     """Abstract base class for extending the properties of an :class:`~pystac.Item`
     to include properties defined by a STAC Extension.
 
@@ -99,7 +99,7 @@ class PropertiesExtension(ABC):
 S = TypeVar("S", bound="STACObject_Type")
 
 
-class ExtensionManagementMixin(Generic[S], ABC):
+class ExtensionManagementMixin(Generic[S], abc.ABC):
     """Abstract base class with methods for adding and removing extensions from STAC
     Objects. This class is generic over the type of object being extended (e.g.
     :class:`~pystac.Item`).
@@ -111,7 +111,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     """
 
     @classmethod
-    @abstractmethod
+    @abc.abstractmethod
     def get_schema_uri(cls) -> str:
         """Gets the schema URI associated with this extension."""
         raise NotImplementedError
@@ -158,7 +158,9 @@ class ExtensionManagementMixin(Generic[S], ABC):
         """
         if asset.owner is None:
             if add_if_missing:
-                raise STACError("Can only add schema URIs to Assets with an owner.")
+                raise errors.STACError(
+                    "Can only add schema URIs to Assets with an owner."
+                )
             else:
                 return
         return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
@@ -178,6 +180,6 @@ class ExtensionManagementMixin(Generic[S], ABC):
             cls.add_to(obj)
 
         if cls.get_schema_uri() not in obj.stac_extensions:
-            raise ExtensionNotImplemented(
+            raise errors.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )

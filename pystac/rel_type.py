@@ -1,7 +1,7 @@
-from enum import Enum
+import enum
 
 
-class RelType(str, Enum):
+class RelType(str, enum.Enum):
     """A list of common rel types that can be used in STAC Link metadata.
     See :stac-spec:`"Using Relation Types <best-practices.md#using-relation-types>`
     in the STAC Best Practices for guidelines on using relation types. You may also want

@@ -15,22 +15,15 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.summaries import RangeSummary as RangeSummary_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 
@@ -46,8 +39,8 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 
 class ViewExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
@@ -178,11 +171,11 @@ class ViewExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], ItemViewExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"View extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -247,72 +240,72 @@ class AssetViewExtension(ViewExtension["Asset_Type"]):
         return "<AssetViewExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesViewExtension(SummariesExtension):
+class SummariesViewExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`View Object Extension <view>`.
     """
 
     @property
-    def off_nadir(self) -> Optional[RangeSummary[float]]:
+    def off_nadir(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`ViewExtension.off_nadir` values for
         this Collection.
         """
         return self.summaries.get_range(OFF_NADIR_PROP)
 
     @off_nadir.setter
-    def off_nadir(self, v: Optional[RangeSummary[float]]) -> None:
+    def off_nadir(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(OFF_NADIR_PROP, v)
 
     @property
-    def incidence_angle(self) -> Optional[RangeSummary[float]]:
+    def incidence_angle(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`ViewExtension.incidence_angle` values
         for this Collection.
         """
         return self.summaries.get_range(INCIDENCE_ANGLE_PROP)
 
     @incidence_angle.setter
-    def incidence_angle(self, v: Optional[RangeSummary[float]]) -> None:
+    def incidence_angle(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(INCIDENCE_ANGLE_PROP, v)
 
     @property
-    def azimuth(self) -> Optional[RangeSummary[float]]:
+    def azimuth(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`ViewExtension.azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(AZIMUTH_PROP)
 
     @azimuth.setter
-    def azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def azimuth(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(AZIMUTH_PROP, v)
 
     @property
-    def sun_azimuth(self) -> Optional[RangeSummary[float]]:
+    def sun_azimuth(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`ViewExtension.sun_azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_AZIMUTH_PROP)
 
     @sun_azimuth.setter
-    def sun_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def sun_azimuth(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(SUN_AZIMUTH_PROP, v)
 
     @property
-    def sun_elevation(self) -> Optional[RangeSummary[float]]:
+    def sun_elevation(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`ViewExtension.sun_elevation` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_ELEVATION_PROP)
 
     @sun_elevation.setter
-    def sun_elevation(self, v: Optional[RangeSummary[float]]) -> None:
+    def sun_elevation(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(SUN_ELEVATION_PROP, v)
 
 
-class ViewExtensionHooks(ExtensionHooks):
+class ViewExtensionHooks(hooks.ExtensionHooks):
     schema_uri = SCHEMA_URI
     prev_extension_ids = {"view"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
 
-VIEW_EXTENSION_HOOKS: ExtensionHooks = ViewExtensionHooks()
+VIEW_EXTENSION_HOOKS: hooks.ExtensionHooks = ViewExtensionHooks()

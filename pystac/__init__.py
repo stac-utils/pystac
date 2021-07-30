@@ -28,7 +28,6 @@ from pystac.core import (
     Extent,
     Item,
     SpatialExtent,
-    Summaries,
     TemporalExtent,
 )
 from pystac.errors import (
@@ -48,7 +47,7 @@ from pystac.provider import Provider, ProviderRole
 from pystac.rel_type import RelType
 from pystac.stac_io import StacIO
 from pystac.stac_object import STACObject, STACObjectType
-from pystac.summaries import RangeSummary
+from pystac.summaries import RangeSummary, Summaries
 from pystac.version import __version__, get_stac_version, set_stac_version
 
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(

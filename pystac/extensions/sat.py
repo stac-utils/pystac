@@ -4,7 +4,6 @@ https://github.com/stac-extensions/sat
 """
 
 import enum
-from datetime import datetime as Datetime
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -18,20 +17,13 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
-from pystac.utils import datetime_to_str, map_opt, str_to_datetime
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, summaries, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
+    from datetime import datetime as Datetime_Type
+
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
@@ -58,8 +50,8 @@ class OrbitState(str, enum.Enum):
 
 class SatExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -82,7 +74,7 @@ class SatExtension(
         relative_orbit: Optional[int] = None,
         absolute_orbit: Optional[int] = None,
         platform_international_designator: Optional[str] = None,
-        anx_datetime: Optional[Datetime] = None,
+        anx_datetime: Optional["Datetime_Type"] = None,
     ) -> None:
         """Applies ext extension properties to the extended :class:`~pystac.Item` or
         class:`~pystac.Asset`.
@@ -117,13 +109,13 @@ class SatExtension(
     @property
     def orbit_state(self) -> Optional[OrbitState]:
         """Get or sets an orbit state of the object."""
-        return map_opt(
+        return utils.map_opt(
             lambda x: OrbitState(x), self._get_property(ORBIT_STATE_PROP, str)
         )
 
     @orbit_state.setter
     def orbit_state(self, v: Optional[OrbitState]) -> None:
-        self._set_property(ORBIT_STATE_PROP, map_opt(lambda x: x.value, v))
+        self._set_property(ORBIT_STATE_PROP, utils.map_opt(lambda x: x.value, v))
 
     @property
     def absolute_orbit(self) -> Optional[int]:
@@ -144,12 +136,14 @@ class SatExtension(
         self._set_property(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[Datetime]:
-        return map_opt(str_to_datetime, self._get_property(ANX_DATETIME_PROP, str))
+    def anx_datetime(self) -> Optional["Datetime_Type"]:
+        return utils.map_opt(
+            utils.str_to_datetime, self._get_property(ANX_DATETIME_PROP, str)
+        )
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[Datetime]) -> None:
-        self._set_property(ANX_DATETIME_PROP, map_opt(datetime_to_str, v))
+    def anx_datetime(self, v: Optional["Datetime_Type"]) -> None:
+        self._set_property(ANX_DATETIME_PROP, utils.map_opt(utils.datetime_to_str, v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -170,11 +164,11 @@ class SatExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], ItemSatExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], AssetSatExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Satellite extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -241,7 +235,7 @@ class AssetSatExtension(SatExtension["Asset_Type"]):
         return "<AssetSatExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesSatExtension(SummariesExtension):
+class SummariesSatExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Satellite Extension <sat>`.
@@ -273,47 +267,49 @@ class SummariesSatExtension(SummariesExtension):
         self._set_summary(ORBIT_STATE_PROP, v)
 
     @property
-    def absolute_orbit(self) -> Optional[RangeSummary[int]]:
+    def absolute_orbit(self) -> Optional[summaries.RangeSummary[int]]:
         return self.summaries.get_range(ABSOLUTE_ORBIT_PROP)
 
     @absolute_orbit.setter
-    def absolute_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+    def absolute_orbit(self, v: Optional[summaries.RangeSummary[int]]) -> None:
         self._set_summary(ABSOLUTE_ORBIT_PROP, v)
 
     @property
-    def relative_orbit(self) -> Optional[RangeSummary[int]]:
+    def relative_orbit(self) -> Optional[summaries.RangeSummary[int]]:
         return self.summaries.get_range(RELATIVE_ORBIT_PROP)
 
     @relative_orbit.setter
-    def relative_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+    def relative_orbit(self, v: Optional[summaries.RangeSummary[int]]) -> None:
         self._set_summary(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[RangeSummary[Datetime]]:
-        return map_opt(
-            lambda s: RangeSummary(
-                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+    def anx_datetime(self) -> Optional[summaries.RangeSummary["Datetime_Type"]]:
+        return utils.map_opt(
+            lambda s: summaries.RangeSummary(
+                utils.str_to_datetime(s.minimum), utils.str_to_datetime(s.maximum)
             ),
             self.summaries.get_range(ANX_DATETIME_PROP),
         )
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[RangeSummary[Datetime]]) -> None:
+    def anx_datetime(
+        self, v: Optional[summaries.RangeSummary["Datetime_Type"]]
+    ) -> None:
         self._set_summary(
             ANX_DATETIME_PROP,
-            map_opt(
-                lambda s: RangeSummary(
-                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+            utils.map_opt(
+                lambda s: summaries.RangeSummary(
+                    utils.datetime_to_str(s.minimum), utils.datetime_to_str(s.maximum)
                 ),
                 v,
             ),
         )
 
 
-class SatExtensionHooks(ExtensionHooks):
+class SatExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"sat"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
 
-SAT_EXTENSION_HOOKS: ExtensionHooks = SatExtensionHooks()
+SAT_EXTENSION_HOOKS: hooks.ExtensionHooks = SatExtensionHooks()

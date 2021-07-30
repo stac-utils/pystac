@@ -2,7 +2,7 @@
 
 https://github.com/stac-extensions/pointcloud
 """
-from enum import Enum
+import enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -15,23 +15,15 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
-from pystac.utils import get_required, map_opt
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.summaries import RangeSummary as RangeSummary_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 
@@ -46,7 +38,7 @@ DENSITY_PROP = PREFIX + "density"
 STATISTICS_PROP = PREFIX + "statistics"
 
 
-class PhenomenologyType(str, Enum):
+class PhenomenologyType(str, enum.Enum):
     """Valid values for the ``pc:type`` field in the :stac-ext:`Pointcloud Item
     Properties <pointcloud#item-properties>`."""
 
@@ -57,7 +49,7 @@ class PhenomenologyType(str, Enum):
     OTHER = "other"
 
 
-class SchemaType(str, Enum):
+class SchemaType(str, enum.Enum):
     """Valid values for the ``type`` field in a :stac-ext:`Schema Object
     <pointcloud#schema-object>`."""
 
@@ -106,19 +98,19 @@ class Schema:
     @property
     def size(self) -> int:
         """Gets or sets the size value."""
-        return get_required(self.properties.get("size"), self, "size")
+        return utils.get_required(self.properties.get("size"), self, "size")
 
     @size.setter
     def size(self, v: int) -> None:
         if not isinstance(v, int):
-            raise STACError("size must be an int! Invalid input: {}".format(v))
+            raise errors.STACError("size must be an int! Invalid input: {}".format(v))
 
         self.properties["size"] = v
 
     @property
     def name(self) -> str:
         """Gets or sets the name property for this Schema."""
-        return get_required(self.properties.get("name"), self, "name")
+        return utils.get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -128,7 +120,7 @@ class Schema:
     def type(self) -> SchemaType:
         """Gets or sets the type property. Valid values are ``floating``, ``unsigned``,
         and ``signed``."""
-        return get_required(self.properties.get("type"), self, "type")
+        return utils.get_required(self.properties.get("type"), self, "type")
 
     @type.setter
     def type(self, v: SchemaType) -> None:
@@ -227,7 +219,7 @@ class Statistic:
     @property
     def name(self) -> str:
         """Gets or sets the name property."""
-        return get_required(self.properties.get("name"), self, "name")
+        return utils.get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -335,8 +327,8 @@ class Statistic:
 
 class PointcloudExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -386,7 +378,7 @@ class PointcloudExtension(
     @property
     def count(self) -> int:
         """Gets or sets the number of points in the Item."""
-        return get_required(self._get_property(COUNT_PROP, int), self, COUNT_PROP)
+        return utils.get_required(self._get_property(COUNT_PROP, int), self, COUNT_PROP)
 
     @count.setter
     def count(self, v: int) -> None:
@@ -395,7 +387,7 @@ class PointcloudExtension(
     @property
     def type(self) -> Union[PhenomenologyType, str]:
         """Gets or sets the phenomenology type for the point cloud."""
-        return get_required(self._get_property(TYPE_PROP, str), self, TYPE_PROP)
+        return utils.get_required(self._get_property(TYPE_PROP, str), self, TYPE_PROP)
 
     @type.setter
     def type(self, v: Union[PhenomenologyType, str]) -> None:
@@ -404,7 +396,9 @@ class PointcloudExtension(
     @property
     def encoding(self) -> str:
         """Gets or sets the content encoding or format of the data."""
-        return get_required(self._get_property(ENCODING_PROP, str), self, ENCODING_PROP)
+        return utils.get_required(
+            self._get_property(ENCODING_PROP, str), self, ENCODING_PROP
+        )
 
     @encoding.setter
     def encoding(self, v: str) -> None:
@@ -415,7 +409,7 @@ class PointcloudExtension(
         """Gets or sets the list of :class:`Schema` instances defining
         dimensions and types for the data.
         """
-        result = get_required(
+        result = utils.get_required(
             self._get_property(SCHEMAS_PROP, List[Dict[str, Any]]), self, SCHEMAS_PROP
         )
         return [Schema(s) for s in result]
@@ -439,11 +433,11 @@ class PointcloudExtension(
         the pre-channel statistics. Elements in this list map to elements in the
         :attr:`PointcloudExtension.schemas` list."""
         result = self._get_property(STATISTICS_PROP, List[Dict[str, Any]])
-        return map_opt(lambda stats: [Statistic(s) for s in stats], result)
+        return utils.map_opt(lambda stats: [Statistic(s) for s in stats], result)
 
     @statistics.setter
     def statistics(self, v: Optional[List[Statistic]]) -> None:
-        set_value = map_opt(lambda stats: [s.to_dict() for s in stats], v)
+        set_value = utils.map_opt(lambda stats: [s.to_dict() for s in stats], v)
         self._set_property(STATISTICS_PROP, set_value)
 
     @classmethod
@@ -465,15 +459,15 @@ class PointcloudExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], ItemPointcloudExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             if obj.owner is not None and not isinstance(obj.owner, core.Item):
-                raise ExtensionTypeError(
+                raise errors.ExtensionTypeError(
                     "Pointcloud extension does not apply to Collection Assets."
                 )
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Pointcloud extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -524,18 +518,18 @@ class AssetPointcloudExtension(PointcloudExtension["Asset_Type"]):
         return f"<AssetPointcloudExtension Asset {self.repr_id}>"
 
 
-class SummariesPointcloudExtension(SummariesExtension):
+class SummariesPointcloudExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Point Cloud Extension <pointcloud>`.
     """
 
     @property
-    def count(self) -> Optional[RangeSummary[int]]:
+    def count(self) -> Optional["RangeSummary_Type[int]"]:
         return self.summaries.get_range(COUNT_PROP)
 
     @count.setter
-    def count(self, v: Optional[RangeSummary[int]]) -> None:
+    def count(self, v: Optional["RangeSummary_Type[int]"]) -> None:
         self._set_summary(COUNT_PROP, v)
 
     @property
@@ -555,16 +549,16 @@ class SummariesPointcloudExtension(SummariesExtension):
         self._set_summary(ENCODING_PROP, v)
 
     @property
-    def density(self) -> Optional[RangeSummary[float]]:
+    def density(self) -> Optional["RangeSummary_Type[float]"]:
         return self.summaries.get_range(DENSITY_PROP)
 
     @density.setter
-    def density(self, v: Optional[RangeSummary[float]]) -> None:
+    def density(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(DENSITY_PROP, v)
 
     @property
     def statistics(self) -> Optional[List[Statistic]]:
-        return map_opt(
+        return utils.map_opt(
             lambda stats: [Statistic(d) for d in stats],
             self.summaries.get_list(STATISTICS_PROP),
         )
@@ -573,14 +567,14 @@ class SummariesPointcloudExtension(SummariesExtension):
     def statistics(self, v: Optional[List[Statistic]]) -> None:
         self._set_summary(
             STATISTICS_PROP,
-            map_opt(lambda stats: [s.to_dict() for s in stats], v),
+            utils.map_opt(lambda stats: [s.to_dict() for s in stats], v),
         )
 
 
-class PointcloudExtensionHooks(ExtensionHooks):
+class PointcloudExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"pointcloud"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
 
-POINTCLOUD_EXTENSION_HOOKS: ExtensionHooks = PointcloudExtensionHooks()
+POINTCLOUD_EXTENSION_HOOKS: hooks.ExtensionHooks = PointcloudExtensionHooks()

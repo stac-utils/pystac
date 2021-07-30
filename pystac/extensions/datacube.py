@@ -3,8 +3,8 @@
 https://github.com/stac-extensions/datacube
 """
 
-from abc import ABC
-from enum import Enum
+import abc
+import enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -17,13 +17,9 @@ from typing import (
     cast,
 )
 
-from pystac.asset import Asset
-from pystac.core import Collection, Item
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.utils import get_required
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
@@ -48,14 +44,14 @@ DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
 
 
-class DimensionType(str, Enum):
+class DimensionType(str, enum.Enum):
     """Dimension object types for spatial and temporal Dimension Objects."""
 
     SPATIAL = "spatial"
     TEMPORAL = "temporal"
 
 
-class HorizontalSpatialDimensionAxis(str, Enum):
+class HorizontalSpatialDimensionAxis(str, enum.Enum):
     """Allowed values for ``axis`` field of :class:`HorizontalSpatialDimension`
     object."""
 
@@ -63,14 +59,14 @@ class HorizontalSpatialDimensionAxis(str, Enum):
     Y = "y"
 
 
-class VerticalSpatialDimensionAxis(str, Enum):
+class VerticalSpatialDimensionAxis(str, enum.Enum):
     """Allowed values for ``axis`` field of :class:`VerticalSpatialDimension`
     object."""
 
     Z = "z"
 
 
-class Dimension(ABC):
+class Dimension(abc.ABC):
     """Object representing a dimension of the datacube. The fields contained in
     Dimension Object vary by ``type``. See the :stac-ext:`Datacube Dimension Object
     <datacube#dimension-object>` docs for details.
@@ -90,7 +86,7 @@ class Dimension(ABC):
         :stac-ext:`Temporal Dimension Objects <datacube#temporal-dimension-object>`. May
         be an arbitrary string for :stac-ext:`Additional Dimension Objects
         <datacube#additional-dimension-object>`."""
-        return get_required(
+        return utils.get_required(
             self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
         )
 
@@ -116,11 +112,11 @@ class Dimension(ABC):
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Dimension":
-        dim_type: str = get_required(
+        dim_type: str = utils.get_required(
             d.get(DIM_TYPE_PROP), "cube_dimension", DIM_TYPE_PROP
         )
         if dim_type == DimensionType.SPATIAL:
-            axis: str = get_required(
+            axis: str = utils.get_required(
                 d.get(DIM_AXIS_PROP), "cube_dimension", DIM_AXIS_PROP
             )
             if axis == "z":
@@ -141,7 +137,7 @@ class HorizontalSpatialDimension(Dimension):
     @property
     def axis(self) -> HorizontalSpatialDimensionAxis:
         """Axis of the spatial dimension. Must be one of ``"x"`` or ``"y"``."""
-        return get_required(
+        return utils.get_required(
             self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
         )
 
@@ -153,7 +149,7 @@ class HorizontalSpatialDimension(Dimension):
     def extent(self) -> List[float]:
         """Extent (lower and upper bounds) of the dimension as two-dimensional array.
         Open intervals with ``None`` are not allowed."""
-        return get_required(
+        return utils.get_required(
             self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
         )
 
@@ -209,7 +205,7 @@ class VerticalSpatialDimension(Dimension):
     @property
     def axis(self) -> VerticalSpatialDimensionAxis:
         """Axis of the spatial dimension. Always ``"z"``."""
-        return get_required(
+        return utils.get_required(
             self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
         )
 
@@ -415,8 +411,8 @@ class AdditionalDimension(Dimension):
 
 class DatacubeExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
@@ -448,7 +444,7 @@ class DatacubeExtension(
     @property
     def dimensions(self) -> Dict[str, Dimension]:
         """Dictionary mapping dimension name to a :class:`Dimension` object."""
-        result = get_required(
+        result = utils.get_required(
             self._get_property(DIMENSIONS_PROP, Dict[str, Any]), self, DIMENSIONS_PROP
         )
         return {k: Dimension.from_dict(v) for k, v in result.items()}
@@ -473,17 +469,17 @@ class DatacubeExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, Collection):
+        if isinstance(obj, core.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
-        if isinstance(obj, Item):
+        if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Datacube extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -544,7 +540,7 @@ class AssetDatacubeExtension(DatacubeExtension["Asset_Type"]):
     def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, Asset):
+        if asset.owner and isinstance(asset.owner, asset_mod.Asset):
             self.additional_read_properties = [asset.owner.properties]
         else:
             self.additional_read_properties = None
@@ -553,13 +549,13 @@ class AssetDatacubeExtension(DatacubeExtension["Asset_Type"]):
         return "<AssetDatacubeExtension Item id={}>".format(self.asset_href)
 
 
-class DatacubeExtensionHooks(ExtensionHooks):
+class DatacubeExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"datacube"}
     stac_object_types = {
-        STACObjectType.COLLECTION,
-        STACObjectType.ITEM,
+        stac_object.STACObjectType.COLLECTION,
+        stac_object.STACObjectType.ITEM,
     }
 
 
-DATACUBE_EXTENSION_HOOKS: ExtensionHooks = DatacubeExtensionHooks()
+DATACUBE_EXTENSION_HOOKS: hooks.ExtensionHooks = DatacubeExtensionHooks()

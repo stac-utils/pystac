@@ -17,25 +17,19 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions import projection, view
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
-from pystac.utils import get_required, map_opt
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks, projection, view
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
+    from pystac.summaries import RangeSummary as RangeSummary_Type
 
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
@@ -131,7 +125,7 @@ class Band:
         Returns:
             str
         """
-        return get_required(self.properties.get("name"), self, "name")
+        return utils.get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -286,8 +280,8 @@ class Band:
 
 class EOExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -331,11 +325,11 @@ class EOExtension(
     @bands.setter
     def bands(self, v: Optional[List[Band]]) -> None:
         self._set_property(
-            BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
+            BANDS_PROP, utils.map_opt(lambda bands: [b.to_dict() for b in bands], v)
         )
 
     def _get_bands(self) -> Optional[List[Band]]:
-        return map_opt(
+        return utils.map_opt(
             lambda bands: [Band(b) for b in bands],
             self._get_property(BANDS_PROP, List[Dict[str, Any]]),
         )
@@ -373,11 +367,11 @@ class EOExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemEOExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"EO extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -473,7 +467,7 @@ class AssetEOExtension(EOExtension["Asset_Type"]):
         return "<AssetEOExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesEOExtension(SummariesExtension):
+class SummariesEOExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Electro-Optical Extension <eo>`.
@@ -485,34 +479,39 @@ class SummariesEOExtension(SummariesExtension):
         for this Collection.
         """
 
-        return map_opt(
+        return utils.map_opt(
             lambda bands: [Band(b) for b in bands],
             self.summaries.get_list(BANDS_PROP),
         )
 
     @bands.setter
     def bands(self, v: Optional[List[Band]]) -> None:
-        self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
+        self._set_summary(
+            BANDS_PROP, utils.map_opt(lambda x: [b.to_dict() for b in x], v)
+        )
 
     @property
-    def cloud_cover(self) -> Optional[RangeSummary[float]]:
+    def cloud_cover(self) -> Optional["RangeSummary_Type[float]"]:
         """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
         for this Collection.
         """
         return self.summaries.get_range(CLOUD_COVER_PROP)
 
     @cloud_cover.setter
-    def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:
+    def cloud_cover(self, v: Optional["RangeSummary_Type[float]"]) -> None:
         self._set_summary(CLOUD_COVER_PROP, v)
 
 
-class EOExtensionHooks(ExtensionHooks):
+class EOExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"eo"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self,
+        obj: Dict[str, Any],
+        version: "STACVersionID_Type",
+        info: "STACJSONDescription_Type",
     ) -> None:
         if version < "0.9":
             # Some eo fields became common_metadata
@@ -576,7 +575,10 @@ class EOExtensionHooks(ExtensionHooks):
                 if not any(prop.startswith(PREFIX) for prop in obj["properties"]):
                     obj["stac_extensions"].remove(EOExtension.get_schema_uri())
 
-        if version < "1.0.0-beta.1" and info.object_type == STACObjectType.ITEM:
+        if (
+            version < "1.0.0-beta.1"
+            and info.object_type == stac_object.STACObjectType.ITEM
+        ):
             # gsd moved from eo to common metadata
             if "eo:gsd" in obj["properties"]:
                 obj["properties"]["gsd"] = obj["properties"]["eo:gsd"]
@@ -597,4 +599,4 @@ class EOExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-EO_EXTENSION_HOOKS: ExtensionHooks = EOExtensionHooks()
+EO_EXTENSION_HOOKS: hooks.ExtensionHooks = EOExtensionHooks()

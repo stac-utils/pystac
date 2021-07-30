@@ -5,14 +5,8 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-import pystac
-from pystac.serialization import (
-    identify_stac_object,
-    identify_stac_object_type,
-    merge_common_properties,
-    migrate_to_latest,
-)
-from pystac.utils import safe_urlparse
+from pystac import core, errors, stac_object, utils
+from pystac.serialization import common_properties, identify, migrate
 
 # Use orjson if available
 try:
@@ -133,33 +127,33 @@ class StacIO(ABC):
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
         """
-        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+        if identify.identify_stac_object_type(d) == stac_object.STACObjectType.ITEM:
             collection_cache = None
             if root is not None:
                 collection_cache = root._resolved_objects.as_collection_cache()
 
             # Merge common properties in case this is an older STAC object.
-            merge_common_properties(
+            common_properties.merge_common_properties(
                 d, json_href=href, collection_cache=collection_cache
             )
 
-        info = identify_stac_object(d)
-        d = migrate_to_latest(d, info)
+        info = identify.identify_stac_object(d)
+        d = migrate.migrate_to_latest(d, info)
 
-        if info.object_type == pystac.STACObjectType.CATALOG:
-            result = pystac.Catalog.from_dict(
+        if info.object_type == stac_object.STACObjectType.CATALOG:
+            result = core.Catalog.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
             result._stac_io = self
             return result
 
-        if info.object_type == pystac.STACObjectType.COLLECTION:
-            return pystac.Collection.from_dict(
+        if info.object_type == stac_object.STACObjectType.COLLECTION:
+            return core.Collection.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
-        if info.object_type == pystac.STACObjectType.ITEM:
-            return pystac.Item.from_dict(
+        if info.object_type == stac_object.STACObjectType.ITEM:
+            return core.Item.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
@@ -279,7 +273,7 @@ class DefaultStacIO(StacIO):
 
             href : The URI of the file to open.
         """
-        parsed = safe_urlparse(href)
+        parsed = utils.safe_urlparse(href)
         href_contents: str
         if parsed.scheme != "":
             try:
@@ -361,10 +355,10 @@ class DuplicateKeyReportingMixin(StacIO):
         txt = self.read_text(source, *args, **kwargs)
         try:
             return self.json_loads(txt, source=source)
-        except pystac.DuplicateObjectKeyError as e:
+        except errors.DuplicateObjectKeyError as e:
             url = source if isinstance(source, str) else source.get_absolute_href()
             msg = str(e) + f" in {url}"
-            raise pystac.DuplicateObjectKeyError(msg)
+            raise errors.DuplicateObjectKeyError(msg)
 
     @staticmethod
     def _report_duplicate_object_names(
@@ -373,7 +367,7 @@ class DuplicateKeyReportingMixin(StacIO):
         result: Dict[str, Any] = {}
         for key, value in object_pairs:
             if key in result:
-                raise pystac.DuplicateObjectKeyError(
+                raise errors.DuplicateObjectKeyError(
                     f'Found duplicate object name "{key}"'
                 )
             else:

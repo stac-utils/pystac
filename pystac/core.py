@@ -1,7 +1,7 @@
+import copy
+import datetime as datetime_mod
+import enum
 import os
-from copy import copy, deepcopy
-from datetime import datetime as Datetime
-from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,42 +19,29 @@ from typing import (
 from dateutil import parser, tz
 
 import pystac
-import pystac.link
-from pystac.asset import Asset
-from pystac.cache import ResolvedObjectCache
-from pystac.common_metadata import CommonMetadata
-from pystac.errors import STACError, STACTypeError
-from pystac.layout import (
-    BestPracticesLayoutStrategy,
-    HrefLayoutStrategy,
-    LayoutTemplate,
-)
-from pystac.provider import Provider
-from pystac.rel_type import RelType
-from pystac.serialization import (
-    identify_stac_object,
-    identify_stac_object_type,
-    migrate_to_latest,
-)
-from pystac.stac_io import StacIO
-from pystac.stac_object import STACObject, STACObjectType
-from pystac.summaries import Summaries
-from pystac.utils import (
-    datetime_to_str,
-    is_absolute_href,
-    make_absolute_href,
-    make_relative_href,
-    str_to_datetime,
-)
+from pystac import asset as asset_mod
+from pystac import cache, common_metadata, errors, layout, provider, rel_type
+from pystac import stac_io as stac_io_mod
+from pystac import stac_object
+from pystac import summaries as summaries_mod
+from pystac import utils
+from pystac.serialization import identify
+from pystac.serialization import migrate as migrate_mod
 
 if TYPE_CHECKING:
+    from datetime import datetime as Datetime_Type
+
     from pystac.asset import Asset as Asset_Type
     from pystac.common_metadata import CommonMetadata as CommonMetadata_Type
+    from pystac.layout import HrefLayoutStrategy as HrefLayoutStrategy_Type
     from pystac.link import Link as Link_Type
     from pystac.provider import Provider as Provider_Type
+    from pystac.rel_type import RelType as RelType_Type
+    from pystac.stac_io import StacIO as StacIO_Type
+    from pystac.summaries import Summaries as Summaries_Type
 
 
-class CatalogType(str, Enum):
+class CatalogType(str, enum.Enum):
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download an online catalog from and be able to use it on their
@@ -101,10 +88,10 @@ class CatalogType(str, Enum):
         self_link = None
         relative = False
         for link in stac_json["links"]:
-            if link["rel"] == RelType.SELF:
+            if link["rel"] == rel_type.RelType.SELF:
                 self_link = link
             else:
-                relative |= not is_absolute_href(link["href"])
+                relative |= not utils.is_absolute_href(link["href"])
 
         if self_link:
             if relative:
@@ -118,7 +105,7 @@ class CatalogType(str, Enum):
                 return None
 
 
-class Catalog(STACObject):
+class Catalog(stac_object.STACObject):
     """A PySTAC Catalog represents a STAC catalog in memory.
 
     A Catalog is a :class:`~pystac.STACObject` that may contain children,
@@ -150,9 +137,9 @@ class Catalog(STACObject):
         catalog_type : The catalog type. Defaults to ABSOLUTE_PUBLISHED
     """
 
-    STAC_OBJECT_TYPE = STACObjectType.CATALOG
+    STAC_OBJECT_TYPE = stac_object.STACObjectType.CATALOG
 
-    _stac_io: Optional["StacIO"] = None
+    _stac_io: Optional["StacIO_Type"] = None
     """Optional instance of StacIO that will be used by default
     for any IO operations on objects contained by this catalog.
     Set while reading in a catalog. This is set when a catalog
@@ -183,7 +170,7 @@ class Catalog(STACObject):
         else:
             self.extra_fields = extra_fields
 
-        self._resolved_objects = ResolvedObjectCache()
+        self._resolved_objects = cache.ResolvedObjectCache()
 
         self.add_link(pystac.link.Link.root(self))
 
@@ -198,9 +185,9 @@ class Catalog(STACObject):
         return "<Catalog id={}>".format(self.id)
 
     def set_root(self, root: Optional["Catalog"]) -> None:
-        STACObject.set_root(self, root)
+        stac_object.STACObject.set_root(self, root)
         if root is not None:
-            root._resolved_objects = ResolvedObjectCache.merge(
+            root._resolved_objects = cache.ResolvedObjectCache.merge(
                 root._resolved_objects, self._resolved_objects
             )
 
@@ -214,7 +201,7 @@ class Catalog(STACObject):
         self,
         child: Union["Catalog", "Collection"],
         title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: Optional["HrefLayoutStrategy_Type"] = None,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
         This method will set the child's parent to this object, and its root to
@@ -229,10 +216,10 @@ class Catalog(STACObject):
 
         # Prevent typo confusion
         if isinstance(child, Item):
-            raise STACError("Cannot add item as child. Use add_item instead.")
+            raise errors.STACError("Cannot add item as child. Use add_item instead.")
 
         if strategy is None:
-            strategy = BestPracticesLayoutStrategy()
+            strategy = layout.BestPracticesLayoutStrategy()
 
         child.set_root(self.get_root())
         child.set_parent(self)
@@ -260,7 +247,7 @@ class Catalog(STACObject):
         self,
         item: "Item",
         title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: Optional["HrefLayoutStrategy_Type"] = None,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
         This method will set the item's parent to this object, and its root to
@@ -273,10 +260,10 @@ class Catalog(STACObject):
 
         # Prevent typo confusion
         if isinstance(item, Catalog):
-            raise STACError("Cannot add catalog as item. Use add_child instead.")
+            raise errors.STACError("Cannot add catalog as item. Use add_child instead.")
 
         if strategy is None:
-            strategy = BestPracticesLayoutStrategy()
+            strategy = layout.BestPracticesLayoutStrategy()
 
         item.set_root(self.get_root())
         item.set_parent(self)
@@ -333,7 +320,7 @@ class Catalog(STACObject):
         """
         return map(
             lambda x: cast(Union[Catalog, Collection], x),
-            self.get_stac_objects(RelType.CHILD),
+            self.get_stac_objects(rel_type.RelType.CHILD),
         )
 
     def get_collections(self) -> Iterable["Collection"]:
@@ -341,7 +328,7 @@ class Catalog(STACObject):
         instances."""
         return map(
             lambda x: cast(Collection, x),
-            self.get_stac_objects(RelType.CHILD, Collection),
+            self.get_stac_objects(rel_type.RelType.CHILD, Collection),
         )
 
     def get_all_collections(self) -> Iterable["Collection"]:
@@ -357,7 +344,7 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'child'``
         """
-        return self.get_links(RelType.CHILD)
+        return self.get_links(rel_type.RelType.CHILD)
 
     def clear_children(self) -> None:
         """Removes all children from this catalog.
@@ -378,7 +365,7 @@ class Catalog(STACObject):
         new_links: List["Link_Type"] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != RelType.CHILD:
+            if link.rel != rel_type.RelType.CHILD:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -417,7 +404,9 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        return map(lambda x: cast("Item", x), self.get_stac_objects(RelType.ITEM))
+        return map(
+            lambda x: cast("Item", x), self.get_stac_objects(rel_type.RelType.ITEM)
+        )
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -431,7 +420,7 @@ class Catalog(STACObject):
                 item.set_parent(None)
                 item.set_root(None)
 
-        self.links = [link for link in self.links if link.rel != RelType.ITEM]
+        self.links = [link for link in self.links if link.rel != rel_type.RelType.ITEM]
 
     def remove_item(self, item_id: str) -> None:
         """Removes an item from this catalog.
@@ -442,7 +431,7 @@ class Catalog(STACObject):
         new_links: List["Link_Type"] = []
         root = self.get_root()
         for link in self.links:
-            if link.rel != RelType.ITEM:
+            if link.rel != rel_type.RelType.ITEM:
                 new_links.append(link)
             else:
                 link.resolve_stac_object(root=root)
@@ -473,12 +462,12 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'item'``
         """
-        return self.get_links(RelType.ITEM)
+        return self.get_links(rel_type.RelType.ITEM)
 
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != RelType.SELF]
+            links = [x for x in links if x.rel != rel_type.RelType.SELF]
 
         d: Dict[str, Any] = {
             "type": self.STAC_OBJECT_TYPE.value.title(),
@@ -506,13 +495,13 @@ class Catalog(STACObject):
             description=self.description,
             title=self.title,
             stac_extensions=self.stac_extensions,
-            extra_fields=deepcopy(self.extra_fields),
+            extra_fields=copy.deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
         )
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == RelType.ROOT:
+            if link.rel == rel_type.RelType.ROOT:
                 # Catalog __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -544,7 +533,7 @@ class Catalog(STACObject):
         self,
         root_href: str,
         catalog_type: Optional[CatalogType] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: Optional["HrefLayoutStrategy_Type"] = None,
     ) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
 
@@ -567,7 +556,7 @@ class Catalog(STACObject):
         self.save(catalog_type)
 
     def normalize_hrefs(
-        self, root_href: str, strategy: Optional[HrefLayoutStrategy] = None
+        self, root_href: str, strategy: Optional["HrefLayoutStrategy_Type"] = None
     ) -> None:
         """Normalize HREFs will regenerate all link HREFs based on
         an absolute root_href and the canonical catalog layout as specified
@@ -586,13 +575,15 @@ class Catalog(STACObject):
             for the canonical layout of a STAC.
         """
         if strategy is None:
-            _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
+            _strategy: "HrefLayoutStrategy_Type" = layout.BestPracticesLayoutStrategy()
         else:
             _strategy = strategy
 
         # Normalizing requires an absolute path
-        if not is_absolute_href(root_href):
-            root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
+        if not utils.is_absolute_href(root_href):
+            root_href = utils.make_absolute_href(
+                root_href, os.getcwd(), start_is_dir=True
+            )
 
         def process_item(item: "Item", _root_href: str) -> Callable[[], None]:
             item.resolve_links()
@@ -672,10 +663,10 @@ class Catalog(STACObject):
                 )
             )
 
-        layout_template = LayoutTemplate(template, defaults=defaults)
+        layout_template = layout.LayoutTemplate(template, defaults=defaults)
 
         keep_item_links: List["Link_Type"] = []
-        item_links = [lk for lk in self.links if lk.rel == RelType.ITEM]
+        item_links = [lk for lk in self.links if lk.rel == rel_type.RelType.ITEM]
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast("Item", link.target)
@@ -706,7 +697,7 @@ class Catalog(STACObject):
                 curr_parent = subcat
 
             # resolve collection link so when added back points to correct location
-            col_link = item.get_single_link(RelType.COLLECTION)
+            col_link = item.get_single_link(rel_type.RelType.COLLECTION)
             if col_link is not None:
                 col_link.resolve_stac_object()
 
@@ -714,7 +705,7 @@ class Catalog(STACObject):
 
         # keep only non-item links and item links that have not been moved elsewhere
         self.links = [
-            lk for lk in self.links if lk.rel != RelType.ITEM
+            lk for lk in self.links if lk.rel != rel_type.RelType.ITEM
         ] + keep_item_links
 
         return result
@@ -758,8 +749,8 @@ class Catalog(STACObject):
             if child_link.is_resolved():
                 child = cast(Catalog, child_link.target)
                 if dest_href is not None:
-                    rel_href = make_relative_href(child.self_href, self.self_href)
-                    child_dest_href = make_absolute_href(
+                    rel_href = utils.make_relative_href(child.self_href, self.self_href)
+                    child_dest_href = utils.make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
                     child.save(dest_href=child_dest_href)
@@ -770,8 +761,8 @@ class Catalog(STACObject):
             if item_link.is_resolved():
                 item = cast("Item", item_link.target)
                 if dest_href is not None:
-                    rel_href = make_relative_href(item.self_href, self.self_href)
-                    item_dest_href = make_absolute_href(
+                    rel_href = utils.make_relative_href(item.self_href, self.self_href)
+                    item_dest_href = utils.make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
                     item.save_object(include_self_link=True, dest_href=item_dest_href)
@@ -790,8 +781,8 @@ class Catalog(STACObject):
 
         catalog_dest_href = None
         if dest_href is not None:
-            rel_href = make_relative_href(self.self_href, self.self_href)
-            catalog_dest_href = make_absolute_href(
+            rel_href = utils.make_relative_href(self.self_href, self.self_href)
+            catalog_dest_href = utils.make_absolute_href(
                 rel_href, dest_href, start_is_dir=True
             )
         self.save_object(
@@ -840,10 +831,10 @@ class Catalog(STACObject):
         for item in self.get_items():
             item.validate()
 
-    def _object_links(self) -> List[Union[str, RelType]]:
+    def _object_links(self) -> List[Union[str, "RelType_Type"]]:
         return [
-            RelType.CHILD,
-            RelType.ITEM,
+            rel_type.RelType.CHILD,
+            rel_type.RelType.ITEM,
             *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
         ]
 
@@ -913,12 +904,12 @@ class Catalog(STACObject):
 
         def apply_asset_mapper(
             tup: Tuple[str, "Asset_Type"]
-        ) -> List[Tuple[str, Asset]]:
+        ) -> List[Tuple[str, "Asset_Type"]]:
             k, v = tup
             result = asset_mapper(k, v)
             if result is None:
                 raise Exception("asset_mapper cannot return None.")
-            if isinstance(result, Asset):
+            if isinstance(result, asset_mod.Asset):
                 return [(k, result)]
             elif isinstance(result, tuple):
                 return [result]
@@ -969,16 +960,18 @@ class Catalog(STACObject):
         preserve_dict: bool = True,
     ) -> "Catalog":
         if migrate:
-            info = identify_stac_object(d)
-            d = migrate_to_latest(d, info)
+            info = identify.identify_stac_object(d)
+            d = migrate_mod.migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise errors.STACTypeError(
+                f"{d} does not represent a {cls.__name__} instance"
+            )
 
         catalog_type = CatalogType.determine_type(d)
 
         if preserve_dict:
-            d = deepcopy(d)
+            d = copy.deepcopy(d)
 
         id = d.pop("id")
         description = d.pop("description")
@@ -999,11 +992,11 @@ class Catalog(STACObject):
         )
 
         for link in links:
-            if link["rel"] == RelType.ROOT:
+            if link["rel"] == rel_type.RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                cat.remove_links(RelType.ROOT)
+                cat.remove_links(rel_type.RelType.ROOT)
 
-            if link["rel"] != RelType.SELF or href is None:
+            if link["rel"] != rel_type.RelType.SELF or href is None:
                 cat.add_link(pystac.link.Link.from_dict(link))
 
         if root:
@@ -1017,20 +1010,22 @@ class Catalog(STACObject):
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "Catalog":
+    def from_file(cls, href: str, stac_io: Optional["StacIO_Type"] = None) -> "Catalog":
         if stac_io is None:
-            stac_io = StacIO.default()
+            stac_io = stac_io_mod.StacIO.default()
 
         result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
-            raise STACTypeError(f"{result} is not a {Catalog}.")
+            raise errors.STACTypeError(f"{result} is not a {Catalog}.")
         result._stac_io = stac_io
 
         return result
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
-        return identify_stac_object_type(d) == STACObjectType.CATALOG
+        return (
+            identify.identify_stac_object_type(d) == stac_object.STACObjectType.CATALOG
+        )
 
 
 T = TypeVar("T")
@@ -1089,7 +1084,8 @@ class SpatialExtent:
             SpatialExtent: The clone of this object.
         """
         return SpatialExtent(
-            bboxes=deepcopy(self.bboxes), extra_fields=deepcopy(self.extra_fields)
+            bboxes=copy.deepcopy(self.bboxes),
+            extra_fields=copy.deepcopy(self.extra_fields),
         )
 
     @staticmethod
@@ -1173,7 +1169,7 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
 
-    intervals: List[List[Optional[Datetime]]]
+    intervals: List[List[Optional["Datetime_Type"]]]
     """A list of two datetimes wrapped in a list,
     representing the temporal extent of a Collection. Open date ranges are
     represented by either the start (the first element of the interval) or the
@@ -1185,16 +1181,20 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: Union[List[List[Optional[Datetime]]], List[Optional[Datetime]]],
+        intervals: Union[
+            List[List[Optional["Datetime_Type"]]], List[Optional["Datetime_Type"]]
+        ],
         extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
-        if isinstance(intervals, list) and isinstance(intervals[0], Datetime):
-            self.intervals = [cast(List[Optional[Datetime]], intervals)]
+        if isinstance(intervals, list) and isinstance(
+            intervals[0], datetime_mod.datetime
+        ):
+            self.intervals = [cast(List[Optional["Datetime_Type"]], intervals)]
         else:
-            self.intervals = cast(List[List[Optional[Datetime]]], intervals)
+            self.intervals = cast(List[List[Optional["Datetime_Type"]]], intervals)
 
         self.extra_fields = extra_fields or {}
 
@@ -1210,10 +1210,10 @@ class TemporalExtent:
             end = None
 
             if i[0] is not None:
-                start = datetime_to_str(i[0])
+                start = utils.datetime_to_str(i[0])
 
             if i[1] is not None:
-                end = datetime_to_str(i[1])
+                end = utils.datetime_to_str(i[1])
 
             encoded_intervals.append([start, end])
 
@@ -1227,7 +1227,8 @@ class TemporalExtent:
             TemporalExtent: The clone of this object.
         """
         return TemporalExtent(
-            intervals=deepcopy(self.intervals), extra_fields=deepcopy(self.extra_fields)
+            intervals=copy.deepcopy(self.intervals),
+            extra_fields=copy.deepcopy(self.extra_fields),
         )
 
     @staticmethod
@@ -1237,7 +1238,7 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The TemporalExtent deserialized from the JSON dict.
         """
-        parsed_intervals: List[List[Optional[Datetime]]] = []
+        parsed_intervals: List[List[Optional["Datetime_Type"]]] = []
         for i in d["interval"]:
             start = None
             end = None
@@ -1262,7 +1263,7 @@ class TemporalExtent:
             TemporalExtent: The resulting TemporalExtent.
         """
         return TemporalExtent(
-            intervals=[[Datetime.utcnow().replace(microsecond=0), None]]
+            intervals=[[datetime_mod.datetime.utcnow().replace(microsecond=0), None]]
         )
 
 
@@ -1319,7 +1320,7 @@ class Extent:
         return Extent(
             spatial=self.spatial.clone(),
             temporal=self.temporal.clone(),
-            extra_fields=deepcopy(self.extra_fields),
+            extra_fields=copy.deepcopy(self.extra_fields),
         )
 
     @staticmethod
@@ -1358,9 +1359,9 @@ class Extent:
             [float("-inf")],
             [float("-inf")],
         ]
-        datetimes: List[Datetime] = []
-        starts: List[Datetime] = []
-        ends: List[Datetime] = []
+        datetimes: List["Datetime_Type"] = []
+        starts: List["Datetime_Type"] = []
+        ends: List["Datetime_Type"] = []
 
         for item in items:
             if item.bbox is not None:
@@ -1461,7 +1462,7 @@ class Collection(Catalog):
             JSON properties of the Catalog.
     """
 
-    STAC_OBJECT_TYPE = STACObjectType.COLLECTION
+    STAC_OBJECT_TYPE = stac_object.STACObjectType.COLLECTION
 
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC object
@@ -1480,7 +1481,7 @@ class Collection(Catalog):
         license: str = "proprietary",
         keywords: Optional[List[str]] = None,
         providers: Optional[List["Provider_Type"]] = None,
-        summaries: Optional[Summaries] = None,
+        summaries: Optional["Summaries_Type"] = None,
     ):
         super().__init__(
             id,
@@ -1497,9 +1498,9 @@ class Collection(Catalog):
         self.stac_extensions: List[str] = stac_extensions or []
         self.keywords = keywords
         self.providers = providers
-        self.summaries = summaries or Summaries.empty()
+        self.summaries = summaries or summaries_mod.Summaries.empty()
 
-        self.assets: Dict[str, Asset] = {}
+        self.assets: Dict[str, "Asset_Type"] = {}
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
@@ -1508,7 +1509,7 @@ class Collection(Catalog):
         self,
         item: "Item",
         title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: Optional["HrefLayoutStrategy_Type"] = None,
     ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
@@ -1549,7 +1550,7 @@ class Collection(Catalog):
         clone._resolved_objects.cache(clone)
 
         for link in self.links:
-            if link.rel == RelType.ROOT:
+            if link.rel == rel_type.RelType.ROOT:
                 # Collection __init__ sets correct root to clone; don't reset
                 # if the root link points to self
                 root_is_self = link.is_resolved() and link.target is self
@@ -1571,16 +1572,18 @@ class Collection(Catalog):
         preserve_dict: bool = True,
     ) -> "Collection":
         if migrate:
-            info = identify_stac_object(d)
-            d = migrate_to_latest(d, info)
+            info = identify.identify_stac_object(d)
+            d = migrate_mod.migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise errors.STACTypeError(
+                f"{d} does not represent a {cls.__name__} instance"
+            )
 
         catalog_type = CatalogType.determine_type(d)
 
         if preserve_dict:
-            d = deepcopy(d)
+            d = copy.deepcopy(d)
 
         id = d.pop("id")
         description = d.pop("description")
@@ -1591,10 +1594,10 @@ class Collection(Catalog):
         keywords = d.get("keywords")
         providers = d.get("providers")
         if providers is not None:
-            providers = list(map(lambda x: Provider.from_dict(x), providers))
+            providers = list(map(lambda x: provider.Provider.from_dict(x), providers))
         summaries = d.get("summaries")
         if summaries is not None:
-            summaries = Summaries(summaries)
+            summaries = summaries_mod.Summaries(summaries)
 
         assets: Optional[Dict[str, Any]] = d.get("assets", None)
         links = d.pop("links")
@@ -1617,23 +1620,23 @@ class Collection(Catalog):
         )
 
         for link in links:
-            if link["rel"] == RelType.ROOT:
+            if link["rel"] == rel_type.RelType.ROOT:
                 # Remove the link that's generated in Catalog's constructor.
-                collection.remove_links(RelType.ROOT)
+                collection.remove_links(rel_type.RelType.ROOT)
 
-            if link["rel"] != RelType.SELF or href is None:
+            if link["rel"] != rel_type.RelType.SELF or href is None:
                 collection.add_link(pystac.link.Link.from_dict(link))
 
         if assets is not None:
             for asset_key, asset_dict in assets.items():
-                collection.add_asset(asset_key, Asset.from_dict(asset_dict))
+                collection.add_asset(asset_key, asset_mod.Asset.from_dict(asset_dict))
 
         if root:
             collection.set_root(root)
 
         return collection
 
-    def get_assets(self) -> Dict[str, Asset]:
+    def get_assets(self) -> Dict[str, "Asset_Type"]:
         """Get this item's assets.
 
         Returns:
@@ -1641,7 +1644,7 @@ class Collection(Catalog):
         """
         return dict(self.assets.items())
 
-    def add_asset(self, key: str, asset: Asset) -> None:
+    def add_asset(self, key: str, asset: "Asset_Type") -> None:
         """Adds an Asset to this item.
 
         Args:
@@ -1663,18 +1666,23 @@ class Collection(Catalog):
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "Collection":
+    def from_file(
+        cls, href: str, stac_io: Optional["StacIO_Type"] = None
+    ) -> "Collection":
         result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
-            raise STACTypeError(f"{result} is not a {Collection}.")
+            raise errors.STACTypeError(f"{result} is not a {Collection}.")
         return result
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
-        return identify_stac_object_type(d) == STACObjectType.COLLECTION
+        return (
+            identify.identify_stac_object_type(d)
+            == stac_object.STACObjectType.COLLECTION
+        )
 
 
-class Item(STACObject):
+class Item(stac_object.STACObject):
     """An Item is the core granular entity in a STAC, containing the core metadata
     that enables any client to search or crawl online catalogs of spatial 'assets' -
     satellite imagery, derived data, DEM's, etc.
@@ -1725,14 +1733,14 @@ class Item(STACObject):
             properties of the Item.
     """
 
-    STAC_OBJECT_TYPE = STACObjectType.ITEM
+    STAC_OBJECT_TYPE = stac_object.STACObjectType.ITEM
 
     def __init__(
         self,
         id: str,
         geometry: Optional[Dict[str, Any]],
         bbox: Optional[List[float]],
-        datetime: Optional[Datetime],
+        datetime: Optional["Datetime_Type"],
         properties: Dict[str, Any],
         stac_extensions: Optional[List[str]] = None,
         href: Optional[str] = None,
@@ -1750,12 +1758,12 @@ class Item(STACObject):
         else:
             self.extra_fields = extra_fields
 
-        self.assets: Dict[str, Asset] = {}
+        self.assets: Dict[str, "Asset_Type"] = {}
 
-        self.datetime: Optional[Datetime] = None
+        self.datetime: Optional["Datetime_Type"] = None
         if datetime is None:
             if "start_datetime" not in properties or "end_datetime" not in properties:
-                raise STACError(
+                raise errors.STACError(
                     "Invalid Item: If datetime is None, "
                     "a start_datetime and end_datetime "
                     "must be supplied in "
@@ -1803,12 +1811,14 @@ class Item(STACObject):
             # Make sure relative asset links remain valid.
             for asset in self.assets.values():
                 asset_href = asset.href
-                if not is_absolute_href(asset_href):
-                    abs_href = make_absolute_href(asset_href, prev_href)
-                    new_relative_href = make_relative_href(abs_href, new_href)
+                if not utils.is_absolute_href(asset_href):
+                    abs_href = utils.make_absolute_href(asset_href, prev_href)
+                    new_relative_href = utils.make_relative_href(abs_href, new_href)
                     asset.href = new_relative_href
 
-    def get_datetime(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
+    def get_datetime(
+        self, asset: Optional["Asset_Type"] = None
+    ) -> Optional["Datetime_Type"]:
         """Gets an Item or an Asset datetime.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -1824,9 +1834,11 @@ class Item(STACObject):
             if asset_dt is None:
                 return None
             else:
-                return str_to_datetime(asset_dt)
+                return utils.str_to_datetime(asset_dt)
 
-    def set_datetime(self, datetime: Datetime, asset: Optional[Asset] = None) -> None:
+    def set_datetime(
+        self, datetime: "Datetime_Type", asset: Optional["Asset_Type"] = None
+    ) -> None:
         """Set an Item or an Asset datetime.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -1835,9 +1847,9 @@ class Item(STACObject):
         if asset is None:
             self.datetime = datetime
         else:
-            asset.extra_fields["datetime"] = datetime_to_str(datetime)
+            asset.extra_fields["datetime"] = utils.datetime_to_str(datetime)
 
-    def get_assets(self) -> Dict[str, Asset]:
+    def get_assets(self) -> Dict[str, "Asset_Type"]:
         """Get this item's assets.
 
         Returns:
@@ -1845,7 +1857,7 @@ class Item(STACObject):
         """
         return dict(self.assets.items())
 
-    def add_asset(self, key: str, asset: Asset) -> None:
+    def add_asset(self, key: str, asset: "Asset_Type") -> None:
         """Adds an Asset to this item.
 
         Args:
@@ -1865,15 +1877,15 @@ class Item(STACObject):
         self_href = None
         for asset in self.assets.values():
             href = asset.href
-            if is_absolute_href(href):
+            if utils.is_absolute_href(href):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError(
+                        raise errors.STACError(
                             "Cannot make asset HREFs relative "
                             "if no self_href is set."
                         )
-                asset.href = make_relative_href(asset.href, self_href)
+                asset.href = utils.make_relative_href(asset.href, self_href)
         return self
 
     def make_asset_hrefs_absolute(self) -> "Item":
@@ -1888,15 +1900,15 @@ class Item(STACObject):
         self_href = None
         for asset in self.assets.values():
             href = asset.href
-            if not is_absolute_href(href):
+            if not utils.is_absolute_href(href):
                 if self_href is None:
                     self_href = self.get_self_href()
                     if self_href is None:
-                        raise STACError(
+                        raise errors.STACError(
                             "Cannot make relative asset HREFs absolute "
                             "if no self_href is set."
                         )
-                asset.href = make_absolute_href(asset.href, self_href)
+                asset.href = utils.make_absolute_href(asset.href, self_href)
 
         return self
 
@@ -1913,7 +1925,7 @@ class Item(STACObject):
         Returns:
             Item: self
         """
-        self.remove_links(RelType.COLLECTION)
+        self.remove_links(rel_type.RelType.COLLECTION)
         self.collection_id = None
         if collection is not None:
             self.add_link(pystac.link.Link.collection(collection))
@@ -1928,7 +1940,7 @@ class Item(STACObject):
             Collection or None: If this item belongs to a collection, returns
             a reference to the collection. Otherwise returns None.
         """
-        collection_link = self.get_single_link(RelType.COLLECTION)
+        collection_link = self.get_single_link(rel_type.RelType.COLLECTION)
         if collection_link is None:
             return None
         else:
@@ -1937,12 +1949,12 @@ class Item(STACObject):
     def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
-            links = [x for x in links if x.rel != RelType.SELF]
+            links = [x for x in links if x.rel != rel_type.RelType.SELF]
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
         if self.datetime is not None:
-            self.properties["datetime"] = datetime_to_str(self.datetime)
+            self.properties["datetime"] = utils.datetime_to_str(self.datetime)
         else:
             self.properties["datetime"] = None
 
@@ -1974,11 +1986,11 @@ class Item(STACObject):
         cls = self.__class__
         clone = cls(
             id=self.id,
-            geometry=deepcopy(self.geometry),
-            bbox=copy(self.bbox),
-            datetime=copy(self.datetime),
-            properties=deepcopy(self.properties),
-            stac_extensions=deepcopy(self.stac_extensions),
+            geometry=copy.deepcopy(self.geometry),
+            bbox=copy.copy(self.bbox),
+            datetime=copy.copy(self.datetime),
+            properties=copy.deepcopy(self.properties),
+            stac_extensions=copy.deepcopy(self.stac_extensions),
             collection=self.collection_id,
         )
         for link in self.links:
@@ -1989,9 +2001,9 @@ class Item(STACObject):
 
         return clone
 
-    def _object_links(self) -> List[Union[str, RelType]]:
+    def _object_links(self) -> List[Union[str, "RelType_Type"]]:
         return [
-            RelType.COLLECTION,
+            rel_type.RelType.COLLECTION,
             *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
         ]
 
@@ -2005,14 +2017,16 @@ class Item(STACObject):
         preserve_dict: bool = True,
     ) -> "Item":
         if migrate:
-            info = identify_stac_object(d)
-            d = migrate_to_latest(d, info)
+            info = identify.identify_stac_object(d)
+            d = migrate_mod.migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise errors.STACTypeError(
+                f"{d} does not represent a {cls.__name__} instance"
+            )
 
         if preserve_dict:
-            d = deepcopy(d)
+            d = copy.deepcopy(d)
 
         id = d.pop("id")
         geometry = d.pop("geometry")
@@ -2043,14 +2057,14 @@ class Item(STACObject):
 
         has_self_link = False
         for link in links:
-            has_self_link |= link["rel"] == RelType.SELF
+            has_self_link |= link["rel"] == rel_type.RelType.SELF
             item.add_link(pystac.link.Link.from_dict(link))
 
         if not has_self_link and href is not None:
             item.add_link(pystac.link.Link.self_href(href))
 
         for k, v in assets.items():
-            asset = Asset.from_dict(v)
+            asset = asset_mod.Asset.from_dict(v)
             asset.set_owner(item)
             item.assets[k] = asset
 
@@ -2063,7 +2077,7 @@ class Item(STACObject):
     def common_metadata(self) -> "CommonMetadata_Type":
         """Access the item's common metadata fields as a
         :class:`~pystac.CommonMetadata` object."""
-        return CommonMetadata(self)
+        return common_metadata.CommonMetadata(self)
 
     def full_copy(
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
@@ -2071,12 +2085,12 @@ class Item(STACObject):
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[StacIO] = None) -> "Item":
+    def from_file(cls, href: str, stac_io: Optional["StacIO_Type"] = None) -> "Item":
         result = super().from_file(href, stac_io)
         if not isinstance(result, Item):
-            raise STACTypeError(f"{result} is not a {Item}.")
+            raise errors.STACTypeError(f"{result} is not a {Item}.")
         return result
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
-        return identify_stac_object_type(d) == STACObjectType.ITEM
+        return identify.identify_stac_object_type(d) == stac_object.STACObjectType.ITEM

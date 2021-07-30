@@ -1,15 +1,15 @@
-from enum import Enum
-from functools import total_ordering
+import enum
+import functools
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set, Union
 
 import pystac
-from pystac.version import STACVersion
+from pystac import version
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
-class OldExtensionShortIDs(Enum):
+class OldExtensionShortIDs(enum.Enum):
     """Enumerates the IDs of common extensions."""
 
     CHECKSUM = "checksum"
@@ -31,7 +31,7 @@ class OldExtensionShortIDs(Enum):
     FILE = "file"
 
 
-@total_ordering
+@functools.total_ordering
 class STACVersionID:
     """Defines STAC versions in an object that is orderable based on version number.
     For instance, ``1.0.0-beta.2 < 1.0.0``
@@ -87,7 +87,7 @@ class STACVersionRange:
             self.min_version = min_version
 
         if max_version is None:
-            self.max_version = STACVersionID(STACVersion.DEFAULT_STAC_VERSION)
+            self.max_version = STACVersionID(version.STACVersion.DEFAULT_STAC_VERSION)
         else:
             if isinstance(max_version, str):
                 self.max_version = STACVersionID(max_version)

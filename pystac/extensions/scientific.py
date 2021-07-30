@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 """
 
 import copy
-from enum import Enum
+import enum
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,17 +22,8 @@ from typing import (
 )
 from urllib import parse
 
-import pystac.link
-from pystac import core
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.utils import map_opt
+from pystac import core, errors, link, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.core import Collection as Collection_Type
@@ -54,7 +45,7 @@ DOI_URL_BASE = "https://doi.org/"
 
 
 # Link rel type.
-class ScientificRelType(str, Enum):
+class ScientificRelType(str, enum.Enum):
     """A list of rel types defined in the Scientific Citation Extension.
 
     See the :stac-ext:`Scientific Citation Extension Relation types
@@ -99,7 +90,7 @@ class Publication:
         :attr:`Publication.doi` is ``None``, this method will also return ``None``."""
         if self.doi is None:
             return None
-        return pystac.link.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
+        return link.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
 
 
 def remove_link(links: List["Link_Type"], doi: Optional[str]) -> None:
@@ -116,8 +107,8 @@ def remove_link(links: List["Link_Type"], doi: Optional[str]) -> None:
 
 class ScientificExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Collection_Type", "Item_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the
@@ -175,7 +166,7 @@ class ScientificExtension(
         if v is not None:
             self.properties[DOI_PROP] = v
             url = doi_to_url(v)
-            self.obj.add_link(pystac.link.Link(ScientificRelType.CITE_AS, url))
+            self.obj.add_link(link.Link(ScientificRelType.CITE_AS, url))
 
     @property
     def citation(self) -> Optional[str]:
@@ -195,7 +186,7 @@ class ScientificExtension(
     def publications(self) -> Optional[List[Publication]]:
         """Get or sets the list of relevant publications referencing and describing the
         data."""
-        return map_opt(
+        return utils.map_opt(
             lambda pubs: [Publication.from_dict(pub) for pub in pubs],
             self._get_property(PUBLICATIONS_PROP, List[Dict[str, Any]]),
         )
@@ -203,7 +194,8 @@ class ScientificExtension(
     @publications.setter
     def publications(self, v: Optional[List[Publication]]) -> None:
         self._set_property(
-            PUBLICATIONS_PROP, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v)
+            PUBLICATIONS_PROP,
+            utils.map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v),
         )
         if v is not None:
             for pub in v:
@@ -259,7 +251,7 @@ class ScientificExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Scientific extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -334,7 +326,7 @@ class ItemScientificExtension(ScientificExtension["Item_Type"]):
         return "<ItemScientificExtension Item id={}>".format(self.item.id)
 
 
-class SummariesScientificExtension(SummariesExtension):
+class SummariesScientificExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
@@ -363,10 +355,13 @@ class SummariesScientificExtension(SummariesExtension):
         self._set_summary(DOI_PROP, v)
 
 
-class ScientificExtensionHooks(ExtensionHooks):
+class ScientificExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"scientific"}
-    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
+    stac_object_types = {
+        stac_object.STACObjectType.COLLECTION,
+        stac_object.STACObjectType.ITEM,
+    }
 
 
-SCIENTIFIC_EXTENSION_HOOKS: ExtensionHooks = ScientificExtensionHooks()
+SCIENTIFIC_EXTENSION_HOOKS: hooks.ExtensionHooks = ScientificExtensionHooks()

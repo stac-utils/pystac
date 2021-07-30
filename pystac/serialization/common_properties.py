@@ -1,14 +1,16 @@
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union, cast
 
-import pystac
-from pystac.cache import CollectionCache
-from pystac.serialization.identify import STACVersionID
-from pystac.utils import make_absolute_href
+from pystac import core, rel_type, stac_io, utils
+from pystac.serialization import identify
+
+if TYPE_CHECKING:
+    from pystac.cache import CollectionCache as CollectionCache_Type
+    from pystac.core import Collection as Collection_Type
 
 
 def merge_common_properties(
     item_dict: Dict[str, Any],
-    collection_cache: Optional[CollectionCache] = None,
+    collection_cache: Optional["CollectionCache_Type"] = None,
     json_href: Optional[str] = None,
 ) -> bool:
     """Merges Collection properties into an Item.
@@ -28,14 +30,14 @@ def merge_common_properties(
     """
     properties_merged = False
 
-    collection: Optional[Union[pystac.Collection, Dict[str, Any]]] = None
+    collection: Optional[Union["Collection_Type", Dict[str, Any]]] = None
     collection_href: Optional[str] = None
 
     stac_version = item_dict.get("stac_version")
 
     # The commons extension was removed in 1.0.0-beta.1, so if this is an earlier STAC
     # item we don't have to bother with merging.
-    if stac_version is not None and STACVersionID(stac_version) > "0.9.0":
+    if stac_version is not None and identify.STACVersionID(stac_version) > "0.9.0":
         return False
 
     # Check to see if this is a 0.9.0 item that
@@ -64,22 +66,24 @@ def merge_common_properties(
             links = cast(List[Dict[str, Any]], item_dict["links"])
 
         collection_link = next(
-            (link for link in links if link["rel"] == pystac.RelType.COLLECTION), None
+            (link for link in links if link["rel"] == rel_type.RelType.COLLECTION), None
         )
         if collection_link is not None:
             collection_href = collection_link.get("href")
             if collection_href is not None:
                 if json_href is not None:
-                    collection_href = make_absolute_href(collection_href, json_href)
+                    collection_href = utils.make_absolute_href(
+                        collection_href, json_href
+                    )
                 if collection_cache is not None:
                     collection = collection_cache.get_by_href(collection_href)
 
                 if collection is None:
-                    collection = pystac.StacIO.default().read_json(collection_href)
+                    collection = stac_io.StacIO.default().read_json(collection_href)
 
     if collection is not None:
         collection_props: Optional[Dict[str, Any]] = None
-        if isinstance(collection, pystac.Collection):
+        if isinstance(collection, core.Collection):
             collection_id = collection.id
             collection_props = collection.extra_fields.get("properties")
         elif isinstance(collection, dict):

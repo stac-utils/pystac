@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/timestamps
 """
 
-from datetime import datetime as datetime
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -16,23 +15,17 @@ from typing import (
     cast,
 )
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.stac_object import STACObjectType
-from pystac.summaries import RangeSummary
-from pystac.utils import datetime_to_str, map_opt, str_to_datetime
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, summaries, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
+    from datetime import datetime as Datetime_Type
+
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.summaries import RangeSummary as RangeSummary_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 
@@ -45,8 +38,8 @@ UNPUBLISHED_PROP = "unpublished"
 
 class TimestampsExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -64,9 +57,9 @@ class TimestampsExtension(
 
     def apply(
         self,
-        published: Optional[datetime] = None,
-        expires: Optional[datetime] = None,
-        unpublished: Optional[datetime] = None,
+        published: Optional["Datetime_Type"] = None,
+        expires: Optional["Datetime_Type"] = None,
+        unpublished: Optional["Datetime_Type"] = None,
     ) -> None:
         """Applies timestamps extension properties to the extended Item.
 
@@ -83,7 +76,7 @@ class TimestampsExtension(
         self.unpublished = unpublished
 
     @property
-    def published(self) -> Optional[datetime]:
+    def published(self) -> Optional["Datetime_Type"]:
         """Gets or sets a datetime object that represents the date and time that the
         corresponding data was published the first time.
 
@@ -92,14 +85,16 @@ class TimestampsExtension(
         linked to the Asset Object. If it comes from the Item properties, it refers to
         timestamp valid for the metadata.
         """
-        return map_opt(str_to_datetime, self._get_property(PUBLISHED_PROP, str))
+        return utils.map_opt(
+            utils.str_to_datetime, self._get_property(PUBLISHED_PROP, str)
+        )
 
     @published.setter
-    def published(self, v: Optional[datetime]) -> None:
-        self._set_property(PUBLISHED_PROP, map_opt(datetime_to_str, v))
+    def published(self, v: Optional["Datetime_Type"]) -> None:
+        self._set_property(PUBLISHED_PROP, utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def expires(self) -> Optional[datetime]:
+    def expires(self) -> Optional["Datetime_Type"]:
         """Gets or sets a datetime object that represents the date and time the
         corresponding data expires (is not valid any longer).
 
@@ -108,14 +103,16 @@ class TimestampsExtension(
         actual data linked to the Asset Object. If it comes from the Item properties,
         it refers to to the timestamp valid for the metadata.
         """
-        return map_opt(str_to_datetime, self._get_property(EXPIRES_PROP, str))
+        return utils.map_opt(
+            utils.str_to_datetime, self._get_property(EXPIRES_PROP, str)
+        )
 
     @expires.setter
-    def expires(self, v: Optional[datetime]) -> None:
-        self._set_property(EXPIRES_PROP, map_opt(datetime_to_str, v))
+    def expires(self, v: Optional["Datetime_Type"]) -> None:
+        self._set_property(EXPIRES_PROP, utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def unpublished(self) -> Optional[datetime]:
+    def unpublished(self) -> Optional["Datetime_Type"]:
         """Gets or sets a datetime object that represents the date and time the
         corresponding data was unpublished.
 
@@ -124,11 +121,13 @@ class TimestampsExtension(
         actual data linked to the Asset Object. If it comes from the Item properties,
         it's referencing to the timestamp valid for the metadata.
         """
-        return map_opt(str_to_datetime, self._get_property(UNPUBLISHED_PROP, str))
+        return utils.map_opt(
+            utils.str_to_datetime, self._get_property(UNPUBLISHED_PROP, str)
+        )
 
     @unpublished.setter
-    def unpublished(self, v: Optional[datetime]) -> None:
-        self._set_property(UNPUBLISHED_PROP, map_opt(datetime_to_str, v))
+    def unpublished(self, v: Optional["Datetime_Type"]) -> None:
+        self._set_property(UNPUBLISHED_PROP, utils.map_opt(utils.datetime_to_str, v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -149,11 +148,11 @@ class TimestampsExtension(
         if isinstance(obj, core.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
-        elif isinstance(obj, Asset):
+        elif isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Timestamps extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -218,92 +217,92 @@ class AssetTimestampsExtension(TimestampsExtension["Asset_Type"]):
         return "<AssetTimestampsExtension Asset href={}>".format(self.asset_href)
 
 
-class SummariesTimestampsExtension(SummariesExtension):
+class SummariesTimestampsExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Timestamps Extension <timestamps>`.
     """
 
     @property
-    def published(self) -> Optional[RangeSummary[datetime]]:
+    def published(self) -> Optional["RangeSummary_Type[Datetime_Type]"]:
         """Get or sets the summary of :attr:`TimestampsExtension.published` values
         for this Collection.
         """
 
-        return map_opt(
-            lambda s: RangeSummary(
-                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+        return utils.map_opt(
+            lambda s: summaries.RangeSummary(
+                utils.str_to_datetime(s.minimum), utils.str_to_datetime(s.maximum)
             ),
             self.summaries.get_range(PUBLISHED_PROP),
         )
 
     @published.setter
-    def published(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def published(self, v: Optional["RangeSummary_Type[Datetime_Type]"]) -> None:
         self._set_summary(
             PUBLISHED_PROP,
-            map_opt(
-                lambda s: RangeSummary(
-                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+            utils.map_opt(
+                lambda s: summaries.RangeSummary(
+                    utils.datetime_to_str(s.minimum), utils.datetime_to_str(s.maximum)
                 ),
                 v,
             ),
         )
 
     @property
-    def expires(self) -> Optional[RangeSummary[datetime]]:
+    def expires(self) -> Optional["RangeSummary_Type[Datetime_Type]"]:
         """Get or sets the summary of :attr:`TimestampsExtension.expires` values
         for this Collection.
         """
 
-        return map_opt(
-            lambda s: RangeSummary(
-                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+        return utils.map_opt(
+            lambda s: summaries.RangeSummary(
+                utils.str_to_datetime(s.minimum), utils.str_to_datetime(s.maximum)
             ),
             self.summaries.get_range(EXPIRES_PROP),
         )
 
     @expires.setter
-    def expires(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def expires(self, v: Optional["RangeSummary_Type[Datetime_Type]"]) -> None:
         self._set_summary(
             EXPIRES_PROP,
-            map_opt(
-                lambda s: RangeSummary(
-                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+            utils.map_opt(
+                lambda s: summaries.RangeSummary(
+                    utils.datetime_to_str(s.minimum), utils.datetime_to_str(s.maximum)
                 ),
                 v,
             ),
         )
 
     @property
-    def unpublished(self) -> Optional[RangeSummary[datetime]]:
+    def unpublished(self) -> Optional["RangeSummary_Type[Datetime_Type]"]:
         """Get or sets the summary of :attr:`TimestampsExtension.unpublished` values
         for this Collection.
         """
 
-        return map_opt(
-            lambda s: RangeSummary(
-                str_to_datetime(s.minimum), str_to_datetime(s.maximum)
+        return utils.map_opt(
+            lambda s: summaries.RangeSummary(
+                utils.str_to_datetime(s.minimum), utils.str_to_datetime(s.maximum)
             ),
             self.summaries.get_range(UNPUBLISHED_PROP),
         )
 
     @unpublished.setter
-    def unpublished(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def unpublished(self, v: Optional["RangeSummary_Type[Datetime_Type]"]) -> None:
         self._set_summary(
             UNPUBLISHED_PROP,
-            map_opt(
-                lambda s: RangeSummary(
-                    datetime_to_str(s.minimum), datetime_to_str(s.maximum)
+            utils.map_opt(
+                lambda s: summaries.RangeSummary(
+                    utils.datetime_to_str(s.minimum), utils.datetime_to_str(s.maximum)
                 ),
                 v,
             ),
         )
 
 
-class TimestampsExtensionHooks(ExtensionHooks):
+class TimestampsExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"timestamps"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
 
-TIMESTAMPS_EXTENSION_HOOKS: ExtensionHooks = TimestampsExtensionHooks()
+TIMESTAMPS_EXTENSION_HOOKS: hooks.ExtensionHooks = TimestampsExtensionHooks()

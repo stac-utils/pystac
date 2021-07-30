@@ -3,24 +3,24 @@
 https://github.com/stac-extensions/label
 """
 
-from enum import Enum
+import enum
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union, cast
 
-import pystac.link
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError
-from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.media_type import MediaType
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.stac_object import STACObjectType
-from pystac.utils import get_required, map_opt
+from pystac import asset as asset_mod
+from pystac import core, errors
+from pystac import link as link_mod
+from pystac import media_type as media_type_mod
+from pystac import stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
     from pystac.rel_type import RelType as RelType_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
@@ -36,7 +36,7 @@ METHODS_PROP = PREFIX + "methods"
 OVERVIEWS_PROP = PREFIX + "overviews"
 
 
-class LabelRelType(str, Enum):
+class LabelRelType(str, enum.Enum):
     """A list of rel types defined in the Label Extension.
 
     See the :stac-ext:`Label Extension Links <label#links-source-imagery>`
@@ -47,7 +47,7 @@ class LabelRelType(str, Enum):
     """Used to indicate a link to the source item to which a label item applies."""
 
 
-class LabelType(str, Enum):
+class LabelType(str, enum.Enum):
     """Enumerates valid label types ("raster" or "vector")."""
 
     VECTOR = "vector"
@@ -57,7 +57,7 @@ class LabelType(str, Enum):
     """Convenience attribute for checking if values are valid label types"""
 
 
-class LabelTask(str, Enum):
+class LabelTask(str, enum.Enum):
     """Enumerates recommended values for "label:tasks" field."""
 
     REGRESSION = "regression"
@@ -66,7 +66,7 @@ class LabelTask(str, Enum):
     SEGMENTATION = "segmentation"
 
 
-class LabelMethod(str, Enum):
+class LabelMethod(str, enum.Enum):
     """Enumerates recommended values for "label:methods" field."""
 
     AUTOMATED = "automated"
@@ -119,7 +119,7 @@ class LabelClasses:
     @property
     def classes(self) -> List[Union[str, int, float]]:
         """Gets or sets the class values."""
-        return get_required(self.properties.get("classes"), self, "classes")
+        return utils.get_required(self.properties.get("classes"), self, "classes")
 
     @classes.setter
     def classes(self, v: List[Union[str, int, float]]) -> None:
@@ -190,7 +190,7 @@ class LabelCount:
     @property
     def name(self) -> str:
         """Gets or sets the class that this count represents."""
-        return get_required(self.properties.get("name"), self, "name")
+        return utils.get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -200,7 +200,7 @@ class LabelCount:
     @property
     def count(self) -> int:
         """Get or sets the number of occurrences of the class."""
-        return get_required(self.properties.get("count"), self, "count")
+        return utils.get_required(self.properties.get("count"), self, "count")
 
     @count.setter
     def count(self, v: int) -> None:
@@ -254,7 +254,7 @@ class LabelStatistics:
     @property
     def name(self) -> str:
         """Gets or sets the name of the statistic being reported."""
-        return get_required(self.properties.get("name"), self, "name")
+        return utils.get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str) -> None:
@@ -263,7 +263,7 @@ class LabelStatistics:
     @property
     def value(self) -> float:
         """Gets or sets the value of the statistic."""
-        return get_required(self.properties.get("value"), self, "value")
+        return utils.get_required(self.properties.get("value"), self, "value")
 
     @value.setter
     def value(self, v: float) -> None:
@@ -366,7 +366,9 @@ class LabelOverview:
             self.properties.pop("counts", None)
         else:
             if not isinstance(v, list):
-                raise STACError("counts must be a list! Invalid input: {}".format(v))
+                raise errors.STACError(
+                    "counts must be a list! Invalid input: {}".format(v)
+                )
 
             self.properties["counts"] = [c.to_dict() for c in v]
 
@@ -434,7 +436,9 @@ class LabelOverview:
         return self.to_dict() == o
 
 
-class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]]):
+class LabelExtension(
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]]
+):
     """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
@@ -496,7 +500,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
     def label_description(self) -> str:
         """Gets or sets a description of the label, how it was created,
         and what it is recommended for."""
-        return get_required(
+        return utils.get_required(
             self.obj.properties.get(DESCRIPTION_PROP), self.obj, DESCRIPTION_PROP
         )
 
@@ -508,7 +512,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
     def label_type(self) -> LabelType:
         """Gets or sets an Enum of either vector label type or raster label type."""
         return LabelType(
-            get_required(self.obj.properties.get(TYPE_PROP), self.obj, TYPE_PROP)
+            utils.get_required(self.obj.properties.get(TYPE_PROP), self.obj, TYPE_PROP)
         )
 
     @label_type.setter
@@ -545,7 +549,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
             self.obj.properties.pop(CLASSES_PROP, None)
         else:
             if not isinstance(v, list):
-                raise STACError(
+                raise errors.STACError(
                     "label_classes must be a list! Invalid input: {}".format(v)
                 )
 
@@ -618,11 +622,11 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
         extra_fields = None
         if assets is not None:
             extra_fields = {"label:assets": assets}
-        link = pystac.link.Link(
+        link = link_mod.Link(
             "source",
             source_item,
             title=title,
-            media_type=MediaType.JSON,
+            media_type=media_type_mod.MediaType.JSON,
             extra_fields=extra_fields,
         )
         self.obj.add_link(link)
@@ -660,7 +664,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
 
         self.obj.add_asset(
             "labels",
-            Asset(
+            asset_mod.Asset(
                 href=href, title=title, media_type=media_type, extra_fields=properties
             ),
         )
@@ -685,7 +689,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
             href,
             title=title,
             properties=properties,
-            media_type=MediaType.GEOJSON,
+            media_type=media_type_mod.MediaType.GEOJSON,
         )
 
     @classmethod
@@ -703,7 +707,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Label extension does not apply to type '{type(obj).__name__}'"
             )
 
@@ -716,7 +720,7 @@ class LabelExtension(ExtensionManagementMixin[Union["Item_Type", "Collection_Typ
         return SummariesLabelExtension(obj)
 
 
-class SummariesLabelExtension(SummariesExtension):
+class SummariesLabelExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Label Extension <label>`.
@@ -740,7 +744,7 @@ class SummariesLabelExtension(SummariesExtension):
         for this Collection.
         """
 
-        return map_opt(
+        return utils.map_opt(
             lambda classes: [LabelClasses(c) for c in classes],
             self.summaries.get_list(CLASSES_PROP),
         )
@@ -748,7 +752,8 @@ class SummariesLabelExtension(SummariesExtension):
     @label_classes.setter
     def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
         self._set_summary(
-            CLASSES_PROP, map_opt(lambda classes: [c.to_dict() for c in classes], v)
+            CLASSES_PROP,
+            utils.map_opt(lambda classes: [c.to_dict() for c in classes], v),
         )
 
     @property
@@ -788,10 +793,10 @@ class SummariesLabelExtension(SummariesExtension):
         self._set_summary(METHODS_PROP, v)
 
 
-class LabelExtensionHooks(ExtensionHooks):
+class LabelExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"label"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
     def get_object_links(
         self, so: "STACObject_Type"
@@ -801,9 +806,12 @@ class LabelExtensionHooks(ExtensionHooks):
         return None
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self,
+        obj: Dict[str, Any],
+        version: "STACVersionID_Type",
+        info: "STACJSONDescription_Type",
     ) -> None:
-        if info.object_type == STACObjectType.ITEM and version < "1.0.0":
+        if info.object_type == stac_object.STACObjectType.ITEM and version < "1.0.0":
             props = obj["properties"]
             # Migrate 0.8.0-rc1 non-pluralized forms
             # As it's a common mistake, convert for any pre-1.0.0 version.
@@ -826,4 +834,4 @@ class LabelExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-LABEL_EXTENSION_HOOKS: ExtensionHooks = LabelExtensionHooks()
+LABEL_EXTENSION_HOOKS: hooks.ExtensionHooks = LabelExtensionHooks()

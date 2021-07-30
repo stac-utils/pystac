@@ -3,21 +3,20 @@
 https://github.com/stac-extensions/item-assets
 """
 
-from copy import deepcopy
+import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import ExtensionManagementMixin
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.stac_object import STACObjectType
-from pystac.utils import get_required
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 
@@ -100,12 +99,12 @@ class AssetDefinition:
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns a JSON-like dictionary representing this ``AssetDefinition``."""
-        return deepcopy(self.properties)
+        return copy.deepcopy(self.properties)
 
     def create_asset(self, href: str) -> "Asset_Type":
         """Creates a new :class:`~pystac.Asset` instance using the fields from this
         ``AssetDefinition`` and the given ``href``."""
-        return Asset(
+        return asset_mod.Asset(
             href=href,
             title=self.title,
             description=self.description,
@@ -125,7 +124,7 @@ class AssetDefinition:
         )
 
 
-class ItemAssetsExtension(ExtensionManagementMixin["Collection_Type"]):
+class ItemAssetsExtension(base.ExtensionManagementMixin["Collection_Type"]):
     def __init__(self, collection: "Collection_Type") -> None:
         self.collection = collection
 
@@ -133,7 +132,7 @@ class ItemAssetsExtension(ExtensionManagementMixin["Collection_Type"]):
     def item_assets(self) -> Dict[str, AssetDefinition]:
         """Gets or sets a dictionary of assets that can be found in member Items. Maps
         the asset key to an :class:`AssetDefinition` instance."""
-        result: Dict[str, Any] = get_required(
+        result: Dict[str, Any] = utils.get_required(
             self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
         )
         return {k: AssetDefinition(v) for k, v in result.items()}
@@ -166,18 +165,21 @@ class ItemAssetsExtension(ExtensionManagementMixin["Collection_Type"]):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Item Assets extension does not apply to type '{type(obj).__name__}'"
             )
 
 
-class ItemAssetsExtensionHooks(ExtensionHooks):
+class ItemAssetsExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"asset", "item-assets"}
-    stac_object_types = {STACObjectType.COLLECTION}
+    stac_object_types = {stac_object.STACObjectType.COLLECTION}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self,
+        obj: Dict[str, Any],
+        version: "STACVersionID_Type",
+        info: "STACJSONDescription_Type",
     ) -> None:
         # Handle that the "item-assets" extension had the id of "assets", before
         # collection assets (since removed) took over the ID of "assets"
@@ -189,4 +191,4 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-ITEM_ASSETS_EXTENSION_HOOKS: ExtensionHooks = ItemAssetsExtensionHooks()
+ITEM_ASSETS_EXTENSION_HOOKS: hooks.ExtensionHooks = ItemAssetsExtensionHooks()

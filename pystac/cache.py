@@ -1,8 +1,8 @@
-from collections import ChainMap
-from copy import copy
+import collections
+import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
-import pystac
+from pystac import core, stac_object
 
 if TYPE_CHECKING:
     from pystac.core import Collection as Collection_Type
@@ -26,7 +26,7 @@ def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:
         return href, True
     else:
         ids: List[str] = []
-        obj: Optional[pystac.STACObject] = stac_object
+        obj: Optional["STACObject_Type"] = stac_object
         while obj is not None:
             ids.append(obj.id)
             obj = obj.get_parent()
@@ -149,7 +149,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects[key] = obj
 
-        if isinstance(obj, pystac.Collection):
+        if isinstance(obj, core.Collection):
             self.ids_to_collections[obj.id] = obj
 
     def remove(self, obj: "STACObject_Type") -> None:
@@ -165,7 +165,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects.pop(key, None)
 
-        if obj.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION:
+        if obj.STAC_OBJECT_TYPE == stac_object.STACObjectType.COLLECTION:
             self.id_keys_to_objects.pop(obj.id, None)
 
     def __contains__(self, obj: "STACObject_Type") -> bool:
@@ -203,16 +203,21 @@ class ResolvedObjectCache:
         """
         merged = ResolvedObjectCache(
             id_keys_to_objects=dict(
-                ChainMap(
-                    copy(first.id_keys_to_objects), copy(second.id_keys_to_objects)
+                collections.ChainMap(
+                    copy.copy(first.id_keys_to_objects),
+                    copy.copy(second.id_keys_to_objects),
                 )
             ),
             hrefs_to_objects=dict(
-                ChainMap(copy(first.hrefs_to_objects), copy(second.hrefs_to_objects))
+                collections.ChainMap(
+                    copy.copy(first.hrefs_to_objects),
+                    copy.copy(second.hrefs_to_objects),
+                )
             ),
             ids_to_collections=dict(
-                ChainMap(
-                    copy(first.ids_to_collections), copy(second.ids_to_collections)
+                collections.ChainMap(
+                    copy.copy(first.ids_to_collections),
+                    copy.copy(second.ids_to_collections),
                 )
             ),
         )
@@ -264,7 +269,7 @@ class CollectionCache:
         href: Optional[str] = None,
     ) -> None:
         """Caches a collection JSON."""
-        if isinstance(collection, pystac.Collection):
+        if isinstance(collection, core.Collection):
             self.cached_ids[collection.id] = collection
         else:
             self.cached_ids[collection["id"]] = collection
@@ -303,7 +308,7 @@ class ResolvedObjectCollectionCache(CollectionCache):
         if result is None:
             return super().get_by_href(href)
         else:
-            return cast(pystac.Collection, result)
+            return cast("Collection_Type", result)
 
     def contains_id(self, collection_id: str) -> bool:
         return self.resolved_object_cache.contains_collection_id(
@@ -325,22 +330,24 @@ class ResolvedObjectCollectionCache(CollectionCache):
     ) -> "ResolvedObjectCollectionCache":
         first_cached_ids = {}
         if first is not None:
-            first_cached_ids = copy(first.cached_ids)
+            first_cached_ids = copy.copy(first.cached_ids)
 
         second_cached_ids = {}
         if second is not None:
-            second_cached_ids = copy(second.cached_ids)
+            second_cached_ids = copy.copy(second.cached_ids)
 
         first_cached_hrefs = {}
         if first is not None:
-            first_cached_hrefs = copy(first.cached_hrefs)
+            first_cached_hrefs = copy.copy(first.cached_hrefs)
 
         second_cached_hrefs = {}
         if second is not None:
-            second_cached_hrefs = copy(second.cached_hrefs)
+            second_cached_hrefs = copy.copy(second.cached_hrefs)
 
         return ResolvedObjectCollectionCache(
             resolved_object_cache,
-            cached_ids=dict(ChainMap(first_cached_ids, second_cached_ids)),
-            cached_hrefs=dict(ChainMap(first_cached_hrefs, second_cached_hrefs)),
+            cached_ids=dict(collections.ChainMap(first_cached_ids, second_cached_ids)),
+            cached_hrefs=dict(
+                collections.ChainMap(first_cached_hrefs, second_cached_hrefs)
+            ),
         )

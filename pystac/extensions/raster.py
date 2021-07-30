@@ -4,15 +4,16 @@ https://github.com/stac-extensions/raster
 """
 
 import enum
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union
 
-import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
-)
-from pystac.utils import get_opt, get_required, map_opt
+from pystac import asset as asset_mod
+from pystac import core, errors, utils
+from pystac.extensions import base
+
+if TYPE_CHECKING:
+    from pystac.asset import Asset as Asset_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
 
@@ -272,7 +273,7 @@ class Histogram:
         Returns:
             int
         """
-        return get_required(self.properties.get("count"), self, "count")
+        return utils.get_required(self.properties.get("count"), self, "count")
 
     @count.setter
     def count(self, v: int) -> None:
@@ -285,7 +286,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties.get("min"), self, "min")
+        return utils.get_required(self.properties.get("min"), self, "min")
 
     @min.setter
     def min(self, v: float) -> None:
@@ -298,7 +299,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties.get("max"), self, "max")
+        return utils.get_required(self.properties.get("max"), self, "max")
 
     @max.setter
     def max(self, v: float) -> None:
@@ -312,7 +313,7 @@ class Histogram:
         Returns:
             List[int]
         """
-        return get_required(self.properties.get("buckets"), self, "buckets")
+        return utils.get_required(self.properties.get("buckets"), self, "buckets")
 
     @buckets.setter
     def buckets(self, v: List[int]) -> None:
@@ -538,7 +539,7 @@ class RasterBand:
         Returns:
             [Statistics]
         """
-        return Statistics.from_dict(get_opt(self.properties.get("statistics")))
+        return Statistics.from_dict(utils.get_opt(self.properties.get("statistics")))
 
     @statistics.setter
     def statistics(self, v: Optional[Statistics]) -> None:
@@ -604,7 +605,7 @@ class RasterBand:
         Returns:
             [Histogram]
         """
-        return Histogram.from_dict(get_opt(self.properties.get("histogram")))
+        return Histogram.from_dict(utils.get_opt(self.properties.get("histogram")))
 
     @histogram.setter
     def histogram(self, v: Optional[Histogram]) -> None:
@@ -626,7 +627,8 @@ class RasterBand:
 
 
 class RasterExtension(
-    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from
@@ -649,10 +651,10 @@ class RasterExtension(
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and isinstance(asset.owner, core.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
@@ -679,11 +681,11 @@ class RasterExtension(
     @bands.setter
     def bands(self, v: Optional[List[RasterBand]]) -> None:
         self._set_property(
-            BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
+            BANDS_PROP, utils.map_opt(lambda bands: [b.to_dict() for b in bands], v)
         )
 
     def _get_bands(self) -> Optional[List[RasterBand]]:
-        return map_opt(
+        return utils.map_opt(
             lambda bands: [RasterBand(b) for b in bands],
             self._get_property(BANDS_PROP, List[Dict[str, Any]]),
         )
@@ -693,7 +695,7 @@ class RasterExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "RasterExtension":
+    def ext(cls, obj: "Asset_Type", add_if_missing: bool = False) -> "RasterExtension":
         """Extends the given STAC Object with properties from the :stac-ext:`Raster
         Extension <raster>`.
 
@@ -703,23 +705,23 @@ class RasterExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Asset):
+        if isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise pystac.ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"Raster extension does not apply to type '{type(obj).__name__}'"
             )
 
     @classmethod
     def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
+        cls, obj: "Collection_Type", add_if_missing: bool = False
     ) -> "SummariesRasterExtension":
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
 
 
-class SummariesRasterExtension(SummariesExtension):
+class SummariesRasterExtension(base.SummariesExtension):
     """A concrete implementation of :class:`~SummariesExtension` that extends
     the ``summaries`` field of a :class:`~pystac.Collection` to include properties
     defined in the :stac-ext:`Raster Extension <raster>`.
@@ -730,11 +732,13 @@ class SummariesRasterExtension(SummariesExtension):
         """Get or sets a list of :class:`~pystac.Band` objects that represent
         the available bands.
         """
-        return map_opt(
+        return utils.map_opt(
             lambda bands: [RasterBand(b) for b in bands],
             self.summaries.get_list(BANDS_PROP),
         )
 
     @bands.setter
     def bands(self, v: Optional[List[RasterBand]]) -> None:
-        self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
+        self._set_summary(
+            BANDS_PROP, utils.map_opt(lambda x: [b.to_dict() for b in x], v)
+        )

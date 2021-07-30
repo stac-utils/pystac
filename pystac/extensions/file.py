@@ -3,26 +3,22 @@
 https://github.com/stac-extensions/file
 """
 
-from enum import Enum
+import enum
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from pystac import core
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import (
-    OldExtensionShortIDs,
-    STACJSONDescription,
-    STACVersionID,
-)
-from pystac.stac_object import STACObjectType
-from pystac.utils import get_required
+from pystac import asset as asset_mod
+from pystac import core, errors, stac_object, utils
+from pystac.extensions import base, hooks
+from pystac.serialization import identify
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
     from pystac.core import Collection as Collection_Type
     from pystac.core import Item as Item_Type
+    from pystac.serialization.identify import (
+        STACJSONDescription as STACJSONDescription_Type,
+    )
+    from pystac.serialization.identify import STACVersionID as STACVersionID_Type
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -34,7 +30,7 @@ SIZE_PROP = PREFIX + "size"
 VALUES_PROP = PREFIX + "values"
 
 
-class ByteOrder(str, Enum):
+class ByteOrder(str, enum.Enum):
     """List of allows values for the ``"file:byte_order"`` field defined by the
     :stac-ext:`File Info Extension <file>`."""
 
@@ -77,7 +73,7 @@ class MappingObject:
     def values(self) -> List[Any]:
         """Gets or sets the list of value(s) in the file. At least one array element is
         required."""
-        return get_required(self.properties.get("values"), self, "values")
+        return utils.get_required(self.properties.get("values"), self, "values")
 
     @values.setter
     def values(self, v: List[Any]) -> None:
@@ -86,7 +82,7 @@ class MappingObject:
     @property
     def summary(self) -> str:
         """Gets or sets the short description of the value(s)."""
-        return get_required(self.properties.get("summary"), self, "summary")
+        return utils.get_required(self.properties.get("summary"), self, "summary")
 
     @summary.setter
     def summary(self, v: str) -> None:
@@ -94,7 +90,8 @@ class MappingObject:
 
 
 class FileExtension(
-    PropertiesExtension, ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]]
+    base.PropertiesExtension,
+    base.ExtensionManagementMixin[Union["Item_Type", "Collection_Type"]],
 ):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     with properties from the :stac-ext:`File Info Extension <file>`.
@@ -206,27 +203,30 @@ class FileExtension(
 
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
-        if isinstance(obj, Asset):
+        if isinstance(obj, asset_mod.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
-            raise ExtensionTypeError(
+            raise errors.ExtensionTypeError(
                 f"File Info extension does not apply to type '{type(obj).__name__}'"
             )
 
 
-class FileExtensionHooks(ExtensionHooks):
+class FileExtensionHooks(hooks.ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"file"}
-    stac_object_types = {STACObjectType.ITEM}
+    stac_object_types = {stac_object.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self,
+        obj: Dict[str, Any],
+        version: "STACVersionID_Type",
+        info: "STACJSONDescription_Type",
     ) -> None:
         # The checksum field was previously it's own extension.
         old_checksum: Optional[Dict[str, str]] = None
         if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
-            if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
+            if identify.OldExtensionShortIDs.CHECKSUM.value in info.extensions:
                 old_item_checksum = obj["properties"].get("checksum:multihash")
                 if old_item_checksum is not None:
                     if old_checksum is None:
@@ -240,7 +240,9 @@ class FileExtensionHooks(ExtensionHooks):
                         old_checksum[asset_key] = old_asset_checksum
 
                 try:
-                    obj["stac_extensions"].remove(OldExtensionShortIDs.CHECKSUM.value)
+                    obj["stac_extensions"].remove(
+                        identify.OldExtensionShortIDs.CHECKSUM.value
+                    )
                 except ValueError:
                     pass
 
@@ -256,4 +258,4 @@ class FileExtensionHooks(ExtensionHooks):
                     obj["assets"][key][CHECKSUM_PROP] = old_checksum[key]
 
 
-FILE_EXTENSION_HOOKS: ExtensionHooks = FileExtensionHooks()
+FILE_EXTENSION_HOOKS: hooks.ExtensionHooks = FileExtensionHooks()
