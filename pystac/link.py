@@ -6,9 +6,9 @@ from pystac.utils import make_absolute_href, make_relative_href, is_absolute_hre
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.item import Item as Item_Type
-    from pystac.catalog import Catalog as Catalog_Type
-    from pystac.collection import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
+    from pystac.core import Catalog as Catalog_Type
+    from pystac.core import Collection as Collection_Type
 
 HIERARCHICAL_LINKS = [
     pystac.RelType.ROOT,

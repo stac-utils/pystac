@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Callable
-from pystac.collection import Collection
+from pystac.core import Collection
 import unittest
 
 import pystac

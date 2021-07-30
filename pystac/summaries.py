@@ -24,8 +24,7 @@ else:
     from typing_extensions import Protocol
 
 if TYPE_CHECKING:
-    from pystac.item import Item as Item_Type
-    from pystac.collection import Collection as Collection_Type
+    from pystac.core import Collection as Collection_Type, Item as Item_Type
 
 from abc import abstractmethod
 

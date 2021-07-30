@@ -6,7 +6,7 @@ import pystac
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.collection import Collection as Collection_Type
+    from pystac.core import Collection as Collection_Type
 
 
 def get_cache_key(stac_object: "STACObject_Type") -> Tuple[str, bool]:

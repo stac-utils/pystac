@@ -44,7 +44,7 @@ class ItemCollection(Collection[pystac.Item]):
         >>> for item in item_collection:
         ...     ...
 
-        Get the number of :class:`~pytac.Item` instances in the
+        Get the number of :class:`~pystac.Item` instances in the
         :class:`~ItemCollection`
 
         >>> length: int = len(item_collection)

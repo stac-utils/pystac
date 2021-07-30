@@ -1,7 +1,7 @@
 import json
 
 from pystac import ExtensionTypeError
-from pystac.collection import Collection
+from pystac.core import Collection
 import unittest
 
 import pystac

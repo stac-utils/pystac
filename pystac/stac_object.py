@@ -8,7 +8,7 @@ from pystac.link import Link
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.core import Catalog as Catalog_Type
 
 
 class STACObjectType(str, Enum):

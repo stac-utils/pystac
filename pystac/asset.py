@@ -5,9 +5,9 @@ from pystac import common_metadata
 from pystac import utils
 
 if TYPE_CHECKING:
-    from pystac.collection import Collection as Collection_Type
+    from pystac.core import Collection as Collection_Type
     from pystac.common_metadata import CommonMetadata as CommonMetadata_Type
-    from pystac.item import Item as Item_Type
+    from pystac.core import Item as Item_Type
 
 
 class Asset:

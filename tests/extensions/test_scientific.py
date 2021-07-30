@@ -4,7 +4,7 @@ import datetime
 
 from pystac import ExtensionTypeError
 from pystac.link import Link
-from pystac.collection import Summaries
+from pystac.core import Summaries
 import unittest
 from typing import List, Optional
 

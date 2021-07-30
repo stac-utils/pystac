@@ -19,22 +19,24 @@ from pystac.version import (
     get_stac_version,
     set_stac_version,
 )
+from pystac.asset import Asset
 from pystac.media_type import MediaType
 from pystac.rel_type import RelType
 from pystac.stac_io import StacIO
 from pystac.stac_object import STACObject, STACObjectType
 from pystac.link import Link, HIERARCHICAL_LINKS
-from pystac.catalog import Catalog, CatalogType
-from pystac.collection import (
+from pystac.core import (
+    Catalog,
+    CatalogType,
     Collection,
     Extent,
+    Item,
     SpatialExtent,
     TemporalExtent,
     Summaries,
 )
 from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary
-from pystac.item import Item, Asset
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
 import pystac.validation

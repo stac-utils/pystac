@@ -1,14 +1,14 @@
 from datetime import datetime as Datetime
-from pystac.errors import STACError
 from typing import Any, cast, Dict, List, Optional, Type, TYPE_CHECKING, TypeVar, Union
 
-import pystac
+from pystac.errors import STACError
+from pystac.provider import Provider
 from pystac import utils
 
 if TYPE_CHECKING:
     from pystac.provider import Provider as Provider_Type
     from pystac.asset import Asset as Asset_Type
-    from pystac.item import Item as Item_Type
+    from pystac.core import Item as Item_Type
 
 
 P = TypeVar("P")
@@ -46,7 +46,7 @@ class CommonMetadata:
             else:
                 self.object.extra_fields[prop_name] = v
         else:
-            raise pystac.STACError(f"Cannot set field {prop_name} on {self}.")
+            raise STACError(f"Cannot set field {prop_name} on {self}.")
 
     def _get_field(self, prop_name: str, _typ: Type[P]) -> Optional[P]:
         maybe_field: Optional[P]
@@ -120,7 +120,7 @@ class CommonMetadata:
     def providers(self) -> Optional[List["Provider_Type"]]:
         """Get or set a list of the object's providers."""
         return utils.map_opt(
-            lambda providers: [pystac.Provider.from_dict(d) for d in providers],
+            lambda providers: [Provider.from_dict(d) for d in providers],
             self._get_field("providers", List[Dict[str, Any]]),
         )
 
