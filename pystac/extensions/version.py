@@ -3,19 +3,20 @@
 https://github.com/stac-extensions/version
 """
 from enum import Enum
-from typing import Generic, List, Optional, TypeVar, Union, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac.link
 from pystac import core
 from pystac.errors import ExtensionTypeError
-from pystac.media_type import MediaType
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.media_type import MediaType
 from pystac.stac_object import STACObjectType
 from pystac.utils import get_required, map_opt
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 T = TypeVar("T", "Collection_Type", "Item_Type")

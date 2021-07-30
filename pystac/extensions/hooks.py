@@ -7,10 +7,8 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
     from pystac.rel_type import RelType as RelType_Type
-    from pystac.stac_object import (
-        STACObject as STACObject_Type,
-        STACObjectType as STACObjectType_Type,
-    )
+    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.stac_object import STACObjectType as STACObjectType_Type
 
 
 class ExtensionHooks(ABC):

@@ -4,6 +4,7 @@ https://github.com/stac-extensions/pointcloud
 """
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
@@ -12,7 +13,6 @@ from typing import (
     TypeVar,
     Union,
     cast,
-    TYPE_CHECKING,
 )
 
 from pystac import core
@@ -30,7 +30,8 @@ from pystac.utils import get_required, map_opt
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 

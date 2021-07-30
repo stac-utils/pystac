@@ -6,6 +6,7 @@ https://github.com/stac-extensions/datacube
 from abc import ABC
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
@@ -14,7 +15,6 @@ from typing import (
     TypeVar,
     Union,
     cast,
-    TYPE_CHECKING,
 )
 
 from pystac.asset import Asset
@@ -27,7 +27,8 @@ from pystac.utils import get_required
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Item as Item_Type, Collection as Collection_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
 
 T = TypeVar("T", "Collection_Type", "Item_Type", "Asset_Type")
 

@@ -1,5 +1,6 @@
 from copy import deepcopy
 from typing import (
+    TYPE_CHECKING,
     Any,
     Collection,
     Dict,
@@ -8,7 +9,6 @@ from typing import (
     List,
     Optional,
     Union,
-    TYPE_CHECKING,
 )
 
 from pystac import core
@@ -19,7 +19,8 @@ from pystac.stac_object import STACObjectType
 from pystac.utils import is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type, Item as Item_Type
+    from pystac.core import Catalog as Catalog_Type
+    from pystac.core import Item as Item_Type
 
 ItemLike = Union["Item_Type", Dict[str, Any]]
 

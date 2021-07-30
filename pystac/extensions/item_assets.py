@@ -4,7 +4,7 @@ https://github.com/stac-extensions/item-assets
 """
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pystac import core
 from pystac.asset import Asset

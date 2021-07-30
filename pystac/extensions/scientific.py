@@ -10,6 +10,7 @@ https://doi.org/10.1000/182
 import copy
 from enum import Enum
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
@@ -18,7 +19,6 @@ from typing import (
     TypeVar,
     Union,
     cast,
-    TYPE_CHECKING,
 )
 from urllib import parse
 
@@ -35,7 +35,8 @@ from pystac.stac_object import STACObjectType
 from pystac.utils import map_opt
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
     from pystac.link import Link as Link_Type
     from pystac.stac_object import STACObject as STACObject_Type
 

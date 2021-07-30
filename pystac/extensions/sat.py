@@ -6,6 +6,7 @@ https://github.com/stac-extensions/sat
 import enum
 from datetime import datetime as Datetime
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
@@ -15,7 +16,6 @@ from typing import (
     TypeVar,
     Union,
     cast,
-    TYPE_CHECKING,
 )
 
 from pystac import core
@@ -33,7 +33,8 @@ from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type, Item as Item_Type
+    from pystac.core import Collection as Collection_Type
+    from pystac.core import Item as Item_Type
 
 T = TypeVar("T", "Item_Type", "Asset_Type")
 
