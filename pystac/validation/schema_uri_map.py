@@ -3,8 +3,8 @@ import functools
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pystac
-from pystac.stac_object import STACObjectType
 from pystac.serialization import identify
+from pystac.stac_object import STACObjectType
 
 
 class SchemaUriMap(abc.ABC):
