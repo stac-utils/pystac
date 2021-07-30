@@ -1,7 +1,10 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import pystac
+from pystac.rel_type import RelType
 from pystac.serialization.identify import STACVersionID, identify_stac_object
+from pystac.stac_io import StacIO
+from pystac.stac_object import STACObjectType
 from pystac.utils import make_absolute_href
 from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 
@@ -105,7 +108,7 @@ def validate_dict(
 
 
 def validate_all(
-    stac_dict: Dict[str, Any], href: str, stac_io: Optional[pystac.StacIO] = None
+    stac_dict: Dict[str, Any], href: str, stac_io: Optional[StacIO] = None
 ) -> None:
     """Validate STAC JSON and all contained catalogs, collections and items.
 
@@ -116,7 +119,7 @@ def validate_all(
 
         stac_dict : Dictionary that is the STAC json of the object.
         href : HREF of the STAC object being validated. Used for error
-            reporting and resolving relative links.
+            reporting and resolving relative links.`
         stac_io: Optional StacIO instance to use for reading hrefs. If None,
             the StacIO.default() instance is used.
 
@@ -125,7 +128,7 @@ def validate_all(
             contained catalog, collection or item has a validation error.
     """
     if stac_io is None:
-        stac_io = pystac.StacIO.default()
+        stac_io = StacIO.default()
 
     info = identify_stac_object(stac_dict)
 
@@ -138,7 +141,7 @@ def validate_all(
         href=href,
     )
 
-    if info.object_type != pystac.STACObjectType.ITEM:
+    if info.object_type != STACObjectType.ITEM:
         if "links" in stac_dict:
             # Account for 0.6 links
             if isinstance(stac_dict["links"], dict):
@@ -147,7 +150,7 @@ def validate_all(
                 links = cast(List[Dict[str, Any]], stac_dict.get("links"))
             for link in links:
                 rel = link.get("rel")
-                if rel in [pystac.RelType.ITEM, pystac.RelType.CHILD]:
+                if rel in [RelType.ITEM, RelType.CHILD]:
                     link_href = make_absolute_href(
                         cast(str, link.get("href")), start_href=href
                     )

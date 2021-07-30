@@ -3,7 +3,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
-import pystac
+from pystac.errors import STACValidationError
+from pystac.stac_io import StacIO
 from pystac.stac_object import STACObjectType
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
@@ -144,7 +145,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
         if schema_uri not in self.schema_cache:
-            s = json.loads(pystac.StacIO.default().read_text(schema_uri))
+            s = json.loads(StacIO.default().read_text(schema_uri))
             self.schema_cache[schema_uri] = s
 
         schema = self.schema_cache[schema_uri]
@@ -217,7 +218,7 @@ class JsonSchemaSTACValidator(STACValidator):
             msg = self._get_error_message(
                 schema_uri, stac_object_type, None, href, stac_dict.get("id")
             )
-            raise pystac.STACValidationError(msg, source=e) from e
+            raise STACValidationError(msg, source=e) from e
 
     def validate_extension(
         self,
@@ -255,7 +256,7 @@ class JsonSchemaSTACValidator(STACValidator):
             msg = self._get_error_message(
                 schema_uri, stac_object_type, extension_id, href, stac_dict.get("id")
             )
-            raise pystac.STACValidationError(msg, source=e) from e
+            raise STACValidationError(msg, source=e) from e
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)
