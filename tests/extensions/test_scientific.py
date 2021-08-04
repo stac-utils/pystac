@@ -5,7 +5,7 @@ import unittest
 from typing import List, Optional
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac.errors import ExtensionTypeError
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,

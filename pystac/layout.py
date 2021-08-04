@@ -3,12 +3,16 @@ import collections
 import string
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
-from pystac import core, errors, utils
+from pystac import catalog as catalog_mod
+from pystac import collection as collection_mod
+from pystac import errors
+from pystac import item as item_mod
+from pystac import utils
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 
@@ -93,7 +97,7 @@ class LayoutTemplate:
         self, stac_object: "STACObject_Type", template_var: str
     ) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
-            if isinstance(stac_object, core.Item):
+            if isinstance(stac_object, item_mod.Item):
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
@@ -235,11 +239,11 @@ class HrefLayoutStrategy(abc.ABC):
     def get_href(
         self, stac_object: "STACObject_Type", parent_dir: str, is_root: bool = False
     ) -> str:
-        if isinstance(stac_object, core.Item):
+        if isinstance(stac_object, item_mod.Item):
             return self.get_item_href(stac_object, parent_dir)
-        elif isinstance(stac_object, core.Collection):
+        elif isinstance(stac_object, collection_mod.Collection):
             return self.get_collection_href(stac_object, parent_dir, is_root)
-        elif isinstance(stac_object, core.Catalog):
+        elif isinstance(stac_object, catalog_mod.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
             raise errors.STACError("Unknown STAC object type {}".format(stac_object))

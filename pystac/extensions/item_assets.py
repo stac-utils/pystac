@@ -7,12 +7,13 @@ import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from pystac import asset as asset_mod
-from pystac import core, errors, stac_object, utils
+from pystac import collection as collection_mod
+from pystac import errors, stac_object, utils
 from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type
+    from pystac.collection import Collection as Collection_Type
     from pystac.serialization.identify import (
         STACJSONDescription as STACJSONDescription_Type,
     )
@@ -161,7 +162,7 @@ class ItemAssetsExtension(base.ExtensionManagementMixin["Collection_Type"]):
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, core.Collection):
+        if isinstance(obj, collection_mod.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:

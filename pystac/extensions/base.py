@@ -17,7 +17,7 @@ from pystac import errors
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type
+    from pystac.collection import Collection as Collection_Type
     from pystac.stac_object import STACObject as STACObject_Type
     from pystac.summaries import RangeSummary as RangeSummary_Type
     from pystac.summaries import Summaries as Summaries_Type

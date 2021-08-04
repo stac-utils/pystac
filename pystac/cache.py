@@ -2,10 +2,11 @@ import collections
 import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 
-from pystac import core, stac_object
+from pystac import collection as collection_mod
+from pystac import stac_object as stac_object_mod
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type
+    from pystac.collection import Collection as Collection_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 
@@ -149,7 +150,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects[key] = obj
 
-        if isinstance(obj, core.Collection):
+        if isinstance(obj, collection_mod.Collection):
             self.ids_to_collections[obj.id] = obj
 
     def remove(self, obj: "STACObject_Type") -> None:
@@ -165,7 +166,7 @@ class ResolvedObjectCache:
         else:
             self.id_keys_to_objects.pop(key, None)
 
-        if obj.STAC_OBJECT_TYPE == stac_object.STACObjectType.COLLECTION:
+        if obj.STAC_OBJECT_TYPE == stac_object_mod.STACObjectType.COLLECTION:
             self.id_keys_to_objects.pop(obj.id, None)
 
     def __contains__(self, obj: "STACObject_Type") -> bool:
@@ -269,7 +270,7 @@ class CollectionCache:
         href: Optional[str] = None,
     ) -> None:
         """Caches a collection JSON."""
-        if isinstance(collection, core.Collection):
+        if isinstance(collection, collection_mod.Collection):
             self.cached_ids[collection.id] = collection
         else:
             self.cached_ids[collection["id"]] = collection

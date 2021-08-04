@@ -18,13 +18,15 @@ from typing import (
 )
 
 from pystac import asset as asset_mod
-from pystac import core, errors, stac_object, utils
+from pystac import errors
+from pystac import item as item_mod
+from pystac import stac_object, utils
 from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
     from pystac.serialization.identify import (
         STACJSONDescription as STACJSONDescription_Type,
     )
@@ -329,11 +331,11 @@ class SarExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, core.Item):
+        if isinstance(obj, item_mod.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
         elif isinstance(obj, asset_mod.Asset):
-            if obj.owner is not None and not isinstance(obj.owner, core.Item):
+            if obj.owner is not None and not isinstance(obj.owner, item_mod.Item):
                 raise errors.ExtensionTypeError(
                     "SAR extension does not apply to Collection Assets."
                 )
@@ -398,7 +400,7 @@ class AssetSarExtension(SarExtension["Asset_Type"]):
     def __init__(self, asset: "Asset_Type"):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, core.Item):
+        if asset.owner and isinstance(asset.owner, item_mod.Item):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:

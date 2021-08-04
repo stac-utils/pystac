@@ -20,16 +20,9 @@ import pystac.extensions.version
 import pystac.extensions.view
 import pystac.validation
 from pystac.asset import Asset
+from pystac.catalog import Catalog, CatalogType
+from pystac.collection import Collection, Extent, SpatialExtent, TemporalExtent
 from pystac.common_metadata import CommonMetadata
-from pystac.core import (
-    Catalog,
-    CatalogType,
-    Collection,
-    Extent,
-    Item,
-    SpatialExtent,
-    TemporalExtent,
-)
 from pystac.errors import (
     DuplicateObjectKeyError,
     ExtensionAlreadyExistsError,
@@ -40,6 +33,7 @@ from pystac.errors import (
     STACTypeError,
     STACValidationError,
 )
+from pystac.item import Item
 from pystac.item_collection import ItemCollection
 from pystac.link import HIERARCHICAL_LINKS, Link
 from pystac.media_type import MediaType
@@ -166,3 +160,9 @@ def read_dict(
     if stac_io is None:
         stac_io = StacIO.default()
     return stac_io.stac_object_from_dict(d, href, root)
+
+
+def default_stac_io() -> StacIO:
+    """Convenience method for getting the default :class:`~pystac.StacIO`
+    implementation."""
+    return StacIO.default()

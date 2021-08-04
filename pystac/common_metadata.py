@@ -5,7 +5,7 @@ from pystac import errors, provider, utils
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Item as Item_Type
+    from pystac.item import Item as Item_Type
     from pystac.provider import Provider as Provider_Type
 
 

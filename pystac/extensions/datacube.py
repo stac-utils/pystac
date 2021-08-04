@@ -18,13 +18,16 @@ from typing import (
 )
 
 from pystac import asset as asset_mod
-from pystac import core, errors, stac_object, utils
+from pystac import collection as collection_mod
+from pystac import errors
+from pystac import item as item_mod
+from pystac import stac_object, utils
 from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
 
 T = TypeVar("T", "Collection_Type", "Item_Type", "Asset_Type")
 
@@ -469,10 +472,10 @@ class DatacubeExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, core.Collection):
+        if isinstance(obj, collection_mod.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
-        if isinstance(obj, core.Item):
+        if isinstance(obj, item_mod.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, asset_mod.Asset):

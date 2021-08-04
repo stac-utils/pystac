@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 import pystac
-from pystac.core import Collection
+from pystac.collection import Collection
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     CustomLayoutStrategy,

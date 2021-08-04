@@ -2,8 +2,8 @@ import json
 import unittest
 
 import pystac
-from pystac import ExtensionTypeError
-from pystac.core import Collection
+from pystac.collection import Collection
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.view import ViewExtension
 from pystac.summaries import RangeSummary
 from tests.utils import TestCases, assert_to_from_dict

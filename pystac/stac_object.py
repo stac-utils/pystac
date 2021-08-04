@@ -3,14 +3,13 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Type, Union, cast
 
 import pystac
-from pystac import core, errors
+from pystac import catalog as catalog_mod
+from pystac import errors
 from pystac import link as link_mod
-from pystac import rel_type
-from pystac import stac_io as stac_io_mod
-from pystac import utils
+from pystac import rel_type, utils
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type
+    from pystac.catalog import Catalog as Catalog_Type
     from pystac.link import Link as Link_Type
     from pystac.stac_io import StacIO as StacIO_Type
 
@@ -338,7 +337,7 @@ class STACObject(ABC):
                     stac_io = root_stac_io
 
             if stac_io is None:
-                stac_io = stac_io_mod.StacIO.default()
+                stac_io = pystac.default_stac_io()
 
         if dest_href is None:
             self_href = self.get_self_href()
@@ -370,7 +369,7 @@ class STACObject(ABC):
         """
         clone = self.clone()
 
-        if root is None and isinstance(clone, core.Catalog):
+        if root is None and isinstance(clone, catalog_mod.Catalog):
             root = clone
 
         clone.set_root(cast("Catalog_Type", root))
@@ -394,7 +393,7 @@ class STACObject(ABC):
                             rel_type.RelType.CHILD,
                             rel_type.RelType.ITEM,
                         ]
-                        and isinstance(clone, core.Catalog)
+                        and isinstance(clone, catalog_mod.Catalog)
                     ):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
@@ -403,7 +402,7 @@ class STACObject(ABC):
                     target = copied_target
                 if link.rel in [rel_type.RelType.CHILD, rel_type.RelType.ITEM]:
                     target.set_root(root)
-                    if isinstance(clone, core.Catalog):
+                    if isinstance(clone, catalog_mod.Catalog):
                         target.set_parent(clone)
                 link.target = target
 
@@ -479,7 +478,7 @@ class STACObject(ABC):
             return pystac.read_file(href)
 
         if stac_io is None:
-            stac_io = stac_io_mod.StacIO.default()
+            stac_io = pystac.default_stac_io()
 
         if not utils.is_absolute_href(href):
             href = utils.make_absolute_href(href)

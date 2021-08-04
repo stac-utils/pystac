@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union, cast
 
-from pystac import core, rel_type, stac_io, utils
+from pystac import collection as collection_mod
+from pystac import rel_type, stac_io, utils
 from pystac.serialization import identify
 
 if TYPE_CHECKING:
     from pystac.cache import CollectionCache as CollectionCache_Type
-    from pystac.core import Collection as Collection_Type
+    from pystac.collection import Collection as Collection_Type
 
 
 def merge_common_properties(
@@ -83,7 +84,7 @@ def merge_common_properties(
 
     if collection is not None:
         collection_props: Optional[Dict[str, Any]] = None
-        if isinstance(collection, core.Collection):
+        if isinstance(collection, collection_mod.Collection):
             collection_id = collection.id
             collection_props = collection.extra_fields.get("properties")
         elif isinstance(collection, dict):

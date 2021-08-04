@@ -2,16 +2,15 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import pystac
-from pystac import core, errors
+from pystac import catalog as catalog_mod
+from pystac import errors
 from pystac import media_type as media_type_mod
-from pystac import rel_type
-from pystac import stac_io as stac_io_mod
-from pystac import utils
+from pystac import rel_type, utils
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
     from pystac.rel_type import RelType as RelType_Type
     from pystac.stac_io import StacIO as StacIO_Type
     from pystac.stac_object import STACObject as STACObject_Type
@@ -269,10 +268,10 @@ class Link:
 
                 if stac_io is None:
                     if self.owner is not None:
-                        if isinstance(self.owner, core.Catalog):
+                        if isinstance(self.owner, catalog_mod.Catalog):
                             stac_io = self.owner._stac_io
                     if stac_io is None:
-                        stac_io = stac_io_mod.StacIO.default()
+                        stac_io = pystac.default_stac_io()
 
                 obj = stac_io.read_stac_object(target_href, root=root)
                 obj.set_self_href(target_href)
@@ -286,7 +285,7 @@ class Link:
         if (
             self.owner
             and self.rel in [rel_type.RelType.CHILD, rel_type.RelType.ITEM]
-            and isinstance(self.owner, core.Catalog)
+            and isinstance(self.owner, catalog_mod.Catalog)
         ):
             assert self._target_object
             self._target_object.set_parent(self.owner)

@@ -7,15 +7,16 @@ import enum
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Union, cast
 
 from pystac import asset as asset_mod
-from pystac import core, errors
+from pystac import errors
+from pystac import item as item_mod
 from pystac import link as link_mod
 from pystac import media_type as media_type_mod
 from pystac import stac_object, utils
 from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
     from pystac.rel_type import RelType as RelType_Type
     from pystac.serialization.identify import (
         STACJSONDescription as STACJSONDescription_Type,
@@ -703,7 +704,7 @@ class LabelExtension(
 
         This extension can be applied to instances of :class:`~pystac.Item`.
         """
-        if isinstance(obj, core.Item):
+        if isinstance(obj, item_mod.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
@@ -801,7 +802,7 @@ class LabelExtensionHooks(hooks.ExtensionHooks):
     def get_object_links(
         self, so: "STACObject_Type"
     ) -> Optional[List[Union[str, "RelType_Type"]]]:
-        if isinstance(so, core.Item):
+        if isinstance(so, item_mod.Item):
             return [LabelRelType.SOURCE]
         return None
 

@@ -5,12 +5,15 @@ https://github.com/stac-extensions/version
 import enum
 from typing import TYPE_CHECKING, Generic, List, Optional, TypeVar, Union, cast
 
-from pystac import core, errors, link, media_type, stac_object, utils
+from pystac import collection as collection_mod
+from pystac import errors
+from pystac import item as item_mod
+from pystac import link, media_type, stac_object, utils
 from pystac.extensions import base, hooks
 
 if TYPE_CHECKING:
-    from pystac.core import Collection as Collection_Type
-    from pystac.core import Item as Item_Type
+    from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
 T = TypeVar("T", "Collection_Type", "Item_Type")
@@ -206,10 +209,10 @@ class VersionExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, core.Collection):
+        if isinstance(obj, collection_mod.Collection):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
-        if isinstance(obj, core.Item):
+        if isinstance(obj, item_mod.Item):
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
@@ -266,7 +269,7 @@ class VersionExtensionHooks(hooks.ExtensionHooks):
     }
 
     def get_object_links(self, so: "STACObject_Type") -> Optional[List[str]]:
-        if isinstance(so, core.Collection) or isinstance(so, core.Item):
+        if isinstance(so, collection_mod.Collection) or isinstance(so, item_mod.Item):
             return [
                 VersionRelType.LATEST,
                 VersionRelType.PREDECESSOR,

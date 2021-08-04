@@ -11,14 +11,15 @@ from typing import (
     Union,
 )
 
-from pystac import core, errors
+from pystac import errors
+from pystac import item as item_mod
 from pystac import stac_io as stac_io_mod
 from pystac import stac_object, utils
 from pystac.serialization import identify
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type
-    from pystac.core import Item as Item_Type
+    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.item import Item as Item_Type
     from pystac.stac_io import StacIO as StacIO_Type
 
 ItemLike = Union["Item_Type", Dict[str, Any]]
@@ -58,7 +59,7 @@ class ItemCollection(Collection["Item_Type"]):
         >>> for item in item_collection:
         ...     ...
 
-        Get the number of :class:`~pystac.Item` instances in the
+        Get the number of :class:`~pytac.Item` instances in the
         :class:`~ItemCollection`
 
         >>> length: int = len(item_collection)
@@ -99,10 +100,10 @@ class ItemCollection(Collection["Item_Type"]):
     ):
         def map_item(item_or_dict: ItemLike) -> "Item_Type":
             # Converts dicts to pystac.Items and clones if necessary
-            if isinstance(item_or_dict, core.Item):
+            if isinstance(item_or_dict, item_mod.Item):
                 return item_or_dict.clone() if clone_items else item_or_dict
             else:
-                return core.Item.from_dict(item_or_dict)
+                return item_mod.Item.from_dict(item_or_dict)
 
         self.items = list(map(map_item, items))
         self.extra_fields = extra_fields or {}
@@ -168,7 +169,7 @@ class ItemCollection(Collection["Item_Type"]):
             raise errors.STACTypeError("Dict is not a valid ItemCollection")
 
         items = [
-            core.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
+            item_mod.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
             for item in d.get("features", [])
         ]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}

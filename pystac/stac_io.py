@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, Union
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-from pystac import core, errors, stac_object, utils
+from pystac import catalog, collection, errors, item, stac_object, utils
 from pystac.serialization import common_properties, identify, migrate
 
 # Use orjson if available
@@ -15,7 +15,7 @@ except ImportError:
     orjson = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from pystac.core import Catalog as Catalog_Type
+    from pystac.catalog import Catalog as Catalog_Type
     from pystac.link import Link as Link_Type
     from pystac.stac_object import STACObject as STACObject_Type
 
@@ -141,19 +141,19 @@ class StacIO(ABC):
         d = migrate.migrate_to_latest(d, info)
 
         if info.object_type == stac_object.STACObjectType.CATALOG:
-            result = core.Catalog.from_dict(
+            result = catalog.Catalog.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
             result._stac_io = self
             return result
 
         if info.object_type == stac_object.STACObjectType.COLLECTION:
-            return core.Collection.from_dict(
+            return collection.Collection.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
         if info.object_type == stac_object.STACObjectType.ITEM:
-            return core.Item.from_dict(
+            return item.Item.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
