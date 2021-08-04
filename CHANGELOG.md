@@ -4,12 +4,11 @@
 
 ### Added
 
+- `isort` for sorting imports as part of pre-commit checks ([#594](https://github.com/stac-utils/pystac/pull/594))
+
 ### Removed
 
 ### Changed
-
-- Moved contents of `item`, `catalog`, and `collection` modules into `core` module
-  (top-level package exports remain unchanged) ([#594](https://github.com/stac-utils/pystac/pull/594))
 
 ### Fixed
 
