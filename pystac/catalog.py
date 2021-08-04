@@ -665,13 +665,10 @@ class Catalog(STACObject):
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast(pystac.Item, link.target)
-            item_parts = layout_template.get_template_values(item)
+            subcat_ids = layout_template.substitute(item).split("/")
             id_iter = reversed(parent_ids)
             if all(
-                [
-                    "{}".format(id) == next(id_iter, None)
-                    for id in reversed(list(item_parts.values()))
-                ]
+                ["{}".format(id) == next(id_iter, None) for id in reversed(subcat_ids)]
             ):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
@@ -679,12 +676,11 @@ class Catalog(STACObject):
                 keep_item_links.append(link)
                 continue
             curr_parent = self
-            for k, v in item_parts.items():
-                subcat_id = "{}".format(v)
+            for subcat_id in subcat_ids:
                 subcat = curr_parent.get_child(subcat_id)
                 if subcat is None:
-                    subcat_desc = "Catalog of items from {} with {} of {}".format(
-                        curr_parent.id, k, v
+                    subcat_desc = "Catalog of items from {} with id {}".format(
+                        curr_parent.id, subcat_id
                     )
                     subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)
