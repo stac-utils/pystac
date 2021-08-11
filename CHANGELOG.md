@@ -8,7 +8,13 @@
 
 ### Changed
 
+- Enable [strict
+  mode](https://mypy.readthedocs.io/en/latest/command_line.html?highlight=strict%20mode#cmdoption-mypy-strict)
+  for `mypy` ([#591](https://github.com/stac-utils/pystac/pull/591))
+
 ### Fixed
+
+- Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
 
 ### Deprecated
 
