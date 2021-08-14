@@ -45,7 +45,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-            <best-practices.md#self-contained-catalogs>`
+        <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -55,7 +55,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -65,7 +65,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     @classmethod
@@ -1013,7 +1013,7 @@ class Catalog(STACObject):
         result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
             raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
-        result._stac_io = stac_io
+        result.stac_io = stac_io
 
         return result
 
