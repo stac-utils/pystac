@@ -323,7 +323,7 @@ class STACObject(ABC):
         if stac_io is None:
             root = self.get_root()
             if root is not None:
-                root_stac_io = root.stac_io
+                root_stac_io = root._stac_io
                 if root_stac_io is not None:
                     stac_io = root_stac_io
 

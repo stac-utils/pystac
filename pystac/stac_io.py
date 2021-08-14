@@ -160,7 +160,7 @@ class StacIO(ABC):
             result = pystac.Catalog.from_dict(
                 d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
             )
-            result.stac_io = self
+            result._stac_io = self
             return result
 
         if info.object_type == pystac.STACObjectType.COLLECTION:

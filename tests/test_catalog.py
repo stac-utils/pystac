@@ -116,10 +116,10 @@ class CatalogTest(unittest.TestCase):
         with open(path) as f:
             cat_dict = json.load(f)
         root_cat = pystac.Catalog(id="test", description="test desc")
-        root_cat.stac_io = CustomStacIO()
+        root_cat._stac_io = CustomStacIO()
 
         collection = Catalog.from_dict(cat_dict, root=root_cat)
-        self.assertIsInstance(collection.stac_io, CustomStacIO)
+        self.assertIsInstance(collection._stac_io, CustomStacIO)
 
     def test_read_remote(self) -> None:
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
@@ -948,7 +948,7 @@ class CatalogTest(unittest.TestCase):
         catalogs = TestCases.all_test_catalogs()
         mock_io = MockStacIO()
         for cat in catalogs:
-            cat.stac_io = mock_io
+            cat._stac_io = mock_io
             expected_collection_reads = set([])
             for root, _, items in cat.walk():
                 if isinstance(root, Collection) and root != cat:

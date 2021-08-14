@@ -45,7 +45,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-        <best-practices.md#self-contained-catalogs>`
+            <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -55,7 +55,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-        <best-practices.md#published-catalogs>`
+            <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -65,7 +65,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-        <best-practices.md#published-catalogs>`
+            <best-practices.md#published-catalogs>`
     """
 
     @classmethod
@@ -136,6 +136,10 @@ class Catalog(STACObject):
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
 
     _stac_io: Optional[pystac.StacIO] = None
+    """Optional instance of StacIO that will be used by default
+    for any IO operations on objects contained by this catalog.
+    Set while reading in a catalog. This is set when a catalog
+    is read by a StacIO instance."""
 
     DEFAULT_FILE_NAME = "catalog.json"
     """Default file name that will be given to this STAC object in
@@ -173,36 +177,17 @@ class Catalog(STACObject):
 
         self._resolved_objects.cache(self)
 
-    @property
-    def stac_io(self) -> Optional[pystac.StacIO]:
-        """Optional instance of :class:`~pystac.StacIO` that will be used by default
-        for any IO operations on objects contained by this catalog. Set while reading
-        in a catalog. This is set when a catalog is read by a :class:`~pystac.StacIO`
-        instance."""
-        return self._stac_io
-
-    @stac_io.setter
-    def stac_io(self, v: Optional[pystac.StacIO]) -> None:
-        self._stac_io = v
-
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
 
     def set_root(self, root: Optional["Catalog"]) -> None:
-        """Sets the root :class:`~pystac.Catalog` for this :class:`~pystac.Catalog`.
-        This method also sets the :attr:`~pystac.Catalog.stac_io` for this ``Catalog``
-        to be the same as ``root.stac_io``.
-
-        Args:
-            root : A :class:`~pystac.Catalog` instance to set as the root.
-        """
         super().set_root(root)
         if root is not None:
             root._resolved_objects = ResolvedObjectCache.merge(
                 root._resolved_objects, self._resolved_objects
             )
-            if root.stac_io is not None:
-                self.stac_io = root.stac_io
+            if root._stac_io is not None:
+                self._stac_io = root._stac_io
 
     def is_relative(self) -> bool:
         return self.catalog_type in [
@@ -1028,7 +1013,7 @@ class Catalog(STACObject):
         result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
             raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
-        result.stac_io = stac_io
+        result._stac_io = stac_io
 
         return result
 
