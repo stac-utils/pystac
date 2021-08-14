@@ -252,14 +252,14 @@ class Link:
 
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
-                stac_io = root._stac_io
+                stac_io = root.stac_io
 
             if obj is None:
 
                 if stac_io is None:
                     if self.owner is not None:
                         if isinstance(self.owner, pystac.Catalog):
-                            stac_io = self.owner._stac_io
+                            stac_io = self.owner.stac_io
                     if stac_io is None:
                         stac_io = pystac.StacIO.default()
 
