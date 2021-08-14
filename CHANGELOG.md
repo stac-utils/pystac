@@ -6,6 +6,8 @@
 
 ### Removed
 
+- Exclude `tests` from package distribution. This should make the package lighter ([#604](https://github.com/stac-utils/pystac/pull/604))
+
 ### Changed
 
 - Enable [strict
