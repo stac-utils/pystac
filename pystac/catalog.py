@@ -181,11 +181,13 @@ class Catalog(STACObject):
         return "<Catalog id={}>".format(self.id)
 
     def set_root(self, root: Optional["Catalog"]) -> None:
-        STACObject.set_root(self, root)
+        super().set_root(root)
         if root is not None:
             root._resolved_objects = ResolvedObjectCache.merge(
                 root._resolved_objects, self._resolved_objects
             )
+            if root._stac_io is not None:
+                self._stac_io = root._stac_io
 
     def is_relative(self) -> bool:
         return self.catalog_type in [
