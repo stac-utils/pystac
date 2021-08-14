@@ -1013,7 +1013,7 @@ class Catalog(STACObject):
         result = super().from_file(href, stac_io)
         if not isinstance(result, Catalog):
             raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
-        result.stac_io = stac_io
+        result._stac_io = stac_io
 
         return result
 
