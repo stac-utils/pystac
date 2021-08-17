@@ -130,6 +130,29 @@ class LinkTest(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
+    def test_auto_title_when_resolved(self) -> None:
+        extent = pystac.Extent.from_items([self.item])
+        collection = pystac.Collection(
+            id="my_collection",
+            description="Test Collection",
+            extent=extent,
+            title="Collection Title",
+        )
+        link = pystac.Link("my rel", target=collection)
+
+        self.assertEqual(collection.title, link.title)
+
+    def test_auto_title_not_found(self) -> None:
+        extent = pystac.Extent.from_items([self.item])
+        collection = pystac.Collection(
+            id="my_collection",
+            description="Test Collection",
+            extent=extent,
+        )
+        link = pystac.Link("my rel", target=collection)
+
+        self.assertEqual(None, link.title)
+
 
 class StaticLinkTest(unittest.TestCase):
     def setUp(self) -> None:
