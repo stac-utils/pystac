@@ -4,9 +4,6 @@
 
 ### Added
 
-- "Public" `Catalog.stac_io` property to match "private" `Catalog._stac_io` attribute
-  ([#590](https://github.com/stac-utils/pystac/pull/590))
-
 ### Removed
 
 ### Changed
