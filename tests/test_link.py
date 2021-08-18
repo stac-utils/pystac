@@ -153,6 +153,39 @@ class LinkTest(unittest.TestCase):
 
         self.assertEqual(None, link.title)
 
+    def test_auto_title_is_serialized(self) -> None:
+        extent = pystac.Extent.from_items([self.item])
+        collection = pystac.Collection(
+            id="my_collection",
+            description="Test Collection",
+            extent=extent,
+            title="Collection Title",
+        )
+        link = pystac.Link("my rel", target=collection)
+
+        assert link.to_dict().get("title") == collection.title
+
+    def test_no_auto_title_if_not_resolved(self) -> None:
+        link = pystac.Link(
+            "my rel", target="https://www.some-domain.com/path/to/thing.txt"
+        )
+
+        assert link.title is None
+
+    def test_title_as_init_argument(self) -> None:
+        link_title = "Link title"
+        extent = pystac.Extent.from_items([self.item])
+        collection = pystac.Collection(
+            id="my_collection",
+            description="Test Collection",
+            extent=extent,
+            title="Collection Title",
+        )
+        link = pystac.Link("my rel", title=link_title, target=collection)
+
+        assert link.title == link_title
+        assert link.to_dict().get("title") == link_title
+
 
 class StaticLinkTest(unittest.TestCase):
     def setUp(self) -> None:
