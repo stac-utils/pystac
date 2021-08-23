@@ -8,10 +8,10 @@ jsonschema==3.2.0
 coverage==5.5
 doc8==0.9.0
 
-types-python-dateutil==0.1.4
-types-orjson==0.1.1
+types-python-dateutil==0.1.6
+types-orjson==3.6.0
 
-pre-commit==2.13.0
+pre-commit==2.14.0
 
 # optional dependencies
-orjson==3.6.0
+orjson==3.6.1

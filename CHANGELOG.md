@@ -6,12 +6,19 @@
 
 ### Removed
 
+- Exclude `tests` from package distribution. This should make the package lighter ([#604](https://github.com/stac-utils/pystac/pull/604))
+
 ### Changed
+
+- Enable [strict
+  mode](https://mypy.readthedocs.io/en/latest/command_line.html?highlight=strict%20mode#cmdoption-mypy-strict)
+  for `mypy` ([#591](https://github.com/stac-utils/pystac/pull/591))
 
 ### Fixed
 
 - `generate_subcatalogs` can include multiple template values in a single subfolder layer 
   ([#595](https://github.com/stac-utils/pystac/pull/595))
+- Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
 
 ### Deprecated
 

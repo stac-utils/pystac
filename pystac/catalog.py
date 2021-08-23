@@ -32,7 +32,8 @@ from pystac.serialization import (
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.item import Asset as Asset_Type, Item as Item_Type
+    from pystac.asset import Asset as Asset_Type
+    from pystac.item import Item as Item_Type
     from pystac.collection import Collection as Collection_Type
 
 
