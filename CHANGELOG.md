@@ -17,6 +17,8 @@
 
 ### Fixed
 
+- `generate_subcatalogs` can include multiple template values in a single subfolder layer 
+  ([#595](https://github.com/stac-utils/pystac/pull/595))
 - Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
 
 ### Deprecated
