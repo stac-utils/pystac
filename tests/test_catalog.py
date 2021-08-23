@@ -535,9 +535,7 @@ class CatalogTest(unittest.TestCase):
                 )
             )
 
-        result = catalog.generate_subcatalogs(
-            join_path_or_url(JoinType.PATH, "${property1}", "${property2}")
-        )
+        result = catalog.generate_subcatalogs("${property1}/${property2}")
         self.assertEqual(len(result), 6)
 
         catalog.normalize_hrefs("/")
