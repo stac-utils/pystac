@@ -427,6 +427,30 @@ class CatalogTest(unittest.TestCase):
                     actual, expected, msg=" for child '{}'".format(child.id)
                 )
 
+    def test_generate_subcatalogs_merge_template_elements(self) -> None:
+        catalog = Catalog(id="test", description="Test")
+        item_properties = [
+            dict(property1=p1, property2=p2) for p1 in ("A", "B") for p2 in (1, 2)
+        ]
+        for ni, properties in enumerate(item_properties):
+            catalog.add_item(
+                Item(
+                    id="item{}".format(ni),
+                    geometry=ARBITRARY_GEOM,
+                    bbox=ARBITRARY_BBOX,
+                    datetime=datetime.utcnow(),
+                    properties=properties,
+                )
+            )
+        result = catalog.generate_subcatalogs("${property1}_${property2}")
+
+        actual_subcats = set([cat.id for cat in result])
+        expected_subcats = set(
+            ["{}_{}".format(d["property1"], d["property2"]) for d in item_properties]
+        )
+        self.assertEqual(len(result), len(expected_subcats))
+        self.assertSetEqual(actual_subcats, expected_subcats)
+
     def test_generate_subcatalogs_can_be_applied_multiple_times(self) -> None:
         catalog = TestCases.test_case_8()
 
@@ -525,9 +549,7 @@ class CatalogTest(unittest.TestCase):
                 )
             )
 
-        result = catalog.generate_subcatalogs(
-            join_path_or_url(JoinType.PATH, "${property1}", "${property2}")
-        )
+        result = catalog.generate_subcatalogs("${property1}/${property2}")
         self.assertEqual(len(result), 6)
 
         catalog.normalize_hrefs("/")

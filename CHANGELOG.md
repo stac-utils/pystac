@@ -6,6 +6,8 @@
 
 ### Removed
 
+- Exclude `tests` from package distribution. This should make the package lighter ([#604](https://github.com/stac-utils/pystac/pull/604))
+
 ### Changed
 
 - Enable [strict
@@ -14,9 +16,12 @@
 - `Catalog.set_root` also sets `Catalog.stac_io` for the calling instance to be the same
   as `root.stac_io`, if that value is not `None`
   ([#590](https://github.com/stac-utils/pystac/pull/590))
+- Links will get their `title` from their target if no `title` is provided ([#607](https://github.com/stac-utils/pystac/pull/607))
 
 ### Fixed
 
+- `generate_subcatalogs` can include multiple template values in a single subfolder layer 
+  ([#595](https://github.com/stac-utils/pystac/pull/595))
 - Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
 
 ### Deprecated
