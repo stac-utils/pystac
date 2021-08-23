@@ -56,9 +56,6 @@ class Link:
     """Optional description of the media type. Registered Media Types are preferred.
     See :class:`~pystac.MediaType` for common media types."""
 
-    title: Optional[str]
-    """Optional title for this link."""
-
     extra_fields: Dict[str, Any]
     """Optional, additional fields for this link. This is used by extensions as a
     way to serialize and deserialize properties on link object JSON."""
@@ -70,6 +67,7 @@ class Link:
 
     _target_href: Optional[str]
     _target_object: Optional["STACObject_Type"]
+    _title: Optional[str]
 
     def __init__(
         self,
@@ -102,6 +100,22 @@ class Link:
         """
         self.owner = owner
         return self
+
+    @property
+    def title(self) -> Optional[str]:
+        """Optional title for this link. If not provided during instantiation, this will
+        attempt to get the title from the STAC object that the link references."""
+        if self._title is not None:
+            return self._title
+        if self._target_object is not None and isinstance(
+            self._target_object, pystac.Catalog
+        ):
+            return self._target_object.title
+        return None
+
+    @title.setter
+    def title(self, v: Optional[str]) -> None:
+        self._title = v
 
     @property
     def href(self) -> str:
