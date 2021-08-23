@@ -69,7 +69,7 @@ To use them you can pass in a strategy to the normalize_hrefs call.
 Using templates
 '''''''''''''''
 
-You can utilze template strings to determine the file paths of HREFs set on Catalogs,
+You can utilize template strings to determine the file paths of HREFs set on Catalogs,
 Collection or Items. These templates use python format strings, which can name
 the property or attribute of the item you want to use for replacing the template
 variable. For example:
@@ -84,7 +84,9 @@ variable. For example:
 
 The above code will save items in subfolders based on the collection ID, year and month
 of it's datetime (or start_datetime if a date range is defined and no datetime is
-defined).
+defined). Note that the forward slash (``/``) should be used as path separator in the
+template string regardless of the system path separator (thus both in POSIX-compliant
+and Windows environments).
 
 You can use dot notation to specify attributes of objects or keys in dictionaries for
 template variables. PySTAC will look at the object, it's ``properties`` and its

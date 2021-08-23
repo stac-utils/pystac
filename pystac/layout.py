@@ -54,6 +54,10 @@ class LayoutTemplate:
     | ``collection``     | The collection ID of an Item's collection.             |
     +--------------------+--------------------------------------------------------+
 
+    The forward slash (``/``) should be used as path separator in the template
+    string regardless of the system path separator (thus both in POSIX-compliant
+    and Windows environments).
+
     Examples::
 
         # Uses the year, month and day of the item
