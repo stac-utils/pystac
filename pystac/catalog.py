@@ -45,7 +45,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-            <best-practices.md#self-contained-catalogs>`
+        <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -55,7 +55,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -65,7 +65,7 @@ class CatalogType(str, Enum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     @classmethod
@@ -181,11 +181,13 @@ class Catalog(STACObject):
         return "<Catalog id={}>".format(self.id)
 
     def set_root(self, root: Optional["Catalog"]) -> None:
-        STACObject.set_root(self, root)
+        super().set_root(root)
         if root is not None:
             root._resolved_objects = ResolvedObjectCache.merge(
                 root._resolved_objects, self._resolved_objects
             )
+            if root._stac_io is not None:
+                self._stac_io = root._stac_io
 
     def is_relative(self) -> bool:
         return self.catalog_type in [
