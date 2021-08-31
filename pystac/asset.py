@@ -60,7 +60,7 @@ class Asset(base.JSONObject):
     @property
     def href(self) -> str:
         """Link to the asset object. Relative and absolute links are both allowed."""
-        return self._get_field("href", str, required=True)
+        return utils.get_required(self.fields.get("href"), self, "href")
 
     @href.setter
     def href(self, v: str) -> None:
@@ -69,7 +69,7 @@ class Asset(base.JSONObject):
     @property
     def title(self) -> Optional[str]:
         """Optional displayed title for clients and users."""
-        return self._get_field("title", str)
+        return self.fields.get("title")
 
     @title.setter
     def title(self, v: Optional[str]) -> None:
@@ -80,7 +80,7 @@ class Asset(base.JSONObject):
         """A description of the Asset providing additional details, such as how it was
         processed or created. CommonMark 0.29 syntax MAY be used for rich text
         representation."""
-        return self._get_field("description", str)
+        return self.fields.get("description")
 
     @description.setter
     def description(self, v: Optional[str]) -> None:
@@ -90,7 +90,7 @@ class Asset(base.JSONObject):
     def media_type(self) -> Optional[Union[MediaType, str]]:
         """Optional description of the media type. Registered Media Types are preferred.
         See :class:`~pystac.MediaType` for common media types."""
-        return self._get_field("type", str)
+        return self.fields.get("type")
 
     @media_type.setter
     def media_type(self, v: Optional[Union[MediaType, str]]) -> None:
@@ -100,7 +100,7 @@ class Asset(base.JSONObject):
     def roles(self) -> Optional[List[str]]:
         """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
         asset."""
-        return self._get_field("roles", List[str])
+        return self.fields.get("roles")
 
     @roles.setter
     def roles(self, v: Optional[List[str]]) -> None:
