@@ -94,7 +94,7 @@ class ItemCustomExtension(CustomExtension[pystac.Item]):
 class AssetCustomExtension(CustomExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset) -> None:
         self.catalog = asset
-        self.properties = asset.extra_fields
+        self.properties = asset.fields
         if asset.owner:
             if isinstance(asset.owner, pystac.Item):
                 self.additional_read_properties = [asset.owner.properties]

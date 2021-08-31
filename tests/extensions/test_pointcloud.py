@@ -271,7 +271,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.add_asset("data", asset)
         ext = AssetPointcloudExtension(asset)
         self.assertEqual(ext.asset_href, asset.href)
-        self.assertEqual(ext.properties, asset.extra_fields)
+        self.assertEqual(ext.properties, asset.fields)
         self.assertEqual(ext.additional_read_properties, [pc_item.properties])
 
     def test_ext(self) -> None:

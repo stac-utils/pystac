@@ -214,7 +214,7 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.extra_fields
+        self.properties = asset.fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 

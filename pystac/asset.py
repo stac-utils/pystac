@@ -1,7 +1,8 @@
 from copy import copy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
-from pystac import common_metadata
+from pystac import base, common_metadata
+from pystac.media_type import MediaType
 from pystac import utils
 
 if TYPE_CHECKING:
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
 
 
-class Asset:
+class Asset(base.JSONObject):
     """An object that contains a link to data associated with an Item or Collection that
     can be downloaded or streamed.
 
@@ -30,32 +31,12 @@ class Asset:
             object JSON.
     """
 
-    href: str
-    """Link to the asset object. Relative and absolute links are both allowed."""
-
-    title: Optional[str]
-    """Optional displayed title for clients and users."""
-
-    description: Optional[str]
-    """A description of the Asset providing additional details, such as how it was
-    processed or created. CommonMark 0.29 syntax MAY be used for rich text
-    representation."""
-
-    media_type: Optional[str]
-    """Optional description of the media type. Registered Media Types are preferred.
-    See :class:`~pystac.MediaType` for common media types."""
-
-    roles: Optional[List[str]]
-    """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
-    asset."""
+    fields: Dict[str, Any]
+    """Dictionary of JSON fields for this asset."""
 
     owner: Optional[Union["Item_Type", "Collection_Type"]]
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
-
-    extra_fields: Dict[str, Any]
-    """Optional, additional fields for this asset. This is used by extensions as a
-    way to serialize and deserialize properties on asset object JSON."""
 
     def __init__(
         self,
@@ -66,15 +47,77 @@ class Asset:
         roles: Optional[List[str]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
+        self.fields = extra_fields or {}
         self.href = href
         self.title = title
         self.description = description
         self.media_type = media_type
         self.roles = roles
-        self.extra_fields = extra_fields or {}
 
         # The Item which owns this Asset.
         self.owner = None
+
+    @property
+    def href(self) -> str:
+        """Link to the asset object. Relative and absolute links are both allowed."""
+        return self._get_field("href", str, required=True)
+
+    @href.setter
+    def href(self, v: str) -> None:
+        self._set_field("href", v)
+
+    @property
+    def title(self) -> Optional[str]:
+        """Optional displayed title for clients and users."""
+        return self._get_field("title", str)
+
+    @title.setter
+    def title(self, v: Optional[str]) -> None:
+        self._set_field("title", v, pop_if_none=True)
+
+    @property
+    def description(self) -> Optional[str]:
+        """A description of the Asset providing additional details, such as how it was
+        processed or created. CommonMark 0.29 syntax MAY be used for rich text
+        representation."""
+        return self._get_field("description", str)
+
+    @description.setter
+    def description(self, v: Optional[str]) -> None:
+        self._set_field("description", v, pop_if_none=True)
+
+    @property
+    def media_type(self) -> Optional[Union[MediaType, str]]:
+        """Optional description of the media type. Registered Media Types are preferred.
+        See :class:`~pystac.MediaType` for common media types."""
+        return self._get_field("type", str)
+
+    @media_type.setter
+    def media_type(self, v: Optional[Union[MediaType, str]]) -> None:
+        self._set_field("type", v, pop_if_none=True)
+
+    @property
+    def roles(self) -> Optional[List[str]]:
+        """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
+        asset."""
+        return self._get_field("roles", List[str])
+
+    @roles.setter
+    def roles(self, v: Optional[List[str]]) -> None:
+        self._set_field("roles", v, pop_if_none=True)
+
+    @property
+    def extra_fields(self) -> Dict[str, Any]:
+        return {
+            k: v
+            for k, v in self.fields.items()
+            if k not in {"href", "title", "description", "type", "roles"}
+        }
+
+    @extra_fields.setter
+    def extra_fields(self, v: Dict[str, Any]) -> None:
+        for _k, _v in v.items():
+            self._set_field(_k, _v, pop_if_none=True)
 
     def set_owner(self, obj: Union["Collection_Type", "Item_Type"]) -> None:
         """Sets the owning item of this Asset.
@@ -104,33 +147,6 @@ class Asset:
             else:
                 return None
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this Asset.
-
-        Returns:
-            dict: A serialization of the Asset that can be written out as JSON.
-        """
-
-        d: Dict[str, Any] = {"href": self.href}
-
-        if self.media_type is not None:
-            d["type"] = self.media_type
-
-        if self.title is not None:
-            d["title"] = self.title
-
-        if self.description is not None:
-            d["description"] = self.description
-
-        if self.extra_fields is not None and len(self.extra_fields) > 0:
-            for k, v in self.extra_fields.items():
-                d[k] = v
-
-        if self.roles is not None:
-            d["roles"] = self.roles
-
-        return d
-
     def clone(self) -> "Asset":
         """Clones this asset.
 
@@ -144,7 +160,7 @@ class Asset:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            extra_fields=self.extra_fields,
+            extra_fields=dict(self.extra_fields),
         )
 
     @property

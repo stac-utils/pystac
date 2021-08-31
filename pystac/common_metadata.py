@@ -1,9 +1,10 @@
 from datetime import datetime as Datetime
-from pystac.errors import STACError
 from typing import Any, cast, Dict, List, Optional, Type, TYPE_CHECKING, TypeVar, Union
 
 import pystac
 from pystac import utils
+from pystac.base import JSONObject
+from pystac.errors import STACError
 
 if TYPE_CHECKING:
     from pystac.provider import Provider as Provider_Type
@@ -32,19 +33,16 @@ class CommonMetadata:
     def _set_field(self, prop_name: str, v: Optional[Any]) -> None:
         if hasattr(self.object, prop_name):
             setattr(self.object, prop_name, v)
-        elif hasattr(self.object, "properties"):
-            item = cast("Item_Type", self.object)
+        elif isinstance(self.object, pystac.Item):
             if v is None:
-                item.properties.pop(prop_name, None)
+                self.object.properties.pop(prop_name, None)
             else:
-                item.properties[prop_name] = v
-        elif hasattr(self.object, "extra_fields") and isinstance(
-            self.object.extra_fields, Dict
-        ):
+                self.object.properties[prop_name] = v
+        elif isinstance(self.object, JSONObject):
             if v is None:
-                self.object.extra_fields.pop(prop_name, None)
+                self.object.fields.pop(prop_name, None)
             else:
-                self.object.extra_fields[prop_name] = v
+                self.object.fields[prop_name] = v
         else:
             raise pystac.STACError(f"Cannot set field {prop_name} on {self}.")
 
