@@ -11,7 +11,7 @@ doc8==0.9.0
 types-python-dateutil==0.1.6
 types-orjson==3.6.0
 
-pre-commit==2.14.0
+pre-commit==2.14.1
 
 # optional dependencies
 orjson==3.6.3
