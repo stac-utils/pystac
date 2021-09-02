@@ -44,7 +44,7 @@ jobs:
         # wheel.
         if: ${{ startsWith(matrix.python-version, '3.10')}}
         with:
-          toolchain: nightly-2021-04-27
+          toolchain: stable
           override: true
           default: true
           profile: minimal
