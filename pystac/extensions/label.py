@@ -5,7 +5,7 @@ https://github.com/stac-extensions/label
 
 from enum import Enum
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -73,7 +73,7 @@ class LabelClasses:
 
     def apply(
         self,
-        classes: List[Union[str, int, float]],
+        classes: Sequence[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> None:
         """Sets the properties for this instance.
@@ -90,7 +90,7 @@ class LabelClasses:
     @classmethod
     def create(
         cls,
-        classes: List[Union[str, int, float]],
+        classes: Sequence[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> "LabelClasses":
         """Creates a new :class:`~LabelClasses` instance.
@@ -106,12 +106,12 @@ class LabelClasses:
         return c
 
     @property
-    def classes(self) -> List[Union[str, int, float]]:
+    def classes(self) -> Sequence[Union[str, int, float]]:
         """Gets or sets the class values."""
         return get_required(self.properties.get("classes"), self, "classes")
 
     @classes.setter
-    def classes(self, v: List[Union[str, int, float]]) -> None:
+    def classes(self, v: Sequence[Union[str, int, float]]) -> None:
         self.properties["classes"] = v
 
     @property
