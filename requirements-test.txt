@@ -4,7 +4,7 @@ black==21.9b0
 
 codespell==2.1.0
 
-jsonschema==3.2.0
+jsonschema==4.0.1
 coverage==5.5
 doc8==0.9.1
 
