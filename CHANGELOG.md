@@ -13,9 +13,6 @@
 - Enable [strict
   mode](https://mypy.readthedocs.io/en/latest/command_line.html?highlight=strict%20mode#cmdoption-mypy-strict)
   for `mypy` ([#591](https://github.com/stac-utils/pystac/pull/591))
-- `Catalog.set_root` also sets `Catalog.stac_io` for the calling instance to be the same
-  as `root.stac_io`, if that value is not `None`
-  ([#590](https://github.com/stac-utils/pystac/pull/590))
 - Links will get their `title` from their target if no `title` is provided ([#607](https://github.com/stac-utils/pystac/pull/607))
 - Relax typing on `LabelClasses` from `List` to `Sequence` ([#627](https://github.com/stac-utils/pystac/pull/627))
 

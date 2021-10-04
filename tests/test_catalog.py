@@ -18,7 +18,6 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.stac_io import DefaultStacIO
 from pystac.utils import is_absolute_href, join_path_or_url, JoinType
 from tests.utils import (
     TestCases,
@@ -107,19 +106,6 @@ class CatalogTest(unittest.TestCase):
         root_cat = pystac.Catalog(id="test", description="test desc")
         collection = Catalog.from_dict(cat_dict, root=root_cat)
         self.assertIs(collection.get_root(), root_cat)
-
-    def test_from_dict_uses_root_stac_io(self) -> None:
-        class CustomStacIO(DefaultStacIO):
-            pass
-
-        path = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
-        with open(path) as f:
-            cat_dict = json.load(f)
-        root_cat = pystac.Catalog(id="test", description="test desc")
-        root_cat._stac_io = CustomStacIO()
-
-        collection = Catalog.from_dict(cat_dict, root=root_cat)
-        self.assertIsInstance(collection._stac_io, CustomStacIO)
 
     def test_read_remote(self) -> None:
         # TODO: Move this URL to the main stac-spec repo once the example JSON is fixed.
