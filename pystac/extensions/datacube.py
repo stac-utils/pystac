@@ -415,10 +415,12 @@ class Variable:
 
     @property
     def dimensions(self) -> List[str]:
-        """The dimensions of hte variable. Should refer to keys in the `cube:dimensions` object
+        """The dimensions of the variable. Should refer to keys in the `cube:dimensions` object
         or be an empty list if the variable has no dimensions"""
         return get_required(
-            self.properties.get(DIM_DIMENSIONS_PROP), "cube:variable", DIM_DIMENSIONS_PROP
+            self.properties.get(DIM_DIMENSIONS_PROP),
+            "cube:variable",
+            DIM_DIMENSIONS_PROP,
         )
 
     @dimensions.setter
@@ -443,7 +445,7 @@ class Variable:
         return self.properties.get(DIM_DESC_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]):
+    def description(self, v: Optional[str]) -> None:
         if v is None:
             self.properties.pop(DIM_DESC_PROP, None)
         else:
@@ -452,16 +454,16 @@ class Variable:
     @property
     def extent(self) -> List[Union[float, str, None]]:
         """If the variable consists of `ordinal values
-        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent (lower and upper bounds) of the
-        values as two-dimensional array. Use `None` for open intervals"""
-        return self.properties.get(DIM_EXTENT_PROP)
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent
+        (lower and upper bounds) of the values as two-dimensional array. Use `None` for
+        open intervals"""
+        return get_required(
+            self.properties.get(DIM_EXTENT_PROP), "cube:variable", DIM_EXTENT_PROP
+        )
 
     @extent.setter
-    def extent(self, v: Optional[List[Union[float, str, None]]]):
-        if v is None:
-            self.properties.pop(DIM_EXTENT_PROP)
-        else:
-            self.properties[DIM_EXTENT_PROP] = v
+    def extent(self, v: List[Union[float, str, None]]) -> None:
+        self.properties[DIM_EXTENT_PROP] = v
 
     @property
     def values(self) -> Optional[List[Union[float, str]]]:
@@ -470,7 +472,7 @@ class Variable:
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
-    def values(self, v: Optional[List[Union[float, str]]]):
+    def values(self, v: Optional[List[Union[float, str]]]) -> None:
         if v is None:
             self.properties.pop(DIM_VALUES_PROP)
         else:
@@ -483,7 +485,7 @@ class Variable:
         return self.properties.get(DIM_UNIT_PROP)
 
     @unit.setter
-    def unit(self, v: Optional[str]):
+    def unit(self, v: Optional[str]) -> None:
         if v is None:
             self.properties.pop(DIM_UNIT_PROP)
         else:
