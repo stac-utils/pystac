@@ -21,6 +21,7 @@ SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
 
 PREFIX: str = "cube:"
 DIMENSIONS_PROP = PREFIX + "dimensions"
+VARIABLES_PROP = PREFIX + "variables"
 
 # Dimension properties
 DIM_TYPE_PROP = "type"
@@ -28,6 +29,7 @@ DIM_DESC_PROP = "description"
 DIM_AXIS_PROP = "axis"
 DIM_EXTENT_PROP = "extent"
 DIM_VALUES_PROP = "values"
+DIM_DIMENSIONS_PROP = "dimensions"
 DIM_STEP_PROP = "step"
 DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
@@ -398,6 +400,100 @@ class AdditionalDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
+class VariableType(str, Enum):
+    """Variable object types"""
+
+    DATA = "data"
+    AUXILIARY = "auxiliary"
+
+
+class Variable:
+    properties: Dict[str, Any]
+
+    def __init__(self, properties: Dict[str, Any]) -> None:
+        self.properties = properties
+
+    @property
+    def dimensions(self) -> List[str]:
+        """The dimensions of hte variable. Should refer to keys in the `cube:dimensions` object
+        or be an empty list if the variable has no dimensions"""
+        return get_required(
+            self.properties.get(DIM_DIMENSIONS_PROP), "cube:variable", DIM_DIMENSIONS_PROP
+        )
+
+    @dimensions.setter
+    def dimensions(self, v: List[str]) -> None:
+        self.properties[DIM_DIMENSIONS_PROP] = v
+
+    @property
+    def var_type(self) -> Union[VariableType, str]:
+        """Type of the variable, either `data` or `auxiliary`"""
+        return get_required(
+            self.properties.get(DIM_TYPE_PROP), "cube:variable", DIM_TYPE_PROP
+        )
+
+    @var_type.setter
+    def var_type(self, v: Union[VariableType, str]) -> None:
+        self.properties[DIM_TYPE_PROP] = v
+
+    @property
+    def description(self) -> Optional[str]:
+        """Detailed multi-line description to explain the variable. `CommonMark 0.29
+        <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
+        return self.properties.get(DIM_DESC_PROP)
+
+    @description.setter
+    def description(self, v: Optional[str]):
+        if v is None:
+            self.properties.pop(DIM_DESC_PROP, None)
+        else:
+            self.properties[DIM_DESC_PROP] = v
+
+    @property
+    def extent(self) -> List[Union[float, str, None]]:
+        """If the variable consists of `ordinal values
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent (lower and upper bounds) of the
+        values as two-dimensional array. Use `None` for open intervals"""
+        return self.properties.get(DIM_EXTENT_PROP)
+
+    @extent.setter
+    def extent(self, v: Optional[List[Union[float, str, None]]]):
+        if v is None:
+            self.properties.pop(DIM_EXTENT_PROP)
+        else:
+            self.properties[DIM_EXTENT_PROP] = v
+
+    @property
+    def values(self) -> Optional[List[Union[float, str]]]:
+        """A set of all potential values, especially useful for `nominal values
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`."""
+        return self.properties.get(DIM_VALUES_PROP)
+
+    @values.setter
+    def values(self, v: Optional[List[Union[float, str]]]):
+        if v is None:
+            self.properties.pop(DIM_VALUES_PROP)
+        else:
+            self.properties[DIM_VALUES_PROP] = v
+
+    @property
+    def unit(self) -> Optional[str]:
+        """The unit of measurement for the data, preferably compliant to `UDUNITS-2
+        <https://ncics.org/portfolio/other-resources/udunits2/>` units (singular)"""
+        return self.properties.get(DIM_UNIT_PROP)
+
+    @unit.setter
+    def unit(self, v: Optional[str]):
+        if v is None:
+            self.properties.pop(DIM_UNIT_PROP)
+        else:
+            self.properties[DIM_UNIT_PROP] = v
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "Variable":
+        return Variable(d)
+
+
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
@@ -423,8 +519,6 @@ class DatacubeExtension(
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
-            bands : A list of available bands where each item is a :class:`~Band`
-                object. If given, requires at least one band.
             dimensions : Dictionary mapping dimension name to a :class:`Dimension`
                 object.
         """
@@ -441,6 +535,15 @@ class DatacubeExtension(
     @dimensions.setter
     def dimensions(self, v: Dict[str, Dimension]) -> None:
         self._set_property(DIMENSIONS_PROP, {k: dim.to_dict() for k, dim in v.items()})
+
+    @property
+    def variables(self) -> Optional[Dict[str, Variable]]:
+        """Dictionary mapping variable name to a :class:`Variable` object."""
+        result = self._get_property(VARIABLES_PROP, Dict[str, Any])
+
+        if result is None:
+            return None
+        return {k: Variable.from_dict(v) for k, v in result.items()}
 
     @classmethod
     def get_schema_uri(cls) -> str:
