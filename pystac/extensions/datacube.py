@@ -17,7 +17,7 @@ from pystac.utils import get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
 
 PREFIX: str = "cube:"
 DIMENSIONS_PROP = PREFIX + "dimensions"
@@ -33,6 +33,14 @@ DIM_DIMENSIONS_PROP = "dimensions"
 DIM_STEP_PROP = "step"
 DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
+
+# Variable properties
+VAR_TYPE_PROP = "type"
+VAR_DESC_PROP = "description"
+VAR_EXTENT_PROP = "extent"
+VAR_VALUES_PROP = "values"
+VAR_DIMENSIONS_PROP = "dimensions"
+VAR_UNIT_PROP = "unit"
 
 
 class DimensionType(str, Enum):
@@ -415,81 +423,81 @@ class Variable:
 
     @property
     def dimensions(self) -> List[str]:
-        """The dimensions of the variable. Should refer to keys in the `cube:dimensions` object
-        or be an empty list if the variable has no dimensions"""
+        """The dimensions of the variable. Should refer to keys in the ``cube:dimensions``
+        object or be an empty list if the variable has no dimensions"""
         return get_required(
-            self.properties.get(DIM_DIMENSIONS_PROP),
+            self.properties.get(VAR_DIMENSIONS_PROP),
             "cube:variable",
-            DIM_DIMENSIONS_PROP,
+            VAR_DIMENSIONS_PROP,
         )
 
     @dimensions.setter
     def dimensions(self, v: List[str]) -> None:
-        self.properties[DIM_DIMENSIONS_PROP] = v
+        self.properties[VAR_DIMENSIONS_PROP] = v
 
     @property
     def var_type(self) -> Union[VariableType, str]:
-        """Type of the variable, either `data` or `auxiliary`"""
+        """Type of the variable, either ``data`` or ``auxiliary``"""
         return get_required(
-            self.properties.get(DIM_TYPE_PROP), "cube:variable", DIM_TYPE_PROP
+            self.properties.get(VAR_TYPE_PROP), "cube:variable", VAR_TYPE_PROP
         )
 
     @var_type.setter
     def var_type(self, v: Union[VariableType, str]) -> None:
-        self.properties[DIM_TYPE_PROP] = v
+        self.properties[VAR_TYPE_PROP] = v
 
     @property
     def description(self) -> Optional[str]:
         """Detailed multi-line description to explain the variable. `CommonMark 0.29
         <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
-        return self.properties.get(DIM_DESC_PROP)
+        return self.properties.get(VAR_DESC_PROP)
 
     @description.setter
     def description(self, v: Optional[str]) -> None:
         if v is None:
-            self.properties.pop(DIM_DESC_PROP, None)
+            self.properties.pop(VAR_DESC_PROP, None)
         else:
-            self.properties[DIM_DESC_PROP] = v
+            self.properties[VAR_DESC_PROP] = v
 
     @property
     def extent(self) -> List[Union[float, str, None]]:
         """If the variable consists of `ordinal values
         <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent
-        (lower and upper bounds) of the values as two-dimensional array. Use `None` for
-        open intervals"""
+        (lower and upper bounds) of the values as two-dimensional array. Use ``None``
+        for open intervals"""
         return get_required(
-            self.properties.get(DIM_EXTENT_PROP), "cube:variable", DIM_EXTENT_PROP
+            self.properties.get(VAR_EXTENT_PROP), "cube:variable", VAR_EXTENT_PROP
         )
 
     @extent.setter
     def extent(self, v: List[Union[float, str, None]]) -> None:
-        self.properties[DIM_EXTENT_PROP] = v
+        self.properties[VAR_EXTENT_PROP] = v
 
     @property
     def values(self) -> Optional[List[Union[float, str]]]:
         """A set of all potential values, especially useful for `nominal values
         <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`."""
-        return self.properties.get(DIM_VALUES_PROP)
+        return self.properties.get(VAR_VALUES_PROP)
 
     @values.setter
     def values(self, v: Optional[List[Union[float, str]]]) -> None:
         if v is None:
-            self.properties.pop(DIM_VALUES_PROP)
+            self.properties.pop(VAR_VALUES_PROP)
         else:
-            self.properties[DIM_VALUES_PROP] = v
+            self.properties[VAR_VALUES_PROP] = v
 
     @property
     def unit(self) -> Optional[str]:
         """The unit of measurement for the data, preferably compliant to `UDUNITS-2
         <https://ncics.org/portfolio/other-resources/udunits2/>` units (singular)"""
-        return self.properties.get(DIM_UNIT_PROP)
+        return self.properties.get(VAR_UNIT_PROP)
 
     @unit.setter
     def unit(self, v: Optional[str]) -> None:
         if v is None:
-            self.properties.pop(DIM_UNIT_PROP)
+            self.properties.pop(VAR_UNIT_PROP)
         else:
-            self.properties[DIM_UNIT_PROP] = v
+            self.properties[VAR_UNIT_PROP] = v
 
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> "Variable":

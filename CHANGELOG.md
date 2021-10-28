@@ -18,6 +18,7 @@
   ([#590](https://github.com/stac-utils/pystac/pull/590))
 - Links will get their `title` from their target if no `title` is provided ([#607](https://github.com/stac-utils/pystac/pull/607))
 - Relax typing on `LabelClasses` from `List` to `Sequence` ([#627](https://github.com/stac-utils/pystac/pull/627))
+- Upgraded datacube-extension to version 2.0.0 ([#645](https://github.com/stac-utils/pystac/pull/645))
 
 ### Fixed
 
