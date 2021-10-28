@@ -362,6 +362,22 @@ AdditionalDimension
    :show-inheritance:
    :inherited-members:
 
+VariableType
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VariableType
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+Variable
+~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.Variable
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 DatacubeExtension
 ~~~~~~~~~~~~~~~~~
 
