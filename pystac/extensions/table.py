@@ -15,7 +15,7 @@ from pystac.utils import get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/table/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/table/v1.2.0/schema.json"
 
 PREFIX: str = "table:"
 COLUMNS_PROP = PREFIX + "columns"
