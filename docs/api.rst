@@ -809,6 +809,39 @@ ItemScientificExtension
    :members:
    :show-inheritance:
 
+Table Extension
+---------------
+
+These classes are representations of the :stac-ext:`Table Extension Spec <tables>`.
+
+TableExtension
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.TableExtension
+   :members:
+   :show-inheritance:
+
+CollectionTableExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.CollectionTableExtension
+   :members:
+   :show-inheritance:
+
+ItemTableExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.ItemTableExtension
+   :members:
+   :show-inheritance:
+
+AssetTableExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.AssetTableExtension
+   :members:
+   :show-inheritance:
+
 Timestamps Extension
 --------------------
 
