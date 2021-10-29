@@ -94,9 +94,7 @@ class Table:
     @property
     def name(self) -> str:
         """The table name"""
-        return get_required(
-            self.properties.get(TBL_NAME_PROP), "table:table", TBL_NAME_PROP
-        )
+        return get_required(self.properties.get(TBL_NAME_PROP), self, TBL_NAME_PROP)
 
     @name.setter
     def name(self, v: str) -> None:
