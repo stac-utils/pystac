@@ -2,7 +2,6 @@
 
 https://github.com/stac-extensions/table
 """
-from copy import deepcopy
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -81,7 +80,7 @@ class Column:
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns a JSON-like dictionary representing this ``Column``."""
-        return deepcopy(self.properties)
+        return self.properties
 
 
 class Table:
@@ -118,7 +117,7 @@ class Table:
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns a JSON-like dictionary representing this ``Table``."""
-        return deepcopy(self.properties)
+        return self.properties
 
 
 class TableExtension(
