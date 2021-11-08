@@ -2,7 +2,7 @@ import os
 import posixpath
 from enum import Enum
 from pystac.errors import RequiredPropertyMissing
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, cast
 from urllib.parse import urljoin, urlparse, urlunparse, ParseResult as URLParseResult
 from datetime import datetime, timezone
 import dateutil.parser
@@ -37,7 +37,14 @@ def safe_urlparse(href: str) -> URLParseResult:
         return parsed
 
 
-class JoinType(str, Enum):
+class StringEnum(str, Enum):
+    """Base Enum class for string enums that will serialize as the string value."""
+
+    def __str__(self) -> str:
+        return cast(str, self.value)
+
+
+class JoinType(StringEnum):
     """Allowed join types for the :func:`_join` function."""
 
     @staticmethod

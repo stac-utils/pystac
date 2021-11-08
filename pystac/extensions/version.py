@@ -2,11 +2,11 @@
 
 https://github.com/stac-extensions/version
 """
-from enum import Enum
 from pystac.utils import get_required, map_opt
 from typing import Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
+from pystac.utils import StringEnum
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -23,7 +23,7 @@ VERSION: str = "version"
 DEPRECATED: str = "deprecated"
 
 
-class VersionRelType(str, Enum):
+class VersionRelType(StringEnum):
     """A list of rel types defined in the Version Extension.
 
     See the `Version Extension Relation types

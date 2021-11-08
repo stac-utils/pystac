@@ -186,7 +186,6 @@ class LinkTest(unittest.TestCase):
         assert link.title == link_title
         assert link.to_dict().get("title") == link_title
 
-    @unittest.expectedFailure
     def test_serialize_link(self) -> None:
         href = "https://some-domain/path/to/item.json"
         title = "A Test Link"
