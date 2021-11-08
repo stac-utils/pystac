@@ -1,0 +1,34 @@
+{
+  "type": "Collection",
+  "id": "id",
+  "stac_version": "1.0.0",
+  "description": "desc",
+  "links": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/table/v1.2.0/schema.json"
+  ],
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          null,
+          null
+        ]
+      ]
+    }
+  },
+  "license": "proprietary",
+  "item_assets": {},
+  "table:columns": []
+}
