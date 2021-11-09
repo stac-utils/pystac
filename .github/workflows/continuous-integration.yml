@@ -37,7 +37,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: actions-rs/toolchain@v1
-        # Wheels for orjson on Python 3.10 are still spotty on MacOS or Windows. This sets up the Rust nightly
+        # Wheels for orjson on Python 3.10 are still spotty on MacOS or Windows. This sets up the Rust
         # toolchain so we can build the orjson wheel.
         if: ${{ startsWith(matrix.python-version, '3.10')}}
         with:
