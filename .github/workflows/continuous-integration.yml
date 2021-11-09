@@ -14,7 +14,6 @@ jobs:
   test:
     name: test
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ startsWith(matrix.python-version, '3.10')}}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
       fail-fast: false
@@ -23,7 +22,7 @@ jobs:
           - "3.7"
           - "3.8"
           - "3.9"
-          - "3.10.0-rc.1"
+          - "3.10"
         os:
           - ubuntu-latest
           - windows-latest
@@ -38,10 +37,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: actions-rs/toolchain@v1
-        # No wheels exist for orjson on Python 3.10 on MacOS or Windows, and the Linux
-        #  wheels are sometimes not uploaded until after the package is initially
-        # published. This sets up the Rust nightly toolchain so we can build the orjson
-        # wheel.
+        # Wheels for orjson on Python 3.10 are still spotty on MacOS or Windows. This sets up the Rust
+        # toolchain so we can build the orjson wheel.
         if: ${{ startsWith(matrix.python-version, '3.10')}}
         with:
           toolchain: stable
@@ -142,7 +139,7 @@ jobs:
           - "3.7"
           - "3.8"
           - "3.9"
-          - "3.10.0-rc.1"
+          - "3.10"
 
     steps:
       - uses: actions/checkout@v2
