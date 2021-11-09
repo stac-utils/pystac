@@ -5,6 +5,7 @@
 ### Added
 
 - Added Table-extension ([#646](https://github.com/stac-utils/pystac/pull/646))
+- Stable support for Python 3.10 ([#656](https://github.com/stac-utils/pystac/pull/656))
 
 ### Removed
 
