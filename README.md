@@ -16,8 +16,9 @@ for Python versions. This means that users can expect support for Python 3.7 to 
 removed from the `main` branch after Dec 26, 2021 and therefore from the next release
 after that date.
 
-*Support for Python >= 3.10 should be considered experimental
-until further notice.*
+Note that while we support Python 3.10.\*, wheels for the `orjson` library are not always immediately available for all
+platforms. If you install PySTAC with the `orjson` extra, you may need to have the Rust toolchain installed in order to
+build the package from source.
 
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
