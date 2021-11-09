@@ -17,7 +17,7 @@ removed from the `main` branch after Dec 26, 2021 and therefore from the next re
 after that date.
 
 Note that while we support Python 3.10.\*, wheels for the `orjson` library are not always immediately available for all
-platforms. If you install PySTAC with the `orjson` extra, you may need to have the Rust toolchain installed in order to
+platforms. If you install PySTAC with the `orjson` extra, you may need to have the Rust toolchain installed (e.g. via [rustup](https://rustup.rs/)) in order to
 build the package from source.
 
 PySTAC has a single required dependency (`python-dateutil`).
