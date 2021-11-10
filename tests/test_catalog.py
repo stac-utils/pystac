@@ -842,7 +842,7 @@ class CatalogTest(unittest.TestCase):
             cat = TestCases.test_case_9()
             cat.normalize_hrefs(tmp_dir)
             cat.validate_all()
-            print(f"Saving catalog to: {tmp_dir}")
+
             cat.save(catalog_type=CatalogType.SELF_CONTAINED)
 
             # read the item back, to make experiment clean
@@ -852,11 +852,15 @@ class CatalogTest(unittest.TestCase):
             # ensure that all links in the output json are relative
             # everything of a nested level > 2 is not relative?
             for link in item.links:
+                # self links are always absolute
+                if link.rel == "self":
+                    continue
+
                 href = link.get_href()
                 assert href is not None
-                self.assertFalse(is_absolute_href(href))
-            # use time sleep to pause there and inspect catalogs manually
-            # time.sleep(10000)
+                self.assertFalse(
+                    is_absolute_href(href), msg=f"Link with rel={link.rel} is absolute!"
+                )
 
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
         cat = TestCases.test_case_3()
