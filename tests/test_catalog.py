@@ -838,28 +838,52 @@ class CatalogTest(unittest.TestCase):
                 check_all_absolute(c2)
 
     def test_self_contained_catalog_collection_item_links(self) -> None:
+        """See issue https://github.com/stac-utils/pystac/issues/657"""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            cat = TestCases.test_case_9()
-            cat.normalize_hrefs(tmp_dir)
-            cat.validate_all()
-
-            cat.save(catalog_type=CatalogType.SELF_CONTAINED)
-
-            # read the item back, to make experiment clean
-            item = Item.from_file(
-                f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
+            catalog = pystac.Catalog(
+                id="catalog-issue-657", description="catalog-issue-657"
             )
-            # ensure that all links in the output json are relative
-            # everything of a nested level > 2 is not relative?
-            for link in item.links:
+            collection = pystac.Collection(
+                "collection-issue-657",
+                "collection-issue-657",
+                pystac.Extent(
+                    spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+                    temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
+                ),
+                license="proprietary",
+            )
+
+            item = pystac.Item(
+                id="item-issue-657",
+                stac_extensions=[],
+                geometry=ARBITRARY_GEOM,
+                bbox=ARBITRARY_BBOX,
+                datetime=datetime(2021, 11, 1),
+                properties={},
+            )
+
+            collection.add_item(item)
+            catalog.add_child(collection)
+
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.validate_all()
+
+            catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
+            item_json = json.loads(
+                open(
+                    f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
+                ).read()
+            )
+
+            for link in item_json["links"]:
                 # self links are always absolute
-                if link.rel == "self":
+                if link["rel"] == "self":
                     continue
 
-                href = link.get_href()
-                assert href is not None
+                href = link["href"]
                 self.assertFalse(
-                    is_absolute_href(href), msg=f"Link with rel={link.rel} is absolute!"
+                    is_absolute_href(href),
+                    msg=f"Link with rel={link['rel']} is absolute!",
                 )
 
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:

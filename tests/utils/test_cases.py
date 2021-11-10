@@ -242,32 +242,3 @@ class TestCases:
                 "data-files/catalogs/" "planet-example-v1.0.0-beta.2/collection.json"
             )
         )
-
-    @staticmethod
-    def test_case_9() -> Catalog:
-        """Manually created STAC Catalog, see issue https://github.com/stac-utils/pystac/issues/657"""
-        catalog = pystac.Catalog(
-            id="catalog-issue-657", description="catalog-issue-657"
-        )
-        collection = pystac.Collection(
-            "collection-issue-657",
-            "collection-issue-657",
-            pystac.Extent(
-                spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
-                temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
-            ),
-            license="proprietary",
-        )
-
-        item = pystac.Item(
-            id="item-issue-657",
-            stac_extensions=[],
-            geometry=ARBITRARY_GEOM,
-            bbox=ARBITRARY_BBOX,
-            datetime=datetime(2021, 11, 1),
-            properties={},
-        )
-
-        collection.add_item(item)
-        catalog.add_child(collection)
-        return catalog
