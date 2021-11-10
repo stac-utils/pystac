@@ -187,12 +187,12 @@ class Catalog(STACObject):
                 root._resolved_objects, self._resolved_objects
             )
 
-        # Walk through resolved object links and update the root
-        for link in self.links:
-            if link.rel == pystac.RelType.CHILD or link.rel == pystac.RelType.ITEM:
-                target = link.target
-                if isinstance(target, STACObject):
-                    target.set_root(root)
+            # Walk through resolved object links and update the root
+            for link in self.links:
+                if link.rel == pystac.RelType.CHILD or link.rel == pystac.RelType.ITEM:
+                    target = link.target
+                    if isinstance(target, STACObject):
+                        target.set_root(root)
 
     def is_relative(self) -> bool:
         return self.catalog_type in [
