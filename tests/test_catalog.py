@@ -853,7 +853,7 @@ class CatalogTest(unittest.TestCase):
             # everything of a nested level > 2 is not relative?
             for link in item.links:
                 href = link.get_href()
-                self.assertIsNotNone(href)
+                assert href is not None
                 self.assertFalse(is_absolute_href(href))
             # use time sleep to pause there and inspect catalogs manually
             # time.sleep(10000)
