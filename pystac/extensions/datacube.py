@@ -4,7 +4,6 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
-from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -13,7 +12,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required
+from pystac.utils import StringEnum, get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
@@ -42,14 +41,14 @@ VAR_DIMENSIONS_PROP = "dimensions"
 VAR_UNIT_PROP = "unit"
 
 
-class DimensionType(str, Enum):
+class DimensionType(StringEnum):
     """Dimension object types for spatial and temporal Dimension Objects."""
 
     SPATIAL = "spatial"
     TEMPORAL = "temporal"
 
 
-class HorizontalSpatialDimensionAxis(str, Enum):
+class HorizontalSpatialDimensionAxis(StringEnum):
     """Allowed values for ``axis`` field of :class:`HorizontalSpatialDimension`
     object."""
 
@@ -57,7 +56,7 @@ class HorizontalSpatialDimensionAxis(str, Enum):
     Y = "y"
 
 
-class VerticalSpatialDimensionAxis(str, Enum):
+class VerticalSpatialDimensionAxis(StringEnum):
     """Allowed values for ``axis`` field of :class:`VerticalSpatialDimension`
     object."""
 
@@ -407,7 +406,7 @@ class AdditionalDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
-class VariableType(str, Enum):
+class VariableType(StringEnum):
     """Variable object types"""
 
     DATA = "data"

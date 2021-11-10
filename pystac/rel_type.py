@@ -1,7 +1,7 @@
-from enum import Enum
+from pystac.utils import StringEnum
 
 
-class RelType(str, Enum):
+class RelType(StringEnum):
     """A list of common rel types that can be used in STAC Link metadata.
     See :stac-spec:`"Using Relation Types <best-practices.md#using-relation-types>`
     in the STAC Best Practices for guidelines on using relation types. You may also want

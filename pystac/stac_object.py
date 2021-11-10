@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional, Type, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
 from pystac.link import Link
-from pystac.utils import is_absolute_href, make_absolute_href
+from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
 
 
-class STACObjectType(str, Enum):
+class STACObjectType(StringEnum):
     CATALOG = "Catalog"
     COLLECTION = "Collection"
     ITEM = "Feature"
