@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/sar
 """
 
-import enum
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast, Union
 
 import pystac
@@ -15,7 +14,7 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required, map_opt
+from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
@@ -40,7 +39,7 @@ LOOKS_EQUIVALENT_NUMBER_PROP: str = PREFIX + "looks_equivalent_number"
 OBSERVATION_DIRECTION_PROP: str = PREFIX + "observation_direction"
 
 
-class FrequencyBand(str, enum.Enum):
+class FrequencyBand(StringEnum):
     P = "P"
     L = "L"
     S = "S"
@@ -51,14 +50,14 @@ class FrequencyBand(str, enum.Enum):
     KA = "Ka"
 
 
-class Polarization(str, enum.Enum):
+class Polarization(StringEnum):
     HH = "HH"
     VV = "VV"
     HV = "HV"
     VH = "VH"
 
 
-class ObservationDirection(str, enum.Enum):
+class ObservationDirection(StringEnum):
     LEFT = "left"
     RIGHT = "right"
 

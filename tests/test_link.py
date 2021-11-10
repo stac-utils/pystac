@@ -186,6 +186,17 @@ class LinkTest(unittest.TestCase):
         assert link.title == link_title
         assert link.to_dict().get("title") == link_title
 
+    def test_serialize_link(self) -> None:
+        href = "https://some-domain/path/to/item.json"
+        title = "A Test Link"
+        link = pystac.Link(pystac.RelType.SELF, href, pystac.MediaType.JSON, title)
+        link_dict = link.to_dict()
+
+        self.assertEqual(str(link_dict["rel"]), "self")
+        self.assertEqual(str(link_dict["type"]), "application/json")
+        self.assertEqual(link_dict["title"], title)
+        self.assertEqual(link_dict["href"], href)
+
 
 class StaticLinkTest(unittest.TestCase):
     def setUp(self) -> None:

@@ -2,7 +2,6 @@
 
 https://github.com/stac-extensions/pointcloud
 """
-from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, cast, Union
 
 import pystac
@@ -13,7 +12,7 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
-from pystac.utils import map_opt, get_required
+from pystac.utils import StringEnum, map_opt, get_required
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
@@ -28,7 +27,7 @@ DENSITY_PROP = PREFIX + "density"
 STATISTICS_PROP = PREFIX + "statistics"
 
 
-class PhenomenologyType(str, Enum):
+class PhenomenologyType(StringEnum):
     """Valid values for the ``pc:type`` field in the :stac-ext:`Pointcloud Item
     Properties <pointcloud#item-properties>`."""
 
@@ -39,7 +38,7 @@ class PhenomenologyType(str, Enum):
     OTHER = "other"
 
 
-class SchemaType(str, Enum):
+class SchemaType(StringEnum):
     """Valid values for the ``type`` field in a :stac-ext:`Schema Object
     <pointcloud#schema-object>`."""
 

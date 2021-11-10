@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/file
 """
 
-from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
 import pystac
@@ -14,7 +13,7 @@ from pystac.serialization.identify import (
     STACJSONDescription,
     STACVersionID,
 )
-from pystac.utils import get_required
+from pystac.utils import StringEnum, get_required
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -26,7 +25,7 @@ SIZE_PROP = PREFIX + "size"
 VALUES_PROP = PREFIX + "values"
 
 
-class ByteOrder(str, Enum):
+class ByteOrder(StringEnum):
     """List of allows values for the ``"file:byte_order"`` field defined by the
     :stac-ext:`File Info Extension <file>`."""
 

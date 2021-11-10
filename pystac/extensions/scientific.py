@@ -8,7 +8,6 @@ https://doi.org/10.1000/182
 """
 
 import copy
-from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 from urllib import parse
 
@@ -19,7 +18,7 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import map_opt
+from pystac.utils import StringEnum, map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
@@ -35,7 +34,7 @@ DOI_URL_BASE = "https://doi.org/"
 
 
 # Link rel type.
-class ScientificRelType(str, Enum):
+class ScientificRelType(StringEnum):
     """A list of rel types defined in the Scientific Citation Extension.
 
     See the :stac-ext:`Scientific Citation Extension Relation types

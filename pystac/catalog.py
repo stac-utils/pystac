@@ -1,6 +1,5 @@
 import os
 from copy import deepcopy
-from enum import Enum
 from pystac.errors import STACTypeError
 from typing import (
     Any,
@@ -29,7 +28,12 @@ from pystac.serialization import (
     identify_stac_object,
     migrate_to_latest,
 )
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
+from pystac.utils import (
+    StringEnum,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+)
 
 if TYPE_CHECKING:
     from pystac.asset import Asset as Asset_Type
@@ -37,7 +41,7 @@ if TYPE_CHECKING:
     from pystac.collection import Collection as Collection_Type
 
 
-class CatalogType(str, Enum):
+class CatalogType(StringEnum):
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download an online catalog from and be able to use it on their
