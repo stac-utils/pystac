@@ -1119,7 +1119,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_link(link, tag)
 
     def check_catalog(self, c: Catalog, tag: str) -> None:
-        self.assertEqual(len(c.get_links("root")), 1)
+        self.assertEqual(len(c.get_links("root")), 1, msg=f"{c}")
 
         for link in c.links:
             self.check_link(link, tag)
