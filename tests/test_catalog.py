@@ -842,11 +842,13 @@ class CatalogTest(unittest.TestCase):
             cat = TestCases.test_case_9()
             cat.normalize_hrefs(tmp_dir)
             cat.validate_all()
-            print(f'Saving catalog to: {tmp_dir}')
+            print(f"Saving catalog to: {tmp_dir}")
             cat.save(catalog_type=CatalogType.SELF_CONTAINED)
 
             # read the item back, to make experiment clean
-            item = Item.from_file(f'{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json')
+            item = Item.from_file(
+                f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
+            )
             # ensure that all links in the output json are relative
             # everything of a nested level > 2 is not relative?
             for link in item.links:

@@ -244,19 +244,19 @@ class TestCases:
         )
 
     @staticmethod
-    def test_case_9() -> Collection:
+    def test_case_9() -> Catalog:
         """Manually created STAC Catalog, see issue https://github.com/stac-utils/pystac/issues/657"""
-        catalog = pystac.Catalog(id="catalog-issue-657", description="catalog-issue-657")
+        catalog = pystac.Catalog(
+            id="catalog-issue-657", description="catalog-issue-657"
+        )
         collection = pystac.Collection(
             "collection-issue-657",
             "collection-issue-657",
             pystac.Extent(
-                spatial=pystac.SpatialExtent([[-180, -90, 180, 90]]),
-                temporal=pystac.TemporalExtent(
-                    [[datetime(2021,11,1), None]]
-                ),
+                spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+                temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
             ),
-            license='proprietary'
+            license="proprietary",
         )
 
         item = pystac.Item(
@@ -264,8 +264,8 @@ class TestCases:
             stac_extensions=[],
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime(2021,11,1),
-            properties={}
+            datetime=datetime(2021, 11, 1),
+            properties={},
         )
 
         collection.add_item(item)
