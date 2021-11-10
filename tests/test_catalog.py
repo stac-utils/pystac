@@ -869,11 +869,10 @@ class CatalogTest(unittest.TestCase):
             catalog.validate_all()
 
             catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
-            item_json = json.loads(
-                open(
-                    f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
-                ).read()
-            )
+            with open(
+                f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
+            ) as f:
+                item_json = json.load(f)
 
             for link in item_json["links"]:
                 # self links are always absolute
