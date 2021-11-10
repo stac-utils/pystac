@@ -363,7 +363,11 @@ class STACObject(ABC):
         if root is None and isinstance(clone, pystac.Catalog):
             root = clone
 
-        clone.set_root(cast(pystac.Catalog, root))
+        # Set the root of the STAC Object using the base class,
+        # avoiding child class overrides
+        # extra logic which can be incompatible with the full copy.
+        STACObject.set_root(clone, cast(pystac.Catalog, root))
+
         if parent:
             clone.set_parent(parent)
 
