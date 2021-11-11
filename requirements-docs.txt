@@ -1,5 +1,5 @@
 ipython==7.29.0
-Sphinx==4.2.0
+Sphinx==4.3.0
 sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.8.7
 
