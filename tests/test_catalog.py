@@ -837,6 +837,54 @@ class CatalogTest(unittest.TestCase):
                 c2.catalog_type = CatalogType.ABSOLUTE_PUBLISHED
                 check_all_absolute(c2)
 
+    def test_self_contained_catalog_collection_item_links(self) -> None:
+        """See issue https://github.com/stac-utils/pystac/issues/657"""
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = pystac.Catalog(
+                id="catalog-issue-657", description="catalog-issue-657"
+            )
+            collection = pystac.Collection(
+                "collection-issue-657",
+                "collection-issue-657",
+                pystac.Extent(
+                    spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+                    temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
+                ),
+                license="proprietary",
+            )
+
+            item = pystac.Item(
+                id="item-issue-657",
+                stac_extensions=[],
+                geometry=ARBITRARY_GEOM,
+                bbox=ARBITRARY_BBOX,
+                datetime=datetime(2021, 11, 1),
+                properties={},
+            )
+
+            collection.add_item(item)
+            catalog.add_child(collection)
+
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.validate_all()
+
+            catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
+            with open(
+                f"{tmp_dir}/collection-issue-657/item-issue-657/item-issue-657.json"
+            ) as f:
+                item_json = json.load(f)
+
+            for link in item_json["links"]:
+                # self links are always absolute
+                if link["rel"] == "self":
+                    continue
+
+                href = link["href"]
+                self.assertFalse(
+                    is_absolute_href(href),
+                    msg=f"Link with rel={link['rel']} is absolute!",
+                )
+
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
         cat = TestCases.test_case_3()
         cat_copy = cat.full_copy()
@@ -1071,7 +1119,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_link(link, tag)
 
     def check_catalog(self, c: Catalog, tag: str) -> None:
-        self.assertEqual(len(c.get_links("root")), 1)
+        self.assertEqual(len(c.get_links("root")), 1, msg=f"{c}")
 
         for link in c.links:
             self.check_link(link, tag)

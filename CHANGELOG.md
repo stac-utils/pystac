@@ -23,9 +23,10 @@
 
 ### Fixed
 
-- `generate_subcatalogs` can include multiple template values in a single subfolder layer 
+- `generate_subcatalogs` can include multiple template values in a single subfolder layer
   ([#595](https://github.com/stac-utils/pystac/pull/595))
 - Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
+- Fix issue that caused incorrect root links when constructing multi-leveled catalogs ([#658](https://github.com/stac-utils/pystac/pull/658))
 - Regression where string `Enum` values were not serialized properly in methods like `Link.to_dict` ([#654](https://github.com/stac-utils/pystac/pull/654))
 
 ### Deprecated
