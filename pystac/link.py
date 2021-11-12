@@ -129,8 +129,15 @@ class Link:
             raise ValueError(f"{self} does not have an HREF set.")
         return result
 
-    def get_href(self) -> Optional[str]:
+    def get_href(self, transform_href: bool = True) -> Optional[str]:
         """Gets the HREF for this link.
+
+        Args:
+            transform_href: If True, transform the HREF based on the type of
+                catalog the owner belongs to (if any). I.e. if the link owner
+                belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
+                the HREF will be transformed to be relative to the catalog root
+                if this is a hierarchical link relation.
 
         Returns:
             str: Returns this link's HREF. If there is an owner of the link and
@@ -144,7 +151,13 @@ class Link:
         else:
             href = self._target_href
 
-        if href and is_absolute_href(href) and self.owner and self.owner.get_root():
+        if (
+            transform_href
+            and href
+            and is_absolute_href(href)
+            and self.owner
+            and self.owner.get_root()
+        ):
             root = self.owner.get_root()
             rel_links = [
                 *HIERARCHICAL_LINKS,
@@ -304,14 +317,22 @@ class Link:
         """
         return self._target_object is not None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
         Returns:
             dict: A serialization of the Link that can be written out as JSON.
+            transform_href: If True, transform the HREF based on the type of
+                catalog the owner belongs to (if any). I.e. if the link owner
+                belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
+                the HREF will be transformed to be relative to the catalog root
+                if this is a hierarchical link relation.
         """
 
-        d: Dict[str, Any] = {"rel": self.rel, "href": self.get_href()}
+        d: Dict[str, Any] = {
+            "rel": self.rel,
+            "href": self.get_href(transform_href=transform_href),
+        }
 
         if self.media_type is not None:
             d["type"] = self.media_type

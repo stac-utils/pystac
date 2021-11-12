@@ -7,6 +7,7 @@
 - Added Table-extension ([#646](https://github.com/stac-utils/pystac/pull/646))
 - Stable support for Python 3.10 ([#656](https://github.com/stac-utils/pystac/pull/656))
 - `.python-version` files are now ignored by Git ([#647](https://github.com/stac-utils/pystac/pull/647))
+- Added a flag to allow users to skip transforming hierarchical link HREFs based on root catalog type ([#663](https://github.com/stac-utils/pystac/pull/663))
 
 ### Removed
 
@@ -20,6 +21,7 @@
 - Links will get their `title` from their target if no `title` is provided ([#607](https://github.com/stac-utils/pystac/pull/607))
 - Relax typing on `LabelClasses` from `List` to `Sequence` ([#627](https://github.com/stac-utils/pystac/pull/627))
 - Upgraded datacube-extension to version 2.0.0 ([#645](https://github.com/stac-utils/pystac/pull/645))
+- By default, ItemCollections will not modify Item HREFs based on root catalog type to avoid performance costs of root link reads ([#663](https://github.com/stac-utils/pystac/pull/663))
 
 ### Fixed
 

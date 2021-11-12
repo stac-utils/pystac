@@ -3,12 +3,12 @@ import os
 import json
 from typing import (
     Any,
+    Callable,
     Dict,
     List,
     Optional,
     TYPE_CHECKING,
     Tuple,
-    Type,
     Union,
 )
 
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 class StacIO(ABC):
-    _default_io: Optional[Type["StacIO"]] = None
+    _default_io: Optional[Callable[[], "StacIO"]] = None
 
     @abstractmethod
     def read_text(
@@ -251,7 +251,7 @@ class StacIO(ABC):
         self.write_text(dest, txt)
 
     @classmethod
-    def set_default(cls, stac_io_class: Type["StacIO"]) -> None:
+    def set_default(cls, stac_io_class: Callable[[], "StacIO"]) -> None:
         """Set the default StacIO instance to use."""
         cls._default_io = stac_io_class
 

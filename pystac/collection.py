@@ -515,8 +515,12 @@ class Collection(Catalog):
         super().add_item(item, title, strategy)
         item.set_collection(self)
 
-    def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
-        d = super().to_dict(include_self_link)
+    def to_dict(
+        self, include_self_link: bool = True, transform_hrefs: bool = True
+    ) -> Dict[str, Any]:
+        d = super().to_dict(
+            include_self_link=include_self_link, transform_hrefs=transform_hrefs
+        )
         d["extent"] = self.extent.to_dict()
         d["license"] = self.license
         if self.stac_extensions is not None:
