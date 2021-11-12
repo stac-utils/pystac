@@ -88,7 +88,7 @@ class ItemCollection(Collection[pystac.Item]):
             if isinstance(item_or_dict, pystac.Item):
                 return item_or_dict.clone() if clone_items else item_or_dict
             else:
-                return pystac.Item.from_dict(item_or_dict)
+                return pystac.Item.from_dict(item_or_dict, preserve_dict=clone_items)
 
         self.items = list(map(map_item, items))
         self.extra_fields = extra_fields or {}

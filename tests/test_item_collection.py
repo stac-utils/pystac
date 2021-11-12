@@ -112,7 +112,7 @@ class TestItemCollection(unittest.TestCase):
 
     def test_from_list_of_dicts(self) -> None:
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
-        item_collection = pystac.ItemCollection(items=[item_dict])
+        item_collection = pystac.ItemCollection(items=[item_dict], clone_items=True)
 
         self.assertEqual(item_collection[0].id, item_dict.get("id"))
 
