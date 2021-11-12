@@ -7,6 +7,7 @@ from os.path import relpath
 import pystac
 
 from tests.utils import TestCases
+from tests.utils.stac_io_mock import MockDefaultStacIO
 
 
 class TestItemCollection(unittest.TestCase):
@@ -176,3 +177,11 @@ class TestItemCollection(unittest.TestCase):
         item_collection = ItemCollection.from_dict(param_dict, root=catalog)
         for item in item_collection.items:
             self.assertEqual(item.get_root(), catalog)
+
+    def test_to_dict_does_not_read_root_link_of_items(self) -> None:
+        with MockDefaultStacIO() as mock_stac_io:
+            item_collection = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
+
+            item_collection.to_dict()
+
+            self.assertEqual(mock_stac_io.mock.read_text.call_count, 1)
