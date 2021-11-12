@@ -3,7 +3,6 @@
 https://github.com/stac-extensions/raster
 """
 
-import enum
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
@@ -12,19 +11,19 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
-from pystac.utils import get_opt, get_required, map_opt
+from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
 
 BANDS_PROP = "raster:bands"
 
 
-class Sampling(str, enum.Enum):
+class Sampling(StringEnum):
     AREA = "area"
     POINT = "point"
 
 
-class DataType(str, enum.Enum):
+class DataType(StringEnum):
     INT8 = "int8"
     INT16 = "int16"
     INT32 = "int32"

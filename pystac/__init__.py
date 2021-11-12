@@ -1,6 +1,43 @@
 """
 PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
+__all__ = [
+    "__version__",
+    "STACError",
+    "STACTypeError",
+    "DuplicateObjectKeyError",
+    "ExtensionAlreadyExistsError",
+    "ExtensionNotImplemented",
+    "ExtensionTypeError",
+    "RequiredPropertyMissing",
+    "STACValidationError",
+    "MediaType",
+    "RelType",
+    "StacIO",
+    "STACObject",
+    "STACObjectType",
+    "Link",
+    "HIERARCHICAL_LINKS",
+    "Catalog",
+    "CatalogType",
+    "Collection",
+    "Extent",
+    "SpatialExtent",
+    "TemporalExtent",
+    "Summaries",
+    "CommonMetadata",
+    "RangeSummary",
+    "Item",
+    "Asset",
+    "ItemCollection",
+    "Provider",
+    "ProviderRole",
+    "read_file",
+    "read_dict",
+    "write_file",
+    "get_stac_version",
+    "set_stac_version",
+]
 
 from pystac.errors import (
     STACError,
@@ -30,11 +67,11 @@ from pystac.collection import (
     Extent,
     SpatialExtent,
     TemporalExtent,
-    Summaries,
 )
 from pystac.common_metadata import CommonMetadata
-from pystac.summaries import RangeSummary
-from pystac.item import Item, Asset
+from pystac.summaries import RangeSummary, Summaries
+from pystac.asset import Asset
+from pystac.item import Item
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
 import pystac.validation
@@ -50,6 +87,7 @@ import pystac.extensions.projection
 import pystac.extensions.sar
 import pystac.extensions.sat
 import pystac.extensions.scientific
+import pystac.extensions.table
 import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
@@ -66,6 +104,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,
         pystac.extensions.sat.SAT_EXTENSION_HOOKS,
         pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
+        pystac.extensions.table.TABLE_EXTENSION_HOOKS,
         pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_HOOKS,
         pystac.extensions.version.VERSION_EXTENSION_HOOKS,
         pystac.extensions.view.VIEW_EXTENSION_HOOKS,

@@ -19,7 +19,7 @@ setup(
     author="stac-utils",
     author_email="stac@radiant.earth",
     url="https://github.com/stac-utils/pystac",
-    packages=find_packages(),
+    packages=find_packages(exclude=["tests*"]),
     package_data={"": ["py.typed"]},
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     python_requires=">=3.7",
@@ -41,6 +41,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
     project_urls={
         "Tracker": "https://github.com/stac-utils/pystac/issues",

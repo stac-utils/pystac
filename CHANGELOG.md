@@ -12,6 +12,37 @@
 
 ### Deprecated
 
+## [v1.2.0]
+
+### Added
+
+- Added Table-extension ([#646](https://github.com/stac-utils/pystac/pull/646))
+- Stable support for Python 3.10 ([#656](https://github.com/stac-utils/pystac/pull/656))
+- `.python-version` files are now ignored by Git ([#647](https://github.com/stac-utils/pystac/pull/647))
+- Added a flag to allow users to skip transforming hierarchical link HREFs based on root catalog type ([#663](https://github.com/stac-utils/pystac/pull/663))
+
+### Removed
+
+- Exclude `tests` from package distribution. This should make the package lighter ([#604](https://github.com/stac-utils/pystac/pull/604))
+
+### Changed
+
+- Enable [strict
+  mode](https://mypy.readthedocs.io/en/latest/command_line.html?highlight=strict%20mode#cmdoption-mypy-strict)
+  for `mypy` ([#591](https://github.com/stac-utils/pystac/pull/591))
+- Links will get their `title` from their target if no `title` is provided ([#607](https://github.com/stac-utils/pystac/pull/607))
+- Relax typing on `LabelClasses` from `List` to `Sequence` ([#627](https://github.com/stac-utils/pystac/pull/627))
+- Upgraded datacube-extension to version 2.0.0 ([#645](https://github.com/stac-utils/pystac/pull/645))
+- By default, ItemCollections will not modify Item HREFs based on root catalog type to avoid performance costs of root link reads ([#663](https://github.com/stac-utils/pystac/pull/663))
+
+### Fixed
+
+- `generate_subcatalogs` can include multiple template values in a single subfolder layer
+  ([#595](https://github.com/stac-utils/pystac/pull/595))
+- Avoid implicit re-exports ([#591](https://github.com/stac-utils/pystac/pull/591))
+- Fix issue that caused incorrect root links when constructing multi-leveled catalogs ([#658](https://github.com/stac-utils/pystac/pull/658))
+- Regression where string `Enum` values were not serialized properly in methods like `Link.to_dict` ([#654](https://github.com/stac-utils/pystac/pull/654))
+
 ## [v1.1.0]
 
 ### Added
@@ -494,7 +525,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.1.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.2.0..main>
+[v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
 [v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>
 [v1.0.0]: <https://github.com/stac-utils/pystac/compare/v1.0.0-rc.3..v1.0.0>

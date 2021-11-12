@@ -1,17 +1,17 @@
 mypy==0.910
-flake8==3.9.2
-black==21.7b0
+flake8==4.0.1
+black==21.10b0
 
 codespell==2.1.0
 
-jsonschema==3.2.0
-coverage==5.5
-doc8==0.9.0
+jsonschema==4.2.1
+coverage==6.1.2
+doc8==0.10.1
 
-types-python-dateutil==0.1.4
-types-orjson==0.1.1
+types-python-dateutil==2.8.2
+types-orjson==3.6.1
 
-pre-commit==2.13.0
+pre-commit==2.15.0
 
 # optional dependencies
-orjson==3.6.0
+orjson==3.6.4

@@ -3,14 +3,13 @@
 https://github.com/stac-extensions/label
 """
 
-from enum import Enum
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required, map_opt
+from pystac.utils import StringEnum, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.0/schema.json"
 
@@ -25,7 +24,7 @@ METHODS_PROP = PREFIX + "methods"
 OVERVIEWS_PROP = PREFIX + "overviews"
 
 
-class LabelRelType(str, Enum):
+class LabelRelType(StringEnum):
     """A list of rel types defined in the Label Extension.
 
     See the :stac-ext:`Label Extension Links <label#links-source-imagery>`
@@ -36,7 +35,7 @@ class LabelRelType(str, Enum):
     """Used to indicate a link to the source item to which a label item applies."""
 
 
-class LabelType(str, Enum):
+class LabelType(StringEnum):
     """Enumerates valid label types ("raster" or "vector")."""
 
     VECTOR = "vector"
@@ -46,7 +45,7 @@ class LabelType(str, Enum):
     """Convenience attribute for checking if values are valid label types"""
 
 
-class LabelTask(str, Enum):
+class LabelTask(StringEnum):
     """Enumerates recommended values for "label:tasks" field."""
 
     REGRESSION = "regression"
@@ -55,7 +54,7 @@ class LabelTask(str, Enum):
     SEGMENTATION = "segmentation"
 
 
-class LabelMethod(str, Enum):
+class LabelMethod(StringEnum):
     """Enumerates recommended values for "label:methods" field."""
 
     AUTOMATED = "automated"
@@ -73,7 +72,7 @@ class LabelClasses:
 
     def apply(
         self,
-        classes: List[Union[str, int, float]],
+        classes: Sequence[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> None:
         """Sets the properties for this instance.
@@ -90,7 +89,7 @@ class LabelClasses:
     @classmethod
     def create(
         cls,
-        classes: List[Union[str, int, float]],
+        classes: Sequence[Union[str, int, float]],
         name: Optional[str] = None,
     ) -> "LabelClasses":
         """Creates a new :class:`~LabelClasses` instance.
@@ -106,12 +105,12 @@ class LabelClasses:
         return c
 
     @property
-    def classes(self) -> List[Union[str, int, float]]:
+    def classes(self) -> Sequence[Union[str, int, float]]:
         """Gets or sets the class values."""
         return get_required(self.properties.get("classes"), self, "classes")
 
     @classes.setter
-    def classes(self, v: List[Union[str, int, float]]) -> None:
+    def classes(self, v: Sequence[Union[str, int, float]]) -> None:
         self.properties["classes"] = v
 
     @property

@@ -56,9 +56,6 @@ class Link:
     """Optional description of the media type. Registered Media Types are preferred.
     See :class:`~pystac.MediaType` for common media types."""
 
-    title: Optional[str]
-    """Optional title for this link."""
-
     extra_fields: Dict[str, Any]
     """Optional, additional fields for this link. This is used by extensions as a
     way to serialize and deserialize properties on link object JSON."""
@@ -70,6 +67,7 @@ class Link:
 
     _target_href: Optional[str]
     _target_object: Optional["STACObject_Type"]
+    _title: Optional[str]
 
     def __init__(
         self,
@@ -104,6 +102,22 @@ class Link:
         return self
 
     @property
+    def title(self) -> Optional[str]:
+        """Optional title for this link. If not provided during instantiation, this will
+        attempt to get the title from the STAC object that the link references."""
+        if self._title is not None:
+            return self._title
+        if self._target_object is not None and isinstance(
+            self._target_object, pystac.Catalog
+        ):
+            return self._target_object.title
+        return None
+
+    @title.setter
+    def title(self, v: Optional[str]) -> None:
+        self._title = v
+
+    @property
     def href(self) -> str:
         """Returns the HREF for this link.
 
@@ -115,8 +129,15 @@ class Link:
             raise ValueError(f"{self} does not have an HREF set.")
         return result
 
-    def get_href(self) -> Optional[str]:
+    def get_href(self, transform_href: bool = True) -> Optional[str]:
         """Gets the HREF for this link.
+
+        Args:
+            transform_href: If True, transform the HREF based on the type of
+                catalog the owner belongs to (if any). I.e. if the link owner
+                belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
+                the HREF will be transformed to be relative to the catalog root
+                if this is a hierarchical link relation.
 
         Returns:
             str: Returns this link's HREF. If there is an owner of the link and
@@ -130,7 +151,13 @@ class Link:
         else:
             href = self._target_href
 
-        if href and is_absolute_href(href) and self.owner and self.owner.get_root():
+        if (
+            transform_href
+            and href
+            and is_absolute_href(href)
+            and self.owner
+            and self.owner.get_root()
+        ):
             root = self.owner.get_root()
             rel_links = [
                 *HIERARCHICAL_LINKS,
@@ -290,14 +317,22 @@ class Link:
         """
         return self._target_object is not None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
         Returns:
             dict: A serialization of the Link that can be written out as JSON.
+            transform_href: If True, transform the HREF based on the type of
+                catalog the owner belongs to (if any). I.e. if the link owner
+                belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
+                the HREF will be transformed to be relative to the catalog root
+                if this is a hierarchical link relation.
         """
 
-        d: Dict[str, Any] = {"rel": self.rel, "href": self.get_href()}
+        d: Dict[str, Any] = {
+            "rel": self.rel,
+            "href": self.get_href(transform_href=transform_href),
+        }
 
         if self.media_type is not None:
             d["type"] = self.media_type

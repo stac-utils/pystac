@@ -1,7 +1,7 @@
-from enum import Enum
+from pystac.utils import StringEnum
 
 
-class MediaType(str, Enum):
+class MediaType(StringEnum):
     """A list of common media types that can be used in STAC Asset and Link metadata."""
 
     COG = "image/tiff; application=geotiff; profile=cloud-optimized"

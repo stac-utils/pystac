@@ -248,6 +248,10 @@ class LabelTest(unittest.TestCase):
 
         label_item.validate()
 
+    def test_label_classes_typing(self) -> None:
+        classes: List[str] = ["foo", "bar"]
+        LabelClasses.create(classes=classes)
+
     def test_label_tasks(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 

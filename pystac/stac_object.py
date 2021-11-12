@@ -1,17 +1,16 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 from typing import Any, Dict, Iterable, List, Optional, Type, cast, TYPE_CHECKING, Union
 
 import pystac
 from pystac import STACError
 from pystac.link import Link
-from pystac.utils import is_absolute_href, make_absolute_href
+from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
 
 
-class STACObjectType(str, Enum):
+class STACObjectType(StringEnum):
     CATALOG = "Catalog"
     COLLECTION = "Collection"
     ITEM = "Feature"
@@ -363,7 +362,11 @@ class STACObject(ABC):
         if root is None and isinstance(clone, pystac.Catalog):
             root = clone
 
-        clone.set_root(cast(pystac.Catalog, root))
+        # Set the root of the STAC Object using the base class,
+        # avoiding child class overrides
+        # extra logic which can be incompatible with the full copy.
+        STACObject.set_root(clone, cast(pystac.Catalog, root))
+
         if parent:
             clone.set_parent(parent)
 
@@ -425,12 +428,20 @@ class STACObject(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
+    def to_dict(
+        self, include_self_link: bool = True, transform_hrefs: bool = True
+    ) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized object.
 
         Args:
             include_self_link : If True, the dict will contain a self link
                 to this object. If False, the self link will be omitted.
+            transform_hrefs: If True, transform the HREF of hierarchical links
+                based on the type of catalog this object belongs to (if any).
+                I.e. if this object belongs to a root catalog that is
+                RELATIVE_PUBLISHED or SELF_CONTAINED,
+                hierarchical link HREFs will be transformed to be relative to the
+                catalog root.
 
             dict: A serialization of the object that can be written out as JSON.
         """

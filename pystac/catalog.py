@@ -1,6 +1,5 @@
 import os
 from copy import deepcopy
-from enum import Enum
 from pystac.errors import STACTypeError
 from typing import (
     Any,
@@ -29,14 +28,20 @@ from pystac.serialization import (
     identify_stac_object,
     migrate_to_latest,
 )
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
+from pystac.utils import (
+    StringEnum,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+)
 
 if TYPE_CHECKING:
-    from pystac.item import Asset as Asset_Type, Item as Item_Type
+    from pystac.asset import Asset as Asset_Type
+    from pystac.item import Item as Item_Type
     from pystac.collection import Collection as Collection_Type
 
 
-class CatalogType(str, Enum):
+class CatalogType(StringEnum):
     SELF_CONTAINED = "SELF_CONTAINED"
     """A 'self-contained catalog' is one that is designed for portability.
     Users may want to download an online catalog from and be able to use it on their
@@ -185,6 +190,13 @@ class Catalog(STACObject):
             root._resolved_objects = ResolvedObjectCache.merge(
                 root._resolved_objects, self._resolved_objects
             )
+
+            # Walk through resolved object links and update the root
+            for link in self.links:
+                if link.rel == pystac.RelType.CHILD or link.rel == pystac.RelType.ITEM:
+                    target = link.target
+                    if isinstance(target, STACObject):
+                        target.set_root(root)
 
     def is_relative(self) -> bool:
         return self.catalog_type in [
@@ -461,7 +473,9 @@ class Catalog(STACObject):
         """
         return self.get_links(pystac.RelType.ITEM)
 
-    def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
+    def to_dict(
+        self, include_self_link: bool = True, transform_hrefs: bool = True
+    ) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
             links = [x for x in links if x.rel != pystac.RelType.SELF]
@@ -471,7 +485,7 @@ class Catalog(STACObject):
             "id": self.id,
             "stac_version": pystac.get_stac_version(),
             "description": self.description,
-            "links": [link.to_dict() for link in links],
+            "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
         }
 
         if self.stac_extensions is not None:
@@ -665,13 +679,10 @@ class Catalog(STACObject):
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast(pystac.Item, link.target)
-            item_parts = layout_template.get_template_values(item)
+            subcat_ids = layout_template.substitute(item).split("/")
             id_iter = reversed(parent_ids)
             if all(
-                [
-                    "{}".format(id) == next(id_iter, None)
-                    for id in reversed(list(item_parts.values()))
-                ]
+                ["{}".format(id) == next(id_iter, None) for id in reversed(subcat_ids)]
             ):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
@@ -679,12 +690,11 @@ class Catalog(STACObject):
                 keep_item_links.append(link)
                 continue
             curr_parent = self
-            for k, v in item_parts.items():
-                subcat_id = "{}".format(v)
+            for subcat_id in subcat_ids:
                 subcat = curr_parent.get_child(subcat_id)
                 if subcat is None:
-                    subcat_desc = "Catalog of items from {} with {} of {}".format(
-                        curr_parent.id, k, v
+                    subcat_desc = "Catalog of items from {} with id {}".format(
+                        curr_parent.id, subcat_id
                     )
                     subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)

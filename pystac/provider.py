@@ -1,8 +1,9 @@
-from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from pystac.utils import StringEnum
 
-class ProviderRole(str, Enum):
+
+class ProviderRole(StringEnum):
     """Enumerates the allows values of the Provider "role" field."""
 
     LICENSOR = "licensor"

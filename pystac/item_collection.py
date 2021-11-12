@@ -88,7 +88,7 @@ class ItemCollection(Collection[pystac.Item]):
             if isinstance(item_or_dict, pystac.Item):
                 return item_or_dict.clone() if clone_items else item_or_dict
             else:
-                return pystac.Item.from_dict(item_or_dict)
+                return pystac.Item.from_dict(item_or_dict, preserve_dict=clone_items)
 
         self.items = list(map(map_item, items))
         self.extra_fields = extra_fields or {}
@@ -116,11 +116,23 @@ class ItemCollection(Collection[pystac.Item]):
 
         return ItemCollection(items=combined, clone_items=False)
 
-    def to_dict(self) -> Dict[str, Any]:
-        """Serializes an :class:`ItemCollection` instance to a JSON-like dictionary."""
+    def to_dict(self, transform_hrefs: bool = False) -> Dict[str, Any]:
+        """Serializes an :class:`ItemCollection` instance to a JSON-like dictionary.
+
+        Args:
+            transform_hrefs: If True, transform the HREF of hierarchical links
+                of Items based on the type of catalog the Item belongs to (if any).
+                I.e. if the item belongs to a root catalog that is
+                RELATIVE_PUBLISHED or SELF_CONTAINED,
+                hierarchical link HREFs will be transformed to be relative to the
+                catalog root. This can be slow if the Items have root links that
+                have not yet been resolved. Defaults to False.
+        """
         return {
             "type": "FeatureCollection",
-            "features": [item.to_dict() for item in self.items],
+            "features": [
+                item.to_dict(transform_hrefs=transform_hrefs) for item in self.items
+            ],
             **self.extra_fields,
         }
 

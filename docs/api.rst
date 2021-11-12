@@ -362,6 +362,22 @@ AdditionalDimension
    :show-inheritance:
    :inherited-members:
 
+VariableType
+~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.VariableType
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+Variable
+~~~~~~~~
+
+.. autoclass:: pystac.extensions.datacube.Variable
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
 DatacubeExtension
 ~~~~~~~~~~~~~~~~~
 
@@ -790,6 +806,39 @@ ItemScientificExtension
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.extensions.scientific.ItemScientificExtension
+   :members:
+   :show-inheritance:
+
+Table Extension
+---------------
+
+These classes are representations of the :stac-ext:`Table Extension Spec <tables>`.
+
+TableExtension
+~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.TableExtension
+   :members:
+   :show-inheritance:
+
+CollectionTableExtension
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.CollectionTableExtension
+   :members:
+   :show-inheritance:
+
+ItemTableExtension
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.ItemTableExtension
+   :members:
+   :show-inheritance:
+
+AssetTableExtension
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.extensions.table.AssetTableExtension
    :members:
    :show-inheritance:
 

@@ -4,7 +4,6 @@ https://github.com/stac-extensions/datacube
 """
 
 from abc import ABC
-from enum import Enum
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -13,14 +12,15 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import get_required
+from pystac.utils import StringEnum, get_required
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
-SCHEMA_URI = "https://stac-extensions.github.io/datacube/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
 
 PREFIX: str = "cube:"
 DIMENSIONS_PROP = PREFIX + "dimensions"
+VARIABLES_PROP = PREFIX + "variables"
 
 # Dimension properties
 DIM_TYPE_PROP = "type"
@@ -32,15 +32,23 @@ DIM_STEP_PROP = "step"
 DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
 
+# Variable properties
+VAR_TYPE_PROP = "type"
+VAR_DESC_PROP = "description"
+VAR_EXTENT_PROP = "extent"
+VAR_VALUES_PROP = "values"
+VAR_DIMENSIONS_PROP = "dimensions"
+VAR_UNIT_PROP = "unit"
 
-class DimensionType(str, Enum):
+
+class DimensionType(StringEnum):
     """Dimension object types for spatial and temporal Dimension Objects."""
 
     SPATIAL = "spatial"
     TEMPORAL = "temporal"
 
 
-class HorizontalSpatialDimensionAxis(str, Enum):
+class HorizontalSpatialDimensionAxis(StringEnum):
     """Allowed values for ``axis`` field of :class:`HorizontalSpatialDimension`
     object."""
 
@@ -48,7 +56,7 @@ class HorizontalSpatialDimensionAxis(str, Enum):
     Y = "y"
 
 
-class VerticalSpatialDimensionAxis(str, Enum):
+class VerticalSpatialDimensionAxis(StringEnum):
     """Allowed values for ``axis`` field of :class:`VerticalSpatialDimension`
     object."""
 
@@ -398,6 +406,102 @@ class AdditionalDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
+class VariableType(StringEnum):
+    """Variable object types"""
+
+    DATA = "data"
+    AUXILIARY = "auxiliary"
+
+
+class Variable:
+    properties: Dict[str, Any]
+
+    def __init__(self, properties: Dict[str, Any]) -> None:
+        self.properties = properties
+
+    @property
+    def dimensions(self) -> List[str]:
+        """The dimensions of the variable. Should refer to keys in the ``cube:dimensions``
+        object or be an empty list if the variable has no dimensions"""
+        return get_required(
+            self.properties.get(VAR_DIMENSIONS_PROP),
+            "cube:variable",
+            VAR_DIMENSIONS_PROP,
+        )
+
+    @dimensions.setter
+    def dimensions(self, v: List[str]) -> None:
+        self.properties[VAR_DIMENSIONS_PROP] = v
+
+    @property
+    def var_type(self) -> Union[VariableType, str]:
+        """Type of the variable, either ``data`` or ``auxiliary``"""
+        return get_required(
+            self.properties.get(VAR_TYPE_PROP), "cube:variable", VAR_TYPE_PROP
+        )
+
+    @var_type.setter
+    def var_type(self, v: Union[VariableType, str]) -> None:
+        self.properties[VAR_TYPE_PROP] = v
+
+    @property
+    def description(self) -> Optional[str]:
+        """Detailed multi-line description to explain the variable. `CommonMark 0.29
+        <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
+        return self.properties.get(VAR_DESC_PROP)
+
+    @description.setter
+    def description(self, v: Optional[str]) -> None:
+        if v is None:
+            self.properties.pop(VAR_DESC_PROP, None)
+        else:
+            self.properties[VAR_DESC_PROP] = v
+
+    @property
+    def extent(self) -> List[Union[float, str, None]]:
+        """If the variable consists of `ordinal values
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent
+        (lower and upper bounds) of the values as two-dimensional array. Use ``None``
+        for open intervals"""
+        return get_required(
+            self.properties.get(VAR_EXTENT_PROP), "cube:variable", VAR_EXTENT_PROP
+        )
+
+    @extent.setter
+    def extent(self, v: List[Union[float, str, None]]) -> None:
+        self.properties[VAR_EXTENT_PROP] = v
+
+    @property
+    def values(self) -> Optional[List[Union[float, str]]]:
+        """A set of all potential values, especially useful for `nominal values
+        <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`."""
+        return self.properties.get(VAR_VALUES_PROP)
+
+    @values.setter
+    def values(self, v: Optional[List[Union[float, str]]]) -> None:
+        if v is None:
+            self.properties.pop(VAR_VALUES_PROP)
+        else:
+            self.properties[VAR_VALUES_PROP] = v
+
+    @property
+    def unit(self) -> Optional[str]:
+        """The unit of measurement for the data, preferably compliant to `UDUNITS-2
+        <https://ncics.org/portfolio/other-resources/udunits2/>` units (singular)"""
+        return self.properties.get(VAR_UNIT_PROP)
+
+    @unit.setter
+    def unit(self, v: Optional[str]) -> None:
+        if v is None:
+            self.properties.pop(VAR_UNIT_PROP)
+        else:
+            self.properties[VAR_UNIT_PROP] = v
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> "Variable":
+        return Variable(d)
+
+
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
@@ -423,8 +527,6 @@ class DatacubeExtension(
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
-            bands : A list of available bands where each item is a :class:`~Band`
-                object. If given, requires at least one band.
             dimensions : Dictionary mapping dimension name to a :class:`Dimension`
                 object.
         """
@@ -441,6 +543,15 @@ class DatacubeExtension(
     @dimensions.setter
     def dimensions(self, v: Dict[str, Dimension]) -> None:
         self._set_property(DIMENSIONS_PROP, {k: dim.to_dict() for k, dim in v.items()})
+
+    @property
+    def variables(self) -> Optional[Dict[str, Variable]]:
+        """Dictionary mapping variable name to a :class:`Variable` object."""
+        result = self._get_property(VARIABLES_PROP, Dict[str, Any])
+
+        if result is None:
+            return None
+        return {k: Variable.from_dict(v) for k, v in result.items()}
 
     @classmethod
     def get_schema_uri(cls) -> str:
