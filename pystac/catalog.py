@@ -473,7 +473,9 @@ class Catalog(STACObject):
         """
         return self.get_links(pystac.RelType.ITEM)
 
-    def to_dict(self, include_self_link: bool = True) -> Dict[str, Any]:
+    def to_dict(
+        self, include_self_link: bool = True, transform_hrefs: bool = True
+    ) -> Dict[str, Any]:
         links = self.links
         if not include_self_link:
             links = [x for x in links if x.rel != pystac.RelType.SELF]
@@ -483,7 +485,7 @@ class Catalog(STACObject):
             "id": self.id,
             "stac_version": pystac.get_stac_version(),
             "description": self.description,
-            "links": [link.to_dict() for link in links],
+            "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
         }
 
         if self.stac_extensions is not None:
