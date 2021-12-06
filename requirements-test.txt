@@ -14,4 +14,4 @@ types-orjson==3.6.1
 pre-commit==2.16.0
 
 # optional dependencies
-orjson==3.6.4
+orjson==3.6.5
