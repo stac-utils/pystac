@@ -1,0 +1,22 @@
+{
+  "type": "Catalog",
+  "stac_version": "1.0.0",
+  "stac_extensions": [],
+  "id": "landsat-stac-collection-catalog",
+  "title": "STAC for Landsat data",
+  "description": "STAC for Landsat data",
+  "links": [
+    {
+      "href": "./catalog.json",
+      "rel": "self"
+    },
+    {
+      "href": "./catalog.json",
+      "rel": "root"
+    },
+    {
+      "href": "./landsat-8-l1/collection.json",
+      "rel": "child"
+    }
+  ]
+}
