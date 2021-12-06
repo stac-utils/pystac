@@ -261,11 +261,11 @@
     },
     {
       "rel": "parent",
-      "href": "../catalog.json"
+      "href": "../collection.json"
     },
     {
       "rel": "collection",
-      "href": "../catalog.json"
+      "href": "../collection.json"
     },
     {
       "rel": "root",

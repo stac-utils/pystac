@@ -133,7 +133,7 @@
       "rel" : "parent"
     },
     {
-      "href" : "./catalog.json",
+      "href" : "./collection.json",
       "rel" : "self"
     },
     {
