@@ -241,10 +241,13 @@ def make_absolute_href(
     parsed_start = safe_urlparse(start_href)
     parsed_source = safe_urlparse(source_href)
 
-    if JoinType.from_parsed_uri(parsed_start) == JoinType.PATH:
-        return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
-    else:
+    if (
+        JoinType.from_parsed_uri(parsed_source) == JoinType.URL
+        or JoinType.from_parsed_uri(parsed_start) == JoinType.URL
+    ):
         return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
+    else:
+        return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
 
 
 def is_absolute_href(href: str) -> bool:
