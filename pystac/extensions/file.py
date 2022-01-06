@@ -13,7 +13,7 @@ from pystac.serialization.identify import (
     STACJSONDescription,
     STACVersionID,
 )
-from pystac.utils import StringEnum, get_required
+from pystac.utils import StringEnum, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -82,6 +82,13 @@ class MappingObject:
     @summary.setter
     def summary(self, v: str) -> None:
         self.properties["summary"] = v
+
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "MappingObject":
+        return cls.create(**d)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return self.properties
 
 
 class FileExtension(
@@ -180,11 +187,21 @@ class FileExtension(
         values that are in the file and describe their meaning. See the
         :stac-ext:`Mapping Object <file#mapping-object>` docs for an example. If given,
         at least one array element is required."""
-        return self._get_property(VALUES_PROP, List[MappingObject])
+        return map_opt(
+            lambda values: [
+                MappingObject.from_dict(mapping_obj) for mapping_obj in values
+            ],
+            self._get_property(VALUES_PROP, List[Dict[str, Any]]),
+        )
 
     @values.setter
     def values(self, v: Optional[List[MappingObject]]) -> None:
-        self._set_property(VALUES_PROP, v)
+        self._set_property(
+            VALUES_PROP,
+            map_opt(
+                lambda values: [mapping_obj.to_dict() for mapping_obj in values], v
+            ),
+        )
 
     @classmethod
     def get_schema_uri(cls) -> str:
