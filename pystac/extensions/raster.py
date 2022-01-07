@@ -48,6 +48,8 @@ class Statistics:
     Use Statistics.create to create a new Statistics instance.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Optional[float]]) -> None:
         self.properties = properties
 
@@ -208,6 +210,8 @@ class Histogram:
     Use Band.create to create a new Band.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -341,6 +345,8 @@ class RasterBand:
 
     Use Band.create to create a new Band.
     """
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties

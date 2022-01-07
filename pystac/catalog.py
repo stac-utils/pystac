@@ -123,19 +123,27 @@ class Catalog(STACObject):
             catalog's self link's HREF.
         catalog_type : Optional catalog type for this catalog. Must
             be one of the values in :class`~pystac.CatalogType`.
-
-    Attributes:
-        id : Identifier for the catalog.
-        description : Detailed multi-line description to fully explain the catalog.
-        title : Optional short descriptive one-line title for the catalog.
-        stac_extensions : Optional list of extensions the Catalog
-            implements.
-        extra_fields : Extra fields that are part of the top-level JSON
-            properties of the Catalog.
-        links : A list of :class:`~pystac.Link` objects representing
-            all links associated with this Catalog.
-        catalog_type : The catalog type. Defaults to ABSOLUTE_PUBLISHED
     """
+
+    catalog_type: CatalogType
+    """The catalog type. Defaults to :attr:`CatalogType.ABSOLUTE_PUBLISHED`."""
+
+    description: str
+    """Detailed multi-line description to fully explain the catalog."""
+
+    extra_fields: Dict[str, Any]
+    """Extra fields that are part of the top-level JSON properties of the Catalog."""
+
+    id: str
+    """Identifier for the catalog."""
+
+    title: Optional[str]
+    """Optional short descriptive one-line title for the catalog."""
+
+    stac_extensions: List[str]
+    """List of extensions the Catalog implements."""
+
+    _resolved_objects: ResolvedObjectCache
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
 

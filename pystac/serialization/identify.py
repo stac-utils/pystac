@@ -37,6 +37,10 @@ class STACVersionID:
     For instance, ``1.0.0-beta.2 < 1.0.0``
     """
 
+    version_string: str
+    version_core: str
+    version_prerelease: Optional[str]
+
     def __init__(self, version_string: str) -> None:
         self.version_string = version_string
 
@@ -75,6 +79,9 @@ class STACVersionID:
 
 class STACVersionRange:
     """Defines a range of STAC versions."""
+
+    min_version: STACVersionID
+    max_version: STACVersionID
 
     def __init__(
         self,
@@ -148,6 +155,10 @@ class STACJSONDescription:
         extensions : List of extension schema URIs for extensions this
             object implements
     """
+
+    object_type: "STACObjectType_Type"
+    version_range: STACVersionRange
+    extensions: Set[str]
 
     def __init__(
         self,

@@ -44,6 +44,8 @@ class Band:
     Use :meth:`Band.create` to create a new Band.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 

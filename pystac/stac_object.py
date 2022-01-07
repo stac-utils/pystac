@@ -36,7 +36,7 @@ class STACObject(ABC):
     STAC_OBJECT_TYPE: STACObjectType
 
     def __init__(self, stac_extensions: List[str]) -> None:
-        self.links: List[Link] = []
+        self.links = []
         self.stac_extensions = stac_extensions
 
     def validate(self) -> List[Any]:

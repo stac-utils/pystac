@@ -131,6 +131,9 @@ class JsonSchemaSTACValidator(STACValidator):
     This class requires the ``jsonschema`` library to be installed.
     """
 
+    schema_uri_map: SchemaUriMap
+    schema_cache: Dict[str, Dict[str, Any]]
+
     def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None) -> None:
         if jsonschema is None:
             raise Exception("Cannot instantiate, requires jsonschema package")
@@ -140,7 +143,7 @@ class JsonSchemaSTACValidator(STACValidator):
         else:
             self.schema_uri_map = DefaultSchemaUriMap()
 
-        self.schema_cache: Dict[str, Dict[str, Any]] = {}
+        self.schema_cache = {}
 
     def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
         if schema_uri not in self.schema_cache:

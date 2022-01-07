@@ -2,7 +2,7 @@
 
 https://github.com/stac-extensions/pointcloud
 """
-from typing import Any, Dict, Generic, List, Optional, TypeVar, cast, Union
+from typing import Any, Dict, Iterable, Generic, List, Optional, TypeVar, cast, Union
 
 import pystac
 from pystac.extensions.base import (
@@ -53,6 +53,8 @@ class Schema:
     Use :meth:`Schema.create` to create a new instance of ``Schema`` from
     properties.
     """
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
@@ -132,6 +134,8 @@ class Statistic:
 
     Use :meth:`Statistic.create` to create a new instance of
     ``Statistic`` from property values."""
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
@@ -475,6 +479,9 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
+    item: pystac.Item
+    properties: Dict[str, Any]
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -491,6 +498,16 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
     This class should generally not be instantiated directly. Instead, call
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
