@@ -9,7 +9,7 @@ coverage==6.2
 doc8==0.10.1
 
 types-python-dateutil==2.8.6
-types-orjson==3.6.1
+types-orjson==3.6.2
 
 pre-commit==2.16.0
 
