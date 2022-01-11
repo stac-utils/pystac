@@ -59,10 +59,7 @@ T = TypeVar("T", bound=Union[_Comparable_x, _Comparable_other])
 
 class RangeSummary(Generic[T]):
     minimum: T
-    """The minimum range value."""
-
     maximum: T
-    """The maximum range value."""
 
     def __init__(self, minimum: T, maximum: T):
         self.minimum = minimum
@@ -202,10 +199,13 @@ DEFAULT_MAXCOUNT = 25
 
 
 class Summaries:
+    _summaries: Dict[str, Any]
+
     lists: Dict[str, List[Any]]
     other: Dict[str, Any]
     ranges: Dict[str, RangeSummary[Any]]
     schemas: Dict[str, Dict[str, Any]]
+    maxcount: int
 
     def __init__(
         self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
