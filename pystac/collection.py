@@ -455,12 +455,21 @@ class Collection(Catalog):
     id: str
     """Identifier for the collection."""
 
+    stac_extensions: List[str]
+    """List of extensions the Collection implements."""
+
+    title: Optional[str]
+    """Optional short descriptive one-line title for the collection."""
+
     keywords: Optional[List[str]]
     """Optional list of keywords describing the collection."""
 
     providers: Optional[List[Provider]]
     """Optional list of providers of this Collection."""
 
+    assets: Dict[str, Asset]
+    """Map of Assets"""
+    
     stac_extensions: List[str]
     """List of extensions the Collection implements."""
 
