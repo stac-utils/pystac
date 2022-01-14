@@ -449,8 +449,8 @@ class Collection(Catalog):
     """Detailed multi-line description to fully explain the collection."""
 
     extent: Extent
-    """Spatial and temporal extents that describe the bounds of all items contained within
-    this Collection."""
+    """Spatial and temporal extents that describe the bounds of all items contained
+    within this Collection."""
 
     id: str
     """Identifier for the collection."""
@@ -477,8 +477,8 @@ class Collection(Catalog):
     """Optional short descriptive one-line title for the collection."""
 
     summaries: Summaries
-    """Optional map of property summaries, either a set of values or statistics such as
-    a range."""
+    """A map of property summaries, either a set of values or statistics such as a
+    range."""
 
     links: List[Link]
     """A list of :class:`~pystac.Link` objects representing all links associated with

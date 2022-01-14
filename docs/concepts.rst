@@ -9,7 +9,9 @@ with PySTAC. If you want to check code examples, see the :ref:`tutorials`.
 STAC Spec Version Support
 =========================
 
-The latest version of PySTAC supports STAC Spec |stac_version| and will automatically update any catalogs to this version. To work with older versions of the STAC Spec, please use an older version of PySTAC:
+The latest version of PySTAC supports STAC Spec |stac_version| and will automatically
+update any catalogs to this version. To work with older versions of the STAC Spec,
+please use an older version of PySTAC:
 
 =================  ==============
 STAC Spec Version  PySTAC Version

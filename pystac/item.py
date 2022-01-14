@@ -60,7 +60,7 @@ class Item(STACObject):
     Could also be None in the case of a null geometry."""
 
     collection: Optional[Collection]
-    """Collection that this item is a part of, if any."""
+    """:class:`~pystac.Collection` to which this Item belongs, if any."""
 
     collection_id: Optional[str]
     """The Collection ID that this item belongs to, if any."""

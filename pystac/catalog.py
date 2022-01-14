@@ -138,7 +138,8 @@ class Catalog(STACObject):
     """Identifier for the catalog."""
 
     links: List[Link]
-    """A list of :class:`~pystac.Link` objects representing all links associated with this Catalog."""
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this Catalog."""
 
     title: Optional[str]
     """Optional short descriptive one-line title for the catalog."""

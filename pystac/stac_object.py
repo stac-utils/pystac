@@ -18,8 +18,8 @@ class STACObjectType(StringEnum):
 
 class STACObject(ABC):
     """A base class for other PySTAC classes that contains a variety of useful
-    methods for dealing with links, copying objects, accessing extensions, and reading and
-    writing files. You shouldn't use STACObject directly, but instead access this
+    methods for dealing with links, copying objects, accessing extensions, and reading
+    and writing files. You shouldn't use STACObject directly, but instead access this
     functionality through the implementing classes.
     """
 

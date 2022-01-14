@@ -1,7 +1,7 @@
 pystac.extensions
 =================
 
-.. toctree:: 
+.. toctree::
     :hidden:
     :maxdepth: 2
     :glob:

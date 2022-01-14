@@ -15,7 +15,7 @@
 import os
 import sys
 import subprocess
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -77,9 +77,7 @@ extlinks = {
 templates_path = ["_templates"]
 
 # Static CSS files
-html_css_files = [
-    "custom.css"
-]
+html_css_files = ["custom.css"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -111,7 +109,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'pydata_sphinx_theme'
+html_theme = "pydata_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -122,13 +120,14 @@ html_theme_options = {
         {
             "name": "GitHub",
             "url": "https://github.com/stac-utils/pystac",
-            "icon": "fab fa-github-square"
+            "icon": "fab fa-github-square",
         },
         {
             "name": "Gitter",
-            "url": "https://gitter.im/SpatioTemporal-Asset-Catalog/python?utm_source=share-link&utm_medium=link&utm_campaign=share-link",
-            "icon": "fab fa-gitter"
-        }
+            "url": "https://gitter.im/SpatioTemporal-Asset-Catalog/"
+            "python?utm_source=share-link&utm_medium=link&utm_campaign=share-link",
+            "icon": "fab fa-gitter",
+        },
     ],
     "external_links": [
         {"name": "STAC Spec", "url": "https://github.com/radiantearth/stac-spec"}
@@ -139,7 +138,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -149,11 +148,11 @@ html_static_path = ['_static']
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars = {
+html_sidebars: Dict[str, List[str]] = {
     "index": [],
     "quickstart": [],
     "concepts": [],
-    "contributing": []
+    "contributing": [],
 }
 
 
