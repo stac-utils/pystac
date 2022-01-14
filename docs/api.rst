@@ -96,7 +96,7 @@ The following classes are used internally to implement these extensions and may 
 :tutorial:`Adding New and Custom Extensions <adding-new-and-custom-extensions.ipynb>` for details):
 
 * :class:`pystac.extensions.base.SummariesExtension`: Base class for extending the properties in
-  :attr:`pystac Collection.summaries` to include properties defined by a STAC Extension.
+  :attr:`pystac.Collection.summaries` to include properties defined by a STAC Extension.
 * :class:`pystac.extensions.base.PropertiesExtension`: Abstract base class for extending the properties of an
   :class:`~pystac.Item` to include properties defined by a STAC Extension.
 * :class:`pystac.extensions.base.ExtensionManagementMixin`: Abstract base class with methods for adding and removing
