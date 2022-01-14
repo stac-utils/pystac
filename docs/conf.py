@@ -148,9 +148,7 @@ html_static_path = ["_static"]
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars: Dict[str, List[str]] = {
-    "index": []
-}
+html_sidebars: Dict[str, List[str]] = {"index": []}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
