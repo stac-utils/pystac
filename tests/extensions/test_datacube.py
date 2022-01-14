@@ -1,7 +1,7 @@
 import unittest
 import pystac
 from pystac import ExtensionTypeError
-from pystac.extensions.datacube import DatacubeExtension
+from pystac.extensions.datacube import DatacubeExtension, Variable
 
 from tests.utils import TestCases
 
@@ -60,4 +60,30 @@ class DatacubeTest(unittest.TestCase):
             r"^Datacube extension does not apply to type 'object'$",
             DatacubeExtension.ext,
             object(),
+        )
+
+    def test_get_variables(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        dc_ext = DatacubeExtension.ext(item)
+
+        assert dc_ext.variables is not None
+        self.assertIsInstance(dc_ext.variables, dict)
+        self.assertNotEqual(dc_ext.variables, {})
+
+        for var in dc_ext.variables.values():
+            self.assertIsInstance(var, Variable)
+
+    def test_set_variables(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        dc_ext = DatacubeExtension.ext(item)
+
+        new_variable = Variable.from_dict(
+            {"dimensions": ["time", "y", "x", "pressure_levels"], "type": "data"}
+        )
+        new_variables = {"temp": new_variable}
+
+        dc_ext.variables = new_variables
+
+        self.assertEqual(
+            item.properties["cube:variables"], {"temp": new_variable.to_dict()}
         )
