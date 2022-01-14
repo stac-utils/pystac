@@ -1,0 +1,5 @@
+pystac
+======
+
+.. automodule:: pystac
+   :members:

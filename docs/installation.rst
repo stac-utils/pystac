@@ -22,6 +22,8 @@ Install from source
 
     pip install git+https://github.com/stac-utils/pystac.git
 
+.. _installation_dependencies:
+
 Dependencies
 =============
 
