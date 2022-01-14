@@ -6,6 +6,7 @@
 
 - Type annotations for instance attributes on all classes ([#705](https://github.com/stac-utils/pystac/pull/705))
 - `extensions.datacube.Variable.to_dict` method ([#699](https://github.com/stac-utils/pystac/pull/699)])
+- Clarification of possible errors when using `.ext` to extend an object ([#701](https://github.com/stac-utils/pystac/pull/701))
 
 ### Removed
 
