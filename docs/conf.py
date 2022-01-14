@@ -112,6 +112,18 @@ html_theme = 'pydata_sphinx_theme'
 # documentation.
 #
 html_theme_options = {
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/stac-utils/pystac",
+            "icon": "fab fa-github-square"
+        },
+        {
+            "name": "Gitter",
+            "url": "https://gitter.im/SpatioTemporal-Asset-Catalog/python?utm_source=share-link&utm_medium=link&utm_campaign=share-link",
+            "icon": "fab fa-gitter"
+        }
+    ]
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
