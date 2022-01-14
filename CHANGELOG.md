@@ -12,6 +12,7 @@
 
 - Quickstart tutorial is now up-to-date with all package changes ([#674](https://github.com/stac-utils/pystac/pull/674))
 - Creating absolute URLs from absolute URLs ([#697](https://github.com/stac-utils/pystac/pull/697)])
+- Serialization error when using `pystac.extensions.file.MappingObject` ([#700](https://github.com/stac-utils/pystac/pull/700))
 
 ### Deprecated
 
