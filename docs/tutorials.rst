@@ -49,3 +49,10 @@ Adding New and Custom Extensions
 
 This tutorial goes over how to contribute new extensions to PySTAC as well as how to
 implement your own custom extensions.
+
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+    :glob:
+
+    tutorials/**

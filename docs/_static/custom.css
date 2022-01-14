@@ -1,0 +1,13 @@
+.no-sidebar {
+    display: none;
+}
+
+.card-text a {
+    font-weight: 600;
+    color: rgb(255, 26, 26);
+}
+
+.card-header p {
+    font-size: large;
+    font-weight: 600;
+}

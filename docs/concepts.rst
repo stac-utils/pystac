@@ -4,6 +4,22 @@ Concepts
 This page will give an overview of some important concepts to understand when working
 with PySTAC. If you want to check code examples, see the :ref:`tutorials`.
 
+.. _stac_version_support:
+
+STAC Spec Version Support
+=========================
+
+The latest version of PySTAC supports STAC Spec |stac_version| and will automatically update any catalogs to this version. To work with older versions of the STAC Spec, please use an older version of PySTAC:
+
+=================  ==============
+STAC Spec Version  PySTAC Version
+=================  ==============
+>=1.0                Latest
+0.9                0.4.*
+0.8                0.3.*
+<0.8               *Not supported*
+=================  ==============
+
 Reading STACs
 =============
 
@@ -317,6 +333,9 @@ to take advantage of connection pooling using a `requests.Session
             return super().read_text(source, *args, **kwargs)
 
    StacIO.set_default(ConnectionPoolingIO)
+
+
+.. _validation_concepts:
 
 Validation
 ==========

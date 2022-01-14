@@ -3,4 +3,5 @@ Sphinx==4.3.2
 sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.8.8
 pydata-sphinx-theme==0.7.2
+sphinx-panels==0.6.0
 jinja2<4.0
