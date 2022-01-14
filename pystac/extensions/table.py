@@ -183,7 +183,7 @@ class TableExtension(
     @property
     def primary_geometry(self) -> Optional[str]:
         """The primary geometry column name"""
-        return self.properties.get(PRIMARY_GEOMETRY_PROP)
+        return self._get_property(PRIMARY_GEOMETRY_PROP, str)
 
     @primary_geometry.setter
     def primary_geometry(self, v: Optional[str]) -> None:
@@ -195,7 +195,7 @@ class TableExtension(
     @property
     def row_count(self) -> Optional[int]:
         """The number of rows in the dataset"""
-        return self.properties.get(ROW_COUNT_PROP)
+        return self._get_property(ROW_COUNT_PROP, int)
 
     @row_count.setter
     def row_count(self, v: Optional[int]) -> None:
