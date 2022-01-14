@@ -443,7 +443,7 @@ class Collection(Catalog):
     """
 
     assets: Dict[str, Asset]
-    """Optional map of Assets"""
+    """Map of Assets"""
 
     description: str
     """Detailed multi-line description to fully explain the collection."""
@@ -466,15 +466,6 @@ class Collection(Catalog):
 
     providers: Optional[List[Provider]]
     """Optional list of providers of this Collection."""
-
-    assets: Dict[str, Asset]
-    """Map of Assets"""
-    
-    stac_extensions: List[str]
-    """List of extensions the Collection implements."""
-
-    title: Optional[str]
-    """Optional short descriptive one-line title for the collection."""
 
     summaries: Summaries
     """A map of property summaries, either a set of values or statistics such as a
