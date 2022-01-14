@@ -10,7 +10,8 @@ API Reference
    api/*
 
 This API reference is auto-generated from the Python docstrings. The table of contents on the left is organized by
-module, and the sections below are organized based on concepts and sections within the :stac-spec:`STAC Spec <>`.
+module. The sections below are organized based on concepts and sections within the :stac-spec:`STAC Spec <>` and PySTAC
+itself.
 
 Primitive Structures
 --------------------
@@ -114,22 +115,14 @@ These classes are used to set the HREFs of a STAC according to some layout.
 The templating functionality is also used when generating subcatalogs based on
 a template.
 
-Templating
-~~~~~~~~~~
-
-.. autoclass:: pystac.layout.LayoutTemplate
-   :members:
-
-.. autoclass:: pystac.layout.TemplateError
-
-HREF Layout Strategies
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: pystac.layout.BestPracticesLayoutStrategy
-
-.. autoclass:: pystac.layout.TemplateLayoutStrategy
-
-.. autoclass:: pystac.layout.CustomLayoutStrategy
+* :class:`pystac.layout.LayoutTemplate`: Represents a template that can be used for deriving paths or other information
+  based on properties of STAC objects supplied as a template string.
+* :class:`pystac.layout.BestPracticesLayoutStrategy`: Layout strategy that represents the catalog layout described
+  in the :stac-spec:`STAC Best Practices documentation <best-practices.md>`.
+* :class:`pystac.layout.TemplateLayoutStrategy`: Layout strategy that can take strings to be supplied to a
+  :class:`~pystac.layout.LayoutTemplate` to derive paths.
+* :class:`pystac.layout.CustomLayoutStrategy`: Layout strategy that allows users to supply functions to dictate
+  stac object paths.
 
 Errors
 ------
@@ -148,6 +141,8 @@ The following exceptions may be raised internally by the library.
 * :class:`pystac.RequiredPropertyMissing`: Raised when a required value is expected to be present but is missing or
   ``None``.
 * :class:`pystac.STACValidationError`: Raised by validation calls if the STAC JSON is invalid.
+* :class:`pystac.layout.TemplateError`: Raised when an error occurs while converting a template string into data for
+  :class:`~pystac.layout.LayoutTemplate`
 
 Serialization
 -------------
