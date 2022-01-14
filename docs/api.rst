@@ -13,8 +13,8 @@ This API reference is auto-generated from the Python docstrings. The table of co
 on the left is organized by module. The sections below are organized based on concepts
 and sections within the :stac-spec:`STAC Spec <>` and PySTAC itself.
 
-Primitive Structures
---------------------
+Base Structures & Classes
+-------------------------
 
 These are the core Python classes representing entities within the STAC Spec. These
 classes provide convenient methods for serializing and deserializing from JSON,
