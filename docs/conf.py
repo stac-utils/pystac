@@ -149,10 +149,7 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 html_sidebars: Dict[str, List[str]] = {
-    "index": [],
-    "quickstart": [],
-    "concepts": [],
-    "contributing": [],
+    "index": []
 }
 
 
