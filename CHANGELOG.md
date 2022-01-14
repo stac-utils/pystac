@@ -4,6 +4,8 @@
 
 ### Added
 
+- Type annotations for instance attributes on all classes ([#705](https://github.com/stac-utils/pystac/pull/705))
+
 ### Removed
 
 ### Changed

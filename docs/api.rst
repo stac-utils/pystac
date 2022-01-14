@@ -104,6 +104,10 @@ Provider
 Summaries
 ~~~~~~~~~
 
+.. autoclass:: pystac.RangeSummary
+   :members:
+   :undoc-members:
+
 .. autoclass:: pystac.Summaries
    :members:
    :undoc-members:

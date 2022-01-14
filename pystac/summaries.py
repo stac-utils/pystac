@@ -58,6 +58,9 @@ T = TypeVar("T", bound=Union[_Comparable_x, _Comparable_other])
 
 
 class RangeSummary(Generic[T]):
+    minimum: T
+    maximum: T
+
     def __init__(self, minimum: T, maximum: T):
         self.minimum = minimum
         self.maximum = maximum
@@ -116,6 +119,8 @@ class Summarizer:
         If no file is passed, a default one will be used.
     """
 
+    summaryfields: Dict[str, SummaryStrategy]
+
     def __init__(self, fields: Optional[str] = None):
         fieldspath = fields or FIELDS_JSON_URL
         try:
@@ -132,7 +137,7 @@ class Summarizer:
         self._set_field_definitions(jsonfields)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
-        self.summaryfields: Dict[str, SummaryStrategy] = {}
+        self.summaryfields = {}
         for name, desc in fields["metadata"].items():
             if isinstance(desc, dict):
                 strategy_value = desc.get("summary", True)
@@ -194,16 +199,24 @@ DEFAULT_MAXCOUNT = 25
 
 
 class Summaries:
+    _summaries: Dict[str, Any]
+
+    lists: Dict[str, List[Any]]
+    other: Dict[str, Any]
+    ranges: Dict[str, RangeSummary[Any]]
+    schemas: Dict[str, Dict[str, Any]]
+    maxcount: int
+
     def __init__(
         self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
     ) -> None:
         self._summaries = summaries
         self.maxcount = maxcount
 
-        self.lists: Dict[str, List[Any]] = {}
-        self.ranges: Dict[str, RangeSummary[Any]] = {}
-        self.schemas: Dict[str, Dict[str, Any]] = {}
-        self.other: Dict[str, Any] = {}
+        self.lists = {}
+        self.ranges = {}
+        self.schemas = {}
+        self.other = {}
 
         for prop_key, summary in summaries.items():
             self.add(prop_key, summary)

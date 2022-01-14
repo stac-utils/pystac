@@ -59,6 +59,18 @@ class ResolvedObjectCache:
             to collections.
     """
 
+    id_keys_to_objects: Dict[str, "STACObject_Type"]
+    """Existing cache of a key made up of the STACObject and it's parents IDs mapped
+    to the cached STACObject."""
+
+    hrefs_to_objects: Dict[str, "STACObject_Type"]
+    """STAC Object HREFs matched to their cached object."""
+
+    ids_to_collections: Dict[str, "Collection_Type"]
+    """Map of collection IDs to collections."""
+
+    _collection_cache: Optional["ResolvedObjectCollectionCache"]
+
     def __init__(
         self,
         id_keys_to_objects: Optional[Dict[str, "STACObject_Type"]] = None,
@@ -69,7 +81,7 @@ class ResolvedObjectCache:
         self.hrefs_to_objects = hrefs_to_objects or {}
         self.ids_to_collections = ids_to_collections or {}
 
-        self._collection_cache: Optional[ResolvedObjectCollectionCache] = None
+        self._collection_cache = None
 
     def get_or_cache(self, obj: "STACObject_Type") -> "STACObject_Type":
         """Gets the STACObject that is the cached version of the given STACObject; or, if
@@ -233,6 +245,9 @@ class CollectionCache:
     in common properties.
     """
 
+    cached_ids: Dict[str, Union["Collection_Type", Dict[str, Any]]]
+    cached_hrefs: Dict[str, Union["Collection_Type", Dict[str, Any]]]
+
     def __init__(
         self,
         cached_ids: Optional[
@@ -274,6 +289,9 @@ class CollectionCache:
 
 
 class ResolvedObjectCollectionCache(CollectionCache):
+
+    resolved_object_cache: ResolvedObjectCache
+
     def __init__(
         self,
         resolved_object_cache: ResolvedObjectCache,

@@ -67,6 +67,8 @@ class LabelClasses:
     Use :meth:`LabelClasses.create` to create a new instance from property values.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
 
@@ -150,6 +152,8 @@ class LabelCount:
     Use :meth:`LabelCount.create` to create a new instance.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
 
@@ -214,6 +218,8 @@ class LabelStatistics:
     Use :meth:`LabelStatistics.create` to create a new instance.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -277,6 +283,8 @@ class LabelOverview:
 
     Use :meth:`LabelOverview.create` to create a new instance.
     """
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]):
         self.properties = properties
@@ -436,6 +444,9 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
        >>> item: pystac.Item = ...
        >>> label_ext = LabelExtension.ext(item)
     """
+
+    obj: pystac.Item
+    schema_uri: str
 
     def __init__(self, item: pystac.Item) -> None:
         self.obj = item

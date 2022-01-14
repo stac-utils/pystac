@@ -29,6 +29,8 @@ class AssetDefinition:
     See the :stac-ext:`Asset Object <item-assets#asset-object>` for details.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -119,6 +121,8 @@ class AssetDefinition:
 
 
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+    collection: pystac.Collection
+
     def __init__(self, collection: pystac.Collection) -> None:
         self.collection = collection
 
