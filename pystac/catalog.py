@@ -49,7 +49,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-            <best-practices.md#self-contained-catalogs>`
+        <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -59,7 +59,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -69,7 +69,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     @classmethod

@@ -320,13 +320,14 @@ class Link:
     def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
-        Returns:
-            dict: A serialization of the Link that can be written out as JSON.
-            transform_href: If True, transform the HREF based on the type of
+        Args:
+            transform_href : If ``True``, transform the HREF based on the type of
                 catalog the owner belongs to (if any). I.e. if the link owner
                 belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
                 the HREF will be transformed to be relative to the catalog root
                 if this is a hierarchical link relation.
+        Returns:
+            dict : A serialization of the Link that can be written out as JSON.
         """
 
         d: Dict[str, Any] = {
