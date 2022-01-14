@@ -54,7 +54,7 @@ class AssetDefinition:
     @property
     def description(self) -> Optional[str]:
         """Gets or sets a description of the Asset providing additional details, such as
-        how it was processed or created. `CommonMark 0.29 <http://commonmark.org/`__
+        how it was processed or created. `CommonMark 0.29 <http://commonmark.org/>`__
         syntax MAY be used for rich text representation."""
         return self.properties.get(ASSET_DESC_PROP)
 
