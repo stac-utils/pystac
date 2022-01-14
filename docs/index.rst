@@ -28,10 +28,14 @@ PySTAC is a library for working with `SpatioTemporal Asset Catalogs (STAC) <http
     * :doc:`tutorials`: In-depth tutorials on using PySTAC for a number of different applications.
     * :doc:`api`: Detailed API documentation of PySTAC classes, methods, and functions.
 
-Acknowledgments
+Related Projects
 ================
 
-This library builds on the code and concepts of `sat-stac <https://github.com/sat-utils/sat-stac>`_.
+* `pystac-client <https://github.com/stac-utils/pystac-client>`__: A Python client for working with STAC Catalogs and
+  APIs.
+* `stactools <https://github.com/stac-utils/stactools>`__: A command line tool and library for working with STAC.
+* `sat-stac <https://github.com/sat-utils/sat-stac>`__: A Python 3 library for reading and working with existing
+  Spatio-Temporal Asset Catalogs (STAC). *Much of PySTAC builds on the code and concepts of* ``sat-stac``.
 
 .. toctree::
    :maxdepth: 2
