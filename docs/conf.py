@@ -55,7 +55,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "sphinx.ext.extlinks",
-    "sphinxcontrib.fulltoc",
     "nbsphinx",
 ]
 
@@ -106,19 +105,13 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = 'pydata_sphinx_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    "show_powered_by": False,
-    "github_user": "stac-utils",
-    "github_repo": "pystac",
-    "github_banner": True,
-    "show_related": False,
-    "note_bg": "#FFF59C",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
