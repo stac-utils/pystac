@@ -135,6 +135,8 @@ html_theme_options = {
     # "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
 
+html_logo = "_static/STAC-03.png"
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".

@@ -11,3 +11,11 @@
     font-size: large;
     font-weight: 600;
 }
+
+.navbar-brand img {
+    height: 50px;
+}
+
+.navbar-brand {
+    height: 75px;
+}
