@@ -12,6 +12,8 @@
 
 ### Changed
 
+- Reorganize docs and switch to PyData theme ([#687](https://github.com/stac-utils/pystac/pull/687))
+
 ### Fixed
 
 - Quickstart tutorial is now up-to-date with all package changes ([#674](https://github.com/stac-utils/pystac/pull/674))

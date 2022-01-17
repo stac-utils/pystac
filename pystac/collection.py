@@ -443,23 +443,17 @@ class Collection(Catalog):
     """
 
     assets: Dict[str, Asset]
-    """Optional map of Assets"""
+    """Map of Assets"""
 
     description: str
     """Detailed multi-line description to fully explain the collection."""
 
     extent: Extent
-    """Spatial and temporal extents that describe the bounds of all items contained within
-    this Collection."""
+    """Spatial and temporal extents that describe the bounds of all items contained
+    within this Collection."""
 
     id: str
     """Identifier for the collection."""
-
-    keywords: Optional[List[str]]
-    """Optional list of keywords describing the collection."""
-
-    providers: Optional[List[Provider]]
-    """Optional list of providers of this Collection."""
 
     stac_extensions: List[str]
     """List of extensions the Collection implements."""
@@ -467,9 +461,15 @@ class Collection(Catalog):
     title: Optional[str]
     """Optional short descriptive one-line title for the collection."""
 
+    keywords: Optional[List[str]]
+    """Optional list of keywords describing the collection."""
+
+    providers: Optional[List[Provider]]
+    """Optional list of providers of this Collection."""
+
     summaries: Summaries
-    """Optional map of property summaries, either a set of values or statistics such as
-    a range."""
+    """A map of property summaries, either a set of values or statistics such as a
+    range."""
 
     links: List[Link]
     """A list of :class:`~pystac.Link` objects representing all links associated with

@@ -49,7 +49,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-            <best-practices.md#self-contained-catalogs>`
+        <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -59,7 +59,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -69,7 +69,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     @classmethod
@@ -122,7 +122,7 @@ class Catalog(STACObject):
         href : Optional HREF for this catalog, which be set as the
             catalog's self link's HREF.
         catalog_type : Optional catalog type for this catalog. Must
-            be one of the values in :class`~pystac.CatalogType`.
+            be one of the values in :class:`~pystac.CatalogType`.
     """
 
     catalog_type: CatalogType
@@ -136,6 +136,10 @@ class Catalog(STACObject):
 
     id: str
     """Identifier for the catalog."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this Catalog."""
 
     title: Optional[str]
     """Optional short descriptive one-line title for the catalog."""
