@@ -26,6 +26,7 @@
 - `DatacubeExtension.variables` now has a setter ([#699](https://github.com/stac-utils/pystac/pull/699)])
 - Landsat STAC tutorial is now up-to-date with all package changes ([#692](https://github.com/stac-utils/pystac/pull/674))
 - Paths to sub-catalog files when using `Catalog.save` ([#714](https://github.com/stac-utils/pystac/pull/714))
+- Link to PySTAC Introduction tutorial in tutorials index page ([#719](https://github.com/stac-utils/pystac/pull/719))
 
 ### Deprecated
 
