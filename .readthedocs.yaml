@@ -7,7 +7,7 @@ version: 2
 formats:
   # Temporarily disabling PDF downloads due to problem with nbsphinx in LateX builds
   # - pdf
-  - epub
+  - htmlzip
 
 python:
   version: "3.8"
