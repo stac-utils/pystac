@@ -770,7 +770,7 @@ class Catalog(STACObject):
                     child_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    child.save(dest_href=child_dest_href)
+                    child.save(dest_href=os.path.dirname(child_dest_href))
                 else:
                     child.save()
 

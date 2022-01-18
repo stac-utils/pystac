@@ -22,6 +22,7 @@
 - Use `PropertiesExtension._get_property` to properly set return type in `TableExtension` ([#712](https://github.com/stac-utils/pystac/pull/712))
 - `DatacubeExtension.variables` now has a setter ([#699](https://github.com/stac-utils/pystac/pull/699)])
 - Landsat STAC tutorial is now up-to-date with all package changes ([#692](https://github.com/stac-utils/pystac/pull/674))
+- Paths to sub-catalog files when using `Catalog.save` ([#714](https://github.com/stac-utils/pystac/pull/714))
 
 ### Deprecated
 

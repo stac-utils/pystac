@@ -18,7 +18,13 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.utils import is_absolute_href, join_path_or_url, JoinType
+from pystac.utils import (
+    is_absolute_href,
+    join_path_or_url,
+    JoinType,
+    make_absolute_href,
+    make_relative_href,
+)
 from tests.utils import (
     TestCases,
     ARBITRARY_GEOM,
@@ -331,6 +337,63 @@ class CatalogTest(unittest.TestCase):
             result_cat = Catalog.from_file(catalog_path)
             for link in result_cat.get_child_links():
                 self.assertTrue(cast(str, link.target).startswith(href))
+
+    def test_subcatalogs_saved_to_correct_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = TestCases.test_case_1()
+            href = "http://test.com"
+
+            catalog.normalize_hrefs(href)
+            catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=tmp_dir)
+
+            # Check the root catalog path
+            expected_root_catalog_path = os.path.join(tmp_dir, "catalog.json")
+            self.assertTrue(
+                os.path.exists(expected_root_catalog_path),
+                msg=f"{expected_root_catalog_path} does not exist.",
+            )
+            self.assertTrue(
+                os.path.isfile(expected_root_catalog_path),
+                msg=f"{expected_root_catalog_path} is not a file.",
+            )
+
+            # Check each child catalog
+            for child_catalog in catalog.get_children():
+                relative_path = make_relative_href(
+                    child_catalog.self_href, catalog.self_href, start_is_dir=False
+                )
+                expected_child_path = make_absolute_href(
+                    relative_path,
+                    expected_root_catalog_path,
+                    start_is_dir=False,
+                )
+                self.assertTrue(
+                    os.path.exists(expected_child_path),
+                    msg=f"{expected_child_path} does not exist.",
+                )
+                self.assertTrue(
+                    os.path.isfile(expected_child_path),
+                    msg=f"{expected_child_path} is not a file.",
+                )
+
+            # Check each item
+            for item in catalog.get_all_items():
+                relative_path = make_relative_href(
+                    item.self_href, catalog.self_href, start_is_dir=False
+                )
+                expected_item_path = make_absolute_href(
+                    relative_path,
+                    expected_root_catalog_path,
+                    start_is_dir=False,
+                )
+                self.assertTrue(
+                    os.path.exists(expected_item_path),
+                    msg=f"{expected_item_path} does not exist.",
+                )
+                self.assertTrue(
+                    os.path.isfile(expected_item_path),
+                    msg=f"{expected_item_path} is not a file.",
+                )
 
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.test_case_1()
