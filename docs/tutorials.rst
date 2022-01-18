@@ -7,7 +7,7 @@ PySTAC Introduction
 -------------------
 
 - :tutorial:`GitHub version <pystac-introduction.ipynb>`
-- :ref:`Docs version </tutorials/pystac-spacenet-tutorial.ipynb>`
+- :ref:`Docs version </tutorials/pystac-introduction.ipynb>`
 
 This tutorial gives an introduction to PySTAC concepts through code examples.
 
