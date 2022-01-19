@@ -1,4 +1,4 @@
-ipython==8.0.0
+ipython==8.0.1
 Sphinx==4.4.0
 sphinxcontrib-fulltoc==1.2.0
 nbsphinx==0.8.8
