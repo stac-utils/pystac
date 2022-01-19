@@ -15,7 +15,7 @@
 import os
 import sys
 import subprocess
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -49,13 +49,13 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx_panels",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "sphinx.ext.extlinks",
-    "sphinxcontrib.fulltoc",
     "nbsphinx",
 ]
 
@@ -75,6 +75,9 @@ extlinks = {
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
+
+# Static CSS files
+html_css_files = ["custom.css"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -106,25 +109,38 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+html_theme = "pydata_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    "show_powered_by": False,
-    "github_user": "stac-utils",
-    "github_repo": "pystac",
-    "github_banner": True,
-    "show_related": False,
-    "note_bg": "#FFF59C",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/stac-utils/pystac",
+            "icon": "fab fa-github-square",
+        },
+        {
+            "name": "Gitter",
+            "url": "https://gitter.im/SpatioTemporal-Asset-Catalog/"
+            "python?utm_source=share-link&utm_medium=link&utm_campaign=share-link",
+            "icon": "fab fa-gitter",
+        },
+    ],
+    "external_links": [
+        {"name": "STAC Spec", "url": "https://github.com/radiantearth/stac-spec"}
+    ],
+    # "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
+
+html_logo = "_static/STAC-03.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -134,7 +150,7 @@ html_theme_options = {
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-# html_sidebars = {}
+html_sidebars: Dict[str, List[str]] = {"index": []}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -216,3 +232,7 @@ epub_exclude_files = ["search.html"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
+
+# -- Substutition variables
+
+rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"

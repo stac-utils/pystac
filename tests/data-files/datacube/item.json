@@ -97,7 +97,18 @@
                     "blue"
                 ]
             }
-        }
+        },
+        "cube:variables": {
+            "temp": {
+              "dimensions": [
+                "time",
+                "y",
+                "x",
+                "pressure_levels"
+              ],
+              "type": "data"
+            }
+          }
     },
     "assets": {
         "data": {

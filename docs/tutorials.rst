@@ -7,7 +7,7 @@ PySTAC Introduction
 -------------------
 
 - :tutorial:`GitHub version <pystac-introduction.ipynb>`
-- :ref:`Docs version </tutorials/pystac-spacenet-tutorial.ipynb>`
+- :ref:`Docs version </tutorials/pystac-introduction.ipynb>`
 
 This tutorial gives an introduction to PySTAC concepts through code examples.
 
@@ -49,3 +49,10 @@ Adding New and Custom Extensions
 
 This tutorial goes over how to contribute new extensions to PySTAC as well as how to
 implement your own custom extensions.
+
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+    :glob:
+
+    tutorials/**

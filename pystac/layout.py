@@ -75,6 +75,16 @@ class LayoutTemplate:
             will be used in case a value cannot be derived from a stac object.
     """
 
+    template: str
+    """The template string to use."""
+
+    defaults: Dict[str, str]
+    """A dictionary of template vars to values. These values will be used in case a
+    value cannot be derived from a stac object."""
+
+    template_vars: List[str]
+    """List of template vars to use when templating."""
+
     # Special template vars specific to Items
     ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
@@ -85,7 +95,7 @@ class LayoutTemplate:
         self.defaults = defaults or {}
 
         # Generate list of template vars
-        template_vars: List[str] = []
+        template_vars = []
         for formatter_parse_result in Formatter().parse(template):
             v = formatter_parse_result[1]
             if v is not None:
@@ -287,6 +297,24 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
 
+    catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]]
+    """A function that takes a :class:`~pystac.Catalog`, a parent directory, and a
+    boolean specifying whether or not this Catalog is the root. If it is the root, it
+    is usually best to not create a subdirectory and put the Catalog file directly
+    in the parent directory. Must return the string path."""
+
+    collection_func: Optional[Callable[["Collection_Type", str, bool], str]]
+    """A function that is used for collections in the same manner as
+    :attr:`~catalog_func`. This takes the same parameters."""
+
+    fallback_strategy: HrefLayoutStrategy
+    """The fallback strategy to use if a function is not provided for a stac object
+    type. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`."""
+
+    item_func: Optional[Callable[["Item_Type", str], str]]
+    """An optional function that takes an :class:`~pystac.Item` and a parent directory
+    and returns the path to be used for the Item."""
+
     def __init__(
         self,
         catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]] = None,
@@ -299,7 +327,7 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
         self.catalog_func = catalog_func
         if fallback_strategy is None:
             fallback_strategy = BestPracticesLayoutStrategy()
-        self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
+        self.fallback_strategy = fallback_strategy
 
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool
@@ -352,6 +380,22 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
 
+    catalog_template: Optional[LayoutTemplate]
+    """The template string to use for catalog paths. Must be a valid template string
+    that can be used by :class:`~pystac.layout.LayoutTemplate`."""
+
+    collection_template: Optional[LayoutTemplate]
+    """The template string to use for collection paths. Must be a valid template string
+    that can be used by :class:`~pystac.layout.LayoutTemplate`."""
+
+    fallback_strategy: HrefLayoutStrategy
+    """The fallback strategy to use if a template is not provided. Defaults to
+    :class:`~pystac.layout.BestPracticesLayoutStrategy`."""
+
+    item_template: Optional[LayoutTemplate]
+    """The template string to use for item paths. Must be a valid template string that
+    can be used by :class:`~pystac.layout.LayoutTemplate`."""
+
     def __init__(
         self,
         catalog_template: Optional[str] = None,
@@ -373,7 +417,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
         if fallback_strategy is None:
             fallback_strategy = BestPracticesLayoutStrategy()
-        self.fallback_strategy: HrefLayoutStrategy = fallback_strategy
+        self.fallback_strategy = fallback_strategy
 
     def get_catalog_href(
         self, cat: "Catalog_Type", parent_dir: str, is_root: bool

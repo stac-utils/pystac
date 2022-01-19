@@ -17,10 +17,10 @@ class STACObjectType(StringEnum):
 
 
 class STACObject(ABC):
-    """A STACObject is the base class for any element of STAC that
-    has links e.g. (Catalogs, Collections, or Items). A STACObject has
-    common functionality, can be converted to and from Python ``dicts`` representing
-    JSON, and can be cloned or copied.
+    """A base class for other PySTAC classes that contains a variety of useful
+    methods for dealing with links, copying objects, accessing extensions, and reading
+    and writing files. You shouldn't use STACObject directly, but instead access this
+    functionality through the implementing classes.
     """
 
     id: str
@@ -36,7 +36,7 @@ class STACObject(ABC):
     STAC_OBJECT_TYPE: STACObjectType
 
     def __init__(self, stac_extensions: List[str]) -> None:
-        self.links: List[Link] = []
+        self.links = []
         self.stac_extensions = stac_extensions
 
     def validate(self) -> List[Any]:

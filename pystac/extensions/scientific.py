@@ -54,6 +54,9 @@ def doi_to_url(doi: str) -> str:
 class Publication:
     """Helper for Publication entries."""
 
+    citation: Optional[str]
+    doi: Optional[str]
+
     def __init__(self, doi: Optional[str], citation: Optional[str]) -> None:
         self.doi = doi
         self.citation = citation
@@ -113,6 +116,8 @@ class ScientificExtension(
        >>> item: pystac.Item = ...
        >>> sci_ext = ScientificExtension.ext(item)
     """
+
+    obj: pystac.STACObject
 
     def __init__(self, obj: pystac.STACObject) -> None:
         self.obj = obj

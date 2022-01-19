@@ -12,6 +12,34 @@
 
 ### Deprecated
 
+## [v1.3.0]
+
+### Added
+
+- Type annotations for instance attributes on all classes ([#705](https://github.com/stac-utils/pystac/pull/705))
+- `extensions.datacube.Variable.to_dict` method ([#699](https://github.com/stac-utils/pystac/pull/699)])
+- Clarification of possible errors when using `.ext` to extend an object ([#701](https://github.com/stac-utils/pystac/pull/701))
+- Downloadable documentation as zipped HTML ([#715](https://github.com/stac-utils/pystac/pull/715))
+
+### Removed
+
+- Downloadable documentation in ePub format ([#715](https://github.com/stac-utils/pystac/pull/715))
+
+### Changed
+
+- Reorganize docs and switch to PyData theme ([#687](https://github.com/stac-utils/pystac/pull/687))
+
+### Fixed
+
+- Quickstart tutorial is now up-to-date with all package changes ([#674](https://github.com/stac-utils/pystac/pull/674))
+- Creating absolute URLs from absolute URLs ([#697](https://github.com/stac-utils/pystac/pull/697)])
+- Serialization error when using `pystac.extensions.file.MappingObject` ([#700](https://github.com/stac-utils/pystac/pull/700))
+- Use `PropertiesExtension._get_property` to properly set return type in `TableExtension` ([#712](https://github.com/stac-utils/pystac/pull/712))
+- `DatacubeExtension.variables` now has a setter ([#699](https://github.com/stac-utils/pystac/pull/699)])
+- Landsat STAC tutorial is now up-to-date with all package changes ([#692](https://github.com/stac-utils/pystac/pull/674))
+- Paths to sub-catalog files when using `Catalog.save` ([#714](https://github.com/stac-utils/pystac/pull/714))
+- Link to PySTAC Introduction tutorial in tutorials index page ([#719](https://github.com/stac-utils/pystac/pull/719))
+
 ## [v1.2.0]
 
 ### Added
@@ -525,7 +553,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.2.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.3.0..main>
+[v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
 [v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>

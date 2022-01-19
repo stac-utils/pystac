@@ -132,11 +132,17 @@ class FileTest(unittest.TestCase):
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
         file_ext = FileExtension.ext(asset)
-        values = [MappingObject.create([0], summary="clouds")]
+        mapping_obj = {"values": [0], "summary": "clouds"}
 
-        file_ext.values = values
+        # file_ext.values = values
+        file_ext.apply(values=[MappingObject.from_dict(mapping_obj)])
 
-        self.assertEqual(file_ext.values, values)
+        self.assertListEqual(asset.extra_fields["file:values"], [mapping_obj])
+
+        values_field = asset.extra_fields["file:values"]
+        self.assertIsInstance(values_field, list)
+        for mapping_obj in values_field:
+            self.assertIsInstance(mapping_obj, dict)
 
     def test_item_asset_apply(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
@@ -146,7 +152,8 @@ class FileTest(unittest.TestCase):
         new_checksum = "90e40210163700a8a6501eccd00b6d3b44ddaed0"
         new_size = 1
         new_header_size = 8192
-        new_values = [MappingObject.create([0], summary="clouds")]
+        new_mapping_obj = {"values": [0], "summary": "clouds"}
+        new_values = [MappingObject.from_dict(new_mapping_obj)]
         new_byte_order = ByteOrder.LITTLE_ENDIAN
 
         self.assertNotEqual(file_ext.checksum, new_checksum)
@@ -163,11 +170,11 @@ class FileTest(unittest.TestCase):
             values=new_values,
         )
 
-        self.assertEqual(file_ext.checksum, new_checksum)
-        self.assertEqual(file_ext.size, new_size)
-        self.assertEqual(file_ext.header_size, new_header_size)
-        self.assertEqual(file_ext.values, new_values)
-        self.assertEqual(file_ext.byte_order, new_byte_order)
+        self.assertEqual(asset.extra_fields["file:checksum"], new_checksum)
+        self.assertEqual(asset.extra_fields["file:size"], new_size)
+        self.assertEqual(asset.extra_fields["file:header_size"], new_header_size)
+        self.assertEqual(asset.extra_fields["file:values"], [new_mapping_obj])
+        self.assertEqual(asset.extra_fields["file:byte_order"], new_byte_order)
 
     def test_repr(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)

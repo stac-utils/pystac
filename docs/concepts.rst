@@ -4,6 +4,24 @@ Concepts
 This page will give an overview of some important concepts to understand when working
 with PySTAC. If you want to check code examples, see the :ref:`tutorials`.
 
+.. _stac_version_support:
+
+STAC Spec Version Support
+=========================
+
+The latest version of PySTAC supports STAC Spec |stac_version| and will automatically
+update any catalogs to this version. To work with older versions of the STAC Spec,
+please use an older version of PySTAC:
+
+=================  ==============
+STAC Spec Version  PySTAC Version
+=================  ==============
+>=1.0                Latest
+0.9                0.4.*
+0.8                0.3.*
+<0.8               *Not supported*
+=================  ==============
+
 Reading STACs
 =============
 
@@ -318,6 +336,9 @@ to take advantage of connection pooling using a `requests.Session
 
    StacIO.set_default(ConnectionPoolingIO)
 
+
+.. _validation_concepts:
+
 Validation
 ==========
 
@@ -427,9 +448,9 @@ classes that extend these objects inherit from
 :class:`pystac.extensions.base.PropertiesExtension`, and you can use the
 ``ext`` method on these classes to extend an object.
 
-For instance, to extend an item with the :stac-ext:`Electro-Optical Extension <eo>`
-you would use :meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>` as
-follows:
+For instance, if you have an item that implements the :stac-ext:`Electro-Optical
+Extension <eo>`, you can access the properties associated with that extension using
+:meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>`:
 
 .. code-block:: python
 
@@ -437,14 +458,22 @@ follows:
    from pystac.extensions.eo import EOExtension
 
    item = Item(...)  # See docs for creating an Item
-   eo_ext = EOExtension.ext(item)
 
-This extended instance now gives you access to the properties defined in that extension:
+   # Check that the Item implements the EO Extension
+   if EOExtension.has_extension(item):
+      eo_ext = EOExtension.ext(item)
 
-.. code-block:: python
+      bands = eo_ext.bands
+      cloud_cover = eo_ext.cloud_cover
+      ...
 
-   eo_ext.bands
-   eo_ext.cloud_cover
+.. note:: The ``ext`` method will raise an :exc:`~pystac.ExtensionNotImplemented`
+   exception if the object does not implement that extension (e.g. if the extension
+   URI is not in that object's :attr:`~pystac.STACObject.stac_extensions` list). In
+   the example above, we check that the Item implements the EO Extension before calling
+   :meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>` to handle this. See
+   the `Adding an Extension`_ section below for details on adding an extension to an
+   object.
 
 See the documentation for each extension implementation for details on the supported
 properties and other functionality.
@@ -491,6 +520,7 @@ have a default value of ``None``:
 
 If you attempt to extend an object that is not supported by an extension, PySTAC will
 throw a :class:`pystac.ExtensionTypeError`.
+
 
 Adding an Extension
 -------------------

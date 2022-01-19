@@ -64,6 +64,8 @@ class ExtensionHooks(ABC):
 
 
 class RegisteredExtensionHooks:
+    hooks: Dict[str, ExtensionHooks]
+
     def __init__(self, hooks: Iterable[ExtensionHooks]):
         self.hooks = dict([(e.schema_uri, e) for e in hooks])
 
