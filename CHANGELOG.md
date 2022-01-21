@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
+
 ### Deprecated
 
 ## [v1.3.0]
