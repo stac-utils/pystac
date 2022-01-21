@@ -782,7 +782,10 @@ class Catalog(STACObject):
                     item_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    item.save_object(include_self_link=True, dest_href=item_dest_href)
+                    item.save_object(
+                        include_self_link=items_include_self_link,
+                        dest_href=item_dest_href,
+                    )
                 else:
                     item.save_object(include_self_link=items_include_self_link)
 
