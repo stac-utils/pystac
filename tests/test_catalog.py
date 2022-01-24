@@ -338,6 +338,36 @@ class CatalogTest(unittest.TestCase):
             for link in result_cat.get_child_links():
                 self.assertTrue(cast(str, link.target).startswith(href))
 
+    def test_save_relative_published_no_self_links(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = TestCases.test_case_1()
+            href = "http://test.com"
+            folder = os.path.join(tmp_dir, "cat")
+            catalog.normalize_hrefs(href)
+            catalog.save(catalog_type=CatalogType.RELATIVE_PUBLISHED, dest_href=folder)
+
+            catalog_path = os.path.join(folder, "catalog.json")
+            self.assertTrue(os.path.exists(catalog_path))
+            result_cat = Catalog.from_file(catalog_path)
+
+            # Check that Items do not have a self link
+            # Since Item.from_dict automatically adds a self link, we need to look at
+            # the JSON files themselves.
+            stac_io = pystac.StacIO.default()
+
+            for current_cat, _, __ in result_cat.walk():
+                for item_link in current_cat.get_item_links():
+                    item_dict = stac_io.read_json(item_link)
+                    self_link = next(
+                        (
+                            link
+                            for link in item_dict.get("links", [])
+                            if link["rel"] == "self"
+                        ),
+                        None,
+                    )
+                    self.assertIsNone(self_link)
+
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
