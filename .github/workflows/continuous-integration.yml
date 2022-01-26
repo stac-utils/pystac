@@ -14,6 +14,7 @@ jobs:
   test:
     name: test
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
       fail-fast: false
@@ -23,11 +24,20 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11.0-alpha.3"
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
+        include:
+          - python-version: "3.11.0-alpha.3"
+            os: ubuntu-latest
+            experimental: true
+          - python-version: "3.11.0-alpha.3"
+            os: windows-latest
+            experimental: true
+          - python-version: "3.11.0-alpha.3"
+            os: macos-latest
+            experimental: true
 
     steps:
       - uses: actions/checkout@v2
