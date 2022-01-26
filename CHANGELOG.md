@@ -4,6 +4,8 @@
 
 ### Added
 
+- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
+
 ### Removed
 
 ### Changed
