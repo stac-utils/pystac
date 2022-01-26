@@ -55,4 +55,8 @@ implement your own custom extensions.
     :maxdepth: 2
     :glob:
 
-    tutorials/**
+    tutorials/pystac-introduction.ipynb
+    tutorials/pystac-spacenet-tutorial.ipynb
+    tutorials/how-to-create-stac-catalogs.ipynb
+    tutorials/creating-a-landsat-stac.ipynb
+    tutorials/adding-new-and-custom-extensions.ipynb
