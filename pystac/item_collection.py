@@ -1,13 +1,11 @@
 from copy import deepcopy
 from pystac.errors import STACTypeError
-from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable, Union
+from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable
 
 import pystac
+from pystac.types import ItemLike
 from pystac.utils import make_absolute_href, is_absolute_href
 from pystac.serialization.identify import identify_stac_object_type
-
-
-ItemLike = Union[pystac.Item, Dict[str, Any]]
 
 
 class ItemCollection(Collection[pystac.Item]):
