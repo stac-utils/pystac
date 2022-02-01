@@ -5,6 +5,7 @@
 ### Added
 
 - Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
+- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
 
 ### Removed
 
