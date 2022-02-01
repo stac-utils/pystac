@@ -3,20 +3,19 @@ import os
 import json
 from typing import (
     Any,
-    AnyStr,
     Callable,
     Dict,
     List,
     Optional,
     TYPE_CHECKING,
     Tuple,
-    Union,
 )
 
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
+from pystac.types import HREF
 from pystac.utils import safe_urlparse
 from pystac.serialization import (
     merge_common_properties,
@@ -40,9 +39,7 @@ class StacIO(ABC):
     _default_io: Optional[Callable[[], "StacIO"]] = None
 
     @abstractmethod
-    def read_text(
-        self, source: Union[str, "os.PathLike[AnyStr]"], *args: Any, **kwargs: Any
-    ) -> str:
+    def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         """Read text from the given URI.
 
         The source to read from can be specified as a string or a
@@ -67,7 +64,7 @@ class StacIO(ABC):
     @abstractmethod
     def write_text(
         self,
-        dest: Union[str, "os.PathLike[AnyStr]"],
+        dest: HREF,
         txt: str,
         *args: Any,
         **kwargs: Any,
@@ -128,7 +125,7 @@ class StacIO(ABC):
     def stac_object_from_dict(
         self,
         d: Dict[str, Any],
-        href: Optional[Union[str, "os.PathLike[AnyStr]"]] = None,
+        href: Optional[HREF] = None,
         root: Optional["Catalog_Type"] = None,
         preserve_dict: bool = True,
     ) -> "STACObject_Type":
@@ -180,9 +177,7 @@ class StacIO(ABC):
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
-    def read_json(
-        self, source: Union[str, "os.PathLike[AnyStr]"], *args: Any, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Read a dict from the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -204,7 +199,7 @@ class StacIO(ABC):
 
     def read_stac_object(
         self,
-        source: Union[str, "os.PathLike[AnyStr]"],
+        source: HREF,
         root: Optional["Catalog_Type"] = None,
         *args: Any,
         **kwargs: Any,
@@ -235,7 +230,7 @@ class StacIO(ABC):
 
     def save_json(
         self,
-        dest: Union[str, "os.PathLike[AnyStr]"],
+        dest: HREF,
         json_dict: Dict[str, Any],
         *args: Any,
         **kwargs: Any,
@@ -270,9 +265,7 @@ class StacIO(ABC):
 
 
 class DefaultStacIO(StacIO):
-    def read_text(
-        self, source: Union[str, "os.PathLike[AnyStr]"], *_: Any, **__: Any
-    ) -> str:
+    def read_text(self, source: HREF, *_: Any, **__: Any) -> str:
         """A concrete implementation of :meth:`StacIO.read_text
         <pystac.StacIO.read_text>`. Converts the ``source`` argument to a string (if it
         is not already) and delegates to :meth:`DefaultStacIO.read_text_from_href` for
@@ -304,9 +297,7 @@ class DefaultStacIO(StacIO):
                 href_contents = f.read()
         return href_contents
 
-    def write_text(
-        self, dest: Union[str, "os.PathLike[AnyStr]"], txt: str, *_: Any, **__: Any
-    ) -> None:
+    def write_text(self, dest: HREF, txt: str, *_: Any, **__: Any) -> None:
         """A concrete implementation of :meth:`StacIO.write_text
         <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
         is not already) and delegates to :meth:`DefaultStacIO.write_text_from_href` for
@@ -354,9 +345,7 @@ class DuplicateKeyReportingMixin(StacIO):
         )
         return result
 
-    def read_json(
-        self, source: Union[str, "os.PathLike[AnyStr]"], *args: Any, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Overwrites :meth:`StacIO.read_json <pystac.StacIO.read_json>` for
         deserializing a JSON file to a dictionary while checking for duplicate object
         keys.

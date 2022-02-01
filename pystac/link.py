@@ -3,6 +3,7 @@ from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import pystac
+from pystac.types import HREF
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
 
 if TYPE_CHECKING:
@@ -416,7 +417,7 @@ class Link(PathLike):
         return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def self_href(cls, href: Union[str, PathLike]) -> "Link":
+    def self_href(cls, href: HREF) -> "Link":
         """Creates a self link to a file's location."""
         href_str = str(os.fspath(href))
         return cls(pystac.RelType.SELF, href_str, media_type=pystac.MediaType.JSON)

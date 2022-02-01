@@ -76,6 +76,7 @@ from pystac.asset import Asset
 from pystac.item import Item
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
+from pystac.types import HREF
 import pystac.validation
 
 import pystac.extensions.hooks
@@ -114,9 +115,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(
-    href: Union[str, "os.PathLike[AnyStr]"], stac_io: Optional[StacIO] = None
-) -> STACObject:
+def read_file(href: HREF, stac_io: Optional[StacIO] = None) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what
@@ -148,7 +147,7 @@ def read_file(
 def write_file(
     obj: STACObject,
     include_self_link: bool = True,
-    dest_href: Optional[Union[str, "os.PathLike[AnyStr]"]] = None,
+    dest_href: Optional[HREF] = None,
     stac_io: Optional[StacIO] = None,
 ) -> None:
     """Writes a STACObject to a file.
