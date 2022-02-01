@@ -15,7 +15,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
-from pystac.types import HREF
+from pystac.link import HREF
 from pystac.utils import safe_urlparse
 from pystac.serialization import (
     merge_common_properties,

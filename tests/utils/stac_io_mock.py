@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pystac
 from pystac.stac_io import DefaultStacIO, StacIO
-from pystac.types import HREF
+from pystac.link import HREF
 
 
 class MockStacIO(pystac.StacIO):

@@ -62,7 +62,7 @@ from pystac.media_type import MediaType
 from pystac.rel_type import RelType
 from pystac.stac_io import StacIO
 from pystac.stac_object import STACObject, STACObjectType
-from pystac.link import Link, HIERARCHICAL_LINKS
+from pystac.link import Link, HIERARCHICAL_LINKS, HREF
 from pystac.catalog import Catalog, CatalogType
 from pystac.collection import (
     Collection,
@@ -76,7 +76,6 @@ from pystac.asset import Asset
 from pystac.item import Item
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
-from pystac.types import HREF
 import pystac.validation
 
 import pystac.extensions.hooks

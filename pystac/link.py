@@ -3,7 +3,6 @@ from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import pystac
-from pystac.types import HREF
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
 
 if TYPE_CHECKING:
@@ -16,6 +15,8 @@ if TYPE_CHECKING:
 
 else:
     PathLike = os.PathLike
+
+HREF = Union[str, os.PathLike]
 
 HIERARCHICAL_LINKS = [
     pystac.RelType.ROOT,
