@@ -381,10 +381,14 @@ class STACObject(ABC):
                     target = cached_target
                 else:
                     target_parent = None
-                    if link.rel in [
-                        pystac.RelType.CHILD,
-                        pystac.RelType.ITEM,
-                    ] and isinstance(clone, pystac.Catalog):
+                    if (
+                        link.rel
+                        in [
+                            pystac.RelType.CHILD,
+                            pystac.RelType.ITEM,
+                        ]
+                        and isinstance(clone, pystac.Catalog)
+                    ):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     if root is not None:

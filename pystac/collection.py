@@ -521,6 +521,9 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
 
+    def _repr_html_(self) -> str:
+        return super()._repr_html_("Collection")
+
     def add_item(
         self,
         item: "Item_Type",

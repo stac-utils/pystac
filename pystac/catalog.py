@@ -1,6 +1,8 @@
 import os
+from html import escape
 from copy import deepcopy
 from pystac.errors import STACTypeError
+from pystac.html import jinja_env
 from typing import (
     Any,
     Callable,
@@ -195,6 +197,13 @@ class Catalog(STACObject):
 
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
+
+    def _repr_html_(self, catalog_type="Catalog") -> str:
+        if jinja_env:
+            template = jinja_env.get_template("Catalog.jinja2")
+            return str(template.render(catalog=self, catalog_type=catalog_type))
+        else:
+            return escape(repr(self))
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)
@@ -425,6 +434,7 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
+        # TODO: List?
         return map(
             lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
         )

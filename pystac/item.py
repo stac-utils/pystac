@@ -1,3 +1,4 @@
+from html import escape
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
 from pystac.catalog import Catalog
@@ -6,6 +7,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 import dateutil.parser
 
 import pystac
+from pystac.html import jinja_env
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
@@ -144,6 +146,13 @@ class Item(STACObject):
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
+    
+    def _repr_html_(self) -> str:
+        if jinja_env:
+            template = jinja_env.get_template("Item.jinja2")
+            return str(template.render(item=self))
+        else:
+            return escape(repr(self))
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
