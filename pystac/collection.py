@@ -38,7 +38,9 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
-TemporalIntervalsLike = Union[TemporalIntervals, List[datetime], List[List[datetime]]]
+TemporalIntervalsLike = Union[
+    TemporalIntervals, List[datetime], List[Optional[datetime]]
+]
 
 
 class SpatialExtent:
