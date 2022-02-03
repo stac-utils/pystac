@@ -1,16 +1,11 @@
+{% import 'Macros.jinja2' as macros %}
+
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
-    <div style="
-        width: 24px;
-        height: 24px;
-        background-color: #DBF5FF;
-        border: 3px solid #4CC9FF;
-        border-radius: 5px;
-        position: absolute;">
-    </div>
+    {{ macros.square('#DBF5FF', '#4CC9FF') }}
     <div>
         <details style="margin-left: 48px;">
             <summary style="margin-bottom: 20px;">
-                <h3 style="margin-bottom: 0px; display: inline;">Item: {{item.id}}</h4>
+                <h3 style="margin-bottom: 0px; display: inline;">Item: {{item.id}}</h3>
             </summary>
             <table style="width: 100%; text-align: left;">
                 <tr><td style="text-align: left;"><strong>ID</strong>: {{item.id}} </td></tr>
@@ -28,34 +23,11 @@
                         <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ item.properties[key] }} </td></tr>
                     {% endfor %}
                 {% endif %}
-                {% if item.extra_fields %}
-                    {% for key in item.extra_fields %}
-                        <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ item.extra_fields[key] }} </td></tr>
-                    {% endfor %}
-                {% endif %}
+                {{ macros.extra_fields(item) }}
             </table>
-            {% if item.stac_extensions|length > 0 %}
-                <details>
-                    <summary style="margin-bottom: 10px; margin-top: 10px;">
-                        <h4 style="margin-bottom: 0px; display: inline;">STAC Extensions</h4>
-                    </summary>
-                    <table style="width: 100%; text-align: left;">
-                        {% for stac_extension in item.stac_extensions %}
-                            <tr><td style="text-align: left;"><a href="{{stac_extension}}">{{stac_extension}}</a></td></tr>
-                        {% endfor %}
-                    </table>
-                </details>
-            {% endif %}
-            {% if item.links|length > 0 %}
-                <details>
-                    <summary style="margin-bottom: 10px; margin-top: 10px;">
-                        <h4 style="margin-bottom: 0px; display: inline;">Links</h4>
-                    </summary>
-                    {% for link in item.links %}
-                        {{ link._repr_html_() }}
-                    {% endfor %}
-                </details>
-            {% endif %}
+            {{ macros.stac_extensions(item) }}
+            {{ macros.assets(item) }}
+            {{ macros.links(item) }}
         </details>
     </div>
 </div>

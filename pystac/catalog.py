@@ -434,7 +434,6 @@ class Catalog(STACObject):
         Return:
             Iterable[Item]: Generator of items whose parent is this catalog.
         """
-        # TODO: List?
         return map(
             lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
         )
