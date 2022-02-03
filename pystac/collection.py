@@ -1,6 +1,8 @@
+from html import escape
 from copy import deepcopy
 from datetime import datetime
 from pystac.errors import STACTypeError
+from pystac.html import jinja_env
 from typing import (
     Any,
     Dict,
@@ -522,7 +524,11 @@ class Collection(Catalog):
         return "<Collection id={}>".format(self.id)
 
     def _repr_html_(self) -> str:
-        return super()._repr_html_("Collection")
+        if jinja_env:
+            template = jinja_env.get_template("Catalog.jinja2")
+            return str(template.render(catalog=self, catalog_type="Collection"))
+        else:
+            return escape(repr(self))
 
     def add_item(
         self,

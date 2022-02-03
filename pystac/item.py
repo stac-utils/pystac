@@ -146,7 +146,7 @@ class Item(STACObject):
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
-    
+
     def _repr_html_(self) -> str:
         if jinja_env:
             template = jinja_env.get_template("Item.jinja2")

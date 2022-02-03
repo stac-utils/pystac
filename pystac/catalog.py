@@ -198,10 +198,10 @@ class Catalog(STACObject):
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
 
-    def _repr_html_(self, catalog_type="Catalog") -> str:
+    def _repr_html_(self) -> str:
         if jinja_env:
             template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self, catalog_type=catalog_type))
+            return str(template.render(catalog=self, catalog_type="Catalog"))
         else:
             return escape(repr(self))
 
