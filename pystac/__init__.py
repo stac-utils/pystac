@@ -89,6 +89,7 @@ import pystac.extensions.projection
 import pystac.extensions.sar
 import pystac.extensions.sat
 import pystac.extensions.scientific
+import pystac.extensions.storage
 import pystac.extensions.table
 import pystac.extensions.timestamps
 import pystac.extensions.version
@@ -106,6 +107,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,
         pystac.extensions.sat.SAT_EXTENSION_HOOKS,
         pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
+        pystac.extensions.storage.STORAGE_EXTENSION_HOOKS,
         pystac.extensions.table.TABLE_EXTENSION_HOOKS,
         pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_HOOKS,
         pystac.extensions.version.VERSION_EXTENSION_HOOKS,
