@@ -9,13 +9,13 @@ from typing import (
     Optional,
     TYPE_CHECKING,
     Tuple,
-    Union,
 )
 
 from urllib.request import urlopen
 from urllib.error import HTTPError
 
 import pystac
+from pystac.link import HREF
 from pystac.utils import safe_urlparse
 from pystac.serialization import (
     merge_common_properties,
@@ -33,16 +33,13 @@ except ImportError:
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
     from pystac.catalog import Catalog as Catalog_Type
-    from pystac.link import Link as Link_Type
 
 
 class StacIO(ABC):
     _default_io: Optional[Callable[[], "StacIO"]] = None
 
     @abstractmethod
-    def read_text(
-        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
-    ) -> str:
+    def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         """Read text from the given URI.
 
         The source to read from can be specified as a string or a
@@ -66,7 +63,11 @@ class StacIO(ABC):
 
     @abstractmethod
     def write_text(
-        self, dest: Union[str, "Link_Type"], txt: str, *args: Any, **kwargs: Any
+        self,
+        dest: HREF,
+        txt: str,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         """Write the given text to a file at the given URI.
 
@@ -124,7 +125,7 @@ class StacIO(ABC):
     def stac_object_from_dict(
         self,
         d: Dict[str, Any],
-        href: Optional[str] = None,
+        href: Optional[HREF] = None,
         root: Optional["Catalog_Type"] = None,
         preserve_dict: bool = True,
     ) -> "STACObject_Type":
@@ -143,6 +144,7 @@ class StacIO(ABC):
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
         """
+        href_str = None if href is None else str(os.fspath(href))
         if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
             collection_cache = None
             if root is not None:
@@ -150,7 +152,7 @@ class StacIO(ABC):
 
             # Merge common properties in case this is an older STAC object.
             merge_common_properties(
-                d, json_href=href, collection_cache=collection_cache
+                d, json_href=href_str, collection_cache=collection_cache
             )
 
         info = identify_stac_object(d)
@@ -158,26 +160,24 @@ class StacIO(ABC):
 
         if info.object_type == pystac.STACObjectType.CATALOG:
             result = pystac.Catalog.from_dict(
-                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
             )
             result._stac_io = self
             return result
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
             return pystac.Collection.from_dict(
-                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
         if info.object_type == pystac.STACObjectType.ITEM:
             return pystac.Item.from_dict(
-                d, href=href, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
             )
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
-    def read_json(
-        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Read a dict from the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -199,7 +199,7 @@ class StacIO(ABC):
 
     def read_stac_object(
         self,
-        source: Union[str, "Link_Type"],
+        source: HREF,
         root: Optional["Catalog_Type"] = None,
         *args: Any,
         **kwargs: Any,
@@ -224,12 +224,13 @@ class StacIO(ABC):
             contained in the file at the given uri.
         """
         d = self.read_json(source, *args, **kwargs)
-        href = source if isinstance(source, str) else source.get_absolute_href()
-        return self.stac_object_from_dict(d, href=href, root=root, preserve_dict=False)
+        return self.stac_object_from_dict(
+            d, href=source, root=root, preserve_dict=False
+        )
 
     def save_json(
         self,
-        dest: Union[str, "Link_Type"],
+        dest: HREF,
         json_dict: Dict[str, Any],
         *args: Any,
         **kwargs: Any,
@@ -264,18 +265,12 @@ class StacIO(ABC):
 
 
 class DefaultStacIO(StacIO):
-    def read_text(self, source: Union[str, "Link_Type"], *_: Any, **__: Any) -> str:
+    def read_text(self, source: HREF, *_: Any, **__: Any) -> str:
         """A concrete implementation of :meth:`StacIO.read_text
         <pystac.StacIO.read_text>`. Converts the ``source`` argument to a string (if it
         is not already) and delegates to :meth:`DefaultStacIO.read_text_from_href` for
         opening and reading the file."""
-        href: Optional[str]
-        if isinstance(source, str):
-            href = source
-        else:
-            href = source.get_absolute_href()
-            if href is None:
-                raise IOError(f"Could not get an absolute HREF from link {source}")
+        href = str(os.fspath(source))
         return self.read_text_from_href(href)
 
     def read_text_from_href(self, href: str) -> str:
@@ -302,20 +297,12 @@ class DefaultStacIO(StacIO):
                 href_contents = f.read()
         return href_contents
 
-    def write_text(
-        self, dest: Union[str, "Link_Type"], txt: str, *_: Any, **__: Any
-    ) -> None:
+    def write_text(self, dest: HREF, txt: str, *_: Any, **__: Any) -> None:
         """A concrete implementation of :meth:`StacIO.write_text
         <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
         is not already) and delegates to :meth:`DefaultStacIO.write_text_from_href` for
         opening and reading the file."""
-        href: Optional[str]
-        if isinstance(dest, str):
-            href = dest
-        else:
-            href = dest.get_absolute_href()
-            if href is None:
-                raise IOError(f"Could not get an absolute HREF from link {dest}")
+        href = str(os.fspath(dest))
         return self.write_text_to_href(href, txt)
 
     def write_text_to_href(self, href: str, txt: str) -> None:
@@ -329,6 +316,7 @@ class DefaultStacIO(StacIO):
             href : The path to which the file will be written.
             txt : The string content to write to the file.
         """
+        href = os.fspath(href)
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -357,9 +345,7 @@ class DuplicateKeyReportingMixin(StacIO):
         )
         return result
 
-    def read_json(
-        self, source: Union[str, "Link_Type"], *args: Any, **kwargs: Any
-    ) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
         """Overwrites :meth:`StacIO.read_json <pystac.StacIO.read_json>` for
         deserializing a JSON file to a dictionary while checking for duplicate object
         keys.
@@ -372,7 +358,7 @@ class DuplicateKeyReportingMixin(StacIO):
         try:
             return self.json_loads(txt, source=source)
         except pystac.DuplicateObjectKeyError as e:
-            url = source if isinstance(source, str) else source.get_absolute_href()
+            url = str(os.fspath(source))
             msg = str(e) + f" in {url}"
             raise pystac.DuplicateObjectKeyError(msg)
 

@@ -22,6 +22,13 @@ class LinkTest(unittest.TestCase):
             properties={},
         )
 
+    def test_path_like(self) -> None:
+        rel = "some-rel"
+        target = os.path.abspath("../elsewhere")
+        link = pystac.Link(rel, target)
+
+        self.assertEqual(os.fspath(link), target)
+
     def test_minimal(self) -> None:
         rel = "my rel"
         target = "https://example.com/a/b"

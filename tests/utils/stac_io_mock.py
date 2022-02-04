@@ -1,8 +1,10 @@
-from typing import Any, Optional, Union
+import os
+from typing import Any, AnyStr, Optional, Union
 from unittest.mock import Mock
 
 import pystac
 from pystac.stac_io import DefaultStacIO, StacIO
+from pystac.link import HREF
 
 
 class MockStacIO(pystac.StacIO):
@@ -24,14 +26,16 @@ class MockStacIO(pystac.StacIO):
         else:
             self.wrapped_stac_io = wrapped_stac_io
 
-    def read_text(
-        self, source: Union[str, pystac.Link], *args: Any, **kwargs: Any
-    ) -> str:
+    def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         self.mock.read_text(source)
         return self.wrapped_stac_io.read_text(source)
 
     def write_text(
-        self, dest: Union[str, pystac.Link], txt: str, *args: Any, **kwargs: Any
+        self,
+        dest: Union[str, "os.PathLike[AnyStr]"],
+        txt: str,
+        *args: Any,
+        **kwargs: Any
     ) -> None:
         self.mock.write_text(dest, txt)
         self.wrapped_stac_io.write_text(dest, txt)

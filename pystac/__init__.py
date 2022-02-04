@@ -39,6 +39,9 @@ __all__ = [
     "set_stac_version",
 ]
 
+import os
+from typing import Any, AnyStr, Dict, Optional, Union
+
 from pystac.errors import (
     STACError,
     STACTypeError,
@@ -50,7 +53,6 @@ from pystac.errors import (
     STACValidationError,
 )
 
-from typing import Any, Dict, Optional
 from pystac.version import (
     __version__,
     get_stac_version,
@@ -60,7 +62,7 @@ from pystac.media_type import MediaType
 from pystac.rel_type import RelType
 from pystac.stac_io import StacIO
 from pystac.stac_object import STACObject, STACObjectType
-from pystac.link import Link, HIERARCHICAL_LINKS
+from pystac.link import Link, HIERARCHICAL_LINKS, HREF
 from pystac.catalog import Catalog, CatalogType
 from pystac.collection import (
     Collection,
@@ -112,7 +114,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(href: str, stac_io: Optional[StacIO] = None) -> STACObject:
+def read_file(href: HREF, stac_io: Optional[StacIO] = None) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what
@@ -144,7 +146,7 @@ def read_file(href: str, stac_io: Optional[StacIO] = None) -> STACObject:
 def write_file(
     obj: STACObject,
     include_self_link: bool = True,
-    dest_href: Optional[str] = None,
+    dest_href: Optional[HREF] = None,
     stac_io: Optional[StacIO] = None,
 ) -> None:
     """Writes a STACObject to a file.
@@ -170,6 +172,7 @@ def write_file(
     """
     if stac_io is None:
         stac_io = StacIO.default()
+    dest_href = None if dest_href is None else str(os.fspath(dest_href))
     obj.save_object(
         include_self_link=include_self_link, dest_href=dest_href, stac_io=stac_io
     )
