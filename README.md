@@ -10,10 +10,10 @@ PySTAC is a library for working with [SpatioTemporal Asset Catalog](https://stac
 
 ## Installation
 
-PySTAC requires Python >= 3.7. This project follows the recommendations of
+PySTAC requires Python >= 3.8. This project follows the recommendations of
 [NEP-29](https://numpy.org/neps/nep-0029-deprecation_policy.html) in deprecating support
-for Python versions. This means that users can expect support for Python 3.7 to be
-removed from the `main` branch after Dec 26, 2021 and therefore from the next release
+for Python versions. This means that users can expect support for Python 3.8 to be
+removed from the `main` branch after Apr 14, 2023 and therefore from the next release
 after that date.
 
 Note that while we support Python 3.10.\*, wheels for the `orjson` library are not always immediately available for all
