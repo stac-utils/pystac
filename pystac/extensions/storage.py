@@ -1,3 +1,8 @@
+"""Implements the Storage Extension.
+
+https://github.com/stac-extensions/storage
+"""
+
 from typing import (
     Any,
     Dict,
