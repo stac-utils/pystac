@@ -66,7 +66,7 @@ class StorageExtension(
        >>> item: pystac.Item = ...
        >>> storage_ext = StorageExtension.ext(item)
     """
-    
+
     def apply(
         self,
         platform: Optional[CloudPlatform] = None,
@@ -108,7 +108,7 @@ class StorageExtension(
         """Gets or sets the region where the data is stored. Relevant to speed of
         access and inter-region egress costs (as defined by PaaS provider)."""
         return self._get_property(REGION_PROP, str)
-    
+
     @region.setter
     def region(self, v: Optional[str]) -> None:
         self._set_property(REGION_PROP, v)
@@ -267,6 +267,7 @@ class SummariesStorageExtension(SummariesExtension):
     @tier.setter
     def tier(self, v: Optional[List[str]]) -> None:
         self._set_summary(TIER_PROP, v)
+
 
 class StorageExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI

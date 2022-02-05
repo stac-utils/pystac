@@ -6,8 +6,6 @@ from string import ascii_letters
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
-from pystac.summaries import RangeSummary
-from pystac.utils import get_opt
 from pystac.extensions.storage import StorageExtension, CloudPlatform
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -25,7 +23,6 @@ class StorageExtensionTest(unittest.TestCase):
 
 
 class ItemStorageExtensionTest(StorageExtensionTest):
-
     def test_to_from_dict(self) -> None:
         with open(self.NAIP_EXAMPLE_URI) as f:
             item_dict = json.load(f)
@@ -33,7 +30,9 @@ class ItemStorageExtensionTest(StorageExtensionTest):
 
     def test_add_to(self) -> None:
         item = self.plain_item
-        self.assertNotIn(StorageExtension.get_schema_uri(), self.plain_item.stac_extensions)
+        self.assertNotIn(
+            StorageExtension.get_schema_uri(), self.plain_item.stac_extensions
+        )
 
         # Check that the URI gets added to stac_extensions
         StorageExtension.add_to(item)
@@ -45,7 +44,9 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         StorageExtension.add_to(item)
 
         eo_uris = [
-            uri for uri in item.stac_extensions if uri == StorageExtension.get_schema_uri()
+            uri
+            for uri in item.stac_extensions
+            if uri == StorageExtension.get_schema_uri()
         ]
         self.assertEqual(len(eo_uris), 1)
 
@@ -118,7 +119,9 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         storage_summaries = StorageExtension.summaries(col)
 
         # Get
-        self.assertEqual(storage_summaries.platform, col_dict["summaries"]["storage:platform"])
+        self.assertEqual(
+            storage_summaries.platform, col_dict["summaries"]["storage:platform"]
+        )
 
         # Set
         new_platform_summary = [random.choice([v for v in CloudPlatform])]
@@ -127,7 +130,9 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         self.assertEqual(storage_summaries.platform, new_platform_summary)
 
         col_dict = col.to_dict()
-        self.assertEqual(col_dict["summaries"]["storage:platform"], new_platform_summary)
+        self.assertEqual(
+            col_dict["summaries"]["storage:platform"], new_platform_summary
+        )
 
     def test_region(self) -> None:
         col = self.naip_collection
@@ -135,7 +140,9 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         storage_summaries = StorageExtension.summaries(col)
 
         # Get
-        self.assertEqual(storage_summaries.region, col_dict["summaries"]["storage:region"])
+        self.assertEqual(
+            storage_summaries.region, col_dict["summaries"]["storage:region"]
+        )
 
         # Set
         new_region_summary = [random.choice(ascii_letters)]
@@ -152,16 +159,23 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         storage_summaries = StorageExtension.summaries(col)
 
         # Get
-        self.assertEqual(storage_summaries.requester_pays, col_dict["summaries"]["storage:requester_pays"])
+        self.assertEqual(
+            storage_summaries.requester_pays,
+            col_dict["summaries"]["storage:requester_pays"],
+        )
 
         # Set
         new_requester_pays_summary = [True]
-        self.assertNotEqual(storage_summaries.requester_pays, new_requester_pays_summary)
+        self.assertNotEqual(
+            storage_summaries.requester_pays, new_requester_pays_summary
+        )
         storage_summaries.requester_pays = new_requester_pays_summary
         self.assertEqual(storage_summaries.requester_pays, new_requester_pays_summary)
 
         col_dict = col.to_dict()
-        self.assertEqual(col_dict["summaries"]["storage:requester_pays"], new_requester_pays_summary)
+        self.assertEqual(
+            col_dict["summaries"]["storage:requester_pays"], new_requester_pays_summary
+        )
 
     def test_tier(self) -> None:
         col = self.naip_collection
@@ -199,16 +213,19 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
 
 
 class AssetStorageExtensionTest(StorageExtensionTest):
-    
     def test_item_apply(self) -> None:
         item = self.naip_item
         asset = random.choice(list(item.assets.values()))
 
         storage_ext = StorageExtension.ext(asset)
-        
-        new_platform = random.choice([v for v in CloudPlatform if v != storage_ext.platform])
+
+        new_platform = random.choice(
+            [v for v in CloudPlatform if v != storage_ext.platform]
+        )
         new_region = random.choice(ascii_letters)
-        new_requestor_pays = random.choice([v for v in {True, False} if v != storage_ext.requester_pays])
+        new_requestor_pays = random.choice(
+            [v for v in {True, False} if v != storage_ext.requester_pays]
+        )
         new_tier = random.choice(ascii_letters)
 
         storage_ext.apply(
@@ -222,26 +239,30 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         self.assertEqual(storage_ext.region, new_region)
         self.assertEqual(storage_ext.requester_pays, new_requestor_pays)
         self.assertEqual(storage_ext.tier, new_tier)
-    
+
     def test_platform(self) -> None:
         item = self.naip_item
 
         # Grab a random asset with the platform property
-        asset = random.choice([
-            _asset
-            for _asset in item.assets.values()
-            if "storage:platform" in _asset.to_dict()
-        ])
+        asset = random.choice(
+            [
+                _asset
+                for _asset in item.assets.values()
+                if "storage:platform" in _asset.to_dict()
+            ]
+        )
 
         storage_ext = StorageExtension.ext(asset)
 
         # Get
-        self.assertEqual(storage_ext.platform, asset.extra_fields.get("storage:platform"))
+        self.assertEqual(
+            storage_ext.platform, asset.extra_fields.get("storage:platform")
+        )
 
         # Set
-        new_platform = random.choice([
-            val for val in CloudPlatform if val != storage_ext.platform
-        ])
+        new_platform = random.choice(
+            [val for val in CloudPlatform if val != storage_ext.platform]
+        )
         storage_ext.platform = new_platform
         self.assertEqual(storage_ext.platform, new_platform)
 
@@ -251,11 +272,13 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         item = self.naip_item
 
         # Grab a random asset with the platform property
-        asset = random.choice([
-            _asset
-            for _asset in item.assets.values()
-            if "storage:region" in _asset.to_dict()
-        ])
+        asset = random.choice(
+            [
+                _asset
+                for _asset in item.assets.values()
+                if "storage:region" in _asset.to_dict()
+            ]
+        )
 
         storage_ext = StorageExtension.ext(asset)
 
@@ -263,9 +286,9 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         self.assertEqual(storage_ext.region, asset.extra_fields.get("storage:region"))
 
         # Set
-        new_region = random.choice([
-            val for val in CloudPlatform if val != storage_ext.region
-        ])
+        new_region = random.choice(
+            [val for val in CloudPlatform if val != storage_ext.region]
+        )
         storage_ext.region = new_region
         self.assertEqual(storage_ext.region, new_region)
 
@@ -279,16 +302,20 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         item = self.naip_item
 
         # Grab a random asset with the platform property
-        asset = random.choice([
-            _asset
-            for _asset in item.assets.values()
-            if "storage:requester_pays" in _asset.to_dict()
-        ])
+        asset = random.choice(
+            [
+                _asset
+                for _asset in item.assets.values()
+                if "storage:requester_pays" in _asset.to_dict()
+            ]
+        )
 
         storage_ext = StorageExtension.ext(asset)
 
         # Get
-        self.assertEqual(storage_ext.requester_pays, asset.extra_fields.get("storage:requester_pays"))
+        self.assertEqual(
+            storage_ext.requester_pays, asset.extra_fields.get("storage:requester_pays")
+        )
 
         # Set
         new_requester_pays = True if not storage_ext.requester_pays else False
@@ -305,11 +332,13 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         item = self.naip_item
 
         # Grab a random asset with the platform property
-        asset = random.choice([
-            _asset
-            for _asset in item.assets.values()
-            if "storage:tier" in _asset.to_dict()
-        ])
+        asset = random.choice(
+            [
+                _asset
+                for _asset in item.assets.values()
+                if "storage:tier" in _asset.to_dict()
+            ]
+        )
 
         storage_ext = StorageExtension.ext(asset)
 
