@@ -31,7 +31,7 @@ PySTAC can be installed from pip or the source repository.
 
 If you would like to enable the validation feature utilizing the
 [jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional
-`validation` requirements: 
+`validation` extra: 
 
 
 ```bash
@@ -40,7 +40,7 @@ If you would like to enable the validation feature utilizing the
 
 If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
 standard `json` library for JSON serialization/deserialization, install with the
-optional `orjson` requirements:
+optional `orjson` extra:
 
 ```bash
 > pip install pystac[orjson]
@@ -49,6 +49,16 @@ optional `orjson` requirements:
 > *`orjson` wheels are only available for Linux in Python 3.10. If you are using the
 > `orjson` extra with Python 3.10 you will need to have the Rust nightly toolchain
 > installed as your default toolchain in order to build the package wheel.*
+
+If you would like to take advantage of asyncio I/O operations, install with the
+optional `async` extra:
+
+```bash
+> pip install pystac[async]
+```
+
+This installs the [`aiofiles`](https://pypi.org/project/aiofiles/) and
+[`httpx`](https://www.python-httpx.org/) dependencies.
 
 From source repository:
 
