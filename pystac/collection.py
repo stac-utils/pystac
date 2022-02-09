@@ -526,8 +526,8 @@ class Collection(Catalog):
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()
         if jinja_env:
-            template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self, catalog_type="Collection"))
+            template = jinja_env.get_template("Collection.jinja2")
+            return str(template.render(collection=self))
         else:
             return escape(repr(self))
 
