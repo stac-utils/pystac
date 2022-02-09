@@ -22,7 +22,7 @@
 {% macro links(parent) -%}
     {% if parent.links|length > 0 %}
         <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px;">
+            <summary style="margin-bottom: 10px; margin-top: 10px">
                 <h4 style="margin-bottom: 0px; display: inline;">Links</h4>
             </summary>
             {% for link in parent.links %}
@@ -36,7 +36,7 @@
 {% macro items(parent) -%}
     {% if parent.get_items()|list|length > 0 %}
         <details>
-            <summary style="margin-bottom: 20px;">
+            <summary style="margin-bottom: 10px; margin-top: 10px">
                 <h4 style="margin-bottom: 0px; display: inline;">Items</h4>
             </summary>
             {% for item in parent.get_items() %}
@@ -50,7 +50,7 @@
 {% macro children(parent) -%}
     {% if parent.get_children()|list|length > 0 %}
         <details>
-            <summary style="margin-bottom: 20px;">
+            <summary style="margin-bottom: 10px; margin-top: 10px">
                 <h4 style="margin-bottom: 0px; display: inline;">Children</h4>
             </summary>
             {% for child in parent.get_children() %}
