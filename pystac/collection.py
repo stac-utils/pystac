@@ -527,7 +527,7 @@ class Collection(Catalog):
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("Collection.jinja2")
-            return str(template.render(collection=self))
+            return str(template.render(catalog=self))
         else:
             return escape(repr(self))
 

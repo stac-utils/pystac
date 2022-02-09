@@ -5,7 +5,9 @@
     <div>
         <details style="margin-left: 48px;">
             <summary style="margin-bottom: 20px;">
-                <h3 style="margin-bottom: 0px; display: inline;">Catalog: {{catalog.id}}</h3>
+                <h3 style="margin-bottom: 0px; display: inline;">
+                    {% block title %} Catalog: {{catalog.id}} {% endblock %}
+                </h3>
             </summary>
             <table style="width: 100%; text-align: left;">
                 <tr><td style="text-align: left;">ID: {{catalog.id}} </td></tr>
@@ -15,12 +17,14 @@
                 {% if catalog.description %}
                     <tr><td style="text-align: left;"><strong>Description:</strong> {{catalog.description}} </td></tr>
                 {% endif %}
+                {% block subclass_fields %} {% endblock %}
                 {{ macros.extra_fields(catalog) }}
             </table>
             {{ macros.stac_extensions(catalog) }}
             {{ macros.children(catalog) }}
             {{ macros.items(catalog) }}
             {{ macros.links(catalog) }}
+            {% block subclass_details %} {% endblock %}
         </details>
     </div>
 </div>

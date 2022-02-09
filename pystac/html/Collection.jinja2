@@ -1,27 +1,14 @@
+{% extends 'Catalog.jinja2' %}
 {% import 'Macros.jinja2' as macros %}
 
-<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
-    {{ macros.square() }}
-    <div>
-        <details style="margin-left: 48px;">
-            <summary style="margin-bottom: 20px;">
-                <h3 style="margin-bottom: 0px; display: inline;">Collection: {{collection.id}}</h3>
-            </summary>
-            <table style="width: 100%; text-align: left;">
-                <tr><td style="text-align: left;">ID: {{collection.id}} </td></tr>
-                {% if collection.title %}
-                    <tr><td style="text-align: left;"><strong>Title:</strong> {{collection.title}} </td></tr>
-                {% endif %}
-                {% if collection.description %}
-                    <tr><td style="text-align: left;"><strong>Description:</strong> {{collection.description}} </td></tr>
-                {% endif %}
-                {{ macros.extra_fields(collection) }}
-            </table>
-            {{ macros.stac_extensions(collection) }}
-            {{ macros.children(collection) }}
-            {{ macros.items(collection) }}
-            {{ macros.assets(collection) }}
-            {{ macros.links(collection) }}
-        </details>
-    </div>
-</div>
+{% block title %}
+    Collection: {{catalog.id}}
+{% endblock %}
+
+{% block subclass_fields %}
+{% endblock %}
+
+{% block subclass_details %}
+    {{ macros.assets(catalog) }}
+{% endblock %}
+
