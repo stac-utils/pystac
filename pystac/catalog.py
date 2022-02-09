@@ -202,7 +202,7 @@ class Catalog(STACObject):
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self, catalog_type="Catalog"))
+            return str(template.render(catalog=self))
         else:
             return escape(repr(self))
 
