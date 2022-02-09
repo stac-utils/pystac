@@ -6,6 +6,16 @@
 {% endblock %}
 
 {% block subclass_fields %}
+    {# Providers field #}
+    {% if catalog.providers %}
+        <tr><td style="text-align: left;"><strong>Providers:</strong>
+        <ul>
+        {% for provider in catalog.providers %}
+             <li>{{ provider._repr_html_() }}</li>
+        {% endfor %}
+        </ul>
+        </td></tr>
+    {% endif %}
 {% endblock %}
 
 {% block subclass_details %}
