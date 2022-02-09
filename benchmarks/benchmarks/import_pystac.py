@@ -1,7 +1,9 @@
 from typing import Any
 
 
-class ImportPySTAC:
+class BenchImportPySTAC:
+    repeat = 10
+
     def setup(self, *args: Any, **kwargs: Any) -> None:
         def import_pystac() -> None:
             import pystac  # noqa: F401
