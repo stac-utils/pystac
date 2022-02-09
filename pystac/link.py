@@ -3,7 +3,7 @@ from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
 import pystac
-from pystac.html import jinja_env
+from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
 
 if TYPE_CHECKING:
@@ -246,6 +246,7 @@ class Link:
         return "<Link rel={} target={}>".format(self.rel, self.target)
 
     def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("Link.jinja2")
             return str(template.render(link=self))

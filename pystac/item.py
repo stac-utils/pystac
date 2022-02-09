@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Union, cast
 import dateutil.parser
 
 import pystac
-from pystac.html import jinja_env
+from pystac.html.jinja_env import get_jinja_env
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
@@ -148,6 +148,7 @@ class Item(STACObject):
         return "<Item id={}>".format(self.id)
 
     def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("Item.jinja2")
             return str(template.render(item=self))

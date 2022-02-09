@@ -3,7 +3,7 @@ from copy import copy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 from pystac import common_metadata
-from pystac.html import jinja_env
+from pystac.html.jinja_env import get_jinja_env
 from pystac import utils
 
 if TYPE_CHECKING:
@@ -159,6 +159,7 @@ class Asset:
         return "<Asset href={}>".format(self.href)
 
     def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("Asset.jinja2")
             return str(template.render(asset=self))
