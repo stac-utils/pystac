@@ -1,10 +1,6 @@
 {% extends 'Catalog.jinja2' %}
 {% import 'Macros.jinja2' as macros %}
 
-{% block title %}
-    Collection: {{catalog.id}}
-{% endblock %}
-
 {% block subclass_fields %}
     {# Providers field #}
     {% if catalog.providers %}

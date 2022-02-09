@@ -6,7 +6,7 @@
         <details style="margin-left: 48px;">
             <summary style="margin-bottom: 20px;">
                 <h3 style="margin-bottom: 0px; display: inline;">
-                    {% block title %} Catalog: {{catalog.id}} {% endblock %}
+                    {{catalog.__class__.__name__}}: {{catalog.id}}
                 </h3>
             </summary>
             <table style="width: 100%; text-align: left;">
