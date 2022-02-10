@@ -9,7 +9,6 @@ from ._util import get_data_path
 
 
 class CollectionBench(Bench):
-
     def setup(self) -> None:
         self.temp_dir = tempfile.mkdtemp()
 
@@ -39,6 +38,6 @@ class CollectionBench(Bench):
         """Serialize an Item to a JSON file."""
         self.collection.save_object(
             include_self_link=True,
-            dest_href=os.path.join(self.temp_dir, f"time_collection_save.json"),
+            dest_href=os.path.join(self.temp_dir, "time_collection_save.json"),
             stac_io=self.stac_io,
         )
