@@ -1,7 +1,7 @@
 from typing import Any
 
 
-class BenchImportPySTAC:
+class ImportPySTACBench:
     repeat = 10
 
     def setup(self, *args: Any, **kwargs: Any) -> None:

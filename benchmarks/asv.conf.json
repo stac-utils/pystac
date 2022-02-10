@@ -46,7 +46,7 @@
 
     // The Pythons you'd like to test against.  If not provided, defaults
     // to the current version of Python used to run `asv`.
-    "pythons": ["3.8", "3.9"],
+    "pythons": ["3.9"],
 
     // The matrix of dependencies to test.  Each key of the "req"
     // requirements dictionary is the name of a package (in PyPI) and
@@ -157,8 +157,7 @@
     // indicating the thresholds.  If multiple entries match, the
     // maximum is taken. If no entry matches, the default is 5%.
     //
-    // "regressions_thresholds": {
-    //    "some_benchmark": 0.01,     // Threshold of 1%
-    //    "another_benchmark": 0.5,   // Threshold of 50%
-    // },
+    "regressions_thresholds": {
+       ".*": 0.1     // Change default threshold to 10%
+    }
 }

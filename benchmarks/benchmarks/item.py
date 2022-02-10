@@ -2,15 +2,13 @@ import json
 import os
 import shutil
 import tempfile
-from timeit import repeat
-import uuid
-
 import pystac
 
+from ._base import Bench
 from ._util import get_data_path
 
-class ItemBench:
-    repeat = 10
+
+class ItemBench(Bench):
 
     def setup(self) -> None:
         self.temp_dir = tempfile.mkdtemp()
@@ -25,22 +23,22 @@ class ItemBench:
     def teardown(self) -> None:
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    def time_from_file(self) -> None:
+    def time_item_from_file(self) -> None:
         """Deserialize an Item from file"""
         _ = pystac.Item.from_file(self.item_path)
-    
-    def time_from_dict(self) -> None:
+
+    def time_item_from_dict(self) -> None:
         """Deserialize an Item from dictionary."""
         _ = pystac.Item.from_dict(self.item_dict)
 
-    def time_to_dict(self) -> None:
+    def time_item_to_dict(self) -> None:
         """Serialize an Item to a dictionary."""
         self.item.to_dict(include_self_link=True)
 
-    def time_save_item(self) -> None:
+    def time_item_save(self) -> None:
         """Serialize an Item to a JSON file."""
         self.item.save_object(
             include_self_link=True,
-            dest_href=os.path.join(self.temp_dir, f"time_save_item.json"),
-            stac_io=self.stac_io
+            dest_href=os.path.join(self.temp_dir, f"time_item_save.json"),
+            stac_io=self.stac_io,
         )
