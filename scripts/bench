@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+asv continuous --split -e --interleave-rounds --config "./benchmarks/asv.conf.json" main HEAD;
