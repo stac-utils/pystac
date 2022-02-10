@@ -157,7 +157,7 @@
     // indicating the thresholds.  If multiple entries match, the
     // maximum is taken. If no entry matches, the default is 5%.
     //
-    "regressions_thresholds": {
-       ".*": 0.1     // Change default threshold to 10%
-    }
+    // "regressions_thresholds": {
+    //    ".*": 0.25     // Change default threshold to 20%
+    // }
 }

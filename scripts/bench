@@ -2,4 +2,15 @@
 
 set -e
 
-asv continuous --split -e --interleave-rounds --config "./benchmarks/asv.conf.json" main HEAD;
+if [[ -z $ASV_FACTOR ]]; then
+    ASV_FACTOR=1.25;
+fi
+
+if [[ -z $ASV_DIR ]]; then
+    ASV_DIR="./benchmarks";
+fi
+
+asv continuous --split -e --interleave-rounds \
+    --factor ${ASV_FACTOR} \
+    --config "${ASV_DIR}/asv.conf.json" \
+    main HEAD;
