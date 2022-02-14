@@ -339,6 +339,39 @@ class STACObject(ABC):
 
         stac_io.save_json(dest_href, self.to_dict(include_self_link=include_self_link))
 
+    async def save_object_async(
+        self,
+        include_self_link: bool = True,
+        dest_href: Optional[str] = None,
+        stac_io: Optional[pystac.StacIO] = None,
+    ) -> None:
+        """Saves this STAC Object asynchronously to ``dest_href`` (if given). If
+        ``dest_href`` is ``None``, the object's ``"self"`` link HREF will be used.
+        This is the async equivalent to :meth:`~pystac.STACObject.save_object`. See
+        that method's documentation for details on arguments and return values.
+        """
+        if stac_io is None:
+            root = self.get_root()
+            if root is not None:
+                root_stac_io = root._stac_io
+                if root_stac_io is not None:
+                    stac_io = root_stac_io
+
+            if stac_io is None:
+                stac_io = pystac.StacIO.default()
+
+        if dest_href is None:
+            self_href = self.get_self_href()
+            if self_href is None:
+                raise STACError(
+                    "Self HREF must be set before saving without an explicit dest_href."
+                )
+            dest_href = self_href
+
+        await stac_io.save_json_async(
+            dest_href, self.to_dict(include_self_link=include_self_link)
+        )
+
     def full_copy(
         self,
         root: Optional["Catalog_Type"] = None,

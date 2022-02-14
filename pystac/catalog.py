@@ -1,3 +1,4 @@
+import asyncio
 import os
 from copy import deepcopy
 from pystac.errors import STACTypeError
@@ -731,6 +732,8 @@ class Catalog(STACObject):
         self,
         catalog_type: Optional[CatalogType] = None,
         dest_href: Optional[str] = None,
+        *,
+        item_batch_size: int = 50,
     ) -> None:
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF or a specified path.
@@ -752,7 +755,55 @@ class Catalog(STACObject):
             If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will
             be included and hierarchical links will be relative URLs.
         """
+        try:
+            loop = asyncio.get_running_loop()
+            loop.run_until_complete(
+                self.save_async(
+                    catalog_type, dest_href, item_batch_size=item_batch_size
+                )
+            )
+        except RuntimeError:
+            asyncio.run(
+                self.save_async(
+                    catalog_type, dest_href, item_batch_size=item_batch_size
+                )
+            )
 
+    async def save_async(
+        self,
+        catalog_type: Optional[CatalogType] = None,
+        dest_href: Optional[str] = None,
+        *,
+        item_batch_size: int = 50,
+    ) -> None:
+        """Asynchronously save this catalog and all it's children/item to files
+        determined by the object's self link HREF or a specified path.
+
+        This method will recursively await calls to :meth:`~pystac.Catalog.save_async`
+        for any child Catalogs and Collections and uses :func:`asyncio.gather` to await
+        batched calls to :meth:`STACObject.save_object_async
+        <pystac.STACObject.save_object_async>`. The number of requests per batch can be
+        controlled using the ``item_batch_size`` argument.
+
+        Args:
+            catalog_type : The catalog type that dictates the structure of
+                the catalog to save. Use a member of :class:`~pystac.CatalogType`.
+                If not supplied, the catalog_type of this catalog will be used.
+                If that attribute is not set, an exception will be raised.
+            dest_href : The location where the catalog is to be saved.
+                If not supplied, the catalog's self link HREF is used to determine
+                the location of the catalog file and children's files.
+            item_batch_size : The maximum number of concurrent Items to save in
+                each batch. Defaults to ``50``.
+        Note:
+            If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
+            all self links will be included, and hierarchical links be absolute URLs.
+            If the catalog type is ``CatalogType.RELATIVE_PUBLISHED``, this catalog's
+            self link will be included, but no child catalog will have self links, and
+            hierarchical links will be relative URLs
+            If the catalog  type is ``CatalogType.SELF_CONTAINED``, no self links will
+            be included and hierarchical links will be relative URLs.
+        """
         root = self.get_root()
         if root is None:
             raise Exception("There is no root catalog")
@@ -770,10 +821,11 @@ class Catalog(STACObject):
                     child_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    child.save(dest_href=os.path.dirname(child_dest_href))
+                    await child.save_async(dest_href=os.path.dirname(child_dest_href))
                 else:
-                    child.save()
+                    await child.save_async()
 
+        item_batch = []
         for item_link in self.get_item_links():
             if item_link.is_resolved():
                 item = cast(pystac.Item, item_link.target)
@@ -782,12 +834,26 @@ class Catalog(STACObject):
                     item_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    item.save_object(
-                        include_self_link=items_include_self_link,
-                        dest_href=item_dest_href,
+                    item_batch.append(
+                        item.save_object_async(
+                            include_self_link=items_include_self_link,
+                            dest_href=item_dest_href,
+                        )
                     )
                 else:
-                    item.save_object(include_self_link=items_include_self_link)
+                    item_batch.append(
+                        item.save_object_async(
+                            include_self_link=items_include_self_link
+                        )
+                    )
+
+                if len(item_batch) == item_batch_size:
+                    await asyncio.gather(*item_batch)
+                    item_batch = []
+
+        if len(item_batch) > 0:
+            await asyncio.gather(*item_batch)
+            item_batch = []
 
         include_self_link = False
         # include a self link if this is the root catalog
