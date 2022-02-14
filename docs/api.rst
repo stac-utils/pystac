@@ -84,7 +84,11 @@ as to serialize and deserialize STAC object to and from JSON.
 
 * :class:`pystac.StacIO`: Base class that can be inherited to provide custom I/O
 * :class:`pystac.stac_io.DefaultStacIO`: The default :class:`pystac.StacIO`
-  implementation used throughout the library.
+  implementation used throughout the library when ``aiofiles`` or ``httpx`` is not
+  installed.
+* :class:`pystac.stac_io.DefaultStacIOAsync`: The default :class:`pystac.StacIO`
+  implementation used throughout the library when ``aiofiles`` and ``httpx`` are
+  installed.
 
 Extensions
 ----------

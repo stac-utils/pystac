@@ -30,6 +30,17 @@ try:
 except ImportError:
     orjson = None  # type: ignore[assignment]
 
+try:
+    import aiofiles
+except ImportError:
+    aiofiles = None  # type: ignore[assignment]
+
+try:
+    import httpx
+except ImportError:
+    httpx = None  # type: ignore[assignment]
+
+
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
     from pystac.catalog import Catalog as Catalog_Type
@@ -39,18 +50,36 @@ class StacIO(ABC):
     _default_io: Optional[Callable[[], "StacIO"]] = None
 
     @abstractmethod
+    async def read_text_async(self, source: HREF, *args: Any, **kwargs: Any) -> str:
+        """Read text asynchronously from the given URI. This method is the asynchronous
+        equivalent of :meth:`StacIO.read_text <pystac.StacIO.read_text>`, see that
+        method's documentation for details on arguments and return values."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def write_text_async(
+        self,
+        dest: HREF,
+        txt: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        """"""
+        raise NotImplementedError
+
+    @abstractmethod
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         """Read text from the given URI.
 
-        The source to read from can be specified as a string or a
-        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
-        which to read. Using a :class:`~pystac.Link` enables implementations to use
-        additional link information, such as paging information contained in the
-        extended links described in the `STAC API spec
+        The source to read from can be specified as a string or a :class:`os.PathLike`
+        object (which includes the :class:`~pystac.Link` class). If it is a string, it
+        must be a URI or local path from which to read. Using a :class:`~pystac.Link`
+        enables implementations to use additional link information, such as paging
+        information contained in the extended links described in the `STAC API spec
         <https://github.com/radiantearth/stac-api-spec/tree/master/item-search#paging>`__.
 
         Args:
-            source : The source to read from.
+            source (HREF) : The source to read from.
             *args : Arbitrary positional arguments that may be utilized by the concrete
                 implementation.
             **kwargs : Arbitrary keyword arguments that may be utilized by the concrete
@@ -72,13 +101,14 @@ class StacIO(ABC):
         """Write the given text to a file at the given URI.
 
         The destination to write to from can be specified as a string or a
-        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
-        which to read. Using a :class:`~pystac.Link` enables implementations to use
-        additional link information.
+        :class:`os.PathLike` object (which includes the :class:`~pystac.Link` class).
+        If it is a string, it must be a URI or local path from which to read. Using a
+        :class:`~pystac.Link` enables implementations to use additional link
+        information.
 
         Args:
-            dest : The destination to write to.
-            txt : The text to write.
+            dest (HREF) : The destination to write to.
+            txt (str): The text to write.
         """
         raise NotImplementedError
 
@@ -197,6 +227,19 @@ class StacIO(ABC):
         txt = self.read_text(source, *args, **kwargs)
         return self.json_loads(txt)
 
+    async def read_json_async(
+        self, source: HREF, *args: Any, **kwargs: Any
+    ) -> Dict[str, Any]:
+        """Read a dict asynchronously from the given source. This method is the async
+        equivalent of the :meth:`StacIO.read_json <pystac.StacIO.read_json>` method.
+        See that method's documentation for details on arguments and return values.
+        """
+        txt = await self.read_text_async(source, *args, **kwargs)
+        d = self.json_loads(txt)
+        if not isinstance(d, dict):
+            raise TypeError(f"JSON from {source} does not represent a dictionary.")
+        return d
+
     def read_stac_object(
         self,
         source: HREF,
@@ -228,6 +271,23 @@ class StacIO(ABC):
             d, href=source, root=root, preserve_dict=False
         )
 
+    async def read_stac_object_async(
+        self,
+        source: HREF,
+        root: Optional["Catalog_Type"] = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> "STACObject_Type":
+        """Read a STACObject asynchronously from a JSON file at the given source. This
+        method is the async equivalent of the :meth:`StacIO.read_stac_object
+        <pystac.StacIO.read_stac_object_async>` method. See that method's documentation
+        for details on arguments and return values.
+        """
+        d = await self.read_json_async(source, *args, **kwargs)
+        return self.stac_object_from_dict(
+            d, href=source, root=root, preserve_dict=False
+        )
+
     def save_json(
         self,
         dest: HREF,
@@ -251,6 +311,20 @@ class StacIO(ABC):
         txt = self.json_dumps(json_dict, *args, **kwargs)
         self.write_text(dest, txt)
 
+    async def save_json_async(
+        self,
+        dest: HREF,
+        json_dict: Dict[str, Any],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        """Write a dict asynchronously to the given URI as JSON. This method is the
+        async equivalent to :meth:`StacIO.save_json <pystac.StacIO.save_json>`. See
+        that method's documentation for details on arguments and return values.
+        """
+        txt = self.json_dumps(json_dict, *args, **kwargs)
+        await self.write_text_async(dest, txt)
+
     @classmethod
     def set_default(cls, stac_io_class: Callable[[], "StacIO"]) -> None:
         """Set the default StacIO instance to use."""
@@ -259,31 +333,47 @@ class StacIO(ABC):
     @classmethod
     def default(cls) -> "StacIO":
         if cls._default_io is None:
-            cls._default_io = DefaultStacIO
+            if aiofiles is not None and httpx is not None:
+                cls._default_io = DefaultStacIOAsync
+            else:
+                cls._default_io = DefaultStacIO
 
         return cls._default_io()
 
 
 class DefaultStacIO(StacIO):
-    def read_text(self, source: HREF, *_: Any, **__: Any) -> str:
+    """The default :class:`~pystac.StacIO` implementation that will be used if either
+    ``aiofiles`` or ``httpx`` is not installed.
+
+    .. note::
+        While this class has concrete implementations of the :class:`~pystac.StacIO`
+        async methods, they simply call the synchronous methods under the hood. To
+        get the best async performance, you should either install PySTAC with the
+        `aiofiles` and `httpx` extras so that the :class:`~pystac.DefaultStacIOAsync`
+        implementation may be used, or provide your own implementations of the async
+        methods.
+    """
+
+    async def read_text_async(self, source: HREF, *args: Any, **kwargs: Any) -> str:
+        """A concrete implementation of :meth:`StacIO.read_text_async
+        <pystac.StacIO.read_text_async>` that calls :meth:`StacIO.read_text
+        <pystac.StacIO.read_text>` synchronously and returns the result."""
+        return self.read_text(source, *args, **kwargs)
+
+    async def write_text_async(
+        self, dest: HREF, txt: str, *args: Any, **kwargs: Any
+    ) -> None:
+        """A concrete implementation of :meth:`StacIO.write_text_async
+        <pystac.StacIO.write_text_async>` that calls :meth:`StacIO.write_text
+        <pystac.StacIO.write_text>` synchronously and returns the result."""
+        self.write_text(dest, txt, *args, **kwargs)
+
+    def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         """A concrete implementation of :meth:`StacIO.read_text
         <pystac.StacIO.read_text>`. Converts the ``source`` argument to a string (if it
-        is not already) and delegates to :meth:`DefaultStacIO.read_text_from_href` for
-        opening and reading the file."""
+        is not already) and uses the built-in :func:`open` function for opening and
+        reading the file."""
         href = str(os.fspath(source))
-        return self.read_text_from_href(href)
-
-    def read_text_from_href(self, href: str) -> str:
-        """Reads file as a UTF-8 string.
-
-        If ``href`` has a "scheme" (e.g. if it starts with "https://") then this will
-        use :func:`urllib.request.urlopen` to open the file and read the contents;
-        otherwise, :func:`open` will be used to open a local file.
-
-        Args:
-
-            href : The URI of the file to open.
-        """
         parsed = safe_urlparse(href)
         href_contents: str
         if parsed.scheme != "":
@@ -300,28 +390,58 @@ class DefaultStacIO(StacIO):
     def write_text(self, dest: HREF, txt: str, *_: Any, **__: Any) -> None:
         """A concrete implementation of :meth:`StacIO.write_text
         <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
-        is not already) and delegates to :meth:`DefaultStacIO.write_text_from_href` for
-        opening and reading the file."""
+        is not already) and uses the built-in :func:`open` function for opening and
+        reading the file."""
         href = str(os.fspath(dest))
-        return self.write_text_to_href(href, txt)
-
-    def write_text_to_href(self, href: str, txt: str) -> None:
-        """Writes text to file using UTF-8 encoding.
-
-        This implementation uses :func:`open` and therefore can only write to the local
-        file system.
-
-        Args:
-
-            href : The path to which the file will be written.
-            txt : The string content to write to the file.
-        """
         href = os.fspath(href)
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
         with open(href, "w", encoding="utf-8") as f:
             f.write(txt)
+
+
+class DefaultStacIOAsync(DefaultStacIO):
+    """The default :class:`~pystac.StacIO` implementation that will be used if both
+    ``aiofiles`` and ``httpx`` are installed.
+    """
+
+    async def read_text_async(self, source: HREF, *_: Any, **__: Any) -> str:
+        """A concrete implementation of :meth:`StacIOAsync.read_text_async
+        <pystac.StacIOAsync.read_text_async>`. Converts the ``source`` argument to a
+        string (if it is not already) and uses `aiofiles.open
+        <https://pypi.org/project/aiofiles/>`__ (for local files) or
+        `httpx.AsyncClient.get
+        <https://www.python-httpx.org/async/#making-requests>`__ for opening and reading
+        the file, depending on the type of HREF."""
+        href = str(os.fspath(source))
+        is_local_file = safe_urlparse(href).scheme == ""
+
+        if is_local_file:
+            async with aiofiles.open(href, encoding="utf-8") as fa:
+                return await fa.read()
+        else:
+            try:
+                async with httpx.AsyncClient() as client:
+                    r = await client.get(href)
+                    r.raise_for_status()
+                    return r.text
+            except (HTTPError, httpx.HTTPStatusError) as e:
+                raise Exception("Could not read uri {}".format(href)) from e
+
+    async def write_text_async(self, dest: HREF, txt: str, *_: Any, **__: Any) -> None:
+        """A concrete implementation of :meth:`StacIO.write_text_async
+        <pystac.StacIO.write_text_async>`. Converts the ``dest`` argument to a string
+        (if it is not already) and uses `aiofiles.open
+        <https://pypi.org/project/aiofiles/>`__ to open and write the ``txt`` to
+        file."""
+        href = str(os.fspath(dest))
+        dirname = os.path.dirname(href)
+        if dirname != "" and not os.path.isdir(dirname):
+            os.makedirs(dirname)
+
+        async with aiofiles.open(href, mode="w", encoding="utf-8") as f:
+            await f.write(txt)
 
 
 class DuplicateKeyReportingMixin(StacIO):

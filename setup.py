@@ -27,7 +27,8 @@ setup(
     extras_require={
         "validation": ["jsonschema>=3.0"],
         "orjson": ["orjson>=3.5"],
-        "async": ["aiofiles~=0.8.0", "httpx~=0.22.0"]
+        "aiofiles": ["aiofiles~=0.8.0"],
+        "httpx": ["httpx~=0.22.0"],
     },
     license="Apache Software License 2.0",
     license_files=["LICENSE"],

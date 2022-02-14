@@ -40,6 +40,14 @@ class MockStacIO(pystac.StacIO):
         self.mock.write_text(dest, txt)
         self.wrapped_stac_io.write_text(dest, txt)
 
+    async def read_text_async(self, source: HREF, *args: Any, **kwargs: Any) -> str:
+        return self.read_text(source, *args, **kwargs)
+
+    async def write_text_async(
+        self, dest: HREF, txt: str, *args: Any, **kwargs: Any
+    ) -> None:
+        return self.write_text(dest, txt, *args, **kwargs)
+
 
 class MockDefaultStacIO(object):
     """Context manager for mocking StacIO."""
