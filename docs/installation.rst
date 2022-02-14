@@ -8,6 +8,13 @@ Install from PyPi (recommended)
 
     pip install pystac
 
+.. note::
+    It is **highly recommended** that you install the ``aiofiles`` and ``httpx`` extras as well.
+
+    .. code-block:: bash
+
+        pip install pystac[aiofiles,httpx]
+
 Install from conda-forge
 ========================
 
@@ -34,6 +41,18 @@ for the basic PySTAC library is `python-dateutil
 
 PySTAC also has the following extras, which can be optionally installed to provide
 additional functionality:
+
+* ``aiofiles`` and ``httpx``
+
+  Installs the additional `aiofiles.open <https://pypi.org/project/aiofiles/>`__ and/or
+  `httpx <https://www.python-httpx.org>`__ dependencies used by the
+  :class:`~pystac.stac_io.DefaultStacIOAsync` default implementaiton of
+  :class:`~pystac.StacIO`.
+
+  .. note::
+    To get the best performance, it is **highly recommended** that you either install
+    these extras or create your own asynchronous :class:`~pystac.StacIO` implementation
+    using alternative async I/O libraries.
 
 * ``validation``
 
