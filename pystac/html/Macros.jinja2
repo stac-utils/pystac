@@ -34,12 +34,13 @@
 
 
 {% macro items(parent) -%}
-    {% if parent.get_items()|list|length > 0 %}
+    {% if parent.get_items()|is_nonempty_generator %}
         <details>
             <summary style="margin-bottom: 10px; margin-top: 10px">
                 <h4 style="margin-bottom: 0px; display: inline;">Items</h4>
             </summary>
-            {% for item in parent.get_items() %}
+            <i> Only the first item shown </i>
+            {% for item in parent.get_items()|first %}
                 {{ item._repr_html_() }}
             {% endfor %}
         </details>
@@ -48,12 +49,13 @@
 
 
 {% macro children(parent) -%}
-    {% if parent.get_children()|list|length > 0 %}
+    {% if parent.get_children()|is_nonempty_generator %}
         <details>
             <summary style="margin-bottom: 10px; margin-top: 10px">
                 <h4 style="margin-bottom: 0px; display: inline;">Children</h4>
             </summary>
-            {% for child in parent.get_children() %}
+            <i> Only the first child shown </i>
+            {% for child in parent.get_children()|first %}
                 {{ child._repr_html_() }}
             {% endfor %}
         </details>
