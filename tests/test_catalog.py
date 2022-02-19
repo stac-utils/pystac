@@ -378,7 +378,7 @@ class CatalogTest(unittest.TestCase):
             catalog.save(
                 catalog_type=CatalogType.ABSOLUTE_PUBLISHED,
                 dest_href=tmp_dir,
-                stac_io=stac_io
+                stac_io=stac_io,
             )
 
         hrefs = []
