@@ -368,6 +368,29 @@ class CatalogTest(unittest.TestCase):
                     )
                     self.assertIsNone(self_link)
 
+    def test_save_with_different_stac_io(self) -> None:
+        catalog = Catalog.from_file(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        stac_io = MockStacIO()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.save(
+                catalog_type=CatalogType.ABSOLUTE_PUBLISHED,
+                dest_href=tmp_dir,
+                stac_io=stac_io
+            )
+
+        hrefs = []
+        for root, _, items in catalog.walk():
+            hrefs.append(root.get_self_href())
+            for item in items:
+                hrefs.append(item.get_self_href())
+
+        self.assertEqual(len(hrefs), stac_io.mock.write_text.call_count)
+        for call_args_list in stac_io.mock.write_text.call_args_list:
+            self.assertIn(call_args_list[0][0], hrefs)
+
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
