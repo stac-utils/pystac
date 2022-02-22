@@ -64,7 +64,7 @@ class JoinType(StringEnum):
         Args:
             parsed_uri (urllib.parse.ParseResult) : A named tuple representing the
                 parsed URI.
-        
+
         Returns:
             JoinType : The join type for the URI.
         """
