@@ -151,7 +151,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
         if asset.owner is None:
             if add_if_missing:
                 raise pystac.STACError(
-                    "Can only add schema URIs to Assets with an owner."
+                    "Attempted to use add_if_missing=True for an Asset with no owner. "
+                    "Use Asset.set_owner or set add_if_missing=False."
                 )
             else:
                 return
