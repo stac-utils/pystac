@@ -18,7 +18,7 @@ from pystac import (
     CatalogType,
     Provider,
 )
-from pystac.utils import datetime_to_str, get_required
+from pystac.utils import datetime_to_str, get_required, str_to_datetime
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
@@ -262,6 +262,14 @@ class CollectionTest(unittest.TestCase):
 class ExtentTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
+
+    def test_temporal_extent_init_typing(self) -> None:
+        # This test exists purely to test the typing of the intervals argument to
+        # TemporalExtent
+        start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
+        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+
+        _ = TemporalExtent([[start_datetime, end_datetime]])
 
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
