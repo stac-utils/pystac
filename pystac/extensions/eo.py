@@ -299,7 +299,7 @@ class EOExtension(
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended :class:`~pystac.Item` or
+        """Applies Electro-Optical Extension properties to the extended :class:`~pystac.Item` or
         :class:`~pystac.Asset`.
 
         Args:
