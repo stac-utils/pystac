@@ -6,6 +6,8 @@
 
 - Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
 - Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
+- Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
 
 ### Removed
 
@@ -17,6 +19,7 @@
 - Adding New and Custom Extensions tutorial now up-to-date with new extensions API ([#724](https://github.com/stac-utils/pystac/pull/724))
 - Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
   with no owner([#746](https://github.com/stac-utils/pystac/pull/746))
+- Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
 
 ### Deprecated
 
