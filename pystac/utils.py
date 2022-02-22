@@ -64,6 +64,9 @@ class JoinType(StringEnum):
         Args:
             parsed_uri (urllib.parse.ParseResult) : A named tuple representing the
                 parsed URI.
+        
+        Returns:
+            JoinType : The join type for the URI.
         """
         if parsed_uri.scheme == "":
             return JoinType.PATH
@@ -383,6 +386,12 @@ def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
     """Maps the value of an optional type to another value, returning
     ``None`` if the input option is ``None``.
 
+    Args:
+        fn (Callable) : A function that maps the non-optional value of type ``T`` to
+            another value. This function will be called on non-``None`` values of
+            ``v``.
+        v (Optional[T]) : The optional value to map.
+
     Examples:
 
         Given an optional value like the following...
@@ -432,10 +441,10 @@ def get_opt(option: Optional[T]) -> T:
             }
 
             # This passes
-            val: str = map_opt(d.get("some_key"))
+            val: str = get_opt(d.get("some_key"))
 
             # This raises a ValueError
-            val: str = map_opt(d.get("does_not_exist"))
+            val: str = get_opt(d.get("does_not_exist"))
     """
     if option is None:
         raise ValueError("Cannot get value from None")
