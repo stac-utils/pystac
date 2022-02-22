@@ -245,5 +245,5 @@ rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"
 # where we do not want to use Sphinx constructs:
 # WARNING: hardcoded link 'https://github.com/stac-extensions/eo' could be replaced
 # by an extlink (try using ':stac-ext:`eo`' instead)
-linklogger = logging.getLogger('sphinx.ext.extlinks')
-linklogger.setLevel(40) # Ignore messages less severe than ERROR
+linklogger = logging.getLogger("sphinx.ext.extlinks")
+linklogger.setLevel(40)  # Ignore messages less severe than ERROR
