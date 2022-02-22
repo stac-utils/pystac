@@ -46,7 +46,8 @@ def safe_urlparse(href: str) -> URLParseResult:
 
 
 class StringEnum(str, Enum):
-    """Base :class:`enum.Enum` class for string enums that will serialize as the string value."""
+    """Base :class:`enum.Enum` class for string enums that will serialize as the string
+    value."""
 
     def __str__(self) -> str:
         return cast(str, self.value)
@@ -59,9 +60,10 @@ class JoinType(StringEnum):
     def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
         """Determines the appropriate join type based on the scheme of the parsed
         result.
-        
+
         Args:
-            parsed_uri (urllib.parse.ParseResult) : A named tuple representing the parsed URI.
+            parsed_uri (urllib.parse.ParseResult) : A named tuple representing the
+                parsed URI.
         """
         if parsed_uri.scheme == "":
             return JoinType.PATH
@@ -75,7 +77,7 @@ class JoinType(StringEnum):
 def join_path_or_url(join_type: JoinType, *args: str) -> str:
     """Functions similarly to :func:`os.path.join`, but can be used to join either a
     local file path or a URL.
-    
+
     Args:
         join_type (JoinType) : One of ``JoinType.PATH`` or ``JoinType.URL``. If
             ``JoinType.PATH``, then :func:`os.path.join` is used for the join.
@@ -164,7 +166,7 @@ def make_relative_href(
             ``False``.
 
     Returns:
-        str: The relative HREF. 
+        str: The relative HREF.
     """
 
     parsed_source = safe_urlparse(source_href)
@@ -295,10 +297,10 @@ def is_absolute_href(href: str) -> bool:
 
 
 def datetime_to_str(dt: datetime) -> str:
-    """Converts a :class:`datetime.datetime` instance to an ISO8601 string in the 
-    `RFC 3339, section 5.6 <https://datatracker.ietf.org/doc/html/rfc3339#section-5.6>`__
-    format required by the :stac-spec:`STAC Spec
-    <master/item-spec/common-metadata.md#date-and-time>`.
+    """Converts a :class:`datetime.datetime` instance to an ISO8601 string in the
+    `RFC 3339, section 5.6
+    <https://datatracker.ietf.org/doc/html/rfc3339#section-5.6>`__ format required by
+    the :stac-spec:`STAC Spec <master/item-spec/common-metadata.md#date-and-time>`.
 
     Args:
         dt : The datetime to convert.
@@ -323,7 +325,7 @@ def str_to_datetime(s: str) -> datetime:
     format :std:doc:`supported by the parser <parser>`.
 
     Args:
-        s (str) : The string to conver to :class:`datetime.datetime`.
+        s (str) : The string to convert to :class:`datetime.datetime`.
     """
     return dateutil.parser.parse(s)
 
@@ -396,7 +398,7 @@ def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
             maybe_item_id: Optional[str] = None
             if maybe_item is not None:
                 maybe_item_id = maybe_item.id
-        
+
         ...with:
 
         .. code-block:: python
