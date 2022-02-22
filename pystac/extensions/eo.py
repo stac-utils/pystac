@@ -1,7 +1,4 @@
-"""Implements the Electro-Optical (EO) extension.
-
-https://github.com/stac-extensions/eo
-"""
+"""Implements the :stac-ext:`Electro-Optical Extension <eo>`."""
 
 from typing import (
     Any,

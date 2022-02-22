@@ -1,6 +1,4 @@
-"""Implements the scientific extension.
-
-https://github.com/stac-extensions/scientific
+"""Implements the :stac-ext:`Scientific Citation Extension <scientific>`.
 
 For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
 

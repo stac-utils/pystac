@@ -1,7 +1,4 @@
-"""Implements the Label extension.
-
-https://github.com/stac-extensions/label
-"""
+"""Implements the :stac-ext:`Label Extension <label>`."""
 
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
