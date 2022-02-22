@@ -15,17 +15,10 @@
     ],
     "label:classes": [
       {
-        "name": "label",
+        "name": null,
         "classes": [
           "one",
           "two"
-        ]
-      },
-      {
-        "name": "label2",
-        "classes": [
-          "three",
-          "four"
         ]
       }
     ],
@@ -99,6 +92,6 @@
     3.8916575492899987
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+    "https://stac-extensions.github.io/label/v1.0.1/schema.json"
   ]
 }
