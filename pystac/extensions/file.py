@@ -1,7 +1,4 @@
-"""Implements the File extension.
-
-https://github.com/stac-extensions/file
-"""
+"""Implements the :stac-ext:`File Info Extension <file>`."""
 
 from typing import Any, Dict, Iterable, List, Optional, Union
 

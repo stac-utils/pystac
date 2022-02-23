@@ -1,7 +1,4 @@
-"""Implements the Datacube extension.
-
-https://github.com/stac-extensions/datacube
-"""
+"""Implements the :stac-ext:`Datacube Extension <datacube>`."""
 
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast

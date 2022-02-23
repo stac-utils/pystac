@@ -1,7 +1,4 @@
-"""Implements the Projection extension.
-
-https://github.com/stac-extensions/projection
-"""
+"""Implements the :stac-ext:`Projection Extension <projection>`."""
 
 import json
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast

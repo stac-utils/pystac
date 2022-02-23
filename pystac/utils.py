@@ -13,10 +13,18 @@ _pathlib = os.path
 
 
 def safe_urlparse(href: str) -> URLParseResult:
-    """Version of URL parse that takes into account windows paths.
+    """Wrapper around :func:`urllib.parse.urlparse` that returns consistent results for
+    both Windows and UNIX file paths.
 
-    A windows absolute path will be parsed with a scheme from urllib.parse.urlparse.
-    This method will take this into account.
+    For Windows paths, this function will include the drive prefix (e.g. ``"D:\\"``) as
+    part of the ``path`` of the :class:`urllib.parse.ParseResult` rather than as the
+    ``scheme`` for consistency with handling of UNIX/LINUX file paths.
+
+    Args:
+        href (str) : The HREF to parse. May be a local file path or URL.
+
+    Returns:
+        urllib.parse.ParseResult : The named tuple representing the parsed HREF.
     """
     parsed = urlparse(href)
     if parsed.scheme != "" and href.lower().startswith("{}:\\".format(parsed.scheme)):
@@ -38,19 +46,28 @@ def safe_urlparse(href: str) -> URLParseResult:
 
 
 class StringEnum(str, Enum):
-    """Base Enum class for string enums that will serialize as the string value."""
+    """Base :class:`enum.Enum` class for string enums that will serialize as the string
+    value."""
 
     def __str__(self) -> str:
         return cast(str, self.value)
 
 
 class JoinType(StringEnum):
-    """Allowed join types for the :func:`_join` function."""
+    """Allowed join types for :func:`~pystac.utils.join_path_or_url`."""
 
     @staticmethod
     def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
         """Determines the appropriate join type based on the scheme of the parsed
-        result."""
+        result.
+
+        Args:
+            parsed_uri (urllib.parse.ParseResult) : A named tuple representing the
+                parsed URI.
+
+        Returns:
+            JoinType : The join type for the URI.
+        """
         if parsed_uri.scheme == "":
             return JoinType.PATH
         else:
@@ -61,8 +78,19 @@ class JoinType(StringEnum):
 
 
 def join_path_or_url(join_type: JoinType, *args: str) -> str:
-    """Version of os.path.join that takes into account whether or not we are working
-    with a URL."""
+    """Functions similarly to :func:`os.path.join`, but can be used to join either a
+    local file path or a URL.
+
+    Args:
+        join_type (JoinType) : One of ``JoinType.PATH`` or ``JoinType.URL``. If
+            ``JoinType.PATH``, then :func:`os.path.join` is used for the join.
+            If ``JoinType.URL``, then :func:`posixpath.join` is used.
+        *args (str): Additional positional string arguments to be joined.
+
+    Returns:
+        str : The joined path
+
+    """
 
     if join_type == JoinType.PATH:
         return _pathlib.join(*args)
@@ -127,19 +155,21 @@ def _make_relative_href_path(
 def make_relative_href(
     source_href: str, start_href: str, start_is_dir: bool = False
 ) -> str:
-    """Makes a given HREF relative to the given starting HREF.
+    """Returns a new string that represents the ``source_href`` as a path relative to
+    ``start_href``. If ``source_href`` and ``start_href`` do not share a common parent,
+    then ``source_href`` is returned unchanged.
+
+    May be used on either local file paths or URLs.
 
     Args:
         source_href : The HREF to make relative.
-        start_href : The HREF that the resulting HREF will be relative with
-            respect to.
-        start_is_dir : If True, the start_href is treated as a directory.
-            Otherwise, the start_href is considered to be a file HREF.
-            Defaults to False.
+        start_href : The HREF that the resulting HREF will be relative to.
+        start_is_dir : If ``True``, ``start_href`` is treated as a directory.
+            Otherwise, ``start_href`` is considered to be a path to a file. Defaults to
+            ``False``.
 
     Returns:
-        str: The relative HREF. If the source_href and start_href do not share a common
-        parent, then source_href will be returned unchanged.
+        str: The relative HREF.
     """
 
     parsed_source = safe_urlparse(source_href)
@@ -219,20 +249,24 @@ def _make_absolute_href_path(
 def make_absolute_href(
     source_href: str, start_href: Optional[str] = None, start_is_dir: bool = False
 ) -> str:
-    """Makes a given HREF absolute based on the given starting HREF.
+    """Returns a new string that represents ``source_href`` as an absolute path. If
+    ``source_href`` is already absolute it is returned unchanged. If ``source_href``
+    is relative, the absolute HREF is constructed by joining ``source_href`` to
+    ``start_href``.
+
+    May be used on either local file paths or URLs.
 
     Args:
         source_href : The HREF to make absolute.
-        start_href : The HREF that will be used as the basis for which to resolve
-            relative paths, if source_href is a relative path. Defaults to the
-            current working directory.
-        start_is_dir : If True, the start_href is treated as a directory.
-            Otherwise, the start_href is considered to be a file HREF.
-            Defaults to False.
+        start_href : The HREF that will be used as the basis for resolving relative
+            paths, if ``source_href`` is a relative path. Defaults to the current
+            working directory.
+        start_is_dir : If ``True``, ``start_href`` is treated as a directory.
+            Otherwise, ``start_href`` is considered to be a path to a file. Defaults to
+            ``False``.
 
     Returns:
-        str: The absolute HREF. If the source_href is already an absolute href,
-        then it will be returned unchanged.
+        str: The absolute HREF.
     """
     if start_href is None:
         start_href = os.getcwd()
@@ -253,24 +287,29 @@ def make_absolute_href(
 def is_absolute_href(href: str) -> bool:
     """Determines if an HREF is absolute or not.
 
+    May be used on either local file paths or URLs.
+
     Args:
         href : The HREF to consider.
 
     Returns:
-        bool: True if the given HREF is absolute, False if it is relative.
+        bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
     return parsed.scheme != "" or _pathlib.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime) -> str:
-    """Convert a python datetime to an ISO8601 string
+    """Converts a :class:`datetime.datetime` instance to an ISO8601 string in the
+    `RFC 3339, section 5.6
+    <https://datatracker.ietf.org/doc/html/rfc3339#section-5.6>`__ format required by
+    the :stac-spec:`STAC Spec <master/item-spec/common-metadata.md#date-and-time>`.
 
     Args:
         dt : The datetime to convert.
 
     Returns:
-        str: The ISO8601 formatted string representing the datetime.
+        str: The ISO8601 (RFC 3339) formatted string representing the datetime.
     """
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
@@ -284,6 +323,13 @@ def datetime_to_str(dt: datetime) -> str:
 
 
 def str_to_datetime(s: str) -> datetime:
+    """Converts a string timestamp to a :class:`datetime.datetime` instance using
+    :meth:`dateutil.parser.parse` under the hood. The input string may be in any
+    format :std:doc:`supported by the parser <parser>`.
+
+    Args:
+        s (str) : The string to convert to :class:`datetime.datetime`.
+    """
     return dateutil.parser.parse(s)
 
 
@@ -337,23 +383,68 @@ U = TypeVar("U")
 
 
 def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
-    """Maps the value of an option to another value, returning
-    None if the input option is None.
+    """Maps the value of an optional type to another value, returning
+    ``None`` if the input option is ``None``.
+
+    Args:
+        fn (Callable) : A function that maps the non-optional value of type ``T`` to
+            another value. This function will be called on non-``None`` values of
+            ``v``.
+        v (Optional[T]) : The optional value to map.
+
+    Examples:
+
+        Given an optional value like the following...
+
+        .. code-block:: python
+
+            maybe_item: Optional[pystac.Item] = ...
+
+        ...you could replace...
+
+        .. code-block:: python
+
+            maybe_item_id: Optional[str] = None
+            if maybe_item is not None:
+                maybe_item_id = maybe_item.id
+
+        ...with:
+
+        .. code-block:: python
+
+            maybe_item_id = map_opt(lambda item: item.id, maybe_item)
     """
     return v if v is None else fn(v)
 
 
 def get_opt(option: Optional[T]) -> T:
-    """Retrieves the value of the Optional type.
+    """Retrieves the value of the ``Optional`` type, raising a :exc:`ValueError` if
+    the value is ``None``.
 
-    If the Optional is None, this will raise a value error.
     Use this to get a properly typed value from an optional
-    in contexts where you can be certain the value is not None.
-    If there is potential for a non-None value, it's best to handle
-    the None case of the optional instead of using this method.
+    in contexts where you can be certain the value is not ``None``.
+    If there is potential for a non-``None`` value, it's best to handle
+    the ``None`` case of the optional instead of using this method.
+
+    Args:
+        option (Optional[T]) : Some ``Optional`` value
 
     Returns:
         The value of type T wrapped by the Optional[T]
+
+    Examples:
+
+        .. code-block:: python
+
+            d = {
+                "some_key": "some_value"
+            }
+
+            # This passes
+            val: str = get_opt(d.get("some_key"))
+
+            # This raises a ValueError
+            val: str = get_opt(d.get("does_not_exist"))
     """
     if option is None:
         raise ValueError("Cannot get value from None")
@@ -361,9 +452,23 @@ def get_opt(option: Optional[T]) -> T:
 
 
 def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
-    """Retrieves an optional value that comes from a required property.
-    If the option is None, throws an RequiredPropertyError with
-    the given obj and property
+    """Retrieves an ``Optional`` value that comes from a required property of some
+    object. If the option is ``None``, throws an :exc:`pystac.RequiredPropertyMissing`
+    with the given obj and property.
+
+    This method is primarily used internally to retrieve properly typed required
+    properties from dictionaries. For an example usage, see the
+    :attr:`pystac.extensions.eo.Band.name` source code.
+
+    Args:
+        option (Optional[T]) : The ``Optional`` value.
+        obj (str, Any) : The object from which the value is being retrieved. This will
+            be passed to the :exc:`~pystac.RequiredPropertyMissing` exception if
+            ``option`` is ``None``.
+        prop (str) : The name of the property being retrieved.
+
+    Returns:
+        T : The properly typed, non-``None`` value.
     """
     if option is None:
         raise RequiredPropertyMissing(obj, prop)

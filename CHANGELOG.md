@@ -8,6 +8,7 @@
 - Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
 - Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
 - Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
+- More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
 
 ### Removed
 

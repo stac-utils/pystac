@@ -1,7 +1,4 @@
-"""Implement the View Geometry extension.
-
-https://github.com/stac-extensions/view
-"""
+"""Implement the :stac-ext:`View Geometry Extension <view>`."""
 
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
