@@ -14,6 +14,8 @@
 
 ### Changed
 
+- Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
+
 ### Fixed
 
 - Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
