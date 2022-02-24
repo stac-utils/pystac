@@ -81,21 +81,40 @@ class STACObject(ABC):
 
         self.links = [link for link in self.links if link.rel != rel]
 
-    def get_single_link(self, rel: Union[str, pystac.RelType]) -> Optional[Link]:
+    def get_single_link(
+        self,
+        rel: Union[str, pystac.RelType],
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+    ) -> Optional[Link]:
         """Get single link that match the given ``rel``.
 
         Args:
              rel : The :class:`~pystac.Link` ``rel`` to match on.
+             media_type: The :class:`~pystack.MediaType` ``media_type`` to match on
         """
 
-        return next((link for link in self.links if link.rel == rel), None)
+        return next(
+            (
+                link
+                for link in self.links
+                if link.rel == rel
+                and (media_type is None or link.media_type == media_type)
+            ),
+            None,
+        )
 
-    def get_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> List[Link]:
+    def get_links(
+        self,
+        rel: Optional[Union[str, pystac.RelType]] = None,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+    ) -> List[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
             rel : If set, filter links such that only those
                 matching this relationship are returned.
+            media_type: If set, filter the links such that only
+                those matching media_type are returned
 
         Returns:
             List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
@@ -104,7 +123,12 @@ class STACObject(ABC):
         if rel is None:
             return self.links
         else:
-            return [link for link in self.links if link.rel == rel]
+            return [
+                link
+                for link in self.links
+                if link.rel == rel
+                and (media_type is None or link.media_type == media_type)
+            ]
 
     def clear_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
