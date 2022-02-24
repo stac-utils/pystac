@@ -242,3 +242,10 @@ class TestCases:
                 "data-files/catalogs/" "planet-example-v1.0.0-beta.2/collection.json"
             )
         )
+
+    @staticmethod
+    def test_case_9() -> Catalog:
+        """Example catalog exposed by GeoServer"""
+        return Catalog.from_file(
+            TestCases.get_path("data-files/catalogs/test-case-9/catalog.json")
+        )
