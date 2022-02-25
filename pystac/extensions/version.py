@@ -1,7 +1,4 @@
-"""Implements the Versioning Indicators extension.
-
-https://github.com/stac-extensions/version
-"""
+"""Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
 from pystac.utils import get_required, map_opt
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
@@ -26,8 +23,8 @@ DEPRECATED: str = "deprecated"
 class VersionRelType(StringEnum):
     """A list of rel types defined in the Version Extension.
 
-    See the `Version Extension Relation types
-    <https://github.com/stac-extensions/version#relation-types>`__ documentation
+    See the :stac-ext:`Version Extension Relation types
+    <version#relation-types>` documentation
     for details."""
 
     LATEST = "latest-version"

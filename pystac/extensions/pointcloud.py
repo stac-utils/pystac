@@ -1,7 +1,4 @@
-"""Implements the Point Cloud extension.
-
-https://github.com/stac-extensions/pointcloud
-"""
+"""Implements the :stac-ext:`Point Cloud Extension <pointcloud>`."""
 from typing import Any, Dict, Iterable, Generic, List, Optional, TypeVar, cast, Union
 
 import pystac

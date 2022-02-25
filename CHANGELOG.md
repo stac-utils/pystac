@@ -6,15 +6,24 @@
 
 - Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
 - Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
-- 
+- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
+- Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
+- More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
+
 ### Removed
 
 ### Changed
+
+- Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
 
 ### Fixed
 
 - Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
 - Adding New and Custom Extensions tutorial now up-to-date with new extensions API ([#724](https://github.com/stac-utils/pystac/pull/724))
+- Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
+  with no owner([#746](https://github.com/stac-utils/pystac/pull/746))
+- Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
 
 ### Deprecated
 

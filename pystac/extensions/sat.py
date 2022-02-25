@@ -1,7 +1,4 @@
-"""Implements the Satellite extension.
-
-https://github.com/stac-extensions/sat
-"""
+"""Implements the :stac-ext:`Satellite Extension <sat>`."""
 
 from datetime import datetime as Datetime
 from pystac.summaries import RangeSummary

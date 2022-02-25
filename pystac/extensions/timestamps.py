@@ -1,7 +1,4 @@
-"""Implements the Timestamps extension.
-
-https://github.com/stac-extensions/timestamps
-"""
+"""Implements the :stac-ext:`Timestamps Extension <timestamps>`."""
 
 from datetime import datetime as datetime
 from pystac.summaries import RangeSummary

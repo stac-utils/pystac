@@ -1,7 +1,4 @@
-"""Implements the Item Assets Definition extension.
-
-https://github.com/stac-extensions/item-assets
-"""
+"""Implements the :stac-ext:`Item Assets Definition Extension <item-assets>`."""
 
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
