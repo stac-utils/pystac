@@ -1219,7 +1219,16 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
 
     def test_get_single_links_media_type(self) -> None:
-        catalog = TestCases.test_case_9()
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
 
         html_link = catalog.get_single_link("search")
         assert html_link is not None
