@@ -1238,8 +1238,16 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(json_link.href, "./search.json")
 
     def test_get_links_media_type(self) -> None:
-        catalog = TestCases.test_case_9()
-        self.assertEqual(len(catalog.get_links("search")), 2)
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
         self.assertEqual(
             len(catalog.get_links("search", media_type="application/geo+json")), 1
         )
