@@ -1221,15 +1221,12 @@ class CatalogTest(unittest.TestCase):
     def test_get_single_links_media_type(self) -> None:
         catalog = TestCases.test_case_9()
 
-        self.assertEqual(
-            catalog.get_single_link("search").href, "./search.html"  # type: ignore
-        )
-        self.assertEqual(
-            catalog.get_single_link(
-                "search", media_type="application/geo+json"
-            ).href,  # type: ignore
-            "./search.json",
-        )
+        html_link = catalog.get_single_link("search")
+        assert html_link is not None
+        self.assertEqual(html_link.href, "./search.html")
+        json_link = catalog.get_single_link("search", media_type="application/geo+json")
+        assert json_link is not None
+        self.assertEqual(json_link.href, "./search.json")
 
     def test_get_links_media_type(self) -> None:
         catalog = TestCases.test_case_9()
