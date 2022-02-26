@@ -15,6 +15,7 @@
 ### Changed
 
 - Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
+- Added the possibility of filtering by `media_type` in `get_links` and `get_single_link` [#704](https://github.com/stac-utils/pystac/pull/704))
 
 ### Fixed
 
