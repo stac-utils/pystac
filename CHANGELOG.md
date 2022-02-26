@@ -20,12 +20,11 @@
 - Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
 - More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
 
-### Removed
-
 ### Changed
 
 - Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
-- Option to filter by `media_type` in `get_links` and `get_single_link` [#704](https://github.com/stac-utils/pystac/pull/704))
+- Option to filter by `media_type` in `STACObject.get_links` and `STACObject.get_single_link`
+  ([#704](https://github.com/stac-utils/pystac/pull/704))
 
 ### Fixed
 
@@ -34,8 +33,6 @@
 - Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
   with no owner ([#746](https://github.com/stac-utils/pystac/pull/746))
 - Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
-
-### Deprecated
 
 ## [v1.3.0]
 
