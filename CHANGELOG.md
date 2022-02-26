@@ -4,6 +4,16 @@
 
 ### Added
 
+### Removed
+
+### Changed
+
+### Fixed
+
+## [v1.4.0]
+
+### Added
+
 - Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
 - Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
 - Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
@@ -568,7 +578,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.3.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
