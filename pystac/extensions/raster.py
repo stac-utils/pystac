@@ -1,7 +1,4 @@
-"""Implements the Raster extension.
-
-https://github.com/stac-extensions/raster
-"""
+"""Implements the :stac-ext:`Raster Extension <raster>`."""
 
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -47,6 +44,8 @@ class Statistics:
 
     Use Statistics.create to create a new Statistics instance.
     """
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Optional[float]]) -> None:
         self.properties = properties
@@ -208,6 +207,8 @@ class Histogram:
     Use Band.create to create a new Band.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -342,6 +343,8 @@ class RasterBand:
     Use Band.create to create a new Band.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -367,8 +370,8 @@ class RasterBand:
                 assumed to represent a sampling over the region of the pixel or a point
                 sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in
-                <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in the
+                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
             bits_per_sample : The actual number of bits used for this band.
                 Normally only present when the number of bits is non-standard for the
                 datatype, such as when a 1 bit TIFF is represented as byte
@@ -417,8 +420,8 @@ class RasterBand:
                 assumed to represent a sampling over the region of the pixel or a point
                 sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in
-                <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in the
+                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
             bits_per_sample : The actual number of bits used for this band.
                 Normally only present when the number of bits is non-standard for the
                 datatype, such as when a 1 bit TIFF is represented as byte

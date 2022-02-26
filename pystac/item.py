@@ -49,32 +49,48 @@ class Item(STACObject):
             belongs to.
         extra_fields : Extra fields that are part of the top-level JSON
             properties of the Item.
-
-    Attributes:
-        id : Provider identifier. Unique within the STAC.
-        geometry : Defines the full footprint of the asset represented by this
-            item, formatted according to
-            `RFC 7946, section 3.1 (GeoJSON) <https://tools.ietf.org/html/rfc7946>`_.
-        bbox :  Bounding Box of the asset represented by this item
-            using either 2D or 3D geometries. The length of the array is 2*n where n
-            is the number of dimensions. Could also be None in the case of a null
-            geometry.
-        datetime : Datetime associated with this item. If None,
-            the start_datetime and end_datetime in the common_metadata
-            will supply the datetime range of the Item.
-        properties : A dictionary of additional metadata for the item.
-        stac_extensions : Optional list of extensions the Item
-            implements.
-        collection : Collection that this item is a part of.
-        links : A list of :class:`~pystac.Link` objects representing
-            all links associated with this STACObject.
-        assets : Dictionary of asset objects that can be downloaded,
-            each with a unique key.
-        collection_id : The Collection ID that this item belongs to, if
-            any.
-        extra_fields : Extra fields that are part of the top-level JSON
-            properties of the Item.
     """
+
+    assets: Dict[str, Asset]
+    """Dictionary of :class:`~pystac.Asset` objects, each with a unique key."""
+
+    bbox: Optional[List[float]]
+    """Bounding Box of the asset represented by this item using either 2D or 3D
+    geometries. The length of the array is 2*n where n is the number of dimensions.
+    Could also be None in the case of a null geometry."""
+
+    collection: Optional[Collection]
+    """:class:`~pystac.Collection` to which this Item belongs, if any."""
+
+    collection_id: Optional[str]
+    """The Collection ID that this item belongs to, if any."""
+
+    datetime: Optional[Datetime]
+    """Datetime associated with this item. If ``None``, then
+    :attr:`~pystac.CommonMetadata.start_datetime` and
+    :attr:`~pystac.CommonMetadata.end_datetime` in :attr:`~pystac.Item.common_metadata`
+    will supply the datetime range of the Item."""
+
+    extra_fields: Dict[str, Any]
+    """Extra fields that are part of the top-level JSON fields the Item."""
+
+    geometry: Optional[Dict[str, Any]]
+    """Defines the full footprint of the asset represented by this item, formatted
+    according to `RFC 7946, section 3.1 (GeoJSON)
+    <https://tools.ietf.org/html/rfc7946>`_."""
+
+    id: str
+    """Provider identifier. Unique within the STAC."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this Item."""
+
+    properties: Dict[str, Any]
+    """A dictionary of additional metadata for the Item."""
+
+    stac_extensions: List[str]
+    """List of extensions the Item implements."""
 
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 

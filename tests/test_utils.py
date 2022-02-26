@@ -158,6 +158,7 @@ class UtilsTest(unittest.TestCase):
                 "https://stacspec.org/a/b/c/catalog.json",
                 "https://stacspec.org/a/b/item.json",
             ),
+            ("http://localhost:8000", None, "http://localhost:8000"),
         ]
 
         for source_href, start_href, expected in test_cases:

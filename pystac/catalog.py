@@ -49,7 +49,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on self-contained catalogs
-            <best-practices.md#self-contained-catalogs>`
+        <best-practices.md#self-contained-catalogs>`
     """
 
     ABSOLUTE_PUBLISHED = "ABSOLUTE_PUBLISHED"
@@ -59,7 +59,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     RELATIVE_PUBLISHED = "RELATIVE_PUBLISHED"
@@ -69,7 +69,7 @@ class CatalogType(StringEnum):
 
     See:
         :stac-spec:`The best practices documentation on published catalogs
-            <best-practices.md#published-catalogs>`
+        <best-practices.md#published-catalogs>`
     """
 
     @classmethod
@@ -122,20 +122,32 @@ class Catalog(STACObject):
         href : Optional HREF for this catalog, which be set as the
             catalog's self link's HREF.
         catalog_type : Optional catalog type for this catalog. Must
-            be one of the values in :class`~pystac.CatalogType`.
-
-    Attributes:
-        id : Identifier for the catalog.
-        description : Detailed multi-line description to fully explain the catalog.
-        title : Optional short descriptive one-line title for the catalog.
-        stac_extensions : Optional list of extensions the Catalog
-            implements.
-        extra_fields : Extra fields that are part of the top-level JSON
-            properties of the Catalog.
-        links : A list of :class:`~pystac.Link` objects representing
-            all links associated with this Catalog.
-        catalog_type : The catalog type. Defaults to ABSOLUTE_PUBLISHED
+            be one of the values in :class:`~pystac.CatalogType`.
     """
+
+    catalog_type: CatalogType
+    """The catalog type. Defaults to :attr:`CatalogType.ABSOLUTE_PUBLISHED`."""
+
+    description: str
+    """Detailed multi-line description to fully explain the catalog."""
+
+    extra_fields: Dict[str, Any]
+    """Extra fields that are part of the top-level JSON properties of the Catalog."""
+
+    id: str
+    """Identifier for the catalog."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this Catalog."""
+
+    title: Optional[str]
+    """Optional short descriptive one-line title for the catalog."""
+
+    stac_extensions: List[str]
+    """List of extensions the Catalog implements."""
+
+    _resolved_objects: ResolvedObjectCache
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
 
@@ -545,6 +557,7 @@ class Catalog(STACObject):
         root_href: str,
         catalog_type: Optional[CatalogType] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
+        stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
 
@@ -562,9 +575,12 @@ class Catalog(STACObject):
             strategy : The layout strategy to use in setting the
                 HREFS for this catalog. Defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
+            stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
+                provided, will use the instance set while reading in the catalog,
+                or the default instance if this is not available.
         """
         self.normalize_hrefs(root_href, strategy=strategy)
-        self.save(catalog_type)
+        self.save(catalog_type, stac_io=stac_io)
 
     def normalize_hrefs(
         self, root_href: str, strategy: Optional[HrefLayoutStrategy] = None
@@ -719,6 +735,7 @@ class Catalog(STACObject):
         self,
         catalog_type: Optional[CatalogType] = None,
         dest_href: Optional[str] = None,
+        stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
         """Save this catalog and all it's children/item to files determined by the object's
         self link HREF or a specified path.
@@ -731,6 +748,9 @@ class Catalog(STACObject):
             dest_href : The location where the catalog is to be saved.
                 If not supplied, the catalog's self link HREF is used to determine
                 the location of the catalog file and children's files.
+            stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
+                provided, will use the instance set while reading in the catalog,
+                or the default instance if this is not available.
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
             all self links will be included, and hierarchical links be absolute URLs.
@@ -758,9 +778,12 @@ class Catalog(STACObject):
                     child_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    child.save(dest_href=child_dest_href)
+                    child.save(
+                        dest_href=os.path.dirname(child_dest_href),
+                        stac_io=stac_io,
+                    )
                 else:
-                    child.save()
+                    child.save(stac_io=stac_io)
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
@@ -770,9 +793,15 @@ class Catalog(STACObject):
                     item_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    item.save_object(include_self_link=True, dest_href=item_dest_href)
+                    item.save_object(
+                        include_self_link=items_include_self_link,
+                        dest_href=item_dest_href,
+                        stac_io=stac_io,
+                    )
                 else:
-                    item.save_object(include_self_link=items_include_self_link)
+                    item.save_object(
+                        include_self_link=items_include_self_link, stac_io=stac_io
+                    )
 
         include_self_link = False
         # include a self link if this is the root catalog
@@ -791,7 +820,9 @@ class Catalog(STACObject):
                 rel_href, dest_href, start_is_dir=True
             )
         self.save_object(
-            include_self_link=include_self_link, dest_href=catalog_dest_href
+            include_self_link=include_self_link,
+            dest_href=catalog_dest_href,
+            stac_io=stac_io,
         )
         if catalog_type is not None:
             self.catalog_type = catalog_type

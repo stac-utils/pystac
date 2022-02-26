@@ -196,6 +196,11 @@ class LabelTest(unittest.TestCase):
         # Set
         LabelExtension.ext(label_item).label_type = LabelType.RASTER
         self.assertEqual(LabelType.RASTER, label_item.properties["label:type"])
+        # name for each label:classes object must be null to pass validation
+        label_classes = LabelExtension.ext(label_item).label_classes
+        assert label_classes is not None
+        for classes_obj in label_classes:
+            classes_obj.name = None
         label_item.validate()
 
     def test_label_properties(self) -> None:

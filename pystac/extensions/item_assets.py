@@ -1,7 +1,4 @@
-"""Implements the Item Assets Definition extension.
-
-https://github.com/stac-extensions/item-assets
-"""
+"""Implements the :stac-ext:`Item Assets Definition Extension <item-assets>`."""
 
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
@@ -29,6 +26,8 @@ class AssetDefinition:
     See the :stac-ext:`Asset Object <item-assets#asset-object>` for details.
     """
 
+    properties: Dict[str, Any]
+
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
 
@@ -52,7 +51,7 @@ class AssetDefinition:
     @property
     def description(self) -> Optional[str]:
         """Gets or sets a description of the Asset providing additional details, such as
-        how it was processed or created. `CommonMark 0.29 <http://commonmark.org/`__
+        how it was processed or created. `CommonMark 0.29 <http://commonmark.org/>`__
         syntax MAY be used for rich text representation."""
         return self.properties.get(ASSET_DESC_PROP)
 
@@ -119,6 +118,8 @@ class AssetDefinition:
 
 
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+    collection: pystac.Collection
+
     def __init__(self, collection: pystac.Collection) -> None:
         self.collection = collection
 

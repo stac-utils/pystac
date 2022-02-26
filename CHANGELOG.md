@@ -10,7 +10,60 @@
 
 ### Fixed
 
+## [v1.4.0]
+
+### Added
+
+- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
+- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
+- Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
+- More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
+
+### Removed
+
+### Changed
+
+- Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
+- Option to filter by `media_type` in `get_links` and `get_single_link` [#704](https://github.com/stac-utils/pystac/pull/704))
+
+### Fixed
+
+- Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
+- Adding New and Custom Extensions tutorial now up-to-date with new extensions API ([#724](https://github.com/stac-utils/pystac/pull/724))
+- Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
+  with no owner ([#746](https://github.com/stac-utils/pystac/pull/746))
+- Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
+
 ### Deprecated
+
+## [v1.3.0]
+
+### Added
+
+- Type annotations for instance attributes on all classes ([#705](https://github.com/stac-utils/pystac/pull/705))
+- `extensions.datacube.Variable.to_dict` method ([#699](https://github.com/stac-utils/pystac/pull/699)])
+- Clarification of possible errors when using `.ext` to extend an object ([#701](https://github.com/stac-utils/pystac/pull/701))
+- Downloadable documentation as zipped HTML ([#715](https://github.com/stac-utils/pystac/pull/715))
+
+### Removed
+
+- Downloadable documentation in ePub format ([#715](https://github.com/stac-utils/pystac/pull/715))
+
+### Changed
+
+- Reorganize docs and switch to PyData theme ([#687](https://github.com/stac-utils/pystac/pull/687))
+
+### Fixed
+
+- Quickstart tutorial is now up-to-date with all package changes ([#674](https://github.com/stac-utils/pystac/pull/674))
+- Creating absolute URLs from absolute URLs ([#697](https://github.com/stac-utils/pystac/pull/697)])
+- Serialization error when using `pystac.extensions.file.MappingObject` ([#700](https://github.com/stac-utils/pystac/pull/700))
+- Use `PropertiesExtension._get_property` to properly set return type in `TableExtension` ([#712](https://github.com/stac-utils/pystac/pull/712))
+- `DatacubeExtension.variables` now has a setter ([#699](https://github.com/stac-utils/pystac/pull/699)])
+- Landsat STAC tutorial is now up-to-date with all package changes ([#692](https://github.com/stac-utils/pystac/pull/674))
+- Paths to sub-catalog files when using `Catalog.save` ([#714](https://github.com/stac-utils/pystac/pull/714))
+- Link to PySTAC Introduction tutorial in tutorials index page ([#719](https://github.com/stac-utils/pystac/pull/719))
 
 ## [v1.2.0]
 
@@ -525,7 +578,9 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.2.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
+[v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
 [v1.0.1]: <https://github.com/stac-utils/pystac/compare/v1.0.0..v1.0.1>

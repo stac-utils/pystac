@@ -1,7 +1,4 @@
-"""Implements the Electro-Optical (EO) extension.
-
-https://github.com/stac-extensions/eo
-"""
+"""Implements the :stac-ext:`Electro-Optical Extension <eo>`."""
 
 from typing import (
     Any,
@@ -43,6 +40,8 @@ class Band:
 
     Use :meth:`Band.create` to create a new Band.
     """
+
+    properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
         self.properties = properties
@@ -297,7 +296,7 @@ class EOExtension(
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended :class:`~pystac.Item` or
+        """Applies Electro-Optical Extension properties to the extended :class:`~pystac.Item` or
         :class:`~pystac.Asset`.
 
         Args:

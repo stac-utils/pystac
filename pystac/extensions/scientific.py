@@ -1,6 +1,4 @@
-"""Implements the scientific extension.
-
-https://github.com/stac-extensions/scientific
+"""Implements the :stac-ext:`Scientific Citation Extension <scientific>`.
 
 For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
 
@@ -53,6 +51,9 @@ def doi_to_url(doi: str) -> str:
 
 class Publication:
     """Helper for Publication entries."""
+
+    citation: Optional[str]
+    doi: Optional[str]
 
     def __init__(self, doi: Optional[str], citation: Optional[str]) -> None:
         self.doi = doi
@@ -113,6 +114,8 @@ class ScientificExtension(
        >>> item: pystac.Item = ...
        >>> sci_ext = ScientificExtension.ext(item)
     """
+
+    obj: pystac.STACObject
 
     def __init__(self, obj: pystac.STACObject) -> None:
         self.obj = obj

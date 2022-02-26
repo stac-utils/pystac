@@ -91,7 +91,7 @@
     -5.960140574104503
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/label/v1.0.0/schema.json"
+    "https://stac-extensions.github.io/label/v1.0.1/schema.json"
   ],
   "collection": "znz"
 }

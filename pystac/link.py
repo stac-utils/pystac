@@ -1,3 +1,4 @@
+import os
 from copy import copy
 from typing import Any, Dict, Optional, TYPE_CHECKING, Union
 
@@ -10,6 +11,13 @@ if TYPE_CHECKING:
     from pystac.catalog import Catalog as Catalog_Type
     from pystac.collection import Collection as Collection_Type
 
+    PathLike = os.PathLike[str]
+
+else:
+    PathLike = os.PathLike
+
+HREF = Union[str, os.PathLike]
+
 HIERARCHICAL_LINKS = [
     pystac.RelType.ROOT,
     pystac.RelType.CHILD,
@@ -20,7 +28,7 @@ HIERARCHICAL_LINKS = [
 ]
 
 
-class Link:
+class Link(PathLike):
     """A link connects a :class:`~pystac.STACObject` to another entity.
 
     The target of a link can be either another STACObject, or
@@ -240,6 +248,9 @@ class Link:
         """Returns true if this link has a string href in its target information."""
         return self._target_href is not None
 
+    def __fspath__(self) -> str:
+        return self.absolute_href
+
     def __repr__(self) -> str:
         return "<Link rel={} target={}>".format(self.rel, self.target)
 
@@ -320,13 +331,14 @@ class Link:
     def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
-        Returns:
-            dict: A serialization of the Link that can be written out as JSON.
-            transform_href: If True, transform the HREF based on the type of
+        Args:
+            transform_href : If ``True``, transform the HREF based on the type of
                 catalog the owner belongs to (if any). I.e. if the link owner
                 belongs to a root catalog that is RELATIVE_PUBLISHED or SELF_CONTAINED,
                 the HREF will be transformed to be relative to the catalog root
                 if this is a hierarchical link relation.
+        Returns:
+            dict : A serialization of the Link that can be written out as JSON.
         """
 
         d: Dict[str, Any] = {
@@ -406,9 +418,10 @@ class Link:
         return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def self_href(cls, href: str) -> "Link":
+    def self_href(cls, href: HREF) -> "Link":
         """Creates a self link to a file's location."""
-        return cls(pystac.RelType.SELF, href, media_type=pystac.MediaType.JSON)
+        href_str = str(os.fspath(href))
+        return cls(pystac.RelType.SELF, href_str, media_type=pystac.MediaType.JSON)
 
     @classmethod
     def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":

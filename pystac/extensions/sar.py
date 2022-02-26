@@ -1,7 +1,4 @@
-"""Implements the Synthetic-Aperture Radar (SAR) extension.
-
-https://github.com/stac-extensions/sar
-"""
+"""Implements the :stac-ext:`Synthetic-Aperture Radar (SAR) Extension <sar>`."""
 
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast, Union
 

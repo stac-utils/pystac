@@ -18,7 +18,13 @@ from pystac import (
     HIERARCHICAL_LINKS,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
-from pystac.utils import is_absolute_href, join_path_or_url, JoinType
+from pystac.utils import (
+    is_absolute_href,
+    join_path_or_url,
+    JoinType,
+    make_absolute_href,
+    make_relative_href,
+)
 from tests.utils import (
     TestCases,
     ARBITRARY_GEOM,
@@ -331,6 +337,116 @@ class CatalogTest(unittest.TestCase):
             result_cat = Catalog.from_file(catalog_path)
             for link in result_cat.get_child_links():
                 self.assertTrue(cast(str, link.target).startswith(href))
+
+    def test_save_relative_published_no_self_links(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = TestCases.test_case_1()
+            href = "http://test.com"
+            folder = os.path.join(tmp_dir, "cat")
+            catalog.normalize_hrefs(href)
+            catalog.save(catalog_type=CatalogType.RELATIVE_PUBLISHED, dest_href=folder)
+
+            catalog_path = os.path.join(folder, "catalog.json")
+            self.assertTrue(os.path.exists(catalog_path))
+            result_cat = Catalog.from_file(catalog_path)
+
+            # Check that Items do not have a self link
+            # Since Item.from_dict automatically adds a self link, we need to look at
+            # the JSON files themselves.
+            stac_io = pystac.StacIO.default()
+
+            for current_cat, _, __ in result_cat.walk():
+                for item_link in current_cat.get_item_links():
+                    item_dict = stac_io.read_json(item_link)
+                    self_link = next(
+                        (
+                            link
+                            for link in item_dict.get("links", [])
+                            if link["rel"] == "self"
+                        ),
+                        None,
+                    )
+                    self.assertIsNone(self_link)
+
+    def test_save_with_different_stac_io(self) -> None:
+        catalog = Catalog.from_file(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        stac_io = MockStacIO()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.save(
+                catalog_type=CatalogType.ABSOLUTE_PUBLISHED,
+                dest_href=tmp_dir,
+                stac_io=stac_io,
+            )
+
+        hrefs = []
+        for root, _, items in catalog.walk():
+            hrefs.append(root.get_self_href())
+            for item in items:
+                hrefs.append(item.get_self_href())
+
+        self.assertEqual(len(hrefs), stac_io.mock.write_text.call_count)
+        for call_args_list in stac_io.mock.write_text.call_args_list:
+            self.assertIn(call_args_list[0][0], hrefs)
+
+    def test_subcatalogs_saved_to_correct_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog = TestCases.test_case_1()
+            href = "http://test.com"
+
+            catalog.normalize_hrefs(href)
+            catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=tmp_dir)
+
+            # Check the root catalog path
+            expected_root_catalog_path = os.path.join(tmp_dir, "catalog.json")
+            self.assertTrue(
+                os.path.exists(expected_root_catalog_path),
+                msg=f"{expected_root_catalog_path} does not exist.",
+            )
+            self.assertTrue(
+                os.path.isfile(expected_root_catalog_path),
+                msg=f"{expected_root_catalog_path} is not a file.",
+            )
+
+            # Check each child catalog
+            for child_catalog in catalog.get_children():
+                relative_path = make_relative_href(
+                    child_catalog.self_href, catalog.self_href, start_is_dir=False
+                )
+                expected_child_path = make_absolute_href(
+                    relative_path,
+                    expected_root_catalog_path,
+                    start_is_dir=False,
+                )
+                self.assertTrue(
+                    os.path.exists(expected_child_path),
+                    msg=f"{expected_child_path} does not exist.",
+                )
+                self.assertTrue(
+                    os.path.isfile(expected_child_path),
+                    msg=f"{expected_child_path} is not a file.",
+                )
+
+            # Check each item
+            for item in catalog.get_all_items():
+                relative_path = make_relative_href(
+                    item.self_href, catalog.self_href, start_is_dir=False
+                )
+                expected_item_path = make_absolute_href(
+                    relative_path,
+                    expected_root_catalog_path,
+                    start_is_dir=False,
+                )
+                self.assertTrue(
+                    os.path.exists(expected_item_path),
+                    msg=f"{expected_item_path} does not exist.",
+                )
+                self.assertTrue(
+                    os.path.isfile(expected_item_path),
+                    msg=f"{expected_item_path} is not a file.",
+                )
 
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.test_case_1()
@@ -1101,6 +1217,40 @@ class CatalogTest(unittest.TestCase):
 
         self.assertGreater(len(all_collections), 0)
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
+
+    def test_get_single_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+
+        html_link = catalog.get_single_link("search")
+        assert html_link is not None
+        self.assertEqual(html_link.href, "./search.html")
+        json_link = catalog.get_single_link("search", media_type="application/geo+json")
+        assert json_link is not None
+        self.assertEqual(json_link.href, "./search.json")
+
+    def test_get_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+        self.assertEqual(
+            len(catalog.get_links("search", media_type="application/geo+json")), 1
+        )
 
 
 class FullCopyTest(unittest.TestCase):

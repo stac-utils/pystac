@@ -23,6 +23,7 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
+from pystac.provider import Provider
 from pystac.utils import datetime_to_str
 from pystac.serialization import (
     identify_stac_object_type,
@@ -36,6 +37,10 @@ if TYPE_CHECKING:
     from pystac.provider import Provider as Provider_Type
 
 T = TypeVar("T")
+TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
+TemporalIntervalsLike = Union[
+    TemporalIntervals, List[datetime], List[Optional[datetime]]
+]
 
 
 class SpatialExtent:
@@ -175,7 +180,7 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
 
-    intervals: List[List[Optional[datetime]]]
+    intervals: TemporalIntervals
     """A list of two datetimes wrapped in a list,
     representing the temporal extent of a Collection. Open date ranges are
     represented by either the start (the first element of the interval) or the
@@ -187,16 +192,16 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: Union[List[List[Optional[datetime]]], List[Optional[datetime]]],
+        intervals: TemporalIntervals,
         extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
         if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = [cast(List[Optional[datetime]], intervals)]
+            self.intervals = intervals
         else:
-            self.intervals = cast(List[List[Optional[datetime]]], intervals)
+            self.intervals = intervals
 
         self.extra_fields = extra_fields or {}
 
@@ -439,29 +444,43 @@ class Collection(Catalog):
             either a set of values or statistics such as a range.
         extra_fields : Extra fields that are part of the top-level
             JSON properties of the Collection.
-
-    Attributes:
-        id : Identifier for the collection.
-        description : Detailed multi-line description to fully explain the
-            collection.
-        extent : Spatial and temporal extents that describe the bounds of
-            all items contained within this Collection.
-        title : Optional short descriptive one-line title for the
-            collection.
-        stac_extensions : Optional list of extensions the Collection
-            implements.
-        keywords : Optional list of keywords describing the
-            collection.
-        providers : Optional list of providers of this
-            Collection.
-        assets : Optional map of Assets
-        summaries : An optional map of property summaries,
-            either a set of values or statistics such as a range.
-        links : A list of :class:`~pystac.Link` objects representing
-            all links associated with this Collection.
-        extra_fields : Extra fields that are part of the top-level
-            JSON properties of the Catalog.
     """
+
+    assets: Dict[str, Asset]
+    """Map of Assets"""
+
+    description: str
+    """Detailed multi-line description to fully explain the collection."""
+
+    extent: Extent
+    """Spatial and temporal extents that describe the bounds of all items contained
+    within this Collection."""
+
+    id: str
+    """Identifier for the collection."""
+
+    stac_extensions: List[str]
+    """List of extensions the Collection implements."""
+
+    title: Optional[str]
+    """Optional short descriptive one-line title for the collection."""
+
+    keywords: Optional[List[str]]
+    """Optional list of keywords describing the collection."""
+
+    providers: Optional[List[Provider]]
+    """Optional list of providers of this Collection."""
+
+    summaries: Summaries
+    """A map of property summaries, either a set of values or statistics such as a
+    range."""
+
+    links: List[Link]
+    """A list of :class:`~pystac.Link` objects representing all links associated with
+    this Collection."""
+
+    extra_fields: Dict[str, Any]
+    """Extra fields that are part of the top-level JSON properties of the Collection."""
 
     STAC_OBJECT_TYPE = STACObjectType.COLLECTION
 
@@ -501,7 +520,7 @@ class Collection(Catalog):
         self.providers = providers
         self.summaries = summaries or Summaries.empty()
 
-        self.assets: Dict[str, Asset] = {}
+        self.assets = {}
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)

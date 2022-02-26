@@ -1,9 +1,6 @@
-"""Implements the Versioning Indicators extension.
-
-https://github.com/stac-extensions/version
-"""
+"""Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
 from pystac.utils import get_required, map_opt
-from typing import Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.utils import StringEnum
@@ -26,8 +23,8 @@ DEPRECATED: str = "deprecated"
 class VersionRelType(StringEnum):
     """A list of rel types defined in the Version Extension.
 
-    See the `Version Extension Relation types
-    <https://github.com/stac-extensions/version#relation-types>`__ documentation
+    See the :stac-ext:`Version Extension Relation types
+    <version#relation-types>` documentation
     for details."""
 
     LATEST = "latest-version"
@@ -226,6 +223,10 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
     :meth:`VersionExtension.ext` on an :class:`~pystac.Collection` to extend it.
     """
 
+    collection: pystac.Collection
+    links: List[pystac.Link]
+    properties: Dict[str, Any]
+
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
@@ -244,6 +245,10 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
     This class should generally not be instantiated directly. Instead, call
     :meth:`VersionExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
+
+    item: pystac.Item
+    links: List[pystac.Link]
+    properties: Dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item

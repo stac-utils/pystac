@@ -17,10 +17,10 @@ class STACObjectType(StringEnum):
 
 
 class STACObject(ABC):
-    """A STACObject is the base class for any element of STAC that
-    has links e.g. (Catalogs, Collections, or Items). A STACObject has
-    common functionality, can be converted to and from Python ``dicts`` representing
-    JSON, and can be cloned or copied.
+    """A base class for other PySTAC classes that contains a variety of useful
+    methods for dealing with links, copying objects, accessing extensions, and reading
+    and writing files. You shouldn't use STACObject directly, but instead access this
+    functionality through the implementing classes.
     """
 
     id: str
@@ -36,7 +36,7 @@ class STACObject(ABC):
     STAC_OBJECT_TYPE: STACObjectType
 
     def __init__(self, stac_extensions: List[str]) -> None:
-        self.links: List[Link] = []
+        self.links = []
         self.stac_extensions = stac_extensions
 
     def validate(self) -> List[Any]:
@@ -81,21 +81,42 @@ class STACObject(ABC):
 
         self.links = [link for link in self.links if link.rel != rel]
 
-    def get_single_link(self, rel: Union[str, pystac.RelType]) -> Optional[Link]:
-        """Get single link that match the given ``rel``.
+    def get_single_link(
+        self,
+        rel: Union[str, pystac.RelType],
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+    ) -> Optional[Link]:
+        """Get single link that match the given ``rel`` and, optionally,
+        ``media_type``. If ``media_type`` is ``None``, then the link is
+        matched only on the ``rel`` value.
 
         Args:
              rel : The :class:`~pystac.Link` ``rel`` to match on.
+             media_type: The :class:`~pystack.MediaType` ``media_type`` to match on
         """
 
-        return next((link for link in self.links if link.rel == rel), None)
+        return next(
+            (
+                link
+                for link in self.links
+                if link.rel == rel
+                and (media_type is None or link.media_type == media_type)
+            ),
+            None,
+        )
 
-    def get_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> List[Link]:
+    def get_links(
+        self,
+        rel: Optional[Union[str, pystac.RelType]] = None,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+    ) -> List[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
         Args:
             rel : If set, filter links such that only those
                 matching this relationship are returned.
+            media_type: If set, filter the links such that only
+                those matching media_type are returned
 
         Returns:
             List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
@@ -104,7 +125,12 @@ class STACObject(ABC):
         if rel is None:
             return self.links
         else:
-            return [link for link in self.links if link.rel == rel]
+            return [
+                link
+                for link in self.links
+                if link.rel == rel
+                and (media_type is None or link.media_type == media_type)
+            ]
 
     def clear_links(self, rel: Optional[Union[str, pystac.RelType]] = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
@@ -381,14 +407,10 @@ class STACObject(ABC):
                     target = cached_target
                 else:
                     target_parent = None
-                    if (
-                        link.rel
-                        in [
-                            pystac.RelType.CHILD,
-                            pystac.RelType.ITEM,
-                        ]
-                        and isinstance(clone, pystac.Catalog)
-                    ):
+                    if link.rel in [
+                        pystac.RelType.CHILD,
+                        pystac.RelType.ITEM,
+                    ] and isinstance(clone, pystac.Catalog):
                         target_parent = clone
                     copied_target = target.full_copy(root=root, parent=target_parent)
                     if root is not None:

@@ -1,7 +1,4 @@
-"""Implements the Datacube extension.
-
-https://github.com/stac-extensions/datacube
-"""
+"""Implements the :stac-ext:`Datacube Extension <datacube>`."""
 
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
@@ -12,7 +9,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, get_required
+from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
@@ -501,6 +498,9 @@ class Variable:
     def from_dict(d: Dict[str, Any]) -> "Variable":
         return Variable(d)
 
+    def to_dict(self) -> Dict[str, Any]:
+        return self.properties
+
 
 class DatacubeExtension(
     Generic[T],
@@ -552,6 +552,15 @@ class DatacubeExtension(
         if result is None:
             return None
         return {k: Variable.from_dict(v) for k, v in result.items()}
+
+    @variables.setter
+    def variables(self, v: Optional[Dict[str, Variable]]) -> None:
+        self._set_property(
+            VARIABLES_PROP,
+            map_opt(
+                lambda variables: {k: var.to_dict() for k, var in variables.items()}, v
+            ),
+        )
 
     @classmethod
     def get_schema_uri(cls) -> str:

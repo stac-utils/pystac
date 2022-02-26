@@ -1,9 +1,6 @@
-"""Implements the File extension.
+"""Implements the :stac-ext:`File Info Extension <file>`."""
 
-https://github.com/stac-extensions/file
-"""
-
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -13,7 +10,7 @@ from pystac.serialization.identify import (
     STACJSONDescription,
     STACVersionID,
 )
-from pystac.utils import StringEnum, get_required
+from pystac.utils import StringEnum, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.0.0/schema.json"
 
@@ -83,6 +80,13 @@ class MappingObject:
     def summary(self, v: str) -> None:
         self.properties["summary"] = v
 
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "MappingObject":
+        return cls.create(**d)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return self.properties
+
 
 class FileExtension(
     PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
@@ -98,6 +102,16 @@ class FileExtension(
        >>> asset: pystac.Asset = ...
        >>> file_ext = FileExtension.ext(asset)
     """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: Dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
@@ -180,11 +194,21 @@ class FileExtension(
         values that are in the file and describe their meaning. See the
         :stac-ext:`Mapping Object <file#mapping-object>` docs for an example. If given,
         at least one array element is required."""
-        return self._get_property(VALUES_PROP, List[MappingObject])
+        return map_opt(
+            lambda values: [
+                MappingObject.from_dict(mapping_obj) for mapping_obj in values
+            ],
+            self._get_property(VALUES_PROP, List[Dict[str, Any]]),
+        )
 
     @values.setter
     def values(self, v: Optional[List[MappingObject]]) -> None:
-        self._set_property(VALUES_PROP, v)
+        self._set_property(
+            VALUES_PROP,
+            map_opt(
+                lambda values: [mapping_obj.to_dict() for mapping_obj in values], v
+            ),
+        )
 
     @classmethod
     def get_schema_uri(cls) -> str:
