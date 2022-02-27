@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Core(TM) i5-1038NG7 CPU @ 2.00GHz",
+    "machine": "Jon-Work-Laptop.local",
+    "num_cpu": "8",
+    "os": "Darwin 19.6.0",
+    "ram": "17179869184",
+    "version": 1
+}
