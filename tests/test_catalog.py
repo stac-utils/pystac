@@ -1218,6 +1218,40 @@ class CatalogTest(unittest.TestCase):
         self.assertGreater(len(all_collections), 0)
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
 
+    def test_get_single_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+
+        html_link = catalog.get_single_link("search")
+        assert html_link is not None
+        self.assertEqual(html_link.href, "./search.html")
+        json_link = catalog.get_single_link("search", media_type="application/geo+json")
+        assert json_link is not None
+        self.assertEqual(json_link.href, "./search.json")
+
+    def test_get_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+        self.assertEqual(
+            len(catalog.get_links("search", media_type="application/geo+json")), 1
+        )
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link: pystac.Link, tag: str) -> None:
