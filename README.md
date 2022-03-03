@@ -1,6 +1,7 @@
 ## PySTAC
 ![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=main)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
+[![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/pystac)](https://anaconda.org/conda-forge/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
 [![codecov](https://codecov.io/gh/stac-utils/pystac/branch/main/graph/badge.svg)](https://codecov.io/gh/stac-utils/pystac)
 [![Gitter](https://badges.gitter.im/SpatioTemporal-Asset-Catalog/python.svg)](https://gitter.im/SpatioTemporal-Asset-Catalog/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
