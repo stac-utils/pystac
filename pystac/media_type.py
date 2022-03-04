@@ -17,3 +17,4 @@ class MediaType(StringEnum):
     TEXT = "text/plain"
     TIFF = "image/tiff"
     XML = "application/xml"
+    PDF = "application/pdf"

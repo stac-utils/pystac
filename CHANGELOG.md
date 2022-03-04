@@ -4,6 +4,8 @@
 
 ### Added
 
+- Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758)) 
+
 ### Removed
 
 ### Changed
