@@ -49,6 +49,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
 
       - uses: actions-rs/toolchain@v1
         # Wheels for orjson are not available for Python 3.11. This sets up the Rust
@@ -59,30 +61,6 @@ jobs:
           override: true
           default: true
           profile: minimal
-
-      - name: Cache dependencies (Linux)
-        if: startsWith(runner.os, 'Linux')
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-      
-      - name: Cache dependencies (macOS)
-        if: startsWith(runner.os, 'macOS')
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-          
-      - name: Cache dependencies (Windows)
-        if: startsWith(runner.os, 'Windows')
-        uses: actions/cache@v2
-        with:
-          path: ~\AppData\Local\pip\Cache
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
 
       - name: Install dependencies
         run: |
@@ -106,13 +84,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.8"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python3.8-${{ hashFiles('requirements-test.txt') }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
       
       - name: Install dependencies
         run: |
@@ -163,13 +136,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
       
       - name: Install dependencies
         run: |
