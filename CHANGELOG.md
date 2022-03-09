@@ -5,6 +5,7 @@
 ### Added
 
 - Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758)) 
+- Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
 
 ### Removed
 
