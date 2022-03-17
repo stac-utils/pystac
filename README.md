@@ -21,9 +21,7 @@ Note that while we support Python 3.10.\*, wheels for the `orjson` library are n
 platforms. If you install PySTAC with the `orjson` extra, you may need to have the Rust toolchain installed (e.g. via [rustup](https://rustup.rs/)) in order to
 build the package from source.
 
-Support for Python 3.11 should be considered experimental until further notice. There is a known issue with failing build of `orjson` on 3.11.0 alpha releases prior to alpha.6 (see
-[#765(comment)](https://github.com/stac-utils/pystac/pull/765#pullrequestreview-908908772) for
-some additional detail). The workaround is to install `tomli` prior to installing `orjson`.
+Support for Python 3.11 should be considered experimental until further notice.
 
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
