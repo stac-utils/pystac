@@ -298,6 +298,10 @@ class Link(PathLike):
                     if self.owner is not None:
                         if isinstance(self.owner, pystac.Catalog):
                             stac_io = self.owner._stac_io
+                        elif self.rel != pystac.RelType.ROOT:
+                            owner_root = self.owner.get_root()
+                            if owner_root is not None:
+                                stac_io = owner_root._stac_io
                     if stac_io is None:
                         stac_io = pystac.StacIO.default()
 
