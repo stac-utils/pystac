@@ -84,18 +84,18 @@ jobs:
           # Cache based on OS, Python version, and dependency hash
           key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
 
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install -e ".[validation]"
+        
       - name: Install toml library
         # tomllib is not yet available in the 3.11.0-alpha.5 release, which causes failures when trying
         # to build orjson. We patch this by installing tomli until tomllib is available in the next release.
         if: ${{ startsWith(matrix.python-version, '3.11')}}
         run: |
           pip install tomli==2.0.1
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements-test.txt
-          pip install -e ".[validation]"
       
       - name: Execute test suite
         run: ./scripts/test
