@@ -14,6 +14,8 @@
 
 ### Fixed
 
+- "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+
 ## [v1.4.0]
 
 ### Added
