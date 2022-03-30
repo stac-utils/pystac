@@ -53,7 +53,7 @@ class AssetDefinition:
                 such as how it was processed or created.
                 `CommonMark 0.29 <http://commonmark.org/>`__ syntax MAY be used
                 for rich text representation.
-            media_type : `media type
+            media_type : `media type\
                 <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
                  of the asset.
             roles : `semantic roles
@@ -82,7 +82,7 @@ class AssetDefinition:
                 such as how it was processed or created.
                 `CommonMark 0.29 <http://commonmark.org/>`__ syntax MAY be used
                 for rich text representation.
-            media_type : `media type
+            media_type : `media type\
                 <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
                  of the asset.
             roles : `semantic roles
