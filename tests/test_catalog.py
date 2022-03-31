@@ -327,7 +327,7 @@ class CatalogTest(unittest.TestCase):
     def test_save_to_provided_href(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=folder)
@@ -341,7 +341,7 @@ class CatalogTest(unittest.TestCase):
     def test_save_relative_published_no_self_links(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.RELATIVE_PUBLISHED, dest_href=folder)
@@ -394,7 +394,7 @@ class CatalogTest(unittest.TestCase):
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
 
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=tmp_dir)
