@@ -36,6 +36,64 @@ class AssetDefinition:
             return NotImplemented
         return self.to_dict() == o.to_dict()
 
+    @classmethod
+    def create(
+        cls,
+        title: Optional[str],
+        description: Optional[str],
+        media_type: Optional[str],
+        roles: Optional[List[str]],
+    ) -> "AssetDefinition":
+        """
+        Creates a new asset definition.
+
+        Args:
+            title : Displayed title for clients and users.
+            description : Description of the Asset providing additional details,
+                such as how it was processed or created.
+                `CommonMark 0.29 <http://commonmark.org/>`__ syntax MAY be used
+                for rich text representation.
+            media_type : `media type\
+                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
+                 of the asset.
+            roles : `semantic roles
+                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
+                of the asset, similar to the use of rel in links.
+        """
+        asset_defn = cls({})
+        asset_defn.apply(
+            title=title, description=description, media_type=media_type, roles=roles
+        )
+        return asset_defn
+
+    def apply(
+        self,
+        title: Optional[str],
+        description: Optional[str],
+        media_type: Optional[str],
+        roles: Optional[List[str]],
+    ) -> None:
+        """
+        Sets the properties for this asset definition.
+
+        Args:
+            title : Displayed title for clients and users.
+            description : Description of the Asset providing additional details,
+                such as how it was processed or created.
+                `CommonMark 0.29 <http://commonmark.org/>`__ syntax MAY be used
+                for rich text representation.
+            media_type : `media type\
+                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
+                 of the asset.
+            roles : `semantic roles
+                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
+                of the asset, similar to the use of rel in links.
+        """
+        self.title = title
+        self.description = description
+        self.media_type = media_type
+        self.roles = roles
+
     @property
     def title(self) -> Optional[str]:
         """Gets or sets the displayed title for clients and users."""
@@ -65,7 +123,7 @@ class AssetDefinition:
     @property
     def media_type(self) -> Optional[str]:
         """Gets or sets the `media type
-        <https://github.com/radiantearth/stac-spec/tree/v1.0.0-rc.1/catalog-spec/catalog-spec.md#media-types>`__
+        <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
         of the asset."""
         return self.properties.get(ASSET_TYPE_PROP)
 
@@ -79,7 +137,7 @@ class AssetDefinition:
     @property
     def roles(self) -> Optional[List[str]]:
         """Gets or sets the `semantic roles
-        <https://github.com/radiantearth/stac-spec/tree/v1.0.0-rc.1/item-spec/item-spec.md#asset-role-types>`__
+        <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
         of the asset, similar to the use of rel in links."""
         return self.properties.get(ASSET_ROLES_PROP)
 

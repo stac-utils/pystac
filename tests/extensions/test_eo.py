@@ -21,6 +21,7 @@ class BandsTest(unittest.TestCase):
             description=Band.band_description("red"),
             center_wavelength=0.65,
             full_width_half_max=0.1,
+            solar_illumination=42.0,
         )
 
         self.assertEqual(band.name, "B01")
@@ -28,7 +29,7 @@ class BandsTest(unittest.TestCase):
         self.assertEqual(band.description, "Common name: red, Range: 0.6 to 0.7")
         self.assertEqual(band.center_wavelength, 0.65)
         self.assertEqual(band.full_width_half_max, 0.1)
-
+        self.assertEqual(band.solar_illumination, 42.0)
         self.assertEqual(band.__repr__(), "<Band name=B01>")
 
     def test_band_description_unknown_band(self) -> None:
