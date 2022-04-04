@@ -16,6 +16,7 @@
 ### Fixed
 
 - "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+- Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
 
 ## [v1.4.0]
 
