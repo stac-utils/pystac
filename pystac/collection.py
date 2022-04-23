@@ -562,13 +562,13 @@ class Collection(Catalog):
             description=self.description,
             extent=self.extent.clone(),
             title=self.title,
-            stac_extensions=self.stac_extensions,
-            extra_fields=self.extra_fields,
+            stac_extensions=deepcopy(self.stac_extensions),
+            extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
             license=self.license,
-            keywords=self.keywords,
-            providers=self.providers,
-            summaries=self.summaries,
+            keywords=deepcopy(self.keywords),
+            providers=deepcopy(self.providers),
+            summaries=self.summaries.clone(),
         )
 
         clone._resolved_objects.cache(clone)
