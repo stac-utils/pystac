@@ -82,10 +82,12 @@ class CollectionTest(unittest.TestCase):
 
     def test_clone_cant_mutate_original(self) -> None:
         collection = TestCases.test_case_8()
+        assert collection.keywords is not None
         self.assertListEqual(collection.keywords, ["disaster", "open"])
         clone = collection.clone()
         clone.extra_fields["test"] = "extra"
         self.assertNotIn("test", collection.extra_fields)
+        assert clone.keywords is not None
         clone.keywords.append("clone")
         self.assertListEqual(clone.keywords, ["disaster", "open", "clone"])
         self.assertListEqual(collection.keywords, ["disaster", "open"])
