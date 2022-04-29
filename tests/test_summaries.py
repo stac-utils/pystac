@@ -59,6 +59,17 @@ class SummariesTest(unittest.TestCase):
         summaries = Summarizer().summarize(coll.get_all_items())
         self.assertFalse(summaries.is_empty())
 
+    def test_clone_summary(self) -> None:
+        coll = TestCases.test_case_5()
+        summaries = Summarizer().summarize(coll.get_all_items())
+        summaries_dict = summaries.to_dict()
+        self.assertEqual(len(summaries_dict["eo:bands"]), 4)
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+        clone = summaries.clone()
+        self.assertTrue(isinstance(clone, Summaries))
+        clone_dict = clone.to_dict()
+        self.assertDictEqual(clone_dict, summaries_dict)
+
 
 class RangeSummaryTest(unittest.TestCase):
     def setUp(self) -> None:
