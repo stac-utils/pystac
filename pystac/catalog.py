@@ -517,7 +517,7 @@ class Catalog(STACObject):
             id=self.id,
             description=self.description,
             title=self.title,
-            stac_extensions=deepcopy(self.stac_extensions),
+            stac_extensions=self.stac_extensions.copy(),
             extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
         )
