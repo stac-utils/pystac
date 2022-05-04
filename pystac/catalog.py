@@ -117,7 +117,7 @@ class Catalog(STACObject):
     Args:
         id : Identifier for the catalog. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the catalog.
-            `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY be used for rich
+            `CommonMark 0.29 syntax <https://commonmark.org/>`_ MAY be used for rich
             text representation.
         title : Optional short descriptive one-line title for the catalog.
         stac_extensions : Optional list of extensions the Catalog implements.
@@ -527,7 +527,7 @@ class Catalog(STACObject):
             id=self.id,
             description=self.description,
             title=self.title,
-            stac_extensions=self.stac_extensions,
+            stac_extensions=self.stac_extensions.copy(),
             extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
         )

@@ -4,11 +4,20 @@
 
 ### Added
 
+- Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
+- Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
+- Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
+- Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
+
 ### Removed
 
 ### Changed
 
 ### Fixed
+
+- "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+- Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
+- Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
 
 ## [v1.4.0]
 

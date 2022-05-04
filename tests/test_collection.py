@@ -80,6 +80,19 @@ class CollectionTest(unittest.TestCase):
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
 
+    def test_clone_cant_mutate_original(self) -> None:
+        collection = TestCases.test_case_8()
+        assert collection.keywords is not None
+        self.assertListEqual(collection.keywords, ["disaster", "open"])
+        clone = collection.clone()
+        clone.extra_fields["test"] = "extra"
+        self.assertNotIn("test", collection.extra_fields)
+        assert clone.keywords is not None
+        clone.keywords.append("clone")
+        self.assertListEqual(clone.keywords, ["disaster", "open", "clone"])
+        self.assertListEqual(collection.keywords, ["disaster", "open"])
+        self.assertNotEqual(id(collection.summaries), id(clone.summaries))
+
     def test_multiple_extents(self) -> None:
         cat1 = TestCases.test_case_1()
         country = cat1.get_child("country-1")

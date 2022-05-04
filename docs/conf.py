@@ -17,7 +17,6 @@ import sys
 import subprocess
 from typing import Any, Dict, List
 
-from sphinx.util import logging
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -239,11 +238,3 @@ intersphinx_mapping = {
 # -- Substutition variables
 
 rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"
-
-# -- Suppress warnings from the extlinks extension
-# We do this to avoid warnings like the following in our Jupyter notebook tutorials
-# where we do not want to use Sphinx constructs:
-# WARNING: hardcoded link 'https://github.com/stac-extensions/eo' could be replaced
-# by an extlink (try using ':stac-ext:`eo`' instead)
-linklogger = logging.getLogger("sphinx.ext.extlinks")
-linklogger.setLevel(40)  # Ignore messages less severe than ERROR

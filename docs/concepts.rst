@@ -279,7 +279,7 @@ for reading from AWS's S3 cloud object storage using `boto3
    from pystac.stac_io import DefaultStacIO, StacIO
 
    class CustomStacIO(DefaultStacIO):
-      def __init__():
+      def __init__(self):
          self.s3 = boto3.resource("s3")
 
       def read_text(
@@ -302,8 +302,7 @@ for reading from AWS's S3 cloud object storage using `boto3
          if parsed.scheme == "s3":
             bucket = parsed.netloc
             key = parsed.path[1:]
-            s3 = boto3.resource("s3")
-            s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+            self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
          else:
             super().write_text(dest, txt, *args, **kwargs)
 
@@ -322,7 +321,7 @@ to take advantage of connection pooling using a `requests.Session
    from pystac.stac_io import DefaultStacIO, StacIO
 
    class ConnectionPoolingIO(DefaultStacIO):
-      def __init__():
+      def __init__(self):
          self.session = requests.Session()
 
       def read_text(
