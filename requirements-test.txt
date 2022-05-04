@@ -1,4 +1,4 @@
-mypy==0.942
+mypy==0.950
 flake8==4.0.1
 black==22.3.0
 
@@ -14,4 +14,4 @@ types-orjson==3.6.2
 pre-commit==2.18.1
 
 # optional dependencies
-orjson==3.6.7
+orjson==3.6.8
