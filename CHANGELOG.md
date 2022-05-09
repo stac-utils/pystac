@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [v1.5.0]
 
 ### Added
 
@@ -9,10 +9,6 @@
 - Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
 - Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
 - Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
-
-### Removed
-
-### Changed
 
 ### Fixed
 
@@ -585,7 +581,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.5.0..main>
+[v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
 [v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
