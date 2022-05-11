@@ -1,3 +1,4 @@
+from copy import deepcopy
 import sys
 import numbers
 from enum import Enum
@@ -286,6 +287,21 @@ class Summaries:
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )
+
+    def clone(self) -> "Summaries":
+        """Clones this object.
+
+        Returns:
+            Summaries: The clone of this object
+        """
+        summaries = Summaries(
+            summaries=deepcopy(self._summaries), maxcount=self.maxcount
+        )
+        summaries.lists = deepcopy(self.lists)
+        summaries.other = deepcopy(self.other)
+        summaries.ranges = deepcopy(self.ranges)
+        summaries.schemas = deepcopy(self.schemas)
+        return summaries
 
     def to_dict(self) -> Dict[str, Any]:
         return {

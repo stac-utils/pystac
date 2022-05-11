@@ -39,6 +39,10 @@ if TYPE_CHECKING:
     from pystac.provider import Provider as Provider_Type
 
 T = TypeVar("T")
+TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
+TemporalIntervalsLike = Union[
+    TemporalIntervals, List[datetime], List[Optional[datetime]]
+]
 
 
 class SpatialExtent:
@@ -178,7 +182,7 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
 
-    intervals: List[List[Optional[datetime]]]
+    intervals: TemporalIntervals
     """A list of two datetimes wrapped in a list,
     representing the temporal extent of a Collection. Open date ranges are
     represented by either the start (the first element of the interval) or the
@@ -190,16 +194,16 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: Union[List[List[Optional[datetime]]], List[Optional[datetime]]],
+        intervals: TemporalIntervals,
         extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
         if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = [cast(List[Optional[datetime]], intervals)]
+            self.intervals = intervals
         else:
-            self.intervals = cast(List[List[Optional[datetime]]], intervals)
+            self.intervals = intervals
 
         self.extra_fields = extra_fields or {}
 
@@ -419,7 +423,7 @@ class Collection(Catalog):
     Args:
         id : Identifier for the collection. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the
-            collection. `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY
+            collection. `CommonMark 0.29 syntax <https://commonmark.org/>`_ MAY
             be used for rich text representation.
         extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
@@ -568,13 +572,13 @@ class Collection(Catalog):
             description=self.description,
             extent=self.extent.clone(),
             title=self.title,
-            stac_extensions=self.stac_extensions,
-            extra_fields=self.extra_fields,
+            stac_extensions=self.stac_extensions.copy(),
+            extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
             license=self.license,
-            keywords=self.keywords,
-            providers=self.providers,
-            summaries=self.summaries,
+            keywords=self.keywords.copy() if self.keywords is not None else None,
+            providers=deepcopy(self.providers),
+            summaries=self.summaries.clone(),
         )
 
         clone._resolved_objects.cache(clone)

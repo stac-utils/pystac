@@ -452,7 +452,7 @@ class SummariesScientificTest(unittest.TestCase):
         sci_summaries = ScientificExtension.summaries(collection)
 
         sci_summaries.doi = [PUB2_DOI]
-        new_dois = ScientificExtension.summaries(self.collection).doi
+        new_dois = ScientificExtension.summaries(collection).doi
 
         assert new_dois is not None
         self.assertListEqual([PUB2_DOI], new_dois)

@@ -4,19 +4,46 @@
 
 ### Added
 
-- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
-- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
-- 
+- Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
+- Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
+- Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
+- Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
+- Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
+
 ### Removed
 
 ### Changed
 
 ### Fixed
 
+- "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+- Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
+- Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
+
+## [v1.4.0]
+
+### Added
+
+- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
+- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
+- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
+- Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
+- More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
+
+### Changed
+
+- Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
+- Option to filter by `media_type` in `STACObject.get_links` and `STACObject.get_single_link`
+  ([#704](https://github.com/stac-utils/pystac/pull/704))
+
+### Fixed
+
 - Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
 - Adding New and Custom Extensions tutorial now up-to-date with new extensions API ([#724](https://github.com/stac-utils/pystac/pull/724))
-
-### Deprecated
+- Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
+  with no owner ([#746](https://github.com/stac-utils/pystac/pull/746))
+- Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
 
 ## [v1.3.0]
 
@@ -559,7 +586,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.3.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>
