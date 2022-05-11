@@ -9,6 +9,7 @@
 - Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
 - Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
 - Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
+- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
 
 ### Removed
 
@@ -25,7 +26,6 @@
 ### Added
 
 - Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
-- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
 - Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
 - Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
 - Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
