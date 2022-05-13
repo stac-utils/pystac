@@ -92,7 +92,8 @@ class Asset:
         """Gets the absolute href for this asset, if possible.
 
         If this Asset has no associated Item, and the asset HREF is a relative path,
-            this method will return None.
+            this method will return ``None``. If the Item that owns the Asset has no
+            self HREF, this will also return ``None``.
 
         Returns:
             str: The absolute HREF of this asset, or None if an absolute HREF could not
