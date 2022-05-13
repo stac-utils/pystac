@@ -1,0 +1,23 @@
+{% import 'Macros.jinja2' as macros %}
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
+    {{ macros.square('#FFF7E5', '#FF6132') }}
+    <div style="margin-left: 48px;">
+        <h4 style="margin-bottom: 0px;">Link: {{ link.id }}</h4>
+        {% if link.title %}
+            <p style="color: #9D9D9D; margin-bottom: 0px;">{{ link.title }}</p>
+        {% endif %}
+        <table style="width: 100%; text-align: left;">
+            <tr><td style="text-align: left;"><strong>Rel:</strong> {{ link.rel }} </td></tr>
+            <tr><td style="text-align: left;"><strong>Target:</strong> {{ link.target }} </td></tr>
+            {% if link.media_type %}
+                <tr><td style="text-align: left;"><strong>Media Type:</strong> {{ link.media_type }} </td></tr>
+            {% endif %}
+            {{ macros.extra_fields(link) }}
+        </table>
+        {% if link.extra_fields %}
+            <table style="width: 100%; text-align: left;">
+            </table>
+        {% endif %}
+    </div>
+</div>

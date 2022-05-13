@@ -1,0 +1,33 @@
+{% import 'Macros.jinja2' as macros %}
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
+    {{ macros.square('#DBF5FF', '#4CC9FF') }}
+    <div>
+        <details style="margin-left: 48px;">
+            <summary style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 0px; display: inline;">Item: {{item.id}}</h3>
+            </summary>
+            <table style="width: 100%; text-align: left;">
+                <tr><td style="text-align: left;"><strong>ID</strong>: {{item.id}} </td></tr>
+                {% if item.title %}
+                    <tr><td style="text-align: left;"><strong>Title:</strong> {{item.title}} </td></tr>
+                {% endif %}
+                {% if item.bbox %}
+                    <tr><td style="text-align: left;"><strong>Bounding Box:</strong> {{item.bbox}} </td></tr>
+                {% endif %}
+                {% if item.datetime %}
+                    <tr><td style="text-align: left;"><strong>Datetime:</strong> {{item.datetime}} </td></tr>
+                {% endif %}
+                {% if item.properties %}
+                    {% for key in item.properties %}
+                        <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ item.properties[key] }} </td></tr>
+                    {% endfor %}
+                {% endif %}
+                {{ macros.extra_fields(item) }}
+            </table>
+            {{ macros.stac_extensions(item) }}
+            {{ macros.assets(item) }}
+            {{ macros.links(item) }}
+        </details>
+    </div>
+</div>

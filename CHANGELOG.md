@@ -9,6 +9,7 @@
 - Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
 - Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
 - Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
+- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
 
 ### Removed
 
