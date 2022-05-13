@@ -102,9 +102,10 @@ class Asset:
             return self.href
         else:
             if self.owner is not None:
-                return utils.make_absolute_href(self.href, self.owner.get_self_href())
-            else:
-                return None
+                item_self = self.owner.get_self_href()
+                if item_self is not None:
+                    return utils.make_absolute_href(self.href, item_self)
+            return None
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Asset.
