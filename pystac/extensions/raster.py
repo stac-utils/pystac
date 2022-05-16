@@ -10,7 +10,7 @@ from pystac.extensions.base import (
 )
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
-SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
 
 BANDS_PROP = "raster:bands"
 
@@ -37,6 +37,12 @@ class DataType(StringEnum):
     CFLOAT32 = "cfloat32"
     CFLOAT64 = "cfloat64"
     OTHER = "other"
+
+
+class NoDataStrings(StringEnum):
+    INF = "inf"
+    NINF = "-inf"
+    NAN = "nan"
 
 
 class Statistics:
@@ -350,7 +356,7 @@ class RasterBand:
 
     def apply(
         self,
-        nodata: Optional[float] = None,
+        nodata: Optional[Union[float, NoDataStrings]] = None,
         sampling: Optional[Sampling] = None,
         data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
@@ -400,7 +406,7 @@ class RasterBand:
     @classmethod
     def create(
         cls,
-        nodata: Optional[float] = None,
+        nodata: Optional[Union[float, NoDataStrings]] = None,
         sampling: Optional[Sampling] = None,
         data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
@@ -452,7 +458,7 @@ class RasterBand:
         return b
 
     @property
-    def nodata(self) -> Optional[float]:
+    def nodata(self) -> Optional[Union[float, NoDataStrings]]:
         """Get or sets the nodata pixel value
 
         Returns:
@@ -461,7 +467,7 @@ class RasterBand:
         return self.properties.get("nodata")
 
     @nodata.setter
-    def nodata(self, v: Optional[float]) -> None:
+    def nodata(self, v: Optional[Union[float, NoDataStrings]]) -> None:
         if v is not None:
             self.properties["nodata"] = v
         else:
