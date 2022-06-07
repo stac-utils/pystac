@@ -10,6 +10,7 @@ class MediaType(StringEnum):
     GEOTIFF = "image/tiff; application=geotiff"
     HDF = "application/x-hdf"  # Hierarchical Data Format versions 4 and earlier.
     HDF5 = "application/x-hdf5"  # Hierarchical Data Format version 5
+    HTML = "text/html"
     JPEG = "image/jpeg"
     JPEG2000 = "image/jp2"
     JSON = "application/json"
