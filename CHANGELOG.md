@@ -5,6 +5,7 @@
 ### Added
 
 - Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
+- Enum MediaType entry for HTML documents ([#816](https://github.com/stac-utils/pystac/pull/816))
 - Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
 - Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
 - Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
