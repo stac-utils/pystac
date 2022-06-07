@@ -72,13 +72,27 @@ class ItemTest(unittest.TestCase):
                 self.assertFalse(is_absolute_href(asset.href))
 
     def test_asset_absolute_href(self) -> None:
+        item_path = TestCases.get_path("data-files/item/sample-item.json")
         item_dict = self.get_example_item_dict()
         item = Item.from_dict(item_dict)
+        item.set_self_href(item_path)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = os.path.abspath("./data.geojson")
+        expected_href = os.path.abspath(
+            os.path.join(os.path.dirname(item_path), "./data.geojson")
+        )
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
+
+    def test_asset_absolute_href_no_item_self(self) -> None:
+        item_dict = self.get_example_item_dict()
+        item = Item.from_dict(item_dict)
+        assert item.get_self_href() is None
+
+        rel_asset = Asset("./data.geojson")
+        rel_asset.set_owner(item)
+        actual_href = rel_asset.get_absolute_href()
+        self.assertEqual(None, actual_href)
 
     def test_extra_fields(self) -> None:
         item = pystac.Item.from_file(
