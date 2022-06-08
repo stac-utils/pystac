@@ -1,5 +1,5 @@
 from html import escape
-from copy import copy
+from copy import copy, deepcopy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 from pystac import common_metadata
@@ -148,7 +148,7 @@ class Asset:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            extra_fields=self.extra_fields,
+            extra_fields=deepcopy(self.extra_fields),
         )
 
     @property
