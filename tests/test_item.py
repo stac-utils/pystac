@@ -311,6 +311,9 @@ class AssetTest(unittest.TestCase):
         original_asset.roles = ["new role"]
         self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
 
+        original_asset.roles.append("new role")
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
         original_asset.extra_fields["new_field"] = "new_value"
         self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
 
