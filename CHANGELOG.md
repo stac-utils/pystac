@@ -16,6 +16,8 @@
 
 ### Changed
 
+- Updated Raster Extension from v1.0.0 to v1.1.0 ([#809](https://github.com/stac-utils/pystac/pull/809))
+
 ### Fixed
 
 - "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
