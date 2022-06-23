@@ -20,6 +20,7 @@
 
 ### Fixed
 
+- Mutating `Asset.extra_fields` on a cloned `Asset` also mutated the original asset ([#826](https://github.com/stac-utils/pystac/pull/826))
 - "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
 - Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
 - Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))

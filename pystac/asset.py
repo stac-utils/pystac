@@ -1,5 +1,5 @@
 from html import escape
-from copy import copy
+from copy import copy, deepcopy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 from pystac import common_metadata
@@ -136,7 +136,7 @@ class Asset:
         return d
 
     def clone(self) -> "Asset":
-        """Clones this asset.
+        """Clones this asset. Makes a ``deepcopy`` of the :attr:`~pystac.Asset.extra_fields`.
 
         Returns:
             Asset: The clone of this asset.
@@ -148,7 +148,7 @@ class Asset:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            extra_fields=self.extra_fields,
+            extra_fields=deepcopy(self.extra_fields),
         )
 
     @property

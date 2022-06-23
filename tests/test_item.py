@@ -280,6 +280,44 @@ class ItemSubClassTest(unittest.TestCase):
         self.assertIsInstance(cloned_item, self.BasicCustomItem)
 
 
+class AssetTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        with open(TestCases.get_path("data-files/item/sample-item.json")) as src:
+            item_dict = json.load(src)
+
+        self.asset_dict = item_dict["assets"]["analytic"]
+
+    def example_asset(self) -> Asset:
+        return Asset.from_dict(self.asset_dict)
+
+    def test_clone(self) -> None:
+        original_asset = self.example_asset()
+        cloned_asset = original_asset.clone()
+
+        self.assertDictEqual(original_asset.to_dict(), self.asset_dict)
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        # Changes to original asset should not affect cloned Asset
+        original_asset.description = "Some new description"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.href = "/path/to/new/href"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.title = "New Title"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.roles = ["new role"]
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.roles.append("new role")
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.extra_fields["new_field"] = "new_value"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+
 class AssetSubClassTest(unittest.TestCase):
     class CustomAsset(Asset):
         pass
