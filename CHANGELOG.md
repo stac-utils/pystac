@@ -16,6 +16,8 @@
 
 ### Changed
 
+- Updated Raster Extension from v1.0.0 to v1.1.0 ([#809](https://github.com/stac-utils/pystac/pull/809))
+
 ### Fixed
 
 - Mutating `Asset.extra_fields` on a cloned `Asset` also mutated the original asset ([#826](https://github.com/stac-utils/pystac/pull/826))
