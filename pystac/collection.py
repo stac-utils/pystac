@@ -1,6 +1,7 @@
 from html import escape
 from copy import deepcopy
 from datetime import datetime
+
 from pystac.errors import STACTypeError
 from pystac.html.jinja_env import get_jinja_env
 from typing import (
@@ -446,6 +447,9 @@ class Collection(Catalog):
             either a set of values or statistics such as a range.
         extra_fields : Extra fields that are part of the top-level
             JSON properties of the Collection.
+        assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
+            :class:`~pystac.Asset` values in the dictionary will have their
+            :attr:`~pystac.Asset.owner` attribute set to the created Collection.
     """
 
     assets: Dict[str, Asset]
@@ -504,6 +508,7 @@ class Collection(Catalog):
         keywords: Optional[List[str]] = None,
         providers: Optional[List["Provider_Type"]] = None,
         summaries: Optional[Summaries] = None,
+        assets: Optional[Dict[str, Asset]] = None,
     ):
         super().__init__(
             id,
@@ -523,6 +528,9 @@ class Collection(Catalog):
         self.summaries = summaries or Summaries.empty()
 
         self.assets = {}
+        if assets is not None:
+            for k, asset in assets.items():
+                self.add_asset(k, asset)
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
@@ -631,7 +639,9 @@ class Collection(Catalog):
         if summaries is not None:
             summaries = Summaries(summaries)
 
-        assets: Optional[Dict[str, Any]] = d.get("assets", None)
+        assets: Optional[Dict[str, Any]] = {
+            k: Asset.from_dict(v) for k, v in d.get("assets", {}).items()
+        }
         links = d.pop("links")
 
         d.pop("stac_version")
@@ -649,6 +659,7 @@ class Collection(Catalog):
             summaries=summaries,
             href=href,
             catalog_type=catalog_type,
+            assets=assets,
         )
 
         for link in links:
@@ -658,10 +669,6 @@ class Collection(Catalog):
 
             if link["rel"] != pystac.RelType.SELF or href is None:
                 collection.add_link(Link.from_dict(link))
-
-        if assets is not None:
-            for asset_key, asset_dict in assets.items():
-                collection.add_asset(asset_key, Asset.from_dict(asset_dict))
 
         if root:
             collection.set_root(root)
