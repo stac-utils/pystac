@@ -587,6 +587,7 @@ class Collection(Catalog):
             keywords=self.keywords.copy() if self.keywords is not None else None,
             providers=deepcopy(self.providers),
             summaries=self.summaries.clone(),
+            assets={k: asset.clone() for k, asset in self.assets.items()},
         )
 
         clone._resolved_objects.cache(clone)
