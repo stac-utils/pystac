@@ -11,6 +11,7 @@
 - Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
 - Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
 - Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
+- Add `assets` argument to `Item` and `Collection` init methods to allow adding Assets during object initialization ([#834](https://github.com/stac-utils/pystac/pull/834))
 
 ### Removed
 
@@ -24,6 +25,7 @@
 - "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
 - Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
 - Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
+- Collection assets are now preserved when using `Collection.clone` ([#834](https://github.com/stac-utils/pystac/pull/834))
 
 ## [v1.4.0]
 
