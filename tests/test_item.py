@@ -221,15 +221,23 @@ class ItemTest(unittest.TestCase):
         )
         self.assertFalse(did_merge)
 
-    def test_clone_sets_asset_owner(self) -> None:
+    def test_clone_preserves_assets(self) -> None:
         cat = TestCases.test_case_2()
-        item = next(iter(cat.get_all_items()))
-        original_asset = list(item.assets.values())[0]
-        assert original_asset.owner is item
+        original_item = next(iter(cat.get_all_items()))
+        assert len(original_item.assets) > 0
+        assert all(
+            asset.owner is original_item for asset in original_item.assets.values()
+        )
 
-        clone = item.clone()
-        clone_asset = list(clone.assets.values())[0]
-        self.assertIs(clone_asset.owner, clone)
+        cloned_item = original_item.clone()
+
+        for key in original_item.assets:
+            with self.subTest(f"Preserves {key} asset"):
+                self.assertIn(key, cloned_item.assets)
+            cloned_asset = cloned_item.assets.get(key)
+            if cloned_asset is not None:
+                with self.subTest(f"Sets owner for {key}"):
+                    self.assertIs(cloned_asset.owner, cloned_item)
 
     def test_make_asset_href_relative_is_noop_on_relative_hrefs(self) -> None:
         cat = TestCases.test_case_2()

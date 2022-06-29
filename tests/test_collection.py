@@ -275,17 +275,20 @@ class CollectionTest(unittest.TestCase):
         path = TestCases.get_path("data-files/collections/with-assets.json")
         original_collection = Collection.from_file(path)
         assert len(original_collection.assets) > 0
+        assert all(
+            asset.owner is original_collection
+            for asset in original_collection.assets.values()
+        )
 
         cloned_collection = original_collection.clone()
 
-        original_assets_dict = {
-            k: asset.to_dict() for k, asset in original_collection.assets.items()
-        }
-        cloned_assets_dict = {
-            k: asset.to_dict() for k, asset in cloned_collection.assets.items()
-        }
-
-        self.assertDictEqual(original_assets_dict, cloned_assets_dict)
+        for key in original_collection.assets:
+            with self.subTest(f"Preserves {key} asset"):
+                self.assertIn(key, cloned_collection.assets)
+            cloned_asset = cloned_collection.assets.get(key)
+            if cloned_asset is not None:
+                with self.subTest(f"Sets owner for {key}"):
+                    self.assertIs(cloned_asset.owner, cloned_collection)
 
 
 class ExtentTest(unittest.TestCase):
