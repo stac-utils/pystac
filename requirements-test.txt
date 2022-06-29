@@ -1,6 +1,6 @@
 mypy==0.961
 flake8==4.0.1
-black==22.3.0
+black==22.6.0
 
 codespell==2.1.0
 
