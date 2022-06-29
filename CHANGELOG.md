@@ -24,6 +24,7 @@
 - "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
 - Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
 - Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
+- Docstrings for `StacIO.read_text` and `StacIO.write_text` now match the type annotations for the `source` argument. ([#835](https://github.com/stac-utils/pystac/pull/835))
 
 ## [v1.4.0]
 
