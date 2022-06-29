@@ -271,6 +271,25 @@ class CollectionTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Collection.from_dict(catalog_dict)
 
+    def test_clone_preserves_assets(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        original_collection = Collection.from_file(path)
+        assert len(original_collection.assets) > 0
+        assert all(
+            asset.owner is original_collection
+            for asset in original_collection.assets.values()
+        )
+
+        cloned_collection = original_collection.clone()
+
+        for key in original_collection.assets:
+            with self.subTest(f"Preserves {key} asset"):
+                self.assertIn(key, cloned_collection.assets)
+            cloned_asset = cloned_collection.assets.get(key)
+            if cloned_asset is not None:
+                with self.subTest(f"Sets owner for {key}"):
+                    self.assertIs(cloned_asset.owner, cloned_collection)
+
 
 class ExtentTest(unittest.TestCase):
     def setUp(self) -> None:
