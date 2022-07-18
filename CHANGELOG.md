@@ -4,6 +4,16 @@
 
 ### Added
 
+### Removed
+
+### Changed
+
+### Fixed
+
+## [v1.5.0]
+
+### Added
+
 - Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
 - Enum MediaType entry for HTML documents ([#816](https://github.com/stac-utils/pystac/pull/816))
 - Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
@@ -12,8 +22,6 @@
 - Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
 - Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
 - Add `assets` argument to `Item` and `Collection` init methods to allow adding Assets during object initialization ([#834](https://github.com/stac-utils/pystac/pull/834))
-
-### Removed
 
 ### Changed
 
@@ -594,7 +602,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.5.0..main>
+[v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
 [v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
