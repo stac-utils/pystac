@@ -4,6 +4,7 @@ import os
 import json
 from datetime import datetime
 from dateutil import tz
+import time
 import tempfile
 
 import pystac
@@ -412,6 +413,46 @@ class ExtentTest(unittest.TestCase):
         )
 
         self.assertDictEqual(extent_dict, extent.to_dict())
+
+    def test_utc_datetimes_are_not_localized(self) -> None:
+        extent_dict = {"interval": [["2015-06-27T10:25:31Z", None]]}
+
+        prev_tz = os.environ.get("TZ")
+
+        # Test without TZ environment variable set
+        with self.subTest(tz=None):
+            if "TZ" in os.environ:
+                del os.environ["TZ"]
+                time.tzset()
+            extent = TemporalExtent.from_dict(extent_dict)
+            first_datetime = extent.intervals[0][0]
+            assert first_datetime is not None
+            self.assertIs(first_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(first_datetime.tzinfo, tz.tzlocal())
+
+        # Test with TZ environment variable set to UTC
+        with self.subTest(tz="UTC"):
+            os.environ["TZ"] = "UTC"
+            time.tzset()
+            extent = TemporalExtent.from_dict(extent_dict)
+            first_datetime = extent.intervals[0][0]
+            assert first_datetime is not None
+            self.assertIs(first_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(first_datetime.tzinfo, tz.tzlocal())
+
+        # Test with TZ environment variable set to UTC
+        with self.subTest(tz="US/Central"):
+            os.environ["TZ"] = "US/Central"
+            time.tzset()
+            extent = TemporalExtent.from_dict(extent_dict)
+            first_datetime = extent.intervals[0][0]
+            assert first_datetime is not None
+            self.assertIs(first_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(first_datetime.tzinfo, tz.tzlocal())
+
+        if prev_tz is not None:
+            os.environ["TZ"] = prev_tz
+            time.tzset()
 
 
 class CollectionSubClassTest(unittest.TestCase):
