@@ -3,11 +3,18 @@ import os
 import json
 import ntpath
 import sys
+import time
 from datetime import datetime, timezone, timedelta
 
+from dateutil import tz
 from pystac import utils
 
-from pystac.utils import make_relative_href, make_absolute_href, is_absolute_href
+from pystac.utils import (
+    make_relative_href,
+    make_absolute_href,
+    is_absolute_href,
+    str_to_datetime,
+)
 from tests.utils import TestCases
 
 
@@ -272,6 +279,37 @@ class UtilsTest(unittest.TestCase):
             with self.subTest(title=title):
                 got = utils.datetime_to_str(dt)
                 self.assertEqual(expected, got)
+
+    def test_str_to_datetime(self) -> None:
+        utc_timestamp = "2015-06-27T10:25:31Z"
+
+        prev_tz = os.environ.get("TZ")
+
+        with self.subTest(tz=None):
+            if "TZ" in os.environ:
+                del os.environ["TZ"]
+                time.tzset()
+            utc_datetime = str_to_datetime(utc_timestamp)
+            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+
+        with self.subTest(tz="UTC"):
+            os.environ["TZ"] = "UTC"
+            time.tzset()
+            utc_datetime = str_to_datetime(utc_timestamp)
+            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+
+        with self.subTest(tz="US/Central"):
+            os.environ["TZ"] = "US/Central"
+            time.tzset()
+            utc_datetime = str_to_datetime(utc_timestamp)
+            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
+            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+
+        if prev_tz is not None:
+            os.environ["TZ"] = prev_tz
+            time.tzset()
 
     def test_geojson_bbox(self) -> None:
         # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON

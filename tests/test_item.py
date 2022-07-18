@@ -2,12 +2,10 @@ from copy import deepcopy
 import os
 import json
 import tempfile
-import time
 from typing import Any, Dict
 import unittest
 
 import pystac
-from dateutil import tz
 from pystac import Asset, Item
 from pystac.validation import validate_dict
 import pystac.serialization.common_properties
@@ -21,46 +19,6 @@ class ItemTest(unittest.TestCase):
         with open(m) as f:
             item_dict: Dict[str, Any] = json.load(f)
         return item_dict
-
-    def test_utc_datetimes_are_not_localized(self) -> None:
-        item_dict = self.get_example_item_dict()
-
-        prev_tz = os.environ.get("TZ")
-
-        # Test without TZ environment variable set
-        with self.subTest(tz=None):
-            if "TZ" in os.environ:
-                del os.environ["TZ"]
-                time.tzset()
-            item = Item.from_dict(item_dict)
-            datetime = item.datetime
-            assert datetime is not None
-            self.assertIs(datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(datetime.tzinfo, tz.tzlocal())
-
-        # Test with TZ environment variable set to UTC
-        with self.subTest(tz="UTC"):
-            os.environ["TZ"] = "UTC"
-            time.tzset()
-            item = Item.from_dict(item_dict)
-            datetime = item.datetime
-            assert datetime is not None
-            self.assertIs(datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(datetime.tzinfo, tz.tzlocal())
-
-        # Test with TZ environment variable set to UTC
-        with self.subTest(tz="US/Central"):
-            os.environ["TZ"] = "US/Central"
-            time.tzset()
-            item = Item.from_dict(item_dict)
-            datetime = item.datetime
-            assert datetime is not None
-            self.assertIs(datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(datetime.tzinfo, tz.tzlocal())
-
-        if prev_tz is not None:
-            os.environ["TZ"] = prev_tz
-            time.tzset()
 
     def test_to_from_dict(self) -> None:
         self.maxDiff = None
