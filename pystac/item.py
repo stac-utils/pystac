@@ -4,8 +4,6 @@ from datetime import datetime as Datetime
 from pystac.catalog import Catalog
 from typing import Any, Dict, List, Optional, Union, cast
 
-import dateutil.parser
-
 import pystac
 from pystac.html.jinja_env import get_jinja_env
 from pystac import STACError, STACObjectType
@@ -411,7 +409,7 @@ class Item(STACObject):
 
         datetime = properties.get("datetime")
         if datetime is not None:
-            datetime = dateutil.parser.parse(datetime)
+            datetime = str_to_datetime(datetime)
         links = d.pop("links")
         assets = d.pop("assets")
 

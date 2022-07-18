@@ -17,7 +17,6 @@ from typing import (
     cast,
 )
 
-import dateutil.parser
 from dateutil import tz
 
 import pystac
@@ -27,7 +26,7 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
-from pystac.utils import datetime_to_str
+from pystac.utils import datetime_to_str, str_to_datetime
 from pystac.serialization import (
     identify_stac_object_type,
     identify_stac_object,
@@ -253,9 +252,9 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = dateutil.parser.parse(i[0])
+                start = str_to_datetime(i[0])
             if i[1]:
-                end = dateutil.parser.parse(i[1])
+                end = str_to_datetime(i[1])
             parsed_intervals.append([start, end])
 
         return TemporalExtent(

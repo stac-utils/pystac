@@ -330,7 +330,7 @@ def str_to_datetime(s: str) -> datetime:
     Args:
         s (str) : The string to convert to :class:`datetime.datetime`.
     """
-    return dateutil.parser.parse(s)
+    return dateutil.parser.isoparse(s)
 
 
 def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
