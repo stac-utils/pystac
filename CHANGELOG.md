@@ -6,6 +6,8 @@
 
 ### Removed
 
+- Support for Python 3.7 ([#853](https://github.com/stac-utils/pystac/pull/853))
+
 ### Changed
 
 ### Fixed
