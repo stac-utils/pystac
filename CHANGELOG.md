@@ -10,6 +10,33 @@
 
 ### Fixed
 
+## [v1.5.0]
+
+### Added
+
+- Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
+- Enum MediaType entry for HTML documents ([#816](https://github.com/stac-utils/pystac/pull/816))
+- Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
+- Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
+- Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
+- Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
+- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
+- Add `assets` argument to `Item` and `Collection` init methods to allow adding Assets during object initialization ([#834](https://github.com/stac-utils/pystac/pull/834))
+
+### Changed
+
+- Updated Raster Extension from v1.0.0 to v1.1.0 ([#809](https://github.com/stac-utils/pystac/pull/809))
+
+### Fixed
+
+- Mutating `Asset.extra_fields` on a cloned `Asset` also mutated the original asset ([#826](https://github.com/stac-utils/pystac/pull/826))
+- "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+- Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
+- Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
+- Collection assets are now preserved when using `Collection.clone` ([#834](https://github.com/stac-utils/pystac/pull/834))
+- Docstrings for `StacIO.read_text` and `StacIO.write_text` now match the type annotations for the `source` argument. ([#835](https://github.com/stac-utils/pystac/pull/835))
+- UTC timestamps now always have `tzutc` timezone even when system timezone is set to UTC. ([#848](https://github.com/stac-utils/pystac/pull/848))
+
 ## [v1.4.0]
 
 ### Added
@@ -575,7 +602,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.4.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.5.0..main>
+[v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
 [v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>

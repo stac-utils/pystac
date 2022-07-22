@@ -72,13 +72,27 @@ class ItemTest(unittest.TestCase):
                 self.assertFalse(is_absolute_href(asset.href))
 
     def test_asset_absolute_href(self) -> None:
+        item_path = TestCases.get_path("data-files/item/sample-item.json")
         item_dict = self.get_example_item_dict()
         item = Item.from_dict(item_dict)
+        item.set_self_href(item_path)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = os.path.abspath("./data.geojson")
+        expected_href = os.path.abspath(
+            os.path.join(os.path.dirname(item_path), "./data.geojson")
+        )
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
+
+    def test_asset_absolute_href_no_item_self(self) -> None:
+        item_dict = self.get_example_item_dict()
+        item = Item.from_dict(item_dict)
+        assert item.get_self_href() is None
+
+        rel_asset = Asset("./data.geojson")
+        rel_asset.set_owner(item)
+        actual_href = rel_asset.get_absolute_href()
+        self.assertEqual(None, actual_href)
 
     def test_extra_fields(self) -> None:
         item = pystac.Item.from_file(
@@ -207,15 +221,23 @@ class ItemTest(unittest.TestCase):
         )
         self.assertFalse(did_merge)
 
-    def test_clone_sets_asset_owner(self) -> None:
+    def test_clone_preserves_assets(self) -> None:
         cat = TestCases.test_case_2()
-        item = next(iter(cat.get_all_items()))
-        original_asset = list(item.assets.values())[0]
-        assert original_asset.owner is item
+        original_item = next(iter(cat.get_all_items()))
+        assert len(original_item.assets) > 0
+        assert all(
+            asset.owner is original_item for asset in original_item.assets.values()
+        )
 
-        clone = item.clone()
-        clone_asset = list(clone.assets.values())[0]
-        self.assertIs(clone_asset.owner, clone)
+        cloned_item = original_item.clone()
+
+        for key in original_item.assets:
+            with self.subTest(f"Preserves {key} asset"):
+                self.assertIn(key, cloned_item.assets)
+            cloned_asset = cloned_item.assets.get(key)
+            if cloned_asset is not None:
+                with self.subTest(f"Sets owner for {key}"):
+                    self.assertIs(cloned_asset.owner, cloned_item)
 
     def test_make_asset_href_relative_is_noop_on_relative_hrefs(self) -> None:
         cat = TestCases.test_case_2()
@@ -264,6 +286,44 @@ class ItemSubClassTest(unittest.TestCase):
         cloned_item = custom_item.clone()
 
         self.assertIsInstance(cloned_item, self.BasicCustomItem)
+
+
+class AssetTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maxDiff = None
+        with open(TestCases.get_path("data-files/item/sample-item.json")) as src:
+            item_dict = json.load(src)
+
+        self.asset_dict = item_dict["assets"]["analytic"]
+
+    def example_asset(self) -> Asset:
+        return Asset.from_dict(self.asset_dict)
+
+    def test_clone(self) -> None:
+        original_asset = self.example_asset()
+        cloned_asset = original_asset.clone()
+
+        self.assertDictEqual(original_asset.to_dict(), self.asset_dict)
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        # Changes to original asset should not affect cloned Asset
+        original_asset.description = "Some new description"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.href = "/path/to/new/href"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.title = "New Title"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.roles = ["new role"]
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.roles.append("new role")
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
+
+        original_asset.extra_fields["new_field"] = "new_value"
+        self.assertDictEqual(cloned_asset.to_dict(), self.asset_dict)
 
 
 class AssetSubClassTest(unittest.TestCase):

@@ -1,6 +1,9 @@
+from html import escape
 from copy import deepcopy
 from datetime import datetime
+
 from pystac.errors import STACTypeError
+from pystac.html.jinja_env import get_jinja_env
 from typing import (
     Any,
     Dict,
@@ -14,7 +17,6 @@ from typing import (
     cast,
 )
 
-import dateutil.parser
 from dateutil import tz
 
 import pystac
@@ -24,7 +26,7 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
-from pystac.utils import datetime_to_str
+from pystac.utils import datetime_to_str, str_to_datetime
 from pystac.serialization import (
     identify_stac_object_type,
     identify_stac_object,
@@ -250,9 +252,9 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = dateutil.parser.parse(i[0])
+                start = str_to_datetime(i[0])
             if i[1]:
-                end = dateutil.parser.parse(i[1])
+                end = str_to_datetime(i[1])
             parsed_intervals.append([start, end])
 
         return TemporalExtent(
@@ -421,7 +423,7 @@ class Collection(Catalog):
     Args:
         id : Identifier for the collection. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the
-            collection. `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY
+            collection. `CommonMark 0.29 syntax <https://commonmark.org/>`_ MAY
             be used for rich text representation.
         extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
@@ -444,6 +446,9 @@ class Collection(Catalog):
             either a set of values or statistics such as a range.
         extra_fields : Extra fields that are part of the top-level
             JSON properties of the Collection.
+        assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
+            :class:`~pystac.Asset` values in the dictionary will have their
+            :attr:`~pystac.Asset.owner` attribute set to the created Collection.
     """
 
     assets: Dict[str, Asset]
@@ -502,6 +507,7 @@ class Collection(Catalog):
         keywords: Optional[List[str]] = None,
         providers: Optional[List["Provider_Type"]] = None,
         summaries: Optional[Summaries] = None,
+        assets: Optional[Dict[str, Asset]] = None,
     ):
         super().__init__(
             id,
@@ -521,9 +527,20 @@ class Collection(Catalog):
         self.summaries = summaries or Summaries.empty()
 
         self.assets = {}
+        if assets is not None:
+            for k, asset in assets.items():
+                self.add_asset(k, asset)
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("Collection.jinja2")
+            return str(template.render(catalog=self))
+        else:
+            return escape(repr(self))
 
     def add_item(
         self,
@@ -562,13 +579,14 @@ class Collection(Catalog):
             description=self.description,
             extent=self.extent.clone(),
             title=self.title,
-            stac_extensions=self.stac_extensions,
-            extra_fields=self.extra_fields,
+            stac_extensions=self.stac_extensions.copy(),
+            extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
             license=self.license,
-            keywords=self.keywords,
-            providers=self.providers,
-            summaries=self.summaries,
+            keywords=self.keywords.copy() if self.keywords is not None else None,
+            providers=deepcopy(self.providers),
+            summaries=self.summaries.clone(),
+            assets={k: asset.clone() for k, asset in self.assets.items()},
         )
 
         clone._resolved_objects.cache(clone)
@@ -621,7 +639,9 @@ class Collection(Catalog):
         if summaries is not None:
             summaries = Summaries(summaries)
 
-        assets: Optional[Dict[str, Any]] = d.get("assets", None)
+        assets: Optional[Dict[str, Any]] = {
+            k: Asset.from_dict(v) for k, v in d.get("assets", {}).items()
+        }
         links = d.pop("links")
 
         d.pop("stac_version")
@@ -639,6 +659,7 @@ class Collection(Catalog):
             summaries=summaries,
             href=href,
             catalog_type=catalog_type,
+            assets=assets,
         )
 
         for link in links:
@@ -648,10 +669,6 @@ class Collection(Catalog):
 
             if link["rel"] != pystac.RelType.SELF or href is None:
                 collection.add_link(Link.from_dict(link))
-
-        if assets is not None:
-            for asset_key, asset_dict in assets.items():
-                collection.add_asset(asset_key, Asset.from_dict(asset_dict))
 
         if root:
             collection.set_root(root)

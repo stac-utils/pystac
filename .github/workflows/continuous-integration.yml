@@ -32,23 +32,25 @@ jobs:
         experimental:
           - false
         include:
-          - python-version: "3.11.0-alpha.3"
+          - python-version: "3.11.0-alpha.7"
             os: ubuntu-latest
             experimental: true
-          - python-version: "3.11.0-alpha.3"
+          - python-version: "3.11.0-alpha.7"
             os: windows-latest
             experimental: true
-          - python-version: "3.11.0-alpha.3"
+          - python-version: "3.11.0-alpha.7"
             os: macos-latest
             experimental: true
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
 
       - uses: actions-rs/toolchain@v1
         # Wheels for orjson are not available for Python 3.11. This sets up the Rust
@@ -59,30 +61,6 @@ jobs:
           override: true
           default: true
           profile: minimal
-
-      - name: Cache dependencies (Linux)
-        if: startsWith(runner.os, 'Linux')
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-      
-      - name: Cache dependencies (macOS)
-        if: startsWith(runner.os, 'macOS')
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-          
-      - name: Cache dependencies (Windows)
-        if: startsWith(runner.os, 'Windows')
-        uses: actions/cache@v2
-        with:
-          path: ~\AppData\Local\pip\Cache
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
 
       - name: Install dependencies
         run: |
@@ -100,19 +78,14 @@ jobs:
     name: coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python3.8-${{ hashFiles('requirements-test.txt') }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
       
       - name: Install dependencies
         run: |
@@ -131,7 +104,7 @@ jobs:
         run: coverage xml --fail-under 0
       
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v3
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -154,22 +127,17 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11.0-alpha.3"
+          - "3.11.0-alpha.7"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+          cache: 'pip'
+          cache-dependency-path: requirements-test.txt
       
       - name: Install dependencies
         run: |
@@ -182,9 +150,9 @@ jobs:
   vanilla:
     runs-on: ubuntu-latest
     steps:  
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 

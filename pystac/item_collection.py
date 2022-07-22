@@ -1,8 +1,10 @@
 from copy import deepcopy
 from pystac.errors import STACTypeError
 from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable, Union
+from html import escape
 
 import pystac
+from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import make_absolute_href, is_absolute_href
 from pystac.serialization.identify import identify_stac_object_type
 
@@ -235,3 +237,11 @@ class ItemCollection(Collection[pystac.Item]):
             identify_stac_object_type(feature) == pystac.STACObjectType.ITEM
             for feature in d.get("features", [])
         )
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("ItemCollection.jinja2")
+            return str(template.render(item_collection=self))
+        else:
+            return escape(repr(self))

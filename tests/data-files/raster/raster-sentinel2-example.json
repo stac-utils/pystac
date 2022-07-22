@@ -548,6 +548,13 @@
           "full_width_half_max": 0.026
         }
       ],
+      "raster:bands": [
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 60,
+          "nodata": "nan"
+        }
+      ],
       "proj:shape": [
         1830,
         1830
@@ -711,7 +718,7 @@
     "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json",
     "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
-    "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
   ],
   "virtual:assets": {
     "SIR": {
