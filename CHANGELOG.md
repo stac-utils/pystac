@@ -10,6 +10,13 @@
 
 ### Fixed
 
+
+## [v1.6.0]
+
+### Removed
+
+- Support for Python 3.7 ([#853](https://github.com/stac-utils/pystac/pull/853))
+
 ## [v1.5.0]
 
 ### Added
@@ -602,7 +609,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.5.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.6.0..main>
+[v1.6.0]: <https://github.com/stac-utils/pystac/compare/v1.5.0..v1.6.0>
 [v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
 [v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
