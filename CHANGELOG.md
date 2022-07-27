@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
+
 
 ## [v1.6.0]
 
