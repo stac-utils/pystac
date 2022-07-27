@@ -10,8 +10,11 @@
 
 ### Fixed
 
-- Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
+## [v1.6.1]
 
+### Fixed
+
+- Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
 
 ## [v1.6.0]
 
@@ -611,7 +614,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.6.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.6.1..main>
+[v1.6.1]: <https://github.com/stac-utils/pystac/compare/v1.6.0..v1.6.1>
 [v1.6.0]: <https://github.com/stac-utils/pystac/compare/v1.5.0..v1.6.0>
 [v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
 [v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
