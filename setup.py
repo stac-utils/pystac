@@ -24,7 +24,7 @@ setup(
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     python_requires=">=3.8",
     install_requires=["python-dateutil>=2.7.0"],
-    extras_require={"validation": ["jsonschema>=3.0"], "orjson": ["orjson>=3.5"]},
+    extras_require={"validation": ["jsonschema>=4.0.1"], "orjson": ["orjson>=3.5"]},
     license="Apache Software License 2.0",
     license_files=["LICENSE"],
     zip_safe=False,
