@@ -424,8 +424,10 @@ class Variable:
 
     @property
     def dimensions(self) -> List[str]:
-        """The dimensions of the variable. Should refer to keys in the ``cube:dimensions``
-        object or be an empty list if the variable has no dimensions"""
+        """The dimensions of the variable. Should refer to keys in the
+        ``cube:dimensions`` object or be an empty list if the variable has no
+        dimensions
+        """
         return get_required(
             self.properties.get(VAR_DIMENSIONS_PROP),
             "cube:variable",

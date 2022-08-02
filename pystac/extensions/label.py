@@ -552,9 +552,9 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
 
     @property
     def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
-        """Gets or set a list of tasks these labels apply to. Usually a subset of 'regression',
-        'classification', 'detection', or 'segmentation', but may be arbitrary
-        values."""
+        """Gets or set a list of tasks these labels apply to. Usually a subset of
+        'regression', 'classification', 'detection', or 'segmentation', but may be
+        arbitrary values."""
         return self.obj.properties.get(TASKS_PROP)
 
     @label_tasks.setter

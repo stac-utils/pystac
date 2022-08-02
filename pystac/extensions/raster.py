@@ -208,7 +208,8 @@ class Statistics:
 
 
 class Histogram:
-    """Represents pixel distribution information attached to a band in the raster extension.
+    """Represents pixel distribution information attached to a band in the raster
+    extension.
 
     Use Band.create to create a new Band.
     """
@@ -525,7 +526,8 @@ class RasterBand:
 
     @property
     def spatial_resolution(self) -> Optional[float]:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
 
         Returns:
             [float]
@@ -541,7 +543,8 @@ class RasterBand:
 
     @property
     def statistics(self) -> Optional[Statistics]:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
 
         Returns:
             [Statistics]
@@ -607,7 +610,8 @@ class RasterBand:
 
     @property
     def histogram(self) -> Optional[Histogram]:
-        """Get or sets the histogram distribution information of the pixels values in the band
+        """Get or sets the histogram distribution information of the pixels values in
+        the band.
 
         Returns:
             [Histogram]
@@ -678,9 +682,9 @@ class RasterExtension(
 
     @property
     def bands(self) -> Optional[List[RasterBand]]:
-        """Gets or sets a list of available bands where each item is a :class:`~RasterBand`
-        object (or ``None`` if no bands have been set). If not available the field
-        should not be provided.
+        """Gets or sets a list of available bands where each item is a
+        :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
+        available the field should not be provided.
         """
         return self._get_bands()
 

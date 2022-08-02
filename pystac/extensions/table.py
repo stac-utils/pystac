@@ -64,8 +64,8 @@ class Column:
 
     @property
     def col_type(self) -> Optional[str]:
-        """Data type of the column. If using a file format with a type system (like Parquet),
-        we recommend you use those types"""
+        """Data type of the column. If using a file format with a type system (like
+        Parquet), we recommend you use those types"""
         return self.properties.get(COL_TYPE_PROP)
 
     @col_type.setter

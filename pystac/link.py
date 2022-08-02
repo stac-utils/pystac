@@ -213,9 +213,9 @@ class Link(PathLike):
 
     @property
     def target(self) -> Union[str, "STACObject_Type"]:
-        """The target of the link. If the link is unresolved, or the link is to something
-        that is not a STACObject, the target is an HREF. If resolved, the target is a
-        STACObject."""
+        """The target of the link. If the link is unresolved, or the link is to
+        something that is not a STACObject, the target is an HREF. If resolved, the
+        target is a STACObject."""
         if self._target_object:
             return self._target_object
         elif self._target_href:

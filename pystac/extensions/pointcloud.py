@@ -468,9 +468,9 @@ class PointcloudExtension(
 
 
 class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
-    """A concrete implementation of :class:`PointcloudExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Point Cloud Extension <pointcloud>`.
+    """A concrete implementation of :class:`PointcloudExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Point Cloud Extension <pointcloud>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Item` to extend it.
