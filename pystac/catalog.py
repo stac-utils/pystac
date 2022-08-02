@@ -232,9 +232,9 @@ class Catalog(STACObject):
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
-        """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
-        This method will set the child's parent to this object, and its root to
-        this Catalog's root.
+        """Adds a link to a child :class:`~pystac.Catalog` or
+        :class:`~pystac.Collection`. This method will set the child's parent to this
+        object, and its root to this Catalog's root.
 
         Args:
             child : The child to add.
@@ -264,9 +264,9 @@ class Catalog(STACObject):
     def add_children(
         self, children: Iterable[Union["Catalog", "Collection_Type"]]
     ) -> None:
-        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection` objects.
-        This method will set each child's parent to this object, and their root to
-        this Catalog's root.
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
+        objects. This method will set each child's parent to this object, and their
+        root to this Catalog's root.
 
         Args:
             children : The children to add.
@@ -747,8 +747,8 @@ class Catalog(STACObject):
         dest_href: Optional[str] = None,
         stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
-        """Save this catalog and all it's children/item to files determined by the object's
-        self link HREF or a specified path.
+        """Save this catalog and all it's children/item to files determined by the
+        object's self link HREF or a specified path.
 
         Args:
             catalog_type : The catalog type that dictates the structure of

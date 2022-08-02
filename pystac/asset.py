@@ -136,7 +136,8 @@ class Asset:
         return d
 
     def clone(self) -> "Asset":
-        """Clones this asset. Makes a ``deepcopy`` of the :attr:`~pystac.Asset.extra_fields`.
+        """Clones this asset. Makes a ``deepcopy`` of the
+        :attr:`~pystac.Asset.extra_fields`.
 
         Returns:
             Asset: The clone of this asset.

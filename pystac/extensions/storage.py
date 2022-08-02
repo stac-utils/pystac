@@ -167,9 +167,9 @@ class StorageExtension(
 
 
 class ItemStorageExtension(StorageExtension[pystac.Item]):
-    """A concrete implementation of :class:`StorageExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Storage Extension <storage>`.
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`StorageExtension.ext` on an :class:`~pystac.Item` to extend it.
@@ -190,9 +190,9 @@ class ItemStorageExtension(StorageExtension[pystac.Item]):
 
 
 class AssetStorageExtension(StorageExtension[pystac.Asset]):
-    """A concrete implementation of :class:`StorageExtension` on an :class:`~pystac.Asset`
-    that extends the Asset fields to include properties defined in the
-    :stac-ext:`Storage Extension <storage>`.
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`StorageExtension.ext` on an :class:`~pystac.Asset` to extend it.

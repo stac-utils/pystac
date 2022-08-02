@@ -108,8 +108,8 @@ class ProjectionExtension(
 
     @property
     def wkt2(self) -> Optional[str]:
-        """Get or sets the WKT2 string representing the Coordinate Reference System (CRS)
-        that the ``proj:geometry`` and ``proj:bbox`` fields represent
+        """Get or sets the WKT2 string representing the Coordinate Reference System
+        (CRS) that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
         `WKT2 string <https://docs.opengeospatial.org/is/12-063r5/12-063r5.html>`_.
@@ -125,8 +125,8 @@ class ProjectionExtension(
 
     @property
     def projjson(self) -> Optional[Dict[str, Any]]:
-        """Get or sets the PROJJSON string representing the Coordinate Reference System (CRS)
-        that the ``proj:geometry`` and ``proj:bbox`` fields represent
+        """Get or sets the PROJJSON string representing the Coordinate Reference System
+        (CRS) that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
         This value is a
         `PROJJSON object <https://proj.org/specifications/projjson.html>`_.
@@ -184,8 +184,8 @@ class ProjectionExtension(
 
     @property
     def bbox(self) -> Optional[List[float]]:
-        """Get or sets the bounding box of the assets represented by this item in the asset
-        data CRS.
+        """Get or sets the bounding box of the assets represented by this item in the
+        asset data CRS.
 
         Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``,
         ``projjson`` or ``wkt2`` properties. First two numbers are coordinates of the
@@ -203,7 +203,8 @@ class ProjectionExtension(
 
     @property
     def centroid(self) -> Optional[Dict[str, float]]:
-        """Get or sets coordinates representing the centroid of the item in the asset data CRS.
+        """Get or sets coordinates representing the centroid of the item in the asset
+        data CRS.
 
         Coordinates are defined in latitude and longitude, even if the data coordinate
         system does not use lat/long.
@@ -289,9 +290,9 @@ class ProjectionExtension(
 
 
 class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
-    """A concrete implementation of :class:`ProjectionExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Projection Extension <projection>`.
+    """A concrete implementation of :class:`ProjectionExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    defined in the :stac-ext:`Projection Extension <projection>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`ProjectionExtension.ext` on an :class:`~pystac.Item` to extend it.
