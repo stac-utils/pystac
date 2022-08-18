@@ -86,7 +86,7 @@ class GridTest(unittest.TestCase):
         GridExtension.ext(self.item).apply(code)
 
         with self.assertRaises(ValueError):
-            GridExtension.ext(self.item).code = None
+            GridExtension.ext(self.item).code = ""
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
