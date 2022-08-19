@@ -285,7 +285,7 @@ for reading from AWS's S3 cloud object storage using `boto3
       def read_text(
          self, source: Union[str, Link], *args: Any, **kwargs: Any
       ) -> str:
-         parsed = urlparse(uri)
+         parsed = urlparse(source)
          if parsed.scheme == "s3":
             bucket = parsed.netloc
             key = parsed.path[1:]
