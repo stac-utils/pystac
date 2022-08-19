@@ -20,6 +20,7 @@
 ### Fixed
 
 - Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
+- Fixed bug in custom StacIO example in documentation ([#879](https://github.com/stac-utils/pystac/pull/879))
 
 ## [v1.6.0]
 
