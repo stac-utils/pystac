@@ -15,6 +15,7 @@
 ### Fixed
 
 - Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
+- Fixed bug in custom StacIO example in documentation ([#879](https://github.com/stac-utils/pystac/pull/879))
 
 ## [v1.6.0]
 
@@ -135,13 +136,14 @@
 ## [v1.1.0]
 
 ### Added
+
 - Include type information during packaging for use with e.g. `mypy` ([#579](https://github.com/stac-utils/pystac/pull/579))
 - Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
   locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
 
 ### Changed
 
-- Pin the rustc version in Continuous Integration to work around https://github.com/rust-lang/cargo/pull/9727 ([#581](https://github.com/stac-utils/pystac/pull/581))
+- Pin the rustc version in Continuous Integration to work around <https://github.com/rust-lang/cargo/pull/9727> ([#581](https://github.com/stac-utils/pystac/pull/581))
 
 ## [v1.0.1]
 
@@ -193,9 +195,9 @@
 ### Added
 
 - (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
--  `LabelTask` enum in `pystac.extensions.label` with recommended values for
+- `LabelTask` enum in `pystac.extensions.label` with recommended values for
   `"label:tasks"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
--  `LabelMethod` enum in `pystac.extensions.label` with recommended values for
+- `LabelMethod` enum in `pystac.extensions.label` with recommended values for
   `"label:methods"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
 - Label Extension summaries ([#484](https://github.com/stac-utils/pystac/pull/484))
 - Timestamps Extension summaries ([#513](https://github.com/stac-utils/pystac/pull/513))
@@ -408,7 +410,6 @@
 
 - Be more strict with CatalogType in `Catalog.save` ([#244](https://github.com/stac-utils/pystac/pull/244))
 
-
 ## [v0.5.3]
 
 ### Added
@@ -508,6 +509,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 ## [v0.4.0]
 
 The two major changes for this release are:
+
 - Upgrade to STAC 0.9.0
 - Refactor the extensions API to accommodate items that implement multiple extensions (e.g. `eo` and `view`)
 
@@ -517,7 +519,7 @@ See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/bl
 
 These are the major API changes that will have to be accounted for when upgrading PySTAC:
 
-#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit.
+#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit
 
 This change affects the two extensions that were implemented for Item - `EOItem` and `LabelItem`
 have become `EOItemExt` and `LabelItemExt`, and no longer inherit from Item.
@@ -529,7 +531,8 @@ be able to account well for these new items that implemented both the `eo` and `
 See the [Extensions section](https://pystac.readthedocs.io/en/0.4/concepts.html#extensions) in the
 documentation for more information on the new way to use extensions.
 
-#### Extensions have moved to their own package:
+#### Extensions have moved to their own package
+
 - `pystac.label` -> `pystac.extensions.label`
 - `pystac.eo` -> `pystac.extensions.eo`
 - `pystac.single_file_stac` -> `pystac.extensions.single_file_stac`
@@ -542,6 +545,7 @@ documentation for more information on the new way to use extensions.
 - Added support for the [commons](https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/commons) extension.
 
 ### Changed
+
 - Migrated CI workflows from Travis CI to GitHub Actions [#108](https://github.com/azavea/pystac/pull/108)
 - Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
@@ -551,7 +555,6 @@ documentation for more information on the new way to use extensions.
 - Asset properties always return a dict instead of being None for Assets that have non-core properties.
 - The `Band` constructor in the EO extension changed to taking a dict. To create a band from property values,
 use `Band.create`
-
 
 ## [v0.3.4] - 2020-06-20
 
