@@ -13,6 +13,7 @@
 - Ability to only update resolved links when using `Catalog.normalize_hrefs` and `Catalog.normalize_and_save`, via a new `skip_unresolved` argument ([#900](https://github.com/stac-utils/pystac/pull/900))
 - Add the optional argument `timespec` to `utils.datetime_to_str` ([#929](https://github.com/stac-utils/pystac/pull/929))
 - `isort` ([#961](https://github.com/stac-utils/pystac/pull/961))
+- `__geo_interface__` for items ([#885](https://github.com/stac-utils/pystac/pull/885))
 
 ### Removed
 
