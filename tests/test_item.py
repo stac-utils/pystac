@@ -282,6 +282,14 @@ class ItemTest(unittest.TestCase):
         )
         self.assertEqual(item.geometry, item.__geo_interface__)
 
+    def test_relative_extension_path(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path(
+                "data-files/item/sample-item-with-relative-extension-path.json"
+            )
+        )
+        item.validate()
+
 
 class ItemSubClassTest(unittest.TestCase):
     """This tests cases related to creating classes inheriting from pystac.Catalog to
