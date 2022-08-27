@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
 import pystac
+import pystac.utils
 from pystac.stac_object import STACObjectType
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
@@ -250,6 +251,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
         if schema_uri is None:
             return None
+        schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
         try:
             self._validate_from_uri(stac_dict, schema_uri)
