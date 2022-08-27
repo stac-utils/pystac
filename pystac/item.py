@@ -481,3 +481,14 @@ class Item(STACObject):
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.ITEM
+
+    @property
+    def __geo_interface__(self) -> Optional[Dict[str, Any]]:
+        """Returns this item's geometry.
+
+        https://gist.github.com/sgillies/2217756
+
+        Returns:
+            Dict[str, Any]: The Item's geometry
+        """
+        return deepcopy(self.geometry)

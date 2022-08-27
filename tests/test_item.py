@@ -276,6 +276,12 @@ class ItemTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Item.from_dict(catalog_dict)
 
+    def test_geo_interface(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+        self.assertEqual(item.geometry, item.__geo_interface__)
+
 
 class ItemSubClassTest(unittest.TestCase):
     """This tests cases related to creating classes inheriting from pystac.Catalog to
