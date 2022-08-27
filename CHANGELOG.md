@@ -28,6 +28,7 @@
 - Dependency resolution when installing `requirements-dev.txt` ([#897](https://github.com/stac-utils/pystac/pull/897))
 - Serializing optional Collection attributes ([#916](https://github.com/stac-utils/pystac/pull/916))
 - A couple non-running tests ([#912](https://github.com/stac-utils/pystac/pull/912))
+- Support relative stac extension paths via `make_absolute_href` ([#884](https://github.com/stac-utils/pystac/pull/884))
 
 ## [v1.6.1]
 
