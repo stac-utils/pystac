@@ -800,3 +800,22 @@ collection ID, which can help avoid multiple reads of
 collection links.
 
 Note that this feature was dropped in STAC 1.0.0-beta.1
+
+Geo interface
+=============
+
+:class:`~pystac.Item` implements ``__geo_interface__``, a de-facto standard for
+describing geospatial objects in Python:
+https://gist.github.com/sgillies/2217756. Many packages can automatically use
+objects that implement this protocol, e.g. `shapely
+<https://shapely.readthedocs.io/en/stable/manual.html>`_:
+
+.. code-block:: python
+
+   >>> from pystac import Item
+   >>> from shapely.geometry import mapping, shape
+   >>> item = Item.from_file("data-files/item/sample-item.json")
+   >>> print(shape(item))
+   POLYGON ((-122.308150179 37.488035566, -122.597502109 37.538869539,
+   -122.576687533 37.613537207, -122.2880486 37.562818007, -122.308150179
+   37.488035566))
