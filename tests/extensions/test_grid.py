@@ -1,4 +1,6 @@
 """Tests for pystac.extensions.grid."""
+# This is for the type checking on GridTest.test_clear_code
+# mypy: warn_unused_ignores=False
 
 import datetime
 from typing import Any, Dict
@@ -86,7 +88,10 @@ class GridTest(unittest.TestCase):
         GridExtension.ext(self.item).apply(code)
 
         with self.assertRaises(ValueError):
-            GridExtension.ext(self.item).code = ""
+            # Ignore type errors because this test intentionally checks behavior
+            # that does not conform to the type signature.
+            # https://github.com/stac-utils/pystac/pull/878#discussion_r957352232
+            GridExtension.ext(self.item).code = None  # type: ignore
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
