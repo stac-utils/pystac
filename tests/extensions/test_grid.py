@@ -92,6 +92,18 @@ class GridTest(unittest.TestCase):
             # that does not conform to the type signature.
             # https://github.com/stac-utils/pystac/pull/878#discussion_r957352232
             GridExtension.ext(self.item).code = None  # type: ignore
+        with self.assertRaises(ValueError):
+            # First segment has to be all caps
+            # https://github.com/stac-utils/pystac/pull/878#discussion_r957354927
+            GridExtension.ext(self.item).code = "this-is-not-a-grid-code"
+        with self.assertRaises(ValueError):
+            # Folks might try to put an epsg code in
+            # https://github.com/stac-utils/pystac/pull/878#discussion_r957355415
+            GridExtension.ext(self.item).code = "4326"
+        with self.assertRaises(ValueError):
+            # Folks might try to put an epsg code in
+            # https://github.com/stac-utils/pystac/pull/878#discussion_r957355415
+            GridExtension.ext(self.item).code = "EPSG:4326"
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
