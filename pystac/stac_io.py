@@ -12,6 +12,7 @@ from typing import (
 )
 
 from urllib.request import urlopen
+from urllib.request import Request
 from urllib.error import HTTPError
 
 import pystac
@@ -37,6 +38,9 @@ if TYPE_CHECKING:
 
 class StacIO(ABC):
     _default_io: Optional[Callable[[], "StacIO"]] = None
+
+    def __init__(self, headers: Optional[Dict[str, str]] = None):
+        self.headers = headers or {}
 
     @abstractmethod
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
@@ -289,7 +293,8 @@ class DefaultStacIO(StacIO):
         href_contents: str
         if parsed.scheme != "":
             try:
-                with urlopen(href) as f:
+                req = Request(href, headers=self.headers)
+                with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e
