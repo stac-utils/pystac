@@ -259,9 +259,25 @@ created automatically by all of the object-specific I/O methods (e.g.
 :meth:`pystac.Catalog.from_file`), so most users will not need to instantiate this
 class themselves.
 
-If you require custom logic for I/O operations or would like to use a 3rd-party library
-for I/O operations (e.g. ``requests``), you can create a sub-class of
-:class:`pystac.StacIO` (or :class:`pystac.DefaultStacIO`) and customize the methods as
+If you are dealing with a STAC catalog with URIs that require authentication.
+It is possible provide auth headers (or any other customer headers) to the
+:class:`pystac.stac_io.DefaultStacIO`.
+
+.. code-block:: python
+
+  from pystac import Catalog
+  from pystac import StacIO
+
+  stac_io = StacIO.default()
+  stac_io.headers = {"Authorization": "<some-auth-header>"}
+
+  catalog = Catalog.from_file("<URI-requiring-auth>", stac_io=stac_io)
+
+
+If you require more custom logic for I/O operations or would like to use a
+3rd-party library for I/O operations (e.g. ``requests``),
+you can create a sub-class of :class:`pystac.StacIO`
+(or :class:`pystac.DefaultStacIO`) and customize the methods as
 you see fit. You can then pass instances of this custom sub-class into the ``stac_io``
 argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this

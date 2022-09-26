@@ -98,3 +98,19 @@ class StacIOTest(unittest.TestCase):
                 str(excinfo.exception),
                 f'Found duplicate object name "key" in {src_href}',
             )
+
+    @unittest.mock.patch("pystac.stac_io.urlopen")
+    def test_headers_stac_io(self, urlopen_mock: unittest.mock.MagicMock) -> None:
+        stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
+
+        try:
+            # note we don't care if this raises an exception, we just want to make
+            # sure urlopen was called with the appropriate headers
+            pystac.Catalog.from_file(
+                "https://example.com/catalog.json", stac_io=stac_io
+            )
+        except Exception:
+            pass
+
+        request_obj = urlopen_mock.call_args[0][0]
+        self.assertEqual(request_obj.headers, stac_io.headers)
