@@ -4,6 +4,8 @@
 
 ### Added
 
+- Adds custom `header` support to `DefaultStacIO` ([#889](https://github.com/stac-utils/pystac/pull/889))
+
 ### Removed
 
 ### Changed
