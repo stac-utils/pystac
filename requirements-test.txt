@@ -4,7 +4,7 @@ black==22.6.0
 
 codespell==2.1.0
 
-jsonschema==4.14.0
+jsonschema==4.16.0
 coverage==6.5.0
 doc8==1.0.0
 
@@ -14,4 +14,4 @@ types-orjson==3.6.2
 pre-commit==2.20.0
 
 # optional dependencies
-orjson==3.7.11
+orjson==3.8.0
