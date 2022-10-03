@@ -2,7 +2,7 @@ mypy==0.971
 flake8==5.0.4
 black==22.6.0
 
-codespell==2.1.0
+codespell==2.2.1
 
 jsonschema==4.16.0
 coverage==6.5.0
