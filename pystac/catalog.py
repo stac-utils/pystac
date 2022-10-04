@@ -498,7 +498,11 @@ class Catalog(STACObject):
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
-        links = self.links
+        links = [
+            x
+            for x in self.links
+            if x.rel != pystac.RelType.ROOT or x.get_href(transform_hrefs) is not None
+        ]
         if not include_self_link:
             links = [x for x in links if x.rel != pystac.RelType.SELF]
 

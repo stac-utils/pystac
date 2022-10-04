@@ -290,6 +290,16 @@ class CollectionTest(unittest.TestCase):
                 with self.subTest(f"Sets owner for {key}"):
                     self.assertIs(cloned_asset.owner, cloned_collection)
 
+    def test_to_dict_no_self_href(self) -> None:
+        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+        spatial_extent = SpatialExtent(bboxes=ARBITRARY_BBOX)
+        extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+        collection = Collection(
+            id="an-id", description="A test Collection", extent=extent
+        )
+        d = collection.to_dict(include_self_link=False)
+        Collection.from_dict(d)
+
 
 class ExtentTest(unittest.TestCase):
     def setUp(self) -> None:
