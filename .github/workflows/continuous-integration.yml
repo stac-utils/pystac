@@ -31,13 +31,13 @@ jobs:
         experimental:
           - false
         include:
-          - python-version: "3.11.0-alpha.7"
+          - python-version: "3.11.0-rc.2"
             os: ubuntu-latest
             experimental: true
-          - python-version: "3.11.0-alpha.7"
+          - python-version: "3.11.0-rc.2"
             os: windows-latest
             experimental: true
-          - python-version: "3.11.0-alpha.7"
+          - python-version: "3.11.0-rc.2"
             os: macos-latest
             experimental: true
 
@@ -125,7 +125,7 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11.0-alpha.7"
+          - "3.11.0-rc.2"
 
     steps:
       - uses: actions/checkout@v3
