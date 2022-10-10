@@ -10,6 +10,8 @@
 
 ### Fixed
 
+- Dependency resolution when installing `requirements-dev.txt` ([#897](https://github.com/stac-utils/pystac/pull/897))
+
 ## [v1.6.1]
 
 ### Fixed
