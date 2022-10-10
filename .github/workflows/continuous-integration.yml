@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
           cache-dependency-path: requirements-test.txt
 
       - uses: actions-rs/toolchain@v1
@@ -66,7 +66,7 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements-test.txt
           pip install -e ".[validation]"
-      
+
       - name: Execute test suite
         run: ./scripts/test
         shell: bash
@@ -83,15 +83,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.8"
-          cache: 'pip'
+          cache: "pip"
           cache-dependency-path: requirements-test.txt
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements-test.txt
           pip install -e ".[validation]"
-      
+
       - name: Execute test suite
         run: ./scripts/test
         env:
@@ -101,14 +101,14 @@ jobs:
         # Ignore the configured fail-under to ensure we upload the coverage report. We
         # will trigger a failure for coverage drops in a later job
         run: coverage xml --fail-under 0
-      
+
       - name: Upload All coverage to Codecov
         uses: codecov/codecov-action@v3
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
-          fail_ci_if_error: false 
+          fail_ci_if_error: false
 
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
@@ -134,9 +134,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
           cache-dependency-path: requirements-test.txt
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
@@ -147,16 +147,16 @@ jobs:
 
   vanilla:
     runs-on: ubuntu-latest
-    steps:  
+    steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 
       - name: Install without orjson
         run: pip install '.[validation]'
-      
+
       - name: Run unittests
         run: python -m unittest discover tests
 
