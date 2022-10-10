@@ -41,7 +41,7 @@ class SarItemExtTest(unittest.TestCase):
         self.assertTrue(SarExtension.has_extension(self.item))
 
     def test_required(self) -> None:
-        mode: str = "Nonesense mode"
+        mode: str = "Nonsense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         polarizations: List[sar.Polarization] = [
             sar.Polarization.HV,
@@ -140,7 +140,7 @@ class SarItemExtTest(unittest.TestCase):
         self.item.validate()
 
     def test_polarization_must_be_list(self) -> None:
-        mode: str = "Nonesense mode"
+        mode: str = "Nonsense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
         # Skip type hint as we are passing in an incorrect polarization.
         polarizations = sar.Polarization.HV
