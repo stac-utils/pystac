@@ -572,6 +572,7 @@ class Catalog(STACObject):
         catalog_type: Optional[CatalogType] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
         stac_io: Optional[pystac.StacIO] = None,
+        skip_unresolved: bool = False,
     ) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
 
@@ -592,24 +593,39 @@ class Catalog(STACObject):
             stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
                 provided, will use the instance set while reading in the catalog,
                 or the default instance if this is not available.
+            skip_unresolved : Skip unresolved links when normalizing the tree.
+                Defaults to False. Because unresolved links are not saved, this
+                argument can be used to normalize and save only newly-added
+                objects.
         """
-        self.normalize_hrefs(root_href, strategy=strategy)
+        self.normalize_hrefs(
+            root_href, strategy=strategy, skip_unresolved=skip_unresolved
+        )
         self.save(catalog_type, stac_io=stac_io)
 
     def normalize_hrefs(
-        self, root_href: str, strategy: Optional[HrefLayoutStrategy] = None
+        self,
+        root_href: str,
+        strategy: Optional[HrefLayoutStrategy] = None,
+        skip_unresolved: bool = False,
     ) -> None:
         """Normalize HREFs will regenerate all link HREFs based on
         an absolute root_href and the canonical catalog layout as specified
         in the STAC specification's best practices.
 
-        This method mutates the entire catalog tree.
+        This method mutates the entire catalog tree, unless ``skip_unresolved``
+        is True, in which case only resolved links are modified. This is useful
+        in the case when you have loaded large catalog and you've added a few
+        items/children, and you only want to update those newly-added objects,
+        not the whole tree.
 
         Args:
             root_href : The absolute HREF that all links will be normalized against.
             strategy : The layout strategy to use in setting the HREFS
                 for this catalog. Defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
+            skip_unresolved : Skip unresolved links when normalizing the tree.
+                Defaults to False.
 
         See:
             :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>`
@@ -625,7 +641,8 @@ class Catalog(STACObject):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         def process_item(item: "Item_Type", _root_href: str) -> Callable[[], None]:
-            item.resolve_links()
+            if not skip_unresolved:
+                item.resolve_links()
 
             new_self_href = _strategy.get_href(item, _root_href)
 
@@ -639,16 +656,29 @@ class Catalog(STACObject):
         ) -> List[Callable[[], None]]:
             setter_funcs: List[Callable[[], None]] = []
 
-            cat.resolve_links()
+            if not skip_unresolved:
+                cat.resolve_links()
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
             new_root = os.path.dirname(new_self_href)
 
-            for item in cat.get_items():
-                setter_funcs.append(process_item(item, new_root))
-
-            for child in cat.get_children():
-                setter_funcs.extend(process_catalog(child, new_root, is_root=False))
+            for link in cat.get_links():
+                if skip_unresolved and not link.is_resolved():
+                    continue
+                elif link.rel == pystac.RelType.ITEM:
+                    link.resolve_stac_object(root=self.get_root())
+                    setter_funcs.append(
+                        process_item(cast(pystac.Item, link.target), new_root)
+                    )
+                elif link.rel == pystac.RelType.CHILD:
+                    link.resolve_stac_object(root=self.get_root())
+                    setter_funcs.extend(
+                        process_catalog(
+                            cast(Union[pystac.Catalog, pystac.Collection], link.target),
+                            new_root,
+                            is_root=False,
+                        )
+                    )
 
             def fn() -> None:
                 cat.set_self_href(new_self_href)
