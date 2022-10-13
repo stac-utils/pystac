@@ -478,6 +478,55 @@ class TestCatalog:
             "area-1-1-imagery.json"
         )
 
+    def test_normalize_hrefs_skip_unresolved(self) -> None:
+        catalog = TestCases.case_1()
+        catalog.normalize_hrefs("http://example.com", skip_unresolved=True)
+        assert catalog.self_href.startswith("http://example.com")
+        for link in catalog.links:
+            if link.rel == "child" or link.rel == "item":
+                assert not link.is_resolved()
+        item = Item(
+            "an-id",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        catalog.add_item(item, title="This is the test item")
+        catalog.normalize_hrefs("http://example.com", skip_unresolved=True)
+        for link in catalog.links:
+            if link.title == "This is the test item":
+                assert link.is_resolved()
+                assert isinstance(link.target, pystac.STACObject)
+                assert link.target.self_href.startswith("http://example.com")
+            elif link.rel == "child" or link.rel == "item":
+                assert not link.is_resolved()
+
+    def test_save_unresolved(self) -> None:
+        catalog = Catalog("an-id", "a description")
+        item = Item(
+            "an-id",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        catalog.add_item(item)
+        catalog.add_link(pystac.Link("child", "/not/a/real/path/catalog.json"))
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            catalog.set_self_href(os.path.join(temporary_directory, "catalog.json"))
+            item.set_self_href(os.path.join(temporary_directory, "item.json"))
+            catalog.save()
+            assert len(os.listdir(temporary_directory)) == 2
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            catalog.normalize_and_save(temporary_directory, skip_unresolved=True)
+            assert len(os.listdir(temporary_directory)) == 2
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with pytest.raises(FileNotFoundError):
+                catalog.normalize_and_save(temporary_directory, skip_unresolved=False)
+
     def test_generate_subcatalogs_works_with_custom_properties(self) -> None:
         catalog = TestCases.case_8()
         defaults = {"pl:item_type": "PlanetScope"}
