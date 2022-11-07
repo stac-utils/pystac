@@ -24,22 +24,13 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
         experimental:
           - false
-        include:
-          - python-version: "3.11.0-rc.2"
-            os: ubuntu-latest
-            experimental: true
-          - python-version: "3.11.0-rc.2"
-            os: windows-latest
-            experimental: true
-          - python-version: "3.11.0-rc.2"
-            os: macos-latest
-            experimental: true
 
     steps:
       - uses: actions/checkout@v3
@@ -50,16 +41,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
           cache-dependency-path: requirements-test.txt
-
-      - uses: actions-rs/toolchain@v1
-        # Wheels for orjson are not available for Python 3.11. This sets up the Rust
-        # toolchain so we can build orjson wheel from source.
-        if: ${{ startsWith(matrix.python-version, '3.11')}}
-        with:
-          toolchain: stable
-          override: true
-          default: true
-          profile: minimal
 
       - name: Install dependencies
         run: |
@@ -125,7 +106,7 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11.0-rc.2"
+          - "3.11"
 
     steps:
       - uses: actions/checkout@v3
