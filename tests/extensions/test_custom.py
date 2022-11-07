@@ -48,7 +48,7 @@ class CustomExtension(
 
     @classmethod
     def get_schema_uri(cls) -> str:
-        return super().get_schema_uri()
+        raise NotImplementedError
 
     @staticmethod
     def custom_ext(obj: T) -> "CustomExtension[T]":
