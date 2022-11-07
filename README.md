@@ -18,14 +18,6 @@ for Python versions. This means that users can expect support for Python 3.8 to 
 removed from the `main` branch after Apr 14, 2023 and therefore from the next release
 after that date.
 
-Note that while we support Python 3.10.\*, wheels for the `orjson` library are not always immediately available for all
-platforms. If you install PySTAC with the `orjson` extra, you may need to have the Rust toolchain installed (e.g. via [rustup](https://rustup.rs/)) in order to
-build the package from source.
-
-Support for Python 3.11 should be considered experimental until further notice. There is a known issue with failing build of `orjson` on 3.11.0 alpha releases prior to alpha.6 (see
-[#765(comment)](https://github.com/stac-utils/pystac/pull/765#pullrequestreview-908908772) for
-some additional detail).
-
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
 
@@ -48,10 +40,6 @@ optional `orjson` requirements:
 ```bash
 > pip install pystac[orjson]
 ```
-
-> *`orjson` wheels are only available for Linux in Python 3.10. If you are using the
-> `orjson` extra with Python 3.10 you will need to have the Rust nightly toolchain
-> installed as your default toolchain in order to build the package wheel.*
 
 From source repository:
 
