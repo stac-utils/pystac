@@ -1,4 +1,5 @@
-## PySTAC
+# PySTAC
+
 ![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=main)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/pystac)](https://anaconda.org/conda-forge/pystac)
@@ -34,8 +35,7 @@ PySTAC can be installed from pip or the source repository.
 
 If you would like to enable the validation feature utilizing the
 [jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional
-`validation` requirements: 
-
+`validation` requirements:
 
 ```bash
 > pip install pystac[validation]
@@ -61,8 +61,8 @@ From source repository:
 > pip install .
 ```
 
+### Versions
 
-#### Versions
 To install a version of PySTAC that works with a specific versions of the STAC
 specification, install the matching version of PySTAC from the following table.
 
