@@ -94,8 +94,8 @@ See [contributing docs](docs/contributing.rst) for details on contributing to th
 There is a quickstart and tutorials written as jupyter notebooks in the `docs/tutorials` folder.
 To run the notebooks, run a jupyter notebook with the `docs` directory as the notebook directory:
 
-```
-> PYTHONPATH=`pwd`:$PYTHONPATH jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=docs
+```shell
+jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=docs
 ```
 
 You can then navigate to the notebooks and execute them.
