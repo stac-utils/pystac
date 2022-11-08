@@ -134,7 +134,7 @@ class LabelTest(unittest.TestCase):
     def test_get_sources(self) -> None:
         cat = TestCases.case_1()
 
-        items = cat.get_all_items()
+        items = list(cat.get_all_items())
         item_ids = set([i.id for i in items])
 
         for li in items:

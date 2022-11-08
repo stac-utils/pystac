@@ -717,7 +717,7 @@ class TestCatalog:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.case_1()
-            catalog_items = catalog.get_all_items()
+            catalog_items = list(catalog.get_all_items())
 
             new_cat = catalog.map_items(item_mapper)
 
@@ -725,9 +725,9 @@ class TestCatalog:
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, "cat", "catalog.json"))
-            result_items = result_cat.get_all_items()
+            result_items = list(result_cat.get_all_items())
 
-            assert len(list(catalog_items)) * 2 == len(list(result_items))
+            assert len(catalog_items) * 2 == len(result_items)
 
             ones, twos = 0, 0
             for item in result_items:
@@ -1125,7 +1125,7 @@ class TestCatalog:
                     )
                     self_href = item.get_self_href()
                     assert self_href is not None
-                    self_href.endswith(end), "{} does not end with {}".format(
+                    assert self_href.endswith(end), "{} does not end with {}".format(
                         self_href, end
                     )
 
