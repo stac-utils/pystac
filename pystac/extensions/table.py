@@ -1,4 +1,4 @@
-"""Implements the :stac-ext:`Table Extension <table>.`"""
+"""Implements the :stac-ext:`Table Extension <table>`."""
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
