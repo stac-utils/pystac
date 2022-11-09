@@ -16,6 +16,7 @@
 ### Fixed
 
 - Dependency resolution when installing `requirements-dev.txt` ([#897](https://github.com/stac-utils/pystac/pull/897))
+- Serializing optional Collection attributes ([#916](https://github.com/stac-utils/pystac/pull/916))
 
 ## [v1.6.1]
 
