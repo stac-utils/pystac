@@ -5,6 +5,8 @@ import unittest
 from copy import deepcopy
 from typing import Any, Dict
 
+import dateutil.relativedelta
+
 import pystac
 import pystac.serialization.common_properties
 from pystac import Asset, Item
@@ -179,6 +181,40 @@ class ItemTest(unittest.TestCase):
         self.assertCountEqual(no_filter.keys(), ["analytic", "thumbnail"])
         no_assets = item.get_assets(media_type=pystac.MediaType.HDF)
         self.assertEqual(no_assets, {})
+
+    def test_null_datetime_constructor(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+        with self.assertRaises(pystac.STACError):
+            Item(
+                "test",
+                geometry=item.geometry,
+                bbox=item.bbox,
+                datetime=None,
+                end_datetime=item.datetime,
+                properties={},
+            )
+        with self.assertRaises(pystac.STACError):
+            Item(
+                "test",
+                geometry=item.geometry,
+                bbox=item.bbox,
+                datetime=None,
+                start_datetime=item.datetime,
+                properties={},
+            )
+        assert item.datetime
+        null_dt_item = Item(
+            "test",
+            geometry=item.geometry,
+            bbox=item.bbox,
+            datetime=None,
+            start_datetime=item.datetime,
+            end_datetime=item.datetime + dateutil.relativedelta.relativedelta(days=1),
+            properties={},
+        )
+        null_dt_item.validate()
 
     def test_get_set_asset_datetime(self) -> None:
         item = pystac.Item.from_file(
@@ -379,4 +415,5 @@ class AssetSubClassTest(unittest.TestCase):
         asset = self.CustomAsset.from_dict(self.asset_dict)
         cloned_asset = asset.clone()
 
+        self.assertIsInstance(cloned_asset, self.CustomAsset)
         self.assertIsInstance(cloned_asset, self.CustomAsset)
