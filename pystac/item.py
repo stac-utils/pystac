@@ -40,8 +40,12 @@ class Item(STACObject):
             where n is the number of dimensions. Could also be None in the case of a
             null geometry.
         datetime : Datetime associated with this item. If None,
-            a start_datetime and end_datetime must be supplied in the properties.
+            a start_datetime and end_datetime must be supplied.
         properties : A dictionary of additional metadata for the item.
+        start_datetime : Optional start datetime, part of common metadata. This value
+            will override any `start_datetime` key in properties.
+        end_datetime : Optional end datetime, part of common metadata. This value
+            will override any `end_datetime` key in properties.
         stac_extensions : Optional list of extensions the Item implements.
         href : Optional HREF for this item, which be set as the item's
             self link's HREF.
@@ -104,6 +108,8 @@ class Item(STACObject):
         bbox: Optional[List[float]],
         datetime: Optional[Datetime],
         properties: Dict[str, Any],
+        start_datetime: Optional[Datetime] = None,
+        end_datetime: Optional[Datetime] = None,
         stac_extensions: Optional[List[str]] = None,
         href: Optional[str] = None,
         collection: Optional[Union[str, Collection]] = None,
@@ -124,13 +130,16 @@ class Item(STACObject):
         self.assets: Dict[str, Asset] = {}
 
         self.datetime: Optional[Datetime] = None
+        if start_datetime:
+            properties["start_datetime"] = datetime_to_str(start_datetime)
+        if end_datetime:
+            properties["end_datetime"] = datetime_to_str(end_datetime)
         if datetime is None:
             if "start_datetime" not in properties or "end_datetime" not in properties:
                 raise STACError(
                     "Invalid Item: If datetime is None, "
                     "a start_datetime and end_datetime "
-                    "must be supplied in "
-                    "the properties."
+                    "must be supplied."
                 )
             self.datetime = None
         else:
