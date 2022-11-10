@@ -513,3 +513,41 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         item_root = join_path_or_url(join_type, parent_dir, "{}".format(item.id))
 
         return join_path_or_url(join_type, item_root, "{}.json".format(item.id))
+
+
+class AsIsLayoutStrategy(HrefLayoutStrategy):
+    """Layout strategy that simply preserves the current href of all objects.
+
+    If any object doesn't have a self href, a ValueError is raised.
+    """
+
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
+        href = cat.self_href
+        if href is None:
+            raise ValueError(
+                f"Catalog is missing href, required for AsIsLayoutStrategy: {cat}"
+            )
+        else:
+            return href
+
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
+        href = col.self_href
+        if href is None:
+            raise ValueError(
+                f"Collection is missing href, required for AsIsLayoutStrategy: {col}"
+            )
+        else:
+            return href
+
+    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+        href = item.self_href
+        if href is None:
+            raise ValueError(
+                f"Item is missing href, required for AsIsLayoutStrategy: {item}"
+            )
+        else:
+            return href

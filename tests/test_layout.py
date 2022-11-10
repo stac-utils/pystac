@@ -5,6 +5,7 @@ from typing import Callable
 import pystac
 from pystac.collection import Collection
 from pystac.layout import (
+    AsIsLayoutStrategy,
     BestPracticesLayoutStrategy,
     CustomLayoutStrategy,
     LayoutTemplate,
@@ -420,3 +421,41 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(item, parent_dir="http://example.com")
         expected = "http://example.com/{}/{}.json".format(item.id, item.id)
         self.assertEqual(href, expected)
+
+
+class AsIsLayoutStrategyTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.strategy = AsIsLayoutStrategy()
+
+    def test_catalog(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        with self.assertRaises(ValueError):
+            self.strategy.get_href(cat, parent_dir="http://example.com", is_root=True)
+        cat.set_self_href("/an/href")
+        href = self.strategy.get_href(
+            cat, parent_dir="https://example.com", is_root=True
+        )
+        self.assertEqual(href, "/an/href")
+
+    def test_collection(self) -> None:
+        collection = TestCases.case_8()
+        collection.set_self_href(None)
+        with self.assertRaises(ValueError):
+            self.strategy.get_href(
+                collection, parent_dir="http://example.com", is_root=True
+            )
+        collection.set_self_href("/an/href")
+        href = self.strategy.get_href(
+            collection, parent_dir="https://example.com", is_root=True
+        )
+        self.assertEqual(href, "/an/href")
+
+    def test_item(self) -> None:
+        collection = TestCases.case_8()
+        item = next(iter(collection.get_all_items()))
+        item.set_self_href(None)
+        with self.assertRaises(ValueError):
+            self.strategy.get_href(item, parent_dir="http://example.com")
+        item.set_self_href("/an/href")
+        href = self.strategy.get_href(item, parent_dir="http://example.com")
+        self.assertEqual(href, "/an/href")
