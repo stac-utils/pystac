@@ -16,6 +16,7 @@
 - `AsIsLayoutStrategy` ([#919](https://github.com/stac-utils/pystac/pull/919))
 - `__geo_interface__` for items ([#885](https://github.com/stac-utils/pystac/pull/885))
 - Optional `strategy` parameter to `catalog.add_items()` ([#967](https://github.com/stac-utils/pystac/pull/967))
+- `start_datetime` and `end_datetime` arguments to the `Item` constructor ([#918](https://github.com/stac-utils/pystac/pull/918))
 
 ### Removed
 
