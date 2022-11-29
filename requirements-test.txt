@@ -1,5 +1,5 @@
 mypy==0.982
-flake8==5.0.4
+flake8==6.0.0
 black==22.10.0
 
 codespell==2.2.2
