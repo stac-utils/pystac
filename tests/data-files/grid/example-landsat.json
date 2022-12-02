@@ -1,0 +1,129 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "id": "LC09_L2SR_081122_20221130_02_T2",
+  "properties": {
+    "platform": "landsat-9",
+    "instruments": [
+      "oli",
+      "tirs"
+    ],
+    "created": "2022-12-02T07:31:27.565Z",
+    "gsd": 30,
+    "description": "Landsat Collection 2 Level-2",
+    "eo:cloud_cover": 100,
+    "view:off_nadir": 0,
+    "view:sun_elevation": 18.24930158,
+    "view:sun_azimuth": 116.70818279,
+    "proj:epsg": 3031,
+    "proj:shape": [
+      7731,
+      7821
+    ],
+    "proj:transform": [
+      30,
+      0,
+      743385,
+      0,
+      -30,
+      337215
+    ],
+    "grid:code": "WGS2-081122",
+    "landsat:cloud_cover_land": 100,
+    "landsat:wrs_type": "2",
+    "landsat:wrs_path": "081",
+    "landsat:wrs_row": "122",
+    "landsat:collection_category": "T2",
+    "landsat:collection_number": "02",
+    "landsat:correction": "L2SR",
+    "landsat:scene_id": "LC90811222022334LGN00",
+    "sci:doi": "10.5066/P9OGBGM6",
+    "datetime": "2022-11-30T23:10:16.172033Z",
+    "earthsearch:payload_id": "usgs-landsat-c2l2/workflow-landsat-to-stac/LC09_L2SR_081122_20221130_20221202_02_T2_SR",
+    "processing:software": {
+      "landsat-to-stac": "0.1.0"
+    },
+    "updated": "2022-12-02T07:31:27.565Z"
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          70.06845303665641,
+          -80.93500601550424
+        ],
+        [
+          68.81052300366429,
+          -82.64772956732001
+        ],
+        [
+          82.3854019772448,
+          -82.64899815759557
+        ],
+        [
+          81.11511917154068,
+          -80.93577539197138
+        ],
+        [
+          70.06845303665641,
+          -80.93500601550424
+        ]
+      ]
+    ]
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://earth-search.aws.element84.com/v1/collections/landsat-c2-l2/items/LC09_L2SR_081122_20221130_02_T2"
+    },
+    {
+      "rel": "canonical",
+      "href": "s3://earthsearch-data/landsat-c2-l2/081/122/2022/11/LC09_L2SR_081122_20221130_02_T2/LC09_L2SR_081122_20221130_02_T2.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "cite-as",
+      "href": "https://doi.org/10.5066/P9OGBGM6",
+      "title": "Landsat 8-9 OLI/TIRS Collection 2 Level-2"
+    },
+    {
+      "rel": "via",
+      "href": "https://landsatlook.usgs.gov/stac-server/collections/landsat-c2l2-sr/items/LC09_L2SR_081122_20221130_20221202_02_T2_SR",
+      "type": "application/json",
+      "title": "USGS STAC Item"
+    },
+    {
+      "rel": "parent",
+      "href": "https://earth-search.aws.element84.com/v1/collections/landsat-c2-l2"
+    },
+    {
+      "rel": "collection",
+      "href": "https://earth-search.aws.element84.com/v1/collections/landsat-c2-l2"
+    },
+    {
+      "rel": "root",
+      "href": "https://earth-search.aws.element84.com/v1/"
+    }
+  ],
+  "assets": {},
+  "bbox": [
+    65.60123,
+    -83.097758,
+    83.855046,
+    -80.499732
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/processing/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/storage/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/scientific/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/classification/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+    "https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json",
+    "https://stac-extensions.github.io/grid/v1.1.0/schema.json"
+  ],
+  "collection": "landsat-c2-l2"
+}
