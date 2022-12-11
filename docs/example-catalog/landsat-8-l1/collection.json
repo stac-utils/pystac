@@ -8,7 +8,7 @@
   ],
   "id" : "landsat-8-l1",
   "title" : "Landsat 8 L1",
-  "description" : "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
+  "description" : "Landsat 8 imagery radiometrically calibrated and orthorectified using ground points and Digital Elevation Model (DEM) data to correct relief displacement.",
   "keywords" : [
     "landsat",
     "earth observation",
