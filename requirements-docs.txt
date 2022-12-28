@@ -1,7 +1,7 @@
 ipython==8.6.0
 Sphinx==4.5.0
 sphinxcontrib-fulltoc==1.2.0
-nbsphinx==0.8.9
+nbsphinx==0.8.10
 pydata-sphinx-theme==0.8.1
 sphinx-panels==0.6.0
 jinja2<4.0

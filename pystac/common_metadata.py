@@ -49,8 +49,6 @@ class CommonMetadata:
             raise pystac.STACError(f"Cannot set field {prop_name} on {self}.")
 
     def _get_field(self, prop_name: str, _typ: Type[P]) -> Optional[P]:
-        maybe_field: Optional[P]
-
         if hasattr(self.object, prop_name):
             return cast(Optional[P], getattr(self.object, prop_name))
         elif hasattr(self.object, "properties"):
