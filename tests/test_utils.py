@@ -280,7 +280,7 @@ class UtilsTest(unittest.TestCase):
             with self.subTest(title=title):
                 got = utils.datetime_to_str(dt)
                 self.assertEqual(expected, got)
-    
+
     def test_datetime_to_str_with_microseconds_timespec(self) -> None:
         cases = (
             (
