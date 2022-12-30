@@ -7,6 +7,7 @@
 - Update Grid Extension support to v1.1.0 and fix issue with grid:code prefix validation ([#925](https://github.com/stac-utils/pystac/pull/925))
 - Adds custom `header` support to `DefaultStacIO` ([#889](https://github.com/stac-utils/pystac/pull/889))
 - Python 3.11 checks in CI ([#908](https://github.com/stac-utils/pystac/pull/908))
+- Add the optional argument timespec to datetime_to_str function in utils ([#929](https://github.com/stac-utils/pystac/pull/929))
 
 ### Removed
 
@@ -16,6 +17,7 @@
 
 - Creating dictionaries from Catalogs and Collections without root hrefs now creates valid STAC ([#896](https://github.com/stac-utils/pystac/pull/896))
 - Dependency resolution when installing `requirements-dev.txt` ([#897](https://github.com/stac-utils/pystac/pull/897))
+- Serializing optional Collection attributes ([#916](https://github.com/stac-utils/pystac/pull/916))
 
 ## [v1.6.1]
 

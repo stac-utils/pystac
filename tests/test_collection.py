@@ -226,6 +226,43 @@ class CollectionTest(unittest.TestCase):
         collection = pystac.Collection.from_dict(data)
         collection.validate()
 
+    def test_removing_optional_attributes(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        with open(path, "r") as file:
+            data = json.load(file)
+        data["title"] = "dummy title"
+        data["stac_extensions"] = ["dummy extension"]
+        data["keywords"] = ["key", "word"]
+        data["providers"] = [{"name": "pystac"}]
+        collection = pystac.Collection.from_dict(data)
+
+        # Assert we have everything set
+        assert collection.title
+        assert collection.stac_extensions
+        assert collection.keywords
+        assert collection.providers
+        assert collection.summaries
+        assert collection.assets
+
+        # Remove all of the optional stuff
+        collection.title = None
+        collection.stac_extensions = []
+        collection.keywords = []
+        collection.providers = []
+        collection.summaries = pystac.Summaries({})
+        collection.assets = {}
+
+        collection_as_dict = collection.to_dict()
+        for key in (
+            "title",
+            "stac_extensions",
+            "keywords",
+            "providers",
+            "summaries",
+            "assets",
+        ):
+            assert key not in collection_as_dict
+
     def test_from_dict_preserves_dict(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:

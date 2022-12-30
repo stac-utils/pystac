@@ -559,11 +559,11 @@ class Collection(Catalog):
         )
         d["extent"] = self.extent.to_dict()
         d["license"] = self.license
-        if self.stac_extensions is not None:
+        if self.stac_extensions:
             d["stac_extensions"] = self.stac_extensions
-        if self.keywords is not None:
+        if self.keywords:
             d["keywords"] = self.keywords
-        if self.providers is not None:
+        if self.providers:
             d["providers"] = list(map(lambda x: x.to_dict(), self.providers))
         if not self.summaries.is_empty():
             d["summaries"] = self.summaries.to_dict()
@@ -629,19 +629,19 @@ class Collection(Catalog):
         description = d.pop("description")
         license = d.pop("license")
         extent = Extent.from_dict(d.pop("extent"))
-        title = d.get("title")
-        stac_extensions = d.get("stac_extensions")
-        keywords = d.get("keywords")
-        providers = d.get("providers")
+        title = d.pop("title", None)
+        stac_extensions = d.pop("stac_extensions", None)
+        keywords = d.pop("keywords", None)
+        providers = d.pop("providers", None)
         if providers is not None:
             providers = list(map(lambda x: pystac.Provider.from_dict(x), providers))
-        summaries = d.get("summaries")
+        summaries = d.pop("summaries", None)
         if summaries is not None:
             summaries = Summaries(summaries)
 
-        assets: Optional[Dict[str, Any]] = {
-            k: Asset.from_dict(v) for k, v in d.get("assets", {}).items()
-        }
+        assets = d.pop("assets", None)
+        if assets:
+            assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
         d.pop("stac_version")

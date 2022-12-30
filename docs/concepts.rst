@@ -638,7 +638,7 @@ by the Python Standard Library `os.walk()
        root.title = '{} has been walked!'.format(root.id)
 
        # subcats represents any catalogs or collections owned by root
-       for cat in subcatalogs:
+       for cat in subcats:
            cat.title = 'About to be walked!'
 
        # items represent all items that are contained by root
