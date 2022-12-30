@@ -281,6 +281,30 @@ class UtilsTest(unittest.TestCase):
                 got = utils.datetime_to_str(dt)
                 self.assertEqual(expected, got)
 
+    def test_datetime_to_str_with_microseconds_timespec(self) -> None:
+        cases = (
+            (
+                "timezone naive, assume utc",
+                datetime(2000, 1, 1, 0, 0, 0, 0),
+                "2000-01-01T00:00:00.000000Z",
+            ),
+            (
+                "timezone aware, utc",
+                datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc),
+                "2000-01-01T00:00:00.000000Z",
+            ),
+            (
+                "timezone aware, utc -7",
+                datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone(timedelta(hours=-7))),
+                "2000-01-01T00:00:00.000000-07:00",
+            ),
+        )
+
+        for title, dt, expected in cases:
+            with self.subTest(title=title):
+                got = utils.datetime_to_str(dt, timespec="microseconds")
+                self.assertEqual(expected, got)
+
     def test_str_to_datetime(self) -> None:
         def _set_tzinfo(tz_str: Optional[str]) -> None:
             if tz_str is None:

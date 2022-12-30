@@ -299,7 +299,7 @@ def is_absolute_href(href: str) -> bool:
     return parsed.scheme != "" or _pathlib.isabs(parsed.path)
 
 
-def datetime_to_str(dt: datetime) -> str:
+def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
     """Converts a :class:`datetime.datetime` instance to an ISO8601 string in the
     `RFC 3339, section 5.6
     <https://datatracker.ietf.org/doc/html/rfc3339#section-5.6>`__ format required by
@@ -307,6 +307,10 @@ def datetime_to_str(dt: datetime) -> str:
 
     Args:
         dt : The datetime to convert.
+        timespec: An optional argument that specifies the number of additional
+        terms of the time to include. Valid options are 'auto', 'hours',
+        'minutes', 'seconds', 'milliseconds' and 'microseconds'. The default value
+        is 'auto'.
 
     Returns:
         str: The ISO8601 (RFC 3339) formatted string representing the datetime.
@@ -314,7 +318,7 @@ def datetime_to_str(dt: datetime) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
 
-    timestamp = dt.isoformat()
+    timestamp = dt.isoformat(timespec=timespec)
     zulu = "+00:00"
     if timestamp.endswith(zulu):
         timestamp = "{}Z".format(timestamp[: -len(zulu)])
