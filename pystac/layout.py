@@ -160,16 +160,12 @@ class LayoutTemplate:
                 prop_source = stac_object
 
             if prop_source is None and hasattr(stac_object, "properties"):
-                obj_props: Optional[
-                    Dict[str, Any]
-                ] = stac_object.properties  # type:ignore
+                obj_props: Optional[Dict[str, Any]] = stac_object.properties
                 if obj_props is not None and props[0] in obj_props:
                     prop_source = obj_props
 
             if prop_source is None and hasattr(stac_object, "extra_fields"):
-                extra_fields: Optional[
-                    Dict[str, Any]
-                ] = stac_object.extra_fields  # type:ignore
+                extra_fields: Optional[Dict[str, Any]] = stac_object.extra_fields
                 if extra_fields is not None and props[0] in extra_fields:
                     prop_source = extra_fields
 
