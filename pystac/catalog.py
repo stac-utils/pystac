@@ -510,7 +510,7 @@ class Catalog(STACObject):
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
         }
 
-        if self.stac_extensions is not None:
+        if self.stac_extensions:
             d["stac_extensions"] = self.stac_extensions
 
         for key in self.extra_fields:

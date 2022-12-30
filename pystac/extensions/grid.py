@@ -7,13 +7,13 @@ import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/grid/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/grid/v1.1.0/schema.json"
 PREFIX: str = "grid:"
 
 # Field names
 CODE_PROP: str = PREFIX + "code"  # required
 
-CODE_REGEX: str = r"[A-Z]+-[-_.A-Za-z0-9]+"
+CODE_REGEX: str = r"[A-Z0-9]+-[-_.A-Za-z0-9]+"
 CODE_PATTERN: Pattern[str] = re.compile(CODE_REGEX)
 
 
