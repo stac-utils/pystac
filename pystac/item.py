@@ -221,13 +221,37 @@ class Item(STACObject):
         else:
             asset.extra_fields["datetime"] = datetime_to_str(datetime)
 
-    def get_assets(self) -> Dict[str, Asset]:
+    def get_assets(
+        self,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+        role: Optional[Union[str, pystac.MediaType]] = None,
+    ) -> Dict[str, Asset]:
         """Get this item's assets.
 
+        Args:
+            media_type: If set, filter the assets such that only those with a
+                matching ``media_type`` are returned.
+            role: If set, filter the assets such that only those with a matching
+                ``role`` are returned.
+
         Returns:
-            Dict[str, Asset]: A copy of the dictionary of this item's assets.
+            Dict[str, Asset]: A dictionary of assets that match ``media_type``
+                and/or ``role`` if set or else all of this item's assets.
         """
-        return dict(self.assets.items())
+        assets = dict(self.assets.items())
+        if media_type is not None:
+            assets = {
+                key: asset
+                for key, asset in assets.items()
+                if asset.media_type == media_type
+            }
+        if role is not None:
+            assets = {
+                key: asset
+                for key, asset in assets.items()
+                if asset.roles is not None and role in asset.roles
+            }
+        return assets
 
     def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.
