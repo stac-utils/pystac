@@ -132,7 +132,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.item.validate()
 
     def test_full_copy(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
 
         # Fetch two items from the catalog
         item1 = cat.get_item("area-1-1-imagery", recursive=True)
@@ -359,7 +359,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
         self.collection.validate()
 
     def test_full_copy(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
 
         # Fetch two collections from the catalog
         col1 = cat.get_child("area-1-1", recursive=True)

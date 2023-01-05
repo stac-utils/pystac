@@ -132,7 +132,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(len(LabelExtension.ext(label_example_1).label_tasks or []), 2)
 
     def test_get_sources(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
 
         items = cat.get_all_items()
         item_ids = set([i.id for i in items])
@@ -152,7 +152,7 @@ class LabelTest(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, "catalog.json"))
@@ -163,7 +163,7 @@ class LabelTest(unittest.TestCase):
     def test_read_label_item_owns_asset(self) -> None:
         item = next(
             x
-            for x in TestCases.test_case_2().get_all_items()
+            for x in TestCases.case_2().get_all_items()
             if LabelExtension.has_extension(x)
         )
         assert len(item.assets) > 0

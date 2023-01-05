@@ -35,7 +35,7 @@ from tests.utils import (
 
 class CatalogTypeTest(unittest.TestCase):
     def test_determine_type_for_absolute_published(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
             cat_json = pystac.StacIO.default().read_json(
@@ -46,7 +46,7 @@ class CatalogTypeTest(unittest.TestCase):
         self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
 
     def test_determine_type_for_relative_published(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_and_save(tmp_dir, catalog_type=CatalogType.RELATIVE_PUBLISHED)
             cat_json = pystac.StacIO.default().read_json(
@@ -77,7 +77,7 @@ class CatalogTest(unittest.TestCase):
     def test_create_and_read(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat_dir = os.path.join(tmp_dir, "catalog")
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
 
             catalog.normalize_and_save(
                 cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED
@@ -93,7 +93,7 @@ class CatalogTest(unittest.TestCase):
             self.assertEqual(len(list(items)), 8)
 
     def test_from_dict_preserves_dict(self) -> None:
-        catalog_dict = TestCases.test_case_1().to_dict()
+        catalog_dict = TestCases.case_1().to_dict()
         param_dict = deepcopy(catalog_dict)
 
         # test that the parameter is preserved
@@ -219,29 +219,29 @@ class CatalogTest(unittest.TestCase):
         self.assertIsNone(subcat2.get_root())
 
     def test_add_child_throws_if_item(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         item = next(iter(cat.get_all_items()))
         with self.assertRaises(pystac.STACError):
             cat.add_child(item)  # type:ignore
 
     def test_add_item_throws_if_child(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         child = next(iter(cat.get_children()))
         with self.assertRaises(pystac.STACError):
             cat.add_item(child)  # type:ignore
 
     def test_get_child_returns_none_if_not_found(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         self.assertIsNone(child)
 
     def test_get_item_returns_none_if_not_found(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
         self.assertIsNone(item)
 
     def test_sets_catalog_type(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
 
         self.assertEqual(cat.catalog_type, CatalogType.SELF_CONTAINED)
 
@@ -314,7 +314,7 @@ class CatalogTest(unittest.TestCase):
                     )
 
     def test_save_uses_previous_catalog_type(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
@@ -326,7 +326,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_save_to_provided_href(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
             href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
@@ -340,7 +340,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_save_relative_published_no_self_links(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
             href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
@@ -393,7 +393,7 @@ class CatalogTest(unittest.TestCase):
 
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
             href = "https://stac.test"
 
             catalog.normalize_hrefs(href)
@@ -449,13 +449,13 @@ class CatalogTest(unittest.TestCase):
                 )
 
     def test_clone_uses_previous_catalog_type(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_normalize_hrefs_sets_all_hrefs(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         catalog.normalize_hrefs("http://example.com")
         for root, _, items in catalog.walk():
             self_href = root.get_self_href()
@@ -476,7 +476,7 @@ class CatalogTest(unittest.TestCase):
                 self.assertIn("http://example.com", item.self_href)
 
     def test_normalize_hrefs_makes_absolute_href(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         catalog.normalize_hrefs("./relativepath")
         abspath = os.path.abspath("./relativepath")
         self_href = catalog.get_self_href()
@@ -484,7 +484,7 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(self_href.startswith(abspath))
 
     def test_normalize_href_works_with_label_source_links(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         catalog.normalize_hrefs("http://example.com")
         item = catalog.get_item("area-1-1-labels", recursive=True)
         assert item is not None
@@ -496,7 +496,7 @@ class CatalogTest(unittest.TestCase):
         )
 
     def test_generate_subcatalogs_works_with_custom_properties(self) -> None:
-        catalog = TestCases.test_case_8()
+        catalog = TestCases.case_8()
         defaults = {"pl:item_type": "PlanetScope"}
         catalog.generate_subcatalogs(
             "${year}/${month}/${pl:item_type}", defaults=defaults
@@ -509,7 +509,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(type_cats, set(["PSScene4Band", "SkySatScene", "PlanetScope"]))
 
     def test_generate_subcatalogs_does_not_change_item_count(self) -> None:
-        catalog = TestCases.test_case_7()
+        catalog = TestCases.case_7()
 
         item_counts = {
             cat.id: len(list(cat.get_all_items())) for cat in catalog.get_children()
@@ -554,7 +554,7 @@ class CatalogTest(unittest.TestCase):
         self.assertSetEqual(actual_subcats, expected_subcats)
 
     def test_generate_subcatalogs_can_be_applied_multiple_times(self) -> None:
-        catalog = TestCases.test_case_8()
+        catalog = TestCases.case_8()
 
         _ = catalog.generate_subcatalogs("${year}/${month}")
         catalog.normalize_hrefs("/tmp")
@@ -669,7 +669,7 @@ class CatalogTest(unittest.TestCase):
             return item
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
 
             new_cat = catalog.map_items(item_mapper)
 
@@ -693,7 +693,7 @@ class CatalogTest(unittest.TestCase):
             return [item, item2]
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_1()
+            catalog = TestCases.case_1()
             catalog_items = catalog.get_all_items()
 
             new_cat = catalog.map_items(item_mapper)
@@ -798,7 +798,7 @@ class CatalogTest(unittest.TestCase):
             return asset
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_2()
+            catalog = TestCases.case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
 
@@ -831,7 +831,7 @@ class CatalogTest(unittest.TestCase):
                 return asset
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_2()
+            catalog = TestCases.case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
 
@@ -871,7 +871,7 @@ class CatalogTest(unittest.TestCase):
                 return asset
 
         with tempfile.TemporaryDirectory() as tmp_dir:
-            catalog = TestCases.test_case_2()
+            catalog = TestCases.case_2()
 
             new_cat = catalog.map_assets(asset_mapper)
 
@@ -900,7 +900,7 @@ class CatalogTest(unittest.TestCase):
             self.assertTrue(not_found)
 
     def test_make_all_asset_hrefs_absolute(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         cat.make_all_asset_hrefs_absolute()
         item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
         assert item is not None
@@ -909,7 +909,7 @@ class CatalogTest(unittest.TestCase):
         self.assertTrue(is_absolute_href(href))
 
     def test_make_all_asset_hrefs_relative(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
         assert item is not None
         asset = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"]
@@ -1002,7 +1002,7 @@ class CatalogTest(unittest.TestCase):
                 )
 
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
-        cat = TestCases.test_case_3()
+        cat = TestCases.case_3()
         cat_copy = cat.full_copy()
         cat_copy.normalize_hrefs("http://example.com")
         for root, catalogs, items in cat_copy.walk():
@@ -1015,7 +1015,7 @@ class CatalogTest(unittest.TestCase):
                         self.assertIsNot(link.get_href(), None)
 
     def test_extra_fields(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
 
         catalog.extra_fields["custom_field"] = "Special content"
 
@@ -1040,7 +1040,7 @@ class CatalogTest(unittest.TestCase):
                 cat.validate_all()
 
         # Make one invalid, write it off, read it in, ensure it throws
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         item = cat.get_item("area-1-1-labels", recursive=True)
         assert item is not None
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
@@ -1054,7 +1054,7 @@ class CatalogTest(unittest.TestCase):
                 cat2.validate_all()
 
     def test_set_hrefs_manually(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
 
         # Modify the datetimes
         year = 2004
@@ -1168,12 +1168,12 @@ class CatalogTest(unittest.TestCase):
                 pass
 
     def test_get_children_cbers(self) -> None:
-        cat = TestCases.test_case_6()
+        cat = TestCases.case_6()
         self.assertEqual(len(list(cat.get_children())), 4)
 
     def test_resolve_planet(self) -> None:
         """Test against a bug that caused infinite recursion during link resolution"""
-        cat = TestCases.test_case_8()
+        cat = TestCases.case_8()
         for root, _, items in cat.walk():
             for item in items:
                 item.resolve_links()
@@ -1189,7 +1189,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(len(items), 1)
 
     def test_catalog_with_href_caches_by_href(self) -> None:
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         cache = cat._resolved_objects
 
         # Since all of our STAC objects have HREFs, everything should be
@@ -1205,21 +1205,21 @@ class CatalogTest(unittest.TestCase):
             _ = pystac.Catalog.from_dict(collection_dict)
 
     def test_get_collections(self) -> None:
-        catalog = TestCases.test_case_2()
+        catalog = TestCases.case_2()
         collections = list(catalog.get_collections())
 
         self.assertGreater(len(collections), 0)
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in collections))
 
     def test_get_all_collections(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
         all_collections = list(catalog.get_all_collections())
 
         self.assertGreater(len(all_collections), 0)
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
 
     def test_get_single_links_media_type(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
 
         catalog.links.append(
             pystac.Link(rel="search", target="./search.html", media_type="text/html")
@@ -1238,7 +1238,7 @@ class CatalogTest(unittest.TestCase):
         self.assertEqual(json_link.href, "./search.json")
 
     def test_get_links_media_type(self) -> None:
-        catalog = TestCases.test_case_1()
+        catalog = TestCases.case_1()
 
         catalog.links.append(
             pystac.Link(rel="search", target="./search.html", media_type="text/html")
@@ -1350,7 +1350,7 @@ class FullCopyTest(unittest.TestCase):
 
     def test_full_copy_3(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            root_cat = TestCases.test_case_1()
+            root_cat = TestCases.case_1()
             root_cat.normalize_hrefs(
                 os.path.join(tmp_dir, "catalog-full-copy-3-source")
             )
@@ -1364,7 +1364,7 @@ class FullCopyTest(unittest.TestCase):
 
     def test_full_copy_4(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
-            root_cat = TestCases.test_case_2()
+            root_cat = TestCases.case_2()
             root_cat.normalize_hrefs(
                 os.path.join(tmp_dir, "catalog-full-copy-4-source")
             )
@@ -1391,7 +1391,7 @@ class CatalogSubClassTest(unittest.TestCase):
     """This tests cases related to creating classes inheriting from pystac.Catalog to
     ensure that inheritance, class methods, etc. function as expected."""
 
-    TEST_CASE_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+    case_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
 
     class BasicCustomCatalog(pystac.Catalog):
         pass
@@ -1400,18 +1400,18 @@ class CatalogSubClassTest(unittest.TestCase):
         self.stac_io = pystac.StacIO.default()
 
     def test_from_dict_returns_subclass(self) -> None:
-        catalog_dict = self.stac_io.read_json(self.TEST_CASE_1)
+        catalog_dict = self.stac_io.read_json(self.case_1)
         custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
 
         self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_from_file_returns_subclass(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
+        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
 
         self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_clone(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.TEST_CASE_1)
+        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
         cloned_catalog = custom_catalog.clone()
 
         self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)

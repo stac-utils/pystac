@@ -8,14 +8,14 @@ from tests.utils import TestCases
 
 class SummariesTest(unittest.TestCase):
     def test_summary(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
         self.assertEqual(len(summaries_dict["eo:bands"]), 4)
         self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_limit(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         summaries.maxcount = 2
         summaries_dict = summaries.to_dict()
@@ -23,7 +23,7 @@ class SummariesTest(unittest.TestCase):
         self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_custom_fields_file(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         path = TestCases.get_path("data-files/summaries/fields_no_bands.json")
         summaries = Summarizer(path).summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
@@ -31,7 +31,7 @@ class SummariesTest(unittest.TestCase):
         self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
 
     def test_summary_wrong_custom_fields_file(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         with self.assertRaises(FileNotFoundError) as context:
             Summarizer("wrong/path").summarize(coll.get_all_items())
         self.assertTrue("No such file or directory" in str(context.exception))
@@ -55,12 +55,12 @@ class SummariesTest(unittest.TestCase):
         self.assertTrue(summaries.is_empty())
 
     def test_summary_not_empty(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         self.assertFalse(summaries.is_empty())
 
     def test_clone_summary(self) -> None:
-        coll = TestCases.test_case_5()
+        coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_all_items())
         summaries_dict = summaries.to_dict()
         self.assertEqual(len(summaries_dict["eo:bands"]), 4)

@@ -10,10 +10,10 @@ echo
 if [[ -z ${CI} || -n ${CHECK_COVERAGE} ]]; then
     echo " -- RUNNING UNIT TESTS (WITH COVERAGE) --"
     # Test suite with coverage enabled
-    coverage run -m unittest discover tests
+    coverage run -m pytest tests
 else
     echo " -- RUNNING UNIT TESTS (WITHOUT COVERAGE) --"
-    python -m unittest discover tests
+    pytest tests
 fi
 
 echo

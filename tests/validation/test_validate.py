@@ -66,7 +66,7 @@ class ValidateTest(unittest.TestCase):
 
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
-        cat = TestCases.test_case_1()
+        cat = TestCases.case_1()
         item = cat.get_item("area-1-1-labels", recursive=True)
         assert item is not None
         assert item.get_self_href() is not None
@@ -94,7 +94,7 @@ class ValidateTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             dst_dir = os.path.join(tmp_dir, "catalog")
             # Copy test case 7 to the temporary directory
-            catalog_href = get_opt(TestCases.test_case_7().get_self_href())
+            catalog_href = get_opt(TestCases.case_7().get_self_href())
             shutil.copytree(os.path.dirname(catalog_href), dst_dir)
 
             new_cat_href = os.path.join(dst_dir, "catalog.json")

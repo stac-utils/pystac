@@ -130,29 +130,29 @@ class TestCases:
     @staticmethod
     def all_test_catalogs() -> List[Catalog]:
         return [
-            TestCases.test_case_1(),
-            TestCases.test_case_2(),
-            TestCases.test_case_3(),
-            TestCases.test_case_4(),
-            TestCases.test_case_5(),
-            TestCases.test_case_7(),
-            TestCases.test_case_8(),
+            TestCases.case_1(),
+            TestCases.case_2(),
+            TestCases.case_3(),
+            TestCases.case_4(),
+            TestCases.case_5(),
+            TestCases.case_7(),
+            TestCases.case_8(),
         ]
 
     @staticmethod
-    def test_case_1() -> Catalog:
+    def case_1() -> Catalog:
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
 
     @staticmethod
-    def test_case_2() -> Catalog:
+    def case_2() -> Catalog:
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/test-case-2/catalog.json")
         )
 
     @staticmethod
-    def test_case_3() -> Catalog:
+    def case_3() -> Catalog:
         root_cat = Catalog(
             id="test3", description="test case 3 catalog", title="test case 3 title"
         )
@@ -203,7 +203,7 @@ class TestCases:
         return root_cat
 
     @staticmethod
-    def test_case_4() -> Catalog:
+    def case_4() -> Catalog:
         """Test case that is based on a local copy of the Tier 1 dataset from
         DrivenData's OpenCities AI Challenge.
         See: https://www.drivendata.org/competitions/60/building-segmentation-disaster\
@@ -214,28 +214,28 @@ class TestCases:
         )
 
     @staticmethod
-    def test_case_5() -> Catalog:
+    def case_5() -> Catalog:
         """Based on a subset of https://cbers.stac.cloud/"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/test-case-5/catalog.json")
         )
 
     @staticmethod
-    def test_case_6() -> Catalog:
+    def case_6() -> Catalog:
         """Based on a subset of CBERS, contains a root and 4 empty children"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/cbers-partial/catalog.json")
         )
 
     @staticmethod
-    def test_case_7() -> Catalog:
+    def case_7() -> Catalog:
         """Test case 4 as STAC version 0.8.1"""
         return Catalog.from_file(
             TestCases.get_path("data-files/catalogs/label_catalog-v0.8.1/catalog.json")
         )
 
     @staticmethod
-    def test_case_8() -> Collection:
+    def case_8() -> Collection:
         """Planet disaster data example catalog, 1.0.0-beta.2"""
         return Collection.from_file(
             TestCases.get_path(

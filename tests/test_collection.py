@@ -57,13 +57,13 @@ class CollectionTest(unittest.TestCase):
             self.assertTrue(type(x) is float)
 
     def test_read_eo_items_are_heritable(self) -> None:
-        cat = TestCases.test_case_5()
+        cat = TestCases.case_5()
         item = next(iter(cat.get_all_items()))
 
         self.assertTrue(EOExtension.has_extension(item))
 
     def test_save_uses_previous_catalog_type(self) -> None:
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
         self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -75,13 +75,13 @@ class CollectionTest(unittest.TestCase):
             self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_clone_uses_previous_catalog_type(self) -> None:
-        catalog = TestCases.test_case_8()
+        catalog = TestCases.case_8()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
 
     def test_clone_cant_mutate_original(self) -> None:
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         assert collection.keywords is not None
         self.assertListEqual(collection.keywords, ["disaster", "open"])
         clone = collection.clone()
@@ -94,7 +94,7 @@ class CollectionTest(unittest.TestCase):
         self.assertNotEqual(id(collection.summaries), id(clone.summaries))
 
     def test_multiple_extents(self) -> None:
-        cat1 = TestCases.test_case_1()
+        cat1 = TestCases.case_1()
         country = cat1.get_child("country-1")
         assert country is not None
         col1 = country.get_child("area-1-1")
@@ -122,7 +122,7 @@ class CollectionTest(unittest.TestCase):
         self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict["extent"])
 
     def test_extra_fields(self) -> None:
-        catalog = TestCases.test_case_2()
+        catalog = TestCases.case_2()
         collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
         assert collection is not None
 
@@ -142,7 +142,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_update_extents(self) -> None:
 
-        catalog = TestCases.test_case_2()
+        catalog = TestCases.case_2()
         base_collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
         assert isinstance(base_collection, Collection)
         base_extent = base_collection.extent
