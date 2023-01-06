@@ -5,7 +5,7 @@ class MediaType(StringEnum):
     """A list of common media types that can be used in STAC Asset and Link metadata."""
 
     COG = "image/tiff; application=geotiff; profile=cloud-optimized"
-    FLATGEOBUF = "application/vnd.flatgeobuf"
+    FLATGEOBUF = "application/vnd.flatgeobuf"  # https://github.com/flatgeobuf/flatgeobuf/discussions/112#discussioncomment-4606721  # noqa
     GEOJSON = "application/geo+json"
     GEOPACKAGE = "application/geopackage+sqlite3"
     GEOTIFF = "image/tiff; application=geotiff"
