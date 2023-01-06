@@ -697,7 +697,7 @@ class Collection(Catalog):
         assets = dict()
         for key, asset in self.assets.items():
             if (media_type is None or asset.media_type == media_type) and (
-                role is None or (asset.roles is not None and role in asset.roles)
+                role is None or asset.has_role(role)
             ):
                 assets[key] = asset
         return assets
