@@ -678,7 +678,7 @@ class Collection(Catalog):
     def get_assets(
         self,
         media_type: Optional[Union[str, pystac.MediaType]] = None,
-        role: Optional[Union[str, pystac.MediaType]] = None,
+        role: Optional[str] = None,
     ) -> Dict[str, Asset]:
         """Get this collection's assets.
 
