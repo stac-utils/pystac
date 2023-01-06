@@ -21,32 +21,32 @@ after that date.
 PySTAC has a single required dependency (`python-dateutil`).
 PySTAC can be installed from pip or the source repository.
 
-```bash
-> pip install pystac
+```shell
+pip install pystac
 ```
 
 If you would like to enable the validation feature utilizing the
 [jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional
 `validation` requirements:
 
-```bash
-> pip install pystac[validation]
+```shell
+pip install pystac[validation]
 ```
 
 If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
 standard `json` library for JSON serialization/deserialization, install with the
 optional `orjson` requirements:
 
-```bash
-> pip install pystac[orjson]
+```shell
+pip install pystac[orjson]
 ```
 
 From source repository:
 
-```bash
-> git clone https://github.com/stac-utils/pystac.git
-> cd pystac
-> pip install .
+```shell
+git clone https://github.com/stac-utils/pystac.git
+cd pystac
+pip install .
 ```
 
 ### Versions
@@ -63,7 +63,7 @@ specification, install the matching version of PySTAC from the following table.
 
 For instance, to work with STAC v0.9.x:
 
-```bash
+```shell
 pip install pystac==0.4.0
 ```
 
