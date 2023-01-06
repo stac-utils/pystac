@@ -692,19 +692,14 @@ class Collection(Catalog):
             Dict[str, Asset]: A dictionary of assets that match ``media_type``
                 and/or ``role`` if set or else all of this collection's assets.
         """
-        assets = dict(self.assets.items())
-        if media_type is not None:
-            assets = {
-                key: asset
-                for key, asset in assets.items()
-                if asset.media_type == media_type
-            }
-        if role is not None:
-            assets = {
-                key: asset
-                for key, asset in assets.items()
-                if asset.roles is not None and role in asset.roles
-            }
+        if media_type is None and role is None:
+            return dict(self.assets.items())
+        assets = dict()
+        for key, asset in self.assets.items():
+            if (media_type is None or asset.media_type == media_type) and (
+                role is None or (asset.roles is not None and role in asset.roles)
+            ):
+                assets[key] = asset
         return assets
 
     def add_asset(self, key: str, asset: Asset) -> None:
