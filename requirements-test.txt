@@ -2,8 +2,6 @@ mypy==0.990
 flake8==6.0.0
 black==22.10.0
 pytest==7.2.0
-pytest-asyncio==0.20.3
-
 codespell==2.2.2
 
 jsonschema==4.17.3
