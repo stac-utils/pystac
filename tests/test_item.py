@@ -161,6 +161,25 @@ class ItemTest(unittest.TestCase):
 
         null_dt_item.validate()
 
+    def test_get_assets(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+
+        media_type_filter = item.get_assets(media_type=pystac.MediaType.COG)
+        self.assertCountEqual(media_type_filter.keys(), ["analytic"])
+        role_filter = item.get_assets(role="data")
+        self.assertCountEqual(role_filter.keys(), ["analytic"])
+        multi_filter = item.get_assets(
+            media_type=pystac.MediaType.PNG, role="thumbnail"
+        )
+        self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
+
+        no_filter = item.get_assets()
+        self.assertCountEqual(no_filter.keys(), ["analytic", "thumbnail"])
+        no_assets = item.get_assets(media_type=pystac.MediaType.HDF)
+        self.assertEqual(no_assets, {})
+
     def test_get_set_asset_datetime(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
