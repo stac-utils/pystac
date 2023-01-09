@@ -1,8 +1,19 @@
+import datetime
 import json
 import os
 import shutil
 import tempfile
-from pystac import Catalog, StacIO
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from pystac import (
+    Catalog,
+    StacIO,
+    Collection,
+    Extent,
+    TemporalExtent,
+    SpatialExtent,
+    Item,
+)
 
 from ._base import Bench
 from ._util import get_data_path
@@ -41,3 +52,67 @@ class CatalogBench(Bench):
             dest_href=os.path.join(self.temp_dir, "time_catalog_save.json"),
             stac_io=self.stac_io,
         )
+
+
+class WalkCatalogBench(Bench):
+    def setup_cache(self) -> Catalog:
+        return make_large_catalog()
+
+    def time_walk(self, catalog: Catalog) -> None:
+        for (
+            _,
+            _,
+            _,
+        ) in catalog.walk():
+            pass
+
+    def peakmem_walk(self, catalog: Catalog) -> None:
+        for (
+            _,
+            _,
+            _,
+        ) in catalog.walk():
+            pass
+
+
+class ReadCatalogBench(Bench):
+    def setup(self) -> None:
+        catalog = make_large_catalog()
+        self.temporary_directory = TemporaryDirectory()
+        self.path = str(Path(self.temporary_directory.name) / "catalog.json")
+        catalog.normalize_and_save(self.temporary_directory.name)
+
+    def teardown(self) -> None:
+        shutil.rmtree(self.temporary_directory.name)
+
+    def time_read_and_walk(self) -> None:
+        catalog = Catalog.from_file(self.path)
+        for _, _, _ in catalog.walk():
+            pass
+
+
+class WriteCatalogBench(Bench):
+    def setup(self) -> None:
+        self.catalog = make_large_catalog()
+        self.temporary_directory = TemporaryDirectory()
+
+    def teardown(self) -> None:
+        shutil.rmtree(self.temporary_directory.name)
+
+    def time_normalize_and_save(self) -> None:
+        self.catalog.normalize_and_save(self.temporary_directory.name)
+
+
+def make_large_catalog() -> Catalog:
+    catalog = Catalog("an-id", "a description")
+    extent = Extent(
+        SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+        TemporalExtent([[datetime.datetime(2023, 1, 1), None]]),
+    )
+    for i in range(0, 10):
+        collection = Collection(f"collection-{i}", f"Collection {i}", extent)
+        for j in range(0, 100):
+            item = Item(f"item-{i}-{j}", None, None, datetime.datetime.now(), {})
+            collection.add_item(item)
+        catalog.add_child(collection)
+    return catalog
