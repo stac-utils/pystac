@@ -327,7 +327,7 @@ class CatalogTest(unittest.TestCase):
     def test_save_to_provided_href(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=folder)
@@ -341,7 +341,7 @@ class CatalogTest(unittest.TestCase):
     def test_save_relative_published_no_self_links(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
             folder = os.path.join(tmp_dir, "cat")
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.RELATIVE_PUBLISHED, dest_href=folder)
@@ -368,10 +368,33 @@ class CatalogTest(unittest.TestCase):
                     )
                     self.assertIsNone(self_link)
 
+    def test_save_with_different_stac_io(self) -> None:
+        catalog = Catalog.from_file(
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+        )
+        stac_io = MockStacIO()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            catalog.normalize_hrefs(tmp_dir)
+            catalog.save(
+                catalog_type=CatalogType.ABSOLUTE_PUBLISHED,
+                dest_href=tmp_dir,
+                stac_io=stac_io,
+            )
+
+        hrefs = []
+        for root, _, items in catalog.walk():
+            hrefs.append(root.get_self_href())
+            for item in items:
+                hrefs.append(item.get_self_href())
+
+        self.assertEqual(len(hrefs), stac_io.mock.write_text.call_count)
+        for call_args_list in stac_io.mock.write_text.call_args_list:
+            self.assertIn(call_args_list[0][0], hrefs)
+
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.test_case_1()
-            href = "http://test.com"
+            href = "https://stac.test"
 
             catalog.normalize_hrefs(href)
             catalog.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED, dest_href=tmp_dir)
@@ -1194,6 +1217,40 @@ class CatalogTest(unittest.TestCase):
 
         self.assertGreater(len(all_collections), 0)
         self.assertTrue(all(isinstance(c, pystac.Collection) for c in all_collections))
+
+    def test_get_single_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+
+        html_link = catalog.get_single_link("search")
+        assert html_link is not None
+        self.assertEqual(html_link.href, "./search.html")
+        json_link = catalog.get_single_link("search", media_type="application/geo+json")
+        assert json_link is not None
+        self.assertEqual(json_link.href, "./search.json")
+
+    def test_get_links_media_type(self) -> None:
+        catalog = TestCases.test_case_1()
+
+        catalog.links.append(
+            pystac.Link(rel="search", target="./search.html", media_type="text/html")
+        )
+        catalog.links.append(
+            pystac.Link(
+                rel="search", target="./search.json", media_type="application/geo+json"
+            )
+        )
+        self.assertEqual(
+            len(catalog.get_links("search", media_type="application/geo+json")), 1
+        )
 
 
 class FullCopyTest(unittest.TestCase):

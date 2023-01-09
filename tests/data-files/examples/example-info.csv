@@ -119,6 +119,7 @@
 "1.0.0/collection.json","Collection","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json"
 "1.0.0/collectionless-item.json","Feature","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json"
 "1.0.0/core-item.json","Feature","1.0.0",""
+"1.0.0/example-sentinel2.json","Feature","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/sat/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json|https://stac-extensions.github.io/mgrs/v1.0.0/schema.json|https://stac-extensions.github.io/grid/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json"
 "1.0.0/extended-item.json","Feature","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json|https://stac-extensions.github.io/scientific/v1.0.0/schema.json|https://stac-extensions.github.io/view/v1.0.0/schema.json|https://stac-extensions.github.io/remote-data/v1.0.0/schema.json"
 "1.0.0/extensions-collection/collection.json","Collection","1.0.0",""
 "1.0.0/extensions-collection/proj-example/proj-example.json","Feature","1.0.0","https://stac-extensions.github.io/eo/v1.0.0/schema.json|https://stac-extensions.github.io/projection/v1.0.0/schema.json"

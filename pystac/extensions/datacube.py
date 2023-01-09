@@ -1,7 +1,4 @@
-"""Implements the Datacube extension.
-
-https://github.com/stac-extensions/datacube
-"""
+"""Implements the :stac-ext:`Datacube Extension <datacube>`."""
 
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
@@ -414,6 +411,12 @@ class VariableType(StringEnum):
 
 
 class Variable:
+    """Object representing a variable in the datacube. The dimensions field lists
+    zero or more :stac-ext:`Datacube Dimension Object <datacube#dimension-object>`
+    instances. See the :stac-ext:`Datacube Variable Object
+    <datacube#variable-object>` docs for details.
+    """
+
     properties: Dict[str, Any]
 
     def __init__(self, properties: Dict[str, Any]) -> None:
@@ -421,8 +424,10 @@ class Variable:
 
     @property
     def dimensions(self) -> List[str]:
-        """The dimensions of the variable. Should refer to keys in the ``cube:dimensions``
-        object or be an empty list if the variable has no dimensions"""
+        """The dimensions of the variable. Should refer to keys in the
+        ``cube:dimensions`` object or be an empty list if the variable has no
+        dimensions
+        """
         return get_required(
             self.properties.get(VAR_DIMENSIONS_PROP),
             "cube:variable",
@@ -525,15 +530,22 @@ class DatacubeExtension(
        >>> dc_ext = DatacubeExtension.ext(item)
     """
 
-    def apply(self, dimensions: Dict[str, Dimension]) -> None:
+    def apply(
+        self,
+        dimensions: Dict[str, Dimension],
+        variables: Optional[Dict[str, Variable]] = None,
+    ) -> None:
         """Applies label extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
             dimensions : Dictionary mapping dimension name to a :class:`Dimension`
                 object.
+            variables : Dictionary mapping variable name to a :class:`Variable`
+                object.
         """
         self.dimensions = dimensions
+        self.variables = variables
 
     @property
     def dimensions(self) -> Dict[str, Dimension]:

@@ -84,8 +84,8 @@ class ResolvedObjectCache:
         self._collection_cache = None
 
     def get_or_cache(self, obj: "STACObject_Type") -> "STACObject_Type":
-        """Gets the STACObject that is the cached version of the given STACObject; or, if
-        none exists, sets the cached object to the given object.
+        """Gets the STACObject that is the cached version of the given STACObject; or,
+        if none exists, sets the cached object to the given object.
 
         Args:
             obj : The given object who's cache key will be checked

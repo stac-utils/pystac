@@ -87,3 +87,16 @@ class DatacubeTest(unittest.TestCase):
         self.assertEqual(
             item.properties["cube:variables"], {"temp": new_variable.to_dict()}
         )
+
+    def test_apply_variables(self) -> None:
+        item = pystac.Item.from_file(self.example_uri)
+        cube = DatacubeExtension.ext(item)
+        variables = cube.variables
+        assert variables is not None
+        key, value = variables.popitem()
+        target = value.to_dict()
+        cube.variables = None
+        cube.apply(dimensions={}, variables={key: value})
+        variables = cube.variables
+        assert variables is not None
+        self.assertEqual(target, cube.variables[key].to_dict())

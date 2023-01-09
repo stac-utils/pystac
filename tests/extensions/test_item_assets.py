@@ -46,6 +46,19 @@ class TestAssetDefinition(unittest.TestCase):
             TestCases.get_path("data-files/item-assets/example-landsat8.json")
         )
 
+    def test_create(self) -> None:
+        title = "Coastal Band (B1)"
+        description = "Coastal Band Top Of the Atmosphere"
+        media_type = "image/tiff; application=geotiff"
+        roles = ["data"]
+        asset_defn = AssetDefinition.create(
+            title=title, description=description, media_type=media_type, roles=roles
+        )
+        self.assertEqual(asset_defn.title, title)
+        self.assertEqual(asset_defn.description, description)
+        self.assertEqual(asset_defn.media_type, media_type)
+        self.assertEqual(asset_defn.roles, roles)
+
     def test_title(self) -> None:
         asset_defn = AssetDefinition({})
         title = "Very Important Asset"

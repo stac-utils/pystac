@@ -1,6 +1,4 @@
-"""Implements the scientific extension.
-
-https://github.com/stac-extensions/scientific
+"""Implements the :stac-ext:`Scientific Citation Extension <scientific>`.
 
 For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
 
@@ -290,9 +288,10 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
 
 
 class ItemScientificExtension(ScientificExtension[pystac.Item]):
-    """A concrete implementation of :class:`ScientificExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Scientific Citation Extension <scientific>`.
+    """A concrete implementation of :class:`ScientificExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Scientific Citation Extension
+    <scientific>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`ScientificExtension.ext` on an :class:`~pystac.Item` to extend it.

@@ -1,7 +1,4 @@
-"""Implements the Table extension
-
-https://github.com/stac-extensions/table
-"""
+"""Implements the :stac-ext:`Table Extension <table>`."""
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -67,8 +64,8 @@ class Column:
 
     @property
     def col_type(self) -> Optional[str]:
-        """Data type of the column. If using a file format with a type system (like Parquet),
-        we recommend you use those types"""
+        """Data type of the column. If using a file format with a type system (like
+        Parquet), we recommend you use those types"""
         return self.properties.get(COL_TYPE_PROP)
 
     @col_type.setter

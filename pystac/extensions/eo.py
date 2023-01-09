@@ -1,7 +1,4 @@
-"""Implements the Electro-Optical (EO) extension.
-
-https://github.com/stac-extensions/eo
-"""
+"""Implements the :stac-ext:`Electro-Optical Extension <eo>`."""
 
 from typing import (
     Any,
@@ -149,8 +146,8 @@ class Band:
 
     @property
     def description(self) -> Optional[str]:
-        """Get or sets the description to fully explain the band. CommonMark 0.29 syntax MAY be
-        used for rich text representation.
+        """Get or sets the description to fully explain the band. CommonMark 0.29
+        syntax MAY be used for rich text representation.
 
         Returns:
             str
@@ -299,8 +296,8 @@ class EOExtension(
     def apply(
         self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
     ) -> None:
-        """Applies label extension properties to the extended :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        """Applies Electro-Optical Extension properties to the extended
+        :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
             bands : A list of available bands where each item is a :class:`~Band`
@@ -352,8 +349,8 @@ class EOExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "EOExtension[T]":
-        """Extends the given STAC Object with properties from the :stac-ext:`Electro-Optical
-        Extension <eo>`.
+        """Extends the given STAC Object with properties from the
+        :stac-ext:`Electro-Optical Extension <eo>`.
 
         This extension can be applied to instances of :class:`~pystac.Item` or
         :class:`~pystac.Asset`.

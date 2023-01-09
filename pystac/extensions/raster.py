@@ -1,7 +1,4 @@
-"""Implements the Raster extension.
-
-https://github.com/stac-extensions/raster
-"""
+"""Implements the :stac-ext:`Raster Extension <raster>`."""
 
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -13,7 +10,7 @@ from pystac.extensions.base import (
 )
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
-SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
 
 BANDS_PROP = "raster:bands"
 
@@ -40,6 +37,12 @@ class DataType(StringEnum):
     CFLOAT32 = "cfloat32"
     CFLOAT64 = "cfloat64"
     OTHER = "other"
+
+
+class NoDataStrings(StringEnum):
+    INF = "inf"
+    NINF = "-inf"
+    NAN = "nan"
 
 
 class Statistics:
@@ -205,7 +208,8 @@ class Statistics:
 
 
 class Histogram:
-    """Represents pixel distribution information attached to a band in the raster extension.
+    """Represents pixel distribution information attached to a band in the raster
+    extension.
 
     Use Band.create to create a new Band.
     """
@@ -353,7 +357,7 @@ class RasterBand:
 
     def apply(
         self,
-        nodata: Optional[float] = None,
+        nodata: Optional[Union[float, NoDataStrings]] = None,
         sampling: Optional[Sampling] = None,
         data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
@@ -373,8 +377,8 @@ class RasterBand:
                 assumed to represent a sampling over the region of the pixel or a point
                 sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in
-                <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in the
+                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
             bits_per_sample : The actual number of bits used for this band.
                 Normally only present when the number of bits is non-standard for the
                 datatype, such as when a 1 bit TIFF is represented as byte
@@ -403,7 +407,7 @@ class RasterBand:
     @classmethod
     def create(
         cls,
-        nodata: Optional[float] = None,
+        nodata: Optional[Union[float, NoDataStrings]] = None,
         sampling: Optional[Sampling] = None,
         data_type: Optional[DataType] = None,
         bits_per_sample: Optional[float] = None,
@@ -423,8 +427,8 @@ class RasterBand:
                 assumed to represent a sampling over the region of the pixel or a point
                 sample at the center of the pixel.
             data_type :The data type of the band.
-                One of the data types as described in
-                <https://github.com/stac-extensions/raster/#data-types>.
+                One of the data types as described in the
+                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
             bits_per_sample : The actual number of bits used for this band.
                 Normally only present when the number of bits is non-standard for the
                 datatype, such as when a 1 bit TIFF is represented as byte
@@ -455,7 +459,7 @@ class RasterBand:
         return b
 
     @property
-    def nodata(self) -> Optional[float]:
+    def nodata(self) -> Optional[Union[float, NoDataStrings]]:
         """Get or sets the nodata pixel value
 
         Returns:
@@ -464,7 +468,7 @@ class RasterBand:
         return self.properties.get("nodata")
 
     @nodata.setter
-    def nodata(self, v: Optional[float]) -> None:
+    def nodata(self, v: Optional[Union[float, NoDataStrings]]) -> None:
         if v is not None:
             self.properties["nodata"] = v
         else:
@@ -522,7 +526,8 @@ class RasterBand:
 
     @property
     def spatial_resolution(self) -> Optional[float]:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
 
         Returns:
             [float]
@@ -538,7 +543,8 @@ class RasterBand:
 
     @property
     def statistics(self) -> Optional[Statistics]:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the band.
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
 
         Returns:
             [Statistics]
@@ -604,7 +610,8 @@ class RasterBand:
 
     @property
     def histogram(self) -> Optional[Histogram]:
-        """Get or sets the histogram distribution information of the pixels values in the band
+        """Get or sets the histogram distribution information of the pixels values in
+        the band.
 
         Returns:
             [Histogram]
@@ -675,9 +682,9 @@ class RasterExtension(
 
     @property
     def bands(self) -> Optional[List[RasterBand]]:
-        """Gets or sets a list of available bands where each item is a :class:`~RasterBand`
-        object (or ``None`` if no bands have been set). If not available the field
-        should not be provided.
+        """Gets or sets a list of available bands where each item is a
+        :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
+        available the field should not be provided.
         """
         return self._get_bands()
 

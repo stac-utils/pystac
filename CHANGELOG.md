@@ -4,8 +4,13 @@
 
 ### Added
 
-- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
-- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Add `media_type` and `role` filtering to Item and Collection `get_assets()` method ([#936](https://github.com/stac-utils/pystac/pull/936))
+- `Asset.has_role` ([#936](https://github.com/stac-utils/pystac/pull/936))
+- Enum MediaType entry for flatgeobuf ([discussion](https://github.com/flatgeobuf/flatgeobuf/discussions/112#discussioncomment-4606721)) ([#938](https://github.com/stac-utils/pystac/pull/938))
+- Update Grid Extension support to v1.1.0 and fix issue with grid:code prefix validation ([#925](https://github.com/stac-utils/pystac/pull/925))
+- Adds custom `header` support to `DefaultStacIO` ([#889](https://github.com/stac-utils/pystac/pull/889))
+- Python 3.11 checks in CI ([#908](https://github.com/stac-utils/pystac/pull/908))
+- Add the optional argument timespec to datetime_to_str function in utils ([#929](https://github.com/stac-utils/pystac/pull/929))
 
 ### Removed
 
@@ -13,10 +18,72 @@
 
 ### Fixed
 
+- Dependency resolution when installing `requirements-dev.txt` ([#897](https://github.com/stac-utils/pystac/pull/897))
+- Serializing optional Collection attributes ([#916](https://github.com/stac-utils/pystac/pull/916))
+
+## [v1.6.1]
+
+### Fixed
+
+- Pins `jsonschema` to >=4.0.1 to avoid a `RefResolutionError` when validating some extensions ([#857](https://github.com/stac-utils/pystac/pull/857))
+- Fixed bug in custom StacIO example in documentation ([#879](https://github.com/stac-utils/pystac/pull/879))
+
+## [v1.6.0]
+
+### Removed
+
+- Support for Python 3.7 ([#853](https://github.com/stac-utils/pystac/pull/853))
+
+## [v1.5.0]
+
+### Added
+
+- Enum MediaType entry for PDF documents ([#758](https://github.com/stac-utils/pystac/pull/758))
+- Enum MediaType entry for HTML documents ([#816](https://github.com/stac-utils/pystac/pull/816))
+- Updated Link to obtain stac_io from owner root ([#762](https://github.com/stac-utils/pystac/pull/762))
+- Replace test.com with special-use domain name. ([#769](https://github.com/stac-utils/pystac/pull/769))
+- Updated AssetDefinition to have create, apply methods ([#768](https://github.com/stac-utils/pystac/pull/768))
+- Add Grid Extension support ([#799](https://github.com/stac-utils/pystac/pull/799))
+- Rich HTML representations for Jupyter Notebook display ([#743](https://github.com/stac-utils/pystac/pull/743))
+- Add `assets` argument to `Item` and `Collection` init methods to allow adding Assets during object initialization ([#834](https://github.com/stac-utils/pystac/pull/834))
+
+### Changed
+
+- Updated Raster Extension from v1.0.0 to v1.1.0 ([#809](https://github.com/stac-utils/pystac/pull/809))
+
+### Fixed
+
+- Mutating `Asset.extra_fields` on a cloned `Asset` also mutated the original asset ([#826](https://github.com/stac-utils/pystac/pull/826))
+- "How to create STAC catalogs" tutorial ([#775](https://github.com/stac-utils/pystac/pull/775))
+- Add a `variables` argument, to accompany `dimensions`, for the `apply` method of stac objects extended with datacube ([#782](https://github.com/stac-utils/pystac/pull/782))
+- Deepcopy collection properties on clone. Implement `clone` method for `Summaries` ([#794](https://github.com/stac-utils/pystac/pull/794))
+- Collection assets are now preserved when using `Collection.clone` ([#834](https://github.com/stac-utils/pystac/pull/834))
+- Docstrings for `StacIO.read_text` and `StacIO.write_text` now match the type annotations for the `source` argument. ([#835](https://github.com/stac-utils/pystac/pull/835))
+- UTC timestamps now always have `tzutc` timezone even when system timezone is set to UTC. ([#848](https://github.com/stac-utils/pystac/pull/848))
+
+## [v1.4.0]
+
+### Added
+
+- Experimental support for Python 3.11 ([#731](https://github.com/stac-utils/pystac/pull/731))
+- Accept PathLike objects in `StacIO` I/O methods, `pystac.read_file` and `pystac.write_file` ([#728](https://github.com/stac-utils/pystac/pull/728))
+- Support for Storage Extension ([#745](https://github.com/stac-utils/pystac/pull/745))
+- Optional `StacIO` instance as argument to `Catalog.save`/`Catalog.normalize_and_save` ([#751](https://github.com/stac-utils/pystac/pull/751))
+- More thorough docstrings for `pystac.utils` functions and classes ([#735](https://github.com/stac-utils/pystac/pull/735))
+
+### Changed
+
+- Label Extension version updated to `v1.0.1` ([#726](https://github.com/stac-utils/pystac/pull/726))
+- Option to filter by `media_type` in `STACObject.get_links` and `STACObject.get_single_link`
+  ([#704](https://github.com/stac-utils/pystac/pull/704))
+
+### Fixed
+
 - Self links no longer included in Items for "relative published" catalogs ([#725](https://github.com/stac-utils/pystac/pull/725))
 - Adding New and Custom Extensions tutorial now up-to-date with new extensions API ([#724](https://github.com/stac-utils/pystac/pull/724))
-
-### Deprecated
+- Clarify error message when using `PropertyExtension.ext(..., add_if_missing=True)` on an `Asset`
+  with no owner ([#746](https://github.com/stac-utils/pystac/pull/746))
+- Type errors when initializing `TemporalExtent` using a list of `datetime` objects ([#744](https://github.com/stac-utils/pystac/pull/744))
 
 ## [v1.3.0]
 
@@ -80,13 +147,14 @@
 ## [v1.1.0]
 
 ### Added
+
 - Include type information during packaging for use with e.g. `mypy` ([#579](https://github.com/stac-utils/pystac/pull/579))
 - Optional `dest_href` argument to `Catalog.save` to allow saving `Catalog` instances to
   locations other than their `self` href ([#565](https://github.com/stac-utils/pystac/pull/565))
 
 ### Changed
 
-- Pin the rustc version in Continuous Integration to work around https://github.com/rust-lang/cargo/pull/9727 ([#581](https://github.com/stac-utils/pystac/pull/581))
+- Pin the rustc version in Continuous Integration to work around <https://github.com/rust-lang/cargo/pull/9727> ([#581](https://github.com/stac-utils/pystac/pull/581))
 
 ## [v1.0.1]
 
@@ -138,9 +206,9 @@
 ### Added
 
 - (Experimental) support for Python 3.10 ([#473](https://github.com/stac-utils/pystac/pull/473))
--  `LabelTask` enum in `pystac.extensions.label` with recommended values for
+- `LabelTask` enum in `pystac.extensions.label` with recommended values for
   `"label:tasks"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
--  `LabelMethod` enum in `pystac.extensions.label` with recommended values for
+- `LabelMethod` enum in `pystac.extensions.label` with recommended values for
   `"label:methods"` field ([#484](https://github.com/stac-utils/pystac/pull/484))
 - Label Extension summaries ([#484](https://github.com/stac-utils/pystac/pull/484))
 - Timestamps Extension summaries ([#513](https://github.com/stac-utils/pystac/pull/513))
@@ -353,7 +421,6 @@
 
 - Be more strict with CatalogType in `Catalog.save` ([#244](https://github.com/stac-utils/pystac/pull/244))
 
-
 ## [v0.5.3]
 
 ### Added
@@ -453,6 +520,7 @@ asset extension renamed to item-assets and renamed assets field in Collections t
 ## [v0.4.0]
 
 The two major changes for this release are:
+
 - Upgrade to STAC 0.9.0
 - Refactor the extensions API to accommodate items that implement multiple extensions (e.g. `eo` and `view`)
 
@@ -462,7 +530,7 @@ See the [stac-spec 0.9.0 changelog](https://github.com/radiantearth/stac-spec/bl
 
 These are the major API changes that will have to be accounted for when upgrading PySTAC:
 
-#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit.
+#### Extensions are wrappers around Catalogs, Collection and Items, and no longer inherit
 
 This change affects the two extensions that were implemented for Item - `EOItem` and `LabelItem`
 have become `EOItemExt` and `LabelItemExt`, and no longer inherit from Item.
@@ -474,7 +542,8 @@ be able to account well for these new items that implemented both the `eo` and `
 See the [Extensions section](https://pystac.readthedocs.io/en/0.4/concepts.html#extensions) in the
 documentation for more information on the new way to use extensions.
 
-#### Extensions have moved to their own package:
+#### Extensions have moved to their own package
+
 - `pystac.label` -> `pystac.extensions.label`
 - `pystac.eo` -> `pystac.extensions.eo`
 - `pystac.single_file_stac` -> `pystac.extensions.single_file_stac`
@@ -487,6 +556,7 @@ documentation for more information on the new way to use extensions.
 - Added support for the [commons](https://github.com/radiantearth/stac-spec/tree/v0.9.0/extensions/commons) extension.
 
 ### Changed
+
 - Migrated CI workflows from Travis CI to GitHub Actions [#108](https://github.com/azavea/pystac/pull/108)
 - Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
@@ -496,7 +566,6 @@ documentation for more information on the new way to use extensions.
 - Asset properties always return a dict instead of being None for Assets that have non-core properties.
 - The `Band` constructor in the EO extension changed to taking a dict. To create a band from property values,
 use `Band.create`
-
 
 ## [v0.3.4] - 2020-06-20
 
@@ -559,7 +628,11 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.3.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.6.1..main>
+[v1.6.1]: <https://github.com/stac-utils/pystac/compare/v1.6.0..v1.6.1>
+[v1.6.0]: <https://github.com/stac-utils/pystac/compare/v1.5.0..v1.6.0>
+[v1.5.0]: <https://github.com/stac-utils/pystac/compare/v1.4.0..v1.5.0>
+[v1.4.0]: <https://github.com/stac-utils/pystac/compare/v1.3.0..v1.4.0>
 [v1.3.0]: <https://github.com/stac-utils/pystac/compare/v1.2.0..v1.3.0>
 [v1.2.0]: <https://github.com/stac-utils/pystac/compare/v1.1.0..v1.2.0>
 [v1.1.0]: <https://github.com/stac-utils/pystac/compare/v1.0.1..v1.1.0>

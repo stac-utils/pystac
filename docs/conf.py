@@ -17,6 +17,7 @@ import sys
 import subprocess
 from typing import Any, Dict, List
 
+
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
 from pystac.version import __version__, STACVersion  # noqa:E402
@@ -231,6 +232,7 @@ epub_exclude_files = ["search.html"]
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+    "dateutil": ("https://dateutil.readthedocs.io/en/stable", None),
 }
 
 # -- Substutition variables

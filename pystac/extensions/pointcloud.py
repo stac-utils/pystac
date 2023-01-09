@@ -1,7 +1,4 @@
-"""Implements the Point Cloud extension.
-
-https://github.com/stac-extensions/pointcloud
-"""
+"""Implements the :stac-ext:`Point Cloud Extension <pointcloud>`."""
 from typing import Any, Dict, Iterable, Generic, List, Optional, TypeVar, cast, Union
 
 import pystac
@@ -471,9 +468,9 @@ class PointcloudExtension(
 
 
 class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
-    """A concrete implementation of :class:`PointcloudExtension` on an :class:`~pystac.Item`
-    that extends the properties of the Item to include properties defined in the
-    :stac-ext:`Point Cloud Extension <pointcloud>`.
+    """A concrete implementation of :class:`PointcloudExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Point Cloud Extension <pointcloud>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`PointcloudExtension.ext` on an :class:`~pystac.Item` to extend it.

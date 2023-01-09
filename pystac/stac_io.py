@@ -12,6 +12,7 @@ from typing import (
 )
 
 from urllib.request import urlopen
+from urllib.request import Request
 from urllib.error import HTTPError
 
 import pystac
@@ -38,15 +39,18 @@ if TYPE_CHECKING:
 class StacIO(ABC):
     _default_io: Optional[Callable[[], "StacIO"]] = None
 
+    def __init__(self, headers: Optional[Dict[str, str]] = None):
+        self.headers = headers or {}
+
     @abstractmethod
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
         """Read text from the given URI.
 
-        The source to read from can be specified as a string or a
-        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
-        which to read. Using a :class:`~pystac.Link` enables implementations to use
-        additional link information, such as paging information contained in the
-        extended links described in the `STAC API spec
+        The source to read from can be specified as a string or :class:`os.PathLike`
+        object (:class:`~pystac.Link` is a path-like object). If it is a string, it
+        must be a URI or local path from which to read. Using a :class:`~pystac.Link`
+        enables implementations to use additional link information, such as paging
+        information contained in the extended links described in the `STAC API spec
         <https://github.com/radiantearth/stac-api-spec/tree/master/item-search#paging>`__.
 
         Args:
@@ -71,10 +75,11 @@ class StacIO(ABC):
     ) -> None:
         """Write the given text to a file at the given URI.
 
-        The destination to write to from can be specified as a string or a
-        :class:`~pystac.Link`. If it is a string, it must be a URI or local path from
-        which to read. Using a :class:`~pystac.Link` enables implementations to use
-        additional link information.
+        The destination to write to can be specified as a string or
+        :class:`os.PathLike` object (:class:`~pystac.Link` is a path-like object). If
+        it is a string, it must be a URI or local path from which to read. Using a
+        :class:`~pystac.Link` enables implementations to use additional link
+        information.
 
         Args:
             dest : The destination to write to.
@@ -288,7 +293,8 @@ class DefaultStacIO(StacIO):
         href_contents: str
         if parsed.scheme != "":
             try:
-                with urlopen(href) as f:
+                req = Request(href, headers=self.headers)
+                with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
             except HTTPError as e:
                 raise Exception("Could not read uri {}".format(href)) from e

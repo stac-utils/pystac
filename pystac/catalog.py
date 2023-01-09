@@ -1,6 +1,8 @@
 import os
+from html import escape
 from copy import deepcopy
 from pystac.errors import STACTypeError
+from pystac.html.jinja_env import get_jinja_env
 from typing import (
     Any,
     Callable,
@@ -115,7 +117,7 @@ class Catalog(STACObject):
     Args:
         id : Identifier for the catalog. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the catalog.
-            `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY be used for rich
+            `CommonMark 0.29 syntax <https://commonmark.org/>`_ MAY be used for rich
             text representation.
         title : Optional short descriptive one-line title for the catalog.
         stac_extensions : Optional list of extensions the Catalog implements.
@@ -196,6 +198,14 @@ class Catalog(STACObject):
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
 
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("Catalog.jinja2")
+            return str(template.render(catalog=self))
+        else:
+            return escape(repr(self))
+
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)
         if root is not None:
@@ -222,9 +232,9 @@ class Catalog(STACObject):
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
-        """Adds a link to a child :class:`~pystac.Catalog` or :class:`~pystac.Collection`.
-        This method will set the child's parent to this object, and its root to
-        this Catalog's root.
+        """Adds a link to a child :class:`~pystac.Catalog` or
+        :class:`~pystac.Collection`. This method will set the child's parent to this
+        object, and its root to this Catalog's root.
 
         Args:
             child : The child to add.
@@ -254,9 +264,9 @@ class Catalog(STACObject):
     def add_children(
         self, children: Iterable[Union["Catalog", "Collection_Type"]]
     ) -> None:
-        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection` objects.
-        This method will set each child's parent to this object, and their root to
-        this Catalog's root.
+        """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
+        objects. This method will set each child's parent to this object, and their
+        root to this Catalog's root.
 
         Args:
             children : The children to add.
@@ -500,7 +510,7 @@ class Catalog(STACObject):
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
         }
 
-        if self.stac_extensions is not None:
+        if self.stac_extensions:
             d["stac_extensions"] = self.stac_extensions
 
         for key in self.extra_fields:
@@ -517,7 +527,7 @@ class Catalog(STACObject):
             id=self.id,
             description=self.description,
             title=self.title,
-            stac_extensions=self.stac_extensions,
+            stac_extensions=self.stac_extensions.copy(),
             extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
         )
@@ -557,6 +567,7 @@ class Catalog(STACObject):
         root_href: str,
         catalog_type: Optional[CatalogType] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
+        stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
 
@@ -574,9 +585,12 @@ class Catalog(STACObject):
             strategy : The layout strategy to use in setting the
                 HREFS for this catalog. Defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
+            stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
+                provided, will use the instance set while reading in the catalog,
+                or the default instance if this is not available.
         """
         self.normalize_hrefs(root_href, strategy=strategy)
-        self.save(catalog_type)
+        self.save(catalog_type, stac_io=stac_io)
 
     def normalize_hrefs(
         self, root_href: str, strategy: Optional[HrefLayoutStrategy] = None
@@ -731,9 +745,10 @@ class Catalog(STACObject):
         self,
         catalog_type: Optional[CatalogType] = None,
         dest_href: Optional[str] = None,
+        stac_io: Optional[pystac.StacIO] = None,
     ) -> None:
-        """Save this catalog and all it's children/item to files determined by the object's
-        self link HREF or a specified path.
+        """Save this catalog and all it's children/item to files determined by the
+        object's self link HREF or a specified path.
 
         Args:
             catalog_type : The catalog type that dictates the structure of
@@ -743,6 +758,9 @@ class Catalog(STACObject):
             dest_href : The location where the catalog is to be saved.
                 If not supplied, the catalog's self link HREF is used to determine
                 the location of the catalog file and children's files.
+            stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
+                provided, will use the instance set while reading in the catalog,
+                or the default instance if this is not available.
         Note:
             If the catalog type is ``CatalogType.ABSOLUTE_PUBLISHED``,
             all self links will be included, and hierarchical links be absolute URLs.
@@ -770,9 +788,12 @@ class Catalog(STACObject):
                     child_dest_href = make_absolute_href(
                         rel_href, dest_href, start_is_dir=True
                     )
-                    child.save(dest_href=os.path.dirname(child_dest_href))
+                    child.save(
+                        dest_href=os.path.dirname(child_dest_href),
+                        stac_io=stac_io,
+                    )
                 else:
-                    child.save()
+                    child.save(stac_io=stac_io)
 
         for item_link in self.get_item_links():
             if item_link.is_resolved():
@@ -785,9 +806,12 @@ class Catalog(STACObject):
                     item.save_object(
                         include_self_link=items_include_self_link,
                         dest_href=item_dest_href,
+                        stac_io=stac_io,
                     )
                 else:
-                    item.save_object(include_self_link=items_include_self_link)
+                    item.save_object(
+                        include_self_link=items_include_self_link, stac_io=stac_io
+                    )
 
         include_self_link = False
         # include a self link if this is the root catalog
@@ -806,7 +830,9 @@ class Catalog(STACObject):
                 rel_href, dest_href, start_is_dir=True
             )
         self.save_object(
-            include_self_link=include_self_link, dest_href=catalog_dest_href
+            include_self_link=include_self_link,
+            dest_href=catalog_dest_href,
+            stac_io=stac_io,
         )
         if catalog_type is not None:
             self.catalog_type = catalog_type

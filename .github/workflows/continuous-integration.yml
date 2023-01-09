@@ -21,75 +21,33 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11"
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
         experimental:
           - false
-        include:
-          - python-version: "3.11.0-alpha.3"
-            os: ubuntu-latest
-            experimental: true
-          - python-version: "3.11.0-alpha.3"
-            os: windows-latest
-            experimental: true
-          - python-version: "3.11.0-alpha.3"
-            os: macos-latest
-            experimental: true
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
-      - uses: actions-rs/toolchain@v1
-        # Wheels for orjson are not available for Python 3.11. This sets up the Rust
-        # toolchain so we can build orjson wheel from source.
-        if: ${{ startsWith(matrix.python-version, '3.11')}}
-        with:
-          toolchain: stable
-          override: true
-          default: true
-          profile: minimal
-
-      - name: Cache dependencies (Linux)
-        if: startsWith(runner.os, 'Linux')
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-      
-      - name: Cache dependencies (macOS)
-        if: startsWith(runner.os, 'macOS')
-        uses: actions/cache@v2
-        with:
-          path: ~/Library/Caches/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-          
-      - name: Cache dependencies (Windows)
-        if: startsWith(runner.os, 'Windows')
-        uses: actions/cache@v2
-        with:
-          path: ~\AppData\Local\pip\Cache
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
+          cache: "pip"
+          cache-dependency-path: requirements-test.txt
 
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements-test.txt
           pip install -e ".[validation]"
-      
+
       - name: Execute test suite
         run: ./scripts/test
         shell: bash
@@ -100,43 +58,42 @@ jobs:
     name: coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
+          cache: "pip"
+          cache-dependency-path: requirements-test.txt
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: pip-test-${{ runner.os }}-python3.8-${{ hashFiles('requirements-test.txt') }}
-      
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements-test.txt
           pip install -e ".[validation]"
-      
-      - name: Execute test suite
-        run: ./scripts/test
-        env:
-          CHECK_COVERAGE: true
+
+      - name: Run coverage with orjson
+        run: coverage run -m unittest discover tests
+
+      - name: Uninstall orjson
+        run: pip uninstall -y orjson
+
+      - name: Run coverage without orjson, appending results
+        run: coverage run -a -m unittest discover tests
 
       - name: Prepare ./coverage.xml
         # Ignore the configured fail-under to ensure we upload the coverage report. We
         # will trigger a failure for coverage drops in a later job
         run: coverage xml --fail-under 0
-      
+
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+        uses: codecov/codecov-action@v3
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
-          fail_ci_if_error: false 
+          fail_ci_if_error: false
 
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
@@ -150,27 +107,21 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
-          - "3.11.0-alpha.3"
+          - "3.11"
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: requirements-test.txt
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # Cache based on OS, Python version, and dependency hash
-          key: lint-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('requirements-test.txt') }}
-      
       - name: Install dependencies
         run: |
           pip install --upgrade pip
@@ -181,15 +132,29 @@ jobs:
 
   vanilla:
     runs-on: ubuntu-latest
-    steps:  
-      - uses: actions/checkout@v2
-      
-      - uses: actions/setup-python@v2
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 
       - name: Install without orjson
         run: pip install '.[validation]'
-      
+
       - name: Run unittests
         run: python -m unittest discover tests
+
+  check-dev-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          cache: "pip"
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt

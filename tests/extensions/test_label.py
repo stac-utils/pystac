@@ -138,7 +138,7 @@ class LabelTest(unittest.TestCase):
         item_ids = set([i.id for i in items])
 
         for li in items:
-            if LabelExtension.ext(li).has_extension:
+            if LabelExtension.has_extension(li):
                 sources = list(LabelExtension.ext(li).get_sources() or [])
                 self.assertEqual(len(sources), 1)
                 self.assertTrue(sources[0].id in item_ids)
@@ -164,7 +164,7 @@ class LabelTest(unittest.TestCase):
         item = next(
             x
             for x in TestCases.test_case_2().get_all_items()
-            if LabelExtension.ext(x).has_extension
+            if LabelExtension.has_extension(x)
         )
         assert len(item.assets) > 0
         for asset_key in item.assets:
@@ -196,6 +196,11 @@ class LabelTest(unittest.TestCase):
         # Set
         LabelExtension.ext(label_item).label_type = LabelType.RASTER
         self.assertEqual(LabelType.RASTER, label_item.properties["label:type"])
+        # name for each label:classes object must be null to pass validation
+        label_classes = LabelExtension.ext(label_item).label_classes
+        assert label_classes is not None
+        for classes_obj in label_classes:
+            classes_obj.name = None
         label_item.validate()
 
     def test_label_properties(self) -> None:

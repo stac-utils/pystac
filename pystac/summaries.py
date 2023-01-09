@@ -1,4 +1,4 @@
-import sys
+from copy import deepcopy
 import numbers
 from enum import Enum
 from functools import lru_cache
@@ -12,16 +12,12 @@ from typing import (
     Generic,
     List,
     Optional,
+    Protocol,
     Union,
     TypeVar,
     Iterable,
     TYPE_CHECKING,
 )
-
-if sys.version_info >= (3, 8):
-    from typing import Protocol
-else:
-    from typing_extensions import Protocol
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type
@@ -286,6 +282,21 @@ class Summaries:
         return not (
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )
+
+    def clone(self) -> "Summaries":
+        """Clones this object.
+
+        Returns:
+            Summaries: The clone of this object
+        """
+        summaries = Summaries(
+            summaries=deepcopy(self._summaries), maxcount=self.maxcount
+        )
+        summaries.lists = deepcopy(self.lists)
+        summaries.other = deepcopy(self.other)
+        summaries.ranges = deepcopy(self.ranges)
+        summaries.schemas = deepcopy(self.schemas)
+        return summaries
 
     def to_dict(self) -> Dict[str, Any]:
         return {

@@ -1,7 +1,9 @@
-from copy import copy
+from html import escape
+from copy import copy, deepcopy
 from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
 
 from pystac import common_metadata
+from pystac.html.jinja_env import get_jinja_env
 from pystac import utils
 
 if TYPE_CHECKING:
@@ -90,7 +92,8 @@ class Asset:
         """Gets the absolute href for this asset, if possible.
 
         If this Asset has no associated Item, and the asset HREF is a relative path,
-            this method will return None.
+            this method will return ``None``. If the Item that owns the Asset has no
+            self HREF, this will also return ``None``.
 
         Returns:
             str: The absolute HREF of this asset, or None if an absolute HREF could not
@@ -100,9 +103,10 @@ class Asset:
             return self.href
         else:
             if self.owner is not None:
-                return utils.make_absolute_href(self.href, self.owner.get_self_href())
-            else:
-                return None
+                item_self = self.owner.get_self_href()
+                if item_self is not None:
+                    return utils.make_absolute_href(self.href, item_self)
+            return None
 
     def to_dict(self) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this Asset.
@@ -132,7 +136,8 @@ class Asset:
         return d
 
     def clone(self) -> "Asset":
-        """Clones this asset.
+        """Clones this asset. Makes a ``deepcopy`` of the
+        :attr:`~pystac.Asset.extra_fields`.
 
         Returns:
             Asset: The clone of this asset.
@@ -144,8 +149,22 @@ class Asset:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            extra_fields=self.extra_fields,
+            extra_fields=deepcopy(self.extra_fields),
         )
+
+    def has_role(self, role: str) -> bool:
+        """Check if a role exists in the Asset role list.
+
+        Args:
+            role: Role to check for existence.
+
+        Returns:
+            bool: True if role exists, else False.
+        """
+        if self.roles is None:
+            return False
+        else:
+            return role in self.roles
 
     @property
     def common_metadata(self) -> "CommonMetadata_Type":
@@ -155,6 +174,14 @@ class Asset:
 
     def __repr__(self) -> str:
         return "<Asset href={}>".format(self.href)
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("Asset.jinja2")
+            return str(template.render(asset=self))
+        else:
+            return escape(repr(self))
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "Asset":

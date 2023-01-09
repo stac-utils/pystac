@@ -1,11 +1,11 @@
+from html import escape
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
 from pystac.catalog import Catalog
 from typing import Any, Dict, List, Optional, Union, cast
 
-import dateutil.parser
-
 import pystac
+from pystac.html.jinja_env import get_jinja_env
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.link import Link
@@ -49,6 +49,9 @@ class Item(STACObject):
             belongs to.
         extra_fields : Extra fields that are part of the top-level JSON
             properties of the Item.
+        assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
+            :class:`~pystac.Asset` values in the dictionary will have their
+            :attr:`~pystac.Asset.owner` attribute set to the created Item.
     """
 
     assets: Dict[str, Asset]
@@ -105,6 +108,7 @@ class Item(STACObject):
         href: Optional[str] = None,
         collection: Optional[Union[str, Collection]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
+        assets: Optional[Dict[str, Asset]] = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -142,8 +146,21 @@ class Item(STACObject):
             else:
                 self.collection_id = collection
 
+        self.assets = {}
+        if assets is not None:
+            for k, asset in assets.items():
+                self.add_asset(k, asset)
+
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("Item.jinja2")
+            return str(template.render(item=self))
+        else:
+            return escape(repr(self))
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
@@ -204,13 +221,32 @@ class Item(STACObject):
         else:
             asset.extra_fields["datetime"] = datetime_to_str(datetime)
 
-    def get_assets(self) -> Dict[str, Asset]:
+    def get_assets(
+        self,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+        role: Optional[str] = None,
+    ) -> Dict[str, Asset]:
         """Get this item's assets.
 
+        Args:
+            media_type: If set, filter the assets such that only those with a
+                matching ``media_type`` are returned.
+            role: If set, filter the assets such that only those with a matching
+                ``role`` are returned.
+
         Returns:
-            Dict[str, Asset]: A copy of the dictionary of this item's assets.
+            Dict[str, Asset]: A dictionary of assets that match ``media_type``
+                and/or ``role`` if set or else all of this item's assets.
         """
-        return dict(self.assets.items())
+        if media_type is None and role is None:
+            return dict(self.assets.items())
+        assets = dict()
+        for key, asset in self.assets.items():
+            if (media_type is None or asset.media_type == media_type) and (
+                role is None or asset.has_role(role)
+            ):
+                assets[key] = asset
+        return assets
 
     def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.
@@ -349,12 +385,10 @@ class Item(STACObject):
             properties=deepcopy(self.properties),
             stac_extensions=deepcopy(self.stac_extensions),
             collection=self.collection_id,
+            assets={k: asset.clone() for k, asset in self.assets.items()},
         )
         for link in self.links:
             clone.add_link(link.clone())
-
-        for k, asset in self.assets.items():
-            clone.add_asset(k, asset.clone())
 
         return clone
 
@@ -394,7 +428,7 @@ class Item(STACObject):
 
         datetime = properties.get("datetime")
         if datetime is not None:
-            datetime = dateutil.parser.parse(datetime)
+            datetime = str_to_datetime(datetime)
         links = d.pop("links")
         assets = d.pop("assets")
 
@@ -410,6 +444,7 @@ class Item(STACObject):
             stac_extensions=stac_extensions,
             collection=collection_id,
             extra_fields=d,
+            assets={k: Asset.from_dict(v) for k, v in assets.items()},
         )
 
         has_self_link = False
@@ -419,11 +454,6 @@ class Item(STACObject):
 
         if not has_self_link and href is not None:
             item.add_link(Link.self_href(href))
-
-        for k, v in assets.items():
-            asset = Asset.from_dict(v)
-            asset.set_owner(item)
-            item.assets[k] = asset
 
         if root:
             item.set_root(root)

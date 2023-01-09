@@ -1,0 +1,31 @@
+{% import 'Macros.jinja2' as macros %}
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
+    {{ macros.square() }}
+    <div>
+        <details style="margin-left: 48px;">
+            <summary style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 0px; display: inline;">
+                    {{item_collection.__class__.__name__}}
+                </h3>
+            </summary>
+            <table style="width: 100%; text-align: left;">
+                {{ macros.extra_fields(item_collection) }}
+            </table>
+
+            {% if item_collection.__iter__()|is_nonempty_generator %}
+                <details>
+                    {% if item_collection.items | length > 10 %}
+                        <i> Only the first 10 items shown </i>
+                    {% endif %}
+                    <summary style="margin-bottom: 10px; margin-top: 10px">
+                        <h4 style="margin-bottom: 0px; display: inline;">Items</h4>
+                    </summary>
+                    {% for item in item_collection.items[:10] %}
+                        {{ item._repr_html_() }}
+                    {% endfor %}
+                </details>
+            {% endif %}
+        </details>
+    </div>
+</div>

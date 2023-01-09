@@ -1,6 +1,9 @@
+from html import escape
 from copy import deepcopy
 from datetime import datetime
+
 from pystac.errors import STACTypeError
+from pystac.html.jinja_env import get_jinja_env
 from typing import (
     Any,
     Dict,
@@ -14,7 +17,6 @@ from typing import (
     cast,
 )
 
-import dateutil.parser
 from dateutil import tz
 
 import pystac
@@ -24,7 +26,7 @@ from pystac.catalog import Catalog
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
-from pystac.utils import datetime_to_str
+from pystac.utils import datetime_to_str, str_to_datetime
 from pystac.serialization import (
     identify_stac_object_type,
     identify_stac_object,
@@ -37,6 +39,10 @@ if TYPE_CHECKING:
     from pystac.provider import Provider as Provider_Type
 
 T = TypeVar("T")
+TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
+TemporalIntervalsLike = Union[
+    TemporalIntervals, List[datetime], List[Optional[datetime]]
+]
 
 
 class SpatialExtent:
@@ -176,7 +182,7 @@ class TemporalExtent:
         Datetimes are required to be in UTC.
     """
 
-    intervals: List[List[Optional[datetime]]]
+    intervals: TemporalIntervals
     """A list of two datetimes wrapped in a list,
     representing the temporal extent of a Collection. Open date ranges are
     represented by either the start (the first element of the interval) or the
@@ -188,16 +194,16 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: Union[List[List[Optional[datetime]]], List[Optional[datetime]]],
+        intervals: TemporalIntervals,
         extra_fields: Optional[Dict[str, Any]] = None,
     ):
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
         if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = [cast(List[Optional[datetime]], intervals)]
+            self.intervals = intervals
         else:
-            self.intervals = cast(List[List[Optional[datetime]]], intervals)
+            self.intervals = intervals
 
         self.extra_fields = extra_fields or {}
 
@@ -246,9 +252,9 @@ class TemporalExtent:
             end = None
 
             if i[0]:
-                start = dateutil.parser.parse(i[0])
+                start = str_to_datetime(i[0])
             if i[1]:
-                end = dateutil.parser.parse(i[1])
+                end = str_to_datetime(i[1])
             parsed_intervals.append([start, end])
 
         return TemporalExtent(
@@ -417,7 +423,7 @@ class Collection(Catalog):
     Args:
         id : Identifier for the collection. Must be unique within the STAC.
         description : Detailed multi-line description to fully explain the
-            collection. `CommonMark 0.28 syntax <https://commonmark.org/>`_ MAY
+            collection. `CommonMark 0.29 syntax <https://commonmark.org/>`_ MAY
             be used for rich text representation.
         extent : Spatial and temporal extents that describe the bounds of
             all items contained within this Collection.
@@ -440,6 +446,9 @@ class Collection(Catalog):
             either a set of values or statistics such as a range.
         extra_fields : Extra fields that are part of the top-level
             JSON properties of the Collection.
+        assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
+            :class:`~pystac.Asset` values in the dictionary will have their
+            :attr:`~pystac.Asset.owner` attribute set to the created Collection.
     """
 
     assets: Dict[str, Asset]
@@ -498,6 +507,7 @@ class Collection(Catalog):
         keywords: Optional[List[str]] = None,
         providers: Optional[List["Provider_Type"]] = None,
         summaries: Optional[Summaries] = None,
+        assets: Optional[Dict[str, Asset]] = None,
     ):
         super().__init__(
             id,
@@ -517,9 +527,20 @@ class Collection(Catalog):
         self.summaries = summaries or Summaries.empty()
 
         self.assets = {}
+        if assets is not None:
+            for k, asset in assets.items():
+                self.add_asset(k, asset)
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("Collection.jinja2")
+            return str(template.render(catalog=self))
+        else:
+            return escape(repr(self))
 
     def add_item(
         self,
@@ -538,11 +559,11 @@ class Collection(Catalog):
         )
         d["extent"] = self.extent.to_dict()
         d["license"] = self.license
-        if self.stac_extensions is not None:
+        if self.stac_extensions:
             d["stac_extensions"] = self.stac_extensions
-        if self.keywords is not None:
+        if self.keywords:
             d["keywords"] = self.keywords
-        if self.providers is not None:
+        if self.providers:
             d["providers"] = list(map(lambda x: x.to_dict(), self.providers))
         if not self.summaries.is_empty():
             d["summaries"] = self.summaries.to_dict()
@@ -558,13 +579,14 @@ class Collection(Catalog):
             description=self.description,
             extent=self.extent.clone(),
             title=self.title,
-            stac_extensions=self.stac_extensions,
-            extra_fields=self.extra_fields,
+            stac_extensions=self.stac_extensions.copy(),
+            extra_fields=deepcopy(self.extra_fields),
             catalog_type=self.catalog_type,
             license=self.license,
-            keywords=self.keywords,
-            providers=self.providers,
-            summaries=self.summaries,
+            keywords=self.keywords.copy() if self.keywords is not None else None,
+            providers=deepcopy(self.providers),
+            summaries=self.summaries.clone(),
+            assets={k: asset.clone() for k, asset in self.assets.items()},
         )
 
         clone._resolved_objects.cache(clone)
@@ -607,17 +629,19 @@ class Collection(Catalog):
         description = d.pop("description")
         license = d.pop("license")
         extent = Extent.from_dict(d.pop("extent"))
-        title = d.get("title")
-        stac_extensions = d.get("stac_extensions")
-        keywords = d.get("keywords")
-        providers = d.get("providers")
+        title = d.pop("title", None)
+        stac_extensions = d.pop("stac_extensions", None)
+        keywords = d.pop("keywords", None)
+        providers = d.pop("providers", None)
         if providers is not None:
             providers = list(map(lambda x: pystac.Provider.from_dict(x), providers))
-        summaries = d.get("summaries")
+        summaries = d.pop("summaries", None)
         if summaries is not None:
             summaries = Summaries(summaries)
 
-        assets: Optional[Dict[str, Any]] = d.get("assets", None)
+        assets = d.pop("assets", None)
+        if assets:
+            assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
         d.pop("stac_version")
@@ -635,6 +659,7 @@ class Collection(Catalog):
             summaries=summaries,
             href=href,
             catalog_type=catalog_type,
+            assets=assets,
         )
 
         for link in links:
@@ -645,22 +670,37 @@ class Collection(Catalog):
             if link["rel"] != pystac.RelType.SELF or href is None:
                 collection.add_link(Link.from_dict(link))
 
-        if assets is not None:
-            for asset_key, asset_dict in assets.items():
-                collection.add_asset(asset_key, Asset.from_dict(asset_dict))
-
         if root:
             collection.set_root(root)
 
         return collection
 
-    def get_assets(self) -> Dict[str, Asset]:
-        """Get this item's assets.
+    def get_assets(
+        self,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+        role: Optional[str] = None,
+    ) -> Dict[str, Asset]:
+        """Get this collection's assets.
+
+        Args:
+            media_type: If set, filter the assets such that only those with a
+                matching ``media_type`` are returned.
+            role: If set, filter the assets such that only those with a matching
+                ``role`` are returned.
 
         Returns:
-            Dict[str, Asset]: A copy of the dictionary of this item's assets.
+            Dict[str, Asset]: A dictionary of assets that match ``media_type``
+                and/or ``role`` if set or else all of this collection's assets.
         """
-        return dict(self.assets.items())
+        if media_type is None and role is None:
+            return dict(self.assets.items())
+        assets = dict()
+        for key, asset in self.assets.items():
+            if (media_type is None or asset.media_type == media_type) and (
+                role is None or asset.has_role(role)
+            ):
+                assets[key] = asset
+        return assets
 
     def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.

@@ -18,7 +18,7 @@ from pystac import (
     CatalogType,
     Provider,
 )
-from pystac.utils import datetime_to_str, get_required
+from pystac.utils import datetime_to_str, get_required, str_to_datetime
 from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
@@ -79,6 +79,19 @@ class CollectionTest(unittest.TestCase):
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
         self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+
+    def test_clone_cant_mutate_original(self) -> None:
+        collection = TestCases.test_case_8()
+        assert collection.keywords is not None
+        self.assertListEqual(collection.keywords, ["disaster", "open"])
+        clone = collection.clone()
+        clone.extra_fields["test"] = "extra"
+        self.assertNotIn("test", collection.extra_fields)
+        assert clone.keywords is not None
+        clone.keywords.append("clone")
+        self.assertListEqual(clone.keywords, ["disaster", "open", "clone"])
+        self.assertListEqual(collection.keywords, ["disaster", "open"])
+        self.assertNotEqual(id(collection.summaries), id(clone.summaries))
 
     def test_multiple_extents(self) -> None:
         cat1 = TestCases.test_case_1()
@@ -213,6 +226,62 @@ class CollectionTest(unittest.TestCase):
         collection = pystac.Collection.from_dict(data)
         collection.validate()
 
+    def test_get_assets(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/with-assets.json")
+        )
+
+        media_type_filter = collection.get_assets(media_type=pystac.MediaType.PNG)
+        self.assertCountEqual(media_type_filter.keys(), ["thumbnail"])
+        role_filter = collection.get_assets(role="thumbnail")
+        self.assertCountEqual(role_filter.keys(), ["thumbnail"])
+        multi_filter = collection.get_assets(
+            media_type=pystac.MediaType.PNG, role="thumbnail"
+        )
+        self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
+
+        no_filter = collection.get_assets()
+        self.assertCountEqual(no_filter.keys(), ["thumbnail"])
+        no_assets = collection.get_assets(media_type=pystac.MediaType.HDF)
+        self.assertEqual(no_assets, {})
+
+    def test_removing_optional_attributes(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        with open(path, "r") as file:
+            data = json.load(file)
+        data["title"] = "dummy title"
+        data["stac_extensions"] = ["dummy extension"]
+        data["keywords"] = ["key", "word"]
+        data["providers"] = [{"name": "pystac"}]
+        collection = pystac.Collection.from_dict(data)
+
+        # Assert we have everything set
+        assert collection.title
+        assert collection.stac_extensions
+        assert collection.keywords
+        assert collection.providers
+        assert collection.summaries
+        assert collection.assets
+
+        # Remove all of the optional stuff
+        collection.title = None
+        collection.stac_extensions = []
+        collection.keywords = []
+        collection.providers = []
+        collection.summaries = pystac.Summaries({})
+        collection.assets = {}
+
+        collection_as_dict = collection.to_dict()
+        for key in (
+            "title",
+            "stac_extensions",
+            "keywords",
+            "providers",
+            "summaries",
+            "assets",
+        ):
+            assert key not in collection_as_dict
+
     def test_from_dict_preserves_dict(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:
@@ -258,10 +327,37 @@ class CollectionTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Collection.from_dict(catalog_dict)
 
+    def test_clone_preserves_assets(self) -> None:
+        path = TestCases.get_path("data-files/collections/with-assets.json")
+        original_collection = Collection.from_file(path)
+        assert len(original_collection.assets) > 0
+        assert all(
+            asset.owner is original_collection
+            for asset in original_collection.assets.values()
+        )
+
+        cloned_collection = original_collection.clone()
+
+        for key in original_collection.assets:
+            with self.subTest(f"Preserves {key} asset"):
+                self.assertIn(key, cloned_collection.assets)
+            cloned_asset = cloned_collection.assets.get(key)
+            if cloned_asset is not None:
+                with self.subTest(f"Sets owner for {key}"):
+                    self.assertIs(cloned_asset.owner, cloned_collection)
+
 
 class ExtentTest(unittest.TestCase):
     def setUp(self) -> None:
         self.maxDiff = None
+
+    def test_temporal_extent_init_typing(self) -> None:
+        # This test exists purely to test the typing of the intervals argument to
+        # TemporalExtent
+        start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
+        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+
+        _ = TemporalExtent([[start_datetime, end_datetime]])
 
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])

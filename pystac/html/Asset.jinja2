@@ -1,0 +1,31 @@
+{% import 'Macros.jinja2' as macros %}
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output">
+    {{ macros.square('#FED7E5', '#FA4C8C') }}
+    <div>
+        <details style="margin-left: 48px;">
+            <summary style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 0px; display: inline;">Asset: {{ asset.title }}</h3>
+            </summary>
+            <table style="width: 100%; text-align: left;">
+                <tr><td style="text-align: left;"><strong>href</strong>: {{ asset.href }} </td></tr>
+                {% if asset.title %}
+                    <tr><td style="text-align: left;"><strong>Title:</strong> {{ asset.title }} </td></tr>
+                {% endif %}
+                {% if asset.description %}
+                    <tr><td style="text-align: left;"><strong>Description:</strong> {{ asset.description }} </td></tr>
+                {% endif %}
+                {% if asset.media_type %}
+                    <tr><td style="text-align: left;"><strong>Media type:</strong> {{ asset.media_type }} </td></tr>
+                {% endif %}
+                {% if asset.roles %}
+                    <tr><td style="text-align: left;"><strong>Roles:</strong> {{ asset.roles }} </td></tr>
+                {% endif %}
+                {% if asset.owner %}
+                    <tr><td style="text-align: left;"><strong>Owner:</strong> {{ asset.Owner }} </td></tr>
+                {% endif %}
+                {{ macros.extra_fields(asset) }}
+            </table>
+        </details>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+{% import 'Macros.jinja2' as macros %}
+
+<div>
+    {% if provider.url %}
+        <a href="{{ provider.url }}"> {{ provider.name }} </a>
+    {% else %}
+        {{ provider.name }}
+    {% endif %}
+    (<i>{{ provider.roles|join(", ") }}</i>){% if provider.description %}: {{ provider.description }} {% endif %}
+    {{ macros.extra_fields(provider) }}
+</div>
+

@@ -1,7 +1,4 @@
-"""Implements the Timestamps extension.
-
-https://github.com/stac-extensions/timestamps
-"""
+"""Implements the :stac-ext:`Timestamps Extension <timestamps>`."""
 
 from datetime import datetime as datetime
 from pystac.summaries import RangeSummary
@@ -85,7 +82,7 @@ class TimestampsExtension(
         """Gets or sets a datetime object that represents the date and time the
         corresponding data expires (is not valid any longer).
 
-        'Unpublished' has a different meaning depending on where it is used. If
+        'Expires' has a different meaning depending on where it is used. If
         available in the asset properties, it refers to the timestamps valid for the
         actual data linked to the Asset Object. If it comes from the Item properties,
         it refers to to the timestamp valid for the metadata.

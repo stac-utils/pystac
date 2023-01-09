@@ -259,9 +259,25 @@ created automatically by all of the object-specific I/O methods (e.g.
 :meth:`pystac.Catalog.from_file`), so most users will not need to instantiate this
 class themselves.
 
-If you require custom logic for I/O operations or would like to use a 3rd-party library
-for I/O operations (e.g. ``requests``), you can create a sub-class of
-:class:`pystac.StacIO` (or :class:`pystac.DefaultStacIO`) and customize the methods as
+If you are dealing with a STAC catalog with URIs that require authentication.
+It is possible provide auth headers (or any other customer headers) to the
+:class:`pystac.stac_io.DefaultStacIO`.
+
+.. code-block:: python
+
+  from pystac import Catalog
+  from pystac import StacIO
+
+  stac_io = StacIO.default()
+  stac_io.headers = {"Authorization": "<some-auth-header>"}
+
+  catalog = Catalog.from_file("<URI-requiring-auth>", stac_io=stac_io)
+
+
+If you require more custom logic for I/O operations or would like to use a
+3rd-party library for I/O operations (e.g. ``requests``),
+you can create a sub-class of :class:`pystac.StacIO`
+(or :class:`pystac.DefaultStacIO`) and customize the methods as
 you see fit. You can then pass instances of this custom sub-class into the ``stac_io``
 argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
@@ -279,13 +295,13 @@ for reading from AWS's S3 cloud object storage using `boto3
    from pystac.stac_io import DefaultStacIO, StacIO
 
    class CustomStacIO(DefaultStacIO):
-      def __init__():
+      def __init__(self):
          self.s3 = boto3.resource("s3")
 
       def read_text(
          self, source: Union[str, Link], *args: Any, **kwargs: Any
       ) -> str:
-         parsed = urlparse(uri)
+         parsed = urlparse(source)
          if parsed.scheme == "s3":
             bucket = parsed.netloc
             key = parsed.path[1:]
@@ -298,12 +314,11 @@ for reading from AWS's S3 cloud object storage using `boto3
       def write_text(
          self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
       ) -> None:
-         parsed = urlparse(uri)
+         parsed = urlparse(dest)
          if parsed.scheme == "s3":
             bucket = parsed.netloc
             key = parsed.path[1:]
-            s3 = boto3.resource("s3")
-            s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+            self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
          else:
             super().write_text(dest, txt, *args, **kwargs)
 
@@ -322,7 +337,7 @@ to take advantage of connection pooling using a `requests.Session
    from pystac.stac_io import DefaultStacIO, StacIO
 
    class ConnectionPoolingIO(DefaultStacIO):
-      def __init__():
+      def __init__(self):
          self.session = requests.Session()
 
       def read_text(
@@ -623,7 +638,7 @@ by the Python Standard Library `os.walk()
        root.title = '{} has been walked!'.format(root.id)
 
        # subcats represents any catalogs or collections owned by root
-       for cat in subcatalogs:
+       for cat in subcats:
            cat.title = 'About to be walked!'
 
        # items represent all items that are contained by root

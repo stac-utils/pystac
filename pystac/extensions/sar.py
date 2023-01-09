@@ -1,7 +1,4 @@
-"""Implements the Synthetic-Aperture Radar (SAR) extension.
-
-https://github.com/stac-extensions/sar
-"""
+"""Implements the :stac-ext:`Synthetic-Aperture Radar (SAR) Extension <sar>`."""
 
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast, Union
 
@@ -528,8 +525,8 @@ class SummariesSarExtension(SummariesExtension):
 
     @property
     def looks_equivalent_number(self) -> Optional[RangeSummary[float]]:
-        """Get or sets the summary of :attr:`SarExtension.looks_equivalent_number` values
-        for this Collection.
+        """Get or sets the summary of :attr:`SarExtension.looks_equivalent_number`
+        values for this Collection.
         """
 
         return self.summaries.get_range(LOOKS_EQUIVALENT_NUMBER_PROP)

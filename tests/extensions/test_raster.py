@@ -6,6 +6,7 @@ from pystac import ExtensionTypeError, Item
 from pystac.utils import get_opt
 from pystac.extensions.raster import (
     Histogram,
+    NoDataStrings,
     RasterExtension,
     RasterBand,
     Sampling,
@@ -41,6 +42,7 @@ class RasterTest(unittest.TestCase):
 
     def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
+        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
 
         # Get
         data_asset = item.assets["data"]
@@ -74,8 +76,12 @@ class RasterTest(unittest.TestCase):
         asset_bands = RasterExtension.ext(index_asset).bands
         self.assertIs(None, asset_bands)
 
+        b09_asset = item2.assets["B09"]
+        b09_bands = RasterExtension.ext(b09_asset).bands
+        assert b09_bands is not None
+        self.assertEqual(b09_bands[0].nodata, "nan")
+
         # Set
-        item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
         b2_asset = item2.assets["B02"]
         self.assertEqual(
             get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum,
@@ -89,6 +95,9 @@ class RasterTest(unittest.TestCase):
         self.assertEqual(
             get_opt(get_opt(new_b2_asset_bands)[0].statistics).maximum, 20567
         )
+
+        new_b2_asset_band0 = get_opt(new_b2_asset_bands)[0]
+        new_b2_asset_band0.nodata = NoDataStrings.INF
 
         item2.validate()
 
@@ -127,7 +136,7 @@ class RasterTest(unittest.TestCase):
                 histogram=new_histograms[1],
             ),
             RasterBand.create(
-                nodata=3,
+                nodata=NoDataStrings.NINF,
                 unit="test3",
                 statistics=new_stats[2],
                 histogram=new_histograms[2],
@@ -147,6 +156,9 @@ class RasterTest(unittest.TestCase):
         self.assertEqual(
             item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"],
             3848.354901960784,
+        )
+        self.assertEqual(
+            item.assets["test"].extra_fields["raster:bands"][2]["nodata"], "-inf"
         )
 
         for s in new_stats:
@@ -190,7 +202,7 @@ class RasterTest(unittest.TestCase):
             histogram=new_histograms[1],
         )
         new_bands[0].apply(
-            nodata=3,
+            nodata=NoDataStrings.NAN,
             unit="test3",
             statistics=new_stats[0],
             histogram=new_histograms[2],
@@ -201,6 +213,9 @@ class RasterTest(unittest.TestCase):
                 "minimum"
             ],
             1,
+        )
+        self.assertEqual(
+            item.assets["test"].extra_fields["raster:bands"][0]["nodata"], "nan"
         )
 
     def test_extension_not_implemented(self) -> None:

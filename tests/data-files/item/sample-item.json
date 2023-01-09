@@ -54,11 +54,20 @@
     "analytic": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/analytic.tif",
       "title": "4-Band Analytic",
-      "product": "http://cool-sat.com/catalog/products/analytic.json"
+      "product": "http://cool-sat.com/catalog/products/analytic.json",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "roles": [
+        "data",
+        "analytic"
+      ]
     },
     "thumbnail": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/thumbnail.png",
-      "title": "Thumbnail"
+      "title": "Thumbnail",
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
     }
   },
   "bbox": [
