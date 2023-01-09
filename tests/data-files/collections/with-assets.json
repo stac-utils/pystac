@@ -30,7 +30,10 @@
     "thumbnail": {
       "href": "http://example.com/thumbnail.png",
       "title": "thumbnail",
-      "media_type": "image/png"
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
     }
   },
   "extent": {
