@@ -12,7 +12,5 @@ def get_data_path(rel_path: Union[str, PathLike]) -> str:
     tests/data-files directory in this repo."""
     rel_path = os.fspath(rel_path)
     return os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__), "..", "..", "tests", "data-files", rel_path
-        )
+        os.path.join(os.path.dirname(__file__), "..", "tests", "data-files", rel_path)
     )
