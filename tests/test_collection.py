@@ -226,6 +226,25 @@ class CollectionTest(unittest.TestCase):
         collection = pystac.Collection.from_dict(data)
         collection.validate()
 
+    def test_get_assets(self) -> None:
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/collections/with-assets.json")
+        )
+
+        media_type_filter = collection.get_assets(media_type=pystac.MediaType.PNG)
+        self.assertCountEqual(media_type_filter.keys(), ["thumbnail"])
+        role_filter = collection.get_assets(role="thumbnail")
+        self.assertCountEqual(role_filter.keys(), ["thumbnail"])
+        multi_filter = collection.get_assets(
+            media_type=pystac.MediaType.PNG, role="thumbnail"
+        )
+        self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
+
+        no_filter = collection.get_assets()
+        self.assertCountEqual(no_filter.keys(), ["thumbnail"])
+        no_assets = collection.get_assets(media_type=pystac.MediaType.HDF)
+        self.assertEqual(no_assets, {})
+
     def test_removing_optional_attributes(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path, "r") as file:
