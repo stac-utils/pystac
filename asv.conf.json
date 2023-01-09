@@ -2,7 +2,7 @@
     "version": 1,
     "project": "pystac",
     "project_url": "https://pystac.readthedocs.io/",
-    "repo": "..",
+    "repo": ".",
     "branches": [
         "main"
     ],

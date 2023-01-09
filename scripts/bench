@@ -8,5 +8,4 @@ fi
 
 asv continuous --split -e --interleave-rounds \
     --factor ${ASV_FACTOR} \
-    --config "${ASV_DIR}/asv.conf.json" \
     main HEAD;
