@@ -173,5 +173,7 @@ jobs:
           cache-dependency-path: requirements-bench.txt
       - name: Install benchmark dependencies
         run: pip install -r requirements-bench.txt
+      - name: Set asv machine
+        run: asv machine --yes
       - name: Check benchmarks
         run: asv dev -a repeat=1 -a rounds=1 --strict
