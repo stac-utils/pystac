@@ -9,8 +9,7 @@ echo
 
 if [[ -z ${CI} || -n ${CHECK_COVERAGE} ]]; then
     echo " -- RUNNING UNIT TESTS (WITH COVERAGE) --"
-    # Test suite with coverage enabled
-    coverage run -m pytest tests
+    pytest tests --cov
 else
     echo " -- RUNNING UNIT TESTS (WITHOUT COVERAGE) --"
     pytest tests
