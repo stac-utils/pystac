@@ -2,7 +2,7 @@ Contributing
 ============
 
 A list of issues and ongoing work is available on the PySTAC `issues page
-<https://github.com/azavea/pystac/issues>`_. If you want to contribute code, the best
+<https://github.com/stac-utils/pystac/issues>`_. If you want to contribute code, the best
 way is to coordinate with the core developers via an issue or pull request conversation.
 
 Development installation

@@ -152,6 +152,20 @@ class Asset:
             extra_fields=deepcopy(self.extra_fields),
         )
 
+    def has_role(self, role: str) -> bool:
+        """Check if a role exists in the Asset role list.
+
+        Args:
+            role: Role to check for existence.
+
+        Returns:
+            bool: True if role exists, else False.
+        """
+        if self.roles is None:
+            return False
+        else:
+            return role in self.roles
+
     @property
     def common_metadata(self) -> "CommonMetadata_Type":
         """Access the asset's common metadata fields as a

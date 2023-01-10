@@ -675,13 +675,32 @@ class Collection(Catalog):
 
         return collection
 
-    def get_assets(self) -> Dict[str, Asset]:
-        """Get this item's assets.
+    def get_assets(
+        self,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
+        role: Optional[str] = None,
+    ) -> Dict[str, Asset]:
+        """Get this collection's assets.
+
+        Args:
+            media_type: If set, filter the assets such that only those with a
+                matching ``media_type`` are returned.
+            role: If set, filter the assets such that only those with a matching
+                ``role`` are returned.
 
         Returns:
-            Dict[str, Asset]: A copy of the dictionary of this item's assets.
+            Dict[str, Asset]: A dictionary of assets that match ``media_type``
+                and/or ``role`` if set or else all of this collection's assets.
         """
-        return dict(self.assets.items())
+        if media_type is None and role is None:
+            return dict(self.assets.items())
+        assets = dict()
+        for key, asset in self.assets.items():
+            if (media_type is None or asset.media_type == media_type) and (
+                role is None or asset.has_role(role)
+            ):
+                assets[key] = asset
+        return assets
 
     def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.
