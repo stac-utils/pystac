@@ -1,21 +1,28 @@
-import unittest
 import tempfile
 from typing import Any, List
 
+import pytest
+
 import pystac
-from pystac import Collection, CatalogType, HIERARCHICAL_LINKS
+from pystac import HIERARCHICAL_LINKS, Catalog, CatalogType, Collection
 from pystac.utils import is_absolute_href, make_absolute_href
 from pystac.validation import validate_dict
-
 from tests.utils import TestCases
 
 
-class STACWritingTest(unittest.TestCase):
+CTYPES = [
+    CatalogType.ABSOLUTE_PUBLISHED,
+    CatalogType.RELATIVE_PUBLISHED,
+    CatalogType.SELF_CONTAINED,
+]
+
+
+class TestSTACWriting:
     """Tests writing STACs, using JSON Schema validation,
     and ensure that links are correctly set to relative or absolute.
     """
 
-    def validate_catalog(self, catalog: pystac.Catalog) -> int:
+    def validate_catalog(self, catalog: Catalog) -> int:
         catalog.validate()
         validated_count = 1
 
@@ -32,9 +39,7 @@ class STACWritingTest(unittest.TestCase):
         d = pystac.StacIO.default().read_json(path)
         return validate_dict(d, pystac.STACObjectType(object_type))
 
-    def validate_link_types(
-        self, root_href: str, catalog_type: pystac.CatalogType
-    ) -> None:
+    def validate_link_types(self, root_href: str, catalog_type: CatalogType) -> None:
         def validate_item_link_type(
             href: str, link_type: str, should_include_self: bool
         ) -> None:
@@ -47,22 +52,22 @@ class STACWritingTest(unittest.TestCase):
             for link in item.get_links():
                 if not link.rel == "self":
                     if link_type == "RELATIVE" and link.rel in rel_links:
-                        self.assertFalse(is_absolute_href(link.href))
+                        assert not is_absolute_href(link.href)
                     else:
-                        self.assertTrue(is_absolute_href(link.href))
+                        assert is_absolute_href(link.href)
 
             rels = set([link["rel"] for link in item_dict["links"]])
-            self.assertEqual("self" in rels, should_include_self)
+            assert ("self" in rels) == should_include_self
 
         def validate_catalog_link_type(
             href: str, link_type: str, should_include_self: bool
         ) -> None:
             cat_dict = pystac.StacIO.default().read_json(href)
             cat = pystac.read_file(href)
-            assert isinstance(cat, pystac.Catalog)
+            assert isinstance(cat, Catalog)
 
             rels = set([link["rel"] for link in cat_dict["links"]])
-            self.assertEqual("self" in rels, should_include_self)
+            assert ("self" in rels) == should_include_self
 
             for child_link in cat.get_child_links():
                 child_href = make_absolute_href(child_link.href, href)
@@ -89,9 +94,7 @@ class STACWritingTest(unittest.TestCase):
 
         validate_catalog_link_type(root_href, link_type, root_should_include_href)
 
-    def do_test(
-        self, catalog: pystac.Catalog, catalog_type: pystac.CatalogType
-    ) -> None:
+    def do_test(self, catalog: Catalog, catalog_type: CatalogType) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog.normalize_hrefs(tmp_dir)
             self.validate_catalog(catalog)
@@ -111,16 +114,8 @@ class STACWritingTest(unittest.TestCase):
                 for item in items:
                     self.validate_file(item.self_href, pystac.STACObjectType.ITEM)
 
-    def test_testcases(self) -> None:
-        for catalog in TestCases.all_test_catalogs():
-            catalog = catalog.full_copy()
-            ctypes = [
-                CatalogType.ABSOLUTE_PUBLISHED,
-                CatalogType.RELATIVE_PUBLISHED,
-                CatalogType.SELF_CONTAINED,
-            ]
-            for catalog_type in ctypes:
-                with self.subTest(
-                    title="Catalog {} [{}]".format(catalog.id, catalog_type)
-                ):
-                    self.do_test(catalog, catalog_type)
+    @pytest.mark.parametrize("catalog", TestCases.all_test_catalogs())
+    @pytest.mark.parametrize("catalog_type", CTYPES)
+    def test_testcases(self, catalog: Catalog, catalog_type: CatalogType) -> None:
+        catalog = catalog.full_copy()
+        self.do_test(catalog, catalog_type)

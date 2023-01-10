@@ -4,19 +4,20 @@ import os
 from typing import Any, Dict
 from pystac.utils import get_opt
 import shutil
-import unittest
 import tempfile
 
 import jsonschema
+import pytest
 
 import pystac
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
 from tests.utils import TestCases
+from tests.utils.test_cases import ExampleInfo
 
 
-class ValidateTest(unittest.TestCase):
+class TestValidate:
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
@@ -35,34 +36,30 @@ class ValidateTest(unittest.TestCase):
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
         item.validate()
 
-    def test_validate_examples(self) -> None:
-        for example in TestCases.get_examples_info():
-            with self.subTest(example.path):
-                stac_version = example.stac_version
-                path = example.path
-                valid = example.valid
+    @pytest.mark.parametrize("example", TestCases.get_examples_info())
+    def test_validate_examples(self, example: ExampleInfo) -> None:
+        stac_version = example.stac_version
+        path = example.path
+        valid = example.valid
 
-                with self.subTest(path):
-                    with open(path, encoding="utf-8") as f:
-                        stac_json = json.load(f)
+        with open(path, encoding="utf-8") as f:
+            stac_json = json.load(f)
 
-                    # Check if common properties need to be merged
-                    if stac_version < "1.0":
-                        if example.object_type == pystac.STACObjectType.ITEM:
-                            collection_cache = CollectionCache()
-                            merge_common_properties(stac_json, collection_cache, path)
+        # Check if common properties need to be merged
+        if stac_version < "1.0":
+            if example.object_type == pystac.STACObjectType.ITEM:
+                collection_cache = CollectionCache()
+                merge_common_properties(stac_json, collection_cache, path)
 
-                    if valid:
-                        pystac.validation.validate_dict(stac_json)
-                    else:
-                        with self.assertRaises(pystac.STACValidationError):
-                            try:
-                                pystac.validation.validate_dict(stac_json)
-                            except pystac.STACValidationError as e:
-                                self.assertIsInstance(
-                                    e.source, jsonschema.ValidationError
-                                )
-                                raise e
+        if valid:
+            pystac.validation.validate_dict(stac_json)
+        else:
+            with pytest.raises(pystac.STACValidationError):
+                try:
+                    pystac.validation.validate_dict(stac_json)
+                except pystac.STACValidationError as e:
+                    assert isinstance(e.source, jsonschema.ValidationError)
+                    raise e
 
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
@@ -73,20 +70,20 @@ class ValidateTest(unittest.TestCase):
 
         item.geometry = {"type": "INVALID"}
 
-        with self.assertRaises(pystac.STACValidationError):
+        with pytest.raises(pystac.STACValidationError):
             try:
                 item.validate()
             except pystac.STACValidationError as e:
-                self.assertTrue(get_opt(item.get_self_href()) in str(e))
+                assert get_opt(item.get_self_href()) in str(e)
                 raise e
 
-    def test_validate_all(self) -> None:
-        for test_case in TestCases.all_test_catalogs():
-            catalog_href = test_case.get_self_href()
-            if catalog_href is not None:
-                stac_dict = pystac.StacIO.default().read_json(catalog_href)
+    @pytest.mark.parametrize("test_case", TestCases.all_test_catalogs())
+    def test_validate_all(self, test_case: pystac.Catalog) -> None:
+        catalog_href = test_case.get_self_href()
+        if catalog_href is not None:
+            stac_dict = pystac.StacIO.default().read_json(catalog_href)
 
-                pystac.validation.validate_all(stac_dict, catalog_href)
+            pystac.validation.validate_all(stac_dict, catalog_href)
 
         # Modify a 0.8.1 collection in a catalog to be invalid with a
         # since-renamed extension and make sure it catches the validation error.
@@ -118,7 +115,7 @@ class ValidateTest(unittest.TestCase):
 
             stac_dict = pystac.StacIO.default().read_json(new_cat_href)
 
-            with self.assertRaises(pystac.STACValidationError):
+            with pytest.raises(pystac.STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
 
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
