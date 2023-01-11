@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+if [[ -z $ASV_FACTOR ]]; then
+    ASV_FACTOR=1.25;
+fi
+
+asv continuous --split -e --interleave-rounds \
+    --factor ${ASV_FACTOR} \
+    main HEAD;

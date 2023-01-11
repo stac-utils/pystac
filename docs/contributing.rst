@@ -73,6 +73,45 @@ flag to Git commit commands, as in ``git commit --no-verify``.
 .. [#] In rare cases changes to one file might invalidate an unchanged file, such as
    when modifying the return type of a function used in another file.
 
+Benchmarks
+^^^^^^^^^^
+
+PySTAC uses `asv <https://asv.readthedocs.io>`_ for benchmarking. Benchmarks are
+defined in the ``./benchmarks`` directory. Due to the inherent uncertainty in
+the environment of Github workflow runners, benchmarks are not executed in CI.
+If your changes may affect performance, use the provided script to run the
+benchmark suite locally. This script will compare your current ``HEAD`` with
+the **main** branch and report any improvements or regressions.
+
+.. code-block:: bash
+
+    scripts/bench
+
+The benchmark suite takes a while to run, and will report any significant
+changes to standard output. For example, here's a benchmark comparison between
+v1.0.0 and v1.6.1 (from `@gadomski's <https://github.com/gadomski>`_ computer)::
+
+          before           after         ratio
+        [eee06027]       [579c071b]
+        <v1.0.0^0>       <v1.6.1^0>
+    -        533±20μs         416±10μs     0.78  collection.CollectionBench.time_collection_from_file [gadomski/virtualenv-py3.10-orjson]
+    -         329±8μs         235±10μs     0.72  collection.CollectionBench.time_collection_from_dict [gadomski/virtualenv-py3.10-orjson]
+    -        332±10μs          231±4μs     0.70  collection.CollectionBench.time_collection_from_dict [gadomski/virtualenv-py3.10]
+    -         174±4μs          106±2μs     0.61  item.ItemBench.time_item_from_dict [gadomski/virtualenv-py3.10]
+    -         174±4μs          106±2μs     0.61  item.ItemBench.time_item_from_dict [gadomski/virtualenv-py3.10-orjson]
+        before           after         ratio
+        [eee06027]       [579c071b]
+        <v1.0.0^0>       <v1.6.1^0>
+    +        87.1±3μs          124±5μs     1.42  catalog.CatalogBench.time_catalog_from_dict [gadomski/virtualenv-py3.10]
+    +        87.1±4μs          122±5μs     1.40  catalog.CatalogBench.time_catalog_from_dict [gadomski/virtualenv-py3.10-orjson]
+
+When developing new benchmarks, you can run a shortened version of the benchmark suite:
+
+.. code-block:: bash
+
+    asv dev
+
+
 CHANGELOG
 ^^^^^^^^^
 

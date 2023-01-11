@@ -1,4 +1,5 @@
 -r ./requirements-docs.txt
 -r ./requirements-test.txt
+-r ./requirements-bench.txt
 
 jupyter==1.0.0
