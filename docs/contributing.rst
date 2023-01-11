@@ -79,8 +79,9 @@ Benchmarks
 PySTAC uses `asv <https://asv.readthedocs.io>`_ for benchmarking. Benchmarks are
 defined in the ``./benchmarks`` directory. Due to the inherent uncertainty in
 the environment of Github workflow runners, benchmarks are not executed in CI.
-If your changes may affect performance, we recommend checking your benchmarks
-locally using the provided script:
+If your changes may affect performance, use the provided script to run the
+benchmark suite locally. This script will compare your current ``HEAD`` with
+the **main** branch and report any improvements or regressions.
 
 .. code-block:: bash
 
