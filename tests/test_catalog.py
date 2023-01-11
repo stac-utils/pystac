@@ -1252,6 +1252,11 @@ class CatalogTest(unittest.TestCase):
             len(catalog.get_links("search", media_type="application/geo+json")), 1
         )
 
+    def test_to_dict_no_self_href(self) -> None:
+        catalog = Catalog(id="an-id", description="A test Catalog")
+        d = catalog.to_dict(include_self_link=False)
+        Catalog.from_dict(d)
+
 
 class FullCopyTest(unittest.TestCase):
     def check_link(self, link: pystac.Link, tag: str) -> None:
