@@ -142,7 +142,10 @@ jobs:
       - name: Install without orjson
         run: pip install '.[validation]'
 
-      - name: Run unittests
+      - name: Install pytest
+        run: pip install pytest
+ 
+      - name: Run tests
         run: pytest tests
 
   check-dev-dependencies:
