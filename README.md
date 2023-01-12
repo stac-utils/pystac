@@ -18,6 +18,30 @@ PySTAC is a library for working with [SpatioTemporal Asset Catalog](https://stac
 pip install pystac
 ```
 
+If you would like to enable the validation feature utilizing the
+[jsonschema](https://pypi.org/project/jsonschema/) project, install with the optional
+`validation` requirements:
+
+```shell
+pip install pystac[validation]
+```
+
+If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
+standard `json` library for JSON serialization/deserialization, install with the
+optional `orjson` requirements:
+
+```shell
+pip install pystac[orjson]
+```
+
+### Install from source:
+
+```shell
+git clone https://github.com/stac-utils/pystac.git
+cd pystac
+pip install .
+```
+
 See the [installation page](https://pystac.readthedocs.io/en/latest/installation.html)
 for more options.
 
