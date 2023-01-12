@@ -72,7 +72,7 @@ Versions
 To install a version of PySTAC that works with a specific versions of the STAC
 specification, install the matching version of PySTAC from the following table.
 
-.. list-table:: Versions
+.. list-table::
    :widths: 50 50
    :header-rows: 1
 
