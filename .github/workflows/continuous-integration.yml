@@ -161,3 +161,24 @@ jobs:
 
       - name: Install dev dependencies
         run: pip install -r requirements-dev.txt
+
+  check-benchmarks:
+    # This checks to make sure any API changes haven't broken any of the
+    # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
+    # appropriate for CI on Github actions.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+          cache: "pip"
+          cache-dependency-path: requirements-bench.txt
+      - name: Install pystac
+        run: pip install .
+      - name: Install benchmark dependencies
+        run: pip install -r requirements-bench.txt
+      - name: Set asv machine
+        run: asv machine --yes
+      - name: Check benchmarks
+        run: asv dev -a repeat=1 -a rounds=1 --strict
