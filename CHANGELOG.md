@@ -16,7 +16,7 @@
 
 ### Changed
 
-- Convert to pytest ([#939](https://github.com/stac-utils/pystac/pull/939))
+- Switch to pytest ([#939](https://github.com/stac-utils/pystac/pull/939))
 
 ### Fixed
 
