@@ -11,6 +11,7 @@ def test_item_html() -> None:
     item_stac_href = TestCases.get_path("data-files/item/sample-item.json")
     item_html_href = TestCases.get_path("data-files/html/sample-item.html")
     item = pystac.Item.from_file(item_stac_href)
+    item.set_self_href(None)
     assert item._repr_html_() == open(item_html_href).read()
 
 
