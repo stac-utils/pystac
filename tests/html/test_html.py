@@ -16,6 +16,12 @@ def test_item_html() -> None:
 
 def test_missing_jinja2(mocker: MockerFixture) -> None:
     get_jinja_env.cache_clear()
+
     mocker.patch.dict(sys.modules, {"jinja2": None})
     assert get_jinja_env() is None
+
+    item_stac_href = TestCases.get_path("data-files/item/sample-item.json")
+    item = pystac.Item.from_file(item_stac_href)
+    assert item._repr_html_() == "&lt;Item id=CS3-20160503_132131_05&gt;"
+
     get_jinja_env.cache_clear()
