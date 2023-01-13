@@ -12,14 +12,7 @@ PySTAC is a library for working with [SpatioTemporal Asset Catalog](https://stac
 
 ## Installation
 
-PySTAC requires Python >= 3.8. This project follows the recommendations of
-[NEP-29](https://numpy.org/neps/nep-0029-deprecation_policy.html) in deprecating support
-for Python versions. This means that users can expect support for Python 3.8 to be
-removed from the `main` branch after Apr 14, 2023 and therefore from the next release
-after that date.
-
-PySTAC has a single required dependency (`python-dateutil`).
-PySTAC can be installed from pip or the source repository.
+### Install from PyPi (recommended)
 
 ```shell
 pip install pystac
@@ -41,7 +34,7 @@ optional `orjson` requirements:
 pip install pystac[orjson]
 ```
 
-From source repository:
+### Install from source:
 
 ```shell
 git clone https://github.com/stac-utils/pystac.git
@@ -49,25 +42,8 @@ cd pystac
 pip install .
 ```
 
-### Versions
-
-To install a version of PySTAC that works with a specific versions of the STAC
-specification, install the matching version of PySTAC from the following table.
-
-| PySTAC | STAC  |
-| ------ | ----- |
-| 1.x    | 1.0.x |
-| 0.5.x  | 1.0.0-beta.* |
-| 0.4.x  | 0.9.x |
-| 0.3.x  | 0.8.x |
-
-For instance, to work with STAC v0.9.x:
-
-```shell
-pip install pystac==0.4.0
-```
-
-STAC spec versions below 0.8 are not supported by PySTAC.
+See the [installation page](https://pystac.readthedocs.io/en/latest/installation.html)
+for more options.
 
 ## Documentation
 
@@ -75,7 +51,8 @@ See the [documentation page](https://pystac.readthedocs.io/en/latest/) for the l
 
 ## Developing
 
-See [contributing docs](docs/contributing.rst) for details on contributing to this project.
+See [contributing docs](https://pystac.readthedocs.io/en/latest/contributing.rst)
+for details on contributing to this project.
 
 ## Running the quickstart and tutorials
 
