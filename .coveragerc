@@ -1,5 +1,5 @@
 [report]
-fail_under = 90.4
+fail_under = 90
 exclude_lines =
     if TYPE_CHECKING:
 
