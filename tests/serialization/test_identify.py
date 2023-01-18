@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 import pystac
 from pystac.cache import CollectionCache
 from pystac.serialization import (
@@ -7,41 +9,33 @@ from pystac.serialization import (
     identify_stac_object_type,
     merge_common_properties,
 )
-from pystac.serialization.identify import STACVersionRange, STACVersionID
-
+from pystac.serialization.identify import STACVersionID, STACVersionRange
 from tests.utils import TestCases
+from tests.utils.test_cases import ExampleInfo
 
 
-class IdentifyTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.examples = TestCases.get_examples_info()
-
-    def test_identify(self) -> None:
+class TestIdentify:
+    @pytest.mark.parametrize("example", TestCases.get_examples_info())
+    def test_identify(self, example: ExampleInfo) -> None:
         collection_cache = CollectionCache()
-        for example in self.examples:
-            with self.subTest(example.path):
-                path = example.path
-                d = pystac.StacIO.default().read_json(path)
-                if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
-                    merge_common_properties(
-                        d, json_href=path, collection_cache=collection_cache
-                    )
+        path = example.path
+        d = pystac.StacIO.default().read_json(path)
+        if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
+            merge_common_properties(
+                d, json_href=path, collection_cache=collection_cache
+            )
 
-                actual = identify_stac_object(d)
-                # Explicitly cover __repr__ functions in tests
-                str_info = str(actual)
-                self.assertIsInstance(str_info, str)
+        actual = identify_stac_object(d)
+        # Explicitly cover __repr__ functions in tests
+        str_info = str(actual)
+        assert isinstance(str_info, str)
 
-                msg = "Failed {}:".format(path)
+        msg = "Failed {}:".format(path)
 
-                self.assertEqual(actual.object_type, example.object_type, msg=msg)
-                version_contained_in_range = actual.version_range.contains(
-                    example.stac_version
-                )
-                self.assertTrue(version_contained_in_range, msg=msg)
-                self.assertEqual(
-                    set(actual.extensions), set(example.extensions), msg=msg
-                )
+        assert actual.object_type == example.object_type, msg
+        version_contained_in_range = actual.version_range.contains(example.stac_version)
+        assert version_contained_in_range, msg
+        assert set(actual.extensions) == set(example.extensions), msg
 
     def test_identify_non_stac_type(self) -> None:
         plain_feature_dict = {
@@ -50,7 +44,7 @@ class IdentifyTest(unittest.TestCase):
             "geometry": {"type": "Point", "coordinates": [0, 0]},
         }
 
-        self.assertIsNone(identify_stac_object_type(plain_feature_dict))
+        assert identify_stac_object_type(plain_feature_dict) is None
 
     def test_identify_invalid_stac_object_with_version(self) -> None:
         # Has stac_version but is not a valid STAC object
@@ -72,10 +66,10 @@ class IdentifyTest(unittest.TestCase):
             "stac_version": "1.0.0",
         }
 
-        with self.assertRaises(pystac.STACTypeError) as ctx:
+        with pytest.raises(pystac.STACTypeError) as ctx:
             identify_stac_object(invalid_dict)
 
-        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+        assert "JSON does not represent a STAC object" in str(ctx.value.args[0])
 
     def test_identify_non_stac_raises_error(self) -> None:
         plain_feature_dict = {
@@ -84,15 +78,15 @@ class IdentifyTest(unittest.TestCase):
             "geometry": {"type": "Point", "coordinates": [0, 0]},
         }
 
-        with self.assertRaises(pystac.STACTypeError) as ctx:
+        with pytest.raises(pystac.STACTypeError) as ctx:
             identify_stac_object(plain_feature_dict)
 
-        self.assertIn("JSON does not represent a STAC object", str(ctx.exception))
+        assert "JSON does not represent a STAC object" in str(ctx.value.args[0])
 
     def test_identify_invalid_with_stac_version(self) -> None:
         not_stac = {"stac_version": "0.9.0", "type": "Custom"}
 
-        self.assertIsNone(identify_stac_object_type(not_stac))
+        assert identify_stac_object_type(not_stac) is None
 
 
 class VersionTest(unittest.TestCase):

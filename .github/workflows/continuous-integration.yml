@@ -74,13 +74,13 @@ jobs:
           pip install -e ".[validation]"
 
       - name: Run coverage with orjson
-        run: coverage run -m unittest discover tests
+        run: pytest tests --cov
 
       - name: Uninstall orjson
         run: pip uninstall -y orjson
 
       - name: Run coverage without orjson, appending results
-        run: coverage run -a -m unittest discover tests
+        run: pytest tests --cov --cov-append
 
       - name: Prepare ./coverage.xml
         # Ignore the configured fail-under to ensure we upload the coverage report. We
@@ -142,8 +142,11 @@ jobs:
       - name: Install without orjson
         run: pip install '.[validation]'
 
-      - name: Run unittests
-        run: python -m unittest discover tests
+      - name: Install test requirements
+        run: pip install pytest pytest-mock html5lib jinja2
+
+      - name: Run tests
+        run: pytest tests
 
   check-dev-dependencies:
     runs-on: ubuntu-latest

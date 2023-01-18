@@ -18,20 +18,20 @@ pip as follows:
 
 Testing
 ^^^^^^^
-PySTAC runs tests using ``unittest``. You can find unit tests in the ``tests/``
+PySTAC runs tests using ``pytest``. You can find unit tests in the ``tests/``
 directory.
 
 Run a single test with:
 
 .. code-block:: bash
 
-    python -m unittest tests/test_catalog.py
+    pytest tests/test_catalog.py::CatalogTest::test_create_and_read
 
 or an entire folder using:
 
 .. code-block:: bash
 
-    python -m unittest discover -v -s tests/
+    pytest tests/extensions
 
 or the entire project using:
 
@@ -43,14 +43,14 @@ The last command will also check test coverage. To view the coverage report, you
 `coverage report` (to view the report in the terminal) or `coverage html` (to generate
 an HTML report that can be opened in a browser).
 
-More details on using ``unittest`` are `here
-<https://docs.python.org/3/library/unittest.html>`_.
+More details on using ``pytest`` are `here
+<https://docs.pytest.org>`_.
 
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
 tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing, and
-``./scripts/test`` to run the tests.
+``./scripts/test`` to run all checks and tests.
 
 PySTAC uses
 

@@ -16,6 +16,8 @@
 
 ### Changed
 
+- Switch to pytest ([#939](https://github.com/stac-utils/pystac/pull/939))
+
 ### Fixed
 
 - Creating dictionaries from Catalogs and Collections without root hrefs now creates valid STAC ([#896](https://github.com/stac-utils/pystac/pull/896))

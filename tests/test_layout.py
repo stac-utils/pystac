@@ -80,7 +80,7 @@ class LayoutTemplateTest(unittest.TestCase):
     def test_templates_item_collection(self) -> None:
         template = LayoutTemplate("${collection}/item.json")
 
-        collection = TestCases.test_case_4().get_child("acc")
+        collection = TestCases.case_4().get_child("acc")
         assert collection is not None
         item = next(iter(collection.get_all_items()))
         assert item.collection_id is not None
@@ -96,7 +96,7 @@ class LayoutTemplateTest(unittest.TestCase):
     def test_throws_for_no_collection(self) -> None:
         template = LayoutTemplate("${collection}/item.json")
 
-        collection = TestCases.test_case_4().get_child("acc")
+        collection = TestCases.case_4().get_child("acc")
         assert collection is not None
         item = next(iter(collection.get_all_items()))
         item.set_collection(None)
@@ -152,7 +152,7 @@ class LayoutTemplateTest(unittest.TestCase):
             "${doesnotexist}/collection.json", defaults={"doesnotexist": "yes"}
         )
 
-        catalog = TestCases.test_case_4().get_child("acc")
+        catalog = TestCases.case_4().get_child("acc")
         assert catalog is not None
         catalog.extra_fields = {"one": "two"}
         path = template.substitute(catalog)
@@ -238,7 +238,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
         strategy = CustomLayoutStrategy(
             collection_func=self.get_custom_collection_func()
         )
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         href = strategy.get_href(collection, parent_dir="http://example.com")
         self.assertEqual(
             href, "http://example.com/col/False/{}.json".format(collection.id)
@@ -251,14 +251,14 @@ class CustomLayoutStrategyTest(unittest.TestCase):
             item_func=self.get_custom_item_func(),
             fallback_strategy=fallback,
         )
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         href = strategy.get_href(collection, parent_dir="http://example.com")
         expected = fallback.get_href(collection, parent_dir="http://example.com")
         self.assertEqual(href, expected)
 
     def test_produces_layout_for_item(self) -> None:
         strategy = CustomLayoutStrategy(item_func=self.get_custom_item_func())
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         item = next(iter(collection.get_all_items()))
         href = strategy.get_href(item, parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/item/{}.json".format(item.id))
@@ -270,7 +270,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
             collection_func=self.get_custom_collection_func(),
             fallback_strategy=fallback,
         )
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         item = next(iter(collection.get_all_items()))
         href = strategy.get_href(item, parent_dir="http://example.com")
         expected = fallback.get_href(item, parent_dir="http://example.com")
@@ -283,7 +283,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
     TEST_ITEM_TEMPLATE = "item/${collection}/${id}.json"
 
     def _get_collection(self) -> Collection:
-        result = TestCases.test_case_4().get_child("acc")
+        result = TestCases.case_4().get_child("acc")
         assert isinstance(result, Collection)
         return result
 
@@ -401,21 +401,21 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
         self.assertEqual(href, "http://example.com/test/catalog.json")
 
     def test_produces_layout_for_root_collection(self) -> None:
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         href = self.strategy.get_href(
             collection, parent_dir="http://example.com", is_root=True
         )
         self.assertEqual(href, "http://example.com/collection.json")
 
     def test_produces_layout_for_child_collection(self) -> None:
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         href = self.strategy.get_href(collection, parent_dir="http://example.com")
         self.assertEqual(
             href, "http://example.com/{}/collection.json".format(collection.id)
         )
 
     def test_produces_layout_for_item(self) -> None:
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         item = next(iter(collection.get_all_items()))
         href = self.strategy.get_href(item, parent_dir="http://example.com")
         expected = "http://example.com/{}/{}.json".format(item.id, item.id)

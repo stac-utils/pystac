@@ -52,7 +52,7 @@ class ItemTest(unittest.TestCase):
         self.assertIs(item.get_root(), catalog)
 
     def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         for item in cat.get_all_items():
             for asset in item.assets.values():
                 if is_absolute_href(asset.href):
@@ -62,7 +62,7 @@ class ItemTest(unittest.TestCase):
                 self.assertTrue(is_absolute_href(asset.href))
 
     def test_set_self_href_none_ignores_relative_asset_hrefs(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         for item in cat.get_all_items():
             for asset in item.assets.values():
                 if is_absolute_href(asset.href):
@@ -114,7 +114,7 @@ class ItemTest(unittest.TestCase):
             self.assertEqual(read_item.extra_fields["test"], "extra")
 
     def test_clearing_collection(self) -> None:
-        collection = TestCases.test_case_4().get_child("acc")
+        collection = TestCases.case_4().get_child("acc")
         assert isinstance(collection, pystac.Collection)
         item = next(iter(collection.get_all_items()))
         self.assertEqual(item.collection_id, collection.id)
@@ -206,7 +206,7 @@ class ItemTest(unittest.TestCase):
         )
 
     def test_read_eo_item_owns_asset(self) -> None:
-        item = next(iter(TestCases.test_case_1().get_all_items()))
+        item = next(iter(TestCases.case_1().get_all_items()))
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
@@ -241,7 +241,7 @@ class ItemTest(unittest.TestCase):
         self.assertFalse(did_merge)
 
     def test_clone_preserves_assets(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         original_item = next(iter(cat.get_all_items()))
         assert len(original_item.assets) > 0
         assert all(
@@ -259,7 +259,7 @@ class ItemTest(unittest.TestCase):
                     self.assertIs(cloned_asset.owner, cloned_item)
 
     def test_make_asset_href_relative_is_noop_on_relative_hrefs(self) -> None:
-        cat = TestCases.test_case_2()
+        cat = TestCases.case_2()
         item = next(iter(cat.get_all_items()))
         asset = list(item.assets.values())[0]
         assert not is_absolute_href(asset.href)

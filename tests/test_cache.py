@@ -81,7 +81,7 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
 
     def test_cache(self) -> None:
         cache = ResolvedObjectCache().as_collection_cache()
-        collection = TestCases.test_case_8()
+        collection = TestCases.case_8()
         collection_json = collection.to_dict()
         cache.cache(collection_json, collection.get_self_href())
         cached = cache.get_by_id(collection.id)
