@@ -46,7 +46,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-test.txt
-          pip install jinja2
           pip install -e ".[validation]"
 
       - name: Execute test suite
@@ -72,7 +71,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements-test.txt
-          pip install jinja2
           pip install -e ".[validation]"
 
       - name: Run coverage with orjson
