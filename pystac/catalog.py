@@ -615,7 +615,7 @@ class Catalog(STACObject):
 
         This method mutates the entire catalog tree, unless ``skip_unresolved``
         is True, in which case only resolved links are modified. This is useful
-        in the case when you have loaded large catalog and you've added a few
+        in the case when you have loaded a large catalog and you've added a few
         items/children, and you only want to update those newly-added objects,
         not the whole tree.
 
