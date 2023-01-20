@@ -12,6 +12,7 @@
 - Python 3.11 checks in CI ([#908](https://github.com/stac-utils/pystac/pull/908))
 - Ability to only update resolved links when using `Catalog.normalize_hrefs` and `Catalog.normalize_and_save`, via a new `skip_unresolved` argument ([#900](https://github.com/stac-utils/pystac/pull/900))
 - Add the optional argument `timespec` to `utils.datetime_to_str` ([#929](https://github.com/stac-utils/pystac/pull/929))
+- `isort` ([#961](https://github.com/stac-utils/pystac/pull/961))
 
 ### Removed
 
