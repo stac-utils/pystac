@@ -3,13 +3,13 @@
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.summaries import RangeSummary
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

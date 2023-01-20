@@ -5,14 +5,15 @@ import shutil
 import tempfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
 from pystac import (
     Catalog,
-    StacIO,
     Collection,
     Extent,
-    TemporalExtent,
-    SpatialExtent,
     Item,
+    SpatialExtent,
+    StacIO,
+    TemporalExtent,
 )
 
 from ._base import Bench

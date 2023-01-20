@@ -1,7 +1,7 @@
 import sys
 
-from pytest_mock import MockerFixture
 import html5lib
+from pytest_mock import MockerFixture
 
 import pystac
 from pystac.html.jinja_env import get_jinja_env

@@ -1,10 +1,9 @@
-from datetime import datetime
 import json
 import os
-from typing import Any, Dict
-from pystac.utils import get_opt
 import shutil
 import tempfile
+from datetime import datetime
+from typing import Any, Dict
 
 import jsonschema
 import pytest
@@ -13,6 +12,7 @@ import pystac
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
+from pystac.utils import get_opt
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo
 

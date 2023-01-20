@@ -1,8 +1,8 @@
 import unittest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions.datacube import DatacubeExtension, Variable
-
 from tests.utils import TestCases
 
 

@@ -1,11 +1,14 @@
 import os
 import posixpath
-from enum import Enum
-from pystac.errors import RequiredPropertyMissing
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, cast
-from urllib.parse import urljoin, urlparse, urlunparse, ParseResult as URLParseResult
 from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, cast
+from urllib.parse import ParseResult as URLParseResult
+from urllib.parse import urljoin, urlparse, urlunparse
+
 import dateutil.parser
+
+from pystac.errors import RequiredPropertyMissing
 
 # Allow for modifying the path library for testability
 # (i.e. testing Windows path manipulation on non-Windows systems)

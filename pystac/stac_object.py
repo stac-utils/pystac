@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterable, List, Optional, Type, cast, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Type, Union, cast
 
 import pystac
 from pystac import STACError

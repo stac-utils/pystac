@@ -2,7 +2,6 @@ import unittest
 
 from pystac import Collection
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
-
 from tests.utils import TestCases
 
 

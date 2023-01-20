@@ -2,10 +2,7 @@
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required
 

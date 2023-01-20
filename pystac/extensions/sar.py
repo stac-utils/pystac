@@ -1,16 +1,16 @@
 """Implements the :stac-ext:`Synthetic-Aperture Radar (SAR) Extension <sar>`."""
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, cast, Union
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.summaries import RangeSummary
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

@@ -2,10 +2,10 @@
 Script to change the version property of the test files for PySTAC.
 This is used when upgrading to a new version of STAC.
 """
-import os
-import re
 import argparse
 import json
+import os
+import re
 
 import pystac
 

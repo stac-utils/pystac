@@ -4,10 +4,7 @@ from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 

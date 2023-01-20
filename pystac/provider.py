@@ -1,5 +1,5 @@
-from typing import Any, Dict, List, Optional
 from html import escape
+from typing import Any, Dict, List, Optional
 
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import StringEnum

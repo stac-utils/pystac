@@ -1,7 +1,7 @@
 import json
-from typing import Any, Dict
 import unittest
 from copy import deepcopy
+from typing import Any, Dict
 
 import pystac
 from pystac import ExtensionTypeError

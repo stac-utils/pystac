@@ -1,17 +1,17 @@
 import os
 from copy import copy
 from html import escape
-from typing import Any, Dict, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import pystac
 from pystac.html.jinja_env import get_jinja_env
-from pystac.utils import make_absolute_href, make_relative_href, is_absolute_href
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.item import Item as Item_Type
     from pystac.catalog import Catalog as Catalog_Type
     from pystac.collection import Collection as Collection_Type
+    from pystac.item import Item as Item_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
     PathLike = os.PathLike[str]
 

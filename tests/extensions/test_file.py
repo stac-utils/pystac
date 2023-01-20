@@ -3,8 +3,8 @@ import unittest
 
 import pystac
 from pystac import ExtensionTypeError
+from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
 from tests.utils import TestCases, assert_to_from_dict
-from pystac.extensions.file import FileExtension, ByteOrder, MappingObject
 
 
 class ByteOrderTest(unittest.TestCase):

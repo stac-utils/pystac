@@ -1,16 +1,13 @@
-from html import escape
 from copy import deepcopy
 from datetime import datetime
-
-from pystac.errors import STACTypeError
-from pystac.html.jinja_env import get_jinja_env
+from html import escape
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Iterable,
     List,
     Optional,
-    TYPE_CHECKING,
     Tuple,
     TypeVar,
     Union,
@@ -20,19 +17,21 @@ from typing import (
 from dateutil import tz
 
 import pystac
-from pystac import STACObjectType, CatalogType
+from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
+from pystac.errors import STACTypeError
+from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
-from pystac.utils import datetime_to_str, str_to_datetime
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
 from pystac.summaries import Summaries
+from pystac.utils import datetime_to_str, str_to_datetime
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type

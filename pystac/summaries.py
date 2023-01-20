@@ -1,23 +1,22 @@
-from copy import deepcopy
 import numbers
+from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
-
-import pystac
-from pystac.utils import get_required
-
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
+    Iterable,
     List,
     Optional,
     Protocol,
-    Union,
     TypeVar,
-    Iterable,
-    TYPE_CHECKING,
+    Union,
 )
+
+import pystac
+from pystac.utils import get_required
 
 if TYPE_CHECKING:
     from pystac.item import Item as Item_Type

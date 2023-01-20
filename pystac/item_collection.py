@@ -1,13 +1,12 @@
 from copy import deepcopy
-from pystac.errors import STACTypeError
-from typing import Any, Dict, Iterator, List, Optional, Collection, Iterable, Union
 from html import escape
+from typing import Any, Collection, Dict, Iterable, Iterator, List, Optional, Union
 
 import pystac
+from pystac.errors import STACTypeError
 from pystac.html.jinja_env import get_jinja_env
-from pystac.utils import make_absolute_href, is_absolute_href
 from pystac.serialization.identify import identify_stac_object_type
-
+from pystac.utils import is_absolute_href, make_absolute_href
 
 ItemLike = Union[pystac.Item, Dict[str, Any]]
 

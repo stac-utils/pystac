@@ -3,8 +3,8 @@ from typing import Any, AnyStr, Optional, Union
 from unittest.mock import Mock
 
 import pystac
-from pystac.stac_io import DefaultStacIO, StacIO
 from pystac.link import HREF
+from pystac.stac_io import DefaultStacIO, StacIO
 
 
 class MockStacIO(pystac.StacIO):

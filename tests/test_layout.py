@@ -1,18 +1,18 @@
+import unittest
 from datetime import datetime, timedelta
 from typing import Callable
-from pystac.collection import Collection
-import unittest
 
 import pystac
-from pystac.utils import join_path_or_url, JoinType
+from pystac.collection import Collection
 from pystac.layout import (
-    LayoutTemplate,
-    CustomLayoutStrategy,
-    TemplateLayoutStrategy,
     BestPracticesLayoutStrategy,
+    CustomLayoutStrategy,
+    LayoutTemplate,
     TemplateError,
+    TemplateLayoutStrategy,
 )
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
+from pystac.utils import JoinType, join_path_or_url
+from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
 
 class LayoutTemplateTest(unittest.TestCase):

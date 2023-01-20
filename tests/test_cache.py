@@ -1,9 +1,9 @@
-from typing import Any, Dict
-from pystac.utils import get_opt
 import unittest
+from typing import Any, Dict
 
 import pystac
 from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
+from pystac.utils import get_opt
 from tests.utils import TestCases
 
 

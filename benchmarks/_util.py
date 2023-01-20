@@ -1,5 +1,5 @@
 import os
-from typing import Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     PathLike = os.PathLike[str]

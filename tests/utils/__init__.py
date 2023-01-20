@@ -5,21 +5,21 @@ __all__ = [
     "ARBITRARY_EXTENT",
     "MockStacIO",
 ]
-from typing import Any, Dict, TYPE_CHECKING, Type
 import unittest
-from tests.utils.test_cases import (
-    TestCases,
-    ARBITRARY_GEOM,
-    ARBITRARY_BBOX,
-    ARBITRARY_EXTENT,
-)
-
 from copy import deepcopy
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, Type
+
 from dateutil.parser import parse
 
 import pystac
 from tests.utils.stac_io_mock import MockStacIO
+from tests.utils.test_cases import (
+    ARBITRARY_BBOX,
+    ARBITRARY_EXTENT,
+    ARBITRARY_GEOM,
+    TestCases,
+)
 
 
 def assert_to_from_dict(

@@ -1,25 +1,26 @@
-from copy import deepcopy
-import unittest
-import os
 import json
-from datetime import datetime
-from dateutil import tz
+import os
 import tempfile
+import unittest
+from copy import deepcopy
+from datetime import datetime
+
+from dateutil import tz
 
 import pystac
-from pystac.extensions.eo import EOExtension
-from pystac.validation import validate_dict
 from pystac import (
+    CatalogType,
     Collection,
-    Item,
     Extent,
+    Item,
+    Provider,
     SpatialExtent,
     TemporalExtent,
-    CatalogType,
-    Provider,
 )
+from pystac.extensions.eo import EOExtension
 from pystac.utils import datetime_to_str, get_required, str_to_datetime
-from tests.utils import TestCases, ARBITRARY_GEOM, ARBITRARY_BBOX
+from pystac.validation import validate_dict
+from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 

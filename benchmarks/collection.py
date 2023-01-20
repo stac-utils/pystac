@@ -2,7 +2,8 @@ import json
 import os
 import shutil
 import tempfile
-from pystac import StacIO, Collection
+
+from pystac import Collection, StacIO
 
 from ._base import Bench
 from ._util import get_data_path

@@ -4,12 +4,12 @@ import json
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

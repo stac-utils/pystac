@@ -1,38 +1,33 @@
-from copy import deepcopy
-import os
 import json
+import os
 import tempfile
-from typing import Any, Dict, List, Tuple, Union, cast
 import unittest
-from datetime import datetime
 from collections import defaultdict
+from copy import deepcopy
+from datetime import datetime
+from typing import Any, Dict, List, Tuple, Union, cast
 
 import pytest
 
 import pystac
 from pystac import (
-    Catalog,
-    Collection,
-    CatalogType,
-    Item,
-    Asset,
-    MediaType,
     HIERARCHICAL_LINKS,
+    Asset,
+    Catalog,
+    CatalogType,
+    Collection,
+    Item,
+    MediaType,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.utils import (
+    JoinType,
     is_absolute_href,
     join_path_or_url,
-    JoinType,
     make_absolute_href,
     make_relative_href,
 )
-from tests.utils import (
-    TestCases,
-    ARBITRARY_GEOM,
-    ARBITRARY_BBOX,
-    MockStacIO,
-)
+from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, MockStacIO, TestCases
 
 
 class CatalogTypeTest(unittest.TestCase):

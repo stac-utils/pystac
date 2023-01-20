@@ -1,10 +1,9 @@
-from html import escape
 from copy import copy, deepcopy
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, Union
+from html import escape
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from pystac import common_metadata
+from pystac import common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
-from pystac import utils
 
 if TYPE_CHECKING:
     from pystac.collection import Collection as Collection_Type

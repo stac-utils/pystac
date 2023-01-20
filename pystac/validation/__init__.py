@@ -1,9 +1,9 @@
-from typing import Dict, List, Any, Optional, cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import pystac
 from pystac.serialization.identify import STACVersionID, identify_stac_object
-from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 from pystac.utils import make_absolute_href
+from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject as STACObject_Type
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 # Import after above class definition
-from pystac.validation.stac_validator import STACValidator, JsonSchemaSTACValidator
+from pystac.validation.stac_validator import JsonSchemaSTACValidator, STACValidator
 
 
 def validate(stac_object: "STACObject_Type") -> List[Any]:

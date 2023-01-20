@@ -6,7 +6,7 @@ from string import ascii_letters
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
-from pystac.extensions.storage import StorageExtension, CloudPlatform
+from pystac.extensions.storage import CloudPlatform, StorageExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 

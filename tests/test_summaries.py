@@ -1,8 +1,8 @@
 import socket
-from typing import Any
 import unittest
+from typing import Any
 
-from pystac.summaries import RangeSummary, Summarizer, Summaries
+from pystac.summaries import RangeSummary, Summaries, Summarizer
 from tests.utils import TestCases
 
 
