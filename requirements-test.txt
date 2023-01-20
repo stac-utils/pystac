@@ -5,6 +5,7 @@ pytest==7.2.1
 pytest-cov==4.0.0
 pytest-mock==3.10.0
 codespell==2.2.2
+isort==5.11.4
 
 jsonschema==4.17.3
 coverage==7.0.5

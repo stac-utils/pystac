@@ -41,3 +41,11 @@ repos:
         stages: [commit]
         types: [python]
         require_serial: true
+
+      - id: isort
+        name: isort
+        entry: isort
+        args: []
+        language: system
+        stages: [commit]
+        types: [python]
