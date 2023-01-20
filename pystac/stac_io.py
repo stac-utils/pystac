@@ -1,29 +1,19 @@
-from abc import ABC, abstractmethod
-import os
 import json
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    TYPE_CHECKING,
-    Tuple,
-)
-
-from urllib.request import urlopen
-from urllib.request import Request
+import os
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 import pystac
 from pystac.link import HREF
-from pystac.utils import safe_urlparse
 from pystac.serialization import (
-    merge_common_properties,
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
+    merge_common_properties,
     migrate_to_latest,
 )
+from pystac.utils import safe_urlparse
 
 # Use orjson if available
 try:
@@ -32,8 +22,8 @@ except ImportError:
     orjson = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
     from pystac.catalog import Catalog as Catalog_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 
 class StacIO(ABC):

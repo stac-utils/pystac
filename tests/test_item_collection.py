@@ -1,11 +1,10 @@
-from copy import deepcopy
 import json
-from pystac.item_collection import ItemCollection
 import unittest
+from copy import deepcopy
 from os.path import relpath
 
 import pystac
-
+from pystac.item_collection import ItemCollection
 from tests.utils import TestCases
 from tests.utils.stac_io_mock import MockDefaultStacIO
 

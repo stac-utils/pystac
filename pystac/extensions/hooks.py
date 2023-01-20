@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from typing import Any, Dict, Iterable, List, Optional, Set, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Union
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID

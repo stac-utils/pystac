@@ -3,16 +3,16 @@ import unittest
 
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.utils import get_opt
 from pystac.extensions.raster import (
+    DataType,
     Histogram,
     NoDataStrings,
-    RasterExtension,
     RasterBand,
+    RasterExtension,
     Sampling,
-    DataType,
     Statistics,
 )
+from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
 
 

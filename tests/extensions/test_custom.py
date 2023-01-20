@@ -1,17 +1,17 @@
 """Tests creating a custom extension"""
 
-from pystac.summaries import RangeSummary
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 import unittest
+from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
 
 import pystac
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.summaries import RangeSummary
 
 T = TypeVar("T", pystac.Catalog, pystac.Collection, pystac.Item, pystac.Asset)
 

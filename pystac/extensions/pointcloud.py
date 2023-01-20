@@ -1,5 +1,5 @@
 """Implements the :stac-ext:`Point Cloud Extension <pointcloud>`."""
-from typing import Any, Dict, Iterable, Generic, List, Optional, TypeVar, cast, Union
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -9,7 +9,7 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
-from pystac.utils import StringEnum, map_opt, get_required
+from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

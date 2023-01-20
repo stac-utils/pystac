@@ -1,15 +1,15 @@
 """Tests for pystac.extensions.sat."""
 
 import datetime
-from pystac.summaries import RangeSummary
-from typing import Any, Dict
 import unittest
+from typing import Any, Dict
 
 import pystac
-from pystac.utils import str_to_datetime, datetime_to_str
 from pystac import ExtensionTypeError
 from pystac.extensions import sat
 from pystac.extensions.sat import OrbitState, SatExtension
+from pystac.summaries import RangeSummary
+from pystac.utils import datetime_to_str, str_to_datetime
 from tests.utils import TestCases
 
 

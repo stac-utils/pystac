@@ -1,12 +1,10 @@
 import json
-from typing import Any, Dict
 import unittest
-
-# from copy import deepcopy
+from typing import Any, Dict
 
 import pystac
 from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, STACError, RequiredPropertyMissing
+from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
 from pystac.extensions.pointcloud import (
     AssetPointcloudExtension,
     PhenomenologyType,
@@ -17,6 +15,8 @@ from pystac.extensions.pointcloud import (
 )
 from pystac.summaries import RangeSummary
 from tests.utils import TestCases, assert_to_from_dict
+
+# from copy import deepcopy
 
 
 class PointcloudTest(unittest.TestCase):

@@ -1,13 +1,13 @@
 from copy import deepcopy
-from typing import Any, Callable, Dict, List, Optional, Set, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple
 
 import pystac
-from pystac.version import STACVersion
 from pystac.serialization.identify import (
     OldExtensionShortIDs,
     STACJSONDescription,
     STACVersionID,
 )
+from pystac.version import STACVersion
 
 if TYPE_CHECKING:
     from pystac import STACObjectType as STACObjectType_Type

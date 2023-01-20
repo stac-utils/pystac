@@ -9,7 +9,6 @@ from pystac.utils import is_absolute_href, make_absolute_href
 from pystac.validation import validate_dict
 from tests.utils import TestCases
 
-
 CTYPES = [
     CatalogType.ABSOLUTE_PUBLISHED,
     CatalogType.RELATIVE_PUBLISHED,

@@ -2,9 +2,7 @@ import unittest
 from datetime import datetime
 from typing import Any, Dict, List
 
-from pystac import CommonMetadata, Provider, ProviderRole, Item
-from pystac import utils
-
+from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
 from tests.utils import TestCases
 
 

@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from pystac.serialization.identify import OldExtensionShortIDs, STACVersionID
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pystac
 from pystac.serialization import STACVersionRange
+from pystac.serialization.identify import OldExtensionShortIDs, STACVersionID
 from pystac.stac_object import STACObjectType
 
 

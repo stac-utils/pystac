@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import (
-    cast,
+    Any,
+    Dict,
     Generic,
     Iterable,
     List,
     Optional,
-    Dict,
-    Any,
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 import pystac

@@ -14,15 +14,15 @@ from typing import (
 )
 
 import pystac
-from pystac.summaries import RangeSummary
+from pystac.extensions import projection, view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions import view, projection
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)

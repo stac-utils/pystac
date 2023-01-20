@@ -1,16 +1,16 @@
-from abc import ABC, abstractmethod
-import logging
 import json
-from pystac.stac_object import STACObjectType
+import logging
+from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
 import pystac
+from pystac.stac_object import STACObjectType
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
 try:
     import jsonschema
-    import jsonschema.validators
     import jsonschema.exceptions
+    import jsonschema.validators
 except ImportError:
     jsonschema = None
 

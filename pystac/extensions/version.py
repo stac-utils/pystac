@@ -1,14 +1,10 @@
 """Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
-from pystac.utils import get_required, map_opt
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
-from pystac.utils import StringEnum
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-)
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item)
 

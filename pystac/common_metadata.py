@@ -1,14 +1,14 @@
 from datetime import datetime as Datetime
-from pystac.errors import STACError
-from typing import Any, cast, Dict, List, Optional, Type, TYPE_CHECKING, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
 from pystac import utils
+from pystac.errors import STACError
 
 if TYPE_CHECKING:
-    from pystac.provider import Provider as Provider_Type
     from pystac.asset import Asset as Asset_Type
     from pystac.item import Item as Item_Type
+    from pystac.provider import Provider as Provider_Type
 
 
 P = TypeVar("P")

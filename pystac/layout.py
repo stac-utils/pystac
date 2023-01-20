@@ -1,16 +1,16 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from string import Formatter
-from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import pystac
-from pystac.utils import safe_urlparse, join_path_or_url, JoinType
+from pystac.utils import JoinType, join_path_or_url, safe_urlparse
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
     from pystac.catalog import Catalog as Catalog_Type
     from pystac.collection import Collection as Collection_Type
     from pystac.item import Item as Item_Type
+    from pystac.stac_object import STACObject as STACObject_Type
 
 
 class TemplateError(Exception):

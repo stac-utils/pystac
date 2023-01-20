@@ -1,28 +1,28 @@
-from html import escape
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
-from pystac.catalog import Catalog
+from html import escape
 from typing import Any, Dict, List, Optional, Union, cast
 
 import pystac
-from pystac.html.jinja_env import get_jinja_env
 from pystac import STACError, STACObjectType
 from pystac.asset import Asset
+from pystac.catalog import Catalog
+from pystac.collection import Collection
+from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.serialization import (
-    identify_stac_object_type,
     identify_stac_object,
+    identify_stac_object_type,
     migrate_to_latest,
 )
 from pystac.stac_object import STACObject
 from pystac.utils import (
+    datetime_to_str,
     is_absolute_href,
     make_absolute_href,
     make_relative_href,
-    datetime_to_str,
     str_to_datetime,
 )
-from pystac.collection import Collection
 
 
 class Item(STACObject):

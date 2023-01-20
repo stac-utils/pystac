@@ -1,8 +1,7 @@
 """Implements the :stac-ext:`Satellite Extension <sat>`."""
 
 from datetime import datetime as Datetime
-from pystac.summaries import RangeSummary
-from typing import Dict, Any, List, Iterable, Generic, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -11,7 +10,8 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, str_to_datetime, datetime_to_str, map_opt
+from pystac.summaries import RangeSummary
+from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 

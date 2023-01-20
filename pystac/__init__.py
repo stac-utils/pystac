@@ -1,3 +1,4 @@
+# isort: skip_file
 """
 PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """

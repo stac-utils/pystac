@@ -3,8 +3,8 @@
 # mypy: warn_unused_ignores=False
 
 import datetime
-from typing import Any, Dict
 import unittest
+from typing import Any, Dict
 
 import pystac
 from pystac import ExtensionTypeError
