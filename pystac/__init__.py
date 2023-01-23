@@ -41,7 +41,7 @@ __all__ = [
 ]
 
 import os
-from typing import Any, AnyStr, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from pystac.errors import (
     STACError,
