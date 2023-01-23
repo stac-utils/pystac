@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Item Assets Definition Extension <item-assets>`."""
 
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
@@ -43,7 +45,7 @@ class AssetDefinition:
         description: Optional[str],
         media_type: Optional[str],
         roles: Optional[List[str]],
-    ) -> "AssetDefinition":
+    ) -> AssetDefinition:
         """
         Creates a new asset definition.
 
@@ -206,7 +208,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
     @classmethod
     def ext(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "ItemAssetsExtension":
+    ) -> ItemAssetsExtension:
         """Extends the given :class:`~pystac.Collection` with properties from the
         :stac-ext:`Item Assets Extension <item-assets>`.
 

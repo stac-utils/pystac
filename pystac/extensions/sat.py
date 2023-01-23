@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Satellite Extension <sat>`."""
 
+from __future__ import annotations
+
 from datetime import datetime as Datetime
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
@@ -133,7 +135,7 @@ class SatExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "SatExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> SatExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Satellite
         Extension <sat>`.
 
@@ -158,7 +160,7 @@ class SatExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesSatExtension":
+    ) -> SummariesSatExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesSatExtension(obj)

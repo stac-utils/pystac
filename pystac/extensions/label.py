@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Label Extension <label>`."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
 
 import pystac
@@ -90,7 +92,7 @@ class LabelClasses:
         cls,
         classes: Sequence[Union[str, int, float]],
         name: Optional[str] = None,
-    ) -> "LabelClasses":
+    ) -> LabelClasses:
         """Creates a new :class:`~LabelClasses` instance.
 
         Args:
@@ -165,7 +167,7 @@ class LabelCount:
         self.count = count
 
     @classmethod
-    def create(cls, name: str, count: int) -> "LabelCount":
+    def create(cls, name: str, count: int) -> LabelCount:
         """Creates a :class:`LabelCount` instance.
 
         Args:
@@ -230,7 +232,7 @@ class LabelStatistics:
         self.value = value
 
     @classmethod
-    def create(cls, name: str, value: float) -> "LabelStatistics":
+    def create(cls, name: str, value: float) -> LabelStatistics:
         """Creates a new :class:`LabelStatistics` instance.
 
         Args:
@@ -315,7 +317,7 @@ class LabelOverview:
         property_key: Optional[str],
         counts: Optional[List[LabelCount]] = None,
         statistics: Optional[List[LabelStatistics]] = None,
-    ) -> "LabelOverview":
+    ) -> LabelOverview:
         """Creates a new instance.
 
         Either ``counts`` or ``statistics``, or both, can be placed in an overview;
@@ -381,7 +383,7 @@ class LabelOverview:
         else:
             self.properties["statistics"] = [s.to_dict() for s in v]
 
-    def merge_counts(self, other: "LabelOverview") -> "LabelOverview":
+    def merge_counts(self, other: "LabelOverview") -> LabelOverview:
         """Merges the counts associated with this overview with another overview.
         Creates a new instance.
 
@@ -690,7 +692,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> "LabelExtension":
+    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> LabelExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Label
         Extension <label>`.
 
@@ -707,7 +709,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesLabelExtension":
+    ) -> SummariesLabelExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesLabelExtension(obj)

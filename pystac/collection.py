@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from datetime import datetime
 from html import escape
@@ -34,8 +36,7 @@ from pystac.summaries import Summaries
 from pystac.utils import datetime_to_str, str_to_datetime
 
 if TYPE_CHECKING:
-    from pystac.item import Item as Item_Type
-    from pystac.provider import Provider as Provider_Type
+    from pystac.item import Item
 
 T = TypeVar("T")
 TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
@@ -90,7 +91,7 @@ class SpatialExtent:
         d = {"bbox": self.bboxes, **self.extra_fields}
         return d
 
-    def clone(self) -> "SpatialExtent":
+    def clone(self) -> SpatialExtent:
         """Clones this object.
 
         Returns:
@@ -101,7 +102,7 @@ class SpatialExtent:
         )
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "SpatialExtent":
+    def from_dict(d: Dict[str, Any]) -> SpatialExtent:
         """Constructs a SpatialExtent from a dict.
 
         Returns:
@@ -114,7 +115,7 @@ class SpatialExtent:
     @staticmethod
     def from_coordinates(
         coordinates: List[Any], extra_fields: Optional[Dict[str, Any]] = None
-    ) -> "SpatialExtent":
+    ) -> SpatialExtent:
         """Constructs a SpatialExtent from a set of coordinates.
 
         This method will only produce a single bbox that covers all points
@@ -228,7 +229,7 @@ class TemporalExtent:
         d = {"interval": encoded_intervals, **self.extra_fields}
         return d
 
-    def clone(self) -> "TemporalExtent":
+    def clone(self) -> TemporalExtent:
         """Clones this object.
 
         Returns:
@@ -239,7 +240,7 @@ class TemporalExtent:
         )
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "TemporalExtent":
+    def from_dict(d: Dict[str, Any]) -> TemporalExtent:
         """Constructs an TemporalExtent from a dict.
 
         Returns:
@@ -262,7 +263,7 @@ class TemporalExtent:
         )
 
     @staticmethod
-    def from_now() -> "TemporalExtent":
+    def from_now() -> TemporalExtent:
         """Constructs an TemporalExtent with a single open interval that has
         the start time as the current time.
 
@@ -318,7 +319,7 @@ class Extent:
 
         return d
 
-    def clone(self) -> "Extent":
+    def clone(self) -> Extent:
         """Clones this object.
 
         Returns:
@@ -331,7 +332,7 @@ class Extent:
         )
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Extent":
+    def from_dict(d: Dict[str, Any]) -> Extent:
         """Constructs an Extent from a dict.
 
         Returns:
@@ -347,8 +348,8 @@ class Extent:
 
     @staticmethod
     def from_items(
-        items: Iterable["Item_Type"], extra_fields: Optional[Dict[str, Any]] = None
-    ) -> "Extent":
+        items: Iterable[Item], extra_fields: Optional[Dict[str, Any]] = None
+    ) -> Extent:
         """Create an Extent based on the datetimes and bboxes of a list of items.
 
         Args:
@@ -504,7 +505,7 @@ class Collection(Catalog):
         catalog_type: Optional[CatalogType] = None,
         license: str = "proprietary",
         keywords: Optional[List[str]] = None,
-        providers: Optional[List["Provider_Type"]] = None,
+        providers: Optional[List[Provider]] = None,
         summaries: Optional[Summaries] = None,
         assets: Optional[Dict[str, Asset]] = None,
     ):
@@ -543,7 +544,7 @@ class Collection(Catalog):
 
     def add_item(
         self,
-        item: "Item_Type",
+        item: Item,
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
@@ -571,7 +572,7 @@ class Collection(Catalog):
 
         return d
 
-    def clone(self) -> "Collection":
+    def clone(self) -> Collection:
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -611,7 +612,7 @@ class Collection(Catalog):
         root: Optional[Catalog] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> "Collection":
+    ) -> Collection:
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -719,13 +720,13 @@ class Collection(Catalog):
 
     def full_copy(
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
-    ) -> "Collection":
+    ) -> Collection:
         return cast(Collection, super().full_copy(root, parent))
 
     @classmethod
     def from_file(
         cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> "Collection":
+    ) -> Collection:
         result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
             raise pystac.STACTypeError(f"{result} is not a {Collection}.")

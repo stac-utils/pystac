@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import copy, deepcopy
 from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
@@ -6,9 +8,9 @@ from pystac import common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
 
 if TYPE_CHECKING:
-    from pystac.collection import Collection as Collection_Type
-    from pystac.common_metadata import CommonMetadata as CommonMetadata_Type
-    from pystac.item import Item as Item_Type
+    from pystac.collection import Collection
+    from pystac.common_metadata import CommonMetadata
+    from pystac.item import Item
 
 
 class Asset:
@@ -50,7 +52,7 @@ class Asset:
     """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
     asset."""
 
-    owner: Optional[Union["Item_Type", "Collection_Type"]]
+    owner: Optional[Union[Item, Collection]]
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
@@ -77,7 +79,7 @@ class Asset:
         # The Item which owns this Asset.
         self.owner = None
 
-    def set_owner(self, obj: Union["Collection_Type", "Item_Type"]) -> None:
+    def set_owner(self, obj: Union[Collection, Item]) -> None:
         """Sets the owning item of this Asset.
 
         The owning item will be used to resolve relative HREFs of this asset.
@@ -134,7 +136,7 @@ class Asset:
 
         return d
 
-    def clone(self) -> "Asset":
+    def clone(self) -> Asset:
         """Clones this asset. Makes a ``deepcopy`` of the
         :attr:`~pystac.Asset.extra_fields`.
 
@@ -166,7 +168,7 @@ class Asset:
             return role in self.roles
 
     @property
-    def common_metadata(self) -> "CommonMetadata_Type":
+    def common_metadata(self) -> CommonMetadata:
         """Access the asset's common metadata fields as a
         :class:`~pystac.CommonMetadata` object."""
         return common_metadata.CommonMetadata(self)
@@ -183,7 +185,7 @@ class Asset:
             return escape(repr(self))
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "Asset":
+    def from_dict(cls, d: Dict[str, Any]) -> Asset:
         """Constructs an Asset from a dict.
 
         Returns:

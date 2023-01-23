@@ -1,4 +1,7 @@
 """Implements the :stac-ext:`Point Cloud Extension <pointcloud>`."""
+
+from __future__ import annotations
+
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -70,7 +73,7 @@ class Schema:
         self.properties["type"] = type
 
     @classmethod
-    def create(cls, name: str, size: int, type: SchemaType) -> "Schema":
+    def create(cls, name: str, size: int, type: SchemaType) -> Schema:
         """Creates a new Schema.
 
         Args:
@@ -180,7 +183,7 @@ class Statistic:
         minimum: Optional[float] = None,
         stddev: Optional[float] = None,
         variance: Optional[float] = None,
-    ) -> "Statistic":
+    ) -> Statistic:
         """Creates a new Statistic class.
 
         Args:
@@ -433,7 +436,7 @@ class PointcloudExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "PointcloudExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> PointcloudExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Point Cloud
         Extension <pointcloud>`.
 
@@ -462,7 +465,7 @@ class PointcloudExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesPointcloudExtension":
+    ) -> SummariesPointcloudExtension:
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesPointcloudExtension(obj)
 

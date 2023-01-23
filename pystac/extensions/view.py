@@ -1,5 +1,7 @@
 """Implement the :stac-ext:`View Geometry Extension <view>`."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac
@@ -143,7 +145,7 @@ class ViewExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "ViewExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> ViewExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`View
         Geometry Extension <scientific>`.
 
@@ -168,7 +170,7 @@ class ViewExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesViewExtension":
+    ) -> SummariesViewExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesViewExtension(obj)

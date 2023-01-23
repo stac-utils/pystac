@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Union
@@ -6,7 +8,7 @@ import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.stac_object import STACObject
 
 
 class ExtensionHooks(ABC):
@@ -38,7 +40,7 @@ class ExtensionHooks(ABC):
         return set([x.value for x in self.stac_object_types])
 
     def get_object_links(
-        self, obj: "STACObject_Type"
+        self, obj: STACObject
     ) -> Optional[List[Union[str, pystac.RelType]]]:
         return None
 
@@ -83,7 +85,7 @@ class RegisteredExtensionHooks:
             del self.hooks[extension_id]
 
     def get_extended_object_links(
-        self, obj: "STACObject_Type"
+        self, obj: STACObject
     ) -> List[Union[str, pystac.RelType]]:
         result: Optional[List[Union[str, pystac.RelType]]] = None
         for ext in obj.stac_extensions:

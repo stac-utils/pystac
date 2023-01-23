@@ -5,6 +5,8 @@ For a description of Digital Object Identifiers (DOIs), see the DOI Handbook:
 https://doi.org/10.1000/182
 """
 
+from __future__ import annotations
+
 import copy
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 from urllib import parse
@@ -72,7 +74,7 @@ class Publication:
         return copy.deepcopy({"doi": self.doi, "citation": self.citation})
 
     @staticmethod
-    def from_dict(d: Dict[str, str]) -> "Publication":
+    def from_dict(d: Dict[str, str]) -> Publication:
         return Publication(d.get("doi"), d.get("citation"))
 
     def get_link(self) -> Optional[pystac.Link]:
@@ -224,7 +226,7 @@ class ScientificExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "ScientificExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> ScientificExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Scientific
         Extension <scientific>`.
 
@@ -249,7 +251,7 @@ class ScientificExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesScientificExtension":
+    ) -> SummariesScientificExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesScientificExtension(obj)

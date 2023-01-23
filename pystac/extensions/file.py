@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`File Info Extension <file>`."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
@@ -50,7 +52,7 @@ class MappingObject:
         self.summary = summary
 
     @classmethod
-    def create(cls, values: List[Any], summary: str) -> "MappingObject":
+    def create(cls, values: List[Any], summary: str) -> MappingObject:
         """Creates a new :class:`~MappingObject` instance.
 
         Args:
@@ -81,7 +83,7 @@ class MappingObject:
         self.properties["summary"] = v
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "MappingObject":
+    def from_dict(cls, d: Dict[str, Any]) -> MappingObject:
         return cls.create(**d)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -215,7 +217,7 @@ class FileExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "FileExtension":
+    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> FileExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 

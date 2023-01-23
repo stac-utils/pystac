@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Electro-Optical Extension <eo>`."""
 
+from __future__ import annotations
+
 from typing import (
     Any,
     Dict,
@@ -86,7 +88,7 @@ class Band:
         center_wavelength: Optional[float] = None,
         full_width_half_max: Optional[float] = None,
         solar_illumination: Optional[float] = None,
-    ) -> "Band":
+    ) -> Band:
         """
         Creates a new band.
 
@@ -348,7 +350,7 @@ class EOExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "EOExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> EOExtension[T]:
         """Extends the given STAC Object with properties from the
         :stac-ext:`Electro-Optical Extension <eo>`.
 
@@ -373,7 +375,7 @@ class EOExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesEOExtension":
+    ) -> SummariesEOExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesEOExtension(obj)

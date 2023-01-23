@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 from functools import total_ordering
 from typing import TYPE_CHECKING, Any, Dict, Optional, Set, Union
@@ -6,7 +8,7 @@ import pystac
 from pystac.version import STACVersion
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObjectType as STACObjectType_Type
+    from pystac.stac_object import STACObjectType
 
 
 class OldExtensionShortIDs(Enum):
@@ -156,13 +158,13 @@ class STACJSONDescription:
             object implements
     """
 
-    object_type: "STACObjectType_Type"
+    object_type: STACObjectType
     version_range: STACVersionRange
     extensions: Set[str]
 
     def __init__(
         self,
-        object_type: "STACObjectType_Type",
+        object_type: STACObjectType,
         version_range: STACVersionRange,
         extensions: Set[str],
     ) -> None:
@@ -176,9 +178,7 @@ class STACJSONDescription:
         )
 
 
-def identify_stac_object_type(
-    json_dict: Dict[str, Any]
-) -> Optional["STACObjectType_Type"]:
+def identify_stac_object_type(json_dict: Dict[str, Any]) -> Optional[STACObjectType]:
     """Determines the STACObjectType of the provided JSON dict. If the JSON dict does
     not represent a STAC object, returns ``None``.
 

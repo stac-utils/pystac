@@ -1,4 +1,7 @@
 """Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
+
+from __future__ import annotations
+
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -186,7 +189,7 @@ class VersionExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "VersionExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> VersionExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Versioning
         Indicators Extension <version>`.
 

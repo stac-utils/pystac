@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Type, Union, cast
 
@@ -7,7 +9,7 @@ from pystac.link import Link
 from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as Catalog_Type
+    from pystac.catalog import Catalog
 
 
 class STACObjectType(StringEnum):
@@ -217,7 +219,7 @@ class STACObject(ABC):
         if root_link is not None and root_link.is_resolved():
             cast(pystac.Catalog, root_link.target)._resolved_objects.cache(self)
 
-    def get_root(self) -> Optional["Catalog_Type"]:
+    def get_root(self) -> Optional[Catalog]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the root for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'root'``.
@@ -236,7 +238,7 @@ class STACObject(ABC):
         else:
             return None
 
-    def set_root(self, root: Optional["Catalog_Type"]) -> None:
+    def set_root(self, root: Optional[Catalog]) -> None:
         """Sets the root :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -272,7 +274,7 @@ class STACObject(ABC):
                 self.add_link(new_root_link)
             root._resolved_objects.cache(self)
 
-    def get_parent(self) -> Optional["Catalog_Type"]:
+    def get_parent(self) -> Optional[Catalog]:
         """Get the :class:`~pystac.Catalog` or :class:`~pystac.Collection` to
         the parent for this object. The root is represented by a
         :class:`~pystac.Link` with ``rel == 'parent'``.
@@ -288,7 +290,7 @@ class STACObject(ABC):
         else:
             return None
 
-    def set_parent(self, parent: Optional["Catalog_Type"]) -> None:
+    def set_parent(self, parent: Optional[Catalog]) -> None:
         """Sets the parent :class:`~pystac.Catalog` or :class:`~pystac.Collection`
         for this object.
 
@@ -302,8 +304,8 @@ class STACObject(ABC):
             self.add_link(Link.parent(parent))
 
     def get_stac_objects(
-        self, rel: Union[str, pystac.RelType], typ: Optional[Type["STACObject"]] = None
-    ) -> Iterable["STACObject"]:
+        self, rel: Union[str, pystac.RelType], typ: Optional[Type[STACObject]] = None
+    ) -> Iterable[STACObject]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
@@ -324,7 +326,7 @@ class STACObject(ABC):
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
                 if typ is None or isinstance(link.target, typ):
-                    yield cast("STACObject", link.target)
+                    yield cast(STACObject, link.target)
 
     def save_object(
         self,
@@ -375,9 +377,9 @@ class STACObject(ABC):
 
     def full_copy(
         self,
-        root: Optional["Catalog_Type"] = None,
-        parent: Optional["Catalog_Type"] = None,
-    ) -> "STACObject":
+        root: Optional[Catalog] = None,
+        parent: Optional[Catalog] = None,
+    ) -> STACObject:
         """Create a full copy of this STAC object and any stac objects linked to by
         this object.
 
@@ -478,7 +480,7 @@ class STACObject(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def clone(self) -> "STACObject":
+    def clone(self) -> STACObject:
         """Clones this object.
 
         Cloning an object will make a copy of all properties and links of the object;
@@ -494,7 +496,7 @@ class STACObject(ABC):
     @classmethod
     def from_file(
         cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> "STACObject":
+    ) -> STACObject:
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -536,10 +538,10 @@ class STACObject(ABC):
         cls,
         d: Dict[str, Any],
         href: Optional[str] = None,
-        root: Optional["Catalog_Type"] = None,
+        root: Optional[Catalog] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> "STACObject":
+    ) -> STACObject:
         """Parses this STACObject from the passed in dictionary.
 
         Args:

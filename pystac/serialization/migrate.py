@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple
 
@@ -10,7 +12,7 @@ from pystac.serialization.identify import (
 from pystac.version import STACVersion
 
 if TYPE_CHECKING:
-    from pystac import STACObjectType as STACObjectType_Type
+    from pystac import STACObjectType
 
 
 def _migrate_catalog(
@@ -93,7 +95,7 @@ def _get_removed_extension_migrations() -> (
     Dict[
         str,
         Tuple[
-            Optional[List["STACObjectType_Type"]],
+            Optional[List[STACObjectType]],
             Optional[
                 Callable[
                     [Dict[str, Any], STACVersionID, STACJSONDescription],

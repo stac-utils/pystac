@@ -1,4 +1,7 @@
 """Implements the :stac-ext:`Table Extension <table>`."""
+
+from __future__ import annotations
+
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -138,7 +141,7 @@ class TableExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "TableExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> TableExtension[T]:
         """Extend the given STAC Object with properties from the
         :stac-ext:`Table Extension <table>`.
 

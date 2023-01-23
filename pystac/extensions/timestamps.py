@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Timestamps Extension <timestamps>`."""
 
+from __future__ import annotations
+
 from datetime import datetime as datetime
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
@@ -114,7 +116,7 @@ class TimestampsExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "TimestampsExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> TimestampsExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Timestamps
         Extension <timestamps>`.
 
@@ -139,7 +141,7 @@ class TimestampsExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesTimestampsExtension":
+    ) -> SummariesTimestampsExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesTimestampsExtension(obj)

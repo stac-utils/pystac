@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Grid Extension <grid>`."""
 
+from __future__ import annotations
+
 import re
 from typing import Any, Dict, Optional, Pattern, Set, Union
 
@@ -79,7 +81,7 @@ class GridExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> "GridExtension":
+    def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> GridExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Grid
         Extension <grid>`.
 

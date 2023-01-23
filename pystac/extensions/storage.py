@@ -3,6 +3,8 @@
 https://github.com/stac-extensions/storage
 """
 
+from __future__ import annotations
+
 from typing import (
     Any,
     Dict,
@@ -135,7 +137,7 @@ class StorageExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "StorageExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> StorageExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Storage
         Extension <storage>`.
 
@@ -160,7 +162,7 @@ class StorageExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesStorageExtension":
+    ) -> SummariesStorageExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesStorageExtension(obj)
