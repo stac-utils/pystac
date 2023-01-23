@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Synthetic-Aperture Radar (SAR) Extension <sar>`."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -298,7 +300,7 @@ class SarExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "SarExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> SarExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`SAR
         Extension <sar>`.
 
@@ -327,7 +329,7 @@ class SarExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesSarExtension":
+    ) -> SummariesSarExtension:
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesSarExtension(obj)

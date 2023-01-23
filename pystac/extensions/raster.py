@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Raster Extension <raster>`."""
 
+from __future__ import annotations
+
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 import pystac
@@ -88,7 +90,7 @@ class Statistics:
         mean: Optional[float] = None,
         stddev: Optional[float] = None,
         valid_percent: Optional[float] = None,
-    ) -> "Statistics":
+    ) -> Statistics:
         """
         Creates a new band.
 
@@ -198,7 +200,7 @@ class Statistics:
         return self.properties
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Statistics":
+    def from_dict(d: Dict[str, Any]) -> Statistics:
         """Constructs an Statistics from a dict.
 
         Returns:
@@ -250,7 +252,7 @@ class Histogram:
         min: float,
         max: float,
         buckets: List[int],
-    ) -> "Histogram":
+    ) -> Histogram:
         """
         Creates a new band.
 
@@ -334,7 +336,7 @@ class Histogram:
         return self.properties
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Histogram":
+    def from_dict(d: Dict[str, Any]) -> Histogram:
         """Constructs an Histogram from a dict.
 
         Returns:
@@ -417,7 +419,7 @@ class RasterBand:
         scale: Optional[float] = None,
         offset: Optional[float] = None,
         histogram: Optional[Histogram] = None,
-    ) -> "RasterBand":
+    ) -> RasterBand:
         """
         Creates a new band.
 
@@ -705,7 +707,7 @@ class RasterExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> "RasterExtension":
+    def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> RasterExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Raster
         Extension <raster>`.
 
@@ -726,7 +728,7 @@ class RasterExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesRasterExtension":
+    ) -> SummariesRasterExtension:
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import pystac
@@ -6,15 +8,14 @@ from pystac.utils import make_absolute_href
 from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject as STACObject_Type
-    from pystac.stac_object import STACObjectType as STACObjectType_Type
+    from pystac.stac_object import STACObject, STACObjectType
 
 
 # Import after above class definition
 from pystac.validation.stac_validator import JsonSchemaSTACValidator, STACValidator
 
 
-def validate(stac_object: "STACObject_Type") -> List[Any]:
+def validate(stac_object: STACObject) -> List[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
@@ -39,7 +40,7 @@ def validate(stac_object: "STACObject_Type") -> List[Any]:
 
 def validate_dict(
     stac_dict: Dict[str, Any],
-    stac_object_type: Optional["STACObjectType_Type"] = None,
+    stac_object_type: Optional[STACObjectType] = None,
     stac_version: Optional[str] = None,
     extensions: Optional[List[str]] = None,
     href: Optional[str] = None,

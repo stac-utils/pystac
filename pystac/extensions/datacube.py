@@ -1,5 +1,7 @@
 """Implements the :stac-ext:`Datacube Extension <datacube>`."""
 
+from __future__ import annotations
+
 from abc import ABC
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
 
@@ -102,7 +104,7 @@ class Dimension(ABC):
         return self.properties
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Dimension":
+    def from_dict(d: Dict[str, Any]) -> Dimension:
         dim_type: str = get_required(
             d.get(DIM_TYPE_PROP), "cube_dimension", DIM_TYPE_PROP
         )
@@ -500,7 +502,7 @@ class Variable:
             self.properties[VAR_UNIT_PROP] = v
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Variable":
+    def from_dict(d: Dict[str, Any]) -> Variable:
         return Variable(d)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -579,7 +581,7 @@ class DatacubeExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "DatacubeExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> DatacubeExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Datacube
         Extension <datacube>`.
 
