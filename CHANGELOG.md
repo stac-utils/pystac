@@ -23,6 +23,7 @@
 ### Changed
 
 - Switch to pytest ([#939](https://github.com/stac-utils/pystac/pull/939))
+- Use `from __future__ import annotations` for type signatures ([#962](https://github.com/stac-utils/pystac/pull/962))
 
 ### Fixed
 
