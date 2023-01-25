@@ -8,7 +8,7 @@ codespell==2.2.2
 isort==5.11.4
 
 jsonschema==4.17.3
-coverage==7.0.5
+coverage==7.1.0
 doc8==0.11.2
 jinja2<4.0
 html5lib==1.1
