@@ -97,8 +97,8 @@ class STACObject(ABC):
 
         Returns:
             Optional[:class:`~pystac.Link`]: First link that matches ``rel``
-                and/or ``media_type``, or else the first link associated with
-                this object.
+            and/or ``media_type``, or else the first link associated with
+            this object.
         """
         if rel is None and media_type is None:
             return next(iter(self.links), None)
@@ -127,8 +127,8 @@ class STACObject(ABC):
 
         Returns:
             List[:class:`~pystac.Link`]: A list of links that match ``rel`` and/
-                or ``media_type`` if set, or else all links associated with this
-                object.
+            or ``media_type`` if set, or else all links associated with this
+            object.
         """
         if rel is None and media_type is None:
             return self.links
@@ -389,7 +389,7 @@ class STACObject(ABC):
 
         Returns:
             STACObject: A full copy of this object, as well as any objects this object
-                links to.
+            links to.
         """
         clone = self.clone()
 

@@ -85,7 +85,7 @@ class CatalogType(StringEnum):
 
         Returns:
             Optional[CatalogType]: The catalog type of the catalog or collection.
-                Will return None if it cannot be determined.
+            Will return None if it cannot be determined.
         """
         self_link = None
         relative = False

@@ -201,8 +201,8 @@ class LayoutTemplate:
 
         Returns:
             [dict]: A dictionary with keys being the template variables
-                and values being the respective values based on the given
-                stac object.
+            and values being the respective values based on the given
+            stac object.
 
         Raises:
             TemplateError: If a value for a template variable cannot be
@@ -224,8 +224,8 @@ class LayoutTemplate:
 
         Returns:
             str: The original template supplied to this LayoutTemplate
-                with template variables replaced by the values derived
-                from this stac object.
+            with template variables replaced by the values derived
+            from this stac object.
 
         Raises:
             TemplateError: If a value for a template variable cannot be

@@ -358,7 +358,7 @@ class Extent:
 
         Returns:
             Extent: An Extent that spatially and temporally covers all of the
-                given items.
+            given items.
         """
         bounds_values: List[List[float]] = [
             [float("inf")],
@@ -689,7 +689,7 @@ class Collection(Catalog):
 
         Returns:
             Dict[str, Asset]: A dictionary of assets that match ``media_type``
-                and/or ``role`` if set or else all of this collection's assets.
+            and/or ``role`` if set or else all of this collection's assets.
         """
         if media_type is None and role is None:
             return dict(self.assets.items())
