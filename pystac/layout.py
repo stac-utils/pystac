@@ -272,6 +272,56 @@ class HrefLayoutStrategy(ABC):
         raise NotImplementedError
 
 
+class BestPracticesLayoutStrategy(HrefLayoutStrategy):
+    """Layout strategy that represents the catalog layout described
+    in the :stac-spec:`STAC Best Practices documentation
+    <best-practices.md>`
+
+    For a root catalog or collection, this will use the filename 'catalog.json'
+    or 'collection.json' to the given directory. For a non-root catalog or collection,
+    the ID will be used as a subdirectory, e.g. ``${id}/catalog.json`` or
+    ``${id}/collection.json``. For items, a subdirectory with a name of the item
+    ID will be made, and the item ID will be used in the filename, i.e.
+    ``${id}/${id}.json``
+
+    All paths are appended to the parent directory.
+    """
+
+    def get_catalog_href(
+        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
+    ) -> str:
+        parsed_parent_dir = safe_urlparse(parent_dir)
+        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+
+        if is_root:
+            cat_root = parent_dir
+        else:
+            cat_root = join_path_or_url(join_type, parent_dir, "{}".format(cat.id))
+
+        return join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
+
+    def get_collection_href(
+        self, col: "Collection_Type", parent_dir: str, is_root: bool
+    ) -> str:
+        parsed_parent_dir = safe_urlparse(parent_dir)
+        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+
+        if is_root:
+            col_root = parent_dir
+        else:
+            col_root = join_path_or_url(join_type, parent_dir, "{}".format(col.id))
+
+        return join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
+
+    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+        parsed_parent_dir = safe_urlparse(parent_dir)
+        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+
+        item_root = join_path_or_url(join_type, parent_dir, "{}".format(item.id))
+
+        return join_path_or_url(join_type, item_root, "{}.json".format(item.id))
+
+
 class CustomLayoutStrategy(HrefLayoutStrategy):
     """Layout strategy that allows users to supply functions to dictate
     stac object paths.
@@ -316,13 +366,11 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
         catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]] = None,
         collection_func: Optional[Callable[["Collection_Type", str, bool], str]] = None,
         item_func: Optional[Callable[["Item_Type", str], str]] = None,
-        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+        fallback_strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
     ):
         self.item_func = item_func
         self.collection_func = collection_func
         self.catalog_func = catalog_func
-        if fallback_strategy is None:
-            fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy = fallback_strategy
 
     def get_catalog_href(
@@ -397,7 +445,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
         catalog_template: Optional[str] = None,
         collection_template: Optional[str] = None,
         item_template: Optional[str] = None,
-        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+        fallback_strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
     ):
         self.catalog_template = (
             LayoutTemplate(catalog_template) if catalog_template is not None else None
@@ -411,8 +459,6 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             LayoutTemplate(item_template) if item_template is not None else None
         )
 
-        if fallback_strategy is None:
-            fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy = fallback_strategy
 
     def get_catalog_href(
@@ -463,56 +509,6 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
                 )
 
             return join_path_or_url(join_type, parent_dir, template_path)
-
-
-class BestPracticesLayoutStrategy(HrefLayoutStrategy):
-    """Layout strategy that represents the catalog layout described
-    in the :stac-spec:`STAC Best Practices documentation
-    <best-practices.md>`
-
-    For a root catalog or collection, this will use the filename 'catalog.json'
-    or 'collection.json' to the given directory. For a non-root catalog or collection,
-    the ID will be used as a subdirectory, e.g. ``${id}/catalog.json`` or
-    ``${id}/collection.json``. For items, a subdirectory with a name of the item
-    ID will be made, and the item ID will be used in the filename, i.e.
-    ``${id}/${id}.json``
-
-    All paths are appended to the parent directory.
-    """
-
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
-        if is_root:
-            cat_root = parent_dir
-        else:
-            cat_root = join_path_or_url(join_type, parent_dir, "{}".format(cat.id))
-
-        return join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
-
-    def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
-    ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
-        if is_root:
-            col_root = parent_dir
-        else:
-            col_root = join_path_or_url(join_type, parent_dir, "{}".format(col.id))
-
-        return join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
-
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
-        item_root = join_path_or_url(join_type, parent_dir, "{}".format(item.id))
-
-        return join_path_or_url(join_type, item_root, "{}.json".format(item.id))
 
 
 class AsIsLayoutStrategy(HrefLayoutStrategy):

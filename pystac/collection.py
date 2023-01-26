@@ -22,7 +22,7 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.errors import STACTypeError
 from pystac.html.jinja_env import get_jinja_env
-from pystac.layout import HrefLayoutStrategy
+from pystac.layout import BestPracticesLayoutStrategy, HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
 from pystac.serialization import (
@@ -545,7 +545,7 @@ class Collection(Catalog):
         self,
         item: "Item_Type",
         title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
     ) -> None:
         super().add_item(item, title, strategy)
         item.set_collection(self)
