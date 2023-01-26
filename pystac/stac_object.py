@@ -83,23 +83,30 @@ class STACObject(ABC):
 
     def get_single_link(
         self,
-        rel: Union[str, pystac.RelType],
+        rel: Optional[Union[str, pystac.RelType]] = None,
         media_type: Optional[Union[str, pystac.MediaType]] = None,
     ) -> Optional[Link]:
-        """Get single link that match the given ``rel`` and, optionally,
-        ``media_type``. If ``media_type`` is ``None``, then the link is
-        matched only on the ``rel`` value.
+        """Get a single :class:`~pystac.Link` instance associated with this
+        object.
 
         Args:
-             rel : The :class:`~pystac.Link` ``rel`` to match on.
-             media_type: The :class:`~pystack.MediaType` ``media_type`` to match on
-        """
+            rel : If set, filter links such that only those
+                matching this relationship are returned.
+            media_type: If set, filter the links such that only
+                those matching media_type are returned
 
+        Returns:
+            Optional[:class:`~pystac.Link`]: First link that matches ``rel``
+                and/or ``media_type``, or else the first link associated with
+                this object.
+        """
+        if rel is None and media_type is None:
+            return next(iter(self.links), None)
         return next(
             (
                 link
                 for link in self.links
-                if link.rel == rel
+                if (rel is None or link.rel == rel)
                 and (media_type is None or link.media_type == media_type)
             ),
             None,
@@ -119,16 +126,17 @@ class STACObject(ABC):
                 those matching media_type are returned
 
         Returns:
-            List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
-                or else all links associated with this object.
+            List[:class:`~pystac.Link`]: A list of links that match ``rel`` and/
+                or ``media_type`` if set, or else all links associated with this
+                object.
         """
-        if rel is None:
+        if rel is None and media_type is None:
             return self.links
         else:
             return [
                 link
                 for link in self.links
-                if link.rel == rel
+                if (rel is None or link.rel == rel)
                 and (media_type is None or link.media_type == media_type)
             ]
 

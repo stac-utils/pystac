@@ -29,6 +29,7 @@
 - Serializing optional Collection attributes ([#916](https://github.com/stac-utils/pystac/pull/916))
 - A couple non-running tests ([#912](https://github.com/stac-utils/pystac/pull/912))
 - Support relative stac extension paths via `make_absolute_href` ([#884](https://github.com/stac-utils/pystac/pull/884))
+- Filtering on `media_type` in `get_links()` and `get_single_link()` ([#966](https://github.com/stac-utils/pystac/pull/966))
 
 ## [v1.6.1]
 
