@@ -1245,7 +1245,7 @@ class TestCatalog:
         assert json_link is not None
         assert json_link.href == "./search.json"
 
-    def test_get_links_media_type(self) -> None:
+    def test_get_links(self) -> None:
         catalog = TestCases.case_1()
 
         catalog.links.append(
@@ -1256,7 +1256,13 @@ class TestCatalog:
                 rel="search", target="./search.json", media_type="application/geo+json"
             )
         )
-        assert len(catalog.get_links("search", media_type="application/geo+json")) == 1
+        assert (
+            len(catalog.get_links(rel="search", media_type="application/geo+json")) == 1
+        )
+        assert len(catalog.get_links(media_type="text/html")) == 1
+        assert len(catalog.get_links(rel="search")) == 2
+        assert len(catalog.get_links(rel="via")) == 0
+        assert len(catalog.get_links()) == 6
 
     def test_to_dict_no_self_href(self) -> None:
         catalog = Catalog(id="an-id", description="A test Catalog")

@@ -86,7 +86,7 @@ class STACObject(ABC):
         rel: Union[str, pystac.RelType],
         media_type: Optional[Union[str, pystac.MediaType]] = None,
     ) -> Optional[Link]:
-        """Get single link that match the given ``rel`` and, optionally,
+        """Get single link that matches the given ``rel`` and, optionally,
         ``media_type``. If ``media_type`` is ``None``, then the link is
         matched only on the ``rel`` value.
 
@@ -119,16 +119,17 @@ class STACObject(ABC):
                 those matching media_type are returned
 
         Returns:
-            List[:class:`~pystac.Link`]: A list of links that match ``rel`` if set,
-                or else all links associated with this object.
+            List[:class:`~pystac.Link`]: A list of links that match ``rel`` and/
+                or ``media_type`` if set, or else all links associated with this
+                object.
         """
-        if rel is None:
+        if rel is None and media_type is None:
             return self.links
         else:
             return [
                 link
                 for link in self.links
-                if link.rel == rel
+                if (rel is None or link.rel == rel)
                 and (media_type is None or link.media_type == media_type)
             ]
 
