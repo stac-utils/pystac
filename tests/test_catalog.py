@@ -1238,12 +1238,22 @@ class TestCatalog:
             )
         )
 
-        html_link = catalog.get_single_link("search")
+        html_link = catalog.get_single_link(rel="search")
         assert html_link is not None
         assert html_link.href == "./search.html"
-        json_link = catalog.get_single_link("search", media_type="application/geo+json")
+        html_link = catalog.get_single_link(media_type="text/html")
+        assert html_link is not None
+        assert html_link.href == "./search.html"
+        json_link = catalog.get_single_link(
+            rel="search", media_type="application/geo+json"
+        )
         assert json_link is not None
         assert json_link.href == "./search.json"
+        no_link = catalog.get_single_link(rel="via")
+        assert no_link is None
+        first_link = catalog.get_single_link()
+        assert first_link is not None
+        assert first_link.rel == "self"
 
     def test_get_links(self) -> None:
         catalog = TestCases.case_1()
