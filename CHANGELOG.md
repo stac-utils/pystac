@@ -15,6 +15,7 @@
 - `isort` ([#961](https://github.com/stac-utils/pystac/pull/961))
 - `AsIsLayoutStrategy` ([#919](https://github.com/stac-utils/pystac/pull/919))
 - `__geo_interface__` for items ([#885](https://github.com/stac-utils/pystac/pull/885))
+- Optional `strategy` parameter to `catalog.add_items()` ([#967](https://github.com/stac-utils/pystac/pull/967))
 
 ### Removed
 
