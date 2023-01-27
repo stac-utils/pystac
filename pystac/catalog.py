@@ -230,7 +230,7 @@ class Catalog(STACObject):
         self,
         child: Union["Catalog", "Collection_Type"],
         title: Optional[str] = None,
-        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
+        strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or
         :class:`~pystac.Collection`. This method will set the child's parent to this
@@ -240,13 +240,15 @@ class Catalog(STACObject):
             child : The child to add.
             title : Optional title to give to the :class:`~pystac.Link`
             strategy : The layout strategy to use for setting the
-                self href of the child. Defaults to
-                :class:`~pystac.layout.BestPracticesLayoutStrategy`
+                self href of the child.
         """
 
         # Prevent typo confusion
         if isinstance(child, pystac.Item):
             raise pystac.STACError("Cannot add item as child. Use add_item instead.")
+
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
 
         child.set_root(self.get_root())
         child.set_parent(self)
@@ -276,7 +278,7 @@ class Catalog(STACObject):
         self,
         item: "Item_Type",
         title: Optional[str] = None,
-        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
+        strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
         This method will set the item's parent to this object, and its root to
@@ -284,14 +286,15 @@ class Catalog(STACObject):
 
         Args:
             item : The item to add.
-            title : Optional title to give to the :class:`~pystac.Link`.
-            strategy : The layout strategy to use for setting the self href of
-                the item. Defaults to
-                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+            title : Optional title to give to the :class:`~pystac.Link`
         """
+
         # Prevent typo confusion
         if isinstance(item, pystac.Catalog):
             raise pystac.STACError("Cannot add catalog as item. Use add_child instead.")
+
+        if strategy is None:
+            strategy = BestPracticesLayoutStrategy()
 
         item.set_root(self.get_root())
         item.set_parent(self)
@@ -304,23 +307,16 @@ class Catalog(STACObject):
 
         self.add_link(Link.item(item, title=title))
 
-    def add_items(
-        self,
-        items: Iterable["Item_Type"],
-        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
-    ) -> None:
-        """Adds links to multiple :class:`~pystac.Item`s.
+    def add_items(self, items: Iterable["Item_Type"]) -> None:
+        """Adds links to multiple :class:`~pystac.Item` s.
         This method will set each item's parent to this object, and their root to
         this Catalog's root.
 
         Args:
             items : The items to add.
-            strategy : The layout strategy to use for setting the self href of
-                the item. Defaults to
-                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
         """
         for item in items:
-            self.add_item(item, strategy=strategy)
+            self.add_item(item)
 
     def get_child(
         self, id: str, recursive: bool = False
@@ -574,7 +570,7 @@ class Catalog(STACObject):
         self,
         root_href: str,
         catalog_type: Optional[CatalogType] = None,
-        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
+        strategy: Optional[HrefLayoutStrategy] = None,
         stac_io: Optional[pystac.StacIO] = None,
         skip_unresolved: bool = False,
     ) -> None:
@@ -610,7 +606,7 @@ class Catalog(STACObject):
     def normalize_hrefs(
         self,
         root_href: str,
-        strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy(),
+        strategy: Optional[HrefLayoutStrategy] = None,
         skip_unresolved: bool = False,
     ) -> None:
         """Normalize HREFs will regenerate all link HREFs based on
@@ -635,6 +631,11 @@ class Catalog(STACObject):
             :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>`
             for the canonical layout of a STAC.
         """
+        if strategy is None:
+            _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
+        else:
+            _strategy = strategy
+
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
@@ -643,7 +644,7 @@ class Catalog(STACObject):
             if not skip_unresolved:
                 item.resolve_links()
 
-            new_self_href = strategy.get_href(item, _root_href)
+            new_self_href = _strategy.get_href(item, _root_href)
 
             def fn() -> None:
                 item.set_self_href(new_self_href)
@@ -658,7 +659,7 @@ class Catalog(STACObject):
             if not skip_unresolved:
                 cat.resolve_links()
 
-            new_self_href = strategy.get_href(cat, _root_href, is_root)
+            new_self_href = _strategy.get_href(cat, _root_href, is_root)
             new_root = os.path.dirname(new_self_href)
 
             for link in cat.get_links():
