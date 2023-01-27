@@ -85,7 +85,7 @@ class CatalogType(StringEnum):
 
         Returns:
             Optional[CatalogType]: The catalog type of the catalog or collection.
-                Will return None if it cannot be determined.
+            Will return None if it cannot be determined.
         """
         self_link = None
         relative = False
@@ -240,7 +240,8 @@ class Catalog(STACObject):
             child : The child to add.
             title : Optional title to give to the :class:`~pystac.Link`
             strategy : The layout strategy to use for setting the
-                self href of the child.
+                self href of the child. If not provided, defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
         """
 
         # Prevent typo confusion
@@ -287,6 +288,9 @@ class Catalog(STACObject):
         Args:
             item : The item to add.
             title : Optional title to give to the :class:`~pystac.Link`
+            strategy : The layout strategy to use for setting the
+                self href of the item. If not provided, defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
         """
 
         # Prevent typo confusion
@@ -307,16 +311,23 @@ class Catalog(STACObject):
 
         self.add_link(Link.item(item, title=title))
 
-    def add_items(self, items: Iterable["Item_Type"]) -> None:
-        """Adds links to multiple :class:`~pystac.Item` s.
+    def add_items(
+        self,
+        items: Iterable["Item_Type"],
+        strategy: Optional[HrefLayoutStrategy] = None,
+    ) -> None:
+        """Adds links to multiple :class:`~pystac.Item`s.
         This method will set each item's parent to this object, and their root to
         this Catalog's root.
 
         Args:
             items : The items to add.
+            strategy : The layout strategy to use for setting the
+                self href of the items. If not provided, defaults to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
         """
         for item in items:
-            self.add_item(item)
+            self.add_item(item, strategy=strategy)
 
     def get_child(
         self, id: str, recursive: bool = False
@@ -588,7 +599,7 @@ class Catalog(STACObject):
                 Defaults to the root catalog.catalog_type or the current catalog
                 catalog_type if there is no root catalog.
             strategy : The layout strategy to use in setting the
-                HREFS for this catalog. Defaults to
+                HREFS for this catalog. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
             stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
                 provided, will use the instance set while reading in the catalog,
@@ -622,7 +633,7 @@ class Catalog(STACObject):
         Args:
             root_href : The absolute HREF that all links will be normalized against.
             strategy : The layout strategy to use in setting the HREFS
-                for this catalog. Defaults to
+                for this catalog. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
             skip_unresolved : Skip unresolved links when normalizing the tree.
                 Defaults to False.
