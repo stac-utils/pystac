@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import json
 import os
 import tempfile
@@ -7,6 +8,7 @@ import unittest
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import pytest
@@ -20,6 +22,7 @@ from pystac import (
     Collection,
     Item,
     MediaType,
+    RelType,
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.utils import (
@@ -1442,6 +1445,28 @@ class CatalogSubClassTest(unittest.TestCase):
         cloned_catalog = custom_catalog.clone()
 
         self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+
+
+def test_from_file_preserve_relative_links(
+    tmp_path: Path, prebuilt_catalog_1: Catalog, item: Item
+) -> None:
+    for _, children, items in prebuilt_catalog_1.walk():
+        for stac_object in itertools.chain(children, items):
+            for link in stac_object.links:
+                if link.rel == RelType.SELF:
+                    assert is_absolute_href(link.href)
+                else:
+                    assert not is_absolute_href(link.href)
+    collection = list(prebuilt_catalog_1.get_all_collections())[0]
+    collection.add_item(item)
+    item.save_object(include_self_link=False, dest_href=str(tmp_path / "item.json"))
+    with open(tmp_path / "item.json") as f:
+        item_as_dict = json.load(f)
+    rel_types = set()
+    for link_as_dict in item_as_dict["links"]:
+        rel_types.add(link_as_dict["rel"])
+        assert not is_absolute_href(link_as_dict["href"])
+    assert rel_types == {"root", "parent", "collection"}
 
 
 def test_custom_catalog_from_dict(catalog: Catalog) -> None:
