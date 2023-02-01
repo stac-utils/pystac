@@ -1,24 +1,31 @@
 """Tests creating a custom extension"""
 
+import datetime
 import unittest
-from typing import Any, Dict, Generic, List, Optional, Set, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Optional, Set, TypeVar, Union, cast
+
+import pytest
 
 import pystac
-from pystac.extensions.base import (
-    ExtensionManagementMixin,
-    PropertiesExtension,
-    SummariesExtension,
+from pystac import (
+    Asset,
+    Catalog,
+    Collection,
+    Extent,
+    Item,
+    SpatialExtent,
+    TemporalExtent,
 )
+from pystac.errors import ExtensionTypeError
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.summaries import RangeSummary
 
 T = TypeVar("T", pystac.Catalog, pystac.Collection, pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://example.com/v2.0/custom-schema.json"
 
 TEST_PROP = "test:prop"
-TEST_LINK_REL = "test-link"
 
 
 class CustomExtension(
@@ -40,60 +47,50 @@ class CustomExtension(
     def test_prop(self, v: Optional[str]) -> None:
         self._set_property(TEST_PROP, v)
 
-    def add_link(self, target: pystac.STACObject) -> None:
-        if self.obj is not None:
-            self.obj.add_link(pystac.Link(TEST_LINK_REL, target))
-        else:
-            raise pystac.ExtensionAlreadyExistsError(f"{self} does not support links")
-
     @classmethod
     def get_schema_uri(cls) -> str:
-        raise NotImplementedError
+        return SCHEMA_URI
 
-    @staticmethod
-    def custom_ext(obj: T) -> "CustomExtension[T]":
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> "CustomExtension[T]":
         if isinstance(obj, pystac.Asset):
+            cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], AssetCustomExtension(obj))
         if isinstance(obj, pystac.Item):
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], ItemCustomExtension(obj))
         if isinstance(obj, pystac.Collection):
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], CollectionCustomExtension(obj))
         if isinstance(obj, pystac.Catalog):
+            cls.validate_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
         raise pystac.ExtensionTypeError(
             f"Custom extension does not apply to {type(obj).__name__}"
         )
 
-    @staticmethod
-    def summaries(obj: pystac.Collection) -> "SummariesCustomExtension":
-        return SummariesCustomExtension(obj)
-
 
 class CatalogCustomExtension(CustomExtension[pystac.Catalog]):
     def __init__(self, catalog: pystac.Catalog) -> None:
-        self.catalog = catalog
         self.properties = catalog.extra_fields
         super().__init__(catalog)
 
 
 class CollectionCustomExtension(CustomExtension[pystac.Collection]):
     def __init__(self, collection: pystac.Collection) -> None:
-        self.catalog = collection
         self.properties = collection.extra_fields
         super().__init__(collection)
 
 
 class ItemCustomExtension(CustomExtension[pystac.Item]):
     def __init__(self, item: pystac.Item) -> None:
-        self.catalog = item
         self.properties = item.properties
         super().__init__(item)
 
 
 class AssetCustomExtension(CustomExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset) -> None:
-        self.catalog = asset
         self.properties = asset.extra_fields
         if asset.owner:
             if isinstance(asset.owner, pystac.Item):
@@ -101,16 +98,6 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
             elif isinstance(asset.owner, pystac.Collection):
                 self.additional_read_properties = [asset.owner.extra_fields]
         super().__init__(None)
-
-
-class SummariesCustomExtension(SummariesExtension):
-    @property
-    def test_prop(self) -> Optional[RangeSummary[str]]:
-        return self.summaries.get_range(TEST_PROP)
-
-    @test_prop.setter
-    def test_prop(self, v: Optional[RangeSummary[str]]) -> None:
-        self._set_summary(TEST_PROP, v)
 
 
 class CustomExtensionHooks(ExtensionHooks):
@@ -125,9 +112,6 @@ class CustomExtensionHooks(ExtensionHooks):
             pystac.STACObjectType.ITEM,
         ]
     )
-
-    def get_object_links(self, obj: pystac.STACObject) -> Optional[List[str]]:
-        return [TEST_LINK_REL]
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
@@ -145,7 +129,74 @@ class CustomExtensionTest(unittest.TestCase):
     def tearDown(self) -> None:
         pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
 
-    # TODO: Test custom extensions and extension hooks
+    def test_add_to_item_asset(self) -> None:
+        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        item.add_asset("foo", Asset("http://pystac.test/asset.tif"))
+        custom = CustomExtension.ext(item.assets["foo"], add_if_missing=True)
+        assert CustomExtension.has_extension(item)
+        custom.apply("bar")
+        item_as_dict = item.to_dict()
+        assert item_as_dict["assets"]["foo"]["test:prop"] == "bar"
+
+    def test_add_to_item(self) -> None:
+        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        custom = CustomExtension.ext(item, add_if_missing=True)
+        assert CustomExtension.has_extension(item)
+        custom.test_prop = "foo"
+        item_as_dict = item.to_dict()
+        assert item_as_dict["properties"]["test:prop"] == "foo"
+
+    def test_add_to_catalog(self) -> None:
+        catalog = Catalog("an-id", "a description")
+        custom = CustomExtension.ext(catalog, add_if_missing=True)
+        assert CustomExtension.has_extension(catalog)
+        custom.test_prop = "foo"
+        catalog_as_dict = catalog.to_dict()
+        assert catalog_as_dict["test:prop"] == "foo"
+
+    def test_add_to_collection(self) -> None:
+        collection = Collection(
+            "an-id",
+            "a description",
+            extent=Extent(
+                spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
+                temporal=TemporalExtent([[datetime.datetime.now(), None]]),
+            ),
+        )
+        custom = CustomExtension.ext(collection, add_if_missing=True)
+        assert CustomExtension.has_extension(collection)
+        custom.test_prop = "foo"
+        collection_as_dict = collection.to_dict()
+        assert collection_as_dict["test:prop"] == "foo"
+
+    def test_add_to_collection_asset(self) -> None:
+        collection = Collection(
+            "an-id",
+            "a description",
+            extent=Extent(
+                spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
+                temporal=TemporalExtent([[datetime.datetime.now(), None]]),
+            ),
+        )
+        collection.add_asset("foo", Asset("http://pystac.test/asset.tif"))
+        custom = CustomExtension.ext(collection.assets["foo"], add_if_missing=True)
+        assert CustomExtension.has_extension(collection)
+        custom.test_prop = "bar"
+        collection_as_dict = collection.to_dict()
+        assert collection_as_dict["assets"]["foo"]["test:prop"] == "bar"
+
+    def test_ext_non_stac_object(self) -> None:
+        with pytest.raises(ExtensionTypeError):
+            CustomExtension.ext({})  # type: ignore
 
     def test_migrates(self) -> None:
-        pass
+        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        item_as_dict = item.to_dict()
+        item_as_dict["stac_version"] = "1.0.0-rc.1"
+        item_as_dict["stac_extensions"] = [
+            "https://example.com/v1.0/custom-schema.json"
+        ]
+        item_as_dict["properties"]["test:old-prop-name"] = "foo"
+        item = Item.from_dict(item_as_dict, migrate=True)
+        custom = CustomExtension.ext(item)
+        assert custom.test_prop == "foo"
