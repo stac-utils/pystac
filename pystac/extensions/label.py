@@ -183,7 +183,6 @@ class LabelCount:
 
     @name.setter
     def name(self, v: str) -> None:
-
         self.properties["name"] = v
 
     @property

@@ -45,7 +45,6 @@ if __name__ == "__main__":
     if args.file:
         migrate(os.path.abspath(args.file))
     else:
-
         data_files_dir = os.path.dirname(os.path.realpath(__file__))
 
         # Skip examples directory, which contains version specific STACs...

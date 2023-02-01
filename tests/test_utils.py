@@ -38,7 +38,6 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual(actual, expected)
 
     def test_make_relative_href_url(self) -> None:
-
         test_cases = [
             (
                 "http://stacspec.org/a/b/c/d/catalog.json",
@@ -241,7 +240,6 @@ class UtilsTest(unittest.TestCase):
     def test_is_absolute_href_windows(self) -> None:
         utils._pathlib = ntpath
         try:
-
             # Test cases of (href, expected)
             test_cases = [
                 ("item.json", False),

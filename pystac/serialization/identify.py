@@ -201,7 +201,6 @@ def identify_stac_object_type(
     # Try to identify using 'type' property for v1.0.0-rc.1 and higher
     introduced_type_attribute = STACVersionID("1.0.0-rc.1")
     if stac_version is not None and stac_version >= introduced_type_attribute:
-
         # Since v1.0.0-rc.1 requires a "type" field for all STAC objects, any object
         # that is missing this attribute is not a valid STAC object.
         if obj_type is None:

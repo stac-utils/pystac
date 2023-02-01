@@ -1084,7 +1084,6 @@ class TestCatalog:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             for root, _, items in catalog.walk():
-
                 # Set root's HREF based off the parent
                 parent = root.get_parent()
                 if parent is None:

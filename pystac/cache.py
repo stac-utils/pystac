@@ -289,7 +289,6 @@ class CollectionCache:
 
 
 class ResolvedObjectCollectionCache(CollectionCache):
-
     resolved_object_cache: ResolvedObjectCache
 
     def __init__(

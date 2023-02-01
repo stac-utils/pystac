@@ -155,7 +155,6 @@ class LayoutTemplate:
         )
 
         try:
-
             if hasattr(stac_object, props[0]):
                 prop_source = stac_object
 

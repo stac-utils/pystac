@@ -142,7 +142,6 @@ class CollectionTest(unittest.TestCase):
             self.assertEqual(read_col.extra_fields["test"], "extra")
 
     def test_update_extents(self) -> None:
-
         catalog = TestCases.case_2()
         base_collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
         assert isinstance(base_collection, Collection)

@@ -303,7 +303,6 @@ class Link(PathLike):
                 stac_io = root._stac_io
 
             if obj is None:
-
                 if stac_io is None:
                     if self.owner is not None:
                         if isinstance(self.owner, pystac.Catalog):
