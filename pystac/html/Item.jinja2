@@ -15,6 +15,12 @@
                 {% if item.bbox %}
                     <tr><td style="text-align: left;"><strong>bbox:</strong> {{item.bbox}} </td></tr>
                 {% endif %}
+                {% if item.start_datetime %}
+                    <tr><td style="text-align: left;"><strong>start_datetime:</strong> {{item.start_datetime}} </td></tr>
+                {% endif %}
+                {% if item.end_datetime %}
+                    <tr><td style="text-align: left;"><strong>end_datetime:</strong> {{item.end_datetime}} </td></tr>
+                {% endif %}
                 {% if item.datetime %}
                     <tr><td style="text-align: left;"><strong>datetime:</strong> {{item.datetime}} </td></tr>
                 {% endif %}
