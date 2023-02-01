@@ -356,7 +356,6 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_merge_label_overviews(self) -> None:
-
         overview_1 = LabelOverview.create(
             property_key="label",
             counts=[

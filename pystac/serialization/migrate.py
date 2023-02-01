@@ -79,9 +79,9 @@ def _migrate_datetime_range(
     return None
 
 
-def _get_object_migrations() -> Dict[
-    str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]
-]:
+def _get_object_migrations() -> (
+    Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]]
+):
     return {
         pystac.STACObjectType.CATALOG: _migrate_catalog,
         pystac.STACObjectType.COLLECTION: _migrate_collection,
@@ -89,17 +89,20 @@ def _get_object_migrations() -> Dict[
     }
 
 
-def _get_removed_extension_migrations() -> Dict[
-    str,
-    Tuple[
-        Optional[List["STACObjectType_Type"]],
-        Optional[
-            Callable[
-                [Dict[str, Any], STACVersionID, STACJSONDescription], Optional[Set[str]]
-            ]
+def _get_removed_extension_migrations() -> (
+    Dict[
+        str,
+        Tuple[
+            Optional[List["STACObjectType_Type"]],
+            Optional[
+                Callable[
+                    [Dict[str, Any], STACVersionID, STACJSONDescription],
+                    Optional[Set[str]],
+                ]
+            ],
         ],
-    ],
-]:
+    ]
+):
     """Handles removed extensions.
 
     This does not handle renamed extension or extensions that were absorbed

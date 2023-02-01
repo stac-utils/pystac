@@ -106,7 +106,6 @@ def _make_relative_href_url(
     parsed_start: URLParseResult,
     start_is_dir: bool = False,
 ) -> str:
-
     # If the start path is not a directory, get the parent directory
     start_dir = (
         parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
@@ -194,7 +193,6 @@ def _make_absolute_href_url(
     parsed_start: URLParseResult,
     start_is_dir: bool = False,
 ) -> str:
-
     # If the source is already absolute, just return it
     if parsed_source.scheme != "":
         return urlunparse(parsed_source)
@@ -227,7 +225,6 @@ def _make_absolute_href_path(
     parsed_start: URLParseResult,
     start_is_dir: bool = False,
 ) -> str:
-
     # If the source is already absolute, just return it
     if _pathlib.isabs(parsed_source.path):
         return urlunparse(parsed_source)
