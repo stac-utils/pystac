@@ -13,7 +13,9 @@
 {% macro extra_fields(parent) -%}
     {% if parent.extra_fields %}
         {% for key, value in parent.extra_fields.items() %}
-            <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ value }} </td></tr>
+            {% if (value is not iterable) or (value is iterable and value|length) %}
+                <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ value }} </td></tr>
+            {% endif %}
         {% endfor %}
     {% endif %}
 {%- endmacro %}

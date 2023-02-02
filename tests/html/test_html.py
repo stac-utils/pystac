@@ -19,16 +19,15 @@ def test_valid_html() -> None:
     item = pystac.Item.from_file(href)
     parse_html(item._repr_html_())
 
-    # These can be uncommented once psytac issue #955 is fixed
-    # href = TestCases.get_path(
-    #     "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
-    # )
-    # collection = pystac.Collection.from_file(href)
-    # parse_html(collection._repr_html_())
+    href = TestCases.get_path(
+        "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
+    )
+    collection = pystac.Collection.from_file(href)
+    parse_html(collection._repr_html_())
 
-    # href = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
-    # catalog = pystac.Catalog.from_file(href)
-    # parse_html(catalog._repr_html_())
+    href = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+    catalog = pystac.Catalog.from_file(href)
+    parse_html(catalog._repr_html_())
 
     href = TestCases.get_path("data-files/item-collection/sample-item-collection.json")
     item_collection = pystac.ItemCollection.from_file(href)
