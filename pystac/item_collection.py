@@ -1,6 +1,19 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from html import escape
-from typing import Any, Collection, Dict, Iterable, Iterator, List, Optional, Union
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import pystac
 from pystac.errors import STACTypeError
@@ -9,6 +22,8 @@ from pystac.serialization.identify import identify_stac_object_type
 from pystac.utils import is_absolute_href, make_absolute_href
 
 ItemLike = Union[pystac.Item, Dict[str, Any]]
+
+C = TypeVar("C", bound="ItemCollection")
 
 
 class ItemCollection(Collection[pystac.Item]):
@@ -148,11 +163,11 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_dict(
-        cls,
+        cls: Type[C],
         d: Dict[str, Any],
         preserve_dict: bool = True,
         root: Optional[pystac.Catalog] = None,
-    ) -> "ItemCollection":
+    ) -> C:
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
         Arguments:
@@ -176,8 +191,8 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> "ItemCollection":
+        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> C:
         """Reads a :class:`ItemCollection` from a JSON file.
 
         Arguments:

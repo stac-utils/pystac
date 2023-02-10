@@ -1,7 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Type, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac import STACError
@@ -10,6 +21,8 @@ from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
+
+S = TypeVar("S", bound="STACObject")
 
 
 class STACObjectType(StringEnum):
@@ -495,8 +508,8 @@ class STACObject(ABC):
 
     @classmethod
     def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> STACObject:
+        cls: Type[S], href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> S:
         """Reads a STACObject implementation from a file.
 
         Args:
@@ -509,7 +522,7 @@ class STACObject(ABC):
             by the JSON read from the file located at HREF.
         """
         if cls == STACObject:
-            return pystac.read_file(href)
+            return cast(S, pystac.read_file(href))
 
         if stac_io is None:
             stac_io = pystac.StacIO.default()
@@ -535,13 +548,13 @@ class STACObject(ABC):
     @classmethod
     @abstractmethod
     def from_dict(
-        cls,
+        cls: Type[S],
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> STACObject:
+    ) -> S:
         """Parses this STACObject from the passed in dictionary.
 
         Args:

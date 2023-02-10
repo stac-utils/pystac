@@ -12,6 +12,8 @@ from typing import (
     List,
     Optional,
     Tuple,
+    Type,
+    TypeVar,
     Union,
     cast,
 )
@@ -43,6 +45,8 @@ if TYPE_CHECKING:
     from pystac.asset import Asset
     from pystac.collection import Collection
     from pystac.item import Item
+
+C = TypeVar("C", bound="Catalog")
 
 
 class CatalogType(StringEnum):
@@ -1043,13 +1047,13 @@ class Catalog(STACObject):
 
     @classmethod
     def from_dict(
-        cls,
+        cls: Type[C],
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional["Catalog"] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> Catalog:
+    ) -> C:
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -1099,7 +1103,9 @@ class Catalog(STACObject):
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> Catalog:
+    def from_file(
+        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> C:
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 

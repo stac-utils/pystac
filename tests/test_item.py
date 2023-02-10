@@ -1,15 +1,17 @@
+from __future__ import annotations
+
 import json
 import os
 import tempfile
 import unittest
 from copy import deepcopy
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import dateutil.relativedelta
 
 import pystac
 import pystac.serialization.common_properties
-from pystac import Asset, Item
+from pystac import Asset, Catalog, Item
 from pystac.utils import datetime_to_str, get_opt, is_absolute_href, str_to_datetime
 from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
@@ -417,3 +419,20 @@ class AssetSubClassTest(unittest.TestCase):
 
         self.assertIsInstance(cloned_asset, self.CustomAsset)
         self.assertIsInstance(cloned_asset, self.CustomAsset)
+
+
+def test_custom_item_from_dict(test_item: Item) -> None:
+    # https://github.com/stac-utils/pystac/issues/862
+    class CustomItem(Item):
+        @classmethod
+        def from_dict(
+            cls,
+            d: Dict[str, Any],
+            href: Optional[str] = None,
+            root: Optional[Catalog] = None,
+            migrate: bool = False,
+            preserve_dict: bool = True,
+        ) -> CustomItem:
+            return super().from_dict(d)
+
+    _ = CustomItem.from_dict(test_item.to_dict())

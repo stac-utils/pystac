@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import numbers
+from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
@@ -19,10 +22,8 @@ import pystac
 from pystac.utils import get_required
 
 if TYPE_CHECKING:
-    from pystac.item import Item as Item_Type
-    from pystac.collection import Collection as Collection_Type
-
-from abc import abstractmethod
+    from pystac.collection import Collection
+    from pystac.item import Item
 
 
 class _Comparable_x(Protocol):
@@ -68,7 +69,7 @@ class RangeSummary(Generic[T]):
         self.maximum = max(self.maximum, v)
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "RangeSummary[T]":
+    def from_dict(cls, d: Dict[str, Any]) -> RangeSummary[T]:
         minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
         maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
@@ -120,7 +121,7 @@ class Summarizer:
         fieldspath = fields or FIELDS_JSON_URL
         try:
             jsonfields = _get_fields_json(fieldspath)
-        except:
+        except Exception as e:
             if fields is None:
                 raise Exception(
                     "Could not read fields definition file at "
@@ -128,7 +129,7 @@ class Summarizer:
                     "Try using a local fields definition file."
                 )
             else:
-                raise
+                raise e
         self._set_field_definitions(jsonfields)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
@@ -145,7 +146,7 @@ class Summarizer:
             else:
                 self.summaryfields[name] = SummaryStrategy.DEFAULT
 
-    def _update_with_item(self, summaries: "Summaries", item: "Item_Type") -> None:
+    def _update_with_item(self, summaries: Summaries, item: Item) -> None:
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
@@ -175,9 +176,7 @@ class Summarizer:
                         summary.append(v)
                     summaries.add(k, summary)
 
-    def summarize(
-        self, source: Union["Collection_Type", Iterable["Item_Type"]]
-    ) -> "Summaries":
+    def summarize(self, source: Union[Collection, Iterable[Item]]) -> Summaries:
         """Creates summaries from items"""
         summaries = Summaries.empty()
         if isinstance(source, pystac.Collection):
@@ -248,13 +247,13 @@ class Summaries:
         self.schemas.pop(prop_key, None)
         self.other.pop(prop_key, None)
 
-    def update(self, summaries: "Summaries") -> None:
+    def update(self, summaries: Summaries) -> None:
         self.lists.update(summaries.lists)
         self.ranges.update(summaries.ranges)
         self.schemas.update(summaries.schemas)
         self.other.update(summaries.other)
 
-    def combine(self, summaries: "Summaries") -> None:
+    def combine(self, summaries: Summaries) -> None:
         for listname, listvalue in summaries.lists.items():
             if listname in self.lists:
                 self.lists[listname].extend(listvalue)
@@ -282,7 +281,7 @@ class Summaries:
             any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
         )
 
-    def clone(self) -> "Summaries":
+    def clone(self) -> Summaries:
         """Clones this object.
 
         Returns:
@@ -306,5 +305,5 @@ class Summaries:
         }
 
     @classmethod
-    def empty(cls) -> "Summaries":
+    def empty(cls) -> Summaries:
         return Summaries({})

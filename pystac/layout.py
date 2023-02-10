@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from string import Formatter
@@ -7,10 +9,10 @@ import pystac
 from pystac.utils import JoinType, join_path_or_url, safe_urlparse
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as Catalog_Type
-    from pystac.collection import Collection as Collection_Type
-    from pystac.item import Item as Item_Type
-    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.catalog import Catalog
+    from pystac.collection import Collection
+    from pystac.item import Item
+    from pystac.stac_object import STACObject
 
 
 class TemplateError(Exception):
@@ -104,9 +106,7 @@ class LayoutTemplate:
                 template_vars.append(v)
         self.template_vars = template_vars
 
-    def _get_template_value(
-        self, stac_object: "STACObject_Type", template_var: str
-    ) -> Any:
+    def _get_template_value(self, stac_object: STACObject, template_var: str) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
             if isinstance(stac_object, pystac.Item):
                 # Datetime
@@ -188,7 +188,7 @@ class LayoutTemplate:
 
         return v
 
-    def get_template_values(self, stac_object: "STACObject_Type") -> Dict[str, Any]:
+    def get_template_values(self, stac_object: STACObject) -> Dict[str, Any]:
         """Gets a dictionary of template variables to values derived from
         the given stac_object. If the template vars cannot be found in the
         stac object, and defaults was supplied to this template, a default
@@ -212,7 +212,7 @@ class LayoutTemplate:
             [(k, self._get_template_value(stac_object, k)) for k in self.template_vars]
         )
 
-    def substitute(self, stac_object: "STACObject_Type") -> str:
+    def substitute(self, stac_object: STACObject) -> str:
         """Substitutes the values derived from
         :meth:`~pystac.layout.LayoutTemplate.get_template_values` into
         the template string for this template.
@@ -243,7 +243,7 @@ class HrefLayoutStrategy(ABC):
     """Base class for HREF Layout strategies."""
 
     def get_href(
-        self, stac_object: "STACObject_Type", parent_dir: str, is_root: bool = False
+        self, stac_object: STACObject, parent_dir: str, is_root: bool = False
     ) -> str:
         if isinstance(stac_object, pystac.Item):
             return self.get_item_href(stac_object, parent_dir)
@@ -255,19 +255,17 @@ class HrefLayoutStrategy(ABC):
             raise pystac.STACError("Unknown STAC object type {}".format(stac_object))
 
     @abstractmethod
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         raise NotImplementedError
 
     @abstractmethod
     def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
+        self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         raise NotImplementedError
 
     @abstractmethod
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         raise NotImplementedError
 
 
@@ -292,13 +290,13 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
 
-    catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]]
+    catalog_func: Optional[Callable[[Catalog, str, bool], str]]
     """A function that takes a :class:`~pystac.Catalog`, a parent directory, and a
     boolean specifying whether or not this Catalog is the root. If it is the root, it
     is usually best to not create a subdirectory and put the Catalog file directly
     in the parent directory. Must return the string path."""
 
-    collection_func: Optional[Callable[["Collection_Type", str, bool], str]]
+    collection_func: Optional[Callable[[Collection, str, bool], str]]
     """A function that is used for collections in the same manner as
     :attr:`~catalog_func`. This takes the same parameters."""
 
@@ -306,15 +304,15 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
     """The fallback strategy to use if a function is not provided for a stac object
     type. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`."""
 
-    item_func: Optional[Callable[["Item_Type", str], str]]
+    item_func: Optional[Callable[[Item, str], str]]
     """An optional function that takes an :class:`~pystac.Item` and a parent directory
     and returns the path to be used for the Item."""
 
     def __init__(
         self,
-        catalog_func: Optional[Callable[["Catalog_Type", str, bool], str]] = None,
-        collection_func: Optional[Callable[["Collection_Type", str, bool], str]] = None,
-        item_func: Optional[Callable[["Item_Type", str], str]] = None,
+        catalog_func: Optional[Callable[[Catalog, str, bool], str]] = None,
+        collection_func: Optional[Callable[[Collection, str, bool], str]] = None,
+        item_func: Optional[Callable[[Item, str], str]] = None,
         fallback_strategy: Optional[HrefLayoutStrategy] = None,
     ):
         self.item_func = item_func
@@ -324,9 +322,7 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy = fallback_strategy
 
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         if self.catalog_func is not None:
             result = self.catalog_func(cat, parent_dir, is_root)
             if result is not None:
@@ -334,7 +330,7 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
         return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
 
     def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
+        self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         if self.collection_func is not None:
             result = self.collection_func(col, parent_dir, is_root)
@@ -342,7 +338,7 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
                 return result
         return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
 
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         if self.item_func is not None:
             result = self.item_func(item, parent_dir)
             if result is not None:
@@ -414,9 +410,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             fallback_strategy = BestPracticesLayoutStrategy()
         self.fallback_strategy = fallback_strategy
 
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
 
@@ -432,7 +426,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             return join_path_or_url(join_type, parent_dir, template_path)
 
     def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
+        self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
@@ -448,7 +442,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
 
             return join_path_or_url(join_type, parent_dir, template_path)
 
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
 
@@ -479,9 +473,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
     All paths are appended to the parent directory.
     """
 
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
 
@@ -493,7 +485,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         return join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
 
     def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
+        self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
@@ -505,7 +497,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
 
         return join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
 
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         parsed_parent_dir = safe_urlparse(parent_dir)
         join_type = JoinType.from_parsed_uri(parsed_parent_dir)
 
@@ -520,9 +512,7 @@ class AsIsLayoutStrategy(HrefLayoutStrategy):
     If any object doesn't have a self href, a ValueError is raised.
     """
 
-    def get_catalog_href(
-        self, cat: "Catalog_Type", parent_dir: str, is_root: bool
-    ) -> str:
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
         href = cat.self_href
         if href is None:
             raise ValueError(
@@ -532,7 +522,7 @@ class AsIsLayoutStrategy(HrefLayoutStrategy):
             return href
 
     def get_collection_href(
-        self, col: "Collection_Type", parent_dir: str, is_root: bool
+        self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         href = col.self_href
         if href is None:
@@ -542,7 +532,7 @@ class AsIsLayoutStrategy(HrefLayoutStrategy):
         else:
             return href
 
-    def get_item_href(self, item: "Item_Type", parent_dir: str) -> str:
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
         href = item.self_href
         if href is None:
             raise ValueError(

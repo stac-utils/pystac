@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime as Datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
@@ -6,9 +8,9 @@ from pystac import utils
 from pystac.errors import STACError
 
 if TYPE_CHECKING:
-    from pystac.asset import Asset as Asset_Type
-    from pystac.item import Item as Item_Type
-    from pystac.provider import Provider as Provider_Type
+    from pystac.asset import Asset
+    from pystac.item import Item
+    from pystac.provider import Provider
 
 
 P = TypeVar("P")
@@ -23,17 +25,17 @@ class CommonMetadata:
         properties : Dictionary of attributes that is the Item's properties
     """
 
-    object: Union["Asset_Type", "Item_Type"]
+    object: Union[Asset, Item]
     """The object from which common metadata is obtained."""
 
-    def __init__(self, object: Union["Asset_Type", "Item_Type"]):
+    def __init__(self, object: Union[Asset, Item]):
         self.object = object
 
     def _set_field(self, prop_name: str, v: Optional[Any]) -> None:
         if hasattr(self.object, prop_name):
             setattr(self.object, prop_name, v)
         elif hasattr(self.object, "properties"):
-            item = cast("Item_Type", self.object)
+            item = cast(pystac.Item, self.object)
             if v is None:
                 item.properties.pop(prop_name, None)
             else:
@@ -52,7 +54,7 @@ class CommonMetadata:
         if hasattr(self.object, prop_name):
             return cast(Optional[P], getattr(self.object, prop_name))
         elif hasattr(self.object, "properties"):
-            item = cast("Item_Type", self.object)
+            item = cast(pystac.Item, self.object)
             return item.properties.get(prop_name)
         elif hasattr(self.object, "extra_fields") and isinstance(
             self.object.extra_fields, Dict
@@ -115,7 +117,7 @@ class CommonMetadata:
 
     # Providers
     @property
-    def providers(self) -> Optional[List["Provider_Type"]]:
+    def providers(self) -> Optional[List[Provider]]:
         """Get or set a list of the object's providers."""
         return utils.map_opt(
             lambda providers: [pystac.Provider.from_dict(d) for d in providers],
@@ -123,7 +125,7 @@ class CommonMetadata:
         )
 
     @providers.setter
-    def providers(self, v: Optional[List["Provider_Type"]]) -> None:
+    def providers(self, v: Optional[List[Provider]]) -> None:
         self._set_field(
             "providers",
             utils.map_opt(lambda providers: [p.to_dict() for p in providers], v),
