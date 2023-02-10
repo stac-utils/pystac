@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 import json
 import os
 import tempfile
 import unittest
 from copy import deepcopy
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 from dateutil import tz
 
 import pystac
 from pystac import (
+    Catalog,
     CatalogType,
     Collection,
     Extent,
@@ -508,3 +512,20 @@ class CollectionSubClassTest(unittest.TestCase):
         cloned_collection = custom_collection.clone()
 
         self.assertIsInstance(cloned_collection, self.BasicCustomCollection)
+
+
+def test_custom_collection_from_dict(test_collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/862
+    class CustomCollection(Collection):
+        @classmethod
+        def from_dict(
+            cls,
+            d: Dict[str, Any],
+            href: Optional[str] = None,
+            root: Optional[Catalog] = None,
+            migrate: bool = False,
+            preserve_dict: bool = True,
+        ) -> CustomCollection:
+            return super().from_dict(d)
+
+    _ = CustomCollection.from_dict(test_collection.to_dict())

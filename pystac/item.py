@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from copy import copy, deepcopy
 from datetime import datetime as Datetime
 from html import escape
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
 from pystac import STACError, STACObjectType
@@ -23,6 +25,8 @@ from pystac.utils import (
     make_relative_href,
     str_to_datetime,
 )
+
+T = TypeVar("T", bound="Item")
 
 
 class Item(STACObject):
@@ -267,7 +271,7 @@ class Item(STACObject):
         asset.set_owner(self)
         self.assets[key] = asset
 
-    def make_asset_hrefs_relative(self) -> "Item":
+    def make_asset_hrefs_relative(self) -> Item:
         """Modify each asset's HREF to be relative to this item's self HREF.
 
         Returns:
@@ -288,7 +292,7 @@ class Item(STACObject):
                 asset.href = make_relative_href(asset.href, self_href)
         return self
 
-    def make_asset_hrefs_absolute(self) -> "Item":
+    def make_asset_hrefs_absolute(self) -> Item:
         """Modify each asset's HREF to be absolute.
 
         Any asset HREFs that are relative will be modified to absolute based on this
@@ -312,7 +316,7 @@ class Item(STACObject):
 
         return self
 
-    def set_collection(self, collection: Optional[Collection]) -> "Item":
+    def set_collection(self, collection: Optional[Collection]) -> Item:
         """Set the collection of this item.
 
         This method will replace any existing Collection link and attribute for
@@ -384,7 +388,7 @@ class Item(STACObject):
 
         return d
 
-    def clone(self) -> "Item":
+    def clone(self) -> Item:
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -409,13 +413,13 @@ class Item(STACObject):
 
     @classmethod
     def from_dict(
-        cls,
+        cls: Type[T],
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> "Item":
+    ) -> T:
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -476,12 +480,14 @@ class Item(STACObject):
         return pystac.CommonMetadata(self)
 
     def full_copy(
-        self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
-    ) -> "Item":
+        self, root: Optional[Catalog] = None, parent: Optional[Catalog] = None
+    ) -> Item:
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls, href: str, stac_io: Optional[pystac.StacIO] = None) -> "Item":
+    def from_file(
+        cls: Type[T], href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> T:
         result = super().from_file(href, stac_io)
         if not isinstance(result, Item):
             raise pystac.STACTypeError(f"{result} is not a {Item}.")

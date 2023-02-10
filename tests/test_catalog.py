@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import tempfile
@@ -5,7 +7,7 @@ import unittest
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import pytest
 
@@ -1440,3 +1442,20 @@ class CatalogSubClassTest(unittest.TestCase):
         cloned_catalog = custom_catalog.clone()
 
         self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+
+
+def test_custom_catalog_from_dict(test_catalog: Catalog) -> None:
+    # https://github.com/stac-utils/pystac/issues/862
+    class CustomCatalog(Catalog):
+        @classmethod
+        def from_dict(
+            cls,
+            d: Dict[str, Any],
+            href: Optional[str] = None,
+            root: Optional[Catalog] = None,
+            migrate: bool = False,
+            preserve_dict: bool = True,
+        ) -> CustomCatalog:
+            return super().from_dict(d)
+
+    _ = CustomCatalog.from_dict(test_catalog.to_dict())

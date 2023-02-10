@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy, deepcopy
 from html import escape
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
 
 from pystac import common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from pystac.collection import Collection
     from pystac.common_metadata import CommonMetadata
     from pystac.item import Item
+
+A = TypeVar("A", bound="Asset")
 
 
 class Asset:
@@ -185,7 +187,7 @@ class Asset:
             return escape(repr(self))
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> Asset:
+    def from_dict(cls: Type[A], d: Dict[str, Any]) -> A:
         """Constructs an Asset from a dict.
 
         Returns:

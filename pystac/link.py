@@ -1,22 +1,26 @@
+from __future__ import annotations
+
 import os
 from copy import copy
 from html import escape
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, TypeVar, Union
 
 import pystac
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as Catalog_Type
-    from pystac.collection import Collection as Collection_Type
-    from pystac.item import Item as Item_Type
-    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.catalog import Catalog
+    from pystac.collection import Collection
+    from pystac.item import Item
+    from pystac.stac_object import STACObject
 
     PathLike = os.PathLike[str]
 
 else:
     PathLike = os.PathLike
+
+L = TypeVar("L", bound="Link")
 
 HREF = Union[str, os.PathLike]
 
@@ -70,19 +74,19 @@ class Link(PathLike):
     """Optional, additional fields for this link. This is used by extensions as a
     way to serialize and deserialize properties on link object JSON."""
 
-    owner: Optional["STACObject_Type"]
+    owner: Optional[STACObject]
     """The owner of this link. The link will use its owner's root catalog
     :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve objects, and
     will create absolute HREFs from relative HREFs against the owner's self HREF."""
 
     _target_href: Optional[str]
-    _target_object: Optional["STACObject_Type"]
+    _target_object: Optional[STACObject]
     _title: Optional[str]
 
     def __init__(
         self,
         rel: Union[str, pystac.RelType],
-        target: Union[str, "STACObject_Type"],
+        target: Union[str, STACObject],
         media_type: Optional[str] = None,
         title: Optional[str] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
@@ -102,7 +106,7 @@ class Link(PathLike):
         self.extra_fields = extra_fields or {}
         self.owner = None
 
-    def set_owner(self, owner: Optional["STACObject_Type"]) -> "Link":
+    def set_owner(self, owner: Optional[STACObject]) -> Link:
         """Sets the owner of this link.
 
         Args:
@@ -212,7 +216,7 @@ class Link(PathLike):
         return href
 
     @property
-    def target(self) -> Union[str, "STACObject_Type"]:
+    def target(self) -> Union[str, STACObject]:
         """The target of the link. If the link is unresolved, or the link is to
         something that is not a STACObject, the target is an HREF. If resolved, the
         target is a STACObject."""
@@ -224,7 +228,7 @@ class Link(PathLike):
             raise ValueError("No target defined for link.")
 
     @target.setter
-    def target(self, target: Union[str, "STACObject_Type"]) -> None:
+    def target(self, target: Union[str, STACObject]) -> None:
         """Sets this link's target to a string or a STAC object."""
         if isinstance(target, str):
             self._target_href = target
@@ -264,7 +268,7 @@ class Link(PathLike):
         else:
             return escape(repr(self))
 
-    def resolve_stac_object(self, root: Optional["Catalog_Type"] = None) -> "Link":
+    def resolve_stac_object(self, root: Optional[Catalog] = None) -> Link:
         """Resolves a STAC object from the HREF of this link, if the link is not
         already resolved.
 
@@ -370,7 +374,7 @@ class Link(PathLike):
 
         return d
 
-    def clone(self) -> "Link":
+    def clone(self) -> Link:
         """Clones this link.
 
         This makes a copy of all link information, but does not clone a STACObject
@@ -388,7 +392,7 @@ class Link(PathLike):
         )
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> "Link":
+    def from_dict(cls: Type[L], d: Dict[str, Any]) -> L:
         """Deserializes a Link from a dict.
 
         Args:
@@ -416,35 +420,35 @@ class Link(PathLike):
         )
 
     @classmethod
-    def root(cls, c: "Catalog_Type") -> "Link":
+    def root(cls: Type[L], c: Catalog) -> L:
         """Creates a link to a root Catalog or Collection."""
         return cls(pystac.RelType.ROOT, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def parent(cls, c: "Catalog_Type") -> "Link":
+    def parent(cls: Type[L], c: Catalog) -> L:
         """Creates a link to a parent Catalog or Collection."""
         return cls(pystac.RelType.PARENT, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def collection(cls, c: "Collection_Type") -> "Link":
+    def collection(cls: Type[L], c: Collection) -> L:
         """Creates a link to an item's Collection."""
         return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def self_href(cls, href: HREF) -> "Link":
+    def self_href(cls: Type[L], href: HREF) -> L:
         """Creates a self link to a file's location."""
         href_str = str(os.fspath(href))
         return cls(pystac.RelType.SELF, href_str, media_type=pystac.MediaType.JSON)
 
     @classmethod
-    def child(cls, c: "Catalog_Type", title: Optional[str] = None) -> "Link":
+    def child(cls: Type[L], c: Catalog, title: Optional[str] = None) -> L:
         """Creates a link to a child Catalog or Collection."""
         return cls(
             pystac.RelType.CHILD, c, title=title, media_type=pystac.MediaType.JSON
         )
 
     @classmethod
-    def item(cls, item: "Item_Type", title: Optional[str] = None) -> "Link":
+    def item(cls: Type[L], item: Item, title: Optional[str] = None) -> L:
         """Creates a link to an Item."""
         return cls(
             pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
@@ -452,10 +456,10 @@ class Link(PathLike):
 
     @classmethod
     def canonical(
-        cls,
-        item_or_collection: Union["Item_Type", "Collection_Type"],
+        cls: Type[L],
+        item_or_collection: Union[Item, Collection],
         title: Optional[str] = None,
-    ) -> "Link":
+    ) -> L:
         """Creates a canonical link to an Item or Collection."""
         return cls(
             pystac.RelType.CANONICAL,

@@ -164,7 +164,7 @@ class RegisteredValidator:
     def get_validator(cls) -> STACValidator:
         if cls._validator is None:
             try:
-                import jsonschema
+                import jsonschema as _  # noqa
             except ImportError:
                 raise Exception(
                     "Cannot validate with default validator because package"

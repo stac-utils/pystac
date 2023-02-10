@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 from abc import ABC, abstractmethod
@@ -22,12 +24,12 @@ except ImportError:
     orjson = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog as Catalog_Type
-    from pystac.stac_object import STACObject as STACObject_Type
+    from pystac.catalog import Catalog
+    from pystac.stac_object import STACObject
 
 
 class StacIO(ABC):
-    _default_io: Optional[Callable[[], "StacIO"]] = None
+    _default_io: Optional[Callable[[], StacIO]] = None
 
     def __init__(self, headers: Optional[Dict[str, str]] = None):
         self.headers = headers or {}
@@ -121,9 +123,9 @@ class StacIO(ABC):
         self,
         d: Dict[str, Any],
         href: Optional[HREF] = None,
-        root: Optional["Catalog_Type"] = None,
+        root: Optional[Catalog] = None,
         preserve_dict: bool = True,
-    ) -> "STACObject_Type":
+    ) -> STACObject:
         """Deserializes a :class:`~pystac.STACObject` sub-class instance from a
         dictionary.
 
@@ -195,10 +197,10 @@ class StacIO(ABC):
     def read_stac_object(
         self,
         source: HREF,
-        root: Optional["Catalog_Type"] = None,
+        root: Optional[Catalog] = None,
         *args: Any,
         **kwargs: Any,
-    ) -> "STACObject_Type":
+    ) -> STACObject:
         """Read a STACObject from a JSON file at the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -247,12 +249,12 @@ class StacIO(ABC):
         self.write_text(dest, txt)
 
     @classmethod
-    def set_default(cls, stac_io_class: Callable[[], "StacIO"]) -> None:
+    def set_default(cls, stac_io_class: Callable[[], StacIO]) -> None:
         """Set the default StacIO instance to use."""
         cls._default_io = stac_io_class
 
     @classmethod
-    def default(cls) -> "StacIO":
+    def default(cls) -> StacIO:
         if cls._default_io is None:
             cls._default_io = DefaultStacIO
 

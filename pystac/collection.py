@@ -11,6 +11,7 @@ from typing import (
     List,
     Optional,
     Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -38,7 +39,8 @@ from pystac.utils import datetime_to_str, str_to_datetime
 if TYPE_CHECKING:
     from pystac.item import Item
 
-T = TypeVar("T")
+C = TypeVar("C", bound="Collection")
+
 TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
 TemporalIntervalsLike = Union[
     TemporalIntervals, List[datetime], List[Optional[datetime]]
@@ -606,13 +608,13 @@ class Collection(Catalog):
 
     @classmethod
     def from_dict(
-        cls,
+        cls: Type[C],
         d: Dict[str, Any],
         href: Optional[str] = None,
         root: Optional[Catalog] = None,
         migrate: bool = False,
         preserve_dict: bool = True,
-    ) -> Collection:
+    ) -> C:
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -725,8 +727,8 @@ class Collection(Catalog):
 
     @classmethod
     def from_file(
-        cls, href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> Collection:
+        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
+    ) -> C:
         result = super().from_file(href, stac_io)
         if not isinstance(result, Collection):
             raise pystac.STACTypeError(f"{result} is not a {Collection}.")
