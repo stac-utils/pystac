@@ -287,9 +287,8 @@ class Summaries:
         Returns:
             Summaries: The clone of this object
         """
-        summaries = Summaries(
-            summaries=deepcopy(self._summaries), maxcount=self.maxcount
-        )
+        cls = self.__class__
+        summaries = cls(summaries=deepcopy(self._summaries), maxcount=self.maxcount)
         summaries.lists = deepcopy(self.lists)
         summaries.other = deepcopy(self.other)
         summaries.ranges = deepcopy(self.ranges)
