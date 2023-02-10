@@ -329,12 +329,26 @@ def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
 def str_to_datetime(s: str) -> datetime:
     """Converts a string timestamp to a :class:`datetime.datetime` instance using
     :meth:`dateutil.parser.parse` under the hood. The input string may be in any
-    format :std:doc:`supported by the parser <parser>`.
+    format :std:doc:`supported by the parser <parser>`. This includes many formats
+    including ISO 8601 and RFC 3339.
 
     Args:
         s (str) : The string to convert to :class:`datetime.datetime`.
+
+    Returns:
+        str: The :class:`datetime.datetime` represented the by the string.
     """
     return dateutil.parser.isoparse(s)
+
+
+def now_in_utc() -> datetime:
+    """Returns a datetime value of now with the UTC timezone applied"""
+    return datetime.now(timezone.utc)
+
+
+def now_to_rfc3339_str() -> str:
+    """Returns an RFC 3339 string representing now"""
+    return datetime_to_str(now_in_utc())
 
 
 def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
