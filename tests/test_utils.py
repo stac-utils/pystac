@@ -7,6 +7,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import pytest
 from dateutil import tz
 
 from pystac import utils
@@ -14,6 +15,8 @@ from pystac.utils import (
     is_absolute_href,
     make_absolute_href,
     make_relative_href,
+    now_in_utc,
+    now_to_rfc3339_str,
     str_to_datetime,
 )
 from tests.utils import TestCases
@@ -349,3 +352,79 @@ class UtilsTest(unittest.TestCase):
             for geom in geom_dicts:
                 got = utils.geometry_to_bbox(geom)
                 self.assertNotEqual(got, None)
+
+
+@pytest.mark.parametrize(
+    "datetime",
+    [
+        "37-01-01T12:00:27.87Z",  # invalid year, must be 4 digits
+        "21985-12-12T23:20:50.52Z",  # year must be 4 digits
+        "1985-13-12T23:20:50.52Z",  # month > 12
+        "1985-12-32T23:20:50.52Z",  # day > 31
+        "1985-12-01T25:20:50.52Z",  # hour > 24
+        "1985-12-01T00:60:50.52Z",  # minute > 59
+        "1985-12-01T00:06:61.52Z",  # second > 60
+        "1985-04-12T23:20:50.Z",  # fractional sec . but no frac secs
+        "1985-04-12T23:20:50,Z",  # fractional sec , but no frac secs
+        "1990-12-31T23:59:61Z",  # second > 60 w/o fractional seconds
+    ],
+)
+def test_parse_invalid_rfc3339_str_to_datetime(datetime: str) -> None:
+    with pytest.raises(ValueError):
+        str_to_datetime(datetime)
+
+
+@pytest.mark.parametrize(
+    "datetime",
+    [
+        "1985-04-12",  # date only
+        "1937-01-01T12:00:27.87+0100",  # invalid TZ format, no sep :
+        "1985-12-12T23:20:50.52",  # no TZ
+        "1985-04-12T23:20:50,52Z",  # comma as frac sec sep disallowed in RFC3339
+    ],
+)
+def test_parse_invalid_rfc3339_but_valid_iso8601_str_to_datetime(datetime: str) -> None:
+    assert str_to_datetime(datetime)
+
+
+@pytest.mark.parametrize(
+    "datetime",
+    [
+        "1985-04-12T23:20:50.52Z",
+        "1996-12-19T16:39:57-00:00",
+        "1996-12-19T16:39:57+00:00",
+        "1996-12-19T16:39:57-08:00",
+        "1996-12-19T16:39:57+08:00",
+        "1937-01-01T12:00:27.87+01:00",
+        "1985-04-12T23:20:50.52Z",
+        "1937-01-01T12:00:27.8710+01:00",
+        "1937-01-01T12:00:27.8+01:00",
+        "1937-01-01T12:00:27.8Z",
+        "2020-07-23T00:00:00.000+03:00",
+        "2020-07-23T00:00:00+03:00",
+        "1985-04-12t23:20:50.000z",
+        "2020-07-23T00:00:00Z",
+        "2020-07-23T00:00:00.0Z",
+        "2020-07-23T00:00:00.01Z",
+        "2020-07-23T00:00:00.012Z",
+        "2020-07-23T00:00:00.0123Z",
+        "2020-07-23T00:00:00.01234Z",
+        "2020-07-23T00:00:00.012345Z",
+        "2020-07-23T00:00:00.0123456Z",
+        "2020-07-23T00:00:00.01234567Z",
+        "2020-07-23T00:00:00.012345678Z",
+    ],
+)
+def test_parse_valid_iso8601_str_to_datetime(datetime: str) -> None:
+    assert str_to_datetime(datetime)
+
+
+def test_now_functions() -> None:
+    now1 = now_in_utc()
+    time.sleep(1)
+    now2 = now_in_utc()
+
+    assert now1 < now2
+    assert now1.tzinfo == timezone.utc
+
+    assert str_to_datetime(now_to_rfc3339_str())

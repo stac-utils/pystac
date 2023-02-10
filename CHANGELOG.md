@@ -4,6 +4,7 @@
 
 ### Added
 
+- Additional util methods `now_in_utc` and `now_to_rfc3339_str` ([#760](https://github.com/stac-utils/pystac/pull/760))
 - Add `media_type` and `role` filtering to Item and Collection `get_assets()` method ([#936](https://github.com/stac-utils/pystac/pull/936))
 - `Asset.has_role` ([#936](https://github.com/stac-utils/pystac/pull/936))
 - Enum MediaType entry for flatgeobuf ([discussion](https://github.com/flatgeobuf/flatgeobuf/discussions/112#discussioncomment-4606721)) ([#938](https://github.com/stac-utils/pystac/pull/938))
