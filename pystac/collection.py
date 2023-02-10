@@ -99,7 +99,8 @@ class SpatialExtent:
         Returns:
             SpatialExtent: The clone of this object.
         """
-        return SpatialExtent(
+        cls = self.__class__
+        return cls(
             bboxes=deepcopy(self.bboxes), extra_fields=deepcopy(self.extra_fields)
         )
 
@@ -237,7 +238,8 @@ class TemporalExtent:
         Returns:
             TemporalExtent: The clone of this object.
         """
-        return TemporalExtent(
+        cls = self.__class__
+        return cls(
             intervals=deepcopy(self.intervals), extra_fields=deepcopy(self.extra_fields)
         )
 
@@ -327,7 +329,8 @@ class Extent:
         Returns:
             Extent: The clone of this extent.
         """
-        return Extent(
+        cls = self.__class__
+        return cls(
             spatial=self.spatial.clone(),
             temporal=self.temporal.clone(),
             extra_fields=deepcopy(self.extra_fields),

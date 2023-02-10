@@ -152,7 +152,7 @@ class ItemCollection(Collection[pystac.Item]):
             **self.extra_fields,
         }
 
-    def clone(self) -> "ItemCollection":
+    def clone(self) -> ItemCollection:
         """Creates a clone of this instance. This clone is a deep copy; all
         :class:`~pystac.Item` instances are cloned and all additional top-level fields
         are deep copied."""
