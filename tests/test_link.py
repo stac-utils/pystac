@@ -1,10 +1,13 @@
 import datetime
+import json
 import os
 import unittest
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
 
 import pystac
+from pystac import Collection, Item, Link
 from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
@@ -305,3 +308,25 @@ class LinkInheritanceTest(unittest.TestCase):
         )
         cloned_link = link.clone()
         self.assertIsInstance(cloned_link, self.CustomLink)
+
+
+def test_relative_self_link(tmp_path: Path) -> None:
+    # https://github.com/stac-utils/pystac/issues/801
+    item = Item("an-id", None, None, datetime.datetime.now(), {})
+    item_as_dict = item.to_dict(include_self_link=False)
+    item_as_dict["links"] = [{"href": "item.json", "rel": "self"}]
+    item_as_dict["assets"] = {"data": {"href": "asset.tif"}}
+    with open(tmp_path / "item.json", "w") as f:
+        json.dump(item_as_dict, f)
+    Path(tmp_path / "asset.tif").touch()
+    collection = Collection("an-id", "a description", ARBITRARY_EXTENT)
+    collection.add_link(Link("item", "item.json"))
+    collection.save_object(
+        include_self_link=False, dest_href=str(tmp_path / "collection.json")
+    )
+    collection = Collection.from_file(str(tmp_path / "collection.json"))
+    read_item = collection.get_item("an-id")
+    assert read_item
+    asset_href = read_item.assets["data"].get_absolute_href()
+    assert asset_href
+    assert Path(asset_href).exists()

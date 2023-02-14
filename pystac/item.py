@@ -457,6 +457,7 @@ class Item(STACObject):
             stac_extensions=stac_extensions,
             collection=collection_id,
             extra_fields=d,
+            href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
         )
 
