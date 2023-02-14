@@ -320,7 +320,8 @@ class Catalog(STACObject):
         items: Iterable[Item],
         strategy: Optional[HrefLayoutStrategy] = None,
     ) -> None:
-        """Adds links to multiple :class:`~pystac.Item`s.
+        """Adds links to multiple :class:`Items <pystac.Item>`.
+
         This method will set each item's parent to this object, and their root to
         this Catalog's root.
 
