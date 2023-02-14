@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime as datetime
+from datetime import datetime
 from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
 
 import pystac

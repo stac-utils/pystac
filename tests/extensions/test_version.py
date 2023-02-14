@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.version."""
 
-import datetime
 import unittest
+from datetime import datetime
 from typing import List, Optional
 
 import pystac
@@ -16,7 +16,7 @@ URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
 def make_item(year: int) -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = f"USGS/GAP/CONUS/{year}"
-    start = datetime.datetime(year, 1, 2)
+    start = datetime(year, 1, 2)
 
     item = pystac.Item(
         id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
@@ -252,11 +252,11 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
 def make_collection(year: int) -> pystac.Collection:
     asset_id = f"my/collection/of/things/{year}"
-    start = datetime.datetime(2014, 8, 10)
-    end = datetime.datetime(year, 1, 3, 4, 5)
+    start = datetime(2014, 8, 10)
+    end = datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
+    intervals: List[List[Optional[datetime]]] = [[start, end]]
     temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
 

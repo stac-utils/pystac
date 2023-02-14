@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.sat."""
 
-import datetime
 import unittest
+from datetime import datetime
 from typing import Any, Dict
 
 import pystac
@@ -16,7 +16,7 @@ from tests.utils import TestCases
 def make_item() -> pystac.Item:
     """Create basic test items that are only slightly different."""
     asset_id = "an/asset"
-    start = datetime.datetime(2018, 1, 2)
+    start = datetime(2018, 1, 2)
     item = pystac.Item(
         id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
     )

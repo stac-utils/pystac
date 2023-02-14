@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.sar."""
 
-import datetime
 import unittest
+from datetime import datetime
 from random import choice
 from string import ascii_letters
 from typing import List
@@ -21,7 +21,7 @@ from tests.utils import TestCases
 
 def make_item() -> pystac.Item:
     asset_id = "my/items/2011"
-    start = datetime.datetime(2020, 11, 7)
+    start = datetime(2020, 11, 7)
     item = pystac.Item(
         id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
     )
