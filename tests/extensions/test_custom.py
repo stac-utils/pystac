@@ -1,7 +1,7 @@
 """Tests creating a custom extension"""
 
-import datetime
 import unittest
+from datetime import datetime
 from typing import Any, Dict, Generic, Optional, Set, TypeVar, Union, cast
 
 import pytest
@@ -130,7 +130,7 @@ class CustomExtensionTest(unittest.TestCase):
         pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
 
     def test_add_to_item_asset(self) -> None:
-        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        item = Item("an-id", None, None, datetime.now(), {})
         item.add_asset("foo", Asset("http://pystac.test/asset.tif"))
         custom = CustomExtension.ext(item.assets["foo"], add_if_missing=True)
         assert CustomExtension.has_extension(item)
@@ -139,7 +139,7 @@ class CustomExtensionTest(unittest.TestCase):
         assert item_as_dict["assets"]["foo"]["test:prop"] == "bar"
 
     def test_add_to_item(self) -> None:
-        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        item = Item("an-id", None, None, datetime.now(), {})
         custom = CustomExtension.ext(item, add_if_missing=True)
         assert CustomExtension.has_extension(item)
         custom.test_prop = "foo"
@@ -160,7 +160,7 @@ class CustomExtensionTest(unittest.TestCase):
             "a description",
             extent=Extent(
                 spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
-                temporal=TemporalExtent([[datetime.datetime.now(), None]]),
+                temporal=TemporalExtent([[datetime.now(), None]]),
             ),
         )
         custom = CustomExtension.ext(collection, add_if_missing=True)
@@ -175,7 +175,7 @@ class CustomExtensionTest(unittest.TestCase):
             "a description",
             extent=Extent(
                 spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
-                temporal=TemporalExtent([[datetime.datetime.now(), None]]),
+                temporal=TemporalExtent([[datetime.now(), None]]),
             ),
         )
         collection.add_asset("foo", Asset("http://pystac.test/asset.tif"))
@@ -190,7 +190,7 @@ class CustomExtensionTest(unittest.TestCase):
             CustomExtension.ext({})  # type: ignore
 
     def test_migrates(self) -> None:
-        item = Item("an-id", None, None, datetime.datetime.now(), {})
+        item = Item("an-id", None, None, datetime.now(), {})
         item_as_dict = item.to_dict()
         item_as_dict["stac_version"] = "1.0.0-rc.1"
         item_as_dict["stac_extensions"] = [

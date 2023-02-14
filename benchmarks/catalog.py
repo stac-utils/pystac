@@ -1,8 +1,8 @@
-import datetime
 import json
 import os
 import shutil
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -108,12 +108,12 @@ def make_large_catalog() -> Catalog:
     catalog = Catalog("an-id", "a description")
     extent = Extent(
         SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
-        TemporalExtent([[datetime.datetime(2023, 1, 1), None]]),
+        TemporalExtent([[datetime(2023, 1, 1), None]]),
     )
     for i in range(0, 10):
         collection = Collection(f"collection-{i}", f"Collection {i}", extent)
         for j in range(0, 100):
-            item = Item(f"item-{i}-{j}", None, None, datetime.datetime.now(), {})
+            item = Item(f"item-{i}-{j}", None, None, datetime.now(), {})
             collection.add_item(item)
         catalog.add_child(collection)
     return catalog

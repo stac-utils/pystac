@@ -1,7 +1,7 @@
-import datetime
 import json
 import os
 import unittest
+from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
@@ -10,7 +10,7 @@ import pystac
 from pystac import Collection, Item, Link
 from tests.utils.test_cases import ARBITRARY_EXTENT
 
-TEST_DATETIME: datetime.datetime = datetime.datetime(2020, 3, 14, 16, 32)
+TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
 
 
 class LinkTest(unittest.TestCase):
@@ -312,7 +312,7 @@ class LinkInheritanceTest(unittest.TestCase):
 
 def test_relative_self_link(tmp_path: Path) -> None:
     # https://github.com/stac-utils/pystac/issues/801
-    item = Item("an-id", None, None, datetime.datetime.now(), {})
+    item = Item("an-id", None, None, datetime.now(), {})
     item_as_dict = item.to_dict(include_self_link=False)
     item_as_dict["links"] = [{"href": "item.json", "rel": "self"}]
     item_as_dict["assets"] = {"data": {"href": "asset.tif"}}

@@ -1,7 +1,7 @@
 """Tests for pystac.tests.extensions.scientific."""
 
-import datetime
 import unittest
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 import pystac
@@ -39,7 +39,7 @@ PUBLICATIONS = [
 
 def make_item() -> pystac.Item:
     asset_id = "USGS/GAP/CONUS/2011"
-    start = datetime.datetime(2011, 1, 2)
+    start = datetime(2011, 1, 2)
     item = pystac.Item(
         id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
     )
@@ -229,11 +229,11 @@ class ItemScientificExtensionTest(unittest.TestCase):
 
 def make_collection() -> pystac.Collection:
     asset_id = "my/thing"
-    start = datetime.datetime(2018, 8, 24)
-    end = start + datetime.timedelta(5, 4, 3, 2, 1)
+    start = datetime(2018, 8, 24)
+    end = start + timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    intervals: List[List[Optional[datetime.datetime]]] = [[start, end]]
+    intervals: List[List[Optional[datetime]]] = [[start, end]]
     temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
     collection = pystac.Collection(asset_id, "desc", extent)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime as Datetime
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
@@ -84,25 +84,25 @@ class CommonMetadata:
 
     # Date and Time Range
     @property
-    def start_datetime(self) -> Optional[Datetime]:
+    def start_datetime(self) -> Optional[datetime]:
         """Get or set the object's start_datetime."""
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("start_datetime", str)
         )
 
     @start_datetime.setter
-    def start_datetime(self, v: Optional[Datetime]) -> None:
+    def start_datetime(self, v: Optional[datetime]) -> None:
         self._set_field("start_datetime", utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def end_datetime(self) -> Optional[Datetime]:
+    def end_datetime(self) -> Optional[datetime]:
         """Get or set the item's end_datetime."""
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("end_datetime", str)
         )
 
     @end_datetime.setter
-    def end_datetime(self, v: Optional[Datetime]) -> None:
+    def end_datetime(self, v: Optional[datetime]) -> None:
         self._set_field("end_datetime", utils.map_opt(utils.datetime_to_str, v))
 
     # License
@@ -179,7 +179,7 @@ class CommonMetadata:
 
     # Metadata
     @property
-    def created(self) -> Optional[Datetime]:
+    def created(self) -> Optional[datetime]:
         """Get or set the metadata file's creation date. All datetime attributes have
         setters that can take either a string or a datetime, but always stores
         the attribute as a string.
@@ -193,11 +193,11 @@ class CommonMetadata:
         return utils.map_opt(utils.str_to_datetime, self._get_field("created", str))
 
     @created.setter
-    def created(self, v: Optional[Datetime]) -> None:
+    def created(self, v: Optional[datetime]) -> None:
         self._set_field("created", utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def updated(self) -> Optional[Datetime]:
+    def updated(self) -> Optional[datetime]:
         """Get or set the metadata file's update date. All datetime attributes have
         setters that can take either a string or a datetime, but always stores
         the attribute as a string
@@ -211,5 +211,5 @@ class CommonMetadata:
         return utils.map_opt(utils.str_to_datetime, self._get_field("updated", str))
 
     @updated.setter
-    def updated(self, v: Optional[Datetime]) -> None:
+    def updated(self, v: Optional[datetime]) -> None:
         self._set_field("updated", utils.map_opt(utils.datetime_to_str, v))

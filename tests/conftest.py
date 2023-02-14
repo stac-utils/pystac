@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 import pytest
 
@@ -19,6 +19,4 @@ def test_collection() -> Catalog:
 
 @pytest.fixture
 def test_item() -> Item:
-    return Item(
-        "test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.datetime.now(), {}
-    )
+    return Item("test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.now(), {})

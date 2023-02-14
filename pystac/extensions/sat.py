@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime as Datetime
+from datetime import datetime
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
@@ -61,7 +61,7 @@ class SatExtension(
         relative_orbit: Optional[int] = None,
         absolute_orbit: Optional[int] = None,
         platform_international_designator: Optional[str] = None,
-        anx_datetime: Optional[Datetime] = None,
+        anx_datetime: Optional[datetime] = None,
     ) -> None:
         """Applies ext extension properties to the extended :class:`~pystac.Item` or
         class:`~pystac.Asset`.
@@ -123,11 +123,11 @@ class SatExtension(
         self._set_property(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[Datetime]:
+    def anx_datetime(self) -> Optional[datetime]:
         return map_opt(str_to_datetime, self._get_property(ANX_DATETIME_PROP, str))
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[Datetime]) -> None:
+    def anx_datetime(self, v: Optional[datetime]) -> None:
         self._set_property(ANX_DATETIME_PROP, map_opt(datetime_to_str, v))
 
     @classmethod
@@ -268,7 +268,7 @@ class SummariesSatExtension(SummariesExtension):
         self._set_summary(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[RangeSummary[Datetime]]:
+    def anx_datetime(self) -> Optional[RangeSummary[datetime]]:
         return map_opt(
             lambda s: RangeSummary(
                 str_to_datetime(s.minimum), str_to_datetime(s.maximum)
@@ -277,7 +277,7 @@ class SummariesSatExtension(SummariesExtension):
         )
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[RangeSummary[Datetime]]) -> None:
+    def anx_datetime(self, v: Optional[RangeSummary[datetime]]) -> None:
         self._set_summary(
             ANX_DATETIME_PROP,
             map_opt(

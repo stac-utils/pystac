@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from copy import copy, deepcopy
-from datetime import datetime as Datetime
 from html import escape
-from typing import Any, Dict, List, Optional, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
 from pystac import STACError, STACObjectType
@@ -28,6 +27,9 @@ from pystac.utils import (
 
 T = TypeVar("T", bound="Item")
 
+if TYPE_CHECKING:
+    from datetime import datetime as Datetime
+
 
 class Item(STACObject):
     """An Item is the core granular entity in a STAC, containing the core metadata
@@ -43,7 +45,7 @@ class Item(STACObject):
             using either 2D or 3D geometries. The length of the array must be 2*n
             where n is the number of dimensions. Could also be None in the case of a
             null geometry.
-        datetime : Datetime associated with this item. If None,
+        datetime : datetime associated with this item. If None,
             a start_datetime and end_datetime must be supplied.
         properties : A dictionary of additional metadata for the item.
         start_datetime : Optional start datetime, part of common metadata. This value
