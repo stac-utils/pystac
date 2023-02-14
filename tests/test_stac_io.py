@@ -3,6 +3,8 @@ import os
 import tempfile
 import unittest
 
+import pytest
+
 import pystac
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
@@ -114,3 +116,29 @@ class StacIOTest(unittest.TestCase):
 
         request_obj = urlopen_mock.call_args[0][0]
         self.assertEqual(request_obj.headers, stac_io.headers)
+
+
+@pytest.mark.vcr()
+def test_retry_stac_io() -> None:
+    # This doesn't test any retry behavior, but it does make sure that we can
+    # still read objects.
+    _ = pytest.importorskip("urllib3")
+    from pystac.stac_io import RetryStacIO
+
+    stac_io = RetryStacIO()
+    _ = stac_io.read_stac_object("https://planetarycomputer.microsoft.com/api/stac/v1")
+
+
+@pytest.mark.vcr()
+def test_retry_stac_io_404() -> None:
+    # This doesn't test any retry behavior, but it does make sure that we can
+    # error when an object doesn't exist.
+    _ = pytest.importorskip("urllib3")
+    from pystac.stac_io import RetryStacIO
+
+    stac_io = RetryStacIO()
+    with pytest.raises(Exception):
+        _ = stac_io.read_stac_object(
+            "https://planetarycomputer.microsoft.com"
+            "/api/stac/v1/collections/not-a-collection-id"
+        )

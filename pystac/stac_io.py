@@ -23,6 +23,14 @@ try:
 except ImportError:
     orjson = None  # type: ignore[assignment]
 
+# Is urllib3 available?
+try:
+    import urllib3  # noqa
+except ImportError:
+    HAS_URLLIB3 = False
+else:
+    HAS_URLLIB3 = True
+
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.stac_object import STACObject
@@ -281,9 +289,8 @@ class DefaultStacIO(StacIO):
 
             href : The URI of the file to open.
         """
-        parsed = safe_urlparse(href)
         href_contents: str
-        if parsed.scheme != "":
+        if _is_url(href):
             try:
                 req = Request(href, headers=self.headers)
                 with urlopen(req) as f:
@@ -373,3 +380,62 @@ class DuplicateKeyReportingMixin(StacIO):
             else:
                 result[key] = value
         return result
+
+
+def _is_url(href: str) -> bool:
+    parsed = safe_urlparse(href)
+    return parsed.scheme != ""
+
+
+if HAS_URLLIB3:
+    from typing import cast
+
+    from urllib3 import PoolManager
+    from urllib3.util import Retry
+
+    class RetryStacIO(DefaultStacIO):
+        """A customized StacIO that retries requests, using
+        :py:class:`urllib3.util.retry.Retry`.
+
+        The headers are passed to :py:class:`DefaultStacIO`. If retry is not
+        provided, a default retry is used.
+
+        To use this class, you'll need to install PySTAC with urllib3:
+
+        .. code-block:: shell
+
+            pip install pystac[urllib3]
+
+        """
+
+        retry: Retry
+        """The :py:class:`urllib3.util.retry.Retry` to use with all reading network
+        requests."""
+
+        def __init__(
+            self,
+            headers: Optional[Dict[str, str]] = None,
+            retry: Optional[Retry] = None,
+        ):
+            super().__init__(headers)
+            self.retry = retry or Retry()
+
+        def read_text_from_href(self, href: str) -> str:
+            """Reads file as a UTF-8 string, with retry support.
+
+            Args:
+                href : The URI of the file to open.
+            """
+            if _is_url(href):
+                # TODO provide a pooled StacIO to enable more efficient network
+                # access (probably named `PooledStacIO`).
+                http = PoolManager()
+                try:
+                    response = http.request(
+                        "GET", href, retries=self.retry  # type: ignore
+                    )
+                    return cast(str, response.data.decode("utf-8"))
+                except HTTPError as e:
+                    raise Exception("Could not read uri {}".format(href)) from e
+            else:
+                return super().read_text_from_href(href)

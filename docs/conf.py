@@ -232,6 +232,7 @@ epub_exclude_files = ["search.html"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "dateutil": ("https://dateutil.readthedocs.io/en/stable", None),
+    "urllib3": ("https://urllib3.readthedocs.io/en/stable", None),
 }
 
 # -- Substutition variables
