@@ -308,9 +308,9 @@ def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
     Args:
         dt : The datetime to convert.
         timespec: An optional argument that specifies the number of additional
-        terms of the time to include. Valid options are 'auto', 'hours',
-        'minutes', 'seconds', 'milliseconds' and 'microseconds'. The default value
-        is 'auto'.
+            terms of the time to include. Valid options are 'auto', 'hours',
+            'minutes', 'seconds', 'milliseconds' and 'microseconds'. The default value
+            is 'auto'.
 
     Returns:
         str: The ISO8601 (RFC 3339) formatted string representing the datetime.
