@@ -34,7 +34,15 @@ optional `orjson` requirements:
 pip install pystac[orjson]
 ```
 
-### Install from source:
+If you would like to use a custom `RetryStacIO` class for automatically retrying
+network requests when reading with PySTAC, you'll need
+[`urllib3`](https://urllib3.readthedocs.io/en/stable/):
+
+```shell
+pip install pystac[urllib3]
+```
+
+### Install from source
 
 ```shell
 git clone https://github.com/stac-utils/pystac.git

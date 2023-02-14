@@ -66,6 +66,18 @@ additional functionality:
 
       pip install pystac[orjson]
 
+* ``urllib3``
+
+  Installs the additional `urllib3 <https://github.com/urllib3/urllib3>`__ dependency.
+  For now, this is only used in :py:class:`pystac.stac_io.RetryStacIO`, but it
+  may be used more extensively in the future.
+
+  To install:
+
+  .. code-block:: bash
+
+      pip install pystac[urllib3]
+
 Versions
 ========
 
