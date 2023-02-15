@@ -423,6 +423,9 @@ class Item(STACObject):
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> T:
+        if preserve_dict:
+            d = deepcopy(d)
+
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -432,34 +435,39 @@ class Item(STACObject):
                 f"{d} does not represent a {cls.__name__} instance"
             )
 
-        if preserve_dict:
-            d = deepcopy(d)
+        # some fields are passed through to __init__
+        pass_through_fields = [
+            "id",
+            "geometry",
+            "bbox",
+            "stac_extensions",
+            "collection",
+        ]
 
-        id = d.pop("id")
-        geometry = d.pop("geometry")
-        properties = d.pop("properties")
-        bbox = d.pop("bbox", None)
-        stac_extensions = d.get("stac_extensions")
-        collection_id = d.pop("collection", None)
-
+        # some fields need some parsing or special handling
+        parse_fields = ["links", "assets", "properties"]
+        links = d.get("links", [])
+        assets = d.get("assets", {})
+        properties = d.get("properties", {})
         datetime = properties.get("datetime")
         if datetime is not None:
             datetime = str_to_datetime(datetime)
-        links = d.pop("links")
-        assets = d.pop("assets")
 
-        d.pop("type")
-        d.pop("stac_version")
+        # some fields are excluded from __init__ entirely
+        exclude_fields = ["type", "stac_version"]
+
+        # get all the fields that are not passed through, parsed, or excluded
+        extra_fields = {
+            k: v
+            for k, v in d.items()
+            if k not in [*pass_through_fields, *parse_fields, *exclude_fields]
+        }
 
         item = cls(
-            id=id,
-            geometry=geometry,
-            bbox=bbox,
+            **{k: d.get(k) for k in pass_through_fields},  # type: ignore
             datetime=datetime,
             properties=properties,
-            stac_extensions=stac_extensions,
-            collection=collection_id,
-            extra_fields=d,
+            extra_fields=extra_fields,
             href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
         )
@@ -499,6 +507,12 @@ class Item(STACObject):
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+        for field in ("type", "stac_version"):
+            if field not in d:
+                raise pystac.STACTypeError(
+                    f"{d} does not represent a {cls.__name__} instance"
+                    f"'{field}' is missing."
+                )
         return identify_stac_object_type(d) == STACObjectType.ITEM
 
     @property
