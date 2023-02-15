@@ -74,6 +74,16 @@ flag to Git commit commands, as in ``git commit --no-verify``.
 .. [#] In rare cases changes to one file might invalidate an unchanged file, such as
    when modifying the return type of a function used in another file.
 
+Documentation
+^^^^^^^^^^^^^
+
+All new features or changes should include API documentation, in the form of
+docstrings.  Additionally, if you are updating an extension version, check to
+see if that extension is used in the ``examples/`` STAC objects at the top level
+of the repository. If so, update the extension version, then re-run
+``docs/quickstart.ipynb`` to include the new extension versions in the notebook
+cell output.
+
 Benchmarks
 ^^^^^^^^^^
 
