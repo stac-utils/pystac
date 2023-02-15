@@ -9,8 +9,14 @@ on:
       - "0.5"
       - "1.0"
       - "2.0"
+      - cancel-running-jobs
   pull_request:
   merge_group:
+
+concurrency:
+  # Cancel running job if another commit is pushed to the branch
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
