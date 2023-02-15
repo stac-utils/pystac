@@ -144,6 +144,20 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
+    def test_optional_epsg(self) -> None:
+        example_uri = TestCases.get_path("data-files/projection/optional-epsg.json")
+        proj_item = pystac.Item.from_file(example_uri)
+
+        # No proj info on item
+        self.assertNotIn("proj:epsg", proj_item.properties)
+
+        # Some proj info on assets
+        asset_no_prop = proj_item.assets["metadata"]
+        self.assertIsNone(ProjectionExtension.ext(asset_no_prop).epsg)
+
+        asset_prop = proj_item.assets["visual"]
+        self.assertEqual(ProjectionExtension.ext(asset_prop).epsg, 32618)
+
     def test_wkt2(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
