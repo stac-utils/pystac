@@ -8,6 +8,7 @@ from copy import deepcopy
 from typing import Any, Dict, Optional
 
 import dateutil.relativedelta
+import pytest
 
 import pystac
 import pystac.serialization.common_properties
@@ -44,10 +45,10 @@ class ItemTest(unittest.TestCase):
         # test that the parameter is preserved
         self.assertEqual(param_dict, item_dict)
 
-        # assert that the parameter is not preserved with
-        # non-default parameter
+        # assert that the parameter is preserved regardless of
+        # preserve_dict
         _ = Item.from_dict(param_dict, preserve_dict=False)
-        self.assertNotEqual(param_dict, item_dict)
+        self.assertEqual(param_dict, item_dict)
 
     def test_from_dict_set_root(self) -> None:
         item_dict = self.get_example_item_dict()
@@ -436,3 +437,21 @@ def test_custom_item_from_dict(test_item: Item) -> None:
             return super().from_dict(d)
 
     _ = CustomItem.from_dict(test_item.to_dict())
+
+
+def test_item_from_dict_raises_useful_error() -> None:
+    item_dict = {"type": "Feature", "stac_version": "1.0.0", "id": "lalalalala"}
+    with pytest.raises(pystac.STACError, match="Invalid Item: "):
+        Item.from_dict(item_dict)
+
+
+def test_item_from_dict_with_missing_stac_version_raises_useful_error() -> None:
+    item_dict = {"type": "Feature", "id": "lalalalala"}
+    with pytest.raises(pystac.STACTypeError, match="'stac_version' is missing"):
+        Item.from_dict(item_dict)
+
+
+def test_item_from_dict_with_missing_type_raises_useful_error() -> None:
+    item_dict = {"stac_version": "0.8.0", "id": "lalalalala"}
+    with pytest.raises(pystac.STACTypeError, match="'type' is missing"):
+        Item.from_dict(item_dict)

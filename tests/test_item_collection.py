@@ -165,10 +165,10 @@ class TestItemCollection(unittest.TestCase):
         _ = ItemCollection.from_dict(param_dict)
         self.assertEqual(param_dict, self.item_collection_dict)
 
-        # assert that the parameter is not preserved with
-        # non-default parameter
+        # assert that the parameter is preserved regardless of
+        # preserve_dict
         _ = ItemCollection.from_dict(param_dict, preserve_dict=False)
-        self.assertNotEqual(param_dict, self.item_collection_dict)
+        self.assertEqual(param_dict, self.item_collection_dict)
 
     def test_from_dict_sets_root(self) -> None:
         param_dict = deepcopy(self.item_collection_dict)
