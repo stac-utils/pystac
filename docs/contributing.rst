@@ -131,3 +131,22 @@ few steps:
 
 For more information on changelogs and how to write a good entry, see `keep a changelog
 <https://keepachangelog.com/en/1.0.0/>`_.
+
+
+Style
+^^^^^
+
+In an effort to maintain a consistent codebase, PySTAC conforms to the following rules:
+
+.. code-block:: python
+
+   # DO
+   from datetime import datetime
+
+   # DON't
+   import datetime
+   import datetime as dt
+
+The exception to this rule is when ``datetime`` is only imported for type checking and
+using the class directly interferes with another variable name. In this case, in the
+TYPE_CHECKING block you should do ``from datetime import datetime as Datetime``.
