@@ -1,8 +1,9 @@
 import unittest
+from pathlib import Path
 
 import pystac
 from pystac import ExtensionTypeError
-from pystac.extensions.table import TableExtension
+from pystac.extensions.table import Column, TableExtension
 from tests.utils import TestCases
 
 
@@ -59,3 +60,23 @@ class TableTest(unittest.TestCase):
             TableExtension.ext,
             object(),
         )
+
+
+def test_item_with_table_extension_is_serilalizable_and_roundtrips(
+    tmp_path: Path,
+) -> None:
+    example_uri = TestCases.get_path("data-files/table/item.json")
+    item = pystac.Item.from_file(example_uri)
+    # add column metadata
+    tab_ext = TableExtension.ext(item, add_if_missing=True)
+    columns = [
+        Column({"name": "col_1", "type": "str"}),
+        Column({"name": "col_2", "type": "byte_array"}),
+    ]
+    tab_ext.columns = columns
+    item.save_object(dest_href=str(tmp_path / "item.json"))
+    assert all(isinstance(c, Column) for c in tab_ext.columns)
+    assert all(
+        before.properties == after.properties
+        for before, after in zip(columns, tab_ext.columns)
+    )

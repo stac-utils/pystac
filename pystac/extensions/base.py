@@ -84,6 +84,10 @@ class PropertiesExtension(ABC):
     ) -> None:
         if v is None and pop_if_none:
             self.properties.pop(prop_name, None)
+        elif isinstance(v, list):
+            self.properties[prop_name] = [
+                x.to_dict() if hasattr(x, "to_dict") else x for x in v
+            ]
         else:
             self.properties[prop_name] = v
 

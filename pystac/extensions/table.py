@@ -168,14 +168,14 @@ class TableExtension(
     @property
     def columns(self) -> Optional[List[Column]]:
         """A list of :class:`Column` objects describing each column"""
-        return self.properties.get(COLUMNS_PROP)
+        v = self.properties.get(COLUMNS_PROP)
+        if v is None:
+            return None
+        return [Column(x) for x in v]
 
     @columns.setter
-    def columns(self, v: List[Column]) -> None:
-        if v is None:
-            self.properties.pop(COLUMNS_PROP, None)
-        else:
-            self.properties[COLUMNS_PROP] = v
+    def columns(self, v: Optional[List[Column]]) -> None:
+        self._set_property(COLUMNS_PROP, v)
 
     @property
     def primary_geometry(self) -> Optional[str]:
