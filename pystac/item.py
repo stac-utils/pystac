@@ -28,6 +28,7 @@ from pystac.utils import (
 T = TypeVar("T", bound="Item")
 
 if TYPE_CHECKING:
+    # avoids conflicts since there are also kwargs and attrs called `datetime`
     from datetime import datetime as Datetime
 
 
