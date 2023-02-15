@@ -15,7 +15,7 @@ from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
 PREFIX: str = "proj:"
 
 # Field names
