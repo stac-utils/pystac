@@ -20,6 +20,7 @@
 - Optional `strategy` parameter to `catalog.add_items()` ([#967](https://github.com/stac-utils/pystac/pull/967))
 - `start_datetime` and `end_datetime` arguments to the `Item` constructor ([#918](https://github.com/stac-utils/pystac/pull/918))
 - `RetryStacIO` ([#986](https://github.com/stac-utils/pystac/pull/986))
+- `STACObject.remove_hierarchical_links` and `Link.is_hierarchical` ([#999](https://github.com/stac-utils/pystac/pull/999))
 
 ### Removed
 
