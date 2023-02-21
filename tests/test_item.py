@@ -455,3 +455,12 @@ def test_item_from_dict_with_missing_type_raises_useful_error() -> None:
     item_dict = {"stac_version": "0.8.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACTypeError, match="'type' is missing"):
         Item.from_dict(item_dict)
+
+
+@pytest.mark.parametrize("add_canonical", (True, False))
+def test_remove_hierarchical_links(label_catalog: Catalog, add_canonical: bool) -> None:
+    item = list(label_catalog.get_all_items())[0]
+    item.remove_hierarchical_links(add_canonical=add_canonical)
+    for link in item.links:
+        assert not link.is_hierarchical()
+    assert bool(item.get_single_link("canonical")) == add_canonical

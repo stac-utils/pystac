@@ -1,10 +1,12 @@
+# TODO move all test case code to this file
+
 from datetime import datetime
 
 import pytest
 
 from pystac import Catalog, Collection, Item
 
-from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM
+from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 
 
 @pytest.fixture
@@ -20,3 +22,8 @@ def collection() -> Catalog:
 @pytest.fixture
 def item() -> Item:
     return Item("test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.now(), {})
+
+
+@pytest.fixture
+def label_catalog() -> Catalog:
+    return TestCases.case_1()

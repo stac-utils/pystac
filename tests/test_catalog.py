@@ -1459,3 +1459,11 @@ def test_custom_catalog_from_dict(catalog: Catalog) -> None:
             return super().from_dict(d)
 
     _ = CustomCatalog.from_dict(catalog.to_dict())
+
+
+@pytest.mark.parametrize("add_canonical", (True, False))
+def test_remove_hierarchical_links(label_catalog: Catalog, add_canonical: bool) -> None:
+    label_catalog.remove_hierarchical_links(add_canonical=add_canonical)
+    for link in label_catalog.links:
+        assert not link.is_hierarchical()
+    assert bool(label_catalog.get_single_link("canonical")) == add_canonical

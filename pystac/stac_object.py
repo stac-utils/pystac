@@ -96,6 +96,35 @@ class STACObject(ABC):
 
         self.links = [link for link in self.links if link.rel != rel]
 
+    def remove_hierarchical_links(self, add_canonical: bool = False) -> List[Link]:
+        """Removes all hierarchical links from this object.
+
+        See :py:const:`pystac.link.HIERARCHICAL_LINKS` for a list of all
+        hierarchical links. If the object has a ``self`` href and
+        ``add_canonical`` is True, a link with ``rel="canonical"`` is added.
+
+        Args:
+            add_canonical : If true, and this item has a ``self`` href, that
+                href is used to build a ``canonical`` link.
+
+        Returns:
+            List[Link]: All removed links
+        """
+        keep = list()
+        self_href = self.get_self_href()
+        if add_canonical and self_href is not None:
+            keep.append(
+                Link("canonical", self_href, media_type=pystac.MediaType.GEOJSON)
+            )
+        remove = list()
+        for link in self.links:
+            if link.is_hierarchical():
+                remove.append(link)
+            else:
+                keep.append(link)
+        self.links = keep
+        return remove
+
     def get_single_link(
         self,
         rel: Optional[Union[str, pystac.RelType]] = None,

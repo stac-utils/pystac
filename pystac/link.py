@@ -24,6 +24,7 @@ L = TypeVar("L", bound="Link")
 
 HREF = Union[str, os.PathLike]
 
+#: Hierarchical links provide structure to STAC catalogs.
 HIERARCHICAL_LINKS = [
     pystac.RelType.ROOT,
     pystac.RelType.CHILD,
@@ -350,7 +351,7 @@ class Link(PathLike):
 
         Hierarchical links are used to build relationships in STAC, e.g.
         "parent", "child", "item", etc. For a complete list of hierarchical
-        relation types, see `:py:const:HIERARCHICAL_LINKS`.
+        relation types, see :py:const:`HIERARCHICAL_LINKS`.
 
         Returns:
             bool: True if the link's rel type is hierarchical.
