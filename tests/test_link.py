@@ -6,8 +6,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
 
+import pytest
+
 import pystac
 from pystac import Collection, Item, Link
+from pystac.link import HIERARCHICAL_LINKS
 from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
@@ -330,3 +333,15 @@ def test_relative_self_link(tmp_path: Path) -> None:
     asset_href = read_item.assets["data"].get_absolute_href()
     assert asset_href
     assert Path(asset_href).exists()
+
+
+@pytest.mark.parametrize("rel", HIERARCHICAL_LINKS)
+def test_is_hierarchical(rel: str) -> None:
+    assert Link(rel, "a-target").is_hierarchical()
+
+
+@pytest.mark.parametrize(
+    "rel", ["canonical", "derived_from", "alternate", "via", "prev", "next", "preview"]
+)
+def test_is_not_hierarchical(rel: str) -> None:
+    assert not Link(rel, "a-target").is_hierarchical()
