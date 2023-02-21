@@ -422,7 +422,7 @@ class AssetSubClassTest(unittest.TestCase):
         self.assertIsInstance(cloned_asset, self.CustomAsset)
 
 
-def test_custom_item_from_dict(test_item: Item) -> None:
+def test_custom_item_from_dict(item: Item) -> None:
     # https://github.com/stac-utils/pystac/issues/862
     class CustomItem(Item):
         @classmethod
@@ -436,7 +436,7 @@ def test_custom_item_from_dict(test_item: Item) -> None:
         ) -> CustomItem:
             return super().from_dict(d)
 
-    _ = CustomItem.from_dict(test_item.to_dict())
+    _ = CustomItem.from_dict(item.to_dict())
 
 
 def test_item_from_dict_raises_useful_error() -> None:

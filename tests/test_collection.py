@@ -514,7 +514,7 @@ class CollectionSubClassTest(unittest.TestCase):
         self.assertIsInstance(cloned_collection, self.BasicCustomCollection)
 
 
-def test_custom_collection_from_dict(test_collection: Collection) -> None:
+def test_custom_collection_from_dict(collection: Collection) -> None:
     # https://github.com/stac-utils/pystac/issues/862
     class CustomCollection(Collection):
         @classmethod
@@ -528,4 +528,4 @@ def test_custom_collection_from_dict(test_collection: Collection) -> None:
         ) -> CustomCollection:
             return super().from_dict(d)
 
-    _ = CustomCollection.from_dict(test_collection.to_dict())
+    _ = CustomCollection.from_dict(collection.to_dict())
