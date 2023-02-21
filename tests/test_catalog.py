@@ -1444,7 +1444,7 @@ class CatalogSubClassTest(unittest.TestCase):
         self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
 
 
-def test_custom_catalog_from_dict(test_catalog: Catalog) -> None:
+def test_custom_catalog_from_dict(catalog: Catalog) -> None:
     # https://github.com/stac-utils/pystac/issues/862
     class CustomCatalog(Catalog):
         @classmethod
@@ -1458,4 +1458,4 @@ def test_custom_catalog_from_dict(test_catalog: Catalog) -> None:
         ) -> CustomCatalog:
             return super().from_dict(d)
 
-    _ = CustomCatalog.from_dict(test_catalog.to_dict())
+    _ = CustomCatalog.from_dict(catalog.to_dict())
