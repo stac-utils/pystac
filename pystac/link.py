@@ -345,6 +345,18 @@ class Link(PathLike):
         """
         return self._target_object is not None
 
+    def is_hierarchical(self) -> bool:
+        """Returns true if this link's rel type is hierarchical.
+
+        Hierarchical links are used to build relationships in STAC, e.g.
+        "parent", "child", "item", etc. For a complete list of hierarchical
+        relation types, see `:py:const:HIERARCHICAL_LINKS`.
+
+        Returns:
+            bool: True if the link's rel type is hierarchical.
+        """
+        return self.rel in HIERARCHICAL_LINKS
+
     def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
         """Generate a dictionary representing the JSON of this serialized Link.
 
