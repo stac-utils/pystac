@@ -911,6 +911,20 @@ class Catalog(STACObject):
         for child in self.get_children():
             yield from child.walk()
 
+    def fully_resolve(self) -> None:
+        """Resolves every link in this catalog.
+
+        Useful if, e.g., you'd like to read a catalog from a filesystem, upgrade
+        every object in the catalog to the latest STAC version, and save it back
+        to the filesystem. By default, :py:meth:`~pystac.Catalog.save` skips
+        unresolved links.
+        """
+        for _, _, items in self.walk():
+            # items is a generator, so we need to consume it to resolve the
+            # items
+            for item in items:
+                pass
+
     def validate_all(self) -> None:
         """Validates each catalog, collection contained within this catalog.
 
