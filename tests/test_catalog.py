@@ -7,6 +7,7 @@ import unittest
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import pytest
@@ -1467,3 +1468,11 @@ def test_remove_hierarchical_links(label_catalog: Catalog, add_canonical: bool) 
     for link in label_catalog.links:
         assert not link.is_hierarchical()
     assert bool(label_catalog.get_single_link("canonical")) == add_canonical
+
+
+def test_fully_resolve(tmp_path: Path, label_catalog: Catalog) -> None:
+    label_catalog.save(dest_href=str(tmp_path / "before"))
+    assert len(list((tmp_path / "before").glob("**/*.json"))) == 1
+    label_catalog.fully_resolve()
+    label_catalog.save(dest_href=str(tmp_path / "after"))
+    assert len(list((tmp_path / "after").glob("**/*.json"))) == 15
