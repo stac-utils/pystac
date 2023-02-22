@@ -1,4 +1,5 @@
 import os
+import pathlib
 import posixpath
 from datetime import datetime, timezone
 from enum import Enum
@@ -10,18 +11,10 @@ import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
-# Allow for modifying the path library for testability
-# (i.e. testing Windows path manipulation on non-Windows systems)
-_pathlib = os.path
-
 
 def safe_urlparse(href: str) -> URLParseResult:
     """Wrapper around :func:`urllib.parse.urlparse` that returns consistent results for
     both Windows and UNIX file paths.
-
-    For Windows paths, this function will include the drive prefix (e.g. ``"D:\\"``) as
-    part of the ``path`` of the :class:`urllib.parse.ParseResult` rather than as the
-    ``scheme`` for consistency with handling of UNIX/LINUX file paths.
 
     Args:
         href (str) : The HREF to parse. May be a local file path or URL.
@@ -30,20 +23,9 @@ def safe_urlparse(href: str) -> URLParseResult:
         urllib.parse.ParseResult : The named tuple representing the parsed HREF.
     """
     parsed = urlparse(href)
-    if parsed.scheme != "" and href.lower().startswith("{}:\\".format(parsed.scheme)):
-        return URLParseResult(
-            scheme="",
-            netloc="",
-            path="{}:{}".format(
-                # We use this more complicated formulation because parsed.scheme
-                # converts to lower-case
-                href[: len(parsed.scheme)],
-                parsed.path,
-            ),
-            params=parsed.params,
-            query=parsed.query,
-            fragment=parsed.fragment,
-        )
+    if "\\" in parsed.path:
+        path = pathlib.Path(href).as_posix()
+        return urlparse(path)
     else:
         return parsed
 
@@ -95,10 +77,7 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
 
     """
 
-    if join_type == JoinType.PATH:
-        return _pathlib.join(*args)
-    else:
-        return posixpath.join(*args)
+    return posixpath.join(*args)
 
 
 def _make_relative_href_url(
@@ -108,7 +87,7 @@ def _make_relative_href_url(
 ) -> str:
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else posixpath.dirname(parsed_start.path)
     )
 
     # Strip the leading slashes from both paths
@@ -135,21 +114,21 @@ def _make_relative_href_path(
 ) -> str:
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else posixpath.dirname(parsed_start.path)
     )
 
     # Strip the leading slashes from both paths
     start_dir = start_dir.lstrip("/")
     source_path = parsed_source.path.lstrip("/")
 
-    relpath = _pathlib.relpath(source_path, start_dir)
+    relpath = posixpath.relpath(source_path, start_dir)
 
     # Ensure we retain a trailing slash from the original source path
     if parsed_source.path.endswith("/"):
         relpath += "/"
 
-    if relpath != "./" and not relpath.startswith(".." + _pathlib.sep):
-        relpath = _pathlib.join(".", relpath)
+    if relpath != "./" and not relpath.startswith("../"):
+        relpath = posixpath.join(".", relpath)
 
     return relpath
 
@@ -226,22 +205,22 @@ def _make_absolute_href_path(
     start_is_dir: bool = False,
 ) -> str:
     # If the source is already absolute, just return it
-    if _pathlib.isabs(parsed_source.path):
+    if posixpath.isabs(parsed_source.path):
         return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else posixpath.dirname(parsed_start.path)
     )
 
     # Join the start directory to the relative path and find the absolute path
-    abs_path = _pathlib.abspath(_pathlib.join(start_dir, parsed_source.path))
+    abs_path = posixpath.abspath(posixpath.join(start_dir, parsed_source.path))
 
     # Account for the normalization of abspath for
     # things like /vsitar// prefixes by replacing the
     # original start_dir text when abspath modifies the start_dir.
-    if not start_dir == _pathlib.abspath(start_dir):
-        abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
+    if not start_dir == posixpath.abspath(start_dir):
+        abs_path = abs_path.replace(posixpath.abspath(start_dir), start_dir)
 
     return abs_path
 
@@ -296,7 +275,7 @@ def is_absolute_href(href: str) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" or _pathlib.isabs(parsed.path)
+    return parsed.scheme != "" or posixpath.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import posixpath
 from copy import deepcopy
 from html import escape
 from typing import (
@@ -263,7 +264,7 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href:
-            child_href = strategy.get_href(child, os.path.dirname(self_href))
+            child_href = strategy.get_href(child, posixpath.dirname(self_href))
             child.set_self_href(child_href)
 
         self.add_link(Link.child(child, title=title))
@@ -310,7 +311,7 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href:
-            item_href = strategy.get_href(item, os.path.dirname(self_href))
+            item_href = strategy.get_href(item, posixpath.dirname(self_href))
             item.set_self_href(item_href)
 
         self.add_link(Link.item(item, title=title))
@@ -676,7 +677,7 @@ class Catalog(STACObject):
                 cat.resolve_links()
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
-            new_root = os.path.dirname(new_self_href)
+            new_root = posixpath.dirname(new_self_href)
 
             for link in cat.get_links():
                 if skip_unresolved and not link.is_resolved():
@@ -839,7 +840,7 @@ class Catalog(STACObject):
                         rel_href, dest_href, start_is_dir=True
                     )
                     child.save(
-                        dest_href=os.path.dirname(child_dest_href),
+                        dest_href=posixpath.dirname(child_dest_href),
                         stac_io=stac_io,
                     )
                 else:
