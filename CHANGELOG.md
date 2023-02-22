@@ -22,6 +22,7 @@
 - `RetryStacIO` ([#986](https://github.com/stac-utils/pystac/pull/986))
 - `STACObject.remove_hierarchical_links` and `Link.is_hierarchical` ([#999](https://github.com/stac-utils/pystac/pull/999))
 - `extra_fields` to `AssetDefinition` in the item assets extension ([#1003](https://github.com/stac-utils/pystac/pull/1003))
+- `Catalog.fully_resolve` ([#1001](https://github.com/stac-utils/pystac/pull/1001))
 
 ### Removed
 
