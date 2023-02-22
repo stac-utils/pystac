@@ -45,6 +45,7 @@ class AssetDefinition:
         description: Optional[str],
         media_type: Optional[str],
         roles: Optional[List[str]],
+        extra_fields: Optional[Dict[str, Any]] = None,
     ) -> AssetDefinition:
         """
         Creates a new asset definition.
@@ -61,10 +62,16 @@ class AssetDefinition:
             roles : `semantic roles
                 <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
                 of the asset, similar to the use of rel in links.
+            extra_fields : Additional fields on the asset definition, e.g. from
+                extensions.
         """
         asset_defn = cls({})
         asset_defn.apply(
-            title=title, description=description, media_type=media_type, roles=roles
+            title=title,
+            description=description,
+            media_type=media_type,
+            roles=roles,
+            extra_fields=extra_fields,
         )
         return asset_defn
 
@@ -74,6 +81,7 @@ class AssetDefinition:
         description: Optional[str],
         media_type: Optional[str],
         roles: Optional[List[str]],
+        extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
         Sets the properties for this asset definition.
@@ -90,7 +98,11 @@ class AssetDefinition:
             roles : `semantic roles
                 <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
                 of the asset, similar to the use of rel in links.
+            extra_fields : Additional fields on the asset definition, e.g. from
+                extensions.
         """
+        if extra_fields:
+            self.properties.update(extra_fields)
         self.title = title
         self.description = description
         self.media_type = media_type

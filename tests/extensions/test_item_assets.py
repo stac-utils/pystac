@@ -93,3 +93,19 @@ class TestAssetDefinition(unittest.TestCase):
 
         self.assertEqual(asset_defn.roles, roles)
         self.assertEqual(asset_defn.to_dict()["roles"], roles)
+
+
+def test_extra_fields(collection: Collection) -> None:
+    asset_definition = AssetDefinition.create(
+        title=None,
+        description=None,
+        media_type=None,
+        roles=None,
+        extra_fields={"raster:bands": [{"nodata": 42}]},
+    )
+    item_assets = ItemAssetsExtension.ext(collection, add_if_missing=True)
+    item_assets.item_assets = {"data": asset_definition}
+    collection_as_dict = collection.to_dict()
+    assert collection_as_dict["item_assets"]["data"]["raster:bands"] == [{"nodata": 42}]
+    asset = asset_definition.create_asset("asset.tif")
+    assert asset.extra_fields["raster:bands"] == [{"nodata": 42}]
