@@ -533,8 +533,10 @@ def test_custom_collection_from_dict(collection: Collection) -> None:
 
 
 @pytest.mark.parametrize("add_canonical", (True, False))
-def test_remove_hierarchical_links(label_catalog: Catalog, add_canonical: bool) -> None:
-    collection = list(label_catalog.get_all_collections())[0]
+def test_remove_hierarchical_links(
+    test_case_1_catalog: Catalog, add_canonical: bool
+) -> None:
+    collection = list(test_case_1_catalog.get_all_collections())[0]
     collection.remove_hierarchical_links(add_canonical=add_canonical)
     for link in collection.links:
         assert not link.is_hierarchical()

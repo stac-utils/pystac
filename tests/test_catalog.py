@@ -1463,16 +1463,18 @@ def test_custom_catalog_from_dict(catalog: Catalog) -> None:
 
 
 @pytest.mark.parametrize("add_canonical", (True, False))
-def test_remove_hierarchical_links(label_catalog: Catalog, add_canonical: bool) -> None:
-    label_catalog.remove_hierarchical_links(add_canonical=add_canonical)
-    for link in label_catalog.links:
+def test_remove_hierarchical_links(
+    test_case_1_catalog: Catalog, add_canonical: bool
+) -> None:
+    test_case_1_catalog.remove_hierarchical_links(add_canonical=add_canonical)
+    for link in test_case_1_catalog.links:
         assert not link.is_hierarchical()
-    assert bool(label_catalog.get_single_link("canonical")) == add_canonical
+    assert bool(test_case_1_catalog.get_single_link("canonical")) == add_canonical
 
 
-def test_fully_resolve(tmp_path: Path, label_catalog: Catalog) -> None:
-    label_catalog.save(dest_href=str(tmp_path / "before"))
+def test_fully_resolve(tmp_path: Path, test_case_1_catalog: Catalog) -> None:
+    test_case_1_catalog.save(dest_href=str(tmp_path / "before"))
     assert len(list((tmp_path / "before").glob("**/*.json"))) == 1
-    label_catalog.fully_resolve()
-    label_catalog.save(dest_href=str(tmp_path / "after"))
+    test_case_1_catalog.fully_resolve()
+    test_case_1_catalog.save(dest_href=str(tmp_path / "after"))
     assert len(list((tmp_path / "after").glob("**/*.json"))) == 15
