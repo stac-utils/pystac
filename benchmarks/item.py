@@ -15,7 +15,8 @@ class ItemBench(Bench):
 
         self.stac_io = StacIO.default()
 
-        self.item_path = get_data_path("item/sample-item-asset-properties.json")
+        # using an item with many assets to better test deserialization timing
+        self.item_path = get_data_path("eo/eo-sentinel2-item.json")
         with open(self.item_path) as src:
             self.item_dict = json.load(src)
         self.item = Item.from_file(self.item_path)

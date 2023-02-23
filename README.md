@@ -59,7 +59,7 @@ See the [documentation page](https://pystac.readthedocs.io/en/latest/) for the l
 
 ## Developing
 
-See [contributing docs](https://pystac.readthedocs.io/en/latest/contributing.rst)
+See [contributing docs](https://pystac.readthedocs.io/en/latest/contributing.html)
 for details on contributing to this project.
 
 ## Running the quickstart and tutorials

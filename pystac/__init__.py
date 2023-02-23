@@ -13,6 +13,7 @@ __all__ = [
     "ExtensionTypeError",
     "RequiredPropertyMissing",
     "STACValidationError",
+    "DeprecatedWarning",
     "MediaType",
     "RelType",
     "StacIO",
@@ -54,6 +55,7 @@ from pystac.errors import (
     ExtensionTypeError,
     RequiredPropertyMissing,
     STACValidationError,
+    DeprecatedWarning,
 )
 
 from pystac.version import (
