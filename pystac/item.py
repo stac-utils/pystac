@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from copy import copy, deepcopy
 from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
@@ -9,6 +10,7 @@ from pystac import STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.collection import Collection
+from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
 from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.serialization import (
@@ -423,6 +425,8 @@ class Item(STACObject):
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> T:
+        from pystac.extensions.version import ItemVersionExtension
+
         if preserve_dict:
             d = deepcopy(d)
 
@@ -482,6 +486,17 @@ class Item(STACObject):
 
         if root:
             item.set_root(root)
+
+        try:
+            version = ItemVersionExtension.ext(item)
+            if version.deprecated:
+                warnings.warn(
+                    f"The item '{item.id}' is deprecated.",
+                    DeprecatedWarning,
+                )
+            # Item asset deprecation checks pending version extension support
+        except ExtensionNotImplemented:
+            pass
 
         return item
 

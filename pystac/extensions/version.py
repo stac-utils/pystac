@@ -1,10 +1,12 @@
 """Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
-
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+import warnings
+from contextlib import contextmanager
+from typing import Any, Dict, Generator, Generic, List, Optional, TypeVar, Union, cast
 
 import pystac
+from pystac.errors import DeprecatedWarning
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
@@ -113,6 +115,16 @@ class VersionExtension(
         possible and users should refrain from using it in new projects. A link with
         relation type ``latest-version`` SHOULD be added to the links and MUST refer to
         the resource that can be used instead.
+
+        NOTE:
+            A :class:`pystac.DeprecatedWarning` is issued if the ``deprecated``
+            property is ``True`` when deserializing a dictionary to an
+            :class:`~pystac.Item` or :class:`~pystac.Collection`. The
+            :meth:`~pystac.extensions.version.ignore_deprecated` context manager
+            is provided as a convenience to suppress these warnings:
+
+            >>> with ignore_deprecated():
+            ...    deprecated_item = pystac.Item.from_dict(deprecated_item_dict)
         """
         return self._get_property(DEPRECATED, bool)
 
@@ -275,3 +287,13 @@ class VersionExtensionHooks(ExtensionHooks):
 
 
 VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()
+
+
+@contextmanager
+def ignore_deprecated() -> Generator[None, None, None]:
+    """Context manager for suppressing the :class:`pystac.DeprecatedWarning`
+    when creating a deprecated :class:`~pystac.Item` or :class:`~pystac.Collection`
+    from a dictionary."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", category=DeprecatedWarning)
+        yield

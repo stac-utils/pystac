@@ -87,3 +87,10 @@ class STACValidationError(Exception):
     def __init__(self, message: str, source: Optional[Any] = None):
         super().__init__(message)
         self.source = source
+
+
+class DeprecatedWarning(FutureWarning):
+    """Issued when converting a dictionary to a STAC Item or Collection and the
+    version extension ``deprecated`` field is present and set to ``True``."""
+
+    pass

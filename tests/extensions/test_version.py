@@ -2,12 +2,20 @@
 
 import unittest
 from datetime import datetime
-from typing import List, Optional
+from typing import Generator, List, Optional
+
+import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac.errors import DeprecatedWarning, ExtensionTypeError
 from pystac.extensions import version
-from pystac.extensions.version import VersionExtension, VersionRelType
+from pystac.extensions.version import (
+    CollectionVersionExtension,
+    ItemVersionExtension,
+    VersionExtension,
+    VersionRelType,
+    ignore_deprecated,
+)
 from tests.utils import TestCases
 
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
@@ -459,17 +467,84 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Collection does not include extension URI
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        with ignore_deprecated():
+            collection = pystac.Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
 
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = VersionExtension.ext(collection)
 
     def test_ext_add_to(self) -> None:
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        with ignore_deprecated():
+            collection = pystac.Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
         self.assertNotIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
 
         _ = VersionExtension.ext(collection, add_if_missing=True)
 
         self.assertIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
+
+
+def test_item_deprecation_warning(
+    item: pystac.Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
+) -> None:
+    version = ItemVersionExtension.ext(item, add_if_missing=True)
+    version.deprecated = True
+    item_dict = item.to_dict()
+    with pytest.warns(DeprecatedWarning, match="The item 'test-item' is deprecated."):
+        _ = pystac.Item.from_dict(item_dict)
+
+    version.deprecated = False
+    item_dict = item.to_dict()
+    _ = pystac.Item.from_dict(item_dict)
+    assert len(list(recwarn)) == 0
+
+    version.deprecated = None
+    item_dict = item.to_dict()
+    _ = pystac.Item.from_dict(item_dict)
+    assert len(list(recwarn)) == 0
+
+    ItemVersionExtension.remove_from(item)
+    item_dict = item.to_dict()
+    _ = pystac.Item.from_dict(item_dict)
+    assert len(list(recwarn)) == 0
+
+
+def test_collection_deprecation_warning(
+    collection: pystac.Collection,
+    recwarn: Generator[pytest.WarningsRecorder, None, None],
+) -> None:
+    version = CollectionVersionExtension.ext(collection, add_if_missing=True)
+    version.deprecated = True
+    collection_dict = collection.to_dict()
+    with pytest.warns(
+        DeprecatedWarning, match="The collection 'test-collection' is deprecated."
+    ):
+        _ = pystac.Collection.from_dict(collection_dict)
+
+    version.deprecated = False
+    collection.extra_fields["deprecated"] = False
+    collection_dict = collection.to_dict()
+    _ = pystac.Collection.from_dict(collection_dict)
+    assert len(list(recwarn)) == 0
+
+    version.deprecated = None
+    collection_dict = collection.to_dict()
+    _ = pystac.Collection.from_dict(collection_dict)
+    assert len(list(recwarn)) == 0
+
+    CollectionVersionExtension.remove_from(collection)
+    collection_dict = collection.to_dict()
+    _ = pystac.Collection.from_dict(collection_dict)
+    assert len(list(recwarn)) == 0
+
+
+def test_ignore_deprecated_context_manager(
+    item: pystac.Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
+) -> None:
+    version = VersionExtension.ext(item, add_if_missing=True)
+    version.deprecated = True
+    item_dict = item.to_dict()
+    with ignore_deprecated():
+        _ = pystac.Item.from_dict(item_dict)
+    assert len(list(recwarn)) == 0

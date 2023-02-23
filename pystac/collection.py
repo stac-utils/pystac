@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from copy import deepcopy
 from datetime import datetime
 from html import escape
@@ -23,7 +24,7 @@ import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
-from pystac.errors import STACTypeError
+from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
 from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
@@ -618,6 +619,8 @@ class Collection(Catalog):
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> C:
+        from pystac.extensions.version import CollectionVersionExtension
+
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -677,6 +680,17 @@ class Collection(Catalog):
 
         if root:
             collection.set_root(root)
+
+        try:
+            version = CollectionVersionExtension.ext(collection)
+            if version.deprecated:
+                warnings.warn(
+                    f"The collection '{collection.id}' is deprecated.",
+                    DeprecatedWarning,
+                )
+            # Collection asset deprecation checks pending version extension support
+        except ExtensionNotImplemented:
+            pass
 
         return collection
 
