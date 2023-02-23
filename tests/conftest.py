@@ -25,5 +25,5 @@ def item() -> Item:
 
 
 @pytest.fixture
-def label_catalog() -> Catalog:
+def test_case_1_catalog() -> Catalog:
     return TestCases.case_1()
