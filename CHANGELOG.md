@@ -45,6 +45,7 @@
 - Allow subclasses in a few more `clone` methods ([#983](https://github.com/stac-utils/pystac/pull/983))
 - Pass `href` from `Item.from_dict` to constructor ([#984](https://github.com/stac-utils/pystac/pull/984))
 - Serializing the table extension ([#992](https://github.com/stac-utils/pystac/pull/992))
+- Use `as_posix` when storing the href when reading STAC objects with a StacIO ([#1008](https://github.com/stac-utils/pystac/pull/1008))
 
 ## [v1.6.1]
 
