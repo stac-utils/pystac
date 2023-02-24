@@ -21,7 +21,6 @@ jobs:
   test:
     name: test
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       # Allow other matrix jobs to complete if 1 fails
       fail-fast: false
@@ -35,8 +34,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-        experimental:
-          - false
 
     steps:
       - uses: actions/checkout@v3
