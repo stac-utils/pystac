@@ -1,7 +1,9 @@
 import json
 import os
+import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -142,3 +144,21 @@ def test_retry_stac_io_404() -> None:
             "https://planetarycomputer.microsoft.com"
             "/api/stac/v1/collections/not-a-collection-id"
         )
+
+
+def test_convert_windows_separators_on_read_path(data_files: Path) -> None:
+    item = pystac.read_file(href=data_files / "item" / "sample-item.json")
+    href = item.get_self_href()
+    assert href
+    assert href.endswith("/item/sample-item.json")
+
+
+@pytest.mark.skipif(
+    sys.platform != "win32", reason="testing windows path construction with strings"
+)
+def test_convert_windows_separators_on_read_str(data_files: Path) -> None:
+    path = os.fspath(data_files) + r"\item\sample-item.json"
+    item = pystac.read_file(href=path)
+    href = item.get_self_href()
+    assert href
+    assert href.endswith("/item/sample-item.json")

@@ -1,6 +1,7 @@
 # TODO move all test case code to this file
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -27,3 +28,8 @@ def item() -> Item:
 @pytest.fixture
 def test_case_1_catalog() -> Catalog:
     return TestCases.case_1()
+
+
+@pytest.fixture
+def data_files() -> Path:
+    return Path(__file__).parent / "data-files"

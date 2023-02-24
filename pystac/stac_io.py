@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -149,7 +150,7 @@ class StacIO(ABC):
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
         """
-        href_str = None if href is None else str(os.fspath(href))
+        href_str = None if href is None else Path(os.fspath(href)).as_posix()
         if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
             collection_cache = None
             if root is not None:
