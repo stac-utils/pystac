@@ -22,26 +22,23 @@ of PySTAC are:
       <input type="search" class="form-control" name="q" id="search-input" placeholder="&#128269; Search the docs ..." aria-label="Search the docs ..." autocomplete="off">
     </form>
 
-.. panels::
+.. grid:: 1 2 2 2
+   :gutter: 2
 
-    Get Started
-    ^^^^^^^^^^^
+   .. grid-item-card:: Get Started
 
-    * :doc:`installation`: Instructions for installing the basic package as well as
-      extras.
-    * :doc:`quickstart`: Jupyter notebook tutorial on using PySTAC for reading &
-      writing STAC catalogs.
+       * :doc:`installation`: Instructions for installing the basic package as well as
+         extras.
+       * :doc:`quickstart`: Jupyter notebook tutorial on using PySTAC for reading &
+         writing STAC catalogs.
 
-    ---
+   .. grid-item-card:: Go Deeper
 
-    Go Deeper
-    ^^^^^^^^^
-
-    * :doc:`concepts`: Overview of how various concepts and structures from the STAC
-      Specification are implemented within PySTAC.
-    * :doc:`tutorials`: In-depth tutorials on using PySTAC for a number of different
-      applications.
-    * :doc:`api`: Detailed API documentation of PySTAC classes, methods, and functions.
+       * :doc:`concepts`: Overview of how various concepts and structures from the STAC
+         Specification are implemented within PySTAC.
+       * :doc:`tutorials`: In-depth tutorials on using PySTAC for a number of different
+         applications.
+       * :doc:`api`: Detailed API documentation of PySTAC classes, methods, and functions.
 
 Related Projects
 ================
