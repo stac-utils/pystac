@@ -4,6 +4,7 @@ PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
 __all__ = [
     "__version__",
+    "TemplateError",
     "STACError",
     "STACTypeError",
     "DuplicateObjectKeyError",
@@ -44,6 +45,7 @@ import os
 from typing import Any, Dict, Optional
 
 from pystac.errors import (
+    TemplateError,
     STACError,
     STACTypeError,
     DuplicateObjectKeyError,

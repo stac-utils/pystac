@@ -9,7 +9,6 @@ from pystac.layout import (
     BestPracticesLayoutStrategy,
     CustomLayoutStrategy,
     LayoutTemplate,
-    TemplateError,
     TemplateLayoutStrategy,
 )
 from pystac.utils import JoinType, join_path_or_url
@@ -103,7 +102,7 @@ class LayoutTemplateTest(unittest.TestCase):
         item.set_collection(None)
         assert item.collection_id is None
 
-        with self.assertRaises(TemplateError):
+        with self.assertRaises(pystac.TemplateError):
             template.get_template_values(item)
 
     def test_nested_properties(self) -> None:

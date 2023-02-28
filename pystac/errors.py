@@ -1,6 +1,14 @@
 from typing import Any, Optional, Union
 
 
+class TemplateError(Exception):
+    """Exception thrown when an error occurs during converting a template
+    string into data for :class:`~pystac.layout.LayoutTemplate`
+    """
+
+    pass
+
+
 class STACError(Exception):
     """A STACError is raised for errors relating to STAC, e.g. for
     invalid formats or trying to operate on a STAC that does not have

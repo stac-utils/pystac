@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from string import Formatter
@@ -16,11 +17,25 @@ if TYPE_CHECKING:
 
 
 class TemplateError(Exception):
-    """Exception thrown when an error occurs during converting a template
+    """DEPRECATED.
+
+    .. deprecated:: 1.7.0
+        Use :class:`pystac.errors.TemplateError` instead.
+
+    Exception thrown when an error occurs during converting a template
     string into data for :class:`~pystac.layout.LayoutTemplate`
     """
 
-    pass
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore
+        warnings.warn(
+            message=(
+                "TemplateError in pystac.layout is deprecated and will be "
+                "removed in pystac version 2.0.0. Use TemplateError in "
+                "pystac.errors instead."
+            ),
+            category=DeprecationWarning,
+        )
+        super().__init__(*args, **kwargs)
 
 
 class LayoutTemplate:
@@ -114,7 +129,7 @@ class LayoutTemplate:
                 if dt is None:
                     dt = stac_object.common_metadata.start_datetime
                 if dt is None:
-                    raise TemplateError(
+                    raise pystac.TemplateError(
                         "Item {} does not have a datetime or "
                         "datetime range set; cannot template {} in {}".format(
                             stac_object, template_var, self.template
@@ -134,12 +149,12 @@ class LayoutTemplate:
                 if template_var == "collection":
                     if stac_object.collection_id is not None:
                         return stac_object.collection_id
-                    raise TemplateError(
+                    raise pystac.TemplateError(
                         f"Item {stac_object} does not have a collection ID set; "
                         f"cannot template {template_var} in {self.template}"
                     )
             else:
-                raise TemplateError(
+                raise pystac.TemplateError(
                     '"{}" cannot be used to template non-Item {} in {}'.format(
                         template_var, stac_object, self.template
                     )
@@ -148,7 +163,7 @@ class LayoutTemplate:
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
         prop_source: Optional[Union[pystac.STACObject, Dict[str, Any]]] = None
-        error = TemplateError(
+        error = pystac.TemplateError(
             "Cannot find property {} on {} for template {}".format(
                 template_var, stac_object, self.template
             )
@@ -181,7 +196,7 @@ class LayoutTemplate:
                     if not hasattr(v, prop):
                         raise error
                     v = getattr(v, prop)
-        except TemplateError as e:
+        except pystac.TemplateError as e:
             if template_var in self.defaults:
                 return self.defaults[template_var]
             raise e
@@ -204,7 +219,7 @@ class LayoutTemplate:
             stac object.
 
         Raises:
-            TemplateError: If a value for a template variable cannot be
+            pystac.TemplateError: If a value for a template variable cannot be
                 derived from the stac object and there is no default,
                 this error will be raised.
         """
@@ -227,7 +242,7 @@ class LayoutTemplate:
             from this stac object.
 
         Raises:
-            TemplateError: If a value for a template variable cannot be
+            pystac.TemplateError: If a value for a template variable cannot be
                 derived from the stac object and there is no default,
                 this error will be raised.
         """
