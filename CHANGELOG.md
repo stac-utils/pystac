@@ -32,6 +32,7 @@
 - Use `from __future__ import annotations` for type signatures ([#962](https://github.com/stac-utils/pystac/pull/962))
 - Use `TypeVar` for alternate constructors ([#983](https://github.com/stac-utils/pystac/pull/983))
 - Behavior when required fields are missing in `Item.from_dict` ([#994](https://github.com/stac-utils/pystac/pull/994))
+- `TemplateError` in `layout.py` deprecated in favor of duplicate in `errors.py` ([#1018](https://github.com/stac-utils/pystac/pull/1018))
 
 ### Fixed
 
