@@ -82,8 +82,8 @@ class ItemCollection(Collection[pystac.Item]):
         >>> item_collection_1 = ItemCollection(items=[item_1, item_2])
         >>> item_collection_2 = ItemCollection(items=[item_2, item_3])
         >>> combined = item_collection_1 + item_collection_2
-        >>> assert len(combined) == 3
-        # If an item is present in both ItemCollections it will only be added once
+        >>> assert len(combined) == 4
+        # If an item is present in both ItemCollections it will occur twice
     """
 
     items: List[pystac.Item]
