@@ -5,7 +5,7 @@
   {% set content_col_class = "col-md-9 col-xl-7" %}
 {% else %}
   {# This customization to the no-sidebars case is why we override docs_main #}
-  {% set content_col_class = "col-md-12" %}
+  {% set content_col_class = "col-md-9 col-xl-10" %}
 {% endif %}
 <main class="col-12 {{ content_col_class }} py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
     {% block docs_body %}
