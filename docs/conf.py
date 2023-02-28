@@ -63,12 +63,12 @@ extlinks = {
     "tutorial": (
         "https://github.com/stac-utils/pystac/"
         "tree/{}/docs/tutorials/%s".format(git_branch),
-        "tutorial",
+        "%s tutorial",
     ),
     "stac-spec": (
         "https://github.com/radiantearth/stac-spec/tree/"
         "v{}/%s".format(STACVersion.DEFAULT_STAC_VERSION),
-        "path",
+        "%s path",
     ),
     "stac-ext": ("https://github.com/stac-extensions/%s", "%s extension"),
 }
@@ -93,7 +93,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
