@@ -166,7 +166,7 @@ The following exceptions may be raised internally by the library.
   be present but is missing or ``None``.
 * :class:`pystac.STACValidationError`: Raised by validation calls if the STAC JSON is
   invalid.
-* :class:`pystac.layout.TemplateError`: Raised when an error occurs while converting a
+* :class:`pystac.TemplateError`: Raised when an error occurs while converting a
   template string into data for :class:`~pystac.layout.LayoutTemplate`.
 
 Serialization
