@@ -50,7 +50,7 @@ class TestItemCollection(unittest.TestCase):
 
     def test_item_collection_contains(self) -> None:
         item = pystac.Item.from_file(self.SIMPLE_ITEM)
-        item_collection = pystac.ItemCollection(items=[item])
+        item_collection = pystac.ItemCollection(items=[item], clone_items=False)
 
         self.assertIn(item, item_collection)
 
@@ -126,7 +126,7 @@ class TestItemCollection(unittest.TestCase):
 
         combined = item_collection_1 + item_collection_2
 
-        self.assertEqual(len(combined), 3)
+        self.assertEqual(len(combined), 4)
 
     def test_add_other_raises_error(self) -> None:
         item_collection = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)

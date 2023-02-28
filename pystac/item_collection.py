@@ -48,9 +48,9 @@ class ItemCollection(Collection[pystac.Item]):
             :class:`~ItemCollection`.
         clone_items : Optional flag indicating whether :class:`~pystac.Item` instances
             should be cloned before storing in the :class:`~ItemCollection`. Setting to
-            ``True`` ensures that changes made to :class:`~pystac.Item` instances in
-            the :class:`~ItemCollection` will not mutate the original ``Item``, but
-            will result in slower instantiation. Defaults to ``False``.
+            ``False`` will result in faster instantiation, but changes made to
+            :class:`~pystac.Item` instances in the :class:`~ItemCollection` will mutate
+            the original ``Item``. Defaults to ``True``.
 
     Examples:
 
@@ -71,7 +71,7 @@ class ItemCollection(Collection[pystac.Item]):
         object equality (i.e. ``item_1 is item_2``).
 
         >>> item: Item = ...
-        >>> item_collection = ItemCollection(items=[item])
+        >>> item_collection = ItemCollection(items=[item], clone_items=False)
         >>> assert item in item_collection
 
         Combine :class:`~ItemCollection` instances
@@ -97,7 +97,7 @@ class ItemCollection(Collection[pystac.Item]):
         self,
         items: Iterable[ItemLike],
         extra_fields: Optional[Dict[str, Any]] = None,
-        clone_items: bool = False,
+        clone_items: bool = True,
     ):
         def map_item(item_or_dict: ItemLike) -> pystac.Item:
             # Converts dicts to pystac.Items and clones if necessary
@@ -125,12 +125,8 @@ class ItemCollection(Collection[pystac.Item]):
         if not isinstance(other, ItemCollection):
             return NotImplemented
 
-        combined = []
-        for item in self.items + other.items:
-            if item not in combined:
-                combined.append(item)
-
-        return ItemCollection(items=combined, clone_items=False)
+        combined = [*self.items, *other.items]
+        return ItemCollection(items=combined)
 
     def to_dict(self, transform_hrefs: bool = False) -> Dict[str, Any]:
         """Serializes an :class:`ItemCollection` instance to a JSON-like dictionary.
