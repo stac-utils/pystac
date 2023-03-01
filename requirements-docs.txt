@@ -1,4 +1,4 @@
-Sphinx==5.0.1
+Sphinx==5.1.1
 ipython==8.11.0
 jinja2<4.0
 nbsphinx==0.8.12
