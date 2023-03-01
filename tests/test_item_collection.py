@@ -72,7 +72,7 @@ class TestItemCollection(unittest.TestCase):
         self.assertEqual(d.get("custom_field"), "My value")
 
     def test_item_collection_from_dict(self) -> None:
-        features = [item.to_dict() for item in self.items]
+        features = [item.to_dict(transform_hrefs=False) for item in self.items]
         d = {
             "type": "FeatureCollection",
             "features": features,
