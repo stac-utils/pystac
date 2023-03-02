@@ -1,7 +1,7 @@
 black==23.1.0
 codespell==2.2.2
 coverage==7.2.1
-doc8==1.0.0
+doc8==1.1.1
 flake8==6.0.0
 html5lib==1.1
 isort==5.12.0
