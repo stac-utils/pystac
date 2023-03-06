@@ -132,6 +132,7 @@ html_theme_options = {
     "external_links": [
         {"name": "STAC Spec", "url": "https://github.com/radiantearth/stac-spec"}
     ],
+    "header_links_before_dropdown": 7,
     # "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
 
