@@ -8,7 +8,7 @@ __all__ = [
 import unittest
 from copy import deepcopy
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, Type
+from typing import Any, Dict, Type
 
 from dateutil.parser import parse
 

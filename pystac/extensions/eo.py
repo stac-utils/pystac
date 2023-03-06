@@ -545,7 +545,7 @@ class EOExtensionHooks(ExtensionHooks):
                         obj["stac_extensions"] = []
                     if view.SCHEMA_URI not in obj["stac_extensions"]:
                         obj["stac_extensions"].append(view.SCHEMA_URI)
-                    if not "view:{}".format(field) in obj["properties"]:
+                    if "view:{}".format(field) not in obj["properties"]:
                         obj["properties"]["view:{}".format(field)] = obj["properties"][
                             "eo:{}".format(field)
                         ]
