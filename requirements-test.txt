@@ -7,7 +7,7 @@ html5lib==1.1
 isort==5.12.0
 jinja2<4.0
 jsonschema==4.17.3
-mypy==1.0.1
+mypy==1.1.1
 orjson==3.8.7
 pre-commit==3.1.1
 pytest-cov==4.0.0
