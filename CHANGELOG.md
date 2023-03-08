@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Use [ruff](https://github.com/charliermarsh/ruff) instead of **isort** and **flake8** ([#1034](https://github.com/stac-utils/pystac/pull/1034))
+
 ## [v1.7.0]
 
 ### Added
@@ -230,7 +234,7 @@
 - Added `Collections` as a type that can be extended for extensions whose fields can appear in collection summaries ([#547](https://github.com/stac-utils/pystac/pull/547))
 - Allow resolved self links when getting an object's self href ([#555](https://github.com/stac-utils/pystac/pull/555))
 - Fixed type annotation on SummariesLabelExtension.label_properties setter ([#562](https://github.com/stac-utils/pystac/pull/562))
-- Allow comparable types with alternate parameter naming of __lt__ method to pass structural type linting for RangeSummary ([#562](https://github.com/stac-utils/pystac/pull/562))
+- Allow comparable types with alternate parameter naming of **lt** method to pass structural type linting for RangeSummary ([#562](https://github.com/stac-utils/pystac/pull/562))
 
 ## [v1.0.0-rc.3]
 
@@ -592,7 +596,7 @@ documentation for more information on the new way to use extensions.
 - Dropped support for Python 3.5 [#108](https://github.com/azavea/pystac/pull/108)
 
 - Extension classes for label, eo and single-file-stac were moved to the `pystac.extensions` package.
-- the eo and label extensions changed from being a subclass of Item to wrapping items. __Note__: This is a major change in the API for dealing with extensions. See the note below for more information.
+- the eo and label extensions changed from being a subclass of Item to wrapping items. **Note**: This is a major change in the API for dealing with extensions. See the note below for more information.
 - Renamed the class that enumerates extension names from `Extension` to `Extensions`
 - Asset properties always return a dict instead of being None for Assets that have non-core properties.
 - The `Band` constructor in the EO extension changed to taking a dict. To create a band from property values,
