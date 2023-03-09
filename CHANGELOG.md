@@ -637,7 +637,7 @@ use `Band.create`
 - Modified output datetime strings to ISO8601. [#69](https://github.com/azavea/pystac/pull/69)
 - Respect tzinfo in the provided datetime [#70](https://github.com/azavea/pystac/pull/70)
 - Set asset owner to item when reading in items.[#71](https://github.com/azavea/pystac/pull/71)
-- Fixed catalog and collection clone logic to avoid dupliction root link [#72](https://github.com/azavea/pystac/pull/72)
+- Fixed catalog and collection clone logic to avoid duplication of root link [#72](https://github.com/azavea/pystac/pull/72)
 
 ## [v0.3.1] - 2019-11-04
 
