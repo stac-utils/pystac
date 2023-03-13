@@ -23,7 +23,8 @@ This is a checklist to use when releasing a new PySTAC version.
 8. Once approved, merge the PR.
 9. Once the PR is merged, create a tag with the version name, e.g. `vX.Y.Z`.
    Prefer a signed tag, if possible.
-   Push the tag to Github to trigger the PyPI publish.
+   Push the tag to Github.
 10. Use the tag to finish your release notes, and publish those.
     The "auto generate" feature is your friend, here.
+    When the release is published, this will trigger the build and release on PyPI.
 11. Announced the release in [Gitter](https://matrix.to/#/#SpatioTemporal-Asset-Catalog_python:gitter.im) and on any relevant social media.
