@@ -6,7 +6,7 @@
 
 **PR Checklist:**
 
-- [ ] Code is formatted (run `pre-commit run --all-files`)
+- [ ] `pre-commit` hooks pass locally
 - [ ] Tests pass (run `scripts/test`)
 - [ ] Documentation has been updated to reflect changes, if applicable
 - [ ] This PR maintains or improves overall codebase code coverage.
