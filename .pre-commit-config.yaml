@@ -11,6 +11,14 @@ repos:
         stages: [commit]
         types: [python]
 
+      - id: black-jupyter
+        name: black-jupyter
+        entry: black
+        language: python
+        require_serial: true
+        types_or: [python, pyi, jupyter]
+        additional_dependencies: [".[jupyter]"]
+
       - id: codespell
         name: codespell
         entry: codespell
