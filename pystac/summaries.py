@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import numbers
+import sys
 from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum
@@ -18,12 +20,32 @@ from typing import (
     Union,
 )
 
+if sys.version_info[:2] < (3, 9):
+    from importlib_resources import files as importlib_resources_files
+else:
+    from importlib.resources import files as importlib_resources_files
+
 import pystac
 from pystac.utils import get_required
 
 if TYPE_CHECKING:
     from pystac.collection import Collection
     from pystac.item import Item
+
+
+def __getattr__(name: str) -> Any:
+    if name == "FIELDS_JSON_URL":
+        import warnings
+
+        warnings.warn(
+            "FIELDS_JSON_URL is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
+        return (
+            "https://cdn.jsdelivr.net/npm/@radiantearth/"
+            "stac-fields/fields-normalized.json"
+        )
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class _Comparable_x(Protocol):
@@ -84,13 +106,17 @@ class RangeSummary(Generic[T]):
         return self.to_dict().__repr__()
 
 
-FIELDS_JSON_URL = (
-    "https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json"
-)
-
-
 @lru_cache(maxsize=None)
-def _get_fields_json(url: str) -> Dict[str, Any]:
+def _get_fields_json(url: Optional[str]) -> Dict[str, Any]:
+    if url is None:
+        # Every time pystac is released this file gets pulled from
+        # https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
+        jsonfields: Dict[str, Any] = json.loads(
+            importlib_resources_files("pystac.static")
+            .joinpath("fields-normalized.json")
+            .read_text()
+        )
+        return jsonfields
     return pystac.StacIO.default().read_json(url)
 
 
@@ -118,18 +144,7 @@ class Summarizer:
     summaryfields: Dict[str, SummaryStrategy]
 
     def __init__(self, fields: Optional[str] = None):
-        fieldspath = fields or FIELDS_JSON_URL
-        try:
-            jsonfields = _get_fields_json(fieldspath)
-        except Exception as e:
-            if fields is None:
-                raise Exception(
-                    "Could not read fields definition file at "
-                    f"{fields} or it is invalid.\n"
-                    "Try using a local fields definition file."
-                )
-            else:
-                raise e
+        jsonfields = _get_fields_json(fields)
         self._set_field_definitions(jsonfields)
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:

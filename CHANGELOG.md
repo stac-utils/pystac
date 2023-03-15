@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Include a copy of the `fields.json` file (for summaries) with each distribution of PySTAC ([#1045](https://github.com/stac-utils/pystac/pull/1045))
+
+### Deprecated
+
+- `pystac.summaries.FIELDS_JSON_URL` ([#1045](https://github.com/stac-utils/pystac/pull/1045))
+
 ### [v1.7.1]
 
 ### Changed
