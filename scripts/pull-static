@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+VERSION="1.0.0-rc.1"
+SRC="https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields@$VERSION/fields-normalized.json"
+HERE=$(dirname "$0")
+DEST=$(dirname "$HERE")/pystac/static/fields-normalized.json
+
+echo "Pulling fields-normalized.json from cdn to $DEST"
+curl "$SRC" | jq -c '{metadata: .metadata}' > "$DEST"

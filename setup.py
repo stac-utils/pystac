@@ -23,7 +23,10 @@ setup(
     package_data={"": ["py.typed", "*.jinja2"]},
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     python_requires=">=3.8",
-    install_requires=["python-dateutil>=2.7.0"],
+    install_requires=[
+        "importlib-resources>=5.12.0; python_version<'3.9'",
+        "python-dateutil>=2.7.0",
+    ],
     extras_require={
         "validation": ["jsonschema>=4.0.1"],
         "orjson": ["orjson>=3.5"],

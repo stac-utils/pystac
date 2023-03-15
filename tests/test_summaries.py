@@ -36,19 +36,19 @@ class SummariesTest(unittest.TestCase):
             Summarizer("wrong/path").summarize(coll.get_all_items())
         self.assertTrue("No such file or directory" in str(context.exception))
 
-    def test_cannot_open_fields_file(self) -> None:
+    def test_can_open_fields_file_even_with_no_nework(self) -> None:
         old_socket = socket.socket
+        try:
 
-        class no_network(socket.socket):
-            def __init__(self, *args: Any, **kwargs: Any):
-                raise Exception("Network call blocked")
+            class no_network(socket.socket):
+                def __init__(self, *args: Any, **kwargs: Any):
+                    raise Exception("Network call blocked")
 
-        socket.socket = no_network  # type:ignore
-
-        with self.assertRaises(Exception) as context:
+            socket.socket = no_network  # type:ignore
             Summarizer()
-        socket.socket = old_socket  # type:ignore
-        self.assertTrue("Could not read fields definition" in str(context.exception))
+        finally:
+            # even if this test fails, it should not break the whole test suite
+            socket.socket = old_socket  # type:ignore
 
     def test_summary_empty(self) -> None:
         summaries = Summaries.empty()
