@@ -531,12 +531,14 @@ class Item(STACObject):
         return identify_stac_object_type(d) == STACObjectType.ITEM
 
     @property
-    def __geo_interface__(self) -> Optional[Dict[str, Any]]:
-        """Returns this item's geometry.
+    def __geo_interface__(self) -> Dict[str, Any]:
+        """Returns this item as a dictionary.
+
+        This just calls `to_dict` without self links or transforming any hrefs.
 
         https://gist.github.com/sgillies/2217756
 
         Returns:
-            Dict[str, Any]: The Item's geometry
+            Dict[str, Any]: This item as a dictionary.
         """
-        return deepcopy(self.geometry)
+        return self.to_dict(include_self_link=False, transform_hrefs=False)
