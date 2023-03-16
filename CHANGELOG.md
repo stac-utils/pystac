@@ -7,6 +7,10 @@
 - Use [ruff](https://github.com/charliermarsh/ruff) instead of **isort** and **flake8** ([#1034](https://github.com/stac-utils/pystac/pull/1034))
 - Update links in doc notebooks to not point to specific versions ([#1039](https://github.com/stac-utils/pystac/pull/1039))
 
+### Fixed
+
+- Item `__geo_interface__` now correctly returns a Feature, rather than only the Geometry ([#1049](https://github.com/stac-utils/pystac/pull/1049))
+
 ## [v1.7.0]
 
 ### Added

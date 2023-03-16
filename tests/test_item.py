@@ -315,12 +315,6 @@ class ItemTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Item.from_dict(catalog_dict)
 
-    def test_geo_interface(self) -> None:
-        item = pystac.Item.from_file(
-            TestCases.get_path("data-files/item/sample-item.json")
-        )
-        self.assertEqual(item.geometry, item.__geo_interface__)
-
     def test_relative_extension_path(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
@@ -466,3 +460,11 @@ def test_remove_hierarchical_links(
     for link in item.links:
         assert not link.is_hierarchical()
     assert bool(item.get_single_link("canonical")) == add_canonical
+
+
+def test_geo_interface() -> None:
+    item = pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
+    assert (
+        item.to_dict(include_self_link=False, transform_hrefs=False)
+        == item.__geo_interface__
+    )
