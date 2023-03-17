@@ -1,3 +1,5 @@
+from __future__ import annotations
+import warnings
 from abc import ABC, abstractmethod
 from typing import (
     Any,
@@ -13,6 +15,75 @@ from typing import (
 )
 
 import pystac
+
+
+# Exception registration code ported with modifications from xarray
+# https://github.com/pydata/xarray/blob/master/xarray/core/extensions.py
+
+
+class ExtensionRegistrationWarning(Warning):
+    """Warning for conflicts in extension registration."""
+
+
+class _CachedExtension:
+    """Custom property-like object (descriptor) for caching extensions."""
+
+    def __init__(self, name, extension):
+        self._name = name
+        self._extension = extension
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            # we're accessing the attribute of the class, i.e., Item.proj
+            return self._extension
+
+        try:
+            cache = obj._cache
+        except AttributeError:
+            cache = obj._cache = {}
+
+        try:
+            return cache[self._name]
+        except KeyError:
+            pass
+
+        try:
+            extension_obj = self._extension.ext(obj)
+        except pystac.ExtensionNotImplemented as e:
+            e.args = (
+                f"{e.args[0]}\nHint: to add a new extension to this pystac object use:"
+                f"``{self._extension.__name__}.add_to(obj)``",
+            )
+            raise e
+        except AttributeError:
+            # __getattr__ on data object will swallow any AttributeErrors
+            # raised when initializing the extension, so we need to raise as
+            # something else:
+            raise RuntimeError(f"error initializing {self._name!r} extension.")
+
+        cache[self._name] = extension_obj
+        return extension_obj
+
+    def __set__(self, obj, *args):
+        raise NotImplementedError(
+            "To add a new extension to this pystac object use: "
+            f"``{self._extension.__name__}.{self._name}.add_to(obj)``"
+        )
+
+
+def register_extension(name, cls):
+    def decorator(extension):
+        if hasattr(cls, name):
+            warnings.warn(
+                f"registration of extension {extension!r} under name {name!r} for type "
+                "{cls!r} is overriding a preexisting attribute with the same name.",
+                ExtensionRegistrationWarning,
+                stacklevel=2,
+            )
+        setattr(cls, name, _CachedExtension(name, extension))
+        return extension
+
+    return decorator
 
 
 class SummariesExtension:

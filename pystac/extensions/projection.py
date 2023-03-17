@@ -6,10 +6,12 @@ import json
 from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
 
 import pystac
+
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
+    register_extension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 
@@ -29,6 +31,7 @@ SHAPE_PROP: str = PREFIX + "shape"
 TRANSFORM_PROP: str = PREFIX + "transform"
 
 
+@register_extension("proj", pystac.Item)
 class ProjectionExtension(
     Generic[T],
     PropertiesExtension,

@@ -21,6 +21,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
+    register_extension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -275,6 +276,7 @@ class Band:
         return None
 
 
+@register_extension("eo", pystac.Item)
 class EOExtension(
     Generic[T],
     PropertiesExtension,
