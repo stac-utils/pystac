@@ -54,12 +54,11 @@ tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing,
 
 PySTAC uses
 
+- `ruff <https://github.com/charliermarsh/ruff>`_ for Python code linting
 - `black <https://github.com/psf/black>`_ for Python code formatting
 - `codespell <https://github.com/codespell-project/codespell/>`_ to check code for common misspellings
 - `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in the docs
-- `flake8 <https://flake8.pycqa.org/en/latest/>`_ for Python style checks
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
-- `isort <https://pycqa.github.io/isort/>` to sort Python import statements
 
 Run all of these with ``pre-commit run --all-files`` or a single one using
 ``pre-commit run --all-files ID``, where ``ID`` is one of the command names above. For
