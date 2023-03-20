@@ -5,6 +5,7 @@
 ### Changed
 
 - Use [ruff](https://github.com/charliermarsh/ruff) instead of **isort** and **flake8** ([#1034](https://github.com/stac-utils/pystac/pull/1034))
+- Update links in doc notebooks to not point to specific versions ([#1039](https://github.com/stac-utils/pystac/pull/1039))
 
 ## [v1.7.0]
 
@@ -39,7 +40,6 @@
 - Use `TypeVar` for alternate constructors ([#983](https://github.com/stac-utils/pystac/pull/983))
 - Behavior when required fields are missing in `Item.from_dict` ([#994](https://github.com/stac-utils/pystac/pull/994))
 - By default, `ItemCollection` now clones items in iterator (`clone_items=True`) ([#1016](https://github.com/stac-utils/pystac/pull/1016))
-- Update links in doc notebooks to not point to specific versions ([#1039](https://github.com/stac-utils/pystac/pull/1039))
 
 ### Deprecated
 
