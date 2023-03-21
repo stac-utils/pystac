@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+### [v1.7.1]
+
 ### Changed
 
 - Use [ruff](https://github.com/charliermarsh/ruff) instead of **isort** and **flake8** ([#1034](https://github.com/stac-utils/pystac/pull/1034))
@@ -668,7 +670,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.7.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.7.1..main>
+[v1.7.1]: <https://github.com/stac-utils/pystac/compare/v1.7.0..v1.7.1>
 [v1.7.0]: <https://github.com/stac-utils/pystac/compare/v1.6.1..v1.7.0>
 [v1.6.1]: <https://github.com/stac-utils/pystac/compare/v1.6.0..v1.6.1>
 [v1.6.0]: <https://github.com/stac-utils/pystac/compare/v1.5.0..v1.6.0>
