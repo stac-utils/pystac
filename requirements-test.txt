@@ -12,7 +12,7 @@ pytest-cov==4.0.0
 pytest-mock==3.10.0
 pytest-vcr==1.0.2
 pytest==7.2.2
-ruff==0.0.258
+ruff==0.0.259
 types-html5lib==1.1.11.12
 types-orjson==3.6.2
 types-python-dateutil==2.8.19.10
