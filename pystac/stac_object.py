@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Iterable,
     List,
@@ -346,7 +347,10 @@ class STACObject(ABC):
             self.add_link(Link.parent(parent))
 
     def get_stac_objects(
-        self, rel: Union[str, pystac.RelType], typ: Optional[Type[STACObject]] = None
+        self,
+        rel: Union[str, pystac.RelType],
+        typ: Optional[Type[STACObject]] = None,
+        modify_links: Optional[Callable[[List[Link]], List[Link]]] = None,
     ) -> Iterable[STACObject]:
         """Gets the :class:`~pystac.STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
@@ -356,6 +360,9 @@ class STACObject(ABC):
                 ``rel`` property against.
             typ : If not ``None``, objects will only be yielded if they are instances of
                 ``typ``.
+            modify_links : A function that modifies the list of links before they are
+                iterated over. For instance, this option can be used to sort the list
+                so that links matching a particular pattern are earlier in the iterator.
 
         Returns:
             Iterable[STACObjects]: A possibly empty iterable of STACObjects that are
@@ -363,6 +370,9 @@ class STACObject(ABC):
             type ``typ`` (if given).
         """
         links = self.links[:]
+        if modify_links:
+            links = modify_links(links)
+
         for i in range(0, len(links)):
             link = links[i]
             if link.rel == rel:

@@ -335,7 +335,7 @@ class Catalog(STACObject):
             self.add_item(item, strategy=strategy)
 
     def get_child(
-        self, id: str, recursive: bool = False
+        self, id: str, recursive: bool = False, sort_links_by_id: bool = True
     ) -> Optional[Union["Catalog", Collection]]:
         """Gets the child of this catalog with the given ID, if it exists.
 
@@ -344,13 +344,33 @@ class Catalog(STACObject):
             recursive : If True, search this catalog and all children for the
                 item; otherwise, only search the children of this catalog. Defaults
                 to False.
+            sort_links_by_id : If True, links containing the ID will be checked
+                first. If links do not contain the ID then setting this to False
+                will improve performance. Defaults to True.
 
         Return:
             Optional Catalog or Collection: The child with the given ID,
             or None if not found.
         """
         if not recursive:
-            return next((c for c in self.get_children() if c.id == id), None)
+            children: Iterable[Union[pystac.Catalog, pystac.Collection]]
+            if not sort_links_by_id:
+                children = self.get_children()
+            else:
+
+                def sort_function(links: List[Link]) -> List[Link]:
+                    return sorted(
+                        links,
+                        key=lambda x: (href := x.get_href()) is None or id not in href,
+                    )
+
+                children = map(
+                    lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
+                    self.get_stac_objects(
+                        pystac.RelType.CHILD, modify_links=sort_function
+                    ),
+                )
+            return next((c for c in children if c.id == id), None)
         else:
             for root, _, _ in self.walk():
                 child = root.get_child(id, recursive=False)

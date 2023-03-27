@@ -541,3 +541,27 @@ def test_remove_hierarchical_links(
     for link in collection.links:
         assert not link.is_hierarchical()
     assert bool(collection.get_single_link("canonical")) == add_canonical
+
+
+@pytest.mark.parametrize("child", ["country-1", "country-2"])
+def test_get_child_checks_links_where_hrefs_contains_id_first(
+    test_case_1_catalog: Catalog, child: str
+) -> None:
+    cat1 = test_case_1_catalog
+    country = cat1.get_child(child)
+    assert country is not None
+    child_links = [link for link in cat1.links if link.rel == pystac.RelType.CHILD]
+    for link in child_links:
+        if country.id not in link.href:
+            assert not link.is_resolved()
+
+
+def test_get_child_sort_links_by_id_is_configurable(
+    test_case_1_catalog: Catalog,
+) -> None:
+    cat1 = test_case_1_catalog
+    country = cat1.get_child("country-2", sort_links_by_id=False)
+    assert country is not None
+    child_links = [link for link in cat1.links if link.rel == pystac.RelType.CHILD]
+    for link in child_links:
+        assert link.is_resolved()

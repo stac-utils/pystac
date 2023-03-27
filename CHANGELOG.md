@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `sort_links_by_id` to Catalog `get_child()` and `modify_links` to `get_stac_objects()` ([#1064](https://github.com/stac-utils/pystac/pull/1064))
+
 ### Changed
 
 - Include a copy of the `fields.json` file (for summaries) with each distribution of PySTAC ([#1045](https://github.com/stac-utils/pystac/pull/1045))
