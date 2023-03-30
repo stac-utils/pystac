@@ -2,7 +2,7 @@ Sphinx==5.1.1
 ipython==8.11.0
 jinja2<4.0
 nbsphinx==0.9.1
-pydata-sphinx-theme==0.13.1
+pydata-sphinx-theme==0.13.2
 sphinx-autobuild==2021.3.14
 sphinx-design==0.3.0
 sphinxcontrib-fulltoc==1.2.0
