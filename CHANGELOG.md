@@ -9,6 +9,7 @@
 ### Changed
 
 - Include a copy of the `fields.json` file (for summaries) with each distribution of PySTAC ([#1045](https://github.com/stac-utils/pystac/pull/1045))
+- Removed documentation references to `to_dict` methods returning JSON ([#1074](https://github.com/stac-utils/pystac/pull/1074))
 
 ### Deprecated
 
