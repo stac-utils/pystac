@@ -233,10 +233,22 @@ class TestCatalog:
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         assert child is None
 
+    def test_get_item_is_deprecated_but_still_works(self) -> None:
+        cat = TestCases.case_1()
+        with pytest.warns(DeprecationWarning):
+            item = cat.get_item("area-2-1-imagery", recursive=True)
+            assert item is not None
+
     def test_get_item_returns_none_if_not_found(self) -> None:
         cat = TestCases.case_1()
-        item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
-        assert item is None
+        with pytest.warns(DeprecationWarning):
+            item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
+            assert item is None
+
+    def test_get_items_returns_empty_generator_if_not_found(self) -> None:
+        cat = TestCases.case_1()
+        items = cat.get_items("thisshouldnotbeanitemid", recursive=True)
+        assert next(items, None) is None
 
     def test_sets_catalog_type(self) -> None:
         cat = TestCases.case_1()
@@ -468,8 +480,7 @@ class TestCatalog:
     def test_normalize_href_works_with_label_source_links(self) -> None:
         catalog = TestCases.case_1()
         catalog.normalize_hrefs("http://example.com")
-        item = catalog.get_item("area-1-1-labels", recursive=True)
-        assert item is not None
+        item = next(catalog.get_items("area-1-1-labels", recursive=True))
         source = next(iter(LabelExtension.ext(item).get_sources()))
         assert source.get_self_href() == (
             "http://example.com/country-1/area-1-1/area-1-1-imagery/"
@@ -623,12 +634,10 @@ class TestCatalog:
         catalog.generate_subcatalogs("${property1}/${property2}")
 
         catalog.normalize_hrefs("/tmp")
-        item1 = catalog.get_item("item1", recursive=True)
-        assert item1 is not None
+        item1 = next(catalog.get_items("item1", recursive=True))
         item1_parent = item1.get_parent()
         assert item1_parent is not None
-        item2 = catalog.get_item("item2", recursive=True)
-        assert item2 is not None
+        item2 = next(catalog.get_items("item2", recursive=True))
         item2_parent = item2.get_parent()
         assert item2_parent is not None
         assert item1_parent.get_self_href() == item2_parent.get_self_href()
@@ -926,17 +935,16 @@ class TestCatalog:
     def test_make_all_asset_hrefs_absolute(self) -> None:
         cat = TestCases.case_2()
         cat.make_all_asset_hrefs_absolute()
-        item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-        assert item is not None
-
-        href = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"].href
+        ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+        item = next(cat.get_items(ID, recursive=True))
+        href = item.assets[ID].href
         assert is_absolute_href(href)
 
     def test_make_all_asset_hrefs_relative(self) -> None:
         cat = TestCases.case_2()
-        item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-        assert item is not None
-        asset = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"]
+        ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+        item = next(cat.get_items(ID, recursive=True))
+        asset = item.assets[ID]
         original_href = asset.href
         cat.make_all_asset_hrefs_absolute()
 
@@ -1061,8 +1069,7 @@ class TestCatalog:
 
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.case_1()
-        item = cat.get_item("area-1-1-labels", recursive=True)
-        assert item is not None
+        item = next(cat.get_items("area-1-1-labels", recursive=True))
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_hrefs(tmp_dir)
@@ -1405,12 +1412,9 @@ class FullCopyTest(unittest.TestCase):
             self.check_catalog(cat2, "dest")
 
             # Check that the relative asset link was saved correctly in the copy.
-            item = cat2.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-            assert item is not None
-
-            href = item.assets[
-                "cf73ec1a-d790-4b59-b077-e101738571ed"
-            ].get_absolute_href()
+            ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+            item = next(cat2.get_items(ID, recursive=True))
+            href = item.assets[ID].get_absolute_href()
             assert href is not None
             assert os.path.exists(href)
 

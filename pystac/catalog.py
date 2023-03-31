@@ -11,6 +11,7 @@ from typing import (
     Callable,
     Dict,
     Iterable,
+    Iterator,
     List,
     Optional,
     Tuple,
@@ -477,7 +478,7 @@ class Catalog(STACObject):
                     return item
             return None
 
-    def get_items(self, *ids: str, recursive: bool = False) -> Iterable[Item]:
+    def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
         """Return all items or specific items of this catalog.
 
         Args:
@@ -487,11 +488,11 @@ class Catalog(STACObject):
                 to False.
 
         Return:
-            Iterable[Item]: Generator of items whose parent is this catalog, and
+            Iterator[Item]: Generator of items whose parent is this catalog, and
                 (if recursive) all catalogs or collections connected to this catalog
                 through child links.
         """
-        items: Iterable[Item]
+        items: Iterator[Item]
         if not recursive:
             items = map(
                 lambda x: cast(pystac.Item, x),

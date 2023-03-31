@@ -64,8 +64,7 @@ class TestValidate:
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
         cat = TestCases.case_1()
-        item = cat.get_item("area-1-1-labels", recursive=True)
-        assert item is not None
+        item = next(cat.get_items("area-1-1-labels", recursive=True))
         assert item.get_self_href() is not None
 
         item.geometry = {"type": "INVALID"}
