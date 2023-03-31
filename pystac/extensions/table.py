@@ -76,7 +76,7 @@ class Column:
             self.properties[COL_TYPE_PROP] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns a JSON-like dictionary representing this ``Column``."""
+        """Returns a dictionary representing this ``Column``."""
         return self.properties
 
 
@@ -111,7 +111,7 @@ class Table:
             self.properties[COL_DESCRIPTION_PROP] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns a JSON-like dictionary representing this ``Table``."""
+        """Returns a dictionary representing this ``Table``."""
         return self.properties
 
 

@@ -359,7 +359,7 @@ class Link(PathLike):
         return self.rel in HIERARCHICAL_LINKS
 
     def to_dict(self, transform_href: bool = True) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this serialized Link.
+        """Returns this link as a dictionary.
 
         Args:
             transform_href : If ``True``, transform the HREF based on the type of
@@ -368,7 +368,7 @@ class Link(PathLike):
                 the HREF will be transformed to be relative to the catalog root
                 if this is a hierarchical link relation.
         Returns:
-            dict : A serialization of the Link that can be written out as JSON.
+            dict : A serialization of the Link.
         """
 
         d: Dict[str, Any] = {

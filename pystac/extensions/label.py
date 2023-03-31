@@ -141,7 +141,7 @@ class LabelClasses:
         return self.to_dict() == o
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this instance."""
+        """Returns this label classes object as a dictionary."""
         return self.properties
 
 
@@ -197,7 +197,7 @@ class LabelCount:
         self.properties["count"] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this instance."""
+        """Returns this label count object as a dictionary."""
         return self.properties
 
     def __eq__(self, o: object) -> bool:
@@ -262,7 +262,7 @@ class LabelStatistics:
         self.properties["value"] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelStatistics."""
+        """Returns this label statistics object as a dictionary."""
         return self.properties
 
     def __eq__(self, o: object) -> bool:
@@ -417,7 +417,7 @@ class LabelOverview:
         return LabelOverview.create(self.property_key, counts=new_counts)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this LabelOverview."""
+        """Returns this label overview as a dictionary."""
         return self.properties
 
     def __eq__(self, o: object) -> bool:

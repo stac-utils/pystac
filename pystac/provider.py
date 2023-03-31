@@ -81,10 +81,10 @@ class Provider:
             return escape(repr(self))
 
     def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this Provider.
+        """Returns this provider as a dictionary.
 
         Returns:
-            dict: A serialization of the Provider that can be written out as JSON.
+            dict: A serialization of the Provider.
         """
         d: Dict[str, Any] = {"name": self.name}
         if self.description is not None:

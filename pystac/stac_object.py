@@ -515,7 +515,7 @@ class STACObject(ABC):
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this serialized object.
+        """Returns this object as a dictionary.
 
         Args:
             include_self_link : If True, the dict will contain a self link
@@ -527,7 +527,7 @@ class STACObject(ABC):
                 hierarchical link HREFs will be transformed to be relative to the
                 catalog root.
 
-            dict: A serialization of the object that can be written out as JSON.
+            dict: A serialization of the object.
         """
         raise NotImplementedError
 

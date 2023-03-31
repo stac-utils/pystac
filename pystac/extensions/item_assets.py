@@ -163,7 +163,7 @@ class AssetDefinition:
             self.properties[ASSET_ROLES_PROP] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns a JSON-like dictionary representing this ``AssetDefinition``."""
+        """Returns a dictionary representing this ``AssetDefinition``."""
         return deepcopy(self.properties)
 
     def create_asset(self, href: str) -> pystac.Asset:

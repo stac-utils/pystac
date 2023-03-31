@@ -125,7 +125,7 @@ class Schema:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns a JSON-like dictionary representing this ``Schema``."""
+        """Returns this schema as a dictionary."""
         return self.properties
 
 
@@ -309,7 +309,7 @@ class Statistic:
         return "<Statistic statistics={}>".format(str(self.properties))
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns a JSON-like dictionary representing this ``Statistic``."""
+        """Returns this statistic as a dictionary."""
         return self.properties
 
     def __eq__(self, o: object) -> bool:
