@@ -504,9 +504,9 @@ class Catalog(STACObject):
             )
 
         if ids:
-            return (i for i in items if i.id in ids)
-
-        return items
+            yield from (i for i in items if i.id in ids)
+        else:
+            yield from items
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -562,9 +562,7 @@ class Catalog(STACObject):
             "get_item is deprecated and will be removed in v2",
             DeprecationWarning,
         )
-        yield from self.get_items()
-        for child in self.get_children():
-            yield from child.get_all_items()
+        yield from self.get_items(recursive=True)
 
     def get_item_links(self) -> List[Link]:
         """Return all item links of this catalog.
