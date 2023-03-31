@@ -706,14 +706,7 @@ class Collection(Catalog):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
-        if not recursive:
-            return next((i for i in self.get_items() if i.id == id), None)
-        else:
-            for root, _, _ in self.walk():
-                item = root.get_item(id, recursive=False)
-                if item is not None:
-                    return item
-            return None
+        return next(self.get_items(id, recursive=recursive), None)
 
     def get_assets(
         self,

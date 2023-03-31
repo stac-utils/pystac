@@ -1490,3 +1490,9 @@ def test_fully_resolve(tmp_path: Path, test_case_1_catalog: Catalog) -> None:
     test_case_1_catalog.fully_resolve()
     test_case_1_catalog.save(dest_href=str(tmp_path / "after"))
     assert len(list((tmp_path / "after").glob("**/*.json"))) == 15
+
+
+def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
+    cat = test_case_1_catalog
+    items = cat.get_items("area-2-1-imagery", "area-1-1-labels", recursive=True)
+    assert len(list(items)) == 2
