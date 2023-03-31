@@ -694,26 +694,18 @@ class Collection(Catalog):
 
         return collection
 
-    def get_item(self, id: str, recursive: Optional[bool] = None) -> Optional[Item]:
+    def get_item(self, id: str, recursive: bool = False) -> Optional[Item]:
         """Returns an item with a given ID.
 
         Args:
             id : The ID of the item to find.
-            recursive (deprecated) : If True, search this collection and all children
-                for the item; otherwise, only search the items of this collection.
-                Defaults to False.
+            recursive : If True, search this collection and all children for the
+                item; otherwise, only search the items of this collection. Defaults
+                to False.
 
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
-        if recursive is not None:
-            warnings.warn(
-                "recursive is deprecated and will be removed in v2",
-                DeprecationWarning,
-            )
-        else:
-            recursive = False
-
         if not recursive:
             return next((i for i in self.get_items() if i.id == id), None)
         else:
@@ -764,7 +756,7 @@ class Collection(Catalog):
         """
         Update datetime and bbox based on all items to a single bbox and time window.
         """
-        self.extent = Extent.from_items(self.get_all_items())
+        self.extent = Extent.from_items(self.get_items(recursive=True))
 
     def full_copy(
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
