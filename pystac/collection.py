@@ -694,6 +694,35 @@ class Collection(Catalog):
 
         return collection
 
+    def get_item(self, id: str, recursive: Optional[bool] = None) -> Optional[Item]:
+        """Returns an item with a given ID.
+
+        Args:
+            id : The ID of the item to find.
+            recursive (deprecated) : If True, search this collection and all children
+                for the item; otherwise, only search the items of this collection.
+                Defaults to False.
+
+        Return:
+            Item or None: The item with the given ID, or None if not found.
+        """
+        if recursive is not None:
+            warnings.warn(
+                "recursive is deprecated and will be removed in v2",
+                DeprecationWarning,
+            )
+        else:
+            recursive = False
+
+        if not recursive:
+            return next((i for i in self.get_items() if i.id == id), None)
+        else:
+            for root, _, _ in self.walk():
+                item = root.get_item(id, recursive=False)
+                if item is not None:
+                    return item
+            return None
+
     def get_assets(
         self,
         media_type: Optional[Union[str, pystac.MediaType]] = None,
