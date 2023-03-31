@@ -563,7 +563,7 @@ class Catalog(STACObject):
             "get_item is deprecated and will be removed in v2",
             DeprecationWarning,
         )
-        yield from self.get_items(recursive=True)
+        return self.get_items(recursive=True)
 
     def get_item_links(self) -> List[Link]:
         """Return all item links of this catalog.

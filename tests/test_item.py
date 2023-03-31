@@ -58,7 +58,7 @@ class ItemTest(unittest.TestCase):
 
     def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
         cat = TestCases.case_2()
-        for item in cat.get_all_items():
+        for item in cat.get_items(recursive=True):
             for asset in item.assets.values():
                 if is_absolute_href(asset.href):
                     asset.href = f"./{os.path.basename(asset.href)}"
@@ -68,7 +68,7 @@ class ItemTest(unittest.TestCase):
 
     def test_set_self_href_none_ignores_relative_asset_hrefs(self) -> None:
         cat = TestCases.case_2()
-        for item in cat.get_all_items():
+        for item in cat.get_items(recursive=True):
             for asset in item.assets.values():
                 if is_absolute_href(asset.href):
                     asset.href = f"./{os.path.basename(asset.href)}"
@@ -121,7 +121,7 @@ class ItemTest(unittest.TestCase):
     def test_clearing_collection(self) -> None:
         collection = TestCases.case_4().get_child("acc")
         assert isinstance(collection, pystac.Collection)
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items(recursive=True))
         self.assertEqual(item.collection_id, collection.id)
         item.set_collection(None)
         self.assertIsNone(item.collection_id)
@@ -245,7 +245,7 @@ class ItemTest(unittest.TestCase):
         )
 
     def test_read_eo_item_owns_asset(self) -> None:
-        item = next(iter(TestCases.case_1().get_all_items()))
+        item = next(TestCases.case_1().get_items(recursive=True))
         assert len(item.assets) > 0
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
@@ -281,7 +281,7 @@ class ItemTest(unittest.TestCase):
 
     def test_clone_preserves_assets(self) -> None:
         cat = TestCases.case_2()
-        original_item = next(iter(cat.get_all_items()))
+        original_item = next(cat.get_items(recursive=True))
         assert len(original_item.assets) > 0
         assert all(
             asset.owner is original_item for asset in original_item.assets.values()
@@ -299,7 +299,7 @@ class ItemTest(unittest.TestCase):
 
     def test_make_asset_href_relative_is_noop_on_relative_hrefs(self) -> None:
         cat = TestCases.case_2()
-        item = next(iter(cat.get_all_items()))
+        item = next(cat.get_items(recursive=True))
         asset = list(item.assets.values())[0]
         assert not is_absolute_href(asset.href)
         original_href = asset.get_absolute_href()
@@ -455,7 +455,7 @@ def test_item_from_dict_with_missing_type_raises_useful_error() -> None:
 def test_remove_hierarchical_links(
     test_case_1_catalog: Catalog, add_canonical: bool
 ) -> None:
-    item = list(test_case_1_catalog.get_all_items())[0]
+    item = next(test_case_1_catalog.get_items(recursive=True))
     item.remove_hierarchical_links(add_canonical=add_canonical)
     for link in item.links:
         assert not link.is_hierarchical()

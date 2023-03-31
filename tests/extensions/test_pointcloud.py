@@ -33,7 +33,7 @@ class PointcloudTest(unittest.TestCase):
         assert_to_from_dict(self, pystac.Item, d)
 
     def test_apply(self) -> None:
-        item = next(iter(TestCases.case_2().get_all_items()))
+        item = next(TestCases.case_2().get_items(recursive=True))
 
         self.assertFalse(PointcloudExtension.has_extension(item))
 
