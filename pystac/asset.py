@@ -112,10 +112,10 @@ class Asset:
             return None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this Asset.
+        """Returns this Asset as a dictionary.
 
         Returns:
-            dict: A serialization of the Asset that can be written out as JSON.
+            dict: A serialization of the Asset.
         """
 
         d: Dict[str, Any] = {"href": self.href}

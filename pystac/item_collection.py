@@ -129,7 +129,7 @@ class ItemCollection(Collection[pystac.Item]):
         return ItemCollection(items=combined)
 
     def to_dict(self, transform_hrefs: bool = False) -> Dict[str, Any]:
-        """Serializes an :class:`ItemCollection` instance to a JSON-like dictionary.
+        """Serializes an :class:`ItemCollection` instance to a dictionary.
 
         Args:
             transform_hrefs: If True, transform the HREF of hierarchical links

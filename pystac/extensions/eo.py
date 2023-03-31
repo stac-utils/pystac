@@ -217,10 +217,10 @@ class Band:
         return "<Band name={}>".format(self.name)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this Band.
+        """Returns this band as a dictionary.
 
         Returns:
-            dict: The wrapped dict of the Band that can be written out as JSON.
+            dict: The serialization of this Band.
         """
         return self.properties
 

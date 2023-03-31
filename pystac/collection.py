@@ -86,10 +86,10 @@ class SpatialExtent:
         self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this SpatialExtent.
+        """Returns this spatial extent as a dictionary.
 
         Returns:
-            dict: A serialization of the SpatialExtent that can be written out as JSON.
+            dict: A serialization of the SpatialExtent.
         """
         d = {"bbox": self.bboxes, **self.extra_fields}
         return d
@@ -212,10 +212,10 @@ class TemporalExtent:
         self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this TemporalExtent.
+        """Returns this temporal extent as a dictionary.
 
         Returns:
-            dict: A serialization of the TemporalExtent that can be written out as JSON.
+            dict: A serialization of the TemporalExtent.
         """
         encoded_intervals: List[List[Optional[str]]] = []
         for i in self.intervals:
@@ -311,10 +311,10 @@ class Extent:
         self.extra_fields = extra_fields or {}
 
     def to_dict(self) -> Dict[str, Any]:
-        """Generate a dictionary representing the JSON of this Extent.
+        """Returns this extent as a dictionary.
 
         Returns:
-            dict: A serialization of the Extent that can be written out as JSON.
+            dict: A serialization of the Extent.
         """
         d = {
             "spatial": self.spatial.to_dict(),

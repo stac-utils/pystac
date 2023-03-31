@@ -192,10 +192,10 @@ class Statistics:
             self.properties.pop("valid_percent", None)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of those Statistics.
+        """Returns these statistics as a dictionary.
 
         Returns:
-            dict: The wrapped dict of the Statistics that can be written out as JSON.
+            dict: The serialization of the Statistics.
         """
         return self.properties
 
@@ -328,10 +328,10 @@ class Histogram:
         self.properties["buckets"] = v
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this histogram.
+        """Returns this histogram as a dictionary.
 
         Returns:
-            dict: The wrapped dict of the Histogram that can be written out as JSON.
+            dict: The serialization of the Histogram.
         """
         return self.properties
 
@@ -631,10 +631,10 @@ class RasterBand:
         return "<Raster Band>"
 
     def to_dict(self) -> Dict[str, Any]:
-        """Returns the dictionary representing the JSON of this Band.
+        """Returns this band as a dictionary.
 
         Returns:
-            dict: The wrapped dict of the Band that can be written out as JSON.
+            dict: The serialization of the Band.
         """
         return self.properties
 
