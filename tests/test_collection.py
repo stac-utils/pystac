@@ -64,7 +64,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_read_eo_items_are_heritable(self) -> None:
         cat = TestCases.case_5()
-        item = next(iter(cat.get_all_items()))
+        item = next(cat.get_items(recursive=True))
 
         self.assertTrue(EOExtension.has_extension(item))
 
