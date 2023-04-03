@@ -14,7 +14,7 @@
 
 - `pystac.summaries.FIELDS_JSON_URL` ([#1045](https://github.com/stac-utils/pystac/pull/1045))
 
-### [v1.7.1]
+## [v1.7.1]
 
 ### Changed
 
