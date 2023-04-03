@@ -18,7 +18,7 @@
 - Catalog `get_item()`. Use `get_items(id)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - Catalog and Collection `get_all_items`. Use `get_items(recursive=True)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 
-### [v1.7.1]
+## [v1.7.1]
 
 ### Changed
 
