@@ -27,3 +27,9 @@ def item() -> Item:
 @pytest.fixture
 def test_case_1_catalog() -> Catalog:
     return TestCases.case_1()
+
+
+@pytest.fixture
+def projection_landsat8_item() -> Item:
+    path = TestCases.get_path("data-files/projection/example-landsat8.json")
+    return Item.from_file(path)

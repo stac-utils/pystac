@@ -16,6 +16,10 @@ from pystac.extensions.hooks import ExtensionHooks
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+SCHEMA_URIS: List[str] = [
+    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    SCHEMA_URI,
+]
 PREFIX: str = "proj:"
 
 # Field names
@@ -289,6 +293,15 @@ class ProjectionExtension(
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesProjectionExtension(obj)
+
+    @classmethod
+    def has_extension(cls, obj: Union[pystac.Item, pystac.Collection]) -> bool:
+        if isinstance(obj, pystac.Item) or isinstance(obj, pystac.Collection):
+            return obj.stac_extensions is not None and any(
+                uri in obj.stac_extensions for uri in SCHEMA_URIS
+            )
+        else:
+            return False
 
 
 class ItemProjectionExtension(ProjectionExtension[pystac.Item]):

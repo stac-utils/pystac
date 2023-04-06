@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import Any, Dict
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
@@ -536,3 +536,19 @@ class ProjectionSummariesTest(unittest.TestCase):
 
         ProjectionExtension.remove_from(col)
         self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+
+
+def test_older_extension_version(projection_landsat8_item: Item) -> None:
+    stac_extensions = set(projection_landsat8_item.stac_extensions)
+    stac_extensions.remove(
+        "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    )
+    stac_extensions.add(
+        "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+    )
+    item_as_dict = projection_landsat8_item.to_dict(
+        include_self_link=False, transform_hrefs=False
+    )
+    item_as_dict["stac_extensions"] = stac_extensions
+    item = Item.from_dict(item_as_dict)
+    assert ProjectionExtension.has_extension(item)
