@@ -119,7 +119,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         not already present."""
         if obj.stac_extensions is None:
             obj.stac_extensions = [cls.get_schema_uri()]
-        elif cls.get_schema_uri() not in obj.stac_extensions:
+        elif cls.has_extension(obj):
             obj.stac_extensions.append(cls.get_schema_uri())
 
     @classmethod
@@ -176,7 +176,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         if add_if_missing:
             cls.add_to(obj)
 
-        if cls.get_schema_uri() not in obj.stac_extensions:
+        if not cls.has_extension(obj):
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )
