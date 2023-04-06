@@ -88,7 +88,7 @@ class TestCatalog:
             collections = catalog.get_children()
             assert len(list(collections)) == 2
 
-            items = read_catalog.get_all_items()
+            items = read_catalog.get_items(recursive=True)
 
             assert len(list(items)) == 8
 
@@ -138,7 +138,7 @@ class TestCatalog:
         )
         subcat.add_item(item)
 
-        items = list(catalog.get_all_items())
+        items = list(catalog.get_items(recursive=True))
         assert len(items) == 1
         assert items[0].properties["key"] == "one"
 
@@ -152,7 +152,7 @@ class TestCatalog:
         )
         subcat.add_item(item)
 
-        items = list(catalog.get_all_items())
+        items = list(catalog.get_items(recursive=True))
         assert len(items) == 1
         assert items[0].properties["key"] == "two"
 
@@ -166,7 +166,7 @@ class TestCatalog:
         )
         subcat.add_item(item)
 
-        items = list(catalog.get_all_items())
+        items = list(catalog.get_items(recursive=True))
         assert len(items) == 1
         assert items[0].properties["key"] == "three"
 
@@ -218,7 +218,7 @@ class TestCatalog:
 
     def test_add_child_throws_if_item(self) -> None:
         cat = TestCases.case_1()
-        item = next(iter(cat.get_all_items()))
+        item = next(cat.get_items(recursive=True))
         with pytest.raises(pystac.STACError):
             cat.add_child(item)  # type:ignore
 
@@ -233,10 +233,29 @@ class TestCatalog:
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         assert child is None
 
+    def test_get_item_is_deprecated_but_still_works(self) -> None:
+        cat = TestCases.case_1()
+        with pytest.warns(DeprecationWarning):
+            item = cat.get_item("area-2-1-imagery", recursive=True)
+            assert item is not None
+
     def test_get_item_returns_none_if_not_found(self) -> None:
         cat = TestCases.case_1()
-        item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
-        assert item is None
+        with pytest.warns(DeprecationWarning):
+            item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
+            assert item is None
+
+    def test_get_all_items_is_deprecated_but_still_works(self) -> None:
+        cat = TestCases.case_1()
+        with pytest.warns(DeprecationWarning):
+            all_items = cat.get_all_items()
+        items = cat.get_items(recursive=True)
+        assert all(a == i for a, i in zip(all_items, items))
+
+    def test_get_items_returns_empty_generator_if_not_found(self) -> None:
+        cat = TestCases.case_1()
+        items = cat.get_items("thisshouldnotbeanitemid", recursive=True)
+        assert next(items, None) is None
 
     def test_sets_catalog_type(self) -> None:
         cat = TestCases.case_1()
@@ -415,7 +434,7 @@ class TestCatalog:
                 ), f"{expected_child_path} is not a file."
 
             # Check each item
-            for item in catalog.get_all_items():
+            for item in catalog.get_items(recursive=True):
                 relative_path = make_relative_href(
                     item.self_href, catalog.self_href, start_is_dir=False
                 )
@@ -468,8 +487,7 @@ class TestCatalog:
     def test_normalize_href_works_with_label_source_links(self) -> None:
         catalog = TestCases.case_1()
         catalog.normalize_hrefs("http://example.com")
-        item = catalog.get_item("area-1-1-labels", recursive=True)
-        assert item is not None
+        item = next(catalog.get_items("area-1-1-labels", recursive=True))
         source = next(iter(LabelExtension.ext(item).get_sources()))
         assert source.get_self_href() == (
             "http://example.com/country-1/area-1-1/area-1-1-imagery/"
@@ -542,7 +560,8 @@ class TestCatalog:
         catalog = TestCases.case_7()
 
         item_counts = {
-            cat.id: len(list(cat.get_all_items())) for cat in catalog.get_children()
+            cat.id: len(list(cat.get_items(recursive=True)))
+            for cat in catalog.get_children()
         }
 
         catalog.generate_subcatalogs("${year}/${day}")
@@ -553,7 +572,7 @@ class TestCatalog:
 
             cat2 = pystac.Catalog.from_file(os.path.join(tmp_dir, "catalog.json"))
             for child in cat2.get_children():
-                actual = len(list(child.get_all_items()))
+                actual = len(list(child.get_items(recursive=True)))
                 expected = item_counts[child.id]
                 assert actual == expected, " for child '{}'".format(child.id)
 
@@ -587,13 +606,13 @@ class TestCatalog:
         _ = catalog.generate_subcatalogs("${year}/${month}")
         catalog.normalize_hrefs("/tmp")
         expected_hrefs = {
-            item.id: item.get_self_href() for item in catalog.get_all_items()
+            item.id: item.get_self_href() for item in catalog.get_items(recursive=True)
         }
 
         result = catalog.generate_subcatalogs("${year}/${month}")
         assert len(result) == 0
         catalog.normalize_hrefs("/tmp")
-        for item in catalog.get_all_items():
+        for item in catalog.get_items(recursive=True):
             assert (
                 item.get_self_href() == expected_hrefs[item.id]
             ), " for item '{}'".format(item.id)
@@ -623,12 +642,10 @@ class TestCatalog:
         catalog.generate_subcatalogs("${property1}/${property2}")
 
         catalog.normalize_hrefs("/tmp")
-        item1 = catalog.get_item("item1", recursive=True)
-        assert item1 is not None
+        item1 = next(catalog.get_items("item1", recursive=True))
         item1_parent = item1.get_parent()
         assert item1_parent is not None
-        item2 = catalog.get_item("item2", recursive=True)
-        assert item2 is not None
+        item2 = next(catalog.get_items("item2", recursive=True))
         item2_parent = item2.get_parent()
         assert item2_parent is not None
         assert item1_parent.get_self_href() == item2_parent.get_self_href()
@@ -681,7 +698,7 @@ class TestCatalog:
         assert len(result) == 6
 
         catalog.normalize_hrefs("/")
-        for item in catalog.get_all_items():
+        for item in catalog.get_items(recursive=True):
             item_parent = item.get_parent()
             assert item_parent is not None
             parent_href = item_parent.self_href
@@ -704,10 +721,10 @@ class TestCatalog:
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, "cat", "catalog.json"))
 
-            for item in result_cat.get_all_items():
+            for item in result_cat.get_items(recursive=True):
                 assert "ITEM_MAPPER" in item.properties
 
-            for item in catalog.get_all_items():
+            for item in catalog.get_items(recursive=True):
                 assert "ITEM_MAPPER" not in item.properties
 
     def test_map_items_multiple(self) -> None:
@@ -720,7 +737,7 @@ class TestCatalog:
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             catalog = TestCases.case_1()
-            catalog_items = list(catalog.get_all_items())
+            catalog_items = list(catalog.get_items(recursive=True))
 
             new_cat = catalog.map_items(item_mapper)
 
@@ -728,7 +745,7 @@ class TestCatalog:
             new_cat.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
 
             result_cat = Catalog.from_file(os.path.join(tmp_dir, "cat", "catalog.json"))
-            result_items = list(result_cat.get_all_items())
+            result_items = list(result_cat.get_items(recursive=True))
 
             assert len(catalog_items) * 2 == len(result_items)
 
@@ -745,7 +762,7 @@ class TestCatalog:
 
             assert ones == twos
 
-            for item in catalog.get_all_items():
+            for item in catalog.get_items(recursive=True):
                 assert ("ITEM_MAPPER_1" not in item.properties) and (
                     "ITEM_MAPPER_2" not in item.properties
                 )
@@ -809,7 +826,7 @@ class TestCatalog:
         c = c.map_items(create_label_item)
         new_catalog = c
 
-        items = new_catalog.get_all_items()
+        items = new_catalog.get_items(recursive=True)
         assert len(list(items)) == 4
 
     def test_map_assets_single(self) -> None:
@@ -832,7 +849,7 @@ class TestCatalog:
             result_cat = Catalog.from_file(os.path.join(tmp_dir, "cat", "catalog.json"))
 
             found = False
-            for item in result_cat.get_all_items():
+            for item in result_cat.get_items(recursive=True):
                 for key, asset in item.assets.items():
                     if key == changed_asset:
                         found = True
@@ -866,7 +883,7 @@ class TestCatalog:
 
             found = False
             not_found = False
-            for item in result_cat.get_all_items():
+            for item in result_cat.get_items(recursive=True):
                 for key, asset in item.assets.items():
                     if key.replace("-modified", "") in changed_assets:
                         found = True
@@ -907,7 +924,7 @@ class TestCatalog:
             found1 = False
             found2 = False
             not_found = False
-            for item in result_cat.get_all_items():
+            for item in result_cat.get_items(recursive=True):
                 for key, asset in item.assets.items():
                     if key.replace("-mod-1", "") in changed_assets:
                         found1 = True
@@ -926,17 +943,16 @@ class TestCatalog:
     def test_make_all_asset_hrefs_absolute(self) -> None:
         cat = TestCases.case_2()
         cat.make_all_asset_hrefs_absolute()
-        item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-        assert item is not None
-
-        href = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"].href
+        ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+        item = next(cat.get_items(ID, recursive=True))
+        href = item.assets[ID].href
         assert is_absolute_href(href)
 
     def test_make_all_asset_hrefs_relative(self) -> None:
         cat = TestCases.case_2()
-        item = cat.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-        assert item is not None
-        asset = item.assets["cf73ec1a-d790-4b59-b077-e101738571ed"]
+        ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+        item = next(cat.get_items(ID, recursive=True))
+        asset = item.assets[ID]
         original_href = asset.href
         cat.make_all_asset_hrefs_absolute()
 
@@ -1061,8 +1077,7 @@ class TestCatalog:
 
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.case_1()
-        item = cat.get_item("area-1-1-labels", recursive=True)
-        assert item is not None
+        item = next(cat.get_items("area-1-1-labels", recursive=True))
         item.geometry = {"type": "INVALID", "coordinates": "NONE"}
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat.normalize_hrefs(tmp_dir)
@@ -1079,7 +1094,7 @@ class TestCatalog:
         # Modify the datetimes
         year = 2004
         month = 2
-        for item in catalog.get_all_items():
+        for item in catalog.get_items(recursive=True):
             assert item.datetime is not None
             item.datetime = item.datetime.replace(year=year, month=month)
             year += 1
@@ -1162,7 +1177,7 @@ class TestCatalog:
 
         # Iterate over the items. This was causing failure in
         # in the later iterations as per issue #88
-        for item in cat.get_all_items():
+        for item in cat.get_items(recursive=True):
             pass
 
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -1173,7 +1188,7 @@ class TestCatalog:
             # Open the local copy and iterate over it.
             cat2 = Catalog.from_file(os.path.join(new_stac_uri, "catalog.json"))
 
-            for item in cat2.get_all_items():
+            for item in cat2.get_items(recursive=True):
                 # Iterate again over the items. This would fail in #88
                 pass
 
@@ -1194,7 +1209,7 @@ class TestCatalog:
         cat = pystac.Catalog.from_file(
             TestCases.get_path("data-files/invalid/shared-id/catalog.json")
         )
-        items = list(cat.get_all_items())
+        items = list(cat.get_items(recursive=True))
 
         assert len(items) == 1
 
@@ -1405,12 +1420,9 @@ class FullCopyTest(unittest.TestCase):
             self.check_catalog(cat2, "dest")
 
             # Check that the relative asset link was saved correctly in the copy.
-            item = cat2.get_item("cf73ec1a-d790-4b59-b077-e101738571ed", recursive=True)
-            assert item is not None
-
-            href = item.assets[
-                "cf73ec1a-d790-4b59-b077-e101738571ed"
-            ].get_absolute_href()
+            ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
+            item = next(cat2.get_items(ID, recursive=True))
+            href = item.assets[ID].get_absolute_href()
             assert href is not None
             assert os.path.exists(href)
 
@@ -1478,3 +1490,9 @@ def test_fully_resolve(tmp_path: Path, test_case_1_catalog: Catalog) -> None:
     test_case_1_catalog.fully_resolve()
     test_case_1_catalog.save(dest_href=str(tmp_path / "after"))
     assert len(list((tmp_path / "after").glob("**/*.json"))) == 15
+
+
+def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
+    cat = test_case_1_catalog
+    items = cat.get_items("area-2-1-imagery", "area-1-1-labels", recursive=True)
+    assert len(list(items)) == 2

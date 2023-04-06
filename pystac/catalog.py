@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import chain
+import warnings
 import os
 from copy import deepcopy
 from html import escape
@@ -9,6 +11,7 @@ from typing import (
     Callable,
     Dict,
     Iterable,
+    Iterator,
     List,
     Optional,
     Tuple,
@@ -445,7 +448,13 @@ class Catalog(STACObject):
         self.links = new_links
 
     def get_item(self, id: str, recursive: bool = False) -> Optional[Item]:
-        """Returns an item with a given ID.
+        """
+        DEPRECATED.
+
+        .. deprecated:: 1.8
+            Use :meth:`next(pystac.Catalog.get_items(id), None)` instead.
+
+        Returns an item with a given ID.
 
         Args:
             id : The ID of the item to find.
@@ -456,24 +465,43 @@ class Catalog(STACObject):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
-        if not recursive:
-            return next((i for i in self.get_items() if i.id == id), None)
-        else:
-            for root, _, _ in self.walk():
-                item = root.get_item(id, recursive=False)
-                if item is not None:
-                    return item
-            return None
+        warnings.warn(
+            "get_item is deprecated and will be removed in v2. "
+            "Use next(self.get_items(id), None) instead",
+            DeprecationWarning,
+        )
+        return next(self.get_items(id, recursive=recursive), None)
 
-    def get_items(self) -> Iterable[Item]:
-        """Return all items of this catalog.
+    def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
+        """Return all items or specific items of this catalog.
+
+        Args:
+            *ids : The IDs of the items to include.
+            recursive : If True, search this catalog and all children for the
+                item; otherwise, only search the items of this catalog. Defaults
+                to False.
 
         Return:
-            Iterable[Item]: Generator of items whose parent is this catalog.
+            Iterator[Item]: Generator of items whose parent is this catalog, and
+                (if recursive) all catalogs or collections connected to this catalog
+                through child links.
         """
-        return map(
-            lambda x: cast(pystac.Item, x), self.get_stac_objects(pystac.RelType.ITEM)
-        )
+        items: Iterator[Item]
+        if not recursive:
+            items = map(
+                lambda x: cast(pystac.Item, x),
+                self.get_stac_objects(pystac.RelType.ITEM),
+            )
+        else:
+            items = chain(
+                self.get_items(recursive=False),
+                *(child.get_items(recursive=True) for child in self.get_children()),
+            )
+
+        if ids:
+            yield from (i for i in items if i.id in ids)
+        else:
+            yield from items
 
     def clear_items(self) -> None:
         """Removes all items from this catalog.
@@ -511,7 +539,13 @@ class Catalog(STACObject):
         self.links = new_links
 
     def get_all_items(self) -> Iterable[Item]:
-        """Get all items from this catalog and all subcatalogs. Will traverse
+        """
+        DEPRECATED.
+
+        .. deprecated:: 1.8
+            Use :meth:`pystac.Catalog.get_items(recursive=True)` instead.
+
+        Get all items from this catalog and all subcatalogs. Will traverse
         any subcatalogs recursively.
 
         Returns:
@@ -519,9 +553,11 @@ class Catalog(STACObject):
                 catalogs or collections connected to this catalog through
                 child links.
         """
-        yield from self.get_items()
-        for child in self.get_children():
-            yield from child.get_all_items()
+        warnings.warn(
+            "get_item is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
+        return self.get_items(recursive=True)
 
     def get_item_links(self) -> List[Link]:
         """Return all item links of this catalog.

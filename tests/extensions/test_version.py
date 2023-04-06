@@ -143,11 +143,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         cat = TestCases.case_1()
 
         # Fetch two items from the catalog
-        item1 = cat.get_item("area-1-1-imagery", recursive=True)
-        item2 = cat.get_item("area-2-2-imagery", recursive=True)
-
-        assert item1 is not None
-        assert item2 is not None
+        item1 = next(cat.get_items("area-1-1-imagery", recursive=True))
+        item2 = next(cat.get_items("area-2-2-imagery", recursive=True))
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Item
@@ -161,10 +158,8 @@ class ItemVersionExtensionTest(unittest.TestCase):
         cat_copy = cat.full_copy()
 
         # Retrieve the copied version of the items
-        item1_copy = cat_copy.get_item("area-1-1-imagery", recursive=True)
-        assert item1_copy is not None
-        item2_copy = cat_copy.get_item("area-2-2-imagery", recursive=True)
-        assert item2_copy is not None
+        item1_copy = next(cat_copy.get_items("area-1-1-imagery", recursive=True))
+        item2_copy = next(cat_copy.get_items("area-2-2-imagery", recursive=True))
 
         # Check to see if the version links point to the instances of the
         # item objects as they should.

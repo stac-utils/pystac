@@ -134,7 +134,7 @@ class LabelTest(unittest.TestCase):
     def test_get_sources(self) -> None:
         cat = TestCases.case_1()
 
-        items = list(cat.get_all_items())
+        items = list(cat.get_items(recursive=True))
         item_ids = set([i.id for i in items])
 
         for li in items:
@@ -156,14 +156,15 @@ class LabelTest(unittest.TestCase):
             catalog.normalize_and_save(cat_dir, catalog_type=CatalogType.SELF_CONTAINED)
 
             cat_read = Catalog.from_file(os.path.join(cat_dir, "catalog.json"))
-            label_item_read = cat_read.get_item("area-2-2-labels", recursive=True)
-            assert label_item_read is not None
+            label_item_read = next(
+                cat_read.get_items("area-2-2-labels", recursive=True)
+            )
             label_item_read.validate()
 
     def test_read_label_item_owns_asset(self) -> None:
         item = next(
             x
-            for x in TestCases.case_2().get_all_items()
+            for x in TestCases.case_2().get_items(recursive=True)
             if LabelExtension.has_extension(x)
         )
         assert len(item.assets) > 0

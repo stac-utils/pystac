@@ -82,7 +82,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         collection = TestCases.case_4().get_child("acc")
         assert collection is not None
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items())
         assert item.collection_id is not None
 
         parts = template.get_template_values(item)
@@ -98,7 +98,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         collection = TestCases.case_4().get_child("acc")
         assert collection is not None
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items())
         item.set_collection(None)
         assert item.collection_id is None
 
@@ -259,7 +259,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
     def test_produces_layout_for_item(self) -> None:
         strategy = CustomLayoutStrategy(item_func=self.get_custom_item_func())
         collection = TestCases.case_8()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items(recursive=True))
         href = strategy.get_href(item, parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/item/{}.json".format(item.id))
 
@@ -271,7 +271,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
             fallback_strategy=fallback,
         )
         collection = TestCases.case_8()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items(recursive=True))
         href = strategy.get_href(item, parent_dir="http://example.com")
         expected = fallback.get_href(item, parent_dir="http://example.com")
         self.assertEqual(href, expected)
@@ -352,7 +352,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
     def test_produces_layout_for_item(self) -> None:
         strategy = TemplateLayoutStrategy(item_template=self.TEST_ITEM_TEMPLATE)
         collection = self._get_collection()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items())
         href = strategy.get_href(item, parent_dir="http://example.com")
         self.assertEqual(
             href,
@@ -363,7 +363,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
         template = "item/${collection}"
         strategy = TemplateLayoutStrategy(item_template=template)
         collection = self._get_collection()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items())
         href = strategy.get_href(item, parent_dir="http://example.com")
         self.assertEqual(
             href,
@@ -378,7 +378,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
             fallback_strategy=fallback,
         )
         collection = self._get_collection()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items())
         href = strategy.get_href(item, parent_dir="http://example.com")
         expected = fallback.get_href(item, parent_dir="http://example.com")
         self.assertEqual(href, expected)
@@ -416,7 +416,7 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
 
     def test_produces_layout_for_item(self) -> None:
         collection = TestCases.case_8()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items(recursive=True))
         href = self.strategy.get_href(item, parent_dir="http://example.com")
         expected = "http://example.com/{}/{}.json".format(item.id, item.id)
         self.assertEqual(href, expected)
@@ -451,7 +451,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
 
     def test_item(self) -> None:
         collection = TestCases.case_8()
-        item = next(iter(collection.get_all_items()))
+        item = next(collection.get_items(recursive=True))
         item.set_self_href(None)
         with self.assertRaises(ValueError):
             self.strategy.get_href(item, parent_dir="http://example.com")

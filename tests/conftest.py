@@ -27,3 +27,8 @@ def item() -> Item:
 @pytest.fixture
 def test_case_1_catalog() -> Catalog:
     return TestCases.case_1()
+
+
+@pytest.fixture
+def test_case_8_collection() -> Collection:
+    return TestCases.case_8()

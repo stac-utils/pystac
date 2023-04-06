@@ -195,7 +195,7 @@ class Summarizer:
         """Creates summaries from items"""
         summaries = Summaries.empty()
         if isinstance(source, pystac.Collection):
-            for item in source.get_all_items():
+            for item in source.get_items(recursive=True):
                 self._update_with_item(summaries, item)
         else:
             for item in source:

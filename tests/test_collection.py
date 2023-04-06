@@ -64,7 +64,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_read_eo_items_are_heritable(self) -> None:
         cat = TestCases.case_5()
-        item = next(iter(cat.get_all_items()))
+        item = next(cat.get_items(recursive=True))
 
         self.assertTrue(EOExtension.has_extension(item))
 
@@ -565,3 +565,22 @@ def test_get_child_sort_links_by_id_is_configurable(
     child_links = [link for link in cat1.links if link.rel == pystac.RelType.CHILD]
     for link in child_links:
         assert link.is_resolved()
+
+
+def test_get_item_returns_none_if_not_found(
+    test_case_8_collection: Collection,
+) -> None:
+    col8 = test_case_8_collection
+    item = col8.get_item("notarealitem")
+    assert item is None
+
+
+def test_get_item_is_not_recursive_by_default(
+    test_case_8_collection: Collection,
+) -> None:
+    col8 = test_case_8_collection
+    item = col8.get_item("20170831_162740_ssc1d1")
+    assert item is None
+
+    item = col8.get_item("20170831_162740_ssc1d1", recursive=True)
+    assert item is not None
