@@ -1,6 +1,6 @@
 black==23.3.0
 codespell==2.2.4
-coverage==7.2.2
+coverage==7.2.3
 doc8==1.1.1
 html5lib==1.1
 jinja2<4.0
