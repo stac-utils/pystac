@@ -89,6 +89,7 @@ import pystac.extensions.eo
 import pystac.extensions.file
 import pystac.extensions.item_assets
 import pystac.extensions.label
+import pystac.extensions.mgrs
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
 import pystac.extensions.sar
@@ -107,6 +108,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.file.FILE_EXTENSION_HOOKS,
         pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
         pystac.extensions.label.LABEL_EXTENSION_HOOKS,
+        pystac.extensions.mgrs.MGRS_EXTENSION_HOOKS,
         pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
         pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,

@@ -96,6 +96,7 @@ PySTAC provides support for the following STAC Extensions:
 * :mod:`File Info <pystac.extensions.file>`
 * :mod:`Item Assets <pystac.extensions.item_assets>`
 * :mod:`Label <pystac.extensions.label>`
+* :mod:`MGRS <pystac.extensions.mgrs>`
 * :mod:`Point Cloud <pystac.extensions.pointcloud>`
 * :mod:`Projection <pystac.extensions.projection>`
 * :mod:`Raster <pystac.extensions.raster>`
