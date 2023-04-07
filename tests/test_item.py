@@ -179,6 +179,8 @@ class ItemTest(unittest.TestCase):
             media_type=pystac.MediaType.PNG, role="thumbnail"
         )
         self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
+        multi_filter["thumbnail"].description = "foo"
+        assert item.assets["thumbnail"].description != "foo"
 
         no_filter = item.get_assets()
         self.assertCountEqual(no_filter.keys(), ["analytic", "thumbnail"])
