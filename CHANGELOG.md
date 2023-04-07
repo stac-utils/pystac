@@ -7,6 +7,7 @@
 - `sort_links_by_id` to Catalog `get_child()` and `modify_links` to `get_stac_objects()` ([#1064](https://github.com/stac-utils/pystac/pull/1064))
 - `*ids` to Catalog and Collection `get_items()` for only including the provided ids in the iterator ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - `recursive` to Catalog and Collection `get_items()` to walk the sub-catalogs and sub-collections ([#1075](https://github.com/stac-utils/pystac/pull/1075))
+- MGRS Extension ([#1088](https://github.com/stac-utils/pystac/pull/1088))
 
 ### Changed
 
