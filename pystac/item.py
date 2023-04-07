@@ -256,15 +256,12 @@ class Item(STACObject):
             Dict[str, Asset]: A dictionary of assets that match ``media_type``
                 and/or ``role`` if set or else all of this item's assets.
         """
-        if media_type is None and role is None:
-            return dict(self.assets.items())
-        assets = dict()
-        for key, asset in self.assets.items():
-            if (media_type is None or asset.media_type == media_type) and (
-                role is None or asset.has_role(role)
-            ):
-                assets[key] = asset
-        return assets
+        return {
+            k: deepcopy(v)
+            for k, v in self.assets.items()
+            if (media_type is None or v.media_type == media_type)
+            and (role is None or v.has_role(role))
+        }
 
     def add_asset(self, key: str, asset: Asset) -> None:
         """Adds an Asset to this item.

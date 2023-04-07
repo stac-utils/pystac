@@ -246,7 +246,11 @@ class CollectionTest(unittest.TestCase):
         self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
 
         no_filter = collection.get_assets()
+        self.assertIsNot(no_filter, collection.assets)
         self.assertCountEqual(no_filter.keys(), ["thumbnail"])
+        no_filter["thumbnail"].description = "foo"
+        assert collection.assets["thumbnail"].description != "foo"
+
         no_assets = collection.get_assets(media_type=pystac.MediaType.HDF)
         self.assertEqual(no_assets, {})
 
