@@ -87,10 +87,12 @@ import pystac.extensions.hooks
 import pystac.extensions.datacube
 import pystac.extensions.eo
 import pystac.extensions.file
+import pystac.extensions.grid
 import pystac.extensions.item_assets
 import pystac.extensions.label
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
+import pystac.extensions.raster
 import pystac.extensions.sar
 import pystac.extensions.sat
 import pystac.extensions.scientific
@@ -105,10 +107,12 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
         pystac.extensions.eo.EO_EXTENSION_HOOKS,
         pystac.extensions.file.FILE_EXTENSION_HOOKS,
+        pystac.extensions.grid.GRID_EXTENSION_HOOKS,
         pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
         pystac.extensions.label.LABEL_EXTENSION_HOOKS,
         pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
         pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
+        pystac.extensions.raster.RASTER_EXTENSION_HOOKS,
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,
         pystac.extensions.sat.SAT_EXTENSION_HOOKS,
         pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,

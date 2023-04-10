@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, Optional, Pattern, Set, Union
+from typing import Any, Dict, List, Optional, Pattern, Set, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/grid/v1.1.0/schema.json"
+SCHEMA_URIS: List[str] = [
+    "https://stac-extensions.github.io/grid/v1.0.0/schema.json",
+    SCHEMA_URI,
+]
 PREFIX: str = "grid:"
 
 # Field names
@@ -81,6 +85,10 @@ class GridExtension(
         return SCHEMA_URI
 
     @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        return SCHEMA_URIS
+
+    @classmethod
     def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> GridExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Grid
         Extension <grid>`.
@@ -102,8 +110,8 @@ class GridExtension(
 
 class GridExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set()
+    prev_extension_ids: Set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
     stac_object_types = {pystac.STACObjectType.ITEM}
 
 
-Grid_EXTENSION_HOOKS: ExtensionHooks = GridExtensionHooks()
+GRID_EXTENSION_HOOKS: ExtensionHooks = GridExtensionHooks()

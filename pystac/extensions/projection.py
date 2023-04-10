@@ -264,6 +264,10 @@ class ProjectionExtension(
         return SCHEMA_URI
 
     @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        return SCHEMA_URIS
+
+    @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> ProjectionExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Projection
         Extension <projection>`.
@@ -293,15 +297,6 @@ class ProjectionExtension(
         """Returns the extended summaries object for the given collection."""
         cls.validate_has_extension(obj, add_if_missing)
         return SummariesProjectionExtension(obj)
-
-    @classmethod
-    def has_extension(cls, obj: Union[pystac.Item, pystac.Collection]) -> bool:
-        if isinstance(obj, pystac.Item) or isinstance(obj, pystac.Collection):
-            return obj.stac_extensions is not None and any(
-                uri in obj.stac_extensions for uri in SCHEMA_URIS
-            )
-        else:
-            return False
 
 
 class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
@@ -376,7 +371,11 @@ class SummariesProjectionExtension(SummariesExtension):
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids = {"proj", "projection"}
+    prev_extension_ids = {
+        "proj",
+        "projection",
+        *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
+    }
     stac_object_types = {pystac.STACObjectType.ITEM}
 
 

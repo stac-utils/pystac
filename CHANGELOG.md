@@ -12,6 +12,7 @@
 
 - Include a copy of the `fields.json` file (for summaries) with each distribution of PySTAC ([#1045](https://github.com/stac-utils/pystac/pull/1045))
 - Removed documentation references to `to_dict` methods returning JSON ([#1074](https://github.com/stac-utils/pystac/pull/1074))
+- Expand support for previous extension schema URIs ([#1091](https://github.com/stac-utils/pystac/pull/1091))
 
 ### Deprecated
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Optional, Set, Union
 
 import pystac
 from pystac.extensions.base import (
@@ -10,10 +10,14 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
-
+SCHEMA_URIS = [
+    "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
+    SCHEMA_URI,
+]
 BANDS_PROP = "raster:bands"
 
 
@@ -707,6 +711,10 @@ class RasterExtension(
         return SCHEMA_URI
 
     @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        return SCHEMA_URIS
+
+    @classmethod
     def ext(cls, obj: pystac.Asset, add_if_missing: bool = False) -> RasterExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Raster
         Extension <raster>`.
@@ -752,3 +760,12 @@ class SummariesRasterExtension(SummariesExtension):
     @bands.setter
     def bands(self, v: Optional[List[RasterBand]]) -> None:
         self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
+
+
+class RasterExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids: Set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
+    stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
+
+
+RASTER_EXTENSION_HOOKS: ExtensionHooks = RasterExtensionHooks()

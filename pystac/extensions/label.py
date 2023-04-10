@@ -11,7 +11,10 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
 
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.1/schema.json"
-
+SCHEMA_URIS = [
+    "https://stac-extensions.github.io/label/v1.0.0/schema.json",
+    SCHEMA_URI,
+]
 PREFIX = "label:"
 
 PROPERTIES_PROP = PREFIX + "properties"
@@ -692,6 +695,10 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         return SCHEMA_URI
 
     @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        return SCHEMA_URIS
+
+    @classmethod
     def ext(cls, obj: pystac.Item, add_if_missing: bool = False) -> LabelExtension:
         """Extends the given STAC Object with properties from the :stac-ext:`Label
         Extension <label>`.
@@ -791,7 +798,7 @@ class LabelExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {
         "label",
-        "https://stac-extensions.github.io/label/v1.0.0/schema.json",
+        *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
     }
     stac_object_types = {pystac.STACObjectType.ITEM}
 

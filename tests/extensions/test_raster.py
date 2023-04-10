@@ -1,6 +1,7 @@
 import json
 import unittest
 
+import pytest
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.extensions.raster import (
@@ -14,6 +15,7 @@ from pystac.extensions.raster import (
 )
 from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
+from tests.conftest import get_data_file
 
 
 class RasterTest(unittest.TestCase):
@@ -270,3 +272,27 @@ class RasterTest(unittest.TestCase):
 
         RasterExtension.remove_from(col)
         self.assertNotIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+
+
+@pytest.fixture
+def ext_item() -> pystac.Item:
+    ext_item_uri = get_data_file("raster/raster-planet-example.json")
+    return pystac.Item.from_file(ext_item_uri)
+
+
+def test_older_extension_version(ext_item: pystac.Item) -> None:
+    old = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
+    new = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+
+    stac_extensions = set(ext_item.stac_extensions)
+    stac_extensions.remove(new)
+    stac_extensions.add(old)
+    item_as_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_as_dict["stac_extensions"] = list(stac_extensions)
+    item = pystac.Item.from_dict(item_as_dict)
+    assert RasterExtension.has_extension(item)
+    assert old in item.stac_extensions
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+    assert RasterExtension.has_extension(migrated_item)
+    assert new in migrated_item.stac_extensions

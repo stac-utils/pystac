@@ -6,11 +6,13 @@ import unittest
 from datetime import datetime
 from typing import Any, Dict
 
+import pytest
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import grid
 from pystac.extensions.grid import GridExtension
 from tests.utils import TestCases
+from tests.conftest import get_data_file
 
 code = "MGRS-4CFJ"
 
@@ -137,3 +139,27 @@ class GridTest(unittest.TestCase):
             GridExtension.ext,
             object(),
         )
+
+
+@pytest.fixture
+def ext_item() -> pystac.Item:
+    ext_item_uri = get_data_file("grid/example-sentinel2.json")
+    return pystac.Item.from_file(ext_item_uri)
+
+
+def test_older_extension_version(ext_item: pystac.Item) -> None:
+    old = "https://stac-extensions.github.io/grid/v1.0.0/schema.json"
+    new = "https://stac-extensions.github.io/grid/v1.1.0/schema.json"
+
+    stac_extensions = set(ext_item.stac_extensions)
+    stac_extensions.remove(new)
+    stac_extensions.add(old)
+    item_as_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_as_dict["stac_extensions"] = list(stac_extensions)
+    item = pystac.Item.from_dict(item_as_dict)
+    assert GridExtension.has_extension(item)
+    assert old in item.stac_extensions
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+    assert GridExtension.has_extension(migrated_item)
+    assert new in migrated_item.stac_extensions
