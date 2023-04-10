@@ -539,16 +539,20 @@ class ProjectionSummariesTest(unittest.TestCase):
 
 
 def test_older_extension_version(projection_landsat8_item: Item) -> None:
+    old = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
+    new = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+
     stac_extensions = set(projection_landsat8_item.stac_extensions)
-    stac_extensions.remove(
-        "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
-    )
-    stac_extensions.add(
-        "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
-    )
+    stac_extensions.remove(new)
+    stac_extensions.add(old)
     item_as_dict = projection_landsat8_item.to_dict(
         include_self_link=False, transform_hrefs=False
     )
-    item_as_dict["stac_extensions"] = stac_extensions
+    item_as_dict["stac_extensions"] = list(stac_extensions)
     item = Item.from_dict(item_as_dict)
     assert ProjectionExtension.has_extension(item)
+    assert old in item.stac_extensions
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+    assert ProjectionExtension.has_extension(migrated_item)
+    assert new in migrated_item.stac_extensions

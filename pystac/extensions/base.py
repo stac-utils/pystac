@@ -113,6 +113,11 @@ class ExtensionManagementMixin(Generic[S], ABC):
         raise NotImplementedError
 
     @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        """Gets a list of schema URIs associated with this extension."""
+        return [cls.get_schema_uri()]
+
+    @classmethod
     def add_to(cls, obj: S) -> None:
         """Add the schema URI for this extension to the
         :attr:`~pystac.STACObject.stac_extensions` list for the given object, if it is
@@ -135,9 +140,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
-        return (
-            obj.stac_extensions is not None
-            and cls.get_schema_uri() in obj.stac_extensions
+        return obj.stac_extensions is not None and any(
+            uri in obj.stac_extensions for uri in cls.get_schema_uris()
         )
 
     @classmethod

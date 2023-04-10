@@ -188,20 +188,19 @@ def migrate_to_latest(
             # Force stac_extensions property, as it makes
             # downstream migration less complex
             result["stac_extensions"] = []
-        pystac.EXTENSION_HOOKS.migrate(result, version, info)
-
-        for ext in result["stac_extensions"][:]:
-            if ext in removed_extension_migrations:
-                object_types, migration_fn = removed_extension_migrations[ext]
-                if object_types is None or info.object_type in object_types:
-                    if migration_fn:
-                        migration_fn(result, version, info)
-                    result["stac_extensions"].remove(ext)
-
         result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
     else:
         # Ensure stac_extensions property for consistency
         if "stac_extensions" not in result:
             result["stac_extensions"] = []
+
+    pystac.EXTENSION_HOOKS.migrate(result, version, info)
+    for ext in result["stac_extensions"][:]:
+        if ext in removed_extension_migrations:
+            object_types, migration_fn = removed_extension_migrations[ext]
+            if object_types is None or info.object_type in object_types:
+                if migration_fn:
+                    migration_fn(result, version, info)
+                result["stac_extensions"].remove(ext)
 
     return result
