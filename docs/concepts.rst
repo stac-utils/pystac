@@ -273,6 +273,16 @@ It is possible provide auth headers (or any other customer headers) to the
 
   catalog = Catalog.from_file("<URI-requiring-auth>", stac_io=stac_io)
 
+You can double check that requests PySTAC is making by adjusting logging level so
+that you see all API calls.
+
+.. code-block:: python
+
+   import logging
+
+   logging.basicConfig()
+   logger = logging.getLogger('pystac')
+   logger.setLevel(logging.DEBUG)
 
 If you require more custom logic for I/O operations or would like to use a
 3rd-party library for I/O operations (e.g. ``requests``),
