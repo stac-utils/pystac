@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
@@ -34,6 +35,9 @@ else:
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.stac_object import STACObject
+
+
+logger = logging.getLogger(__name__)
 
 
 class StacIO(ABC):
@@ -292,6 +296,7 @@ class DefaultStacIO(StacIO):
         href_contents: str
         if _is_url(href):
             try:
+                logger.debug(f"GET {href} Headers: {self.headers}")
                 req = Request(href, headers=self.headers)
                 with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
