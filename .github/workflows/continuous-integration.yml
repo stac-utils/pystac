@@ -43,13 +43,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-          cache-dependency-path: requirements-test.txt
 
       - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements-test.txt
-          pip install -e ".[validation]"
+        run: pip install .[validation,test]
 
       - name: Execute test suite
         run: ./scripts/test
@@ -68,13 +64,9 @@ jobs:
         with:
           python-version: "3.8"
           cache: "pip"
-          cache-dependency-path: requirements-test.txt
 
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements-test.txt
-          pip install -e ".[validation]"
+      - name: Install with dependencies
+        run: pip install .[validation,test]
 
       - name: Run coverage with orjson
         run: pytest tests --cov
@@ -123,17 +115,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-          cache-dependency-path: requirements-test.txt
 
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements-test.txt
+      - name: Install with test dependencies
+        run: pip install .[test]
 
       - name: Execute linters & type checkers
         run: pre-commit run --all-files
 
-  vanilla:
+  without-orjson:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -142,16 +131,16 @@ jobs:
         with:
           python-version: "3.8"
 
-      - name: Install without orjson
-        run: pip install '.[validation]'
+      - name: Install
+        run: pip install .[validation,test]
 
-      - name: Install test requirements
-        run: pip install pytest pytest-mock html5lib jinja2
+      - name: Uninstall orjson
+        run: pip uninstall -y orjson
 
       - name: Run tests
         run: pytest tests
 
-  check-dev-dependencies:
+  check-all-dependencies:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -160,10 +149,9 @@ jobs:
         with:
           python-version: "3.8"
           cache: "pip"
-          cache-dependency-path: requirements-dev.txt
 
-      - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install all dependencies
+        run: pip install .[bench,docs,orjson,test,urllib3,validation]
 
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
@@ -176,11 +164,8 @@ jobs:
         with:
           python-version: "3.8"
           cache: "pip"
-          cache-dependency-path: requirements-bench.txt
       - name: Install pystac
-        run: pip install .
-      - name: Install benchmark dependencies
-        run: pip install -r requirements-bench.txt
+        run: pip install .[bench]
       - name: Set asv machine
         run: asv machine --yes
       - name: Check benchmarks
