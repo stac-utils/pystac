@@ -1,0 +1,2 @@
+include pystac/py.typed pystac/html/*.jinja2
+exclude tests/*

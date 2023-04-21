@@ -35,7 +35,7 @@ class MockStacIO(pystac.StacIO):
         dest: Union[str, "os.PathLike[AnyStr]"],
         txt: str,
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
         self.mock.write_text(dest, txt)
         self.wrapped_stac_io.write_text(dest, txt)

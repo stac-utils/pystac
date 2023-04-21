@@ -16,6 +16,7 @@
 - Make Catalog, Collection `.get_assets()` return a deepcopy ([#1087](https://github.com/stac-utils/pystac/pull/1087))
 - Removed documentation references to `to_dict` methods returning JSON ([#1074](https://github.com/stac-utils/pystac/pull/1074))
 - Expand support for previous extension schema URIs ([#1091](https://github.com/stac-utils/pystac/pull/1091))
+- Use `pyproject.toml` instead of `setup.py` ([#1100](https://github.com/stac-utils/pystac/pull/1100))
 
 ### Deprecated
 

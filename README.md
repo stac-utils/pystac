@@ -8,7 +8,7 @@
 [![Gitter](https://badges.gitter.im/SpatioTemporal-Asset-Catalog/python.svg)](https://gitter.im/SpatioTemporal-Asset-Catalog/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-PySTAC is a library for working with [SpatioTemporal Asset Catalog](https://stacspec.org) in Python 3.
+PySTAC is a library for working with the [SpatioTemporal Asset Catalog](https://stacspec.org) specification in Python 3.
 
 ## Installation
 
@@ -23,7 +23,7 @@ If you would like to enable the validation feature utilizing the
 `validation` requirements:
 
 ```shell
-pip install pystac[validation]
+pip install 'pystac[validation]'
 ```
 
 If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
@@ -31,7 +31,7 @@ standard `json` library for JSON serialization/deserialization, install with the
 optional `orjson` requirements:
 
 ```shell
-pip install pystac[orjson]
+pip install 'pystac[orjson]'
 ```
 
 If you would like to use a custom `RetryStacIO` class for automatically retrying
@@ -39,7 +39,7 @@ network requests when reading with PySTAC, you'll need
 [`urllib3`](https://urllib3.readthedocs.io/en/stable/):
 
 ```shell
-pip install pystac[urllib3]
+pip install 'pystac[urllib3]'
 ```
 
 ### Install from source

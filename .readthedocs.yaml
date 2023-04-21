@@ -16,9 +16,10 @@ formats:
 
 python:
   install:
-    - requirements: requirements-docs.txt
     - method: pip
       path: .
+      extra_requirements:
+        - docs
 
 sphinx:
   fail_on_warning: false
