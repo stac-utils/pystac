@@ -5,6 +5,7 @@ import os
 import tempfile
 import unittest
 from copy import deepcopy
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 import dateutil.relativedelta
@@ -468,3 +469,12 @@ def test_geo_interface() -> None:
         item.to_dict(include_self_link=False, transform_hrefs=False)
         == item.__geo_interface__
     )
+
+
+def test_duplicate_self_links(tmp_path: Path, sample_item: pystac.Item) -> None:
+    # https://github.com/stac-utils/pystac/issues/1102
+    assert len(sample_item.get_links(rel="self")) == 1
+    path = tmp_path / "item.json"
+    sample_item.save_object(include_self_link=True, dest_href=str(path))
+    sample_item = Item.from_file(str(path))
+    assert len(sample_item.get_links(rel="self")) == 1
