@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Duplicate `self` links in Items ([#1103](https://github.com/stac-utils/pystac/pull/1103))
+
 ## [v1.7.2]
 
 ### Fixed
