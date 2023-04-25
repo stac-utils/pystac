@@ -19,7 +19,7 @@ setup(
     author="stac-utils",
     author_email="stac@radiant.earth",
     url="https://github.com/stac-utils/pystac",
-    packages=find_packages(exclude=["tests*"]),
+    packages=find_packages(exclude=["tests*", "benchmarks*"]),
     package_data={"": ["py.typed", "*.jinja2"]},
     py_modules=[splitext(basename(path))[0] for path in glob("pystac/*.py")],
     python_requires=">=3.8",
