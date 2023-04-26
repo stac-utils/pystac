@@ -2,6 +2,7 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 
 import pytest
 
@@ -142,3 +143,10 @@ def test_retry_stac_io_404() -> None:
             "https://planetarycomputer.microsoft.com"
             "/api/stac/v1/collections/not-a-collection-id"
         )
+
+
+def test_save_http_href_errors(tmp_path: Path) -> None:
+    catalog = pystac.Catalog(id="test-catalog", description="")
+    catalog.set_self_href("http://pystac.test/catalog.json")
+    with pytest.raises(NotImplementedError):
+        catalog.save_object()
