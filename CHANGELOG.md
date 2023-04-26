@@ -24,6 +24,12 @@
 - Catalog `get_item()`. Use `get_items(id)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - Catalog and Collection `get_all_items`. Use `get_items(recursive=True)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 
+## [v1.7.3]
+
+### Fixed
+
+- Duplicate `self` links in Items ([#1103](https://github.com/stac-utils/pystac/pull/1103))
+
 ## [v1.7.2]
 
 ### Fixed
@@ -698,7 +704,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.7.2..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.7.3..main>
+[v1.7.3]: <https://github.com/stac-utils/pystac/compare/v1.7.2..v1.7.3>
 [v1.7.2]: <https://github.com/stac-utils/pystac/compare/v1.7.1..v1.7.2>
 [v1.7.1]: <https://github.com/stac-utils/pystac/compare/v1.7.0..v1.7.1>
 [v1.7.0]: <https://github.com/stac-utils/pystac/compare/v1.6.1..v1.7.0>

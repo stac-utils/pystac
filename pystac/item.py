@@ -6,7 +6,7 @@ from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
-from pystac import STACError, STACObjectType
+from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.collection import Collection
@@ -473,13 +473,9 @@ class Item(STACObject):
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
         )
 
-        has_self_link = False
         for link in links:
-            has_self_link |= link["rel"] == pystac.RelType.SELF
-            item.add_link(Link.from_dict(link))
-
-        if not has_self_link and href is not None:
-            item.add_link(Link.self_href(href))
+            if href is None or link.get("rel", None) != RelType.SELF:
+                item.add_link(Link.from_dict(link))
 
         if root:
             item.set_root(root)

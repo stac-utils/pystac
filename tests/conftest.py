@@ -1,14 +1,13 @@
 # TODO move all test case code to this file
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
 from pystac import Catalog, Collection, Item
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
-
 
 here = Path(__file__).resolve().parent
 
@@ -46,3 +45,8 @@ def projection_landsat8_item() -> Item:
 
 def get_data_file(rel_path: str) -> str:
     return str(here / "data-files" / rel_path)
+
+
+@pytest.fixture
+def sample_item() -> Item:
+    return Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
