@@ -326,6 +326,8 @@ class DefaultStacIO(StacIO):
             href : The path to which the file will be written.
             txt : The string content to write to the file.
         """
+        if _is_url(href):
+            raise NotImplementedError("DefaultStacIO cannot write to urls")
         href = os.fspath(href)
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):

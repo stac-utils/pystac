@@ -17,6 +17,7 @@
 - Removed documentation references to `to_dict` methods returning JSON ([#1074](https://github.com/stac-utils/pystac/pull/1074))
 - Expand support for previous extension schema URIs ([#1091](https://github.com/stac-utils/pystac/pull/1091))
 - Use `pyproject.toml` instead of `setup.py` ([#1100](https://github.com/stac-utils/pystac/pull/1100))
+- `DefaultStacIO` now raises an error if it tries to write to a non-local url ([#1107](https://github.com/stac-utils/pystac/pull/1107))
 
 ### Deprecated
 
