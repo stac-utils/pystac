@@ -99,3 +99,13 @@ class TestMigrate:
             match=r"^Item Assets extension does not apply to type 'object'$",
         ):
             ItemAssetsExtension.ext(object())  # type: ignore
+
+
+def test_migrate_works_even_if_stac_extensions_is_null(
+    test_case_1_catalog: pystac.Catalog,
+) -> None:
+    collection = list(test_case_1_catalog.get_all_collections())[0]
+    collection_dict = collection.to_dict()
+    collection_dict["stac_extensions"] = None
+
+    pystac.Collection.from_dict(collection_dict, migrate=True)

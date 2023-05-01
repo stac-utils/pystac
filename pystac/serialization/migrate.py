@@ -184,15 +184,10 @@ def migrate_to_latest(
 
     if version != STACVersion.DEFAULT_STAC_VERSION:
         object_migrations[info.object_type](result, version, info)
-        if "stac_extensions" not in result:
-            # Force stac_extensions property, as it makes
-            # downstream migration less complex
-            result["stac_extensions"] = []
         result["stac_version"] = STACVersion.DEFAULT_STAC_VERSION
-    else:
-        # Ensure stac_extensions property for consistency
-        if "stac_extensions" not in result:
-            result["stac_extensions"] = []
+
+    # Ensure stac_extensions property for consistency
+    result["stac_extensions"] = result.get("stac_extensions", None) or []
 
     pystac.EXTENSION_HOOKS.migrate(result, version, info)
     for ext in result["stac_extensions"][:]:
