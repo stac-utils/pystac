@@ -67,7 +67,7 @@ class Link(PathLike):
     """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
     preferred. See :class:`~pystac.RelType` for common media types."""
 
-    media_type: Optional[str]
+    media_type: Optional[Union[str, pystac.MediaType]]
     """Optional description of the media type. Registered Media Types are preferred.
     See :class:`~pystac.MediaType` for common media types."""
 
@@ -88,7 +88,7 @@ class Link(PathLike):
         self,
         rel: Union[str, pystac.RelType],
         target: Union[str, STACObject],
-        media_type: Optional[str] = None,
+        media_type: Optional[Union[str, pystac.MediaType]] = None,
         title: Optional[str] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
@@ -372,12 +372,12 @@ class Link(PathLike):
         """
 
         d: Dict[str, Any] = {
-            "rel": self.rel,
+            "rel": str(self.rel),
             "href": self.get_href(transform_href=transform_href),
         }
 
         if self.media_type is not None:
-            d["type"] = self.media_type
+            d["type"] = str(self.media_type)
 
         if self.title is not None:
             d["title"] = self.title

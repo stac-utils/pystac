@@ -205,8 +205,8 @@ class LinkTest(unittest.TestCase):
         link = pystac.Link(pystac.RelType.SELF, href, pystac.MediaType.JSON, title)
         link_dict = link.to_dict()
 
-        self.assertEqual(str(link_dict["rel"]), "self")
-        self.assertEqual(str(link_dict["type"]), "application/json")
+        self.assertEqual(link_dict["rel"], "self")
+        self.assertEqual(link_dict["type"], "application/json")
         self.assertEqual(link_dict["title"], title)
         self.assertEqual(link_dict["href"], href)
 
