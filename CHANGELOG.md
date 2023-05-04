@@ -19,6 +19,7 @@
 - Use `pyproject.toml` instead of `setup.py` ([#1100](https://github.com/stac-utils/pystac/pull/1100))
 - `DefaultStacIO` now raises an error if it tries to write to a non-local url ([#1107](https://github.com/stac-utils/pystac/pull/1107))
 - Allow instantiation of pystac objects even with `"stac_extensions": null` ([#1109](https://github.com/stac-utils/pystac/pull/1109))
+- Make `Link.to_dict()` only contain strings ([#1114](https://github.com/stac-utils/pystac/pull/1114))
 
 ### Deprecated
 
