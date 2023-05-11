@@ -222,6 +222,66 @@ class TestCatalog:
         with pytest.raises(pystac.STACError):
             cat.add_child(item)  # type:ignore
 
+    def test_add_child_override_parent(self) -> None:
+        parent1 = Catalog(id="parent1", description="test1")
+        parent2 = Catalog(id="parent2", description="test2")
+        child = Catalog(id="child", description="test3")
+        assert child.get_parent() is None
+
+        parent1.add_child(child)
+        assert child.get_parent() is parent1
+
+        parent2.add_child(child)
+        assert child.get_parent() is parent2
+
+    def test_add_child_keep_parent(self) -> None:
+        parent1 = Catalog(id="parent1", description="test1")
+        parent2 = Catalog(id="parent2", description="test2")
+        child = Catalog(id="child", description="test3")
+        assert child.get_parent() is None
+
+        parent1.add_child(child, keep_parent=True)
+        assert child.get_parent() is parent1
+
+        parent2.add_child(child, keep_parent=True)
+        assert child.get_parent() is parent1
+
+    def test_add_item_override_parent(self) -> None:
+        parent1 = Catalog(id="parent1", description="test1")
+        parent2 = Catalog(id="parent2", description="test2")
+        child = Item(
+            id="child",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        assert child.get_parent() is None
+
+        parent1.add_item(child)
+        assert child.get_parent() is parent1
+
+        parent2.add_item(child)
+        assert child.get_parent() is parent2
+
+    def test_add_item_keep_parent(self) -> None:
+        parent1 = Catalog(id="parent1", description="test1")
+        parent2 = Catalog(id="parent2", description="test2")
+        child = Item(
+            id="child",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        assert child.get_parent() is None
+
+        parent1.add_item(child, keep_parent=True)
+        assert child.get_parent() is parent1
+
+        parent2.add_item(child, keep_parent=True)
+        assert child.get_parent() is parent1
+
     def test_add_item_throws_if_child(self) -> None:
         cat = TestCases.case_1()
         child = next(iter(cat.get_children()))
