@@ -12,6 +12,8 @@
 - `keep_parent` to Catalog `add_item` and `add_child` to avoid overriding existing parents ([#1117](https://github.com/stac-utils/pystac/pull/1117))
 - `owner` attribute to `AssetDefinition` in the item-assets extension ([#1110](https://github.com/stac-utils/pystac/pull/1110))
 - Windows `\\` path delimiters are converted to POSIX style `/` delimiters ([#1125](https://github.com/stac-utils/pystac/pull/1125))
+- Updated raster extension to work with the item_assets extension's AssetDefinition objects ([#1110](https://github.com/stac-utils/pystac/pull/1110))
+- Classification extension ([#1093](https://github.com/stac-utils/pystac/pull/1093)), with support for adding classification information to item_assets' `AssetDefinition`s and raster's `RasterBand` objects.
 
 ### Changed
 
