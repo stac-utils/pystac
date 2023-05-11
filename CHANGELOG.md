@@ -10,6 +10,7 @@
 - MGRS Extension ([#1088](https://github.com/stac-utils/pystac/pull/1088))
 - All HTTP requests are logged when level is set to `logging.DEBUG` ([#1096](https://github.com/stac-utils/pystac/pull/1096))
 - `keep_parent` to Catalog `add_item` and `add_child` to avoid overriding existing parents ([#1117](https://github.com/stac-utils/pystac/pull/1117))
+- `owner` attribute to `AssetDefinition` in the item-assets extension ([#1110](https://github.com/stac-utils/pystac/pull/1110))
 
 ### Changed
 
@@ -21,6 +22,7 @@
 - `DefaultStacIO` now raises an error if it tries to write to a non-local url ([#1107](https://github.com/stac-utils/pystac/pull/1107))
 - Allow instantiation of pystac objects even with `"stac_extensions": null` ([#1109](https://github.com/stac-utils/pystac/pull/1109))
 - Make `Link.to_dict()` only contain strings ([#1114](https://github.com/stac-utils/pystac/pull/1114))
+- Updated raster extension to work with the item_assets extension's AssetDefinition objects ([#1110](https://github.com/stac-utils/pystac/pull/1110))
 
 ### Deprecated
 
