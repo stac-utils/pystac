@@ -553,8 +553,9 @@ class Collection(Catalog):
         item: Item,
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
+        keep_parent: bool = False,
     ) -> None:
-        super().add_item(item, title, strategy)
+        super().add_item(item, title, strategy, keep_parent)
         item.set_collection(self)
 
     def to_dict(

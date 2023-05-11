@@ -240,10 +240,12 @@ class Catalog(STACObject):
         child: Union["Catalog", Collection],
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
+        keep_parent: bool = False,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or
         :class:`~pystac.Collection`. This method will set the child's parent to this
-        object, and its root to this Catalog's root.
+        object (except if a parent is set and keep_parent is true).
+        It will always set its root to this Catalog's root.
 
         Args:
             child : The child to add.
@@ -261,7 +263,8 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         child.set_root(self.get_root())
-        child.set_parent(self)
+        if child.get_parent() is None or not keep_parent:
+            child.set_parent(self)
 
         # set self link
         self_href = self.get_self_href()
@@ -287,10 +290,12 @@ class Catalog(STACObject):
         item: Item,
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
+        keep_parent: bool = False,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
-        This method will set the item's parent to this object, and its root to
-        this Catalog's root.
+        This method will set the item's parent to this object (except if a parent
+        is set and keep_parent is true).
+        It will always set its root to this Catalog's root.
 
         Args:
             item : The item to add.
@@ -308,7 +313,8 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         item.set_root(self.get_root())
-        item.set_parent(self)
+        if item.get_parent() is None or not keep_parent:
+            item.set_parent(self)
 
         # set self link
         self_href = self.get_self_href()
