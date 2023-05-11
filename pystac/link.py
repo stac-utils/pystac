@@ -334,7 +334,8 @@ class Link(PathLike):
             and isinstance(self.owner, pystac.Catalog)
         ):
             assert self._target_object
-            self._target_object.set_parent(self.owner)
+            if self._target_object.get_parent() is None:
+                self._target_object.set_parent(self.owner)
 
         return self
 

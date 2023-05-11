@@ -718,9 +718,16 @@ class Catalog(STACObject):
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        def process_item(item: Item, _root_href: str) -> Callable[[], None]:
+        def process_item(
+            item: Item, _root_href: str, parent: Optional[Catalog]
+        ) -> Optional[Callable[[], None]]:
             if not skip_unresolved:
                 item.resolve_links()
+
+            # Abort as the intended parent is not the actual parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if parent is not None and item.get_parent() != parent:
+                return None
 
             new_self_href = _strategy.get_href(item, _root_href)
 
@@ -730,12 +737,20 @@ class Catalog(STACObject):
             return fn
 
         def process_catalog(
-            cat: Catalog, _root_href: str, is_root: bool
+            cat: Catalog,
+            _root_href: str,
+            is_root: bool,
+            parent: Optional[Catalog] = None,
         ) -> List[Callable[[], None]]:
             setter_funcs: List[Callable[[], None]] = []
 
             if not skip_unresolved:
                 cat.resolve_links()
+
+            # Abort as the intended parent is not the actual parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if parent is not None and cat.get_parent() != parent:
+                return setter_funcs
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
             new_root = os.path.dirname(new_self_href)
@@ -745,9 +760,11 @@ class Catalog(STACObject):
                     continue
                 elif link.rel == pystac.RelType.ITEM:
                     link.resolve_stac_object(root=self.get_root())
-                    setter_funcs.append(
-                        process_item(cast(pystac.Item, link.target), new_root)
+                    item_fn = process_item(
+                        cast(pystac.Item, link.target), new_root, cat
                     )
+                    if item_fn is not None:
+                        setter_funcs.append(item_fn)
                 elif link.rel == pystac.RelType.CHILD:
                     link.resolve_stac_object(root=self.get_root())
                     setter_funcs.extend(
@@ -755,6 +772,7 @@ class Catalog(STACObject):
                             cast(Union[pystac.Catalog, pystac.Collection], link.target),
                             new_root,
                             is_root=False,
+                            parent=cat,
                         )
                     )
 

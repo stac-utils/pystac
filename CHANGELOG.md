@@ -30,6 +30,11 @@
 - Catalog `get_item()`. Use `get_items(id)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - Catalog and Collection `get_all_items`. Use `get_items(recursive=True)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 
+### Fixed
+
+- If a child catalog is linked to from two parents, the creation folder depends on the parent link instead of relying on the order of add_child calls ([#1118](https://github.com/stac-utils/pystac/pull/1118))
+- Don't override an existing parent link when determining the href's ([#1118](https://github.com/stac-utils/pystac/pull/1118))
+
 ## [v1.7.3]
 
 ### Fixed

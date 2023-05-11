@@ -264,6 +264,28 @@ class TestCatalog:
         parent2.add_item(child)
         assert child.get_parent() is parent2
 
+    def test_add_child_store_at_parent_location(self) -> None:
+        root = pystac.Catalog("root", "root")
+        left = pystac.Catalog("left", "left")
+        right = pystac.Catalog("right", "right")
+
+        root.add_child(left)
+        root.add_child(right)
+
+        child = pystac.Catalog("child", "child")
+
+        left.add_child(child)
+        right.add_child(child, keep_parent=True)
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root.normalize_and_save(
+                temporary_directory, pystac.CatalogType.ABSOLUTE_PUBLISHED
+            )
+            correct_path = os.path.join(temporary_directory, "left/child/catalog.json")
+            wrong_path = os.path.join(temporary_directory, "right/child/catalog.json")
+            assert os.path.exists(correct_path)
+            assert not os.path.exists(wrong_path)
+
     def test_add_item_keep_parent(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
