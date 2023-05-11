@@ -85,6 +85,7 @@ from pystac.utils import HREF
 import pystac.validation
 
 import pystac.extensions.hooks
+import pystac.extensions.classification
 import pystac.extensions.datacube
 import pystac.extensions.eo
 import pystac.extensions.file
@@ -106,6 +107,7 @@ import pystac.extensions.view
 
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [
+        pystac.extensions.classification.CLASSIFICATION_EXTENSION_HOOKS,
         pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
         pystac.extensions.eo.EO_EXTENSION_HOOKS,
         pystac.extensions.file.FILE_EXTENSION_HOOKS,
