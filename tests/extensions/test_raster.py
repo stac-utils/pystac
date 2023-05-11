@@ -4,6 +4,7 @@ import unittest
 import pytest
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.raster import (
     DataType,
     Histogram,
@@ -24,6 +25,9 @@ class RasterTest(unittest.TestCase):
     )
     SENTINEL2_EXAMPLE_URI = TestCases.get_path(
         "data-files/raster/raster-sentinel2-example.json"
+    )
+    LANDSAT_COLLECTION_EXAMPLE_URI = TestCases.get_path(
+        "data-files/raster/landsat-collection-example.json"
     )
     GDALINFO_EXAMPLE_URI = TestCases.get_path("data-files/raster/gdalinfo.json")
 
@@ -272,6 +276,15 @@ class RasterTest(unittest.TestCase):
 
         RasterExtension.remove_from(col)
         self.assertNotIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+
+    def test_collection_item_asset(self) -> None:
+        coll = pystac.Collection.from_file(self.LANDSAT_COLLECTION_EXAMPLE_URI)
+
+        qa = ItemAssetsExtension.ext(coll).item_assets["qa"]
+        ang = ItemAssetsExtension.ext(coll).item_assets["ang"]
+
+        assert RasterExtension.ext(qa).bands is not None
+        assert RasterExtension.ext(ang).bands is None
 
 
 @pytest.fixture

@@ -30,8 +30,13 @@ class AssetDefinition:
 
     properties: Dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    owner: Optional[pystac.Collection]
+
+    def __init__(
+        self, properties: Dict[str, Any], owner: Optional[pystac.Collection] = None
+    ) -> None:
         self.properties = properties
+        self.owner = owner
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, AssetDefinition):
@@ -107,6 +112,17 @@ class AssetDefinition:
         self.description = description
         self.media_type = media_type
         self.roles = roles
+        self.owner = None
+
+    def set_owner(self, obj: pystac.Collection) -> None:
+        """Sets the owning item of this AssetDefinition.
+
+        The owning item will be used to resolve relative HREFs of this asset.
+
+        Args:
+            obj: The Collection that owns this asset.
+        """
+        self.owner = obj
 
     @property
     def title(self) -> Optional[str]:
@@ -202,7 +218,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         result: Dict[str, Any] = get_required(
             self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
         )
-        return {k: AssetDefinition(v) for k, v in result.items()}
+        return {k: AssetDefinition(v, self.collection) for k, v in result.items()}
 
     @item_assets.setter
     def item_assets(self, v: Dict[str, AssetDefinition]) -> None:
