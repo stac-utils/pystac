@@ -58,7 +58,8 @@ class TestValidate:
                 try:
                     pystac.validation.validate_dict(stac_json)
                 except pystac.STACValidationError as e:
-                    assert isinstance(e.source, jsonschema.ValidationError)
+                    assert isinstance(e.source, list)
+                    assert isinstance(e.source[0], jsonschema.ValidationError)
                     raise e
 
     def test_validate_error_contains_href(self) -> None:
