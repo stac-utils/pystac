@@ -159,9 +159,36 @@ class JsonSchemaSTACValidator(STACValidator):
 
         return schema, resolver
 
-    def _validate_from_uri(self, stac_dict: Dict[str, Any], schema_uri: str) -> None:
-        schema, resolver = self.get_schema_from_uri(schema_uri)
-        jsonschema.validate(instance=stac_dict, schema=schema, resolver=resolver)
+    def _validate_from_uri(
+        self,
+        stac_dict: Dict[str, Any],
+        stac_object_type: STACObjectType,
+        schema_uri: str,
+        extension_id: Optional[str] = None,
+        href: Optional[str] = None,
+    ) -> None:
+        try:
+            schema, resolver = self.get_schema_from_uri(schema_uri)
+            # This block is cribbed (w/ change in error handling) from
+            # jsonschema.validate
+            cls = jsonschema.validators.validator_for(schema)
+            cls.check_schema(schema)
+            validator = cls(schema, resolver=resolver)
+            errors = list(validator.iter_errors(stac_dict))
+        except Exception as e:
+            logger.error(f"Exception while validating {stac_object_type} href: {href}")
+            logger.exception(e)
+            raise
+        if errors:
+            msg = self._get_error_message(
+                schema_uri,
+                stac_object_type,
+                extension_id,
+                href,
+                stac_dict.get("id", None),
+            )
+            best = jsonschema.exceptions.best_match(errors)
+            raise pystac.STACValidationError(msg, source=errors) from best
         for uri in resolver.store:
             if uri not in self.schema_cache:
                 self.schema_cache[uri] = resolver.store[uri]
@@ -206,6 +233,12 @@ class JsonSchemaSTACValidator(STACValidator):
         Returns:
            str: URI for the JSON schema that was validated against, or None if
                no validation occurred.
+
+        Raises:
+           STACValidationError if stac_dict is not valid. The exception is raised from
+               the "best" error, as determined by the jsonschema library. To access all
+               jsonschema validation errors, use ``STACValidationError.source``.
+
         """
         schema_uri = self.schema_uri_map.get_object_schema_uri(
             stac_object_type, stac_version
@@ -214,14 +247,8 @@ class JsonSchemaSTACValidator(STACValidator):
         if schema_uri is None:
             return None
 
-        try:
-            self._validate_from_uri(stac_dict, schema_uri)
-            return schema_uri
-        except jsonschema.exceptions.ValidationError as e:
-            msg = self._get_error_message(
-                schema_uri, stac_object_type, None, href, stac_dict.get("id")
-            )
-            raise pystac.STACValidationError(msg, source=e) from e
+        self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href=href)
+        return schema_uri
 
     def validate_extension(
         self,
@@ -246,6 +273,12 @@ class JsonSchemaSTACValidator(STACValidator):
         Returns:
            str: URI for the JSON schema that was validated against, or None if
                no validation occurred.
+
+        Raises:
+           STACValidationError if stac_dict is not valid. The exception is raised from
+               the "best" error, as determined by the jsonschema library. To access all
+               jsonschema validation errors, use ``STACValidationError.source``.
+
         """
         schema_uri = extension_id
 
@@ -253,15 +286,7 @@ class JsonSchemaSTACValidator(STACValidator):
             return None
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
-        try:
-            self._validate_from_uri(stac_dict, schema_uri)
-            return schema_uri
-        except jsonschema.exceptions.ValidationError as e:
-            msg = self._get_error_message(
-                schema_uri, stac_object_type, extension_id, href, stac_dict.get("id")
-            )
-            raise pystac.STACValidationError(msg, source=e) from e
-        except Exception as e:
-            logger.error(f"Exception while validating {stac_object_type} href: {href}")
-            logger.exception(e)
-            raise
+        self._validate_from_uri(
+            stac_dict, stac_object_type, schema_uri, extension_id, href
+        )
+        return schema_uri
