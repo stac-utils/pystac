@@ -20,5 +20,10 @@
     "benchmark_dir": "benchmarks",
     "env_dir": ".asv/env",
     "results_dir": ".asv/results",
-    "html_dir": ".asv/html"
+    "html_dir": ".asv/html",
+    "build_command": [
+        "pip install build",
+        "python -m build",
+        "PIP_NO_BUILD_ISOLATION=false python -mpip wheel --no-deps --no-index -w {build_cache_dir} {build_dir}"
+    ]
 }
