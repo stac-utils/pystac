@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from itertools import chain
-import warnings
 import os
+import warnings
 from copy import deepcopy
 from html import escape
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
