@@ -69,7 +69,9 @@ class TestIdentify:
         with pytest.raises(pystac.STACTypeError) as ctx:
             identify_stac_object(invalid_dict)
 
-        assert "JSON does not represent a STAC object" in str(ctx.value.args[0])
+        assert "JSON (id = concepts) does not represent a STACObject instance." in str(
+            ctx.value.args[0]
+        )
 
     def test_identify_non_stac_raises_error(self) -> None:
         plain_feature_dict = {
@@ -81,7 +83,9 @@ class TestIdentify:
         with pytest.raises(pystac.STACTypeError) as ctx:
             identify_stac_object(plain_feature_dict)
 
-        assert "JSON does not represent a STAC object" in str(ctx.value.args[0])
+        assert "JSON (id = unknown) does not represent a STACObject instance." in str(
+            ctx.value.args[0]
+        )
 
     def test_identify_invalid_with_stac_version(self) -> None:
         not_stac = {"stac_version": "0.9.0", "type": "Custom"}
