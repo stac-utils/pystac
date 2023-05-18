@@ -105,6 +105,12 @@ class TestCatalog:
         _ = Catalog.from_dict(param_dict, preserve_dict=False)
         assert param_dict != catalog_dict
 
+    def test_from_file_bad_catalog(self) -> None:
+        with pytest.raises(pystac.errors.STACTypeError) as ctx:
+            _ = Catalog.from_file(TestCases.get_path(TestCases.bad_catalog_case))
+        assert "(id = broken_cat) does not represent a STACObject" in ctx.value.args[0]
+        assert "is Catalog" in ctx.value.args[0]
+
     def test_from_dict_set_root(self) -> None:
         path = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         with open(path) as f:
@@ -1281,7 +1287,7 @@ class TestCatalog:
         # cached only by HREF
         assert len(cache.id_keys_to_objects) == 0
 
-    def testfrom_invalid_dict_raises_exception(self) -> None:
+    def test_from_invalid_dict_raises_exception(self) -> None:
         stac_io = pystac.StacIO.default()
         collection_dict = stac_io.read_json(
             TestCases.get_path("data-files/collections/multi-extent.json")

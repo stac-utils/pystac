@@ -432,9 +432,7 @@ class Item(STACObject):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise pystac.STACTypeError(
-                f"{d} does not represent a {cls.__name__} instance"
-            )
+            raise pystac.STACTypeError(d, cls)
 
         # some fields are passed through to __init__
         pass_through_fields = [
@@ -505,22 +503,10 @@ class Item(STACObject):
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(
-        cls: Type[T], href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> T:
-        result = super().from_file(href, stac_io)
-        if not isinstance(result, Item):
-            raise pystac.STACTypeError(f"{result} is not a {Item}.")
-        return result
-
-    @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         for field in ("type", "stac_version"):
             if field not in d:
-                raise pystac.STACTypeError(
-                    f"{d} does not represent a {cls.__name__} instance"
-                    f"'{field}' is missing."
-                )
+                raise pystac.STACTypeError(d, cls, f"'{field}' is missing.")
         return identify_stac_object_type(d) == STACObjectType.ITEM
 
     @property

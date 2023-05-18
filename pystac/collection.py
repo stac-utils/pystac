@@ -627,7 +627,7 @@ class Collection(Catalog):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise STACTypeError(d, cls)
 
         catalog_type = CatalogType.determine_type(d)
 
@@ -753,15 +753,6 @@ class Collection(Catalog):
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
     ) -> Collection:
         return cast(Collection, super().full_copy(root, parent))
-
-    @classmethod
-    def from_file(
-        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> C:
-        result = super().from_file(href, stac_io)
-        if not isinstance(result, Collection):
-            raise pystac.STACTypeError(f"{result} is not a {Collection}.")
-        return result
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
