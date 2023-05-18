@@ -10,6 +10,7 @@ repos:
         language: system
         stages: [commit]
         types: [python]
+        args: [--fix, --exit-non-zero-on-fix]
 
       - id: black
         name: black
