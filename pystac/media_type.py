@@ -18,5 +18,6 @@ class MediaType(StringEnum):
     PNG = "image/png"
     TEXT = "text/plain"
     TIFF = "image/tiff"
+    KML = "application/vnd.google-earth.kml+xml"
     XML = "application/xml"
     PDF = "application/pdf"
