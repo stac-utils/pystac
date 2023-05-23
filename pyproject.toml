@@ -37,7 +37,6 @@ bench = [
 docs = [
     "Sphinx~=6.2",
     "ipython~=8.12",
-    "jinja2<4.0",
     "jupyter~=1.0",
     "nbsphinx~=0.9",
     "pydata-sphinx-theme~=0.13",
@@ -52,7 +51,6 @@ test = [
     "coverage~=7.2",
     "doc8~=1.1",
     "html5lib~=1.1",
-    "jinja2<4.0",
     "jsonschema~=4.17",
     "mypy~=1.2",
     "orjson~=3.8",

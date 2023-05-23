@@ -531,6 +531,9 @@ class STACObject(ABC):
         """
         raise NotImplementedError
 
+    def _repr_json_(self) -> Dict[str, Any]:
+        return self.to_dict()
+
     @abstractmethod
     def clone(self) -> STACObject:
         """Clones this object.

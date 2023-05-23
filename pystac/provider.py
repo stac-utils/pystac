@@ -1,7 +1,5 @@
-from html import escape
 from typing import Any, Dict, List, Optional
 
-from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import StringEnum
 
 
@@ -72,13 +70,8 @@ class Provider:
             return NotImplemented
         return self.to_dict() == o.to_dict()
 
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Provider.jinja2")
-            return str(template.render(provider=self))
-        else:
-            return escape(repr(self))
+    def _repr_json_(self) -> Dict[str, Any]:
+        return self.to_dict()
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns this provider as a dictionary.

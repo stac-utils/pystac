@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from copy import copy, deepcopy
-from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
 
 from pystac import common_metadata, utils
-from pystac.html.jinja_env import get_jinja_env
 
 if TYPE_CHECKING:
     from pystac.collection import Collection
@@ -178,13 +176,8 @@ class Asset:
     def __repr__(self) -> str:
         return "<Asset href={}>".format(self.href)
 
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Asset.jinja2")
-            return str(template.render(asset=self))
-        else:
-            return escape(repr(self))
+    def _repr_json_(self) -> Dict[str, Any]:
+        return self.to_dict()
 
     @classmethod
     def from_dict(cls: Type[A], d: Dict[str, Any]) -> A:

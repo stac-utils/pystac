@@ -4,7 +4,6 @@ from itertools import chain
 import warnings
 import os
 from copy import deepcopy
-from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -24,7 +23,6 @@ from typing import (
 import pystac
 from pystac.cache import ResolvedObjectCache
 from pystac.errors import STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -206,14 +204,6 @@ class Catalog(STACObject):
 
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self))
-        else:
-            return escape(repr(self))
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)

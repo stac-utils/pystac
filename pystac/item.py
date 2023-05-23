@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import warnings
 from copy import copy, deepcopy
-from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
@@ -11,7 +10,6 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
-from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.serialization import (
     identify_stac_object,
@@ -171,14 +169,6 @@ class Item(STACObject):
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Item.jinja2")
-            return str(template.render(item=self))
-        else:
-            return escape(repr(self))
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
