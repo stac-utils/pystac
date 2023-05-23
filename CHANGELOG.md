@@ -24,6 +24,7 @@
 - Make `Link.to_dict()` only contain strings ([#1114](https://github.com/stac-utils/pystac/pull/1114))
 - Updated raster extension to work with the item_assets extension's AssetDefinition objects ([#1110](https://github.com/stac-utils/pystac/pull/1110))
 - Return all validation errors from validation methods of `JsonSchemaSTACValidator` ([#1120](https://github.com/stac-utils/pystac/pull/1120))
+- EO extension updated to v1.1.0 ([#1131](https://github.com/stac-utils/pystac/pull/1131))
 
 ### Deprecated
 
