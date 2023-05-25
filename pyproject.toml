@@ -84,6 +84,10 @@ exclude = ["tests*", "benchmarks*"]
 [tool.setuptools.dynamic]
 version = { attr = "pystac.version.__version__" }
 
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "I"]
+
 [tool.pytest]
 filterwarnings = "error:::pystac[.*]"
 
