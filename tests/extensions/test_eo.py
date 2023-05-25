@@ -1,15 +1,16 @@
 import json
 import unittest
+
 import pytest
 
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.extensions.eo import Band, EOExtension, PREFIX, SNOW_COVER_PROP
+from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, Band, EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
-from tests.utils import TestCases, assert_to_from_dict
 from tests.conftest import get_data_file
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class BandsTest(unittest.TestCase):
