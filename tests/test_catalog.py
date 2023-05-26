@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import posixpath
 import tempfile
 import unittest
 from collections import defaultdict
@@ -24,10 +25,9 @@ from pystac import (
 )
 from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.utils import (
-    JoinType,
     is_absolute_href,
-    join_path_or_url,
     make_absolute_href,
+    make_posix_style,
     make_relative_href,
 )
 from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, MockStacIO, TestCases
@@ -545,7 +545,7 @@ class TestCatalog:
     def test_normalize_hrefs_makes_absolute_href(self) -> None:
         catalog = TestCases.case_1()
         catalog.normalize_hrefs("./relativepath")
-        abspath = os.path.abspath("./relativepath")
+        abspath = make_posix_style(os.path.abspath("./relativepath"))
         self_href = catalog.get_self_href()
         assert self_href is not None
         assert self_href.startswith(abspath)
@@ -769,7 +769,7 @@ class TestCatalog:
             assert item_parent is not None
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
-            subcats = [el for el in path_to_parent.split(os.sep) if el]
+            subcats = [el for el in path_to_parent.split("/") if el]
             assert len(subcats) == 2, " for item '{}'".format(item.id)
 
     def test_map_items(self) -> None:
@@ -1193,16 +1193,17 @@ class TestCatalog:
             for root, _, items in read_catalog.walk():
                 parent = root.get_parent()
                 if parent is None:
-                    assert root.get_self_href() == os.path.join(tmp_dir, "catalog.json")
+                    assert root.get_self_href() == make_posix_style(
+                        os.path.join(tmp_dir, "catalog.json")
+                    )
                 else:
                     d = os.path.dirname(parent.self_href)
-                    assert root.get_self_href() == os.path.join(
-                        d, root.id, root.DEFAULT_FILE_NAME
+                    assert root.get_self_href() == make_posix_style(
+                        os.path.join(d, root.id, root.DEFAULT_FILE_NAME)
                     )
                 for item in items:
                     assert item.datetime is not None
-                    end = join_path_or_url(
-                        JoinType.PATH,
+                    end = posixpath.join(
                         "{}-{}".format(item.datetime.year, item.datetime.month),
                         "{}.json".format(item.id),
                     )

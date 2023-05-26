@@ -14,7 +14,13 @@ import pytest
 import pystac
 import pystac.serialization.common_properties
 from pystac import Asset, Catalog, Item
-from pystac.utils import datetime_to_str, get_opt, is_absolute_href, str_to_datetime
+from pystac.utils import (
+    datetime_to_str,
+    get_opt,
+    is_absolute_href,
+    make_posix_style,
+    str_to_datetime,
+)
 from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -84,8 +90,8 @@ class ItemTest(unittest.TestCase):
         item.set_self_href(item_path)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = os.path.abspath(
-            os.path.join(os.path.dirname(item_path), "./data.geojson")
+        expected_href = make_posix_style(
+            os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
         )
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)

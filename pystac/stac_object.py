@@ -18,7 +18,12 @@ from typing import (
 import pystac
 from pystac import STACError
 from pystac.link import Link
-from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
+from pystac.utils import (
+    StringEnum,
+    is_absolute_href,
+    make_absolute_href,
+    make_posix_style,
+)
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
@@ -563,6 +568,8 @@ class STACObject(ABC):
         if cls == STACObject:
             return cast(S, pystac.read_file(href))
 
+        href = make_posix_style(href)
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
@@ -571,10 +578,6 @@ class STACObject(ABC):
 
         d = stac_io.read_json(href)
         o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
-
-        # Set the self HREF, if it's not already set to something else.
-        if o.get_self_href() is None:
-            o.set_self_href(href)
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
