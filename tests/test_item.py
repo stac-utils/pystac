@@ -490,34 +490,37 @@ def test_duplicate_self_links(tmp_path: Path, sample_item: pystac.Item) -> None:
 
 def test_get_derived_from_when_none_exists(test_case_1_catalog: Catalog) -> None:
     item = next(test_case_1_catalog.get_items(recursive=True))
-    assert item.get_derived_from() is None
+    assert item.get_derived_from() == []
     for link in item.links:
         assert link.rel != pystac.RelType.DERIVED_FROM
     assert item.get_single_link(pystac.RelType.DERIVED_FROM) is None
 
 
-def test_set_derived_from(test_case_1_catalog: Catalog) -> None:
+def test_add_derived_from(test_case_1_catalog: Catalog) -> None:
     items = list(test_case_1_catalog.get_items(recursive=True))
     item_0 = items[0]
     item_1 = items[1]
-    item_0.set_derived_from(item_1)
+    item_2 = items[2]
+    item_0.add_derived_from(item_1, item_2)
     derived_from = item_0.get_derived_from()
-    assert derived_from is not None
-    assert derived_from.id == item_1.id
+    assert len(derived_from) == 2
+    assert derived_from[0].id == item_1.id
+    assert derived_from[1].id == item_2.id
     filtered = [
         link for link in item_0.links if link.rel == pystac.RelType.DERIVED_FROM
     ]
-    assert len(filtered) == 1
+    assert len(filtered) == 2
     assert filtered[0].to_dict()["href"] == item_1.self_href
+    assert filtered[1].to_dict()["href"] == item_2.self_href
 
 
-def test_set_derived_from_to_none(test_case_1_catalog: Catalog) -> None:
+def test_remove_derived_from(test_case_1_catalog: Catalog) -> None:
     items = list(test_case_1_catalog.get_items(recursive=True))
     item_0 = items[0]
     item_1 = items[1]
-    item_0.set_derived_from(item_1)
-    item_0.set_derived_from(None)
-    assert item_0.get_derived_from() is None
+    item_0.add_derived_from(item_1)
+    item_0.remove_derived_from(item_1.id)
+    assert item_0.get_derived_from() == []
     for link in item_0.links:
         assert link.rel != pystac.RelType.DERIVED_FROM
     assert item_0.get_single_link(pystac.RelType.DERIVED_FROM) is None

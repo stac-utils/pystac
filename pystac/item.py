@@ -352,35 +352,48 @@ class Item(STACObject):
         else:
             return cast(Collection, collection_link.resolve_stac_object().target)
 
-    def set_derived_from(self, item: Optional[Item]) -> Item:
-        """Set the item that this is derived from.
+    def add_derived_from(self, *items: Item) -> Item:
+        """Add one or more items that this is derived from.
 
-        This method will replace any existing "derived_from" link.
+        This method will add to any existing "derived_from" links.
 
         Args:
-            item : The item to set as this
-                item's derived_from link. If None, will clear derived_from.
+            items : Items to add to this item's derived_from links.
 
         Returns:
             Item: self
         """
-        self.remove_links(pystac.RelType.DERIVED_FROM)
-        if item is not None:
+        for item in items:
             self.add_link(Link.derived_from(item))
         return self
 
-    def get_derived_from(self) -> Optional[Item]:
-        """Gets the item that this is derived_from if one exists.
+    def remove_derived_from(self, item_id: str) -> None:
+        """Remove an item that this is derived from.
+
+        This method will remove from existing "derived_from" links.
+
+        Args:
+            item_id : ID of item to remove from this item's derived_from links.
+        """
+        new_links: List[pystac.Link] = []
+
+        for link in self.links:
+            if link.rel != pystac.RelType.DERIVED_FROM:
+                new_links.append(link)
+            else:
+                item = cast(Item, link.resolve_stac_object().target)
+                if item.id != item_id:
+                    new_links.append(link)
+        self.links = new_links
+
+    def get_derived_from(self) -> List[Item]:
+        """Get the items that this is derived from.
 
         Returns:
-            Item or None: If this item is derived from an item, returns
-            a reference to the item. Otherwise returns None.
+            List[Item]: Returns a reference to the derived_from items.
         """
-        item_link = self.get_single_link(pystac.RelType.DERIVED_FROM)
-        if item_link is None:
-            return None
-        else:
-            return cast(Item, item_link.resolve_stac_object().target)
+        links = self.get_links(pystac.RelType.DERIVED_FROM)
+        return [cast(Item, link.resolve_stac_object().target) for link in links]
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
