@@ -352,13 +352,13 @@ class Item(STACObject):
         else:
             return cast(Collection, collection_link.resolve_stac_object().target)
 
-    def add_derived_from(self, *items: Item) -> Item:
+    def add_derived_from(self, *items: Union[Item, str]) -> Item:
         """Add one or more items that this is derived from.
 
         This method will add to any existing "derived_from" links.
 
         Args:
-            items : Items to add to this item's derived_from links.
+            items : Items (or href of items) to add to derived_from links.
 
         Returns:
             Item: self
@@ -373,7 +373,7 @@ class Item(STACObject):
         This method will remove from existing "derived_from" links.
 
         Args:
-            item_id : ID of item to remove from this item's derived_from links.
+            item_id : ID of item to remove from derived_from links.
         """
         new_links: List[pystac.Link] = []
 
@@ -381,7 +381,12 @@ class Item(STACObject):
             if link.rel != pystac.RelType.DERIVED_FROM:
                 new_links.append(link)
             else:
-                item = cast(Item, link.resolve_stac_object().target)
+                try:
+                    item = cast(Item, link.resolve_stac_object().target)
+                except Exception as e:
+                    raise pystac.STACError(
+                        "Link failed to resolve. Use remove_links instead."
+                    ) from e
                 if item.id != item_id:
                     new_links.append(link)
         self.links = new_links
@@ -393,7 +398,12 @@ class Item(STACObject):
             List[Item]: Returns a reference to the derived_from items.
         """
         links = self.get_links(pystac.RelType.DERIVED_FROM)
-        return [cast(Item, link.resolve_stac_object().target) for link in links]
+        try:
+            return [cast(Item, link.resolve_stac_object().target) for link in links]
+        except Exception as e:
+            raise pystac.STACError(
+                "Link failed to resolve. Use get_links instead."
+            ) from e
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True

@@ -472,7 +472,9 @@ class Link(PathLike):
         )
 
     @classmethod
-    def derived_from(cls: Type[L], item: Item, title: Optional[str] = None) -> L:
+    def derived_from(
+        cls: Type[L], item: Union[Item, str], title: Optional[str] = None
+    ) -> L:
         """Creates a link to a derived_from Item."""
         return cls(
             pystac.RelType.DERIVED_FROM,
