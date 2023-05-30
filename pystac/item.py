@@ -352,6 +352,36 @@ class Item(STACObject):
         else:
             return cast(Collection, collection_link.resolve_stac_object().target)
 
+    def set_derived_from(self, item: Optional[Item]) -> Item:
+        """Set the item that this is derived from.
+
+        This method will replace any existing "derived_from" link.
+
+        Args:
+            item : The item to set as this
+                item's derived_from link. If None, will clear derived_from.
+
+        Returns:
+            Item: self
+        """
+        self.remove_links(pystac.RelType.DERIVED_FROM)
+        if item is not None:
+            self.add_link(Link.derived_from(item))
+        return self
+
+    def get_derived_from(self) -> Optional[Item]:
+        """Gets the item that this is derived_from if one exists.
+
+        Returns:
+            Item or None: If this item is derived from an item, returns
+            a reference to the item. Otherwise returns None.
+        """
+        item_link = self.get_single_link(pystac.RelType.DERIVED_FROM)
+        if item_link is None:
+            return None
+        else:
+            return cast(Item, item_link.resolve_stac_object().target)
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
