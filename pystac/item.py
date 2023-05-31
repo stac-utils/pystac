@@ -352,6 +352,59 @@ class Item(STACObject):
         else:
             return cast(Collection, collection_link.resolve_stac_object().target)
 
+    def add_derived_from(self, *items: Union[Item, str]) -> Item:
+        """Add one or more items that this is derived from.
+
+        This method will add to any existing "derived_from" links.
+
+        Args:
+            items : Items (or href of items) to add to derived_from links.
+
+        Returns:
+            Item: self
+        """
+        for item in items:
+            self.add_link(Link.derived_from(item))
+        return self
+
+    def remove_derived_from(self, item_id: str) -> None:
+        """Remove an item that this is derived from.
+
+        This method will remove from existing "derived_from" links.
+
+        Args:
+            item_id : ID of item to remove from derived_from links.
+        """
+        new_links: List[pystac.Link] = []
+
+        for link in self.links:
+            if link.rel != pystac.RelType.DERIVED_FROM:
+                new_links.append(link)
+            else:
+                try:
+                    item = cast(Item, link.resolve_stac_object().target)
+                except Exception as e:
+                    raise pystac.STACError(
+                        "Link failed to resolve. Use remove_links instead."
+                    ) from e
+                if item.id != item_id:
+                    new_links.append(link)
+        self.links = new_links
+
+    def get_derived_from(self) -> List[Item]:
+        """Get the items that this is derived from.
+
+        Returns:
+            List[Item]: Returns a reference to the derived_from items.
+        """
+        links = self.get_links(pystac.RelType.DERIVED_FROM)
+        try:
+            return [cast(Item, link.resolve_stac_object().target) for link in links]
+        except Exception as e:
+            raise pystac.STACError(
+                "Link failed to resolve. Use get_links instead."
+            ) from e
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
