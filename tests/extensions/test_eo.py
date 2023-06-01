@@ -457,3 +457,18 @@ def test_older_extension_version(ext_item: Item) -> None:
 def test_get_assets(ext_item: pystac.Item, filter: Dict[str, str], count: int) -> None:
     assets = EOExtension.ext(ext_item).get_assets(**filter)  # type:ignore
     assert len(assets) == count
+
+
+def test_get_assets_works_even_if_band_info_is_incomplete(
+    ext_item: pystac.Item,
+) -> None:
+    name = ext_item.assets["B4"].extra_fields["eo:bands"][0].pop("name")
+    common_name = ext_item.assets["B2"].extra_fields["eo:bands"][0].pop("common_name")
+
+    eo_ext = EOExtension.ext(ext_item)
+
+    assets = eo_ext.get_assets(name=name)  # type:ignore
+    assert len(assets) == 0
+
+    assets = eo_ext.get_assets(common_name=common_name)  # type:ignore
+    assert len(assets) == 0
