@@ -9,7 +9,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union, cast
 
 import pytest
 
@@ -1501,7 +1501,8 @@ class CatalogSubClassTest(unittest.TestCase):
     case_1 = TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
 
     class BasicCustomCatalog(pystac.Catalog):
-        pass
+        def get_items(self) -> Iterator[Item]:  # type: ignore
+            return super().get_items()
 
     def setUp(self) -> None:
         self.stac_io = pystac.StacIO.default()
@@ -1522,6 +1523,18 @@ class CatalogSubClassTest(unittest.TestCase):
         cloned_catalog = custom_catalog.clone()
 
         self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+
+    def test_get_all_items_works(self) -> None:
+        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
+        cloned_catalog = custom_catalog.clone()
+        with pytest.warns(DeprecationWarning):
+            cloned_catalog.get_all_items()
+
+    def test_get_item_works(self) -> None:
+        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
+        cloned_catalog = custom_catalog.clone()
+        with pytest.warns(DeprecationWarning):
+            cloned_catalog.get_item("area-1-1-imagery")
 
 
 def test_custom_catalog_from_dict(catalog: Catalog) -> None:

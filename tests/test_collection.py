@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterator, Optional
 
 import pytest
 from dateutil import tz
@@ -496,7 +496,8 @@ class CollectionSubClassTest(unittest.TestCase):
     MULTI_EXTENT = TestCases.get_path("data-files/collections/multi-extent.json")
 
     class BasicCustomCollection(pystac.Collection):
-        pass
+        def get_items(self) -> Iterator[Item]:  # type: ignore
+            return super().get_items()
 
     def setUp(self) -> None:
         self.stac_io = pystac.StacIO.default()
@@ -517,6 +518,15 @@ class CollectionSubClassTest(unittest.TestCase):
         cloned_collection = custom_collection.clone()
 
         self.assertIsInstance(cloned_collection, self.BasicCustomCollection)
+
+    def test_collection_get_item_works(self) -> None:
+        path = TestCases.get_path(
+            "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
+        )
+        custom_collection = self.BasicCustomCollection.from_file(path)
+        collection = custom_collection.clone()
+        with pytest.warns(DeprecationWarning):
+            collection.get_item("area-1-1-imagery")
 
 
 def test_custom_collection_from_dict(collection: Collection) -> None:

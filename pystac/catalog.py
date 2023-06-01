@@ -506,15 +506,10 @@ class Catalog(STACObject):
                 self.get_stac_objects(pystac.RelType.ITEM),
             )
         else:
-            try:
-                items = chain(
-                    self.get_items(recursive=False),
-                    *(child.get_items(recursive=True) for child in self.get_children()),
-                )
-            except TypeError:
-                # For inherited classes that do not yet support recursive
-                # See https://github.com/stac-utils/pystac-client/issues/485
-                items = self.get_all_items()
+            items = chain(
+                self.get_items(recursive=False),
+                *(child.get_items(recursive=True) for child in self.get_children()),
+            )
         if ids:
             yield from (i for i in items if i.id in ids)
         else:
