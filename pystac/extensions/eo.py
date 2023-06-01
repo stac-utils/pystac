@@ -470,7 +470,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
             name: If set, filter the assets such that only those with a
                 matching ``eo:band.name`` are returned.
             common_name: If set, filter the assets such that only those with a matching
-                ``eo:band.name`` are returned.
+                ``eo:band.common_name`` are returned.
 
         Returns:
             Dict[str, Asset]: A dictionary of assets that match ``name``
