@@ -1,5 +1,6 @@
 import json
 import unittest
+from typing import Dict
 
 import pytest
 
@@ -441,3 +442,18 @@ def test_older_extension_version(ext_item: Item) -> None:
     migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
     assert EOExtension.has_extension(migrated_item)
     assert new in migrated_item.stac_extensions
+
+
+@pytest.mark.parametrize(
+    "filter,count",
+    [
+        (dict(), 11),
+        ({"name": "B4"}, 1),
+        ({"common_name": "blue"}, 1),
+        ({"name": "B4", "common_name": "red"}, 1),
+        ({"name": "B4", "common_name": "green"}, 0),
+    ],
+)
+def test_get_assets(ext_item: pystac.Item, filter: Dict[str, str], count: int) -> None:
+    assets = EOExtension.ext(ext_item).get_assets(**filter)  # type:ignore
+    assert len(assets) == count
