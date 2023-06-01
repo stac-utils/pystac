@@ -30,6 +30,7 @@
 - Return all validation errors from validation methods of `JsonSchemaSTACValidator` ([#1120](https://github.com/stac-utils/pystac/pull/1120))
 - EO extension updated to v1.1.0 ([#1131](https://github.com/stac-utils/pystac/pull/1131))
 - Use `id` in STACTypeError instead of entire dict ([#1126](https://github.com/stac-utils/pystac/pull/1126))
+- Make sure that `get_items` is backwards compatible ([#1139](https://github.com/stac-utils/pystac/pull/1139))
 
 ### Deprecated
 
