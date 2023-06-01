@@ -476,7 +476,14 @@ class Catalog(STACObject):
             "Use next(self.get_items(id), None) instead",
             DeprecationWarning,
         )
-        return next(self.get_items(id, recursive=recursive), None)
+        if not recursive:
+            return next((i for i in self.get_items() if i.id == id), None)
+        else:
+            for root, _, _ in self.walk():
+                item = root.get_item(id, recursive=False)
+                if item is not None:
+                    return item
+            return None
 
     def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
         """Return all items or specific items of this catalog.
@@ -499,11 +506,15 @@ class Catalog(STACObject):
                 self.get_stac_objects(pystac.RelType.ITEM),
             )
         else:
-            items = chain(
-                self.get_items(recursive=False),
-                *(child.get_items(recursive=True) for child in self.get_children()),
-            )
-
+            try:
+                items = chain(
+                    self.get_items(recursive=False),
+                    *(child.get_items(recursive=True) for child in self.get_children()),
+                )
+            except TypeError:
+                # For inherited classes that do not yet support recursive
+                # See https://github.com/stac-utils/pystac-client/issues/485
+                items = self.get_all_items()
         if ids:
             yield from (i for i in items if i.id in ids)
         else:
@@ -544,7 +555,7 @@ class Catalog(STACObject):
                     item.set_root(None)
         self.links = new_links
 
-    def get_all_items(self) -> Iterable[Item]:
+    def get_all_items(self) -> Iterator[Item]:
         """
         DEPRECATED.
 
@@ -563,7 +574,10 @@ class Catalog(STACObject):
             "get_item is deprecated and will be removed in v2",
             DeprecationWarning,
         )
-        return self.get_items(recursive=True)
+        return chain(
+            self.get_items(),
+            *(child.get_all_items() for child in self.get_children()),
+        )
 
     def get_item_links(self) -> List[Link]:
         """Return all item links of this catalog.

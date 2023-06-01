@@ -707,7 +707,12 @@ class Collection(Catalog):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
-        return next(self.get_items(id, recursive=recursive), None)
+        try:
+            return next(self.get_items(id, recursive=recursive), None)
+        except TypeError:
+            # For inherited classes that do not yet support recursive
+            # See https://github.com/stac-utils/pystac-client/issues/485
+            return super().get_item(id, recursive=recursive)
 
     def get_assets(
         self,
