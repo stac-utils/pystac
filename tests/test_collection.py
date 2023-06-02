@@ -532,6 +532,24 @@ class CollectionSubClassTest(unittest.TestCase):
             collection.get_item("area-1-1-imagery")
 
 
+class CollectionPartialSubClassTest(unittest.TestCase):
+    class BasicCustomCollection(pystac.Collection):
+        def get_items(  # type: ignore
+            self, *, recursive: bool = False
+        ) -> Iterator[Item]:
+            # This get_items does not allow ids as args.
+            return super().get_items(recursive=recursive)
+
+    def test_collection_get_item_raises_type_error(self) -> None:
+        path = TestCases.get_path(
+            "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
+        )
+        custom_collection = self.BasicCustomCollection.from_file(path)
+        collection = custom_collection.clone()
+        with pytest.raises(TypeError, match="takes 1 positional argument"):
+            collection.get_item("area-1-1-imagery")
+
+
 def test_custom_collection_from_dict(collection: Collection) -> None:
     # https://github.com/stac-utils/pystac/issues/862
     class CustomCollection(Collection):

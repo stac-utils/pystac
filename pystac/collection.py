@@ -709,10 +709,12 @@ class Collection(Catalog):
         """
         try:
             return next(self.get_items(id, recursive=recursive), None)
-        except TypeError:
-            # For inherited classes that do not yet support recursive
-            # See https://github.com/stac-utils/pystac-client/issues/485
-            return super().get_item(id, recursive=recursive)
+        except TypeError as e:
+            if any("recursive" in arg for arg in e.args):
+                # For inherited classes that do not yet support recursive
+                # See https://github.com/stac-utils/pystac-client/issues/485
+                return super().get_item(id, recursive=recursive)
+            raise e
 
     def get_assets(
         self,
