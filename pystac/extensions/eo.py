@@ -483,7 +483,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
             for key, asset in self.item.get_assets().items()
             if BANDS_PROP in asset.extra_fields
             and all(
-                v is None or v in [b.get(k) for b in asset.extra_fields[BANDS_PROP]]
+                v is None or any(v == b.get(k) for b in asset.extra_fields[BANDS_PROP])
                 for k, v in kwargs.items()
             )
         }
