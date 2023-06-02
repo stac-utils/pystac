@@ -497,6 +497,9 @@ class CollectionSubClassTest(unittest.TestCase):
 
     class BasicCustomCollection(pystac.Collection):
         def get_items(self) -> Iterator[Item]:  # type: ignore
+            # This get_items does not have the `recursive` kwarg. This mimics
+            # the current state of pystac-client and is intended to test
+            # backwards compatibility of inherited classes
             return super().get_items()
 
     def setUp(self) -> None:
