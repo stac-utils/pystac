@@ -11,6 +11,7 @@ import pytest
 import pystac
 from pystac import Collection, Item, Link
 from pystac.link import HIERARCHICAL_LINKS
+from pystac.utils import make_posix_style
 from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
@@ -33,7 +34,7 @@ class LinkTest(unittest.TestCase):
         target = os.path.abspath("../elsewhere")
         link = pystac.Link(rel, target)
 
-        self.assertEqual(os.fspath(link), target)
+        self.assertEqual(os.fspath(link), make_posix_style(target))
 
     def test_minimal(self) -> None:
         rel = "my rel"
@@ -106,7 +107,7 @@ class LinkTest(unittest.TestCase):
             link = catalog.get_single_link(pystac.RelType.SELF)
             assert link
             link.resolve_stac_object()
-            self.assertEqual(link.get_absolute_href(), path)
+            self.assertEqual(link.get_absolute_href(), make_posix_style(path))
 
     def test_target_getter_setter(self) -> None:
         link = pystac.Link("my rel", target="./foo/bar.json")
@@ -236,7 +237,7 @@ class StaticLinkTest(unittest.TestCase):
             d2 = pystac.Link.from_dict(d).to_dict()
             self.assertEqual(d, d2)
         d = {"rel": "self", "href": "t"}
-        d2 = {"rel": "self", "href": os.path.join(os.getcwd(), "t")}
+        d2 = {"rel": "self", "href": make_posix_style(os.path.join(os.getcwd(), "t"))}
         self.assertEqual(pystac.Link.from_dict(d).to_dict(), d2)
 
     def test_from_dict_failures(self) -> None:

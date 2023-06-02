@@ -248,7 +248,8 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     object_type = identify_stac_object_type(json_dict)
 
     if object_type is None:
-        raise pystac.STACTypeError("JSON does not represent a STAC object.")
+        extra_message = f"'type' attribute is {json_dict.get('type', 'not set')}"
+        raise pystac.STACTypeError(json_dict, pystac.STACObject, extra_message)
 
     version_range = STACVersionRange()
 

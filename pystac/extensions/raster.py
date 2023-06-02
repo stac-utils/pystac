@@ -16,13 +16,13 @@ from typing import (
 )
 
 import pystac
+import pystac.extensions.item_assets as item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-import pystac.extensions.item_assets as item_assets
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
 T = TypeVar("T", pystac.Asset, item_assets.AssetDefinition)

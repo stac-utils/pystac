@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from itertools import chain
-import warnings
 import os
+import warnings
 from copy import deepcopy
 from html import escape
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -1136,7 +1136,7 @@ class Catalog(STACObject):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise STACTypeError(d, cls)
 
         catalog_type = CatalogType.determine_type(d)
 
@@ -1187,8 +1187,6 @@ class Catalog(STACObject):
             stac_io = pystac.StacIO.default()
 
         result = super().from_file(href, stac_io)
-        if not isinstance(result, Catalog):
-            raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
         result._stac_io = stac_io
 
         return result

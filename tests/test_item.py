@@ -14,7 +14,13 @@ import pytest
 import pystac
 import pystac.serialization.common_properties
 from pystac import Asset, Catalog, Item
-from pystac.utils import datetime_to_str, get_opt, is_absolute_href, str_to_datetime
+from pystac.utils import (
+    datetime_to_str,
+    get_opt,
+    is_absolute_href,
+    make_posix_style,
+    str_to_datetime,
+)
 from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
 
@@ -84,8 +90,8 @@ class ItemTest(unittest.TestCase):
         item.set_self_href(item_path)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = os.path.abspath(
-            os.path.join(os.path.dirname(item_path), "./data.geojson")
+        expected_href = make_posix_style(
+            os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
         )
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(expected_href, actual_href)
@@ -480,3 +486,65 @@ def test_duplicate_self_links(tmp_path: Path, sample_item: pystac.Item) -> None:
     sample_item.save_object(include_self_link=True, dest_href=str(path))
     sample_item = Item.from_file(str(path))
     assert len(sample_item.get_links(rel="self")) == 1
+
+
+def test_get_derived_from_when_none_exists(test_case_1_catalog: Catalog) -> None:
+    item = next(test_case_1_catalog.get_items(recursive=True))
+    assert item.get_derived_from() == []
+    for link in item.links:
+        assert link.rel != pystac.RelType.DERIVED_FROM
+    assert item.get_single_link(pystac.RelType.DERIVED_FROM) is None
+
+
+def test_add_derived_from(test_case_1_catalog: Catalog) -> None:
+    items = list(test_case_1_catalog.get_items(recursive=True))
+    item_0 = items[0]
+    item_1 = items[1]
+    item_2 = items[2]
+    item_0.add_derived_from(item_1, item_2.self_href)
+    derived_from = item_0.get_derived_from()
+    assert len(derived_from) == 2
+    assert derived_from[0].id == item_1.id
+    assert derived_from[1].id == item_2.id
+    filtered = [
+        link for link in item_0.links if link.rel == pystac.RelType.DERIVED_FROM
+    ]
+    assert len(filtered) == 2
+    assert filtered[0].to_dict()["href"] == item_1.self_href
+    assert filtered[1].to_dict()["href"] == item_2.self_href
+
+
+def test_get_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
+    item = next(test_case_1_catalog.get_items(recursive=True))
+    item.add_derived_from("foo")
+    with pytest.raises(
+        pystac.STACError, match="Link failed to resolve. Use get_links instead"
+    ):
+        item.get_derived_from()
+
+    links = item.get_links(pystac.RelType.DERIVED_FROM)
+    assert len(links) == 1
+
+
+def test_remove_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
+    item = next(test_case_1_catalog.get_items(recursive=True))
+    item.add_derived_from("foo")
+    with pytest.raises(
+        pystac.STACError, match="Link failed to resolve. Use remove_links instead"
+    ):
+        item.remove_derived_from("foo")
+
+    item.remove_links(pystac.RelType.DERIVED_FROM)
+    assert item.get_derived_from() == []
+
+
+def test_remove_derived_from(test_case_1_catalog: Catalog) -> None:
+    items = list(test_case_1_catalog.get_items(recursive=True))
+    item_0 = items[0]
+    item_1 = items[1]
+    item_0.add_derived_from(item_1)
+    item_0.remove_derived_from(item_1.id)
+    assert item_0.get_derived_from() == []
+    for link in item_0.links:
+        assert link.rel != pystac.RelType.DERIVED_FROM
+    assert item_0.get_single_link(pystac.RelType.DERIVED_FROM) is None

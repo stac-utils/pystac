@@ -71,7 +71,7 @@ class Asset:
         roles: Optional[List[str]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
-        self.href = href
+        self.href = utils.make_posix_style(href)
         self.title = title
         self.description = description
         self.media_type = media_type

@@ -4,6 +4,8 @@ import tempfile
 import unittest
 from typing import List, Union
 
+import pytest
+
 import pystac
 import pystac.validation
 from pystac import Catalog, CatalogType, Collection, ExtensionTypeError, Item
@@ -19,9 +21,8 @@ from pystac.extensions.label import (
     LabelType,
 )
 from pystac.utils import get_opt
-from tests.utils import TestCases, assert_to_from_dict
 from tests.conftest import get_data_file
-import pytest
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class LabelTypeTest(unittest.TestCase):

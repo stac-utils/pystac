@@ -1,12 +1,15 @@
 import json
 import unittest
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.extensions.eo import Band, EOExtension
+from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, Band, EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
+from tests.conftest import get_data_file
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -203,6 +206,11 @@ class EOTest(unittest.TestCase):
         self.assertEqual(cloud_cover_summaries.minimum, 0.0)
         self.assertEqual(cloud_cover_summaries.maximum, 80.0)
 
+        snow_cover_summaries = eo_summaries.snow_cover
+        assert snow_cover_summaries is not None
+        self.assertEqual(snow_cover_summaries.minimum, 0.0)
+        self.assertEqual(snow_cover_summaries.maximum, 80.0)
+
         bands = eo_summaries.bands
         assert bands is not None
         self.assertEqual(len(bands), 11)
@@ -210,11 +218,13 @@ class EOTest(unittest.TestCase):
         # Set
 
         eo_summaries.cloud_cover = RangeSummary(1.0, 2.0)
+        eo_summaries.snow_cover = RangeSummary(4.0, 23)
         eo_summaries.bands = [Band.create(name="test")]
 
         col_dict = col.to_dict()
         self.assertEqual(len(col_dict["summaries"]["eo:bands"]), 1)
         self.assertEqual(col_dict["summaries"]["eo:cloud_cover"]["minimum"], 1.0)
+        self.assertEqual(col_dict["summaries"]["eo:snow_cover"]["minimum"], 4.0)
 
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
@@ -355,3 +365,79 @@ class EOMigrationTest(unittest.TestCase):
         self.assertNotIn("eo:epsg", item.properties)
         self.assertIn("proj:epsg", item.properties)
         self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+
+
+@pytest.fixture
+def ext_item_uri() -> str:
+    return get_data_file("eo/eo-landsat-example.json")
+
+
+@pytest.fixture
+def ext_item(ext_item_uri: str) -> pystac.Item:
+    return pystac.Item.from_file(ext_item_uri)
+
+
+def test_to_from_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
+    with open(ext_item_uri) as f:
+        d = json.load(f)
+    actual = ext_item.to_dict(include_self_link=False)
+    assert actual == d
+
+
+@pytest.mark.parametrize("field", ["cloud_cover", "snow_cover"])
+def test_get_field(ext_item: pystac.Item, field: str) -> None:
+    prop = ext_item.properties[f"{PREFIX}{field}"]
+    attr = getattr(EOExtension.ext(ext_item), field)
+
+    assert attr is not None
+    assert attr == prop
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("cloud_cover", 7.8),
+        ("snow_cover", 99),
+    ],
+)
+def test_set_field(ext_item: pystac.Item, field: str, value) -> None:  # type: ignore
+    original = ext_item.properties[f"{PREFIX}{field}"]
+    setattr(EOExtension.ext(ext_item), field, value)
+    new = ext_item.properties[f"{PREFIX}{field}"]
+
+    assert new != original
+    assert new == value
+    assert ext_item.validate()
+
+
+def test_snow_cover_set_to_none_pops_from_dict(ext_item: pystac.Item) -> None:
+    assert SNOW_COVER_PROP in ext_item.properties
+
+    EOExtension.ext(ext_item).snow_cover = None
+    assert SNOW_COVER_PROP not in ext_item.properties
+
+
+def test_snow_cover_raises_informative_error(ext_item: pystac.Item) -> None:
+    with pytest.raises(ValueError, match="must be number"):
+        EOExtension.ext(ext_item).snow_cover = True
+
+    with pytest.raises(ValueError, match="must be between 0 and 100"):
+        EOExtension.ext(ext_item).snow_cover = 100.5
+
+
+def test_older_extension_version(ext_item: Item) -> None:
+    old = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+    new = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+
+    stac_extensions = set(ext_item.stac_extensions)
+    stac_extensions.remove(new)
+    stac_extensions.add(old)
+    item_as_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_as_dict["stac_extensions"] = list(stac_extensions)
+    item = Item.from_dict(item_as_dict)
+    assert EOExtension.has_extension(item)
+    assert old in item.stac_extensions
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+    assert EOExtension.has_extension(migrated_item)
+    assert new in migrated_item.stac_extensions

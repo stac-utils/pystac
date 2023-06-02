@@ -175,7 +175,7 @@ class ItemCollection(Collection[pystac.Item]):
                 hit of a deepcopy.
         """
         if not cls.is_item_collection(d):
-            raise STACTypeError("Dict is not a valid ItemCollection")
+            raise STACTypeError(d, cls)
 
         items = [
             pystac.Item.from_dict(item, preserve_dict=preserve_dict, root=root)

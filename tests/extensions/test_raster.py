@@ -2,6 +2,7 @@ import json
 import unittest
 
 import pytest
+
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.extensions.item_assets import ItemAssetsExtension
@@ -15,8 +16,8 @@ from pystac.extensions.raster import (
     Statistics,
 )
 from pystac.utils import get_opt
-from tests.utils import TestCases, assert_to_from_dict
 from tests.conftest import get_data_file
+from tests.utils import TestCases, assert_to_from_dict
 
 
 class RasterTest(unittest.TestCase):
