@@ -1584,9 +1584,6 @@ def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
 
 def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
-    # If hrefs are not set, it will fail validation.
-    if cat.get_self_href() is None:
-        cat.normalize_hrefs("/tmp")
     assert cat.validate_all() == 15
     assert cat.validate_all(max_n=10) == 10
     assert cat.validate_all(max_n=1) == 1
@@ -1594,8 +1591,5 @@ def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
 
 def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
-    # If hrefs are not set, it will fail validation.
-    if cat.get_self_href() is None:
-        cat.normalize_hrefs("/tmp")
     assert cat.validate_all() == 15
     assert cat.validate_all(recursive=False) == 3
