@@ -459,6 +459,35 @@ class ItemEOExtension(EOExtension[pystac.Item]):
             return [Band(b) for b in bands]
         return None
 
+    def get_assets(
+        self,
+        name: Optional[str] = None,
+        common_name: Optional[str] = None,
+    ) -> Dict[str, pystac.Asset]:
+        """Get the item's assets where eo:bands are defined.
+
+        Args:
+            name: If set, filter the assets such that only those with a
+                matching ``eo:band.name`` are returned.
+            common_name: If set, filter the assets such that only those with a matching
+                ``eo:band.common_name`` are returned.
+
+        Returns:
+            Dict[str, Asset]: A dictionary of assets that match ``name``
+                and/or ``common_name`` if set or else all of this item's assets were
+                eo:bands are defined.
+        """
+        kwargs = {"name": name, "common_name": common_name}
+        return {
+            key: asset
+            for key, asset in self.item.get_assets().items()
+            if BANDS_PROP in asset.extra_fields
+            and all(
+                v is None or any(v == b.get(k) for b in asset.extra_fields[BANDS_PROP])
+                for k, v in kwargs.items()
+            )
+        }
+
     def __repr__(self) -> str:
         return "<ItemEOExtension Item id={}>".format(self.item.id)
 
