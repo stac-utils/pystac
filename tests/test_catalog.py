@@ -1141,6 +1141,7 @@ class TestCatalog:
             cat.normalize_hrefs("/tmp")
         cat.validate_all()
 
+    def test_validate_all_invalid(self) -> None:
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.case_1()
         item = next(cat.get_items("area-1-1-labels", recursive=True))
@@ -1579,3 +1580,22 @@ def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     items = cat.get_items("area-2-1-imagery", "area-1-1-labels", recursive=True)
     assert len(list(items)) == 2
+
+
+def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
+    cat = test_case_1_catalog
+    # If hrefs are not set, it will fail validation.
+    if cat.get_self_href() is None:
+        cat.normalize_hrefs("/tmp")
+    assert cat.validate_all() == 15
+    assert cat.validate_all(max_n=10) == 10
+    assert cat.validate_all(max_n=1) == 1
+
+
+def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
+    cat = test_case_1_catalog
+    # If hrefs are not set, it will fail validation.
+    if cat.get_self_href() is None:
+        cat.normalize_hrefs("/tmp")
+    assert cat.validate_all() == 15
+    assert cat.validate_all(recursive=False) == 3

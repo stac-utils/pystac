@@ -986,21 +986,42 @@ class Catalog(STACObject):
             for item in items:
                 pass
 
-    def validate_all(self) -> None:
-        """Validates each catalog, collection contained within this catalog.
+    def validate_all(self, recursive: bool = True, max_n: Optional[int] = None) -> int:
+        """Validates each catalog, collection, item contained within this catalog.
 
         Walks through the children and items of the catalog and validates each
         stac object.
+
+        Args:
+            recursive : Whether to validate catalog, collections, and items contained
+                within child objects.
+            max_n : The maximum number of STAC objects to validate. Default
+                is None which does not enforce a max.
+
+        Returns:
+            int : Number of STAC objects validated.
 
         Raises:
             STACValidationError: Raises this error on any item that is invalid.
                 Will raise on the first invalid stac object encountered.
         """
         self.validate()
+        n = 1
         for child in self.get_children():
-            child.validate_all()
+            if max_n is not None and n >= max_n:
+                break
+            if recursive:
+                inner_max_n = None if max_n is None else max_n - n
+                n += child.validate_all(recursive=True, max_n=inner_max_n)
+            else:
+                child.validate()
+                n += 1
         for item in self.get_items():
+            if max_n is not None and n >= max_n:
+                break
             item.validate()
+            n += 1
+        return n
 
     def _object_links(self) -> List[Union[str, pystac.RelType]]:
         return [
