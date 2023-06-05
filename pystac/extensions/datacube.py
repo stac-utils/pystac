@@ -126,18 +126,7 @@ class Dimension(ABC):
             return AdditionalDimension(d)
 
 
-class HorizontalSpatialDimension(Dimension):
-    @property
-    def axis(self) -> HorizontalSpatialDimensionAxis:
-        """Axis of the spatial dimension. Must be one of ``"x"`` or ``"y"``."""
-        return get_required(
-            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
-        )
-
-    @axis.setter
-    def axis(self, v: HorizontalSpatialDimensionAxis) -> None:
-        self.properties[DIM_TYPE_PROP] = v
-
+class SpatialDimension(Dimension):
     @property
     def extent(self) -> List[float]:
         """Extent (lower and upper bounds) of the dimension as two-dimensional array.
@@ -194,63 +183,30 @@ class HorizontalSpatialDimension(Dimension):
             self.properties[DIM_REF_SYS_PROP] = v
 
 
-class VerticalSpatialDimension(Dimension):
+class HorizontalSpatialDimension(SpatialDimension):
+    @property
+    def axis(self) -> HorizontalSpatialDimensionAxis:
+        """Axis of the spatial dimension. Must be one of ``"x"`` or ``"y"``."""
+        return get_required(
+            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+        )
+
+    @axis.setter
+    def axis(self, v: HorizontalSpatialDimensionAxis) -> None:
+        self.properties[DIM_AXIS_PROP] = v
+
+
+class VerticalSpatialDimension(SpatialDimension):
     @property
     def axis(self) -> VerticalSpatialDimensionAxis:
-        """Axis of the spatial dimension. Always ``"z"``."""
+        """Axis of the spatial dimension. Must be ``"z"``."""
         return get_required(
             self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
         )
 
     @axis.setter
     def axis(self, v: VerticalSpatialDimensionAxis) -> None:
-        self.properties[DIM_TYPE_PROP] = v
-
-    @property
-    def extent(self) -> Optional[List[Optional[float]]]:
-        """If the dimension consists of `ordinal
-        <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`__ values,
-        the extent (lower and upper bounds) of the values as two-dimensional array. Use
-        null for open intervals."""
-        return self.properties.get(DIM_EXTENT_PROP)
-
-    @extent.setter
-    def extent(self, v: Optional[List[Optional[float]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_EXTENT_PROP, None)
-        else:
-            self.properties[DIM_EXTENT_PROP] = v
-
-    @property
-    def values(self) -> Optional[Union[List[float], List[str]]]:
-        """A set of all potential values, especially useful for `nominal
-        <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`__ values."""
-
-        return self.properties.get(DIM_VALUES_PROP)
-
-    @values.setter
-    def values(self, v: Optional[Union[List[float], List[str]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_VALUES_PROP, None)
-        else:
-            self.properties[DIM_VALUES_PROP] = v
-
-    @property
-    def step(self) -> Optional[float]:
-        """If the dimension consists of `interval
-        <https://en.wikipedia.org/wiki/Level_of_measurement#Interval_scale>`__ values,
-        the space between the values. Use null for irregularly spaced steps."""
-        return self.properties.get(DIM_STEP_PROP)
-
-    @step.setter
-    def step(self, v: Optional[float]) -> None:
-        self.properties[DIM_STEP_PROP] = v
-
-    def clear_step(self) -> None:
-        """Setting step to None sets it to the null value,
-        which means irregularly spaced steps. Use clear_step
-        to remove it from the properties."""
-        self.properties.pop(DIM_STEP_PROP, None)
+        self.properties[DIM_AXIS_PROP] = v
 
     @property
     def unit(self) -> Optional[str]:
@@ -264,22 +220,6 @@ class VerticalSpatialDimension(Dimension):
             self.properties.pop(DIM_UNIT_PROP, None)
         else:
             self.properties[DIM_UNIT_PROP] = v
-
-    @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
-        """The spatial reference system for the data, specified as `numerical EPSG code
-        <http://www.epsg-registry.org/>`__, `WKT2 (ISO 19162) string
-        <http://docs.opengeospatial.org/is/18-010r7/18-010r7.html>`__ or `PROJJSON
-        object <https://proj.org/specifications/projjson.html>`__.
-        Defaults to EPSG code 4326."""
-        return self.properties.get(DIM_REF_SYS_PROP)
-
-    @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
-        if v is None:
-            self.properties.pop(DIM_REF_SYS_PROP, None)
-        else:
-            self.properties[DIM_REF_SYS_PROP] = v
 
 
 class TemporalDimension(Dimension):
@@ -534,12 +474,12 @@ class DatacubeExtension(
         dimensions: Dict[str, Dimension],
         variables: Optional[Dict[str, Variable]] = None,
     ) -> None:
-        """Applies label extension properties to the extended
+        """Applies Datacube Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
-            dimensions : Dictionary mapping dimension name to a :class:`Dimension`
-                object.
+            dimensions : Dictionary mapping dimension name to :class:`Dimension`
+                objects.
             variables : Dictionary mapping variable name to a :class:`Variable`
                 object.
         """
@@ -548,7 +488,9 @@ class DatacubeExtension(
 
     @property
     def dimensions(self) -> Dict[str, Dimension]:
-        """Dictionary mapping dimension name to a :class:`Dimension` object."""
+        """A dictionary where each key is the name of a dimension and each
+        value is a :class:`~Dimension` object.
+        """
         result = get_required(
             self._get_property(DIMENSIONS_PROP, Dict[str, Any]), self, DIMENSIONS_PROP
         )
@@ -560,7 +502,9 @@ class DatacubeExtension(
 
     @property
     def variables(self) -> Optional[Dict[str, Variable]]:
-        """Dictionary mapping variable name to a :class:`Variable` object."""
+        """A dictionary where each key is the name of a variable and each
+        value is a :class:`~Variable` object.
+        """
         result = self._get_property(VARIABLES_PROP, Dict[str, Any])
 
         if result is None:
