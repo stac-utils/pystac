@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -17,6 +18,7 @@ from typing import (
 
 import pystac
 from pystac import STACError
+from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.utils import (
     StringEnum,
@@ -535,6 +537,14 @@ class STACObject(ABC):
             dict: A serialization of the object.
         """
         raise NotImplementedError
+
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict()))
+        else:
+            return escape(repr(self))
 
     @abstractmethod
     def clone(self) -> STACObject:

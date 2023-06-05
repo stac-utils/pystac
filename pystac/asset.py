@@ -181,8 +181,8 @@ class Asset:
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()
         if jinja_env:
-            template = jinja_env.get_template("Asset.jinja2")
-            return str(template.render(asset=self))
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict()))
         else:
             return escape(repr(self))
 

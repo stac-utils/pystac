@@ -1,95 +1,67 @@
-{% macro square(background_color='#E1E1E1', border_color='#9D9D9D') -%}
-    <div style="
-        width: 24px;
-        height: 24px;
-        background-color: {{ background_color }};
-        border: 3px solid {{ border_color }};
-        border-radius: 5px;
-        position: absolute;">
-    </div>
+{% macro scalar(key, value) -%}
+    {% if value is mapping %}
+        <li style="padding-top: 0.25em; padding-right: 0px; user-select: text; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;">
+            <details>
+                <summary style="cursor: pointer;">
+                    <span style="color: rgb(0, 128, 0); font-weight: 700;">
+                        {{ key }}
+                    </span>
+                </summary>
+                {{ dict(value) }}
+            </details>
+        </li>
+    {% else %}
+        <li style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.5em; user-select: text; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;">
+            <label style="display: inline-block; margin: 0px 0.5em 0px 0px;">
+                <span style="color: rgb(0, 128, 0); font-weight: 700;">
+                    {{ key }}
+                </span>
+            </label>
+            <span style="color: rgb(186, 33, 33);">
+                {% if value is string %}
+                    "{{ value }}"
+                {% else %}
+                    {{ value }}
+                {% endif %}
+            </span>
+        </li>
+    {% endif %}
 {%- endmacro %}
 
 
-{% macro extra_fields(parent) -%}
-    {% if parent.extra_fields %}
-        {% for key, value in parent.extra_fields.items() %}
-            {% if (value is not iterable) or (value is iterable and value|length) %}
-                <tr><td style="text-align: left;"><strong>{{ key }}:</strong> {{ value }} </td></tr>
+{% macro list(key, value) -%}
+    <li style="position: relative; padding-top: 0.25em; margin-left: 0.5em; padding-left: 0px;">
+        <details>
+            <summary style="cursor: pointer;">
+                <span style="color: rgb(0, 128, 0); font-weight: 700;">
+                    {{key}}
+                </span>
+                <span style="padding-left: 0.5em; cursor: default;">
+                    <span style="color: rgb(64, 128, 128); font-style: italic;">
+                        <span style="margin-left: 0.3em; margin-right: 0.3em;">
+                            []
+                        </span>
+                        {{ value|length }} items
+                    </span>
+                </span>
+            </summary>
+            <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
+                {% for item in value %}
+                    {{ dict({loop.index: item}) }}
+                {% endfor %}
+            </ul>
+        </details>
+    </li>
+{%- endmacro %}
+
+{% macro dict(dict) -%}
+    <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
+        {% for key, value in dict.items() %}
+            {% if value is iterable and (value is not string and value is not mapping) %}
+                {{ list(key, value) }}
+            {% else %}
+                {{ scalar(key, value) }}
             {% endif %}
         {% endfor %}
-    {% endif %}
-{%- endmacro %}
-
-
-{% macro links(parent) -%}
-    {% if parent.links|length > 0 %}
-        <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px">
-                <h4 style="margin-bottom: 0px; display: inline;">Links</h4>
-            </summary>
-            {% for link in parent.links %}
-                {{ link._repr_html_() }}
-            {% endfor %}
-        </details>
-    {% endif %}
-{%- endmacro %}
-
-
-{% macro items(parent) -%}
-    {% if parent.get_items()|is_nonempty_generator %}
-        <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px">
-                <h4 style="margin-bottom: 0px; display: inline;">Items</h4>
-            </summary>
-            <i> Only the first item shown </i>
-            {% for item in parent.get_items()|first %}
-                {{ item._repr_html_() }}
-            {% endfor %}
-        </details>
-    {% endif %}
-{%- endmacro %}
-
-
-{% macro children(parent) -%}
-    {% if parent.get_children()|is_nonempty_generator %}
-        <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px">
-                <h4 style="margin-bottom: 0px; display: inline;">Children</h4>
-            </summary>
-            <i> Only the first child shown </i>
-            {% for child in parent.get_children()|first %}
-                {{ child._repr_html_() }}
-            {% endfor %}
-        </details>
-    {% endif %}
-{%- endmacro %}
-
-
-{% macro stac_extensions(parent) -%}
-    {% if parent.stac_extensions|length > 0 %}
-        <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px;">
-                <h4 style="margin-bottom: 0px; display: inline;">STAC Extensions</h4>
-            </summary>
-            <table style="width: 100%; text-align: left;">
-                {% for stac_extension in parent.stac_extensions %}
-                    <tr><td style="text-align: left;"><a href="{{stac_extension}}">{{stac_extension}}</a></td></tr>
-                {% endfor %}
-            </table>
-        </details>
-    {% endif %}
-{%- endmacro %}
-
-
-{% macro assets(parent) -%}
-    {% if parent.assets|length > 0 %}
-        <details>
-            <summary style="margin-bottom: 10px; margin-top: 10px;">
-                <h4 style="margin-bottom: 0px; display: inline;">Assets</h4>
-            </summary>
-            {% for key, asset in parent.assets.items() %}
-                {{ asset._repr_html_() }}
-            {% endfor %}
-        </details>
-    {% endif %}
+    </ul>
 {%- endmacro %}

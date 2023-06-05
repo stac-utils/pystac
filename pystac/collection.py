@@ -3,7 +3,6 @@ from __future__ import annotations
 import warnings
 from copy import deepcopy
 from datetime import datetime
-from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -25,7 +24,6 @@ from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
@@ -539,14 +537,6 @@ class Collection(Catalog):
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Collection.jinja2")
-            return str(template.render(catalog=self))
-        else:
-            return escape(repr(self))
 
     def add_item(
         self,
