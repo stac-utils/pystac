@@ -2,7 +2,7 @@
     {% if value is mapping %}
         <li style="padding-top: 0.25em; padding-right: 0px; user-select: text; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;">
             <details>
-                <summary style="cursor: pointer;">
+                <summary style="cursor: pointer; display: list-item;">
                     <span style="color: rgb(0, 128, 0); font-weight: 700;">
                         {{ key }}
                     </span>
@@ -32,7 +32,7 @@
 {% macro list(key, value) -%}
     <li style="position: relative; padding-top: 0.25em; margin-left: 0.5em; padding-left: 0px;">
         <details>
-            <summary style="cursor: pointer;">
+            <summary style="cursor: pointer; display:list-item;">
                 <span style="color: rgb(0, 128, 0); font-weight: 700;">
                     {{key}}
                 </span>
