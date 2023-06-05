@@ -47,7 +47,7 @@
             </summary>
             <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
                 {% for item in value %}
-                    {{ dict({loop.index: item}) }}
+                    {{ dict({loop.index - 1: item}) }}
                 {% endfor %}
             </ul>
         </details>
