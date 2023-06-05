@@ -1,6 +1,6 @@
 {% macro scalar(key, value) -%}
     {% if value is mapping %}
-        <li style="padding-top: 0.25em; padding-right: 0px; user-select: text; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;">
+        <li style="padding-top: 0.25em;">
             <details>
                 <summary style="cursor: pointer; display: list-item;">
                     <span style="color: rgb(0, 128, 0); font-weight: 700;">
@@ -11,12 +11,10 @@
             </details>
         </li>
     {% else %}
-        <li style="padding-top: 0.25em; padding-right: 0px; margin-left: 0.5em; user-select: text; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em; word-break: break-all;">
-            <label style="display: inline-block; margin: 0px 0.5em 0px 0px;">
-                <span style="color: rgb(0, 128, 0); font-weight: 700;">
-                    {{ key }}
-                </span>
-            </label>
+        <li style="padding-top: 0.25em; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em;">
+            <span style="display: inline-block; margin: 0px 0.5em 0px 0px; color: rgb(0, 128, 0); font-weight: 700;">
+                {{ key }}
+            </span>
             <span style="color: rgb(186, 33, 33);">
                 {% if value is string %}
                     "{{ value }}"
@@ -30,7 +28,7 @@
 
 
 {% macro list(key, value) -%}
-    <li style="position: relative; padding-top: 0.25em; margin-left: 0.5em; padding-left: 0px;">
+    <li style="padding-top: 0.25em;">
         <details>
             <summary style="cursor: pointer; display:list-item;">
                 <span style="color: rgb(0, 128, 0); font-weight: 700;">
@@ -45,17 +43,15 @@
                     </span>
                 </span>
             </summary>
-            <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
-                {% for item in value %}
-                    {{ dict({loop.index - 1: item}) }}
-                {% endfor %}
-            </ul>
+            {% for item in value %}
+                {{ dict({loop.index - 1: item}) }}
+            {% endfor %}
         </details>
     </li>
 {%- endmacro %}
 
 {% macro dict(dict) -%}
-    <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
+    <ul style="margin: 0px; padding: 0px 0px 0px 1.75em; list-style: none; display: block;">
         {% for key, value in dict.items() %}
             {% if value is iterable and (value is not string and value is not mapping) %}
                 {{ list(key, value) }}
