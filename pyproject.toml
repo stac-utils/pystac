@@ -45,6 +45,9 @@ docs = [
     "sphinx-design~=0.4",
     "sphinxcontrib-fulltoc~=1.2",
 ]
+jinja2 = [
+    "jinja2<4.0",
+]
 orjson = ["orjson>=3.5"]
 test = [
     "black~=23.3",
