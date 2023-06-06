@@ -1,9 +1,7 @@
 {% macro scalar(key, value) -%}
     {% if value is mapping %}
         <li><details>
-            <summary class="pystac-summary">
-                <span class="pystac-key">{{ key }}</span>
-            </summary>
+            <summary class="pystac-summary"><span class="pystac-key">{{ key }}</span></summary>
             {{ dict(value) }}
         </details></li>
     {% else %}
@@ -13,7 +11,6 @@
         </li>
     {% endif %}
 {%- endmacro %}
-
 
 {% macro list(key, value) -%}
     <li><details>
