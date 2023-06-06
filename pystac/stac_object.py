@@ -542,7 +542,7 @@ class STACObject(ABC):
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
-            return str(template.render(dict=self.to_dict()))
+            return str(template.render(dict=self.to_dict(transform_hrefs=False)))
         else:
             return escape(repr(self))
 
