@@ -42,6 +42,12 @@ network requests when reading with PySTAC, you'll need
 pip install 'pystac[urllib3]'
 ```
 
+If you are using jupyter notebooks and want to enable pretty display of pystac objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
+
+```shell
+pip install 'pystac[jinja2]'
+```
+
 ### Install from source
 
 ```shell
