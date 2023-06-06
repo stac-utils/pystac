@@ -1,53 +1,30 @@
 {% macro scalar(key, value) -%}
     {% if value is mapping %}
-        <li style="padding-top: 0.25em;">
-            <details>
-                <summary style="cursor: pointer; display: list-item;">
-                    <span style="color: rgb(0, 128, 0); font-weight: 700;">
-                        {{ key }}
-                    </span>
-                </summary>
-                {{ dict(value) }}
-            </details>
-        </li>
+        <li><details>
+            <summary class="pystac-summary">
+                <span class="pystac-key">{{ key }}</span>
+            </summary>
+            {{ dict(value) }}
+        </details></li>
     {% else %}
-        <li style="padding-top: 0.25em; overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em;">
-            <span style="display: inline-block; margin: 0px 0.5em 0px 0px; color: rgb(0, 128, 0); font-weight: 700;">
-                {{ key }}
-            </span>
-            <span style="color: rgb(186, 33, 33);">
-                {% if value is string %}
-                    "{{ value }}"
-                {% else %}
-                    {{ value }}
-                {% endif %}
-            </span>
+        <li style="overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em;">
+            <span class="pystac-key pystac-key-value">{{ key }}</span>
+            <span style="color: rgb(186, 33, 33);">{% if value is string %}"{{ value }}"{% else %}{{ value }}{% endif %}</span>
         </li>
     {% endif %}
 {%- endmacro %}
 
 
 {% macro list(key, value) -%}
-    <li style="padding-top: 0.25em;">
-        <details>
-            <summary style="cursor: pointer; display:list-item;">
-                <span style="color: rgb(0, 128, 0); font-weight: 700;">
-                    {{key}}
-                </span>
-                <span style="padding-left: 0.5em; cursor: default;">
-                    <span style="color: rgb(64, 128, 128); font-style: italic;">
-                        <span style="margin-left: 0.3em; margin-right: 0.3em;">
-                            []
-                        </span>
-                        {{ value|length }} items
-                    </span>
-                </span>
-            </summary>
-            {% for item in value %}
-                {{ dict({loop.index - 1: item}) }}
-            {% endfor %}
-        </details>
-    </li>
+    <li><details>
+        <summary class="pystac-summary">
+            <span class="pystac-key">{{ key }}</span>
+            <span style="padding-left: 0.5em; color: rgb(64, 128, 128); font-style: italic;">[] {{ value|length }} items</span>
+        </summary>
+        {% for item in value %}
+            {{ dict({loop.index - 1: item}) }}
+        {% endfor %}
+    </details></li>
 {%- endmacro %}
 
 {% macro dict(dict) -%}
