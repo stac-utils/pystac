@@ -11,6 +11,14 @@ PySTAC Introduction
 
 This tutorial gives an introduction to PySTAC concepts through code examples.
 
+How to read data from STAC
+--------------------------
+
+- :tutorial:`GitHub version <how-to-read-data-from-stac.ipynb>`
+- :ref:`Docs version </tutorials/how-to-read-data-from-stac.ipynb>`
+
+This tutorial shows how to read data from PySTAC into xarray.
+
 PySTAC SpaceNet tutorial
 ------------------------
 
@@ -56,6 +64,7 @@ implement your own custom extensions.
     :glob:
 
     tutorials/pystac-introduction.ipynb
+    tutorials/how-to-read-data-from-stac.ipynb
     tutorials/pystac-spacenet-tutorial.ipynb
     tutorials/how-to-create-stac-catalogs.ipynb
     tutorials/creating-a-landsat-stac.ipynb
