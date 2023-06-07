@@ -16,6 +16,7 @@
 - Classification extension ([#1093](https://github.com/stac-utils/pystac/pull/1093)), with support for adding classification information to item_assets' `AssetDefinition`s and raster's `RasterBand` objects.
 - `get_derived_from`, `add_derived_from` and `remove_derived_from` to Items ([#1136](https://github.com/stac-utils/pystac/pull/1136))
 - `ItemEOExtension.get_assets` for getting assets filtered on band `name` or `common_name` ([#1140](https://github.com/stac-utils/pystac/pull/1140))
+- `max_items` and `recursive` to `Catalog.validate_all` ([#1141](https://github.com/stac-utils/pystac/pull/1141))
 
 ### Changed
 
