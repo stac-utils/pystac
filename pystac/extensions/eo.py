@@ -29,12 +29,25 @@ from pystac.utils import get_required, map_opt
 
 T = TypeVar("T", pystac.Item, pystac.Asset)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+SCHEMA_URIS: List[str] = [
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+    SCHEMA_URI,
+]
 PREFIX: str = "eo:"
 
 # Field names
 BANDS_PROP: str = PREFIX + "bands"
 CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
+SNOW_COVER_PROP: str = PREFIX + "snow_cover"
+
+
+def validated_percentage(v: Optional[float]) -> Optional[float]:
+    if v is not None and not isinstance(v, (float, int)) or isinstance(v, bool):
+        raise ValueError(f"Invalid percentage: {v} must be number")
+    if v is not None and not 0 <= v <= 100:
+        raise ValueError(f"Invalid percentage: {v} must be between 0 and 100")
+    return v
 
 
 class Band:
@@ -296,7 +309,10 @@ class EOExtension(
     """
 
     def apply(
-        self, bands: Optional[List[Band]] = None, cloud_cover: Optional[float] = None
+        self,
+        bands: Optional[List[Band]] = None,
+        cloud_cover: Optional[float] = None,
+        snow_cover: Optional[float] = None,
     ) -> None:
         """Applies Electro-Optical Extension properties to the extended
         :class:`~pystac.Item` or :class:`~pystac.Asset`.
@@ -307,9 +323,13 @@ class EOExtension(
             cloud_cover : The estimate of cloud cover as a percentage
                 (0-100) of the entire scene. If not available the field should not
                 be provided.
+            snow_cover : The estimate of snow cover as a percentage
+                (0-100) of the entire scene. If not available the field should not
+                be provided.
         """
         self.bands = bands
-        self.cloud_cover = cloud_cover
+        self.cloud_cover = validated_percentage(cloud_cover)
+        self.snow_cover = validated_percentage(snow_cover)
 
     @property
     def bands(self) -> Optional[List[Band]]:
@@ -343,11 +363,29 @@ class EOExtension(
 
     @cloud_cover.setter
     def cloud_cover(self, v: Optional[float]) -> None:
-        self._set_property(CLOUD_COVER_PROP, v)
+        self._set_property(CLOUD_COVER_PROP, validated_percentage(v), pop_if_none=True)
+
+    @property
+    def snow_cover(self) -> Optional[float]:
+        """Get or sets the estimate of snow cover as a percentage
+        (0-100) of the entire scene. If not available the field should not be provided.
+
+        Returns:
+            float or None
+        """
+        return self._get_property(SNOW_COVER_PROP, float)
+
+    @snow_cover.setter
+    def snow_cover(self, v: Optional[float]) -> None:
+        self._set_property(SNOW_COVER_PROP, validated_percentage(v), pop_if_none=True)
 
     @classmethod
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
+
+    @classmethod
+    def get_schema_uris(cls) -> List[str]:
+        return SCHEMA_URIS
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> EOExtension[T]:
@@ -420,6 +458,35 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         if bands is not None:
             return [Band(b) for b in bands]
         return None
+
+    def get_assets(
+        self,
+        name: Optional[str] = None,
+        common_name: Optional[str] = None,
+    ) -> Dict[str, pystac.Asset]:
+        """Get the item's assets where eo:bands are defined.
+
+        Args:
+            name: If set, filter the assets such that only those with a
+                matching ``eo:band.name`` are returned.
+            common_name: If set, filter the assets such that only those with a matching
+                ``eo:band.common_name`` are returned.
+
+        Returns:
+            Dict[str, Asset]: A dictionary of assets that match ``name``
+                and/or ``common_name`` if set or else all of this item's assets were
+                eo:bands are defined.
+        """
+        kwargs = {"name": name, "common_name": common_name}
+        return {
+            key: asset
+            for key, asset in self.item.get_assets().items()
+            if BANDS_PROP in asset.extra_fields
+            and all(
+                v is None or any(v == b.get(k) for b in asset.extra_fields[BANDS_PROP])
+                for k, v in kwargs.items()
+            )
+        }
 
     def __repr__(self) -> str:
         return "<ItemEOExtension Item id={}>".format(self.item.id)
@@ -496,10 +563,24 @@ class SummariesEOExtension(SummariesExtension):
     def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:
         self._set_summary(CLOUD_COVER_PROP, v)
 
+    @property
+    def snow_cover(self) -> Optional[RangeSummary[float]]:
+        """Get or sets the summary of :attr:`EOExtension.snow_cover` values
+        for this Collection.
+        """
+        return self.summaries.get_range(SNOW_COVER_PROP)
+
+    @snow_cover.setter
+    def snow_cover(self, v: Optional[RangeSummary[float]]) -> None:
+        self._set_summary(SNOW_COVER_PROP, v)
+
 
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids = {"eo"}
+    prev_extension_ids = {
+        "eo",
+        *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
+    }
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(

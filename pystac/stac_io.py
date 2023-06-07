@@ -9,14 +9,13 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 import pystac
-from pystac.link import HREF
 from pystac.serialization import (
     identify_stac_object,
     identify_stac_object_type,
     merge_common_properties,
     migrate_to_latest,
 )
-from pystac.utils import safe_urlparse
+from pystac.utils import HREF, safe_urlparse
 
 # Use orjson if available
 try:

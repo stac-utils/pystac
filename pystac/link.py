@@ -7,7 +7,13 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, TypeVar, Union
 
 import pystac
 from pystac.html.jinja_env import get_jinja_env
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
+from pystac.utils import (
+    HREF,
+    is_absolute_href,
+    make_absolute_href,
+    make_posix_style,
+    make_relative_href,
+)
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
@@ -21,8 +27,6 @@ else:
     PathLike = os.PathLike
 
 L = TypeVar("L", bound="Link")
-
-HREF = Union[str, os.PathLike]
 
 #: Hierarchical links provide structure to STAC catalogs.
 HIERARCHICAL_LINKS = [
@@ -97,7 +101,7 @@ class Link(PathLike):
             if rel == pystac.RelType.SELF:
                 self._target_href = make_absolute_href(target)
             else:
-                self._target_href = target
+                self._target_href = make_posix_style(target)
             self._target_object = None
         else:
             self._target_href = None
@@ -264,8 +268,8 @@ class Link(PathLike):
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()
         if jinja_env:
-            template = jinja_env.get_template("Link.jinja2")
-            return str(template.render(link=self))
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict()))
         else:
             return escape(repr(self))
 
@@ -465,6 +469,18 @@ class Link(PathLike):
         """Creates a link to an Item."""
         return cls(
             pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
+        )
+
+    @classmethod
+    def derived_from(
+        cls: Type[L], item: Union[Item, str], title: Optional[str] = None
+    ) -> L:
+        """Creates a link to a derived_from Item."""
+        return cls(
+            pystac.RelType.DERIVED_FROM,
+            item,
+            title=title,
+            media_type=pystac.MediaType.JSON,
         )
 
     @classmethod

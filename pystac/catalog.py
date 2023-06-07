@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from itertools import chain
-import warnings
 import os
+import warnings
 from copy import deepcopy
-from html import escape
+from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -24,7 +23,6 @@ from typing import (
 import pystac
 from pystac.cache import ResolvedObjectCache
 from pystac.errors import STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -206,14 +204,6 @@ class Catalog(STACObject):
 
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self))
-        else:
-            return escape(repr(self))
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)
@@ -476,7 +466,14 @@ class Catalog(STACObject):
             "Use next(self.get_items(id), None) instead",
             DeprecationWarning,
         )
-        return next(self.get_items(id, recursive=recursive), None)
+        if not recursive:
+            return next((i for i in self.get_items() if i.id == id), None)
+        else:
+            for root, _, _ in self.walk():
+                item = root.get_item(id, recursive=False)
+                if item is not None:
+                    return item
+            return None
 
     def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
         """Return all items or specific items of this catalog.
@@ -503,7 +500,6 @@ class Catalog(STACObject):
                 self.get_items(recursive=False),
                 *(child.get_items(recursive=True) for child in self.get_children()),
             )
-
         if ids:
             yield from (i for i in items if i.id in ids)
         else:
@@ -544,7 +540,7 @@ class Catalog(STACObject):
                     item.set_root(None)
         self.links = new_links
 
-    def get_all_items(self) -> Iterable[Item]:
+    def get_all_items(self) -> Iterator[Item]:
         """
         DEPRECATED.
 
@@ -563,7 +559,10 @@ class Catalog(STACObject):
             "get_item is deprecated and will be removed in v2",
             DeprecationWarning,
         )
-        return self.get_items(recursive=True)
+        return chain(
+            self.get_items(),
+            *(child.get_all_items() for child in self.get_children()),
+        )
 
     def get_item_links(self) -> List[Link]:
         """Return all item links of this catalog.
@@ -987,21 +986,41 @@ class Catalog(STACObject):
             for item in items:
                 pass
 
-    def validate_all(self) -> None:
-        """Validates each catalog, collection contained within this catalog.
+    def validate_all(
+        self, max_items: Optional[int] = None, recursive: bool = True
+    ) -> int:
+        """Validates each catalog, collection, item contained within this catalog.
 
         Walks through the children and items of the catalog and validates each
         stac object.
+
+        Args:
+            max_items : The maximum number of STAC items to validate. Default
+                is None which means, validate them all.
+            recursive : Whether to validate catalog, collections, and items contained
+                within child objects.
+
+        Returns:
+            int : Number of STAC items validated.
 
         Raises:
             STACValidationError: Raises this error on any item that is invalid.
                 Will raise on the first invalid stac object encountered.
         """
+        n = 0
         self.validate()
         for child in self.get_children():
-            child.validate_all()
+            if recursive:
+                inner_max_items = None if max_items is None else max_items - n
+                n += child.validate_all(max_items=inner_max_items, recursive=True)
+            else:
+                child.validate()
         for item in self.get_items():
+            if max_items is not None and n >= max_items:
+                break
             item.validate()
+            n += 1
+        return n
 
     def _object_links(self) -> List[Union[str, pystac.RelType]]:
         return [
@@ -1136,7 +1155,7 @@ class Catalog(STACObject):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise STACTypeError(d, cls)
 
         catalog_type = CatalogType.determine_type(d)
 
@@ -1187,8 +1206,6 @@ class Catalog(STACObject):
             stac_io = pystac.StacIO.default()
 
         result = super().from_file(href, stac_io)
-        if not isinstance(result, Catalog):
-            raise pystac.STACTypeError(f"{result} is not a {Catalog}.")
         result._stac_io = stac_io
 
         return result

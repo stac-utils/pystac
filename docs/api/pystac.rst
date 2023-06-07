@@ -4,6 +4,28 @@ pystac
 .. automodule:: pystac
    :members: read_file, write_file, read_dict, set_stac_version, get_stac_version
 
+   .. autosummary::
+      STACObject
+      Catalog
+      Collection
+      Extent
+      SpatialExtent
+      TemporalExtent
+      Provider
+      Summaries
+      Item
+      Asset
+      CommonMetadata
+      ItemCollection
+      Link
+      StacIO
+      read_file
+      write_file
+      read_dict
+      set_stac_version
+      get_stac_version
+
+
 STACObject
 ----------
 
@@ -22,7 +44,6 @@ Catalog
 .. autoclass:: pystac.Catalog
    :members:
    :undoc-members:
-   :show-inheritance:
 
 CatalogType
 -----------
@@ -38,7 +59,6 @@ Collection
 .. autoclass:: pystac.Collection
    :members:
    :undoc-members:
-   :show-inheritance:
 
 Extent
 ------
@@ -67,7 +87,6 @@ ProviderRole
 .. autoclass:: pystac.ProviderRole
    :members:
    :undoc-members:
-   :show-inheritance:
 
 Provider
 --------
@@ -89,7 +108,6 @@ Item
 .. autoclass:: pystac.Item
    :members:
    :undoc-members:
-   :show-inheritance:
 
 Asset
 -----
@@ -110,7 +128,6 @@ ItemCollection
 
 .. autoclass:: pystac.ItemCollection
    :members:
-   :show-inheritance:
 
 Link
 ----

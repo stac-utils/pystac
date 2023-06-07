@@ -92,6 +92,8 @@ class ExampleInfo:
 
 
 class TestCases:
+    bad_catalog_case = "data-files/catalogs/invalid-catalog/catalog.json"
+
     @staticmethod
     def get_path(rel_path: str) -> str:
         return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", rel_path))

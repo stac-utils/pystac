@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import total_ordering
-from typing import TYPE_CHECKING, Any, Dict, Optional, Set, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import pystac
 from pystac.version import STACVersion
@@ -160,13 +160,13 @@ class STACJSONDescription:
 
     object_type: STACObjectType
     version_range: STACVersionRange
-    extensions: Set[str]
+    extensions: List[str]
 
     def __init__(
         self,
         object_type: STACObjectType,
         version_range: STACVersionRange,
-        extensions: Set[str],
+        extensions: List[str],
     ) -> None:
         self.object_type = object_type
         self.version_range = version_range
@@ -248,7 +248,8 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     object_type = identify_stac_object_type(json_dict)
 
     if object_type is None:
-        raise pystac.STACTypeError("JSON does not represent a STAC object.")
+        extra_message = f"'type' attribute is {json_dict.get('type', 'not set')}"
+        raise pystac.STACTypeError(json_dict, pystac.STACObject, extra_message)
 
     version_range = STACVersionRange()
 
@@ -266,12 +267,4 @@ def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
     if stac_extensions is None:
         stac_extensions = []
 
-        # Between 1.0.0-beta.2 and 1.0.0-RC1, STAC extensions changed from
-        # being split between 'common' and custom extensions, with common
-        # extensions having short names that were used in the stac_extensions
-        # property list, to being mostly externalized from the core spec and
-        # always identified with the schema URI as the identifier. This
-        # code translates the short name IDs used pre-1.0.0-RC1 to the
-        # relevant extension schema uri identifier.
-
-    return STACJSONDescription(object_type, version_range, set(stac_extensions))
+    return STACJSONDescription(object_type, version_range, stac_extensions)

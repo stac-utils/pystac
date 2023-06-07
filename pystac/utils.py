@@ -1,8 +1,19 @@
 import os
 import posixpath
+import warnings
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 from urllib.parse import ParseResult as URLParseResult
 from urllib.parse import urljoin, urlparse, urlunparse
 
@@ -10,9 +21,26 @@ import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
-# Allow for modifying the path library for testability
-# (i.e. testing Windows path manipulation on non-Windows systems)
-_pathlib = os.path
+if TYPE_CHECKING:
+    PathLike = os.PathLike[str]
+else:
+    PathLike = os.PathLike
+
+HREF = Union[str, os.PathLike]
+
+
+def make_posix_style(href: HREF) -> str:
+    """Converts double back slashes and single back slashes to single forward
+    slashes for converting Windows paths to Posix style.
+
+    Args:
+        href (Union[str, os.PathLike]) : The href string or path-like object.
+
+    Returns:
+        str : The converted href in string form.
+    """
+    _href = str(os.fspath(href))
+    return _href.replace("\\\\", "/").replace("\\", "/")
 
 
 def safe_urlparse(href: str) -> URLParseResult:
@@ -30,7 +58,13 @@ def safe_urlparse(href: str) -> URLParseResult:
         urllib.parse.ParseResult : The named tuple representing the parsed HREF.
     """
     parsed = urlparse(href)
-    if parsed.scheme != "" and href.lower().startswith("{}:\\".format(parsed.scheme)):
+    if parsed.scheme != "" and (
+        href.lower().startswith("{}:\\".format(parsed.scheme))
+        or (
+            href.lower().startswith("{}:/".format(parsed.scheme))
+            and not href.lower().startswith("{}://".format(parsed.scheme))
+        )
+    ):
         return URLParseResult(
             scheme="",
             netloc="",
@@ -57,11 +91,22 @@ class StringEnum(str, Enum):
 
 
 class JoinType(StringEnum):
-    """Allowed join types for :func:`~pystac.utils.join_path_or_url`."""
+    """DEPRECATED.
+
+    .. deprecated:: 1.8.0
+        No longer used internally by pystac.
+
+    Allowed join types for :func:`~pystac.utils.join_path_or_url`.
+    """
 
     @staticmethod
     def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
-        """Determines the appropriate join type based on the scheme of the parsed
+        """DEPRECATED.
+
+        .. deprecated:: 1.8.0
+            No longer used internally by pystac.
+
+        Determines the appropriate join type based on the scheme of the parsed
         result.
 
         Args:
@@ -71,6 +116,13 @@ class JoinType(StringEnum):
         Returns:
             JoinType : The join type for the URI.
         """
+        warnings.warn(
+            message=(
+                "from_parsed_uri is deprecated and will be removed in pystac "
+                "version 2.0.0. It is no longer used internally by pystac."
+            ),
+            category=DeprecationWarning,
+        )
         if parsed_uri.scheme == "":
             return JoinType.PATH
         else:
@@ -81,7 +133,12 @@ class JoinType(StringEnum):
 
 
 def join_path_or_url(join_type: JoinType, *args: str) -> str:
-    """Functions similarly to :func:`os.path.join`, but can be used to join either a
+    """DEPRECATED.
+
+    .. deprecated:: 1.8.0
+        No longer used internally by pystac.
+
+    Functions similarly to :func:`os.path.join`, but can be used to join either a
     local file path or a URL.
 
     Args:
@@ -92,11 +149,16 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
 
     Returns:
         str : The joined path
-
     """
-
+    warnings.warn(
+        message=(
+            "join_path_or_url is deprecated and will be removed in pystac "
+            "version 2.0.0. It is no longer used internally by pystac."
+        ),
+        category=DeprecationWarning,
+    )
     if join_type == JoinType.PATH:
-        return _pathlib.join(*args)
+        return os.path.join(*args)
     else:
         return posixpath.join(*args)
 
@@ -108,7 +170,7 @@ def _make_relative_href_url(
 ) -> str:
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else os.path.dirname(parsed_start.path)
     )
 
     # Strip the leading slashes from both paths
@@ -125,6 +187,7 @@ def _make_relative_href_url(
     # Prepend the "./", if necessary
     if rel_url != "./" and not rel_url.startswith("../"):
         rel_url = "./" + rel_url
+
     return rel_url
 
 
@@ -135,21 +198,24 @@ def _make_relative_href_path(
 ) -> str:
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else os.path.dirname(parsed_start.path)
     )
 
     # Strip the leading slashes from both paths
     start_dir = start_dir.lstrip("/")
     source_path = parsed_source.path.lstrip("/")
 
-    relpath = _pathlib.relpath(source_path, start_dir)
+    # posixpath doesn't play well with windows drive letters, so we have to use
+    # the os-specific path library for the relpath function. This means we can
+    # only handle windows paths on windows machines.
+    relpath = make_posix_style(os.path.relpath(source_path, start_dir))
 
     # Ensure we retain a trailing slash from the original source path
     if parsed_source.path.endswith("/"):
         relpath += "/"
 
-    if relpath != "./" and not relpath.startswith(".." + _pathlib.sep):
-        relpath = _pathlib.join(".", relpath)
+    if relpath != "./" and not relpath.startswith("../"):
+        relpath = "./" + relpath
 
     return relpath
 
@@ -173,6 +239,8 @@ def make_relative_href(
     Returns:
         str: The relative HREF.
     """
+    source_href = make_posix_style(source_href)
+    start_href = make_posix_style(start_href)
 
     parsed_source = safe_urlparse(source_href)
     parsed_start = safe_urlparse(start_href)
@@ -182,7 +250,7 @@ def make_relative_href(
     ):
         return source_href
 
-    if JoinType.from_parsed_uri(parsed_start) == JoinType.PATH:
+    if parsed_start.scheme == "":
         return _make_relative_href_path(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_relative_href_url(parsed_source, parsed_start, start_is_dir)
@@ -226,22 +294,26 @@ def _make_absolute_href_path(
     start_is_dir: bool = False,
 ) -> str:
     # If the source is already absolute, just return it
-    if _pathlib.isabs(parsed_source.path):
+    if os.path.isabs(parsed_source.path):
         return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
     start_dir = (
-        parsed_start.path if start_is_dir else _pathlib.dirname(parsed_start.path)
+        parsed_start.path if start_is_dir else os.path.dirname(parsed_start.path)
     )
 
     # Join the start directory to the relative path and find the absolute path
-    abs_path = _pathlib.abspath(_pathlib.join(start_dir, parsed_source.path))
+    abs_path = make_posix_style(
+        os.path.abspath(os.path.join(start_dir, parsed_source.path))
+    )
 
     # Account for the normalization of abspath for
     # things like /vsitar// prefixes by replacing the
     # original start_dir text when abspath modifies the start_dir.
-    if not start_dir == _pathlib.abspath(start_dir):
-        abs_path = abs_path.replace(_pathlib.abspath(start_dir), start_dir)
+    if not start_dir == make_posix_style(os.path.abspath(start_dir)):
+        abs_path = abs_path.replace(
+            make_posix_style(os.path.abspath(start_dir)), start_dir
+        )
 
     return abs_path
 
@@ -272,13 +344,13 @@ def make_absolute_href(
         start_href = os.getcwd()
         start_is_dir = True
 
+    source_href = make_posix_style(source_href)
+    start_href = make_posix_style(start_href)
+
     parsed_start = safe_urlparse(start_href)
     parsed_source = safe_urlparse(source_href)
 
-    if (
-        JoinType.from_parsed_uri(parsed_source) == JoinType.URL
-        or JoinType.from_parsed_uri(parsed_start) == JoinType.URL
-    ):
+    if parsed_source.scheme != "" or parsed_start.scheme != "":
         return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
@@ -296,7 +368,7 @@ def is_absolute_href(href: str) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" or _pathlib.isabs(parsed.path)
+    return parsed.scheme != "" or os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:

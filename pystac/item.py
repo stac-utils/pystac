@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import warnings
 from copy import copy, deepcopy
-from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
 
 import pystac
@@ -11,7 +10,6 @@ from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
-from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.serialization import (
     identify_stac_object,
@@ -171,14 +169,6 @@ class Item(STACObject):
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Item.jinja2")
-            return str(template.render(item=self))
-        else:
-            return escape(repr(self))
 
     def set_self_href(self, href: Optional[str]) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
@@ -352,6 +342,59 @@ class Item(STACObject):
         else:
             return cast(Collection, collection_link.resolve_stac_object().target)
 
+    def add_derived_from(self, *items: Union[Item, str]) -> Item:
+        """Add one or more items that this is derived from.
+
+        This method will add to any existing "derived_from" links.
+
+        Args:
+            items : Items (or href of items) to add to derived_from links.
+
+        Returns:
+            Item: self
+        """
+        for item in items:
+            self.add_link(Link.derived_from(item))
+        return self
+
+    def remove_derived_from(self, item_id: str) -> None:
+        """Remove an item that this is derived from.
+
+        This method will remove from existing "derived_from" links.
+
+        Args:
+            item_id : ID of item to remove from derived_from links.
+        """
+        new_links: List[pystac.Link] = []
+
+        for link in self.links:
+            if link.rel != pystac.RelType.DERIVED_FROM:
+                new_links.append(link)
+            else:
+                try:
+                    item = cast(Item, link.resolve_stac_object().target)
+                except Exception as e:
+                    raise pystac.STACError(
+                        "Link failed to resolve. Use remove_links instead."
+                    ) from e
+                if item.id != item_id:
+                    new_links.append(link)
+        self.links = new_links
+
+    def get_derived_from(self) -> List[Item]:
+        """Get the items that this is derived from.
+
+        Returns:
+            List[Item]: Returns a reference to the derived_from items.
+        """
+        links = self.get_links(pystac.RelType.DERIVED_FROM)
+        try:
+            return [cast(Item, link.resolve_stac_object().target) for link in links]
+        except Exception as e:
+            raise pystac.STACError(
+                "Link failed to resolve. Use get_links instead."
+            ) from e
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
@@ -432,9 +475,7 @@ class Item(STACObject):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise pystac.STACTypeError(
-                f"{d} does not represent a {cls.__name__} instance"
-            )
+            raise pystac.STACTypeError(d, cls)
 
         # some fields are passed through to __init__
         pass_through_fields = [
@@ -505,22 +546,10 @@ class Item(STACObject):
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(
-        cls: Type[T], href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> T:
-        result = super().from_file(href, stac_io)
-        if not isinstance(result, Item):
-            raise pystac.STACTypeError(f"{result} is not a {Item}.")
-        return result
-
-    @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         for field in ("type", "stac_version"):
             if field not in d:
-                raise pystac.STACTypeError(
-                    f"{d} does not represent a {cls.__name__} instance"
-                    f"'{field}' is missing."
-                )
+                raise pystac.STACTypeError(d, cls, f"'{field}' is missing.")
         return identify_stac_object_type(d) == STACObjectType.ITEM
 
     @property
