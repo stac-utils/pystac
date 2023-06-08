@@ -7,12 +7,13 @@ from datetime import datetime
 from typing import Any, Dict
 
 import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import grid
 from pystac.extensions.grid import GridExtension
-from tests.utils import TestCases
 from tests.conftest import get_data_file
+from tests.utils import TestCases
 
 code = "MGRS-4CFJ"
 

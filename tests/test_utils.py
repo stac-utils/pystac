@@ -1,7 +1,5 @@
 import json
-import ntpath
 import os
-import sys
 import time
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -12,20 +10,20 @@ from dateutil import tz
 
 from pystac import utils
 from pystac.utils import (
+    JoinType,
     is_absolute_href,
+    join_path_or_url,
     make_absolute_href,
     make_relative_href,
     now_in_utc,
     now_to_rfc3339_str,
+    safe_urlparse,
     str_to_datetime,
 )
 from tests.utils import TestCases
 
 
 class UtilsTest(unittest.TestCase):
-    @unittest.skipIf(
-        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
-    )
     def test_make_relative_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
         test_cases = [
@@ -84,63 +82,56 @@ class UtilsTest(unittest.TestCase):
             self.assertEqual(actual, expected)
 
     def test_make_relative_href_windows(self) -> None:
-        utils._pathlib = ntpath
-        try:
-            # Test cases of (source_href, start_href, expected)
-            test_cases = [
-                (
-                    "C:\\a\\b\\c\\d\\catalog.json",
-                    "C:\\a\\b\\c\\catalog.json",
-                    ".\\d\\catalog.json",
-                ),
-                (
-                    "C:\\a\\b\\catalog.json",
-                    "C:\\a\\b\\c\\catalog.json",
-                    "..\\catalog.json",
-                ),
-                (
-                    "C:\\a\\catalog.json",
-                    "C:\\a\\b\\c\\catalog.json",
-                    "..\\..\\catalog.json",
-                ),
-                ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", ".\\c\\catalog.json"),
-                ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "..\\catalog.json"),
-                (
-                    "http://stacspec.org/a/b/c/d/catalog.json",
-                    "http://stacspec.org/a/b/c/catalog.json",
-                    "./d/catalog.json",
-                ),
-                (
-                    "http://stacspec.org/a/b/catalog.json",
-                    "http://stacspec.org/a/b/c/catalog.json",
-                    "../catalog.json",
-                ),
-                (
-                    "http://stacspec.org/a/catalog.json",
-                    "http://stacspec.org/a/b/c/catalog.json",
-                    "../../catalog.json",
-                ),
-                (
-                    "http://stacspec.org/a/catalog.json",
-                    "http://cogeo.org/a/b/c/catalog.json",
-                    "http://stacspec.org/a/catalog.json",
-                ),
-                (
-                    "http://stacspec.org/a/catalog.json",
-                    "https://stacspec.org/a/b/c/catalog.json",
-                    "http://stacspec.org/a/catalog.json",
-                ),
-            ]
+        # Test cases of (source_href, start_href, expected)
+        test_cases = [
+            (
+                "C:\\a\\b\\c\\d\\catalog.json",
+                "C:\\a\\b\\c\\catalog.json",
+                "./d/catalog.json",
+            ),
+            (
+                "C:\\a\\b\\catalog.json",
+                "C:\\a\\b\\c\\catalog.json",
+                "../catalog.json",
+            ),
+            (
+                "C:\\a\\catalog.json",
+                "C:\\a\\b\\c\\catalog.json",
+                "../../catalog.json",
+            ),
+            ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", "./c/catalog.json"),
+            ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "../catalog.json"),
+            (
+                "http://stacspec.org/a/b/c/d/catalog.json",
+                "http://stacspec.org/a/b/c/catalog.json",
+                "./d/catalog.json",
+            ),
+            (
+                "http://stacspec.org/a/b/catalog.json",
+                "http://stacspec.org/a/b/c/catalog.json",
+                "../catalog.json",
+            ),
+            (
+                "http://stacspec.org/a/catalog.json",
+                "http://stacspec.org/a/b/c/catalog.json",
+                "../../catalog.json",
+            ),
+            (
+                "http://stacspec.org/a/catalog.json",
+                "http://cogeo.org/a/b/c/catalog.json",
+                "http://stacspec.org/a/catalog.json",
+            ),
+            (
+                "http://stacspec.org/a/catalog.json",
+                "https://stacspec.org/a/b/c/catalog.json",
+                "http://stacspec.org/a/catalog.json",
+            ),
+        ]
 
-            for source_href, start_href, expected in test_cases:
-                actual = make_relative_href(source_href, start_href)
-                self.assertEqual(actual, expected)
-        finally:
-            utils._pathlib = os.path
+        for source_href, start_href, expected in test_cases:
+            actual = make_relative_href(source_href, start_href)
+            self.assertEqual(actual, expected)
 
-    @unittest.skipIf(
-        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
-    )
     def test_make_absolute_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
         test_cases = [
@@ -173,11 +164,9 @@ class UtilsTest(unittest.TestCase):
 
         for source_href, start_href, expected in test_cases:
             actual = make_absolute_href(source_href, start_href)
+            _, actual = os.path.splitdrive(actual)
             self.assertEqual(actual, expected)
 
-    @unittest.skipIf(
-        sys.platform in ("win32", "cygwin"), reason="Paths are specific to posix"
-    )
     def test_make_absolute_href_on_vsitar(self) -> None:
         rel_path = "some/item.json"
         cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
@@ -185,46 +174,43 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(expected, make_absolute_href(rel_path, cat_path))
 
+    @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
     def test_make_absolute_href_windows(self) -> None:
-        utils._pathlib = ntpath
-        try:
-            # Test cases of (source_href, start_href, expected)
-            test_cases = [
-                ("item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
-                (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:\\a\\b\\c\\item.json"),
-                (
-                    ".\\z\\item.json",
-                    "Z:\\a\\b\\c\\catalog.json",
-                    "Z:\\a\\b\\c\\z\\item.json",
-                ),
-                ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:\\a\\b\\item.json"),
-                (
-                    "item.json",
-                    "HTTPS://stacspec.org/a/b/c/catalog.json",
-                    "https://stacspec.org/a/b/c/item.json",
-                ),
-                (
-                    "./item.json",
-                    "https://stacspec.org/a/b/c/catalog.json",
-                    "https://stacspec.org/a/b/c/item.json",
-                ),
-                (
-                    "./z/item.json",
-                    "https://stacspec.org/a/b/c/catalog.json",
-                    "https://stacspec.org/a/b/c/z/item.json",
-                ),
-                (
-                    "../item.json",
-                    "https://stacspec.org/a/b/c/catalog.json",
-                    "https://stacspec.org/a/b/item.json",
-                ),
-            ]
+        # Test cases of (source_href, start_href, expected)
+        test_cases = [
+            ("item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+            (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+            (
+                ".\\z\\item.json",
+                "Z:\\a\\b\\c\\catalog.json",
+                "Z:/a/b/c/z/item.json",
+            ),
+            ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:/a/b/item.json"),
+            (
+                "item.json",
+                "HTTPS://stacspec.org/a/b/c/catalog.json",
+                "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                "./item.json",
+                "https://stacspec.org/a/b/c/catalog.json",
+                "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                "./z/item.json",
+                "https://stacspec.org/a/b/c/catalog.json",
+                "https://stacspec.org/a/b/c/z/item.json",
+            ),
+            (
+                "../item.json",
+                "https://stacspec.org/a/b/c/catalog.json",
+                "https://stacspec.org/a/b/item.json",
+            ),
+        ]
 
-            for source_href, start_href, expected in test_cases:
-                actual = make_absolute_href(source_href, start_href)
-                self.assertEqual(actual, expected)
-        finally:
-            utils._pathlib = os.path
+        for source_href, start_href, expected in test_cases:
+            actual = make_absolute_href(source_href, start_href)
+            self.assertEqual(actual, expected)
 
     def test_is_absolute_href(self) -> None:
         # Test cases of (href, expected)
@@ -240,23 +226,20 @@ class UtilsTest(unittest.TestCase):
             actual = is_absolute_href(href)
             self.assertEqual(actual, expected)
 
+    @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
     def test_is_absolute_href_windows(self) -> None:
-        utils._pathlib = ntpath
-        try:
-            # Test cases of (href, expected)
-            test_cases = [
-                ("item.json", False),
-                (".\\item.json", False),
-                ("..\\item.json", False),
-                ("c:\\item.json", True),
-                ("http://stacspec.org/item.json", True),
-            ]
+        # Test cases of (href, expected)
+        test_cases = [
+            ("item.json", False),
+            (".\\item.json", False),
+            ("..\\item.json", False),
+            ("c:\\item.json", True),
+            ("http://stacspec.org/item.json", True),
+        ]
 
-            for href, expected in test_cases:
-                actual = is_absolute_href(href)
-                self.assertEqual(actual, expected)
-        finally:
-            utils._pathlib = os.path
+        for href, expected in test_cases:
+            actual = is_absolute_href(href)
+            self.assertEqual(actual, expected)
 
     def test_datetime_to_str(self) -> None:
         cases = (
@@ -428,3 +411,37 @@ def test_now_functions() -> None:
     assert now1.tzinfo == timezone.utc
 
     assert str_to_datetime(now_to_rfc3339_str())
+
+
+@pytest.mark.parametrize(
+    "test_href,expected",
+    [
+        ("https://some/address/page.html", JoinType.URL),
+        ("C:\\some\\windows\\path\\file.json", JoinType.PATH),
+        ("some\\windows\\path\\file.json", JoinType.PATH),
+        (".\\some\\windows\\path\\file.json", JoinType.PATH),
+        ("C:/some/windows/path/file.json", JoinType.PATH),
+        ("/some/posix/path/file.json", JoinType.PATH),
+        ("./some/posix/path/file.json", JoinType.PATH),
+        ("posix/path/file.json", JoinType.PATH),
+    ],
+)
+def test_join_type(test_href: str, expected: JoinType) -> None:
+    parsed = safe_urlparse(test_href)
+    with pytest.warns(DeprecationWarning):
+        assert JoinType.from_parsed_uri(parsed) == expected
+
+
+def test_join_path_or_url() -> None:
+    path_args = ["some", "path", "file.json"]
+    with pytest.warns(DeprecationWarning):
+        joined_path = join_path_or_url(JoinType.PATH, *path_args)
+    if os.name != "nt":
+        assert joined_path == "some/path/file.json"
+    else:
+        assert joined_path == "some\\path\\file.json"
+
+    url_args = ["https://some", "page", "file.html"]
+    with pytest.warns(DeprecationWarning):
+        joined_url = join_path_or_url(JoinType.URL, *url_args)
+    assert joined_url == "https://some/page/file.html"

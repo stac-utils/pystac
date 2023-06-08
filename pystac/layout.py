@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import posixpath
 import warnings
 from abc import ABC, abstractmethod
 from collections import OrderedDict
@@ -7,7 +8,6 @@ from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
 
 import pystac
-from pystac.utils import JoinType, join_path_or_url, safe_urlparse
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
@@ -426,51 +426,36 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
         self.fallback_strategy = fallback_strategy
 
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
         if is_root or self.catalog_template is None:
             return self.fallback_strategy.get_catalog_href(cat, parent_dir, is_root)
         else:
             template_path = self.catalog_template.substitute(cat)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
-                    join_type, template_path, cat.DEFAULT_FILE_NAME
-                )
+                template_path = posixpath.join(template_path, cat.DEFAULT_FILE_NAME)
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return posixpath.join(parent_dir, template_path)
 
     def get_collection_href(
         self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
         if is_root or self.collection_template is None:
             return self.fallback_strategy.get_collection_href(col, parent_dir, is_root)
         else:
             template_path = self.collection_template.substitute(col)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
-                    join_type, template_path, col.DEFAULT_FILE_NAME
-                )
+                template_path = posixpath.join(template_path, col.DEFAULT_FILE_NAME)
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return posixpath.join(parent_dir, template_path)
 
     def get_item_href(self, item: Item, parent_dir: str) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
         if self.item_template is None:
             return self.fallback_strategy.get_item_href(item, parent_dir)
         else:
             template_path = self.item_template.substitute(item)
             if not template_path.endswith(".json"):
-                template_path = join_path_or_url(
-                    join_type, template_path, "{}.json".format(item.id)
-                )
+                template_path = posixpath.join(template_path, "{}.json".format(item.id))
 
-            return join_path_or_url(join_type, parent_dir, template_path)
+            return posixpath.join(parent_dir, template_path)
 
 
 class BestPracticesLayoutStrategy(HrefLayoutStrategy):
@@ -489,36 +474,27 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
     """
 
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
         if is_root:
             cat_root = parent_dir
         else:
-            cat_root = join_path_or_url(join_type, parent_dir, "{}".format(cat.id))
+            cat_root = posixpath.join(parent_dir, "{}".format(cat.id))
 
-        return join_path_or_url(join_type, cat_root, cat.DEFAULT_FILE_NAME)
+        return posixpath.join(cat_root, cat.DEFAULT_FILE_NAME)
 
     def get_collection_href(
         self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
-
         if is_root:
             col_root = parent_dir
         else:
-            col_root = join_path_or_url(join_type, parent_dir, "{}".format(col.id))
+            col_root = posixpath.join(parent_dir, "{}".format(col.id))
 
-        return join_path_or_url(join_type, col_root, col.DEFAULT_FILE_NAME)
+        return posixpath.join(col_root, col.DEFAULT_FILE_NAME)
 
     def get_item_href(self, item: Item, parent_dir: str) -> str:
-        parsed_parent_dir = safe_urlparse(parent_dir)
-        join_type = JoinType.from_parsed_uri(parsed_parent_dir)
+        item_root = posixpath.join(parent_dir, "{}".format(item.id))
 
-        item_root = join_path_or_url(join_type, parent_dir, "{}".format(item.id))
-
-        return join_path_or_url(join_type, item_root, "{}.json".format(item.id))
+        return posixpath.join(item_root, "{}.json".format(item.id))
 
 
 class AsIsLayoutStrategy(HrefLayoutStrategy):

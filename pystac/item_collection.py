@@ -148,6 +148,14 @@ class ItemCollection(Collection[pystac.Item]):
             **self.extra_fields,
         }
 
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict()))
+        else:
+            return escape(repr(self))
+
     def clone(self) -> ItemCollection:
         """Creates a clone of this instance. This clone is a deep copy; all
         :class:`~pystac.Item` instances are cloned and all additional top-level fields
@@ -175,7 +183,7 @@ class ItemCollection(Collection[pystac.Item]):
                 hit of a deepcopy.
         """
         if not cls.is_item_collection(d):
-            raise STACTypeError("Dict is not a valid ItemCollection")
+            raise STACTypeError(d, cls)
 
         items = [
             pystac.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
@@ -247,11 +255,3 @@ class ItemCollection(Collection[pystac.Item]):
             identify_stac_object_type(feature) == pystac.STACObjectType.ITEM
             for feature in d.get("features", [])
         )
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("ItemCollection.jinja2")
-            return str(template.render(item_collection=self))
-        else:
-            return escape(repr(self))

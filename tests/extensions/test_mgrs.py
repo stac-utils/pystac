@@ -1,10 +1,10 @@
 """Tests for pystac.tests.extensions.mgrs"""
 import json
+
 import pytest
+
 import pystac
 from pystac.extensions.mgrs import MgrsExtension
-
-
 from tests.conftest import get_data_file
 
 

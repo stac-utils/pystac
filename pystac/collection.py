@@ -3,7 +3,6 @@ from __future__ import annotations
 import warnings
 from copy import deepcopy
 from datetime import datetime
-from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -25,7 +24,6 @@ from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
@@ -540,14 +538,6 @@ class Collection(Catalog):
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
 
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Collection.jinja2")
-            return str(template.render(catalog=self))
-        else:
-            return escape(repr(self))
-
     def add_item(
         self,
         item: Item,
@@ -627,7 +617,7 @@ class Collection(Catalog):
             d = migrate_to_latest(d, info)
 
         if not cls.matches_object_type(d):
-            raise STACTypeError(f"{d} does not represent a {cls.__name__} instance")
+            raise STACTypeError(d, cls)
 
         catalog_type = CatalogType.determine_type(d)
 
@@ -707,7 +697,14 @@ class Collection(Catalog):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
-        return next(self.get_items(id, recursive=recursive), None)
+        try:
+            return next(self.get_items(id, recursive=recursive), None)
+        except TypeError as e:
+            if any("recursive" in arg for arg in e.args):
+                # For inherited classes that do not yet support recursive
+                # See https://github.com/stac-utils/pystac-client/issues/485
+                return super().get_item(id, recursive=recursive)
+            raise e
 
     def get_assets(
         self,
@@ -753,15 +750,6 @@ class Collection(Catalog):
         self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
     ) -> Collection:
         return cast(Collection, super().full_copy(root, parent))
-
-    @classmethod
-    def from_file(
-        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
-    ) -> C:
-        result = super().from_file(href, stac_io)
-        if not isinstance(result, Collection):
-            raise pystac.STACTypeError(f"{result} is not a {Collection}.")
-        return result
 
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:

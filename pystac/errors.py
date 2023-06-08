@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 
 class TemplateError(Exception):
@@ -24,7 +24,28 @@ class STACTypeError(Exception):
     a Catalog JSON was read in as an Item.
     """
 
-    pass
+    def __init__(
+        self,
+        bad_dict: Dict[str, Any],
+        expected: type,
+        extra_message: Optional[str] = "",
+    ):
+        """
+        Construct an exception with an appropriate error message from bad_dict and the
+        expected that it didn't align with.
+
+        Args:
+            bad_dict: Dictionary that did not match the expected type
+            expected: The expected type.
+            extra_message: message that will be appended to the exception message.
+        """
+        message = (
+            f"JSON (id = {bad_dict.get('id', 'unknown')}) does not represent"
+            f" a {expected.__name__} instance."
+        )
+        if extra_message:
+            message += " " + extra_message
+        super().__init__(message)
 
 
 class DuplicateObjectKeyError(Exception):

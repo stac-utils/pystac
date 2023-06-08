@@ -71,7 +71,7 @@ class Asset:
         roles: Optional[List[str]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
     ) -> None:
-        self.href = href
+        self.href = utils.make_posix_style(href)
         self.title = title
         self.description = description
         self.media_type = media_type
@@ -181,8 +181,8 @@ class Asset:
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()
         if jinja_env:
-            template = jinja_env.get_template("Asset.jinja2")
-            return str(template.render(asset=self))
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict()))
         else:
             return escape(repr(self))
 

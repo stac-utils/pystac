@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from html import escape
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -17,8 +18,14 @@ from typing import (
 
 import pystac
 from pystac import STACError
+from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
-from pystac.utils import StringEnum, is_absolute_href, make_absolute_href
+from pystac.utils import (
+    StringEnum,
+    is_absolute_href,
+    make_absolute_href,
+    make_posix_style,
+)
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
@@ -531,6 +538,14 @@ class STACObject(ABC):
         """
         raise NotImplementedError
 
+    def _repr_html_(self) -> str:
+        jinja_env = get_jinja_env()
+        if jinja_env:
+            template = jinja_env.get_template("JSON.jinja2")
+            return str(template.render(dict=self.to_dict(transform_hrefs=False)))
+        else:
+            return escape(repr(self))
+
     @abstractmethod
     def clone(self) -> STACObject:
         """Clones this object.
@@ -563,6 +578,8 @@ class STACObject(ABC):
         if cls == STACObject:
             return cast(S, pystac.read_file(href))
 
+        href = make_posix_style(href)
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
@@ -571,10 +588,6 @@ class STACObject(ABC):
 
         d = stac_io.read_json(href)
         o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
-
-        # Set the self HREF, if it's not already set to something else.
-        if o.get_self_href() is None:
-            o.set_self_href(href)
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
