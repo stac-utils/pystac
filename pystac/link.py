@@ -338,7 +338,9 @@ class Link(PathLike):
             and isinstance(self.owner, pystac.Catalog)
         ):
             assert self._target_object
-            if self._target_object.get_parent() is None:
+            # Do nothing if the object wants to keep its parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if not getattr(self._target_object, "keep_parent", False):
                 self._target_object.set_parent(self.owner)
 
         return self

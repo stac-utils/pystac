@@ -255,6 +255,8 @@ class Catalog(STACObject):
         child.set_root(self.get_root())
         if child.get_parent() is None or not keep_parent:
             child.set_parent(self)
+        elif keep_parent:
+            setattr(child, "keep_parent", True)
 
         # set self link
         self_href = self.get_self_href()
