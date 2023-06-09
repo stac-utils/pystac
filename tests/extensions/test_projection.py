@@ -485,7 +485,7 @@ class ProjectionTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Projection extension does not apply to type 'object'$",
+            r"^ProjectionExtension does not apply to type 'object'$",
             ProjectionExtension.ext,
             object(),
         )

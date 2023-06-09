@@ -96,7 +96,7 @@ class TestMigrate:
     ) -> None:
         with pytest.raises(
             ExtensionTypeError,
-            match=r"^Item Assets extension does not apply to type 'object'$",
+            match=r"^ItemAssetsExtension does not apply to type 'object'$",
         ):
             ItemAssetsExtension.ext(object())  # type: ignore
 

@@ -191,3 +191,10 @@ class ExtensionManagementMixin(Generic[S], ABC):
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )
+
+    @classmethod
+    def _ext_error_message(cls, obj: Any) -> str:
+        hint = ""
+        if hasattr(cls, "summaries") and isinstance(obj, pystac.Collection):
+            hint = ". Hint: Did you mean to use `.summaries` instead?"
+        return f"{cls.__name__} does not apply to type '{type(obj).__name__}'{hint}"

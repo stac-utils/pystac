@@ -342,7 +342,7 @@ class EOTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^EO extension does not apply to type 'object'$",
+            r"^EOExtension does not apply to type 'object'$",
             EOExtension.ext,
             object(),
         )
@@ -472,3 +472,12 @@ def test_get_assets_works_even_if_band_info_is_incomplete(
 
     assets = eo_ext.get_assets(common_name=common_name)  # type:ignore
     assert len(assets) == 0
+
+
+def test_exception_should_include_hint_if_obj_is_collection(
+    collection: pystac.Collection,
+) -> None:
+    with pytest.raises(
+        ExtensionTypeError, match="Hint: Did you mean to use `.summaries` instead?"
+    ):
+        EOExtension.ext(collection)  # type:ignore

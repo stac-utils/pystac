@@ -294,7 +294,7 @@ class PointcloudTest(unittest.TestCase):
 
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Pointcloud extension does not apply to type 'RandomObject'$",
+            r"^PointcloudExtension does not apply to type 'RandomObject'$",
             PointcloudExtension.ext,
             RandomObject(),
         )

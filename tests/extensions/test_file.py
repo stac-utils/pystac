@@ -232,7 +232,7 @@ class FileTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^File Info extension does not apply to type 'object'$",
+            r"^FileExtension does not apply to type 'object'$",
             FileExtension.ext,
             object(),
         )

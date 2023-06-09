@@ -219,9 +219,7 @@ class VersionExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
-                f"Version extension does not apply to type '{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
 
 class CollectionVersionExtension(VersionExtension[pystac.Collection]):

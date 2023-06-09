@@ -230,7 +230,7 @@ class TimestampsTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Timestamps extension does not apply to type 'object'$",
+            r"^TimestampsExtension does not apply to type 'object'$",
             TimestampsExtension.ext,
             object(),
         )
