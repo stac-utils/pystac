@@ -17,7 +17,7 @@
 - `get_derived_from`, `add_derived_from` and `remove_derived_from` to Items ([#1136](https://github.com/stac-utils/pystac/pull/1136))
 - `ItemEOExtension.get_assets` for getting assets filtered on band `name` or `common_name` ([#1140](https://github.com/stac-utils/pystac/pull/1140))
 - `max_items` and `recursive` to `Catalog.validate_all` ([#1141](https://github.com/stac-utils/pystac/pull/1141))
-- `KML` as a built in media type ([#1127](https://github.com/stac-utils/pystac/issues/1127))  
+- `KML` as a built in media type ([#1127](https://github.com/stac-utils/pystac/issues/1127))
 
 ### Changed
 
@@ -35,6 +35,7 @@
 - Use `id` in STACTypeError instead of entire dict ([#1126](https://github.com/stac-utils/pystac/pull/1126))
 - Make sure that `get_items` is backwards compatible ([#1139](https://github.com/stac-utils/pystac/pull/1139))
 - Make `_repr_html_` look like `_repr_json_` output ([#1142](https://github.com/stac-utils/pystac/pull/1142))
+- Improved error message when `.ext` is called on a Collection ([#1157](https://github.com/stac-utils/pystac/pull/1157))
 
 ### Deprecated
 
