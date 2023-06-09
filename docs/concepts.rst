@@ -482,7 +482,7 @@ Extension <eo>`, you can access the properties associated with that extension us
    import pystac
    from pystac.extensions.eo import EOExtension
 
-   item = Item(...)  # See docs for creating an Item
+   item = pystac.Item.from_file("tests/data-files/eo/eo-landsat-example.json")
 
    # Check that the Item implements the EO Extension
    if EOExtension.has_extension(item):
@@ -490,6 +490,7 @@ Extension <eo>`, you can access the properties associated with that extension us
 
       bands = eo_ext.bands
       cloud_cover = eo_ext.cloud_cover
+      snow_cover = eo_ext.snow_cover
       ...
 
 .. note:: The ``ext`` method will raise an :exc:`~pystac.ExtensionNotImplemented`
@@ -511,7 +512,7 @@ can therefore mutate those properties.* For instance:
 
 .. code-block:: python
 
-   item = Item.from_file("tests/data-files/eo/eo-landsat-example.json")
+   item = pystac.Item.from_file("tests/data-files/eo/eo-landsat-example.json")
    print(item.properties["eo:cloud_cover"])
    # 78
 
@@ -563,7 +564,7 @@ extended.
 .. code-block:: python
 
    # Load a basic item without any extensions
-   item = Item.from_file("tests/data-files/item/sample-item.json")
+   item = pystac.Item.from_file("tests/data-files/item/sample-item.json")
    print(item.stac_extensions)
    # []
 
@@ -575,14 +576,38 @@ extended.
 Extended Summaries
 ------------------
 
-Extension classes like :class:`~pystac.extensions.eo.EOExtension` may also provide a
-``summaries`` static method that can be used to extend the Collection summaries. This
-method returns a class inheriting from
+Extension classes like :class:`~pystac.extensions.projection.ProjectionExtension` may
+also provide a ``summaries`` static method that can be used to extend the Collection
+summaries. This method returns a class inheriting from
 :class:`pystac.extensions.base.SummariesExtension` that provides tools for summarizing
 the properties defined by that extension. These classes also hold a reference to the
 Collection's :class:`pystac.Summaries` instance in the ``summaries`` attribute.
 
-See :class:`pystac.extensions.eo.SummariesEOExtension` for an example implementation.
+
+.. code-block:: python
+
+   import pystac
+   from pystac.extensions.projection import ProjectionExtension
+
+   # Load a collection that does not implement the Projection extension
+   collection = pystac.Collection.from_file(
+      "tests/data-files/examples/1.0.0/collection.json"
+   )
+
+   # Add Projection extension summaries to the collection
+   proj = ProjectionExtension.summaries(collection, add_if_missing=True)
+   print(collection.stac_extensions)
+   # [
+   #     ....,
+   #     'https://stac-extensions.github.io/projection/v1.1.0/schema.json'
+   # ]
+
+   # Set the values for various extension fields
+   proj.epsg = [4326]
+   collection_as_dict = collection.to_dict()
+   collection_as_dict["summaries"]["proj:epsg"]
+   # [4326]
+
 
 Item Asset properties
 =====================
