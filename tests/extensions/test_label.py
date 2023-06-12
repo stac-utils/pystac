@@ -575,7 +575,7 @@ class LabelSummariesTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Label extension does not apply to type 'object'$",
+            r"^LabelExtension does not apply to type 'object'$",
             LabelExtension.ext,
             object(),
         )

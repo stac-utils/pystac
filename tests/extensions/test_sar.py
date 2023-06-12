@@ -204,7 +204,7 @@ class SarItemExtTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^SAR extension does not apply to type 'object'$",
+            r"^SarExtension does not apply to type 'object'$",
             SarExtension.ext,
             object(),
         )

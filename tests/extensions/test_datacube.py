@@ -57,7 +57,7 @@ class DatacubeTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Datacube extension does not apply to type 'object'$",
+            r"^DatacubeExtension does not apply to type 'object'$",
             DatacubeExtension.ext,
             object(),
         )

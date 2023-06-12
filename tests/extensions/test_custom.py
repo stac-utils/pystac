@@ -66,9 +66,7 @@ class CustomExtension(
             cls.validate_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], CatalogCustomExtension(obj))
 
-        raise pystac.ExtensionTypeError(
-            f"Custom extension does not apply to {type(obj).__name__}"
-        )
+        raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
 
 class CatalogCustomExtension(CustomExtension[pystac.Catalog]):

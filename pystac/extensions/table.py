@@ -161,9 +161,7 @@ class TableExtension(
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(TableExtension[T], AssetTableExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
-                f"Table extension does not apply to type '{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @property
     def columns(self) -> Optional[List[Column]]:

@@ -322,9 +322,7 @@ class SarExtension(
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
-                f"SAR extension does not apply to type '{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @classmethod
     def summaries(
