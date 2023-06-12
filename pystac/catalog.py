@@ -260,7 +260,7 @@ class Catalog(STACObject):
 
         # set self link
         self_href = self.get_self_href()
-        if self_href:
+        if self_href and not keep_parent:
             child_href = strategy.get_href(child, os.path.dirname(self_href))
             child.set_self_href(child_href)
 
