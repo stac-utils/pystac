@@ -60,10 +60,6 @@
       "minimum": 1.2,
       "maximum": 1.2
     },
-    "proj:epsg": {
-      "minimum": 32659,
-      "maximum": 32659
-    },
     "view:sun_elevation": {
       "minimum": 54.9,
       "maximum": 54.9

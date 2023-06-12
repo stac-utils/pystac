@@ -136,7 +136,7 @@ class GridTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Grid Extension does not apply to type 'object'$",
+            r"^GridExtension does not apply to type 'object'$",
             GridExtension.ext,
             object(),
         )

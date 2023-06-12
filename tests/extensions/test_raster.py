@@ -254,7 +254,7 @@ class RasterTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Raster extension does not apply to type 'object'$",
+            r"^RasterExtension does not apply to type 'object'$",
             RasterExtension.ext,
             object(),
         )
