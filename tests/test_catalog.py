@@ -270,28 +270,6 @@ class TestCatalog:
         parent2.add_item(child)
         assert child.get_parent() is parent2
 
-    def test_add_child_store_at_parent_location(self) -> None:
-        root = pystac.Catalog("root", "root")
-        left = pystac.Catalog("left", "left")
-        right = pystac.Catalog("right", "right")
-
-        root.add_child(left)
-        root.add_child(right)
-
-        child = pystac.Catalog("child", "child")
-
-        left.add_child(child)
-        right.add_child(child, keep_parent=True)
-
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            root.normalize_and_save(
-                temporary_directory, pystac.CatalogType.ABSOLUTE_PUBLISHED
-            )
-            correct_path = os.path.join(temporary_directory, "left/child/catalog.json")
-            wrong_path = os.path.join(temporary_directory, "right/child/catalog.json")
-            assert os.path.exists(correct_path)
-            assert not os.path.exists(wrong_path)
-
     def test_add_item_keep_parent(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
@@ -1615,3 +1593,68 @@ def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8
     assert cat.validate_all(recursive=False) == 0
+
+
+@pytest.fixture
+def nested_catalog() -> pystac.Catalog:
+    """
+    Structure:
+
+    ├── catalog.json
+    ├── products
+    │   ├── catalog.json
+    │   └── product_a
+    │       └── catalog.json
+    └── variables
+        ├── catalog.json
+        └── variable_a
+            ├── catalog.json
+    """
+    root = pystac.Catalog("root", "root")
+    variables = pystac.Catalog("variables", "variables")
+    products = pystac.Catalog("products", "products")
+
+    root.add_child(variables)
+    root.add_child(products)
+
+    variable_a = pystac.Catalog("variable_a", "variable_a")
+    product_a = pystac.Catalog("product_a", "product_a")
+
+    variables.add_child(variable_a)
+    products.add_child(product_a)
+
+    return root
+
+
+def test_keep_parent_stores_in_proper_place_on_normalize_and_save(
+    nested_catalog: pystac.Catalog, tmp_path: Path
+) -> None:
+    root = nested_catalog
+    product_a = next(root.get_child("products").get_children())  # type: ignore
+    variable_a = next(root.get_child("variables").get_children())  # type: ignore
+
+    variable_a.add_child(product_a, keep_parent=True)
+
+    root.normalize_and_save(
+        root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
+    )
+    assert (tmp_path / "products" / "product_a").exists()
+    assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
+
+
+def test_keep_parent_stores_in_proper_place_on_save(
+    nested_catalog: pystac.Catalog, tmp_path: Path
+) -> None:
+    nested_catalog.normalize_and_save(
+        root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
+    )
+    root = pystac.Catalog.from_file(str(tmp_path / "catalog.json"))
+    product_a = next(root.get_child("products").get_children())  # type: ignore
+    variable_a = next(root.get_child("variables").get_children())  # type: ignore
+
+    variable_a.add_child(product_a, keep_parent=True)
+
+    root.save(pystac.CatalogType.SELF_CONTAINED, dest_href=str(tmp_path))
+
+    assert (tmp_path / "products" / "product_a").exists()
+    assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
