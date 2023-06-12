@@ -67,9 +67,9 @@ def test_horizontal_dimension_values(
     assert dim.values == [0, 180]
     assert dim.properties["values"] == [0, 180]
 
-    dim.clear_step()
-    assert dim.step is None
-    assert "step" not in dim.properties
+    dim.values = None
+    assert dim.values is None
+    assert "values" not in dim.properties
 
 
 def test_horizontal_dimension_step(
@@ -82,9 +82,9 @@ def test_horizontal_dimension_step(
     assert dim.step == 3
     assert dim.properties["step"] == 3
 
-    dim.values = None
-    assert dim.values is None
-    assert "values" not in dim.properties
+    dim.clear_step()
+    assert dim.step is None
+    assert "step" not in dim.properties
 
 
 def test_temporal_dimension_type(temporal_dimension: dc.TemporalDimension) -> None:
