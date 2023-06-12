@@ -107,6 +107,15 @@ def test_ext_raises_if_item_does_not_conform(plain_item: Item) -> None:
         ClassificationExtension.ext(plain_item)
 
 
+def test_ext_raises_on_collection(collection: pystac.Collection) -> None:
+    with pytest.raises(
+        pystac.errors.ExtensionTypeError,
+        match="ClassificationExtension does not apply to type 'Collection'",
+    ) as e:
+        ClassificationExtension.ext(collection)  # type:ignore
+    assert "Hint" in str(e.value)
+
+
 def test_apply_bitfields(plain_item: Item) -> None:
     ClassificationExtension.add_to(plain_item)
     ClassificationExtension.ext(plain_item).apply(

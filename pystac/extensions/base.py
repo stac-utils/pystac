@@ -194,7 +194,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def _ext_error_message(cls, obj: Any) -> str:
-        hint = ""
+        contents = [f"{cls.__name__} does not apply to type '{type(obj).__name__}'"]
         if hasattr(cls, "summaries") and isinstance(obj, pystac.Collection):
-            hint = f" Hint: Did you mean to use `{cls.__name__}.summaries` instead?"
-        return f"{cls.__name__} does not apply to type '{type(obj).__name__}'.{hint}"
+            hint = f"Hint: Did you mean to use `{cls.__name__}.summaries` instead?"
+            contents.append(hint)
+        return ". ".join(contents)

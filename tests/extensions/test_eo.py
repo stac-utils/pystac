@@ -478,6 +478,7 @@ def test_exception_should_include_hint_if_obj_is_collection(
     collection: pystac.Collection,
 ) -> None:
     with pytest.raises(
-        ExtensionTypeError, match="Hint: Did you mean to use `.summaries` instead?"
+        ExtensionTypeError,
+        match="Hint: Did you mean to use `EOExtension.summaries` instead?",
     ):
         EOExtension.ext(collection)  # type:ignore

@@ -31,6 +31,15 @@ def test_ext_raises_if_item_does_not_conform(item: pystac.Item) -> None:
         MgrsExtension.ext(item)
 
 
+def test_ext_raises_on_collection(collection: pystac.Collection) -> None:
+    with pytest.raises(
+        pystac.errors.ExtensionTypeError,
+        match="MgrsExtension does not apply to type 'Collection'",
+    ) as e:
+        MgrsExtension.ext(collection)  # type: ignore
+    assert "Hint" not in str(e.value)
+
+
 def test_to_from_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
     with open(ext_item_uri) as f:
         d = json.load(f)
