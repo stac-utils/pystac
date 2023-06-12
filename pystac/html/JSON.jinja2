@@ -1,0 +1,29 @@
+{% import 'Macros.jinja2' as macros %}
+
+<style>
+.pystac-summary {
+    cursor: pointer;
+    display:list-item;
+}
+.pystac-key {
+    color: rgb(0, 128, 0);
+    font-weight: 700;
+}
+.pystac-key-value {
+    display: inline-block;
+    margin: 0px 0.5em 0px 0px;
+}
+</style>
+<div class="jp-RenderedJSON jp-mod-trusted jp-OutputArea-output">
+    <div class="container" style="line-height: normal;">
+        <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
+            {% for key, value in dict.items() %}
+                {% if value is iterable and (value is not string and value is not mapping) %}
+                    {{ macros.list(key, value) }}
+                {% else %}
+                    {{ macros.scalar(key, value) }}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>

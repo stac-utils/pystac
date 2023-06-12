@@ -546,9 +546,7 @@ class DatacubeExtension(
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
-                f"Datacube extension does not apply to type '{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
 
 class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):

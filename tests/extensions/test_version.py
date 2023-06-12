@@ -42,7 +42,7 @@ class VersionExtensionTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Version extension does not apply to type 'object'$",
+            r"^VersionExtension does not apply to type 'object'$",
             VersionExtension.ext,
             object(),
         )

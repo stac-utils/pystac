@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import warnings
 from copy import deepcopy
-from html import escape
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
@@ -24,7 +23,6 @@ from typing import (
 import pystac
 from pystac.cache import ResolvedObjectCache
 from pystac.errors import STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -206,14 +204,6 @@ class Catalog(STACObject):
 
     def __repr__(self) -> str:
         return "<Catalog id={}>".format(self.id)
-
-    def _repr_html_(self) -> str:
-        jinja_env = get_jinja_env()
-        if jinja_env:
-            template = jinja_env.get_template("Catalog.jinja2")
-            return str(template.render(catalog=self))
-        else:
-            return escape(repr(self))
 
     def set_root(self, root: Optional["Catalog"]) -> None:
         STACObject.set_root(self, root)
@@ -996,21 +986,41 @@ class Catalog(STACObject):
             for item in items:
                 pass
 
-    def validate_all(self) -> None:
-        """Validates each catalog, collection contained within this catalog.
+    def validate_all(
+        self, max_items: Optional[int] = None, recursive: bool = True
+    ) -> int:
+        """Validates each catalog, collection, item contained within this catalog.
 
         Walks through the children and items of the catalog and validates each
         stac object.
+
+        Args:
+            max_items : The maximum number of STAC items to validate. Default
+                is None which means, validate them all.
+            recursive : Whether to validate catalog, collections, and items contained
+                within child objects.
+
+        Returns:
+            int : Number of STAC items validated.
 
         Raises:
             STACValidationError: Raises this error on any item that is invalid.
                 Will raise on the first invalid stac object encountered.
         """
+        n = 0
         self.validate()
         for child in self.get_children():
-            child.validate_all()
+            if recursive:
+                inner_max_items = None if max_items is None else max_items - n
+                n += child.validate_all(max_items=inner_max_items, recursive=True)
+            else:
+                child.validate()
         for item in self.get_items():
+            if max_items is not None and n >= max_items:
+                break
             item.validate()
+            n += 1
+        return n
 
     def _object_links(self) -> List[Union[str, pystac.RelType]]:
         return [

@@ -412,7 +412,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Scientific extension does not apply to type 'object'$",
+            r"^ScientificExtension does not apply to type 'object'$",
             ScientificExtension.ext,
             object(),
         )

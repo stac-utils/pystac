@@ -406,9 +406,7 @@ class EOExtension(
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(
-                f"EO extension does not apply to type '{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @classmethod
     def summaries(

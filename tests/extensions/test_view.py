@@ -263,7 +263,7 @@ class ViewTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^View extension does not apply to type 'object'$",
+            r"^ViewExtension does not apply to type 'object'$",
             ViewExtension.ext,
             object(),
         )

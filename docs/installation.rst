@@ -78,6 +78,18 @@ additional functionality:
 
       pip install pystac[urllib3]
 
+* ``jinja2``
+
+  Installs the additional `jinja2 <https://github.com/pallets/jinja>`__ dependency.
+  When this dependency is installed, jupyter notebooks display pretty representations
+  of PySTAC objects
+
+  To install:
+
+  .. code-block:: bash
+
+      pip install pystac[jinja2]
+
 Versions
 ========
 

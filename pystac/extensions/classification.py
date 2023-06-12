@@ -542,12 +542,8 @@ class ClassificationExtension(
             return cast(
                 ClassificationExtension[T], RasterBandClassificationExtension(obj)
             )
-
         else:
-            raise pystac.ExtensionTypeError(
-                "Classification extension does not apply to type "
-                f"'{type(obj).__name__}'"
-            )
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @classmethod
     def summaries(

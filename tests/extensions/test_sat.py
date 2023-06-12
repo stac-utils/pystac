@@ -213,7 +213,7 @@ class SatTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Satellite extension does not apply to type 'object'$",
+            r"^SatExtension does not apply to type 'object'$",
             SatExtension.ext,
             object(),
         )

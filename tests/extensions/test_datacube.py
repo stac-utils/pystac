@@ -136,7 +136,7 @@ def test_ext_always_passes_if_asset_has_no_owner(sample_item: pystac.Item) -> No
 
 def test_ext_raises_if_passed_a_non_stac_object() -> None:
     with pytest.raises(
-        ExtensionTypeError, match="Datacube extension does not apply to type 'object'"
+        ExtensionTypeError, match="DatacubeExtension does not apply to type 'object'"
     ):
         dc.DatacubeExtension.ext(object())  # type: ignore
 

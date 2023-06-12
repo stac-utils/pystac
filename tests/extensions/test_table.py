@@ -56,7 +56,7 @@ class TableTest(unittest.TestCase):
     ) -> None:
         self.assertRaisesRegex(
             ExtensionTypeError,
-            r"^Table extension does not apply to type 'object'$",
+            r"^TableExtension does not apply to type 'object'$",
             TableExtension.ext,
             object(),
         )

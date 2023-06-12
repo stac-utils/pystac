@@ -146,11 +146,18 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
     @classmethod
     def validate_owner_has_extension(
-        cls, asset: pystac.Asset, add_if_missing: bool
+        cls,
+        asset: pystac.Asset,
+        add_if_missing: bool = False,
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
         extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
         If ``add_if_missing`` is ``True``, the schema URI will be added to the owner.
+
+        Args:
+            asset : The asset whose owner should be validated.
+            add_if_missing : Whether to add the schema URI to the owner if it is
+                not already present. Defaults to False.
 
         Raises:
             STACError : If ``add_if_missing`` is ``True`` and ``asset.owner`` is
@@ -167,7 +174,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
 
     @classmethod
-    def validate_has_extension(cls, obj: S, add_if_missing: bool) -> None:
+    def validate_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
         """Given a :class:`~pystac.STACObject`, checks if the object has this
         extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
         If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
@@ -175,7 +182,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         Args:
             obj : The object to validate.
             add_if_missing : Whether to add the schema URI to the object if it is
-                not already present.
+                not already present. Defaults to False.
         """
         if add_if_missing:
             cls.add_to(obj)
@@ -184,3 +191,11 @@ class ExtensionManagementMixin(Generic[S], ABC):
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )
+
+    @classmethod
+    def _ext_error_message(cls, obj: Any) -> str:
+        contents = [f"{cls.__name__} does not apply to type '{type(obj).__name__}'"]
+        if hasattr(cls, "summaries") and isinstance(obj, pystac.Collection):
+            hint = f"Hint: Did you mean to use `{cls.__name__}.summaries` instead?"
+            contents.append(hint)
+        return ". ".join(contents)
