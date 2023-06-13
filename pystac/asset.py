@@ -219,6 +219,12 @@ class Asset:
         setting the asset href accordingly.
 
         Modifies the asset in place, and returns the same asset.
+        
+        Args:
+            href: The new asset location
+            
+        Returns:
+            Asset: The asset with the updated href.
         """
         src = _absolute_href(self.href, self.owner, "move")
         dst = _absolute_href(href, self.owner, "move")
