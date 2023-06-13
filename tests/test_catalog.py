@@ -240,16 +240,17 @@ class TestCatalog:
         parent2.add_child(child)
         assert child.get_parent() is parent2
 
-    def test_add_child_keep_parent(self) -> None:
+    def test_add_child_set_parent_false(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
         child = Catalog(id="child", description="test3")
         assert child.get_parent() is None
 
-        parent1.add_child(child, keep_parent=True)
-        assert child.get_parent() is parent1
+        parent1.add_child(child, set_parent=False)
+        assert child.get_parent() is not parent1
 
-        parent2.add_child(child, keep_parent=True)
+        parent1.add_child(child)
+        parent2.add_child(child, set_parent=False)
         assert child.get_parent() is parent1
 
     def test_add_item_override_parent(self) -> None:
@@ -270,7 +271,7 @@ class TestCatalog:
         parent2.add_item(child)
         assert child.get_parent() is parent2
 
-    def test_add_item_keep_parent(self) -> None:
+    def test_add_item_set_parent_false(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
         child = Item(
@@ -282,10 +283,11 @@ class TestCatalog:
         )
         assert child.get_parent() is None
 
-        parent1.add_item(child, keep_parent=True)
-        assert child.get_parent() is parent1
+        parent1.add_item(child, set_parent=False)
+        assert child.get_parent() is not parent1
 
-        parent2.add_item(child, keep_parent=True)
+        parent1.add_item(child)
+        parent2.add_item(child, set_parent=False)
         assert child.get_parent() is parent1
 
     def test_add_item_throws_if_child(self) -> None:
@@ -1626,14 +1628,14 @@ def nested_catalog() -> pystac.Catalog:
     return root
 
 
-def test_keep_parent_stores_in_proper_place_on_normalize_and_save(
+def test_set_parent_false_stores_in_proper_place_on_normalize_and_save(
     nested_catalog: pystac.Catalog, tmp_path: Path
 ) -> None:
     root = nested_catalog
     product_a = next(root.get_child("products").get_children())  # type: ignore
     variable_a = next(root.get_child("variables").get_children())  # type: ignore
 
-    variable_a.add_child(product_a, keep_parent=True)
+    variable_a.add_child(product_a, set_parent=False)
 
     root.normalize_and_save(
         root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
@@ -1642,7 +1644,7 @@ def test_keep_parent_stores_in_proper_place_on_normalize_and_save(
     assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
 
 
-def test_keep_parent_stores_in_proper_place_on_save(
+def test_set_parent_false_stores_in_proper_place_on_save(
     nested_catalog: pystac.Catalog, tmp_path: Path
 ) -> None:
     nested_catalog.normalize_and_save(
@@ -1652,7 +1654,7 @@ def test_keep_parent_stores_in_proper_place_on_save(
     product_a = next(root.get_child("products").get_children())  # type: ignore
     variable_a = next(root.get_child("variables").get_children())  # type: ignore
 
-    variable_a.add_child(product_a, keep_parent=True)
+    variable_a.add_child(product_a, set_parent=False)
 
     root.save(pystac.CatalogType.SELF_CONTAINED, dest_href=str(tmp_path))
 

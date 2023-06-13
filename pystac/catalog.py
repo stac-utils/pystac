@@ -230,11 +230,11 @@ class Catalog(STACObject):
         child: Union["Catalog", Collection],
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
-        keep_parent: bool = False,
+        set_parent: bool = True,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or
         :class:`~pystac.Collection`. This method will set the child's parent to this
-        object (except if a parent is set and keep_parent is true).
+        object (unless ``set_parent`` is False).
         It will always set its root to this Catalog's root.
 
         Args:
@@ -243,6 +243,8 @@ class Catalog(STACObject):
             strategy : The layout strategy to use for setting the
                 self href of the child. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+            set_parent : Whether to set the parent on the child as well.
+                Defaults to True.
         """
 
         # Prevent typo confusion
@@ -253,14 +255,14 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         child.set_root(self.get_root())
-        if child.get_parent() is None or not keep_parent:
+        if set_parent:
             child.set_parent(self)
-        elif keep_parent:
-            setattr(child, "keep_parent", True)
+        else:
+            child._allow_parent_to_override_href = False
 
         # set self link
         self_href = self.get_self_href()
-        if self_href and not keep_parent:
+        if self_href and set_parent:
             child_href = strategy.get_href(child, os.path.dirname(self_href))
             child.set_self_href(child_href)
 
@@ -282,11 +284,11 @@ class Catalog(STACObject):
         item: Item,
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
-        keep_parent: bool = False,
+        set_parent: bool = True,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
-        This method will set the item's parent to this object (except if a parent
-        is set and keep_parent is true).
+        This method will set the item's parent to this object (unless ``set_parent`` is
+        False).
         It will always set its root to this Catalog's root.
 
         Args:
@@ -295,6 +297,8 @@ class Catalog(STACObject):
             strategy : The layout strategy to use for setting the
                 self href of the item. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+            set_parent : Whether to set the parent on the item as well.
+                Defaults to True.
         """
 
         # Prevent typo confusion
@@ -305,12 +309,14 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         item.set_root(self.get_root())
-        if item.get_parent() is None or not keep_parent:
+        if set_parent:
             item.set_parent(self)
+        else:
+            item._allow_parent_to_override_href = False
 
         # set self link
         self_href = self.get_self_href()
-        if self_href:
+        if self_href and set_parent:
             item_href = strategy.get_href(item, os.path.dirname(self_href))
             item.set_self_href(item_href)
 

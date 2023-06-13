@@ -340,7 +340,7 @@ class Link(PathLike):
             assert self._target_object
             # Do nothing if the object wants to keep its parent
             # https://github.com/stac-utils/pystac/issues/1116
-            if not getattr(self._target_object, "keep_parent", False):
+            if self._target_object._allow_parent_to_override_href:
                 self._target_object.set_parent(self.owner)
 
         return self

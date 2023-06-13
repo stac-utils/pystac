@@ -9,7 +9,7 @@
 - `recursive` to Catalog and Collection `get_items()` to walk the sub-catalogs and sub-collections ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - MGRS Extension ([#1088](https://github.com/stac-utils/pystac/pull/1088))
 - All HTTP requests are logged when level is set to `logging.DEBUG` ([#1096](https://github.com/stac-utils/pystac/pull/1096))
-- `keep_parent` to Catalog `add_item` and `add_child` to avoid overriding existing parents ([#1117](https://github.com/stac-utils/pystac/pull/1117))
+- `set_parent` to Catalog `add_item` and `add_child` to avoid overriding existing parents ([#1117](https://github.com/stac-utils/pystac/pull/1117), [#1155](https://github.com/stac-utils/pystac/pull/1155))
 - `owner` attribute to `AssetDefinition` in the item-assets extension ([#1110](https://github.com/stac-utils/pystac/pull/1110))
 - Windows `\\` path delimiters are converted to POSIX style `/` delimiters ([#1125](https://github.com/stac-utils/pystac/pull/1125))
 - Updated raster extension to work with the item_assets extension's AssetDefinition objects ([#1110](https://github.com/stac-utils/pystac/pull/1110))
@@ -45,8 +45,6 @@
 
 ### Fixed
 
-- If a child catalog is linked to from two parents, the creation folder depends on the parent link instead of relying on the order of add_child calls ([#1118](https://github.com/stac-utils/pystac/pull/1118))
-- Don't override an existing parent link when determining the href's ([#1118](https://github.com/stac-utils/pystac/pull/1118))
 
 ## [v1.7.3]
 
