@@ -13,6 +13,7 @@ from dateutil import tz
 
 import pystac
 from pystac import (
+    Asset,
     Catalog,
     CatalogType,
     Collection,
@@ -619,3 +620,41 @@ def test_get_item_is_not_recursive_by_default(
 
     item = col8.get_item("20170831_162740_ssc1d1", recursive=True)
     assert item is not None
+
+
+def test_delete_asset(tmp_asset: Asset, collection: Collection) -> None:
+    asset = tmp_asset
+    href = asset.get_absolute_href()
+    item = asset.owner
+    name = "foo"
+
+    assert href is not None
+    assert item is not None
+
+    collection.add_asset(name, asset)
+
+    # steal the href from the owner and use it as the collection's
+    collection.set_self_href(item.get_self_href())
+
+    collection.delete_asset(name)
+    assert name not in collection.assets
+    assert not os.path.exists(href)
+
+
+def test_delete_asset_relative_no_self_link_fails(
+    tmp_asset: Asset, collection: Collection
+) -> None:
+    asset = tmp_asset
+    href = asset.get_absolute_href()
+    name = "foo"
+
+    assert href is not None
+
+    collection.add_asset(name, asset)
+
+    with pytest.raises(ValueError, match="Cannot delete file") as e:
+        collection.delete_asset(name)
+
+    assert asset.href in str(e.value)
+    assert name in collection.assets
+    assert os.path.exists(href)

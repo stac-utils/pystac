@@ -731,7 +731,7 @@ class Collection(Catalog):
         }
 
     def add_asset(self, key: str, asset: Asset) -> None:
-        """Adds an Asset to this item.
+        """Adds an Asset to this collection.
 
         Args:
             key : The unique key of this asset.
@@ -739,6 +739,22 @@ class Collection(Catalog):
         """
         asset.set_owner(self)
         self.assets[key] = asset
+
+    def delete_asset(self, key: str) -> None:
+        """Deletes the asset at the given key, and removes the asset's data
+        file from the local filesystem.
+
+        It is an error to attempt to delete an asset's file if it is on a
+        remote filesystem.
+
+        To delete the asset without removing the file, use
+        `del collection.assets["key"]`.
+        """
+        asset = self.assets[key]
+        asset.set_owner(self)
+        asset.delete()
+
+        del self.assets[key]
 
     def update_extent_from_items(self) -> None:
         """

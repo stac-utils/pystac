@@ -548,3 +548,37 @@ def test_remove_derived_from(test_case_1_catalog: Catalog) -> None:
     for link in item_0.links:
         assert link.rel != pystac.RelType.DERIVED_FROM
     assert item_0.get_single_link(pystac.RelType.DERIVED_FROM) is None
+
+
+def test_delete_asset(tmp_asset: Asset) -> None:
+    asset = tmp_asset
+    href = asset.get_absolute_href()
+    item = asset.owner
+
+    assert href is not None
+    assert item is not None
+
+    name = next(k for k in item.assets.keys() if item.assets[k] == asset)
+    item.delete_asset(name)
+
+    assert name not in item.assets
+    assert not os.path.exists(href)
+
+
+def test_delete_asset_relative_no_self_link_fails(tmp_asset: pystac.Asset) -> None:
+    asset = tmp_asset
+    href = asset.get_absolute_href()
+    item = asset.owner
+
+    assert href is not None
+    assert item is not None
+
+    item.set_self_href(None)
+
+    name = next(k for k in item.assets.keys() if item.assets[k] == asset)
+    with pytest.raises(ValueError, match="Cannot delete file") as e:
+        item.delete_asset(name)
+
+    assert asset.href in str(e.value)
+    assert name in item.assets
+    assert os.path.exists(href)
