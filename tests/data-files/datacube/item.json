@@ -1,5 +1,5 @@
 {
-    "stac_version": "1.0.0-rc.1",
+    "stac_version": "1.0.0",
     "stac_extensions": [
         "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
     ],
@@ -40,7 +40,7 @@
     ],
     "properties": {
         "title": "Multi-dimensional data cube 123 in a STAC Item.",
-        "datetime": "2016-05-03T13:21:30.040Z",
+        "datetime": "2016-05-03T13:21:30.040000Z",
         "cube:dimensions": {
             "x": {
                 "type": "spatial",
@@ -86,7 +86,7 @@
             "time": {
                 "type": "temporal",
                 "values": [
-                    "2016-05-03T13:21:30.040Z"
+                    "2016-05-03T13:21:30.040000Z"
                 ]
             },
             "spectral": {
@@ -125,7 +125,8 @@
     "links": [
         {
             "rel": "self",
-            "href": "http://cool-sat.com/catalog/datacube-123/example-item.json"
+            "href": "http://cool-sat.com/catalog/datacube-123/example-item.json",
+            "type": "application/json"
         }
     ]
 }
