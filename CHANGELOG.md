@@ -18,6 +18,7 @@
 - `ItemEOExtension.get_assets` for getting assets filtered on band `name` or `common_name` ([#1140](https://github.com/stac-utils/pystac/pull/1140))
 - `max_items` and `recursive` to `Catalog.validate_all` ([#1141](https://github.com/stac-utils/pystac/pull/1141))
 - `KML` as a built in media type ([#1127](https://github.com/stac-utils/pystac/issues/1127))
+- `move/copy/delete` operations for local Assets ([#1158](https://github.com/stac-utils/pystac/issues/1158))
 
 ### Changed
 

@@ -263,6 +263,24 @@ class Item(STACObject):
         asset.set_owner(self)
         self.assets[key] = asset
 
+    def delete_asset(self, key: str) -> None:
+        """Deletes the asset at the given key, and removes the asset's data
+        file from the local filesystem.
+
+        It is an error to attempt to delete an asset's file if it is on a
+        remote filesystem.
+
+        To delete the asset without removing the file, use `del item.assets["key"]`.
+
+        Args:
+            key: The unique key of this asset.
+        """
+        asset = self.assets[key]
+        asset.set_owner(self)
+        asset.delete()
+
+        del self.assets[key]
+
     def make_asset_hrefs_relative(self) -> Item:
         """Modify each asset's HREF to be relative to this item's self HREF.
 

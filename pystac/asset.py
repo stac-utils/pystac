@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import shutil
 from copy import copy, deepcopy
 from html import escape
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
@@ -211,3 +213,66 @@ class Asset:
             roles=roles,
             extra_fields=properties,
         )
+
+    def move(self, href: str) -> Asset:
+        """Moves this asset's file to a new location on the local filesystem,
+        setting the asset href accordingly.
+
+        Modifies the asset in place, and returns the same asset.
+
+        Args:
+            href: The new asset location. Must be a local path. If relative
+                it must be relative to the owner object.
+
+        Returns:
+            Asset: The asset with the updated href.
+        """
+        src = _absolute_href(self.href, self.owner, "move")
+        dst = _absolute_href(href, self.owner, "move")
+        shutil.move(src, dst)
+        self.href = href
+        return self
+
+    def copy(self, href: str) -> Asset:
+        """Copies this asset's file to a new location on the local filesystem,
+        setting the asset href accordingly.
+
+        Modifies the asset in place, and returns the same asset.
+
+        Args:
+            href: The new asset location. Must be a local path. If relative
+                it must be relative to the owner object.
+
+        Returns:
+            Asset: The asset with the updated href.
+        """
+        src = _absolute_href(self.href, self.owner, "copy")
+        dst = _absolute_href(href, self.owner, "copy")
+        shutil.copy2(src, dst)
+        self.href = href
+        return self
+
+    def delete(self) -> None:
+        """Delete this asset's file. Does not delete the asset from the item
+        that owns it. See :func:`~pystac.Item.delete_asset` for that.
+
+        Does not modify the asset.
+        """
+        href = _absolute_href(self.href, self.owner, "delete")
+        os.remove(href)
+
+
+def _absolute_href(
+    href: str, owner: Optional[Union[Item, Collection]], action: str = "access"
+) -> str:
+    if utils.is_absolute_href(href):
+        return href
+    else:
+        item_self = owner.get_self_href() if owner else None
+        if item_self is None:
+            raise ValueError(
+                f"Cannot {action} file if asset href ('{href}') is relative "
+                "and owner item is not set. Hint: try using "
+                ":func:`~pystac.Item.make_asset_hrefs_absolute`"
+            )
+        return utils.make_absolute_href(href, item_self)

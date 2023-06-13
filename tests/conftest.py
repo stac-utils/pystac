@@ -1,11 +1,13 @@
 # TODO move all test case code to this file
 
+import shutil
+import uuid
 from datetime import datetime
 from pathlib import Path
 
 import pytest
 
-from pystac import Catalog, Collection, Item
+from pystac import Asset, Catalog, Collection, Item
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 
@@ -50,3 +52,15 @@ def get_data_file(rel_path: str) -> str:
 @pytest.fixture
 def sample_item() -> Item:
     return Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
+
+
+@pytest.fixture(scope="function")
+def tmp_asset(tmp_path: Path) -> Asset:
+    """Copy the entirety of test-case-2 to tmp and"""
+    src = get_data_file("catalogs/test-case-2")
+    dst = str(tmp_path / str(uuid.uuid4()))
+    shutil.copytree(src, dst)
+
+    catalog = Catalog.from_file(f"{dst}/catalog.json")
+    item = next(catalog.get_items(recursive=True))
+    return next(v for v in item.assets.values())
