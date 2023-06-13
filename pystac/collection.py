@@ -749,6 +749,9 @@ class Collection(Catalog):
 
         To delete the asset without removing the file, use
         `del collection.assets["key"]`.
+
+        Args:
+            key: The unique key of this asset.
         """
         asset = self.assets[key]
         asset.set_owner(self)

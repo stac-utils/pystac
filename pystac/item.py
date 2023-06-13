@@ -271,6 +271,9 @@ class Item(STACObject):
         remote filesystem.
 
         To delete the asset without removing the file, use `del item.assets["key"]`.
+
+        Args:
+            key: The unique key of this asset.
         """
         asset = self.assets[key]
         asset.set_owner(self)

@@ -219,10 +219,11 @@ class Asset:
         setting the asset href accordingly.
 
         Modifies the asset in place, and returns the same asset.
-        
+
         Args:
-            href: The new asset location
-            
+            href: The new asset location. Must be a local path. If relative
+                it must be relative to the owner object.
+
         Returns:
             Asset: The asset with the updated href.
         """
@@ -237,6 +238,13 @@ class Asset:
         setting the asset href accordingly.
 
         Modifies the asset in place, and returns the same asset.
+
+        Args:
+            href: The new asset location. Must be a local path. If relative
+                it must be relative to the owner object.
+
+        Returns:
+            Asset: The asset with the updated href.
         """
         src = _absolute_href(self.href, self.owner, "copy")
         dst = _absolute_href(href, self.owner, "copy")
