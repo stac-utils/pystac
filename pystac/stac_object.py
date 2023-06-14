@@ -58,6 +58,9 @@ class STACObject(ABC):
 
     STAC_OBJECT_TYPE: STACObjectType
 
+    _allow_parent_to_override_href: bool = True
+    """Private attribute for whether parent objects should override on normalization"""
+
     def __init__(self, stac_extensions: List[str]) -> None:
         self.links = []
         self.stac_extensions = stac_extensions

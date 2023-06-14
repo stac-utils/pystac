@@ -338,7 +338,10 @@ class Link(PathLike):
             and isinstance(self.owner, pystac.Catalog)
         ):
             assert self._target_object
-            self._target_object.set_parent(self.owner)
+            # Do nothing if the object wants to keep its parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if self._target_object._allow_parent_to_override_href:
+                self._target_object.set_parent(self.owner)
 
         return self
 
