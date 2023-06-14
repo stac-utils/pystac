@@ -228,6 +228,12 @@ class TestCatalog:
         with pytest.raises(pystac.STACError):
             cat.add_child(item)  # type:ignore
 
+    def test_add_child_returns_link(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child = Catalog(id="child", description="test")
+        link = parent.add_child(child)
+        assert isinstance(link, pystac.Link)
+
     def test_add_child_override_parent(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
@@ -295,6 +301,18 @@ class TestCatalog:
         child = next(iter(cat.get_children()))
         with pytest.raises(pystac.STACError):
             cat.add_item(child)  # type:ignore
+
+    def test_add_item_returns_link(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child = Item(
+            id="child",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        link = parent.add_item(child)
+        assert isinstance(link, pystac.Link)
 
     def test_get_child_returns_none_if_not_found(self) -> None:
         cat = TestCases.case_1()

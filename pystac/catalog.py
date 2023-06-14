@@ -231,7 +231,7 @@ class Catalog(STACObject):
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
         set_parent: bool = True,
-    ) -> None:
+    ) -> Link:
         """Adds a link to a child :class:`~pystac.Catalog` or
         :class:`~pystac.Collection`.
 
@@ -248,6 +248,9 @@ class Catalog(STACObject):
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
             set_parent : Whether to set the parent on the child as well.
                 Defaults to True.
+
+        Returns:
+            Link: The link created for the child
         """
 
         # Prevent typo confusion
@@ -269,7 +272,9 @@ class Catalog(STACObject):
             child_href = strategy.get_href(child, os.path.dirname(self_href))
             child.set_self_href(child_href)
 
-        self.add_link(Link.child(child, title=title))
+        child_link = Link.child(child, title=title)
+        self.add_link(child_link)
+        return child_link
 
     def add_children(self, children: Iterable[Union["Catalog", Collection]]) -> None:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
@@ -288,7 +293,7 @@ class Catalog(STACObject):
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
         set_parent: bool = True,
-    ) -> None:
+    ) -> Link:
         """Adds a link to an :class:`~pystac.Item`.
 
         This method will set the item's parent to this object and potentially
@@ -304,6 +309,9 @@ class Catalog(STACObject):
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
             set_parent : Whether to set the parent on the item as well.
                 Defaults to True.
+
+        Returns:
+            Link: The link created for the item
         """
 
         # Prevent typo confusion
@@ -325,7 +333,9 @@ class Catalog(STACObject):
             item_href = strategy.get_href(item, os.path.dirname(self_href))
             item.set_self_href(item_href)
 
-        self.add_link(Link.item(item, title=title))
+        item_link = Link.item(item, title=title)
+        self.add_link(item_link)
+        return item_link
 
     def add_items(
         self,
