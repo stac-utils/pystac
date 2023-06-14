@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -55,13 +55,13 @@ class XarrayAssetsExtension(
         """
         if isinstance(obj, pystac.Collection):
             cls.validate_has_extension(obj, add_if_missing)
-            return cast(XarrayAssetsExtension[T], CollectionXarrayAssetsExtension(obj))
+            return CollectionXarrayAssetsExtension(obj)
         if isinstance(obj, pystac.Item):
             cls.validate_has_extension(obj, add_if_missing)
-            return cast(XarrayAssetsExtension[T], ItemXarrayAssetsExtension(obj))
+            return ItemXarrayAssetsExtension(obj)
         if isinstance(obj, pystac.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
-            return cast(XarrayAssetsExtension[T], AssetXarrayAssetsExtension(obj))
+            return AssetXarrayAssetsExtension(obj)
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -115,17 +115,15 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
     :meth:`XarrayAssetsExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
-    asset_href: str
+    asset: pystac.Asset
     properties: Dict[str, Any]
-    additional_read_properties: Optional[List[Dict[str, Any]]]
+    additional_read_properties: Optional[List[Dict[str, Any]]] = None
 
     def __init__(self, asset: pystac.Asset):
-        self.asset_href = asset.href
+        self.asset = asset
         self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
-        else:
-            self.additional_read_properties = None
 
     @property
     def storage_options(self) -> Optional[Dict[str, Any]]:
@@ -152,7 +150,7 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
             self.properties[OPEN_KWARGS_PROP] = v
 
     def __repr__(self) -> str:
-        return "<AssetXarrayAssetsExtension Item id={}>".format(self.asset_href)
+        return "<AssetXarrayAssetsExtension Asset href={}>".format(self.asset.href)
 
     def open(self, **kwargs: Any) -> Any:
         try:
@@ -160,7 +158,7 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
         except ImportError:
             raise ImportError("Missing optional dependency `xpystac`")
 
-        return to_xarray(self, **kwargs)
+        return to_xarray(self.asset, **kwargs)
 
 
 class XarrayAssetsExtensionHooks(ExtensionHooks):
