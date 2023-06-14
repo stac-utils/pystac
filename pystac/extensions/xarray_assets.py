@@ -169,4 +169,4 @@ class XarrayAssetsExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
 
-TABLE_EXTENSION_HOOKS: ExtensionHooks = XarrayAssetsExtensionHooks()
+XARRAY_ASSETS_EXTENSION_HOOKS: ExtensionHooks = XarrayAssetsExtensionHooks()
