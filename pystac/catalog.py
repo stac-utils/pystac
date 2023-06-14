@@ -276,16 +276,20 @@ class Catalog(STACObject):
         self.add_link(child_link)
         return child_link
 
-    def add_children(self, children: Iterable[Union["Catalog", Collection]]) -> None:
+    def add_children(
+        self, children: Iterable[Union["Catalog", Collection]]
+    ) -> List[Link]:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
         objects. This method will set each child's parent to this object, and their
         root to this Catalog's root.
 
         Args:
             children : The children to add.
+
+        Returns:
+            List[Link]: An array of links created for the children
         """
-        for child in children:
-            self.add_child(child)
+        return [self.add_child(child) for child in children]
 
     def add_item(
         self,
@@ -341,7 +345,7 @@ class Catalog(STACObject):
         self,
         items: Iterable[Item],
         strategy: Optional[HrefLayoutStrategy] = None,
-    ) -> None:
+    ) -> List[Link]:
         """Adds links to multiple :class:`Items <pystac.Item>`.
 
         This method will set each item's parent to this object, and their root to
@@ -352,9 +356,11 @@ class Catalog(STACObject):
             strategy : The layout strategy to use for setting the
                 self href of the items. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+
+        Returns:
+            List[Link]: A list of links created for the item
         """
-        for item in items:
-            self.add_item(item, strategy=strategy)
+        return [self.add_item(item, strategy=strategy) for item in items]
 
     def get_child(
         self, id: str, recursive: bool = False, sort_links_by_id: bool = True
