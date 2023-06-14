@@ -233,8 +233,11 @@ class Catalog(STACObject):
         set_parent: bool = True,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or
-        :class:`~pystac.Collection`. This method will set the child's parent to this
-        object (unless ``set_parent`` is False).
+        :class:`~pystac.Collection`.
+
+        This method will set the child's parent to this object and potentially
+        override its self_link (unless ``set_parent`` is False).
+
         It will always set its root to this Catalog's root.
 
         Args:
@@ -287,8 +290,10 @@ class Catalog(STACObject):
         set_parent: bool = True,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
-        This method will set the item's parent to this object (unless ``set_parent`` is
-        False).
+
+        This method will set the item's parent to this object and potentially
+        override its self_link (unless ``set_parent`` is False)
+
         It will always set its root to this Catalog's root.
 
         Args:
