@@ -153,6 +153,18 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
         return "<AssetXarrayAssetsExtension Asset href={}>".format(self.asset.href)
 
     def open(self, **kwargs: Any) -> Any:
+        """Open the asset's data as an xarray object.
+
+        Requires ``xpystac`` to be installed.
+
+        Args:
+            **kwargs: All keyword arguments are passed along to ``xarray.open_dataset``
+
+        Returns:
+            xarray.Dataset: An ndimentional representation of the data referenced
+                by the asset. The data file will be accessed, but the data will not
+                necessarily all be eagerly read.
+        """
         try:
             from xpystac.core import to_xarray
         except ImportError:
