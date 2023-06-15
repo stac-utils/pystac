@@ -240,16 +240,17 @@ class TestCatalog:
         parent2.add_child(child)
         assert child.get_parent() is parent2
 
-    def test_add_child_keep_parent(self) -> None:
+    def test_add_child_set_parent_false(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
         child = Catalog(id="child", description="test3")
         assert child.get_parent() is None
 
-        parent1.add_child(child, keep_parent=True)
-        assert child.get_parent() is parent1
+        parent1.add_child(child, set_parent=False)
+        assert child.get_parent() is not parent1
 
-        parent2.add_child(child, keep_parent=True)
+        parent1.add_child(child)
+        parent2.add_child(child, set_parent=False)
         assert child.get_parent() is parent1
 
     def test_add_item_override_parent(self) -> None:
@@ -270,7 +271,7 @@ class TestCatalog:
         parent2.add_item(child)
         assert child.get_parent() is parent2
 
-    def test_add_item_keep_parent(self) -> None:
+    def test_add_item_set_parent_false(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
         child = Item(
@@ -282,10 +283,11 @@ class TestCatalog:
         )
         assert child.get_parent() is None
 
-        parent1.add_item(child, keep_parent=True)
-        assert child.get_parent() is parent1
+        parent1.add_item(child, set_parent=False)
+        assert child.get_parent() is not parent1
 
-        parent2.add_item(child, keep_parent=True)
+        parent1.add_item(child)
+        parent2.add_item(child, set_parent=False)
         assert child.get_parent() is parent1
 
     def test_add_item_throws_if_child(self) -> None:
@@ -1593,3 +1595,68 @@ def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8
     assert cat.validate_all(recursive=False) == 0
+
+
+@pytest.fixture
+def nested_catalog() -> pystac.Catalog:
+    """
+    Structure:
+
+    ├── catalog.json
+    ├── products
+    │   ├── catalog.json
+    │   └── product_a
+    │       └── catalog.json
+    └── variables
+        ├── catalog.json
+        └── variable_a
+            ├── catalog.json
+    """
+    root = pystac.Catalog("root", "root")
+    variables = pystac.Catalog("variables", "variables")
+    products = pystac.Catalog("products", "products")
+
+    root.add_child(variables)
+    root.add_child(products)
+
+    variable_a = pystac.Catalog("variable_a", "variable_a")
+    product_a = pystac.Catalog("product_a", "product_a")
+
+    variables.add_child(variable_a)
+    products.add_child(product_a)
+
+    return root
+
+
+def test_set_parent_false_stores_in_proper_place_on_normalize_and_save(
+    nested_catalog: pystac.Catalog, tmp_path: Path
+) -> None:
+    root = nested_catalog
+    product_a = next(root.get_child("products").get_children())  # type: ignore
+    variable_a = next(root.get_child("variables").get_children())  # type: ignore
+
+    variable_a.add_child(product_a, set_parent=False)
+
+    root.normalize_and_save(
+        root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
+    )
+    assert (tmp_path / "products" / "product_a").exists()
+    assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
+
+
+def test_set_parent_false_stores_in_proper_place_on_save(
+    nested_catalog: pystac.Catalog, tmp_path: Path
+) -> None:
+    nested_catalog.normalize_and_save(
+        root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
+    )
+    root = pystac.Catalog.from_file(str(tmp_path / "catalog.json"))
+    product_a = next(root.get_child("products").get_children())  # type: ignore
+    variable_a = next(root.get_child("variables").get_children())  # type: ignore
+
+    variable_a.add_child(product_a, set_parent=False)
+
+    root.save(pystac.CatalogType.SELF_CONTAINED, dest_href=str(tmp_path))
+
+    assert (tmp_path / "products" / "product_a").exists()
+    assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()

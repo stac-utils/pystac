@@ -230,11 +230,14 @@ class Catalog(STACObject):
         child: Union["Catalog", Collection],
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
-        keep_parent: bool = False,
+        set_parent: bool = True,
     ) -> None:
         """Adds a link to a child :class:`~pystac.Catalog` or
-        :class:`~pystac.Collection`. This method will set the child's parent to this
-        object (except if a parent is set and keep_parent is true).
+        :class:`~pystac.Collection`.
+
+        This method will set the child's parent to this object and potentially
+        override its self_link (unless ``set_parent`` is False).
+
         It will always set its root to this Catalog's root.
 
         Args:
@@ -243,6 +246,8 @@ class Catalog(STACObject):
             strategy : The layout strategy to use for setting the
                 self href of the child. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+            set_parent : Whether to set the parent on the child as well.
+                Defaults to True.
         """
 
         # Prevent typo confusion
@@ -253,12 +258,14 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         child.set_root(self.get_root())
-        if child.get_parent() is None or not keep_parent:
+        if set_parent:
             child.set_parent(self)
+        else:
+            child._allow_parent_to_override_href = False
 
         # set self link
         self_href = self.get_self_href()
-        if self_href:
+        if self_href and set_parent:
             child_href = strategy.get_href(child, os.path.dirname(self_href))
             child.set_self_href(child_href)
 
@@ -280,11 +287,13 @@ class Catalog(STACObject):
         item: Item,
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
-        keep_parent: bool = False,
+        set_parent: bool = True,
     ) -> None:
         """Adds a link to an :class:`~pystac.Item`.
-        This method will set the item's parent to this object (except if a parent
-        is set and keep_parent is true).
+
+        This method will set the item's parent to this object and potentially
+        override its self_link (unless ``set_parent`` is False)
+
         It will always set its root to this Catalog's root.
 
         Args:
@@ -293,6 +302,8 @@ class Catalog(STACObject):
             strategy : The layout strategy to use for setting the
                 self href of the item. If not provided, defaults to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+            set_parent : Whether to set the parent on the item as well.
+                Defaults to True.
         """
 
         # Prevent typo confusion
@@ -303,12 +314,14 @@ class Catalog(STACObject):
             strategy = BestPracticesLayoutStrategy()
 
         item.set_root(self.get_root())
-        if item.get_parent() is None or not keep_parent:
+        if set_parent:
             item.set_parent(self)
+        else:
+            item._allow_parent_to_override_href = False
 
         # set self link
         self_href = self.get_self_href()
-        if self_href:
+        if self_href and set_parent:
             item_href = strategy.get_href(item, os.path.dirname(self_href))
             item.set_self_href(item_href)
 
@@ -717,9 +730,16 @@ class Catalog(STACObject):
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        def process_item(item: Item, _root_href: str) -> Callable[[], None]:
+        def process_item(
+            item: Item, _root_href: str, parent: Optional[Catalog]
+        ) -> Optional[Callable[[], None]]:
             if not skip_unresolved:
                 item.resolve_links()
+
+            # Abort as the intended parent is not the actual parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if parent is not None and item.get_parent() != parent:
+                return None
 
             new_self_href = _strategy.get_href(item, _root_href)
 
@@ -729,12 +749,20 @@ class Catalog(STACObject):
             return fn
 
         def process_catalog(
-            cat: Catalog, _root_href: str, is_root: bool
+            cat: Catalog,
+            _root_href: str,
+            is_root: bool,
+            parent: Optional[Catalog] = None,
         ) -> List[Callable[[], None]]:
             setter_funcs: List[Callable[[], None]] = []
 
             if not skip_unresolved:
                 cat.resolve_links()
+
+            # Abort as the intended parent is not the actual parent
+            # https://github.com/stac-utils/pystac/issues/1116
+            if parent is not None and cat.get_parent() != parent:
+                return setter_funcs
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
             new_root = os.path.dirname(new_self_href)
@@ -744,9 +772,11 @@ class Catalog(STACObject):
                     continue
                 elif link.rel == pystac.RelType.ITEM:
                     link.resolve_stac_object(root=self.get_root())
-                    setter_funcs.append(
-                        process_item(cast(pystac.Item, link.target), new_root)
+                    item_fn = process_item(
+                        cast(pystac.Item, link.target), new_root, cat
                     )
+                    if item_fn is not None:
+                        setter_funcs.append(item_fn)
                 elif link.rel == pystac.RelType.CHILD:
                     link.resolve_stac_object(root=self.get_root())
                     setter_funcs.extend(
@@ -754,6 +784,7 @@ class Catalog(STACObject):
                             cast(Union[pystac.Catalog, pystac.Collection], link.target),
                             new_root,
                             is_root=False,
+                            parent=cat,
                         )
                     )
 
