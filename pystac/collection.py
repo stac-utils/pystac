@@ -544,9 +544,10 @@ class Collection(Catalog):
         title: Optional[str] = None,
         strategy: Optional[HrefLayoutStrategy] = None,
         set_parent: bool = True,
-    ) -> None:
-        super().add_item(item, title, strategy, set_parent)
+    ) -> Link:
+        link = super().add_item(item, title, strategy, set_parent)
         item.set_collection(self)
+        return link
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True

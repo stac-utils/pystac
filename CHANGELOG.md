@@ -37,6 +37,8 @@
 - Make sure that `get_items` is backwards compatible ([#1139](https://github.com/stac-utils/pystac/pull/1139))
 - Make `_repr_html_` look like `_repr_json_` output ([#1142](https://github.com/stac-utils/pystac/pull/1142))
 - Improved error message when `.ext` is called on a Collection ([#1157](https://github.com/stac-utils/pystac/pull/1157))
+- `add_child` and `add_item` return a Link object instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
+- `add_children` and `add_items` return a list of Link objects instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
 
 ### Deprecated
 
