@@ -119,6 +119,7 @@ class TestCatalog:
         collection = Catalog.from_dict(cat_dict, root=root_cat)
         assert collection.get_root() is root_cat
 
+    @pytest.mark.vcr()
     def test_read_remote(self) -> None:
         catalog_url = (
             "https://raw.githubusercontent.com/stac-extensions/label/main/"
