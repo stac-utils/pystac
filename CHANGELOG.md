@@ -43,6 +43,7 @@
 - `add_children` and `add_items` return a list of Link objects instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
 - Include collection assets in `make_all_asset_hrefs_relative/absolute` ([#1168](https://github.com/stac-utils/pystac/pull/1168))
 - Use cassettes for all tests that pull files from remote ([#1162](https://github.com/stac-utils/pystac/pull/1162))
+- Landsat tutorial notebook updated to collection 2 sources ([#1152](https://github.com/stac-utils/pystac/pull/1152))
 
 ### Deprecated
 
