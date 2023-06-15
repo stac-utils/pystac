@@ -4,6 +4,8 @@ import unittest
 from datetime import datetime
 from typing import Any, Dict
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import sat
@@ -49,11 +51,13 @@ class SatTest(unittest.TestCase):
             f"<AssetSatExtension Asset href={asset.href}>", sat_asset_ext.__repr__()
         )
 
+    @pytest.mark.vcr()
     def test_no_args_fails(self) -> None:
         SatExtension.ext(self.item).apply()
         with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
+    @pytest.mark.vcr()
     def test_orbit_state(self) -> None:
         orbit_state = sat.OrbitState.ASCENDING
         SatExtension.ext(self.item).apply(orbit_state)
@@ -62,6 +66,7 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_relative_orbit(self) -> None:
         relative_orbit = 1234
         SatExtension.ext(self.item).apply(None, relative_orbit)
@@ -70,6 +75,7 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_absolute_orbit(self) -> None:
         absolute_orbit = 1234
         SatExtension.ext(self.item).apply(absolute_orbit=absolute_orbit)
@@ -78,6 +84,7 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_anx_datetime(self) -> None:
         anx_datetime = str_to_datetime("2020-01-01T00:00:00Z")
         SatExtension.ext(self.item).apply(anx_datetime=anx_datetime)
@@ -86,6 +93,7 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_platform_international_designator(self) -> None:
         platform_international_designator = "2018-080A"
         SatExtension.ext(self.item).apply(
@@ -99,12 +107,14 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_relative_orbit_no_negative(self) -> None:
         negative_relative_orbit = -2
         SatExtension.ext(self.item).apply(None, negative_relative_orbit)
         with self.assertRaises(pystac.STACValidationError):
             self.item.validate()
 
+    @pytest.mark.vcr()
     def test_both(self) -> None:
         orbit_state = sat.OrbitState.DESCENDING
         relative_orbit = 4321
@@ -113,6 +123,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_modify(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
@@ -157,6 +168,7 @@ class SatTest(unittest.TestCase):
         self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
         self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
 
+    @pytest.mark.vcr()
     def test_clear_orbit_state(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
@@ -164,6 +176,7 @@ class SatTest(unittest.TestCase):
         self.assertIsNone(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_clear_relative_orbit(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 

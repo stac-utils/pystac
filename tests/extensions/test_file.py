@@ -1,6 +1,8 @@
 import json
 import unittest
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
@@ -61,14 +63,17 @@ class FileTest(unittest.TestCase):
             item_dict = json.load(f)
         assert_to_from_dict(self, pystac.Item, item_dict)
 
+    @pytest.mark.vcr()
     def test_validate_item(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_validate_collection(self) -> None:
         collection = pystac.Collection.from_file(self.FILE_COLLECTION_EXAMPLE_URI)
         collection.validate()
 
+    @pytest.mark.vcr()
     def test_item_asset_size(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
@@ -82,6 +87,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_size, FileExtension.ext(asset).size)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_item_asset_header_size(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["measurement"]
@@ -95,6 +101,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_header_size, FileExtension.ext(asset).header_size)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_item_asset_checksum(self) -> None:
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)
         asset = item.assets["thumbnail"]
@@ -111,6 +118,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(new_checksum, FileExtension.ext(asset).checksum)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_item_asset_byte_order(self) -> None:
         # Get
         item = pystac.Item.from_file(self.FILE_ITEM_EXAMPLE_URI)

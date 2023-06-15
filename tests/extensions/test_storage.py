@@ -3,6 +3,8 @@ import random
 import unittest
 from string import ascii_letters
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
@@ -50,6 +52,7 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         ]
         self.assertEqual(len(eo_uris), 1)
 
+    @pytest.mark.vcr()
     def test_validate_storage(self) -> None:
         self.naip_item.validate()
 
@@ -240,6 +243,7 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         self.assertEqual(storage_ext.requester_pays, new_requestor_pays)
         self.assertEqual(storage_ext.tier, new_tier)
 
+    @pytest.mark.vcr()
     def test_platform(self) -> None:
         item = self.naip_item
 
@@ -268,6 +272,7 @@ class AssetStorageExtensionTest(StorageExtensionTest):
 
         item.validate()
 
+    @pytest.mark.vcr()
     def test_region(self) -> None:
         item = self.naip_item
 
@@ -298,6 +303,7 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         storage_ext.region = None
         self.assertNotIn("storage:region", asset.extra_fields)
 
+    @pytest.mark.vcr()
     def test_requester_pays(self) -> None:
         item = self.naip_item
 
@@ -328,6 +334,7 @@ class AssetStorageExtensionTest(StorageExtensionTest):
         storage_ext.requester_pays = None
         self.assertNotIn("storage:requester_pays", asset.extra_fields)
 
+    @pytest.mark.vcr()
     def test_tier(self) -> None:
         item = self.naip_item
 

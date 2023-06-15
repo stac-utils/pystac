@@ -220,6 +220,7 @@ def test_apply_without_required_fields_raises(item: pystac.Item) -> None:
         dc.DatacubeExtension.ext(item).apply()  # type: ignore
 
 
+@pytest.mark.vcr()
 def test_validate(ext_item: pystac.Item) -> None:
     assert ext_item.validate()
 
@@ -243,6 +244,7 @@ def test_get_dimensions(ext_item: pystac.Item) -> None:
     assert attr["x"].to_dict() == prop["x"]
 
 
+@pytest.mark.vcr()
 def test_set_variables(ext_item: pystac.Item) -> None:
     original = ext_item.properties[dc.VARIABLES_PROP]
     value = dc.Variable({"dimensions": ["foo"]})
@@ -255,6 +257,7 @@ def test_set_variables(ext_item: pystac.Item) -> None:
     assert ext_item.validate()
 
 
+@pytest.mark.vcr()
 def test_set_dimensions(ext_item: pystac.Item) -> None:
     original = ext_item.properties[dc.DIMENSIONS_PROP]
     value = dc.Dimension(

@@ -47,6 +47,7 @@ class GridTest(unittest.TestCase):
             f"<ItemGridExtension Item id={self.item.id}>", grid_item_ext.__repr__()
         )
 
+    @pytest.mark.vcr()
     def test_attributes(self) -> None:
         GridExtension.ext(self.item).apply(code)
         self.assertEqual(code, GridExtension.ext(self.item).code)
@@ -56,6 +57,7 @@ class GridTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             GridExtension.ext(self.item).apply("not_a_valid_code")
 
+    @pytest.mark.vcr()
     def test_modify(self) -> None:
         GridExtension.ext(self.item).apply(code)
         GridExtension.ext(self.item).apply(code + "a")

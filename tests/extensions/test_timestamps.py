@@ -2,6 +2,8 @@ import json
 import unittest
 from datetime import datetime
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions.timestamps import TimestampsExtension
@@ -60,10 +62,12 @@ class TimestampsTest(unittest.TestCase):
         for p in ("expires", "unpublished"):
             self.assertNotIn(p, item.properties)
 
+    @pytest.mark.vcr()
     def test_validate_timestamps(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_expires(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 
@@ -106,6 +110,7 @@ class TimestampsTest(unittest.TestCase):
         # Validate
         timestamps_item.validate()
 
+    @pytest.mark.vcr()
     def test_published(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 
@@ -148,6 +153,7 @@ class TimestampsTest(unittest.TestCase):
         # Validate
         timestamps_item.validate()
 
+    @pytest.mark.vcr()
     def test_unpublished(self) -> None:
         timestamps_item = pystac.Item.from_file(self.example_uri)
 

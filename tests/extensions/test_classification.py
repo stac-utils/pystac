@@ -116,6 +116,7 @@ def test_ext_raises_on_collection(collection: pystac.Collection) -> None:
     assert "Hint" in str(e.value)
 
 
+@pytest.mark.vcr()
 def test_apply_bitfields(plain_item: Item) -> None:
     ClassificationExtension.add_to(plain_item)
     ClassificationExtension.ext(plain_item).apply(
@@ -266,6 +267,7 @@ def test_add_to(plain_item: Item) -> None:
     assert len(classification_uris) == 1
 
 
+@pytest.mark.vcr()
 def test_validate_classification(landsat_item: Item) -> None:
     landsat_item.validate()
 

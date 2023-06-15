@@ -1123,6 +1123,7 @@ class TestCatalog:
             c2.catalog_type = CatalogType.ABSOLUTE_PUBLISHED
             check_all_absolute(c2)
 
+    @pytest.mark.vcr()
     def test_self_contained_catalog_collection_item_links(self) -> None:
         """See issue https://github.com/stac-utils/pystac/issues/657"""
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -1201,12 +1202,14 @@ class TestCatalog:
             assert read_cat.extra_fields["custom_field"] == "Special content"
 
     @pytest.mark.parametrize("cat", TestCases.all_test_catalogs())
+    @pytest.mark.vcr()
     def test_validate_all(self, cat: Catalog) -> None:
         # If hrefs are not set, it will fail validation.
         if cat.get_self_href() is None:
             cat.normalize_hrefs("/tmp")
         cat.validate_all()
 
+    @pytest.mark.vcr()
     def test_validate_all_invalid(self) -> None:
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.case_1()
@@ -1648,6 +1651,7 @@ def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
     assert len(list(items)) == 2
 
 
+@pytest.mark.vcr()
 def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8
@@ -1655,6 +1659,7 @@ def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     assert cat.validate_all(max_items=1) == 1
 
 
+@pytest.mark.vcr()
 def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8

@@ -113,6 +113,7 @@ class TestSTACWriting:
                 for item in items:
                     self.validate_file(item.self_href, pystac.STACObjectType.ITEM)
 
+    @pytest.mark.vcr()
     @pytest.mark.parametrize("catalog", TestCases.all_test_catalogs())
     @pytest.mark.parametrize("catalog_type", CTYPES)
     def test_testcases(self, catalog: Catalog, catalog_type: CatalogType) -> None:

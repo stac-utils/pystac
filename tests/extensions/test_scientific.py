@@ -4,6 +4,8 @@ import unittest
 from datetime import datetime, timedelta
 from typing import List, Optional
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import scientific
@@ -80,6 +82,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
     def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.item))
 
+    @pytest.mark.vcr()
     def test_doi(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
         self.assertEqual(DOI, ScientificExtension.ext(self.item).doi)
@@ -102,6 +105,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(PUB1_DOI_URL, link.get_href())
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_citation(self) -> None:
         ScientificExtension.ext(self.item).apply(citation=CITATION)
         self.assertEqual(CITATION, ScientificExtension.ext(self.item).citation)
@@ -109,6 +113,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertFalse(self.item.get_links(ScientificRelType.CITE_AS))
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(publications=publications)
@@ -122,6 +127,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertCountEqual(expected, doi_urls)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_publications(self) -> None:
         ScientificExtension.ext(self.item).apply(publications=PUBLICATIONS)
         self.assertEqual(PUBLICATIONS, ScientificExtension.ext(self.item).publications)
@@ -133,6 +139,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertCountEqual(expected, doi_urls)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
@@ -143,6 +150,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
@@ -153,6 +161,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_forward(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
@@ -173,6 +182,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_reverse(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
@@ -191,6 +201,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.item).remove_publication()
@@ -200,6 +211,7 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
         ScientificExtension.ext(self.item).remove_publication()
@@ -254,6 +266,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     def test_stac_extensions(self) -> None:
         self.assertTrue(ScientificExtension.has_extension(self.collection))
 
+    @pytest.mark.vcr()
     def test_doi(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
         self.assertEqual(DOI, ScientificExtension.ext(self.collection).doi)
@@ -276,6 +289,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(PUB1_DOI_URL, link.get_href())
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_citation(self) -> None:
         ScientificExtension.ext(self.collection).apply(citation=CITATION)
         self.assertEqual(CITATION, ScientificExtension.ext(self.collection).citation)
@@ -283,6 +297,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertFalse(self.collection.get_links(ScientificRelType.CITE_AS))
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(publications=publications)
@@ -298,6 +313,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_publications(self) -> None:
         ScientificExtension.ext(self.collection).apply(publications=PUBLICATIONS)
         self.assertEqual(
@@ -312,6 +328,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
@@ -322,6 +339,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
@@ -332,6 +350,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_forward(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
@@ -352,6 +371,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_publication_reverse(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
@@ -370,6 +390,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.collection).remove_publication()
@@ -379,6 +400,7 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         self.assertEqual(DOI_URL, links[0].target)
         self.collection.validate()
 
+    @pytest.mark.vcr()
     def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
         ScientificExtension.ext(self.collection).remove_publication()

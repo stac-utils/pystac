@@ -105,6 +105,7 @@ class LabelTest(unittest.TestCase):
 
         assert_to_from_dict(self, Item, label_example_1_dict)
 
+    @pytest.mark.vcr()
     def test_from_file(self) -> None:
         label_example_1 = Item.from_file(self.label_example_1_uri)
 
@@ -146,6 +147,7 @@ class LabelTest(unittest.TestCase):
                 self.assertEqual(len(sources), 1)
                 self.assertTrue(sources[0].id in item_ids)
 
+    @pytest.mark.vcr()
     def test_validate_label(self) -> None:
         with open(self.label_example_1_uri, encoding="utf-8") as f:
             label_example_1_dict = json.load(f)
@@ -174,6 +176,7 @@ class LabelTest(unittest.TestCase):
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
 
+    @pytest.mark.vcr()
     def test_label_description(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
@@ -189,6 +192,7 @@ class LabelTest(unittest.TestCase):
         )
         label_item.validate()
 
+    @pytest.mark.vcr()
     def test_label_type(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
@@ -207,6 +211,7 @@ class LabelTest(unittest.TestCase):
             classes_obj.name = None
         label_item.validate()
 
+    @pytest.mark.vcr()
     def test_label_properties(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
         label_item2 = pystac.Item.from_file(self.label_example_2_uri)
@@ -223,6 +228,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(["prop1", "prop2"], label_item.properties["label:properties"])
         label_item.validate()
 
+    @pytest.mark.vcr()
     def test_label_classes(self) -> None:
         # Get
         label_item = pystac.Item.from_file(self.label_example_1_uri)
@@ -261,6 +267,7 @@ class LabelTest(unittest.TestCase):
         classes: List[str] = ["foo", "bar"]
         LabelClasses.create(classes=classes)
 
+    @pytest.mark.vcr()
     def test_label_tasks(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
@@ -274,6 +281,7 @@ class LabelTest(unittest.TestCase):
         self.assertEqual(["classification"], label_item.properties["label:tasks"])
         label_item.validate()
 
+    @pytest.mark.vcr()
     def test_label_methods(self) -> None:
         label_item = pystac.Item.from_file(self.label_example_1_uri)
 
@@ -289,6 +297,7 @@ class LabelTest(unittest.TestCase):
         )
         label_item.validate()
 
+    @pytest.mark.vcr()
     def test_label_overviews(self) -> None:
         # Get
         label_item = pystac.Item.from_file(self.label_example_1_uri)

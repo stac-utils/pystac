@@ -3,6 +3,8 @@ import unittest
 from copy import deepcopy
 from typing import Any, Dict
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.extensions.projection import ProjectionExtension
@@ -99,6 +101,7 @@ class ProjectionTest(unittest.TestCase):
             transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0],
         )
 
+    @pytest.mark.vcr()
     def test_partial_apply(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -107,10 +110,12 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(ProjectionExtension.ext(proj_item).epsg, 1111)
         proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_validate_proj(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_epsg(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -158,6 +163,7 @@ class ProjectionTest(unittest.TestCase):
         asset_prop = proj_item.assets["visual"]
         self.assertEqual(ProjectionExtension.ext(asset_prop).epsg, 32618)
 
+    @pytest.mark.vcr()
     def test_wkt2(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -193,6 +199,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_projjson(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -258,6 +265,7 @@ class ProjectionTest(unittest.TestCase):
         projection.epsg = 4326
         self.assertEqual(projection.crs_string, "EPSG:4326")
 
+    @pytest.mark.vcr()
     def test_geometry(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -298,6 +306,7 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_bbox(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -331,6 +340,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_centroid(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -372,6 +382,7 @@ class ProjectionTest(unittest.TestCase):
             ProjectionExtension.ext(proj_item).centroid = {"lat": 2.0, "lng": 3.0}
             proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_shape(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
@@ -406,6 +417,7 @@ class ProjectionTest(unittest.TestCase):
         # Validate
         proj_item.validate()
 
+    @pytest.mark.vcr()
     def test_transform(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
