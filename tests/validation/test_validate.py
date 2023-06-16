@@ -148,3 +148,18 @@ class TestValidate:
 
         # Should not raise.
         item.validate()
+
+
+@pytest.mark.block_network
+def test_catalog_latest_version_uses_local(catalog: pystac.Catalog) -> None:
+    assert catalog.validate()
+
+
+@pytest.mark.block_network
+def test_collection_latest_versio_uses_localn(collection: pystac.Collection) -> None:
+    assert collection.validate()
+
+
+@pytest.mark.block_network
+def test_item_latest_version_uses_local(item: pystac.Item) -> None:
+    assert item.validate()
