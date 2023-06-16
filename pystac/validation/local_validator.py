@@ -74,9 +74,9 @@ class LocalValidator:
         return Draft7Validator(schema, resolver=resolver)
 
 
-def _read_schema(file_name: str) -> dict[str, Any]:
+def _read_schema(file_name: str) -> Dict[str, Any]:
     with (here / "jsonschemas" / file_name).open("r") as f:
-        return cast(dict[str, Any], json.load(f))
+        return cast(Dict[str, Any], json.load(f))
 
 
 def _extension_validator(schema_uri: str) -> Draft7Validator:
