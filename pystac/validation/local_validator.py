@@ -28,26 +28,22 @@ class LocalValidator:
         LABEL_SCHEMA_URI,
         VIEW_SCHEMA_URI,
     ]
-    schema_cache: Dict[str, Draft7Validator] = {}
 
     def _validate_from_local(
         self, schema_uri: str, stac_dict: Dict[str, Any]
     ) -> List[ValidationError]:
-        if schema_uri not in self.schema_cache:
-            if schema_uri == ITEM_SCHEMA_URI:
-                validator = self.item_validator(VERSION)
-            elif schema_uri == COLLECTION_SCHEMA_URI:
-                validator = self.collection_validator(VERSION)
-            elif schema_uri == CATALOG_SCHEMA_URI:
-                validator = self.catalog_validator(VERSION)
-            elif schema_uri in self.extension_schema_uris:
-                validator = self.extension_validator(schema_uri)
-            else:
-                raise STACLocalValidationError(
-                    f"Schema not available locally: {schema_uri}"
-                )
-            self.schema_cache[schema_uri] = validator
-        validator = self.schema_cache[schema_uri]
+        if schema_uri == ITEM_SCHEMA_URI:
+            validator = self.item_validator(VERSION)
+        elif schema_uri == COLLECTION_SCHEMA_URI:
+            validator = self.collection_validator(VERSION)
+        elif schema_uri == CATALOG_SCHEMA_URI:
+            validator = self.catalog_validator(VERSION)
+        elif schema_uri in self.extension_schema_uris:
+            validator = self.extension_validator(schema_uri)
+        else:
+            raise STACLocalValidationError(
+                f"Schema not available locally: {schema_uri}"
+            )
         return list(validator.iter_errors(stac_dict))
 
     @staticmethod

@@ -1,4 +1,3 @@
-import functools
 import json
 import logging
 from abc import ABC, abstractmethod
@@ -152,10 +151,6 @@ class JsonSchemaSTACValidator(STACValidator):
 
         self.schema_cache = {}
 
-    @functools.cached_property
-    def local_validator(self) -> LocalValidator:
-        return LocalValidator()
-
     def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
         if schema_uri not in self.schema_cache:
             s = json.loads(pystac.StacIO.default().read_text(schema_uri))
@@ -179,9 +174,7 @@ class JsonSchemaSTACValidator(STACValidator):
         try:
             resolver = None
             try:
-                errors = self.local_validator._validate_from_local(
-                    schema_uri, stac_dict
-                )
+                errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
                 schema, resolver = self.get_schema_from_uri(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
