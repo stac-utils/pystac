@@ -228,6 +228,29 @@ class TestCatalog:
         with pytest.raises(pystac.STACError):
             cat.add_child(item)  # type:ignore
 
+    def test_add_child_returns_link(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child = Catalog(id="child", description="test")
+        link = parent.add_child(child)
+        assert isinstance(link, pystac.Link)
+        link.extra_fields["foo"] = "bar"
+        link2 = parent.get_single_link("child")
+        assert link2 is not None
+        assert link2.extra_fields["foo"] == "bar"
+
+    def test_add_children_returns_links(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child1 = Catalog(id="child", description="test")
+        child2 = Catalog(id="child2", description="test")
+        links = parent.add_children([child1, child2])
+        assert isinstance(links, list)
+        assert len(links) == 2
+        assert isinstance(links[0], pystac.Link)
+        assert isinstance(links[1], pystac.Link)
+        links2 = parent.get_links("child")
+        assert links[0] in links2
+        assert links[1] in links2
+
     def test_add_child_override_parent(self) -> None:
         parent1 = Catalog(id="parent1", description="test1")
         parent2 = Catalog(id="parent2", description="test2")
@@ -295,6 +318,47 @@ class TestCatalog:
         child = next(iter(cat.get_children()))
         with pytest.raises(pystac.STACError):
             cat.add_item(child)  # type:ignore
+
+    def test_add_item_returns_link(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child = Item(
+            id="child",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        link = parent.add_item(child)
+        assert isinstance(link, pystac.Link)
+        link.extra_fields["foo"] = "bar"
+        link2 = parent.get_single_link("item")
+        assert link2 is not None
+        assert link2.extra_fields["foo"] == "bar"
+
+    def test_add_items_returns_links(self) -> None:
+        parent = Catalog(id="parent", description="test")
+        child1 = Item(
+            id="child1",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        child2 = Item(
+            id="child2",
+            geometry=None,
+            bbox=None,
+            datetime=datetime.now(),
+            properties={},
+        )
+        links = parent.add_items([child1, child2])
+        assert isinstance(links, list)
+        assert len(links) == 2
+        assert isinstance(links[0], pystac.Link)
+        assert isinstance(links[1], pystac.Link)
+        links2 = parent.get_links("item")
+        assert links[0] in links2
+        assert links[1] in links2
 
     def test_get_child_returns_none_if_not_found(self) -> None:
         cat = TestCases.case_1()
