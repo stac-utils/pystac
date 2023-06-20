@@ -1,11 +1,16 @@
-import importlib
 import json
+import sys
 from typing import Any, Dict, List, cast
 
 from jsonschema import Draft7Validator, RefResolver, ValidationError
 
 from pystac.errors import STACLocalValidationError
 from pystac.version import STACVersion
+
+if sys.version_info[:2] < (3, 9):
+    from importlib_resources import files as importlib_resources_files
+else:
+    from importlib.resources import files as importlib_resources_files
 
 VERSION = STACVersion.DEFAULT_STAC_VERSION
 ITEM_SCHEMA_URI = (
@@ -63,7 +68,7 @@ class LocalValidator:
 
 
 def _read_schema(file_name: str) -> Dict[str, Any]:
-    with importlib.resources.files("pystac.validation.jsonschemas").joinpath(
+    with importlib_resources_files("pystac.validation.jsonschemas").joinpath(
         file_name
     ).open("r") as f:
         return cast(Dict[str, Any], json.load(f))
