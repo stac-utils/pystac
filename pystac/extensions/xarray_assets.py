@@ -167,8 +167,8 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
         """
         try:
             from xpystac.core import to_xarray
-        except ImportError:
-            raise ImportError("Missing optional dependency `xpystac`")
+        except ImportError as err:
+            raise ImportError("Missing optional dependency `xpystac`") from err
 
         return to_xarray(self.asset, **kwargs)
 
