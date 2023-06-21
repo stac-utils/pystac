@@ -183,10 +183,15 @@ class Link(PathLike):
                 *pystac.EXTENSION_HOOKS.get_extended_object_links(self.owner),
             ]
             # if a hierarchical link with an owner and root, and relative catalog
-            if root and root.is_relative() and self.rel in rel_links:
-                owner_href = self.owner.get_self_href()
-                if owner_href is not None:
-                    href = make_relative_href(href, owner_href)
+            if root and root.is_relative():
+                if self.rel in rel_links:
+                    owner_href = self.owner.get_self_href()
+                    if owner_href is not None:
+                        href = make_relative_href(href, owner_href)
+                elif self.target in root.get_target_hierarchy():
+                    owner_href = self.owner.get_self_href()
+                    if owner_href is not None:
+                        href = make_relative_href(href, owner_href)
 
         return href
 
