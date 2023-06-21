@@ -94,7 +94,7 @@ def validate_dict(
         def _get_uri(ext: str) -> Optional[str]:
             return OldExtensionSchemaUriMap.get_extension_schema_uri(
                 ext,
-                stac_object_type,  # type:ignore
+                stac_object_type,
                 stac_version_id,
             )
 
