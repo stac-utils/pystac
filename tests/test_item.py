@@ -514,8 +514,8 @@ def test_add_derived_from(test_case_1_catalog: Catalog) -> None:
         link for link in item_0.links if link.rel == pystac.RelType.DERIVED_FROM
     ]
     assert len(filtered) == 2
-    assert filtered[0].to_dict()["href"] == item_1.self_href
-    assert filtered[1].to_dict()["href"] == item_2.self_href
+    assert filtered[0].to_dict(transform_href=False)["href"] == item_1.self_href
+    assert filtered[1].to_dict(transform_href=False)["href"] == item_2.self_href
 
 
 def test_get_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
