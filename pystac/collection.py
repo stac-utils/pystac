@@ -20,7 +20,7 @@ from typing import (
 from dateutil import tz
 
 import pystac
-from pystac import CatalogType, STACObjectType
+from pystac import CatalogType, STACError, STACObjectType
 from pystac.asset import Asset
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
@@ -33,7 +33,13 @@ from pystac.serialization import (
     migrate_to_latest,
 )
 from pystac.summaries import Summaries
-from pystac.utils import datetime_to_str, str_to_datetime
+from pystac.utils import (
+    datetime_to_str,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+    str_to_datetime,
+)
 
 if TYPE_CHECKING:
     from pystac.item import Item
@@ -759,6 +765,50 @@ class Collection(Catalog):
         asset.delete()
 
         del self.assets[key]
+
+    def make_asset_hrefs_relative(self) -> Collection:
+        """Modify each asset's HREF to be relative to this collection's self HREF.
+
+        Returns:
+            Collection: self
+        """
+        self_href = None
+        for asset in self.assets.values():
+            href = asset.href
+            if is_absolute_href(href):
+                if self_href is None:
+                    self_href = self.get_self_href()
+                    if self_href is None:
+                        raise STACError(
+                            "Cannot make asset HREFs relative "
+                            "if no self_href is set."
+                        )
+                asset.href = make_relative_href(asset.href, self_href)
+        return self
+
+    def make_asset_hrefs_absolute(self) -> Collection:
+        """Modify each asset's HREF to be absolute.
+
+        Any asset HREFs that are relative will be modified to absolute based on this
+        collection's self HREF.
+
+        Returns:
+            Collection: self
+        """
+        self_href = None
+        for asset in self.assets.values():
+            href = asset.href
+            if not is_absolute_href(href):
+                if self_href is None:
+                    self_href = self.get_self_href()
+                    if self_href is None:
+                        raise STACError(
+                            "Cannot make relative asset HREFs absolute "
+                            "if no self_href is set."
+                        )
+                asset.href = make_absolute_href(asset.href, self_href)
+
+        return self
 
     def update_extent_from_items(self) -> None:
         """
