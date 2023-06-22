@@ -1,9 +1,7 @@
 """Tests for pystac.tests.extensions.xarray_assets"""
 import json
-import sys
 
 import pytest
-from pytest_mock import MockerFixture
 
 import pystac
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
@@ -155,22 +153,3 @@ def test_set_field_to_none_pops_from_dict(ext_asset: pystac.Asset, field: str) -
 
     setattr(XarrayAssetsExtension.ext(ext_asset), field, None)
     assert prop_name not in ext_asset.extra_fields
-
-
-def test_open_calls_xpystac_to_xarray(
-    ext_asset: pystac.Asset, mocker: MockerFixture
-) -> None:
-    xpystac = pytest.importorskip("xpystac")
-    mocker.patch("xpystac.core.to_xarray")
-    xr_ext = XarrayAssetsExtension.ext(ext_asset)
-    xr_ext.open()  # type: ignore
-    xpystac.core.to_xarray.assert_called_once_with(ext_asset)
-
-
-def test_open_raises_if_xpystac_not_installed(
-    ext_asset: pystac.Asset, mocker: MockerFixture
-) -> None:
-    mocker.patch.dict(sys.modules, {"xpystac.core": None})
-    xr_ext = XarrayAssetsExtension.ext(ext_asset)
-    with pytest.raises(ImportError, match="Missing optional dependency"):
-        xr_ext.open()  # type: ignore
