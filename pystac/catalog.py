@@ -657,20 +657,18 @@ class Catalog(STACObject):
         return clone
 
     def make_all_asset_hrefs_relative(self) -> None:
-        """Makes all the HREFs of assets belonging to items in this catalog
-        and all children to be relative, recursively.
-        """
-        for _, _, items in self.walk():
-            for item in items:
-                item.make_asset_hrefs_relative()
+        """Recursively makes all the HREFs of assets in this catalog relative"""
+        for item in self.get_all_items():
+            item.make_asset_hrefs_relative()
+        for collection in self.get_all_collections():
+            collection.make_asset_hrefs_relative()
 
     def make_all_asset_hrefs_absolute(self) -> None:
-        """Makes all the HREFs of assets belonging to items in this catalog
-        and all children to be absolute, recursively.
-        """
-        for _, _, items in self.walk():
-            for item in items:
-                item.make_asset_hrefs_absolute()
+        """Recursively makes all the HREFs of assets in this catalog absolute"""
+        for item in self.get_all_items():
+            item.make_asset_hrefs_absolute()
+        for collection in self.get_all_collections():
+            collection.make_asset_hrefs_absolute()
 
     def normalize_and_save(
         self,

@@ -41,6 +41,7 @@
 - Improved error message when `.ext` is called on a Collection ([#1157](https://github.com/stac-utils/pystac/pull/1157))
 - `add_child` and `add_item` return a Link object instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
 - `add_children` and `add_items` return a list of Link objects instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
+- Include collection assets in `make_all_asset_hrefs_relative/absolute` ([#1168](https://github.com/stac-utils/pystac/pull/1168))
 
 ### Deprecated
 
