@@ -1,0 +1,161 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/datacube/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/datacube/json-schema/schema.json#\",\n
+        \ \"title\": \"Data Cube Extension\",\n  \"description\": \"STAC Data Cube
+        Extension to STAC Items and STAC Collections\",\n  \"oneOf\": [\n    {\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"properties\"\n          ],\n          \"properties\": {\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/datacube\"\n
+        \           }\n          }\n        }\n      ]\n    },\n    {\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/datacube\"\n        }\n
+        \     ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_extensions\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"enum\": [\n              \"datacube\",\n
+        \             \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/datacube/json-schema/schema.json\"\n
+        \           ]\n          }\n        }\n      }\n    },\n    \"datacube\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"cube:dimensions\"\n
+        \     ],\n      \"properties\": {\n        \"cube:dimensions\": {\n          \"type\":
+        \"object\",\n          \"additionalProperties\": {\n            \"anyOf\":
+        [\n              {\n                \"$ref\": \"#/definitions/objects/additional_dimension\"\n
+        \             },\n              {\n                \"$ref\": \"#/definitions/objects/horizontal_spatial_dimension\"\n
+        \             },\n              {\n                \"$ref\": \"#/definitions/objects/vertical_spatial_dimension\"\n
+        \             },\n              {\n                \"$ref\": \"#/definitions/objects/temporal_dimension\"\n
+        \             }\n            ]\n          }\n        }\n      }\n    },\n
+        \   \"objects\": {\n      \"additional_dimension\": {\n        \"title\":
+        \"Additional Dimension Object\",\n        \"type\": \"object\",\n        \"anyOf\":
+        [\n          {\n            \"required\": [\n              \"type\",\n              \"extent\"\n
+        \           ]\n          },\n          {\n            \"required\": [\n              \"type\",\n
+        \             \"values\"\n            ]\n          }\n        ],\n        \"not\":
+        {\n          \"required\": [\"axis\"]\n        },\n        \"properties\":
+        {\n          \"type\": {\n            \"allOf\": [\n              {\n                \"type\":
+        \"string\"\n              },\n              {\n                \"not\": {\n
+        \                 \"type\": \"string\",\n                  \"const\": \"spatial\"\n
+        \               }\n              }\n            ]\n          },\n          \"description\":
+        {\n            \"$ref\": \"#/definitions/description\"\n          },\n          \"extent\":
+        {\n            \"$ref\": \"#/definitions/extent_open\"\n          },\n          \"values\":
+        {\n            \"$ref\": \"#/definitions/values\"\n          },\n          \"step\":
+        {\n            \"$ref\": \"#/definitions/step\"\n          },\n          \"unit\":
+        {\n            \"$ref\": \"#/definitions/unit\"\n          },\n          \"reference_system\":
+        {\n            \"type\": \"string\"\n          }\n        }\n      },\n      \"horizontal_spatial_dimension\":
+        {\n        \"title\": \"Horizontal Spatial Dimension Object\",\n        \"type\":
+        \"object\",\n        \"required\": [\n          \"type\",\n          \"axis\",\n
+        \         \"extent\"\n        ],\n        \"properties\": {\n          \"type\":
+        {\n            \"$ref\": \"#/definitions/type_spatial\"\n          },\n          \"axis\":
+        {\n            \"$ref\": \"#/definitions/axis_xy\"\n          },\n          \"description\":
+        {\n            \"$ref\": \"#/definitions/description\"\n          },\n          \"extent\":
+        {\n            \"$ref\": \"#/definitions/extent_closed\"\n          },\n          \"values\":
+        {\n            \"$ref\": \"#/definitions/values_numeric\"\n          },\n
+        \         \"step\": {\n            \"$ref\": \"#/definitions/step\"\n          },\n
+        \         \"reference_system\": {\n            \"$ref\": \"#/definitions/reference_system_spatial\"\n
+        \         }\n        }\n      },\n      \"vertical_spatial_dimension\": {\n
+        \       \"title\": \"Vertical Spatial Dimension Object\",\n        \"type\":
+        \"object\",\n        \"anyOf\": [\n          {\n            \"required\":
+        [\n              \"type\",\n              \"axis\",\n              \"extent\"\n
+        \           ]\n          },\n          {\n            \"required\": [\n              \"type\",\n
+        \             \"axis\",\n              \"values\"\n            ]\n          }\n
+        \       ],\n        \"properties\": {\n          \"type\": {\n            \"$ref\":
+        \"#/definitions/type_spatial\"\n          },\n          \"axis\": {\n            \"$ref\":
+        \"#/definitions/axis_z\"\n          },\n          \"description\": {\n            \"$ref\":
+        \"#/definitions/description\"\n          },\n          \"extent\": {\n            \"$ref\":
+        \"#/definitions/extent_open\"\n          },\n          \"values\": {\n            \"$ref\":
+        \"#/definitions/values\"\n          },\n          \"step\": {\n            \"$ref\":
+        \"#/definitions/step\"\n          },\n          \"unit\": {\n            \"$ref\":
+        \"#/definitions/unit\"\n          },\n          \"reference_system\": {\n
+        \           \"$ref\": \"#/definitions/reference_system_spatial\"\n          }\n
+        \       }\n      },\n      \"temporal_dimension\": {\n        \"title\": \"Temporal
+        Dimension Object\",\n        \"type\": \"object\",\n        \"required\":
+        [\n          \"type\",\n          \"extent\"\n        ],\n        \"not\":
+        {\n          \"required\": [\"axis\"]\n        },\n        \"properties\":
+        {\n          \"type\": {\n            \"type\": \"string\",\n            \"const\":
+        \"temporal\"\n          },\n          \"description\": {\n            \"$ref\":
+        \"#/definitions/description\"\n          },\n          \"values\": {\n            \"type\":
+        \"array\",\n            \"minItems\": 1,\n            \"items\": {\n              \"type\":
+        \"string\"\n            }\n          },\n          \"extent\": {\n            \"type\":
+        \"array\",\n            \"minItems\": 2,\n            \"maxItems\": 2,\n            \"items\":
+        {\n              \"type\": [\n                \"string\",\n                \"null\"\n
+        \             ]\n            }\n          },\n          \"step\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n
+        \       }\n      }\n    },\n    \"type_spatial\": {\n      \"type\": \"string\",\n
+        \     \"const\": \"spatial\"\n    },\n    \"axis_xy\": {\n      \"type\":
+        \"string\",\n      \"enum\": [\n        \"x\",\n        \"y\"\n      ]\n    },\n
+        \   \"axis_z\": {\n      \"type\": \"string\",\n      \"const\": \"z\"\n    },\n
+        \   \"extent_closed\": {\n      \"type\": \"array\",\n      \"minItems\":
+        2,\n      \"maxItems\": 2,\n      \"items\": {\n        \"type\": \"number\"\n
+        \     }\n    },\n    \"extent_open\": {\n      \"type\": \"array\",\n      \"minItems\":
+        2,\n      \"maxItems\": 2,\n      \"items\": {\n        \"type\": [\n          \"number\",\n
+        \         \"null\"\n        ]\n      }\n    },\n    \"values_numeric\": {\n
+        \     \"type\": \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"type\":
+        \"number\"\n      }\n    },\n    \"values\": {\n      \"type\": \"array\",\n
+        \     \"minItems\": 1,\n      \"items\": {\n        \"oneOf\": [\n          {\n
+        \           \"type\": \"number\"\n          },\n          {\n            \"type\":
+        \"string\"\n          }\n        ]\n      }\n    },\n    \"step\": {\n      \"type\":
+        [\n        \"number\",\n        \"null\"\n      ]\n    },\n    \"unit\": {\n
+        \     \"type\": \"string\"\n    },\n    \"reference_system_spatial\": {\n
+        \     \"type\": [\n        \"string\",\n        \"number\",\n        \"object\"\n
+        \     ],\n      \"default\": 4326\n    },\n    \"description\": {\n      \"type\":
+        \"string\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '7526'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:40 GMT
+      ETag:
+      - '"647f85f4-1d66"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 5a8bab660171bbee5bfe2f4bbcc4762839aee301
+      X-GitHub-Request-Id:
+      - D9D8:48BE:38C08E:58A74A:649449D2
+      X-Served-By:
+      - cache-ewr18147-EWR
+      X-Timer:
+      - S1687440460.094098,VS0,VE10
+      expires:
+      - Thu, 22 Jun 2023 13:27:06 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

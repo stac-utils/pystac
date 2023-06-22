@@ -1,0 +1,95 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/checksum/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/checksum/json-schema/schema.json#\",\n
+        \ \"title\": \"Checksum Extension Specification\",\n  \"description\": \"STAC
+        Checksum Extension to a STAC Item\",\n  \"oneOf\": [\n    {\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/checksum_links\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/checksum_assets\"\n
+        \       }\n      ]\n    },\n    {\n      \"allOf\": [\n        {\n          \"$ref\":
+        \"../../../catalog-spec/json-schema/catalog.json\"\n        },\n        {\n
+        \         \"$ref\": \"#/definitions/stac_extensions\"\n        },\n        {\n
+        \         \"$ref\": \"#/definitions/checksum_links\"\n        }\n      ]\n
+        \   },\n    {\n      \"allOf\": [\n        {\n          \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/checksum_links\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/checksum_assets\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"enum\": [\n              \"checksum\",\n
+        \             \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/checksum/json-schema/schema.json\"\n
+        \           ]\n          }\n        }\n      }\n    },\n    \"checksum_links\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"links\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/checksums\"\n          }\n        }\n      }\n    },\n    \"checksum_assets\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"assets\":
+        {\n          \"type\": \"object\",\n          \"patternProperties\": {\n            \".+\":
+        {\n              \"$ref\": \"#/definitions/checksums\"\n            }\n          }\n
+        \       }\n      }\n    },\n    \"checksums\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"checksum:multihash\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[a-f0-9]+$\",\n          \"title\":
+        \"Multihash\"\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2361'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:39 GMT
+      ETag:
+      - '"647f85f4-939"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 89f0923afc9371934ff4a192ab45a423c82744ff
+      X-GitHub-Request-Id:
+      - 8DD4:590C:36E3DE:56C8BA:649449D2
+      X-Served-By:
+      - cache-ewr18129-EWR
+      X-Timer:
+      - S1687440460.867871,VS0,VE19
+      expires:
+      - Thu, 22 Jun 2023 13:27:06 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

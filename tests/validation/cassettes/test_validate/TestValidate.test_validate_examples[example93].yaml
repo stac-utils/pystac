@@ -1,0 +1,199 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json#\",\n
+        \ \"title\": \"Sat Extension\",\n  \"description\": \"STAC Sat Extension to
+        a STAC Item.\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/sat\"\n    },\n    {\n      \"$ref\":
+        \"../../../item-spec/json-schema/instrument.json\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"sat\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"properties\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"enum\":
+        [\n              \"sat\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"properties\": {\n          \"type\":
+        \"object\",\n          \"anyOf\": [\n            {\"required\": [\"sat:relative_orbit\"]},\n
+        \           {\"required\": [\"sat:orbit_state\"]}\n          ],\n          \"properties\":
+        {\n            \"sat:relative_orbit\": {\n              \"type\": \"integer\",\n
+        \             \"minimum\": 1\n            },\n            \"sat:orbit_state\":
+        {\n              \"title\": \"Orbit State\",\n              \"type\": \"string\",\n
+        \             \"enum\": [\n                \"ascending\",\n                \"descending\",\n
+        \               \"geostationary\"\n              ]\n            }\n          }\n
+        \       }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1467'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:41 GMT
+      ETag:
+      - '"647f85f4-5bb"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 1ded2fadc0cdf796abb0dad2115732de242d1322
+      X-GitHub-Request-Id:
+      - E9EA:6A59:375364:56EFF9:649449D4
+      X-Served-By:
+      - cache-ewr18167-EWR
+      X-Timer:
+      - S1687440462.916020,VS0,VE14
+      expires:
+      - Thu, 22 Jun 2023 13:27:08 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sar/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sar/json-schema/schema.json#\",\n
+        \ \"title\": \"SAR Extension\",\n  \"description\": \"STAC SAR Extension to
+        a STAC Item\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/sar\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"sar\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"properties\",\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"stac_extensions\": {\n          \"type\": \"array\",\n          \"contains\":
+        {\n            \"enum\": [\n              \"sar\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sar/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"properties\": {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"sar:instrument_mode\",\n
+        \           \"sar:frequency_band\",\n            \"sar:polarizations\",\n
+        \           \"sar:product_type\"\n          ],\n          \"properties\":
+        {\n            \"sar:instrument_mode\": {\n              \"title\": \"Instrument
+        Mode\",\n              \"type\": \"string\",\n              \"example\": \"WV\"\n
+        \           },\n            \"sar:frequency_band\": {\n              \"title\":
+        \"Frequency Band\",\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"P\",\n                \"L\",\n                \"S\",\n
+        \               \"C\",\n                \"X\",\n                \"Ku\",\n
+        \               \"K\",\n                \"Ka\"\n              ]\n            },\n
+        \           \"sar:center_frequency\": {\n              \"title\": \"Center
+        Frequency (GHz)\",\n              \"type\": \"number\"\n            },\n            \"sar:polarizations\":
+        {\n              \"title\": \"Polarizations\",\n              \"type\": \"array\",\n
+        \             \"minItems\": 1,\n              \"maxItems\": 4,\n              \"uniqueItems\":
+        true,\n              \"items\": {\n                \"type\": \"string\",\n
+        \               \"enum\": [\n                  \"HH\",\n                  \"VV\",\n
+        \                 \"HV\",\n                  \"VH\"\n                ]\n              }\n
+        \           },\n            \"sar:product_type\": {\n              \"title\":
+        \"Product type\",\n              \"type\": \"string\",\n              \"examples\":
+        [\n                \"SSC\",\n                \"MGD\",\n                \"SGC\"\n
+        \             ]\n            },\n            \"sar:resolution_range\": {\n
+        \             \"title\": \"Resolution range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:resolution_azimuth\":
+        {\n              \"title\": \"Resolution azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_range\":
+        {\n              \"title\": \"Pixel spacing range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_azimuth\":
+        {\n              \"title\": \"Pixel spacing azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:looks_range\":
+        {\n              \"title\": \"Looks range\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_azimuth\":
+        {\n              \"title\": \"Looks azimuth\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_equivalent_number\":
+        {\n              \"title\": \"Equivalent number of looks (ENL)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:observation_direction\":
+        {\n              \"title\": \"Antenna pointing direction\",\n              \"type\":
+        \"string\",\n              \"enum\": [\n                \"left\",\n                \"right\"\n
+        \             ]\n            }\n          }\n        },\n        \"assets\":
+        {\n          \"type\": \"object\",\n          \"additionalProperties\": {\n
+        \           \"type\": \"object\",\n            \"properties\": {\n              \"sar:polarizations\":
+        {\n                \"title\": \"Polarizations\",\n                \"type\":
+        \"array\",\n                \"minItems\": 1,\n                \"items\": {\n
+        \                 \"type\": \"string\",\n                  \"enum\": [\n                    \"HH\",\n
+        \                   \"VV\",\n                    \"HV\",\n                    \"VH\"\n
+        \                 ]\n                }\n              }\n            }\n          }\n
+        \       }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '4301'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:42 GMT
+      ETag:
+      - '"647f85f4-10cd"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - b5b18c1da4ff0aad5172e705c18f80196f5e9aa3
+      X-GitHub-Request-Id:
+      - 2FF2:4765:33D18A:53B24F:649449D4
+      X-Served-By:
+      - cache-ewr18172-EWR
+      X-Timer:
+      - S1687440462.010565,VS0,VE12
+      expires:
+      - Thu, 22 Jun 2023 13:27:08 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

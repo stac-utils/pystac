@@ -1,0 +1,177 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json#\",\n
+        \ \"title\": \"EO Extension\",\n  \"description\": \"STAC EO Extension to
+        a STAC Item.\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/eo\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"eo\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"properties\",\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"stac_extensions\": {\n          \"type\": \"array\",\n          \"contains\":
+        {\n            \"enum\": [\n              \"eo\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"properties\": {\n          \"type\":
+        \"object\",\n          \"properties\": {\n            \"eo:bands\": {\n              \"$ref\":
+        \"#/definitions/bands\"\n            },\n            \"eo:cloud_cover\": {\n
+        \             \"title\": \"Cloud Cover\",\n              \"type\": \"number\",\n
+        \             \"minimum\": 0,\n              \"maximum\": 100\n            }\n
+        \         }\n        },\n        \"assets\": {\n          \"type\": \"object\",\n
+        \         \"additionalProperties\": {\n            \"type\": \"object\",\n
+        \           \"properties\": {\n              \"eo:bands\": {\n                \"$ref\":
+        \"#/definitions/bands\"\n              }\n            }\n          }\n        }\n
+        \     }\n    },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\":
+        \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"properties\":
+        {\n          \"name\": {\n            \"title\": \"Name of the band\",\n            \"type\":
+        \"string\"\n          },\n          \"common_name\": {\n            \"title\":
+        \"Common Name of the band\",\n            \"type\": \"string\"\n          },\n
+        \         \"center_wavelength\": {\n            \"title\": \"Center Wavelength\",\n
+        \           \"type\": \"number\"\n          },\n          \"full_width_half_max\":
+        {\n            \"title\": \"Full Width Half Max (FWHM)\",\n            \"type\":
+        \"number\"\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2053'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:40 GMT
+      ETag:
+      - '"647f85f4-805"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - a078fe36441459612de90cd6de79292cfa9c858e
+      X-GitHub-Request-Id:
+      - B3FC:570A:38FEBE:58E081:649449D3
+      X-Served-By:
+      - cache-ewr18136-EWR
+      X-Timer:
+      - S1687440460.211834,VS0,VE15
+      expires:
+      - Thu, 22 Jun 2023 13:27:07 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json#\",\n
+        \ \"title\": \"View Geometry Extension\",\n  \"description\": \"STAC View
+        Geometry Extension to a STAC Item.\",\n  \"allOf\": [\n    {\n      \"$ref\":
+        \"../../../item-spec/json-schema/item.json\"\n    },\n    {\n      \"$ref\":
+        \"#/definitions/view\"\n    }\n  ],\n  \"definitions\": {\n    \"view\": {\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"properties\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"enum\":
+        [\n              \"view\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"properties\": {\n          \"type\":
+        \"object\",\n          \"anyOf\": [\n            {\"required\": [\"view:off_nadir\"]},\n
+        \           {\"required\": [\"view:incidence_angle\"]},\n            {\"required\":
+        [\"view:azimuth\"]},\n            {\"required\": [\"view:sun_azimuth\"]},\n
+        \           {\"required\": [\"view:sun_elevation\"]}\n          ],\n          \"properties\":
+        {\n            \"view:off_nadir\": {\n              \"title\": \"Off Nadir\",\n
+        \             \"type\": \"number\",\n              \"minimum\": 0,\n              \"maximum\":
+        90\n            },\n            \"view:incidence_angle\": {\n              \"title\":
+        \"Center incidence angle\",\n              \"type\": \"number\",\n              \"minimum\":
+        0,\n              \"maximum\": 90\n            },\n            \"view:azimuth\":
+        {\n              \"title\": \"Azimuth angle\",\n              \"type\": \"number\",\n
+        \             \"minimum\": 0,\n              \"maximum\": 360\n            },\n
+        \           \"view:sun_azimuth\": {\n              \"title\": \"Sun Azimuth\",\n
+        \             \"type\": \"number\",\n              \"minimum\": 0,\n              \"maximum\":
+        360\n            },\n            \"view:sun_elevation\": {\n              \"title\":
+        \"Sun Elevation\",\n              \"type\": \"number\",\n              \"minimum\":
+        0,\n              \"maximum\": 90\n            }\n          }\n        }\n
+        \     }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2089'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:40 GMT
+      ETag:
+      - '"647f85f4-829"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 2fba20df0bf31ff744c4ba4361e144c6b9045b7b
+      X-GitHub-Request-Id:
+      - C858:23C7:41038C:60E769:649449D3
+      X-Served-By:
+      - cache-ewr18173-EWR
+      X-Timer:
+      - S1687440460.324688,VS0,VE20
+      expires:
+      - Thu, 22 Jun 2023 13:27:07 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

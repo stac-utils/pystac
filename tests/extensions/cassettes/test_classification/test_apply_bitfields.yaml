@@ -1,0 +1,169 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/classification/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n
+        \   \"$id\": \"https://stac-extensions.github.io/classification/v1.1.0/schema.json#\",\n
+        \   \"title\": \"Classification Extension\",\n    \"description\": \"STAC
+        Classification Extension for STAC Items and STAC Collections.\",\n    \"oneOf\":
+        [\n        {\n            \"$comment\": \"This is the schema for STAC Items.\",\n
+        \           \"allOf\": [\n                {\n                    \"$ref\":
+        \"#/definitions/stac_extensions\"\n                },\n                {\n
+        \                   \"type\": \"object\",\n                    \"required\":
+        [\n                        \"type\",\n                        \"properties\",\n
+        \                       \"assets\"\n                    ],\n                    \"properties\":
+        {\n                        \"type\": {\n                            \"const\":
+        \"Feature\"\n                        },\n                        \"properties\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Properties, but does not require them.\",\n                            \"$ref\":
+        \"#/definitions/fields\"\n                        },\n                        \"assets\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Assets (including in Raster Band Objects), but does not require them.\",\n
+        \                           \"type\": \"object\",\n                            \"additionalProperties\":
+        {\n                                \"allOf\": [\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/fields\"\n
+        \                                   },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        }\n                    }\n
+        \               }\n            ]\n        },\n        {\n            \"$comment\":
+        \"This is the schema for STAC Collections.\",\n            \"allOf\": [\n
+        \               {\n                    \"$ref\": \"#/definitions/stac_extensions\"\n
+        \               },\n                {\n                    \"type\": \"object\",\n
+        \                   \"required\": [\n                        \"type\"\n                    ],\n
+        \                   \"properties\": {\n                        \"type\": {\n
+        \                           \"const\": \"Collection\"\n                        },\n
+        \                       \"assets\": {\n                            \"$comment\":
+        \"This validates the fields in Collection Assets, but does not require them.\",\n
+        \                           \"type\": \"object\",\n                            \"additionalProperties\":
+        {\n                                \"allOf\": [\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/fields\"\n
+        \                                   },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        },\n                        \"item_assets\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Asset Definitions, but does not require them.\",\n                            \"type\":
+        \"object\",\n                            \"additionalProperties\": {\n                                \"allOf\":
+        [\n                                    {\n                                        \"$ref\":
+        \"#/definitions/fields\"\n                                    },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        },\n                        \"summaries\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Summaries, but does not require them.\",\n                            \"$ref\":
+        \"#/definitions/fields\"\n                        }\n                    }\n
+        \               }\n            ]\n        }\n    ],\n    \"definitions\":
+        {\n        \"stac_extensions\": {\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"stac_extensions\"\n            ],\n            \"properties\":
+        {\n                \"stac_extensions\": {\n                    \"type\": \"array\",\n
+        \                   \"contains\": {\n                        \"const\": \"https://stac-extensions.github.io/classification/v1.1.0/schema.json\"\n
+        \                   }\n                }\n            }\n        },\n        \"require_any_field\":
+        {\n            \"$comment\": \"Please list all fields here so that we can
+        force the existance of one of them in other parts of the schemas.\",\n            \"anyOf\":
+        [\n                {\n                    \"required\": [\n                        \"classification:bitfields\"\n
+        \                   ]\n                },\n                {\n                    \"required\":
+        [\n                        \"classification:classes\"\n                    ]\n
+        \               }\n            ]\n        },\n        \"fields\": {\n            \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        corresponding schema.\",\n            \"type\": \"object\",\n            \"properties\":
+        {\n                \"classification:bitfields\": {\n                    \"type\":
+        \"array\",\n                    \"uniqueItems\": true,\n                    \"minItems\":
+        1,\n                    \"items\": {\n                        \"$ref\": \"#/definitions/bit_field_object\"\n
+        \                   }\n                },\n                \"classification:classes\":
+        {\n                    \"type\": \"array\",\n                    \"uniqueItems\":
+        true,\n                    \"minItems\": 1,\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/class_object\"\n                    }\n
+        \               }\n            },\n            \"patternProperties\": {\n
+        \               \"^(?!classification:)\": {}\n            },\n            \"additionalProperties\":
+        false\n        },\n        \"class_object\": {\n            \"$comment\":
+        \"Object for storing classes\",\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"value\",\n                \"description\"\n            ],\n
+        \           \"properties\": {\n                \"value\": {\n                    \"type\":
+        \"integer\"\n                },\n                \"description\": {\n                    \"type\":
+        \"string\"\n                },\n                \"name\": {\n                    \"type\":
+        \"string\"\n                },\n                \"color_hint\": {\n                    \"type\":
+        \"string\",\n                    \"pattern\": \"^([0-9A-Fa-f]{6})$\"\n                }\n
+        \           }\n        },\n        \"bit_field_object\": {\n            \"$comment\":
+        \"Object for storing bit fields\",\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"offset\",\n                \"length\",\n                \"classes\"\n
+        \           ],\n            \"properties\": {\n                \"offset\":
+        {\n                    \"type\": \"integer\",\n                    \"minimum\":
+        0\n                },\n                \"length\": {\n                    \"type\":
+        \"integer\",\n                    \"minimum\": 1\n                },\n                \"classes\":
+        {\n                    \"type\": \"array\",\n                    \"uniqueItems\":
+        true,\n                    \"minItems\": 1,\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/class_object\"\n                    }\n
+        \               },\n                \"roles\": {\n                    \"type\":
+        \"array\",\n                    \"uniqueItems\": true,\n                    \"minItems\":
+        1,\n                    \"items\": {\n                        \"type\": \"string\"\n
+        \                   }\n                },\n                \"description\":
+        {\n                    \"type\": \"string\"\n                },\n                \"name\":
+        {\n                    \"type\": \"string\"\n                }\n            }\n
+        \       },\n        \"raster_bands\": {\n            \"$comment\": \"Classification
+        fields on the Raster Extension raster:bands object\",\n            \"type\":
+        \"object\",\n            \"properties\": {\n                \"raster:bands\":
+        {\n                    \"type\": \"array\",\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/fields\"\n                    }\n
+        \               }\n            }\n        }\n    }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '8234'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:25 GMT
+      ETag:
+      - '"62719998-202a"'
+      Last-Modified:
+      - Tue, 03 May 2022 21:07:36 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - a09d10211379df4e6327d40bb11bd157ad9bf82f
+      X-GitHub-Request-Id:
+      - 54FA:2EA9:254317:37DB94:649449C2
+      X-Served-By:
+      - cache-ewr18178-EWR
+      X-Timer:
+      - S1687440446.804674,VS0,VE22
+      expires:
+      - Thu, 22 Jun 2023 13:26:50 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

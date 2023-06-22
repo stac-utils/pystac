@@ -1,0 +1,146 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/sar/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"SAR Extension\",\n  \"description\": \"STAC
+        SAR Extension to a STAC Item\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json#/definitions/core\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/sar\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"sar\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"properties\"\n
+        \     ],\n      \"properties\": {\n        \"properties\": {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"sar:platform\",\n            \"sar:instrument\",\n
+        \           \"sar:instrument_mode\",\n            \"sar:frequency_band\",\n
+        \           \"sar:polarization\",\n            \"sar:pass_direction\",\n            \"sar:type\"\n
+        \         ],\n          \"properties\": {\n            \"sar:platform\": {\n
+        \             \"title\": \"Platform\",\n              \"type\": \"string\"\n
+        \           },\n            \"sar:constellation\": {\n              \"title\":
+        \"Constellation\",\n              \"type\": \"string\"\n            },\n            \"sar:instrument\":
+        {\n              \"title\": \"Instrument\",\n              \"type\": \"string\"\n
+        \           },\n            \"sar:instrument_mode\": {\n              \"title\":
+        \"Instrument Mode\",\n              \"type\": \"string\",\n              \"example\":
+        \"WV\"\n            },\n            \"sar:frequency_band\": {\n              \"title\":
+        \"Frequency Band\",\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"P\",\n                \"L\",\n                \"S\",\n
+        \               \"C\",\n                \"X\",\n                \"Ku\",\n
+        \               \"K\",\n                \"Ka\"\n              ]\n            },\n
+        \           \"sar:center_wavelength\": {\n              \"title\": \"Center
+        Wavelength (cm)\",\n              \"type\": \"number\"\n            },\n            \"sar:center_frequency\":
+        {\n              \"title\": \"Center Wavelength (GHz)\",\n              \"type\":
+        \"number\"\n            },\n            \"sar:polarization\": {\n              \"title\":
+        \"Polarization\",\n              \"type\": \"array\",\n              \"minItems\":
+        1,\n              \"maxItems\": 4,\n              \"items\": {\n                \"type\":
+        \"string\",\n                \"enum\": [\n                  \"HH\",\n                  \"VV\",\n
+        \                 \"HV\",\n                  \"VH\"\n                ]\n              }\n
+        \           },\n            \"sar:bands\": {\n              \"title\": \"Bands\",\n
+        \             \"type\": \"array\",\n              \"items\": {\n                \"properties\":
+        {\n                  \"name\": {\n                    \"title\": \"Name of
+        the band\",\n                    \"type\": \"string\"\n                  },\n
+        \                 \"description\": {\n                    \"title\": \"Description
+        of the band\",\n                    \"type\": \"string\"\n                  },\n
+        \                 \"data_type\": {\n                    \"title\": \"Data
+        type of the band\",\n                    \"type\": \"string\",\n                    \"examples\":
+        [\n                      \"amplitude\",\n                      \"intensity\",\n
+        \                     \"phase\",\n                      \"angle\",\n                      \"sigma0\",\n
+        \                     \"gamma0\"\n                    ]\n                  },\n
+        \                 \"unit\": {\n                    \"title\": \"Unit of the
+        band\",\n                    \"type\": \"string\"\n                  },\n
+        \                 \"polarization\": {\n                    \"title\": \"Polarization
+        of the band\",\n                    \"type\": [\n                      \"string\",\n
+        \                     \"null\"\n                    ],\n                    \"enum\":
+        [\n                      \"HH\",\n                      \"VV\",\n                      \"HV\",\n
+        \                     \"VH\",\n                      null\n                    ]\n
+        \                 }\n                }\n              }\n            },\n
+        \           \"sar:pass_direction\": {\n              \"title\": \"Pass direction\",\n
+        \             \"type\": [\n                \"string\",\n                \"null\"\n
+        \             ],\n              \"enum\": [\n                \"ascending\",\n
+        \               \"descending\",\n                null\n              ]\n            },\n
+        \           \"sar:type\": {\n              \"title\": \"Product type\",\n
+        \             \"type\": \"string\",\n              \"examples\": [\n                \"RAW\",\n
+        \               \"GRD\",\n                \"OCN\",\n                \"SLC\"\n
+        \             ]\n            },\n            \"sar:resolution_range\": {\n
+        \             \"title\": \"Resolution range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:resolution_azimuth\":
+        {\n              \"title\": \"Resolution azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_range\":
+        {\n              \"title\": \"Pixel spacing range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_azimuth\":
+        {\n              \"title\": \"Pixel spacing azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:looks_range\":
+        {\n              \"title\": \"Looks range\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_azimuth\":
+        {\n              \"title\": \"Looks azimuth\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_equivalent_number\":
+        {\n              \"title\": \"Equivalent number of looks (ENL)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:observation_direction\":
+        {\n              \"title\": \"Antenna pointing direction\",\n              \"type\":
+        \"string\",\n              \"enum\": [\n                \"left\",\n                \"right\"\n
+        \             ]\n            },\n            \"sar:absolute_orbit\": {\n              \"title\":
+        \"Absolute orbit numbers\",\n              \"type\": \"integer\",\n              \"minimum\":
+        0\n            },\n            \"sar:relative_orbit\": {\n              \"type\":
+        \"integer\",\n              \"minimum\": 1\n            },\n            \"sar:incidence_angle\":
+        {\n              \"title\": \"Center incidence angle\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0,\n              \"maximum\": 90\n
+        \           }\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '6111'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Thu, 22 Jun 2023 13:27:35 GMT
+      ETag:
+      - '"bd0d97e01404052bb35eda302935aea6ab05818f78d1970e785c7083dedc3bad"'
+      Expires:
+      - Thu, 22 Jun 2023 13:32:35 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 4fd5b3bd51ea79e44250f16151dae979cc6b3ef5
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 7752:27C1:6B8F5:81D26:649449CD
+      X-Served-By:
+      - cache-ewr18156-EWR
+      X-Timer:
+      - S1687440456.925943,VS0,VE74
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

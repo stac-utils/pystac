@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/checksum/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"Checksum Extension Specification\",\n  \"description\":
+        \"STAC Checksum Extension to a STAC Item\",\n  \"allOf\": [\n    {\n      \"$ref\":
+        \"../../../item-spec/json-schema/item.json#/definitions/core\"\n    },\n    {\n
+        \     \"$ref\": \"#/definitions/checksum\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"checksum\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"links\": {\n          \"title\": \"Links\",\n          \"type\":
+        \"array\",\n          \"items\": {\n            \"$ref\": \"#/definitions/checksums\"\n
+        \         }\n        },\n        \"assets\": {\n          \"title\": \"Assets\",\n
+        \         \"type\": \"object\",\n          \"patternProperties\": {\n            \".+\":
+        {\n              \"$ref\": \"#/definitions/checksums\"\n            }\n          }\n
+        \       }\n      }\n    },\n    \"checksums\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"checksum:md5\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[A-Fa-f0-9]{32}$\",\n          \"title\":
+        \"MD5 checksum\"\n        },\n        \"checksum:sha1\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[A-Fa-f0-9]{40}$\",\n          \"title\":
+        \"SHA1 checksum\"\n        },\n        \"checksum:sha2\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[A-Fa-f0-9]+$\",\n          \"title\":
+        \"SHA2 checksum\"\n        },\n        \"checksum:sha3\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[A-Fa-f0-9]+$\",\n          \"title\":
+        \"SHA3 checksum\"\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '1469'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Thu, 22 Jun 2023 13:27:32 GMT
+      ETag:
+      - '"ceed674cee48a43076989957b8a4f96d8acba3f52df1d52a3745e28225923aac"'
+      Expires:
+      - Thu, 22 Jun 2023 13:32:32 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 2ad0befb15aeca1d5d5079ed539549791e212f29
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - EF00:79E3:2CBADA:36ED48:649449C9
+      X-Served-By:
+      - cache-ewr18168-EWR
+      X-Timer:
+      - S1687440452.459792,VS0,VE89
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

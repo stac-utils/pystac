@@ -1,0 +1,113 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/label/schema.json
+  response:
+    body:
+      string: "{\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n
+        \   \"id\": \"stac-label-item-schema.json#\",\n    \"title\": \"STAC Label
+        Data Item Extension Spec\",\n    \"type\": \"object\",\n    \"properties\":
+        {\n      \"properties\": {\n        \"type\": \"object\",\n        \"required\":
+        [\n          \"label:properties\",\n          \"label:classes\",\n          \"label:description\"\n
+        \       ],\n        \"properties\": {\n          \"label:properties\": {\n
+        \           \"title\": \"Property\",\n            \"type\": \"array\",\n            \"items\":
+        {\n              \"type\": \"string\"\n            }\n          },\n          \"label:classes\":
+        {\n            \"title\": \"Classes\",\n            \"type\": \"array\",\n
+        \           \"items\": {\n              \"type\": \"object\",\n              \"required\":
+        [\n                \"name\",\n                \"classes\"\n              ],\n
+        \             \"properties\": {\n                \"name\": {\n                  \"title\":
+        \"Name\",\n                  \"type\": \"string\"\n                },\n                \"classes\":
+        {\n                  \"title\": \"Classes\",\n                  \"type\":
+        \"array\",\n                  \"items\": {\n                    \"type\":
+        \"string\"\n                  }\n                }\n              }\n            }\n
+        \         },\n          \"label:description\": {\n            \"title\": \"Description\",\n
+        \           \"type\": \"string\"\n          },\n          \"label:type\":
+        {\n            \"title\": \"Type\",\n            \"type\": \"string\",\n            \"enum\":
+        [\n              \"raster\",\n              \"vector\"\n            ]\n          },\n
+        \         \"label:tasks\": {\n            \"title\": \"Task\",\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"string\"\n
+        \           }\n          },\n          \"label:methods\": {\n            \"title\":
+        \"Method\",\n            \"type\": \"array\",\n            \"items\": {\n
+        \             \"type\": \"string\",\n              \"enum\": [\n                \"automated\",\n
+        \               \"manual\"\n              ]\n            }\n          },\n
+        \         \"label:overviews\": {\n            \"title\": \"Overview\",\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"object\",\n
+        \             \"properties\": {\n                \"property_key\": {\n                  \"title\":
+        \"Property Key\",\n                  \"type\": \"string\"\n                },\n
+        \               \"counts\": {\n                  \"title\": \"Counts\",\n
+        \                 \"type\": \"array\",\n                  \"items\": {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"name\":
+        {\n                        \"title\": \"Class Name\",\n                        \"type\":
+        \"string\"\n                      },\n                      \"count\": {\n
+        \                       \"title\": \"Count\",\n                        \"type\":
+        \"integer\"\n                      }\n                    }\n                  }\n
+        \               },\n                \"statistics\": {\n                  \"title\":
+        \"Statistics\",\n                  \"type\": \"array\",\n                  \"items\":
+        {\n                    \"type\": \"object\",\n                    \"properties\":
+        {\n                      \"name\": {\n                        \"title\": \"Stat
+        Name\",\n                        \"type\": \"string\"\n                      },\n
+        \                     \"value\": {\n                        \"title\": \"Value\",\n
+        \                       \"type\": \"number\"\n                      }\n                    }\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       }\n      }\n    }\n  }\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '3404'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Thu, 22 Jun 2023 13:27:32 GMT
+      ETag:
+      - '"46c09f290da4303780880924f1569b2cb0b979a2d363a4446e2b8b7cc494844b"'
+      Expires:
+      - Thu, 22 Jun 2023 13:32:32 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 8d3a246afa50111959447edb3eb90f0a5a1ccc4a
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - EA94:294B:30288B:3A5B00:649449C9
+      X-Served-By:
+      - cache-ewr18158-EWR
+      X-Timer:
+      - S1687440453.666153,VS0,VE80
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

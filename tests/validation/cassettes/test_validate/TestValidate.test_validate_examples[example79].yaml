@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/item-assets/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/item-assets/json-schema/schema.json#\",\n
+        \ \"title\": \"Asset Definition Extension Specification\",\n  \"description\":
+        \"STAC Asset Definition Extension to a STAC Collection\",\n  \"allOf\": [\n
+        \   {\n      \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/item_assets\"\n    }\n  ],\n
+        \ \"definitions\": {\n    \"item_assets\": {\n      \"title\": \"Item Assets
+        Definition\",\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"item_assets\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"enum\":
+        [\n              \"item-assets\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/item-assets/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"item_assets\": {\n          \"type\":
+        \"object\",\n          \"additionalProperties\": {\n            \"$ref\":
+        \"#/definitions/asset\"\n          }\n        }\n      }\n    },\n    \"asset\":
+        {\n      \"type\": \"object\",\n      \"minProperties\": 2,\n      \"properties\":
+        {\n        \"title\": {\n          \"title\": \"Asset title\",\n          \"type\":
+        \"string\"\n        },\n        \"description\": {\n          \"title\": \"Asset
+        description\",\n          \"type\": \"string\"\n        },\n        \"type\":
+        {\n          \"title\": \"Asset type\",\n          \"type\": \"string\"\n
+        \       },\n        \"roles\": {\n          \"title\": \"Asset roles\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1631'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 13:27:40 GMT
+      ETag:
+      - '"647f85f4-65f"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - b8b01ba5a38f0b30bcc4162bdfc0546bea07aaf5
+      X-GitHub-Request-Id:
+      - 7FAE:6526:3ECF0B:5EB02D:649449D3
+      X-Served-By:
+      - cache-ewr18125-EWR
+      X-Timer:
+      - S1687440460.444410,VS0,VE13
+      expires:
+      - Thu, 22 Jun 2023 13:27:07 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1
