@@ -24,7 +24,7 @@ class XarrayAssetsExtension(
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
-    properties from the :stac-ext:`Datacube Extension <datacube>`. This class is
+    properties from the :stac-ext:`Xarray Assets Extension <xarray>`. This class is
     generic over the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Asset`).
 
