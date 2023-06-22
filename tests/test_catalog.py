@@ -1124,7 +1124,7 @@ class TestCatalog:
             c2.catalog_type = CatalogType.ABSOLUTE_PUBLISHED
             check_all_absolute(c2)
 
-    @pytest.mark.vcr()
+    @pytest.mark.block_network()
     def test_self_contained_catalog_collection_item_links(self) -> None:
         """See issue https://github.com/stac-utils/pystac/issues/657"""
         with tempfile.TemporaryDirectory() as tmp_dir:
