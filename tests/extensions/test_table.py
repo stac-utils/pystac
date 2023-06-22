@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions.table import Column, TableExtension
@@ -11,6 +13,7 @@ class TableTest(unittest.TestCase):
     def setUp(self) -> None:
         self.example_uri = TestCases.get_path("data-files/table/item.json")
 
+    @pytest.mark.vcr()
     def test_validate(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()

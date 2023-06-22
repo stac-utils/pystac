@@ -67,6 +67,7 @@ def test_apply_without_required_fields_raises(item: pystac.Item) -> None:
         MgrsExtension.ext(item).apply()  # type: ignore
 
 
+@pytest.mark.vcr()
 def test_validate(ext_item: pystac.Item) -> None:
     assert ext_item.validate()
 
@@ -80,6 +81,7 @@ def test_get_field(ext_item: pystac.Item, field: str) -> None:
     assert attr == prop
 
 
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "field,value",
     [

@@ -18,6 +18,7 @@ from tests.utils.test_cases import ExampleInfo
 
 
 class TestValidate:
+    @pytest.mark.vcr()
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
@@ -36,6 +37,7 @@ class TestValidate:
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
         item.validate()
 
+    @pytest.mark.vcr()
     @pytest.mark.parametrize("example", TestCases.get_examples_info())
     def test_validate_examples(self, example: ExampleInfo) -> None:
         stac_version = example.stac_version
@@ -62,6 +64,7 @@ class TestValidate:
                     assert isinstance(e.source[0], jsonschema.ValidationError)
                     raise e
 
+    @pytest.mark.vcr()
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
         cat = TestCases.case_1()
@@ -77,6 +80,7 @@ class TestValidate:
                 assert get_opt(item.get_self_href()) in str(e)
                 raise e
 
+    @pytest.mark.vcr()
     @pytest.mark.parametrize("test_case", TestCases.all_test_catalogs())
     def test_validate_all(self, test_case: pystac.Catalog) -> None:
         catalog_href = test_case.get_self_href()
@@ -118,6 +122,7 @@ class TestValidate:
             with pytest.raises(pystac.STACValidationError):
                 pystac.validation.validate_all(stac_dict, new_cat_href)
 
+    @pytest.mark.vcr()
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
         dict has tuples instead of lists for the coordinate sequence,

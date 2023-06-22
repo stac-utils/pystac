@@ -225,6 +225,7 @@ class CollectionTest(unittest.TestCase):
         # cached only by HREF
         self.assertEqual(len(cache.id_keys_to_objects), 0)
 
+    @pytest.mark.block_network
     def test_assets(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
         with open(path) as f:
@@ -379,6 +380,7 @@ class ExtentTest(unittest.TestCase):
 
         _ = TemporalExtent([[start_datetime, end_datetime]])
 
+    @pytest.mark.block_network()
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 

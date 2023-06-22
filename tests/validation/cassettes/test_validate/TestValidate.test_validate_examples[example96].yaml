@@ -1,0 +1,96 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/scientific/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/scientific/json-schema/schema.json#\",\n
+        \ \"title\": \"Scientific Extension\",\n  \"description\": \"STAC Scientific
+        Extension to STAC Items or STAC Collections.\",\n  \"oneOf\": [\n    {\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"properties\"\n          ],\n          \"properties\": {\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/scientific\"\n
+        \           }\n          }\n        }\n      ]\n    },\n    {\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/scientific\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"enum\": [\n              \"scientific\",\n
+        \             \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/scientific/json-schema/schema.json\"\n
+        \           ]\n          }\n        }\n      }\n    },\n    \"scientific\":
+        {\n      \"type\": \"object\",\n      \"anyOf\": [\n        {\"required\":
+        [\"sci:doi\"]},\n        {\"required\": [\"sci:citation\"]},\n        {\"required\":
+        [\"sci:publications\"]}\n      ],\n      \"properties\": {\n        \"sci:doi\":
+        {\n          \"type\": \"string\",\n          \"title\": \"Data DOI\",\n          \"pattern\":
+        \"^(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%\\\"#? ])\\\\S)+)$\"\n        },
+        \n        \"sci:citation\": {\n          \"type\": \"string\", \n          \"title\":
+        \"Proposed Data Citation\"\n        },\n        \"sci:publications\": {\n
+        \         \"type\": \"array\",\n          \"title\": \"Publications\",\n          \"items\":
+        {\n            \"type\": \"object\",\n            \"properties\": {\n              \"doi\":
+        {\n                \"type\": \"string\",\n                \"title\": \"Publication
+        DOI\",\n                \"pattern\": \"^(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%\\\"#?
+        ])\\\\S)+)$\"\n              }, \n              \"citation\": { \n                \"type\":
+        \"string\", \n                \"title\": \"Publication Citation\"\n              }\n
+        \           }\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2467'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:31 GMT
+      ETag:
+      - '"647f85f4-9a3"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 3cb80bd0b98bb1fe511b6500d7df40059768ca3e
+      X-GitHub-Request-Id:
+      - 6024:48BE:38C10B:58A7FF:649449D4
+      X-Served-By:
+      - cache-ewr18180-EWR
+      X-Timer:
+      - S1687442551.109859,VS0,VE30
+      expires:
+      - Thu, 22 Jun 2023 13:27:08 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

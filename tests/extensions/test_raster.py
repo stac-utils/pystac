@@ -40,6 +40,7 @@ class RasterTest(unittest.TestCase):
             item_dict = json.load(f)
         assert_to_from_dict(self, Item, item_dict)
 
+    @pytest.mark.vcr()
     def test_validate_raster(self) -> None:
         item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
         item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
@@ -47,6 +48,7 @@ class RasterTest(unittest.TestCase):
         item.validate()
         item2.validate()
 
+    @pytest.mark.vcr()
     def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
         item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)

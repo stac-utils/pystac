@@ -2,6 +2,8 @@ import json
 import unittest
 from typing import Any, Dict
 
+import pytest
+
 import pystac
 from pystac.asset import Asset
 from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
@@ -46,10 +48,12 @@ class PointcloudTest(unittest.TestCase):
         )
         self.assertTrue(PointcloudExtension.has_extension(item))
 
+    @pytest.mark.vcr()
     def test_validate_pointcloud(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.validate()
 
+    @pytest.mark.vcr()
     def test_count(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
@@ -72,6 +76,7 @@ class PointcloudTest(unittest.TestCase):
             PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
             pc_item.validate()
 
+    @pytest.mark.vcr()
     def test_type(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
@@ -87,6 +92,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
+    @pytest.mark.vcr()
     def test_encoding(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
@@ -102,6 +108,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
+    @pytest.mark.vcr()
     def test_schemas(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
@@ -120,6 +127,7 @@ class PointcloudTest(unittest.TestCase):
         # Validate
         pc_item.validate()
 
+    @pytest.mark.vcr()
     def test_statistics(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
 
@@ -151,8 +159,9 @@ class PointcloudTest(unittest.TestCase):
         )
 
         # Validate
-        pc_item.validate
+        pc_item.validate()
 
+    @pytest.mark.vcr()
     def test_density(self) -> None:
         pc_item = pystac.Item.from_file(self.example_uri)
         # Get

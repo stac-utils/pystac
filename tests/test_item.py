@@ -146,6 +146,7 @@ class ItemTest(unittest.TestCase):
 
         self.assertEqual("2016-05-03T13:22:30.040000Z", formatted_time)
 
+    @pytest.mark.vcr()
     def test_null_datetime(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path("data-files/item/sample-item.json")
@@ -194,6 +195,7 @@ class ItemTest(unittest.TestCase):
         no_assets = item.get_assets(media_type=pystac.MediaType.HDF)
         self.assertEqual(no_assets, {})
 
+    @pytest.mark.vcr()
     def test_null_datetime_constructor(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path("data-files/item/sample-item.json")
@@ -259,6 +261,7 @@ class ItemTest(unittest.TestCase):
         for asset_key in item.assets:
             self.assertEqual(item.assets[asset_key].owner, item)
 
+    @pytest.mark.vcr()
     def test_null_geometry(self) -> None:
         m = TestCases.get_path(
             "data-files/examples/1.0.0-beta.2/item-spec/examples/null-geom-item.json"
@@ -324,6 +327,7 @@ class ItemTest(unittest.TestCase):
         with self.assertRaises(pystac.STACTypeError):
             _ = pystac.Item.from_dict(catalog_dict)
 
+    @pytest.mark.vcr()
     def test_relative_extension_path(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(

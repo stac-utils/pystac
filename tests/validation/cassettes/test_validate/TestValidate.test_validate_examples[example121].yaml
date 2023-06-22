@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/grid/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/grid/v1.0.0/schema.json#\",\n  \"title\":
+        \"Grid Extension\",\n  \"description\": \"STAC Grid Extension for STAC Items.\",\n
+        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items\",\n
+        \     \"allOf\": [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       },\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"properties\": {\n              \"allOf\":
+        [\n                {\n                  \"required\": [\n                    \"grid:code\"\n
+        \                 ]\n                },\n                {\n                  \"$ref\":
+        \"#/definitions/fields\"\n                }\n              ]\n            }\n
+        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/grid/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"require_any_field\": {\n      \"anyOf\":
+        [\n        {\"required\": [\"grid:code\"]}\n      ]\n    },\n    \"fields\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"grid:code\":
+        {\n          \"type\": \"string\",\n          \"pattern\": \"^[A-Z]+-[-_.A-Za-z0-9]+$\"\n
+        \       }\n      },\n      \"patternProperties\": {\n        \"^(?!grid:)\":
+        {\n          \"$comment\": \"Do not allow other fields with this prefix\"\n
+        \       }\n      },\n      \"additionalProperties\": false\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1749'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:33 GMT
+      ETag:
+      - '"638a24f0-6d5"'
+      Last-Modified:
+      - Fri, 02 Dec 2022 16:16:48 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 8bd5850aef32cd282208a8c1f67784a960865811
+      X-GitHub-Request-Id:
+      - CD48:0A60:2DDFB0:43E696:64945479
+      X-Served-By:
+      - cache-ewr18147-EWR
+      X-Timer:
+      - S1687442553.398848,VS0,VE21
+      expires:
+      - Thu, 22 Jun 2023 14:12:33 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

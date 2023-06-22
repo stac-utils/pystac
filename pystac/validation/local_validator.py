@@ -38,24 +38,15 @@ class LocalValidator:
             )
         return list(validator.iter_errors(stac_dict))
 
-    @staticmethod
-    def catalog_validator(version: str = VERSION) -> Draft7Validator:
-        schema = _read_schema(f"stac-spec/v{version}/catalog.json")
-        return Draft7Validator(schema)
-
-    @staticmethod
-    def collection_validator(version: str = VERSION) -> Draft7Validator:
-        schema = _read_schema(f"stac-spec/v{version}/collection.json")
+    def _validator(self, stac_type: str, version: str) -> Draft7Validator:
+        schema = _read_schema(f"stac-spec/v{version}/{stac_type}.json")
         resolver = RefResolver.from_schema(schema)
+        resolver.store[
+            f"https://schemas.stacspec.org/v{version}/collection-spec/json-schema/collection.json"
+        ] = _read_schema(f"stac-spec/v{version}/collection.json")
         resolver.store[
             f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/item.json"
         ] = _read_schema(f"stac-spec/v{version}/item.json")
-        return Draft7Validator(schema, resolver=resolver)
-
-    @staticmethod
-    def item_validator(version: str = VERSION) -> Draft7Validator:
-        schema = _read_schema(f"stac-spec/v{version}/item.json")
-        resolver = RefResolver.from_schema(schema)
         for name in ("Feature", "Geometry"):
             resolver.store[f"https://geojson.org/schema/{name}.json"] = _read_schema(
                 f"geojson/{name}.json"
@@ -65,6 +56,15 @@ class LocalValidator:
                 f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/{name}.json"
             ] = _read_schema(f"stac-spec/v{version}/{name}.json")
         return Draft7Validator(schema, resolver=resolver)
+
+    def catalog_validator(self, version: str = VERSION) -> Draft7Validator:
+        return self._validator("catalog", version)
+
+    def collection_validator(self, version: str = VERSION) -> Draft7Validator:
+        return self._validator("collection", version)
+
+    def item_validator(self, version: str = VERSION) -> Draft7Validator:
+        return self._validator("item", version)
 
 
 def _read_schema(file_name: str) -> Dict[str, Any]:

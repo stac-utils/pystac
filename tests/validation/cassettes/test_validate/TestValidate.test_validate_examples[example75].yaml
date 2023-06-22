@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/collection-assets/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/collection-assets/json-schema/schema.json#\",\n
+        \ \"title\": \"Collection Assets Extension Specification\",\n  \"description\":
+        \"STAC Collection-level assets Extension to a STAC Collection\",\n  \"allOf\":
+        [\n    {\n      \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \   },\n    {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"assets\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"enum\":
+        [\n              \"collection-assets\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/collection-assets/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"assets\": {\n          \"$ref\":
+        \"../../../item-spec/json-schema/item.json#/definitions/assets\"\n        }\n
+        \     }\n    }\n  ]\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '939'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:29 GMT
+      ETag:
+      - '"647f85f4-3ab"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 24f62851ff6685421fa92124f3dd4e27839f1f64
+      X-GitHub-Request-Id:
+      - 6302:7A1B:326CE8:524C74:649449D2
+      X-Served-By:
+      - cache-ewr18121-EWR
+      X-Timer:
+      - S1687442549.010983,VS0,VE240
+      expires:
+      - Thu, 22 Jun 2023 13:27:06 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

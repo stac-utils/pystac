@@ -1,0 +1,133 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/sar/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/sar/v1.0.0/schema.json\",\n  \"title\":
+        \"SAR Extension\",\n  \"description\": \"STAC SAR Extension to a STAC Item\",\n
+        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"properties\": {\n              \"allOf\":
+        [\n                {\n                  \"required\": [\n                    \"sar:instrument_mode\",\n
+        \                   \"sar:frequency_band\",\n                    \"sar:polarizations\",\n
+        \                   \"sar:product_type\"\n                  ],\n                  \"properties\":
+        {\n                    \"sar:polarizations\": {\n                      \"type\":
+        \"array\",\n                      \"maxItems\": 4,\n                      \"uniqueItems\":
+        true\n                    }\n                  }\n                },\n                {\n
+        \                 \"$ref\": \"#/definitions/fields\"\n                }\n
+        \             ]\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
+        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
+        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
+        Collections.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
+        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Collection\"\n            },\n
+        \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
+        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/sar/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"sar:instrument_mode\":
+        {\n          \"title\": \"Instrument Mode\",\n          \"type\": \"string\",\n
+        \         \"example\": \"WV\"\n        },\n        \"sar:frequency_band\":
+        {\n          \"title\": \"Frequency Band\",\n          \"type\": \"string\",\n
+        \         \"enum\": [\n            \"P\",\n            \"L\",\n            \"S\",\n
+        \           \"C\",\n            \"X\",\n            \"Ku\",\n            \"K\",\n
+        \           \"Ka\"\n          ]\n        },\n        \"sar:center_frequency\":
+        {\n          \"title\": \"Center Frequency (GHz)\",\n          \"type\": \"number\"\n
+        \       },\n        \"sar:polarizations\": {\n          \"title\": \"Polarizations\",\n
+        \         \"type\": \"array\",\n          \"minItems\": 1,\n          \"items\":
+        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HH\",\n
+        \             \"VV\",\n              \"HV\",\n              \"VH\"\n            ]\n
+        \         }\n        },\n        \"sar:product_type\": {\n          \"title\":
+        \"Product type\",\n          \"type\": \"string\",\n          \"examples\":
+        [\n            \"SSC\",\n            \"MGD\",\n            \"SGC\"\n          ]\n
+        \       },\n        \"sar:resolution_range\": {\n          \"title\": \"Resolution
+        range (m)\",\n          \"type\": \"number\",\n          \"minimum\": 0\n
+        \       },\n        \"sar:resolution_azimuth\": {\n          \"title\": \"Resolution
+        azimuth (m)\",\n          \"type\": \"number\",\n          \"minimum\": 0\n
+        \       },\n        \"sar:pixel_spacing_range\": {\n          \"title\": \"Pixel
+        spacing range (m)\",\n          \"type\": \"number\",\n          \"minimum\":
+        0\n        },\n        \"sar:pixel_spacing_azimuth\": {\n          \"title\":
+        \"Pixel spacing azimuth (m)\",\n          \"type\": \"number\",\n          \"minimum\":
+        0\n        },\n        \"sar:looks_range\": {\n          \"title\": \"Looks
+        range\",\n          \"type\": \"integer\",\n          \"minimum\": 0\n        },\n
+        \       \"sar:looks_azimuth\": {\n          \"title\": \"Looks azimuth\",\n
+        \         \"type\": \"integer\",\n          \"minimum\": 0\n        },\n        \"sar:looks_equivalent_number\":
+        {\n          \"title\": \"Equivalent number of looks (ENL)\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0\n        },\n        \"sar:observation_direction\":
+        {\n          \"title\": \"Antenna pointing direction\",\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"left\",\n            \"right\"\n
+        \         ]\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!sar:)\":
+        {\n          \"$comment\": \"Do not allow unspecified fields prefixed with
+        sar:\"\n        }\n      },\n      \"additionalProperties\": false\n    }\n
+        \ }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '5087'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:18 GMT
+      ETag:
+      - '"60414cc0-13df"'
+      Last-Modified:
+      - Thu, 04 Mar 2021 21:10:24 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 03783173869d504d61dbbf1b0c9ceb3219a56d0a
+      X-GitHub-Request-Id:
+      - 24E6:81FC:2AE6B4:3E9010:6494546A
+      X-Served-By:
+      - cache-ewr18151-EWR
+      X-Timer:
+      - S1687442538.087509,VS0,VE15
+      expires:
+      - Thu, 22 Jun 2023 14:12:18 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -77,12 +77,14 @@ class EOTest(unittest.TestCase):
         ]
         self.assertEqual(len(eo_uris), 1)
 
+    @pytest.mark.vcr()
     def test_validate_eo(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
         item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
+    @pytest.mark.vcr()
     def test_bands(self) -> None:
         item = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
 
@@ -114,6 +116,7 @@ class EOTest(unittest.TestCase):
         mtd_asset = item.get_assets()["mtd"]
         self.assertIsNone(EOExtension.ext(mtd_asset).bands)
 
+    @pytest.mark.vcr()
     def test_asset_bands(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
@@ -169,6 +172,7 @@ class EOTest(unittest.TestCase):
 
         self.assertEqual(len(item.assets["test"].extra_fields["eo:bands"]), 3)
 
+    @pytest.mark.vcr()
     def test_cloud_cover(self) -> None:
         item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
 
@@ -394,6 +398,7 @@ def test_get_field(ext_item: pystac.Item, field: str) -> None:
     assert attr == prop
 
 
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "field,value",
     [

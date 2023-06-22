@@ -1,0 +1,251 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/sat/v1.0.0/schema.json\",\n  \"title\":
+        \"Satellite Extension\",\n  \"description\": \"STAC Sat Extension to a STAC
+        Item.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema
+        for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
+        \         \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"anyOf\":
+        [\n                    {\n                      \"required\": [\n                        \"sat:platform_international_designator\"\n
+        \                     ]\n                    },\n                    {\n                      \"required\":
+        [\n                        \"sat:orbit_state\"\n                      ]\n
+        \                   },\n                    {\n                      \"required\":
+        [\n                        \"sat:absolute_orbit\"\n                      ]\n
+        \                   },\n                    {\n                      \"required\":
+        [\n                        \"sat:relative_orbit\"\n                      ]\n
+        \                   },\n                    {\n                      \"required\":
+        [\n                        \"sat:anx_datetime\"\n                      ]\n
+        \                   }\n                  ]\n                },\n                {\n
+        \                 \"$ref\": \"#/definitions/fields\"\n                }\n
+        \             ]\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
+        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
+        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
+        Collections.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
+        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Collection\"\n            },\n
+        \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
+        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/sat/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"sat:platform_international_designator\":
+        {\n          \"type\": \"string\"\n        },\n        \"sat:orbit_state\":
+        {\n          \"title\": \"Orbit State\",\n          \"type\": \"string\",\n
+        \         \"enum\": [\n            \"ascending\",\n            \"descending\",\n
+        \           \"geostationary\"\n          ]\n        },\n        \"sat:absolute_orbit\":
+        {\n          \"type\": \"integer\",\n          \"minimum\": 1\n        },\n
+        \       \"sat:relative_orbit\": {\n          \"type\": \"integer\",\n          \"minimum\":
+        1\n        },\n        \"sat:anx_datetime\": {\n          \"type\": \"string\",\n
+        \         \"format\": \"date-time\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!sat:)\": {\n          \"$comment\": \"Do not allow unspecified
+        fields prefixed with sat:\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '3714'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:17 GMT
+      ETag:
+      - '"60414dd7-e82"'
+      Last-Modified:
+      - Thu, 04 Mar 2021 21:15:03 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 814ac0cea9d9c8f8673c03c7f8119d8e442e59af
+      X-GitHub-Request-Id:
+      - 7C4E:0926:23D4F4:377C81:64945469
+      X-Served-By:
+      - cache-ewr18128-EWR
+      X-Timer:
+      - S1687442538.836497,VS0,VE19
+      expires:
+      - Thu, 22 Jun 2023 14:12:17 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/processing/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/processing/v1.0.0/schema.json#\",\n  \"title\":
+        \"Processing Extension\",\n  \"description\": \"STAC Processing Extension
+        for STAC Items and STAC Collections.\",\n  \"anyOf\": [\n    {\n      \"$comment\":
+        \"This is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$ref\":
+        \"#/definitions/requirements\"\n                },\n                {\n                  \"$ref\":
+        \"#/definitions/fields\"\n                }\n              ]\n            },\n
+        \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections (Providers).\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"providers\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"providers\": {\n              \"type\":
+        \"array\",\n              \"minItems\": 1,\n              \"items\": {\n                \"type\":
+        \"object\",\n                \"oneOf\": [\n                  {\n                    \"allOf\":
+        [\n                      {\n                        \"required\": [\n                          \"roles\"\n
+        \                       ],\n                        \"properties\": {\n                          \"roles\":
+        {\n                            \"type\": \"array\",\n                            \"contains\":
+        {\n                              \"enum\": [\n                                \"producer\",\n
+        \                               \"processor\"\n                              ]\n
+        \                           }\n                          }\n                        }\n
+        \                     },\n                      {\n                        \"$ref\":
+        \"#/definitions/requirements\"\n                      },\n                      {\n
+        \                       \"$ref\": \"#/definitions/fields\"\n                      }\n
+        \                   ]\n                  },\n                  {\n                    \"patternProperties\":
+        {\n                      \"^(?!processing:)\": {}\n                    },\n
+        \                   \"additionalProperties\": false\n                  }\n
+        \               ]\n              }\n            }\n          }\n        },\n
+        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
+        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
+        Collections (Assets).\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"anyOf\": [\n            {\n              \"required\":
+        [\n                \"type\",\n                \"assets\"\n              ]\n
+        \           },\n            {\n              \"required\": [\n                \"type\",\n
+        \               \"item_assets\"\n              ]\n            }\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/processing/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"requirements\": {\n      \"anyOf\":
+        [\n        {\n          \"required\": [\n            \"processing:lineage\"\n
+        \         ]\n        },\n        {\n          \"required\": [\n            \"processing:level\"\n
+        \         ]\n        },\n        {\n          \"required\": [\n            \"processing:facility\"\n
+        \         ]\n        },\n        {\n          \"required\": [\n            \"processing:software\"\n
+        \         ]\n        }\n      ]\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"processing:lineage\": {\n
+        \         \"title\": \"Processing Lineage Information\",\n          \"type\":
+        \"string\",\n          \"example\": \"Post Processing GRD\"\n        },\n
+        \       \"processing:level\": {\n          \"title\": \"Processing Level\",\n
+        \         \"type\": \"string\",\n          \"examples\": [\n            \"RAW\",\n
+        \           \"L1\",\n            \"L1A\",\n            \"L1B\",\n            \"L1C\",\n
+        \           \"L2\",\n            \"L2A\",\n            \"L3\",\n            \"L4\"\n
+        \         ]\n        },\n        \"processing:facility\": {\n          \"title\":
+        \"Processing Facility\",\n          \"type\": \"string\",\n          \"example\":
+        \"Copernicus S1 Core Ground Segment - DPA\"\n        },\n        \"processing:software\":
+        {\n          \"title\": \"Processing Software Name / version\",\n          \"type\":
+        \"object\",\n          \"patternProperties\": {\n            \".{1,}\": {\n
+        \             \"type\": \"string\"\n            }\n          },\n          \"example\":
+        {\n            \"Sentinel-1 IPF\": \"002.71\"\n          }\n        }\n      },\n
+        \     \"patternProperties\": {\n        \"^(?!processing:)\": {}\n      },\n
+        \     \"additionalProperties\": false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '5729'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:17 GMT
+      ETag:
+      - '"63cb122e-1661"'
+      Last-Modified:
+      - Fri, 20 Jan 2023 22:14:06 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 3d958f600c8c16539eeb37b817705f5e2f6b9c40
+      X-GitHub-Request-Id:
+      - 7B26:6B88:2DE1AA:42A7F4:64945469
+      X-Served-By:
+      - cache-ewr18163-EWR
+      X-Timer:
+      - S1687442538.952919,VS0,VE14
+      expires:
+      - Thu, 22 Jun 2023 14:12:17 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

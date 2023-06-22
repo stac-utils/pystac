@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/timestamps/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/timestamps/json-schema/schema.json#\",\n
+        \ \"title\": \"Timestamps Extension\",\n  \"description\": \"STAC Timestamps
+        Extension to a STAC Item.\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \   },\n    {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\",\n
+        \       \"properties\",\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"stac_extensions\": {\n          \"type\": \"array\",\n          \"contains\":
+        {\n            \"enum\": [\n              \"timestamps\",\n              \"https://schemas.stacspec.org/v1.0.0-beta.2/extensions/timestamps/json-schema/schema.json\"\n
+        \           ]\n          }\n        },\n        \"properties\": {\n          \"$ref\":
+        \"#/definitions/all\"\n        },\n        \"assets\": {\n          \"type\":
+        \"object\",\n          \"additionalProperties\": {\n            \"$ref\":
+        \"#/definitions/all\"\n          }\n        }\n      }\n    }\n  ],\n  \"definitions\":
+        {\n    \"all\": {\n      \"type\": \"object\",\n      \"properties\": {\n
+        \       \"published\": {\n          \"$ref\": \"#/definitions/published\"\n
+        \       },\n        \"unpublished\": {\n          \"$ref\": \"#/definitions/unpublished\"\n
+        \       },\n        \"expires\": {\n          \"$ref\": \"#/definitions/expires\"\n
+        \       }\n      }\n    },\n    \"published\": {\n      \"title\": \"Publish
+        Time\",\n      \"type\": \"string\",\n      \"format\": \"date-time\"\n    },\n
+        \   \"unpublished\": {\n      \"title\": \"Removal Time\",\n      \"type\":
+        \"string\",\n      \"format\": \"date-time\"\n    },\n    \"expires\": {\n
+        \     \"title\": \"Expiry Time\",\n      \"type\": \"string\",\n      \"format\":
+        \"date-time\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1653'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:31 GMT
+      ETag:
+      - '"647f85f4-675"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 114cd0e954a453251ba169c77ebba9d1f36a3324
+      X-GitHub-Request-Id:
+      - CA1E:4B19:38B550:589866:649449D5
+      X-Served-By:
+      - cache-ewr18171-EWR
+      X-Timer:
+      - S1687442551.379497,VS0,VE13
+      expires:
+      - Thu, 22 Jun 2023 13:27:09 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

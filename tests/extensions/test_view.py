@@ -1,6 +1,8 @@
 import json
 import unittest
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.collection import Collection
@@ -38,11 +40,13 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(ViewExtension.ext(item).sun_azimuth, 4.0)
         self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
 
+    @pytest.mark.vcr()
     def test_validate_view(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         self.assertTrue(ViewExtension.has_extension(item))
         item.validate()
 
+    @pytest.mark.vcr()
     def test_off_nadir(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
@@ -77,6 +81,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    @pytest.mark.vcr()
     def test_incidence_angle(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
@@ -115,6 +120,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    @pytest.mark.vcr()
     def test_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
@@ -149,6 +155,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    @pytest.mark.vcr()
     def test_sun_azimuth(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 
@@ -185,6 +192,7 @@ class ViewTest(unittest.TestCase):
         # Validate
         view_item.validate()
 
+    @pytest.mark.vcr()
     def test_sun_elevation(self) -> None:
         view_item = pystac.Item.from_file(self.example_uri)
 

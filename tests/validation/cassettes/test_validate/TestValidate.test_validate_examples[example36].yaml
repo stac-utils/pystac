@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/asset/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"Asset Definition Extension Specification\",\n
+        \ \"description\": \"STAC Asset Definition Extension to a STAC Collection\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/assets\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"assets\": {\n      \"title\": \"Asset schemas\",\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"assets\": {\n          \"type\": \"object\",\n          \"additionalProperties\":
+        {\n            \"$ref\": \"#/definitions/asset\"\n          }\n        }\n
+        \     }\n    },\n    \"asset\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"title\",\n        \"type\"\n      ],\n      \"properties\": {\n
+        \       \"title\": {\n          \"title\": \"Asset title\",\n          \"type\":
+        \"string\"\n        },\n        \"description\": {\n          \"title\": \"Asset
+        description\",\n          \"type\": \"string\"\n        },\n        \"type\":
+        {\n          \"title\": \"Asset type\",\n          \"type\": \"string\"\n
+        \       },\n        \"roles\": {\n          \"title\": \"Asset roles\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '1258'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Thu, 22 Jun 2023 14:02:26 GMT
+      ETag:
+      - '"6ae857b8e1e2f74d6b996d5f7111e822099d2620956150db4b96325f59fccc52"'
+      Expires:
+      - Thu, 22 Jun 2023 14:07:26 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - ce23eb43d98ab84b6922db37761f8870f20330e3
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - CD3A:52E4:78CCE:8F0FF:649449D0
+      X-Served-By:
+      - cache-ewr18130-EWR
+      X-Timer:
+      - S1687442547.635720,VS0,VE118
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

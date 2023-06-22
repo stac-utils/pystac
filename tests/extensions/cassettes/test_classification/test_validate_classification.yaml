@@ -1,0 +1,383 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/raster/v1.1.0/schema.json#\",\n  \"title\":
+        \"raster Extension\",\n  \"description\": \"STAC Raster Extension for STAC
+        Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema
+        for STAC extension raster in Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/assetfields\"\n              }\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"https://stac-extensions.github.io/raster/v1.1.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"assetfields\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"raster:bands\": {\n          \"$ref\":
+        \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!raster:)\": {\n          \"$comment\": \"Above, change `template`
+        to the prefix of this extension\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\":
+        \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"title\":
+        \"Band\",\n        \"type\": \"object\",\n        \"minProperties\": 1,\n
+        \       \"additionalProperties\": true,\n        \"properties\": {\n          \"data_type\":
+        {\n            \"title\": \"Data type of the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"int8\",\n              \"int16\",\n
+        \             \"int32\",\n              \"int64\",\n              \"uint8\",\n
+        \             \"uint16\",\n              \"uint32\",\n              \"uint64\",\n
+        \             \"float16\",\n              \"float32\",\n              \"float64\",\n
+        \             \"cint16\",\n              \"cint32\",\n              \"cfloat32\",\n
+        \             \"cfloat64\",\n              \"other\"\n            ]\n          },\n
+        \         \"unit\": {\n            \"title\": \"Unit denomination of the pixel
+        value\",\n            \"type\": \"string\"\n          },\n          \"bits_per_sample\":
+        {\n            \"title\": \"The actual number of bits used for this band\",\n
+        \           \"type\": \"integer\"\n          },\n          \"sampling\": {\n
+        \           \"title\": \"Pixel sampling in the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"area\",\n              \"point\"\n
+        \           ]\n          },\n          \"nodata\": {\n            \"title\":
+        \"No data pixel value\",\n            \"oneOf\": [\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"string\",\n
+        \               \"enum\": [\n                  \"nan\",\n                  \"inf\",\n
+        \                 \"-inf\"\n                ]\n              }\n            ]\n
+        \         },\n          \"scale\": {\n            \"title\": \"multiplicator
+        factor of the pixel value to transform into the value\",\n            \"type\":
+        \"number\"\n          },\n          \"offset\": {\n            \"title\":
+        \"number to be added to the pixel value to transform into the value\",\n            \"type\":
+        \"number\"\n          },\n          \"spatial_resolution\": {\n            \"title\":
+        \"Average spatial resolution (in meters) of the pixels in the band\",\n            \"type\":
+        \"number\"\n          },\n          \"statistics\": {\n            \"title\":
+        \"Statistics\",\n            \"type\": \"object\",\n            \"minProperties\":
+        1,\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"mean\": {\n                \"title\": \"Mean value of all
+        the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"minimum\": {\n                \"title\": \"Minimum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"maximum\": {\n                \"title\": \"Maximum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"stddev\": {\n                \"title\": \"Standard deviation
+        value of all the pixels in the band\",\n                \"type\": \"number\"\n
+        \             },\n              \"valid_percent\": {\n                \"title\":
+        \"Percentage of valid (not nodata) pixel\",\n                \"type\": \"number\"\n
+        \             }\n            }\n          },\n          \"histogram\": {\n
+        \           \"title\": \"Histogram\",\n            \"type\": \"object\",\n
+        \           \"additionalItems\": false,\n            \"required\": [\n              \"count\",\n
+        \             \"min\",\n              \"max\",\n              \"buckets\"\n
+        \           ],\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"count\": {\n                \"title\": \"number of buckets\",\n
+        \               \"type\": \"number\"\n              },\n              \"min\":
+        {\n                \"title\": \"Minimum value of the buckets\",\n                \"type\":
+        \"number\"\n              },\n              \"max\": {\n                \"title\":
+        \"Maximum value of the buckets\",\n                \"type\": \"number\"\n
+        \             },\n              \"buckets\": {\n                \"title\":
+        \"distribution buckets\",\n                \"type\": \"array\",\n                \"minItems\":
+        3,\n                \"items\": {\n                  \"title\": \"number of
+        pixels in the bucket\",\n                  \"type\": \"integer\"\n                }\n
+        \             }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '6318'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:14 GMT
+      ETag:
+      - '"60e44dd0-18ae"'
+      Last-Modified:
+      - Tue, 06 Jul 2021 12:34:24 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - ec7743452fe279e6c19f9471fba98c26116e9e76
+      X-GitHub-Request-Id:
+      - B78E:3259:31E5C9:481312:64945466
+      X-Served-By:
+      - cache-ewr18142-EWR
+      X-Timer:
+      - S1687442535.572369,VS0,VE60
+      expires:
+      - Thu, 22 Jun 2023 14:12:14 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - landsat.usgs.gov
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json
+  response:
+    body:
+      string: "{\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n
+        \   \"$id\": \"https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json\",\n
+        \   \"title\": \"Landsat Extension\",\n    \"description\": \"Landsat Extension
+        to STAC Items and Collections\",\n    \"allOf\": [\n        {\n            \"type\":
+        \"object\",\n            \"required\": [\n                \"type\",\n                \"properties\",\n
+        \               \"assets\"\n            ],\n            \"properties\": {\n
+        \               \"type\": {\n                    \"const\": \"Feature\"\n
+        \               },\n                \"collection\": {\n                    \"type\":
+        \"string\"\n                },\n                \"properties\": {\n                    \"allOf\":
+        [\n                        {\n                            \"required\": [\n
+        \                               \"landsat:scene_id\",\n                                \"landsat:collection_category\",\n
+        \                               \"landsat:collection_number\",\n                                \"landsat:wrs_type\",\n
+        \                               \"landsat:wrs_path\",\n                                \"landsat:wrs_row\",\n
+        \                               \"landsat:cloud_cover_land\",\n                                \"landsat:correction\"\n
+        \                           ]\n                        },\n                        {\n
+        \                           \"$ref\": \"#/definitions/fields\"\n                        }\n
+        \                   ]\n                }\n            }\n        },\n        {\n
+        \           \"$ref\": \"#/definitions/stac_extensions\"\n        }\n    ],\n
+        \   \"definitions\": {\n        \"stac_extensions\": {\n            \"type\":
+        \"object\",\n            \"required\": [\n              \"stac_extensions\"\n
+        \           ],\n            \"properties\": {\n                \"stac_extensions\":
+        {\n                    \"type\": \"array\",\n                    \"contains\":
+        {\n                        \"const\": \"https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json\"\n
+        \                   }\n                }\n            }\n        },\n        \"fields\":
+        {\n            \"landsat:scene_id\": {\n                \"title\": \"Landsat
+        Scene Identifier\",\n                \"type\": \"string\",\n                \"pattern\":
+        \"^L[CEMOT][1-9][0-9]{3}[0-9]{3}[0-9]{7}[A-Z]{3}[0-9]{2}$\"\n            },\n
+        \           \"landsat:collection_category\": {\n                \"title\":
+        \"Collection Category\",\n                \"type\": \"string\",\n                \"enum\":
+        [\n                    \"A1\",\n                    \"A2\",\n                    \"T1\",\n
+        \                   \"T2\",\n                    \"RT\"\n                ]\n
+        \           },\n            \"landsat:collection_number\": {\n                \"title\":
+        \"Collection Number\",\n                \"type\": \"string\",\n                \"enum\":
+        [\n                    \"01\",\n                    \"02\"\n                ]\n
+        \           },\n            \"landsat:wrs_type\": {\n                \"title\":
+        \"WRS Type\",\n                \"type\": \"string\",\n                \"enum\":
+        [\n                    \"1\",\n                    \"2\"\n                ]\n
+        \           },\n            \"landsat:wrs_path\": {\n                \"title\":
+        \"WRS Path\",\n                \"type\": \"string\",\n                \"pattern\":
+        \"^(0{2}[1-9])$|^(0[1-9][0-9])$|^(1[0-9]{2})$|^(2[0-2][0-9]|23[0-3])$\"\n
+        \           },\n            \"landsat:wrs_row\": {\n                \"title\":
+        \"WRS Row\",\n                \"type\": \"string\",\n                \"pattern\":
+        \"^(0{2}[1-9])$|^(0[1-9][0-9])$|^(1[0-9]{2})$|^(2[0-3][0-9]|24[0-8])$\"\n
+        \           },\n            \"landsat:cloud_cover_land\": {\n                \"title\":
+        \"Land Cloud Cover\",\n                \"type\": \"number\",\n                \"minimum\":
+        -1,\n                \"maximum\": 100\n            },\n            \"landsat:correction\":
+        {\n                \"title\": \"Product Correction Level\",\n                \"type\":
+        \"string\",\n                \"enum\": [\n                    \"L1TP\",\n
+        \                   \"L1GT\",\n                    \"L1GS\",\n                    \"L2SR\",\n
+        \                   \"L2SP\"\n                ]\n            }\n        }\n
+        \   }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '3933'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Jun 2023 14:02:14 GMT
+      ETag:
+      - '"f5d-5c78e5c04950e"'
+      Last-Modified:
+      - Tue, 20 Jul 2021 13:52:06 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - fwb=429bb9b17ca48ed3eeddde0766549464;max-age=300;Path=/;Secure;HttpOnly
+      - cookiesession1=678A3E668644F76E6E22AF98B0BFCC73;Expires=Fri, 21 Jun 2024 14:02:14
+        GMT;Path=/;HttpOnly
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/scientific/v1.0.0/schema.json#\",\n  \"title\":
+        \"Scientific Citation Extension\",\n  \"description\": \"Scientific Citation
+        Extension for STAC Items and STAC Collections.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items. Remove this object
+        if this extension only applies to Collections.\",\n      \"allOf\": [\n        {\n
+        \         \"$ref\": \"#/definitions/stac_extensions\"\n        },\n        {\n
+        \         \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"allOf\": [\n                {\n
+        \                 \"$ref\": \"#/definitions/require_any_field\"\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"$comment\": \"This validates the fields in Item Assets,
+        but does not require them.\",\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        }\n      ]\n    },\n    {\n      \"$comment\": \"This
+        is the schema for STAC Collections.\",\n      \"type\": \"object\",\n      \"allOf\":
+        [\n        {\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        }\n      ],\n      \"anyOf\": [\n
+        \       {\n          \"$comment\": \"This is the schema for the top-level
+        fields in a Collection. Remove this if this extension does not define top-level
+        fields for Collections.\",\n          \"allOf\": [\n            {\n              \"$ref\":
+        \"#/definitions/require_any_field\"\n            },\n            {\n              \"$ref\":
+        \"#/definitions/fields\"\n            }\n          ]\n        },\n        {\n
+        \         \"$comment\": \"This validates the fields in Collection Assets,
+        but does not require them.\",\n          \"required\": [\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Item Asset Definitions. It doesn't
+        require any fields.\",\n          \"required\": [\n            \"item_assets\"\n
+        \         ],\n          \"properties\": {\n            \"item_assets\": {\n
+        \             \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Summaries. By default, only checks
+        the existance of the properties, but not the schema of the summaries.\",\n
+        \         \"required\": [\n            \"summaries\"\n          ],\n          \"properties\":
+        {\n            \"summaries\": {\n              \"$ref\": \"#/definitions/require_any_field\"\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"https://stac-extensions.github.io/scientific/v1.0.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"require_any_field\": {\n      \"$comment\":
+        \"Please list all fields here so that we can force the existance of one of
+        them in other parts of the schemas.\",\n      \"anyOf\": [\n        {\"required\":
+        [\"sci:doi\"]},\n        {\"required\": [\"sci:citation\"]},\n        {\"required\":
+        [\"sci:publications\"]}\n      ]\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"sci:doi\":
+        {\n          \"type\": \"string\",\n          \"title\": \"Data DOI\",\n          \"pattern\":
+        \"^10\\\\.[0-9a-zA-Z]{4,}/[^\\\\s]+$\"\n        }, \n        \"sci:citation\":
+        {\n          \"type\": \"string\", \n          \"title\": \"Proposed Data
+        Citation\"\n        },\n        \"sci:publications\": {\n          \"type\":
+        \"array\",\n          \"title\": \"Publications\",\n          \"items\": {\n
+        \           \"type\": \"object\",\n            \"properties\": {\n              \"doi\":
+        {\n                \"type\": \"string\",\n                \"title\": \"Publication
+        DOI\",\n                \"pattern\": \"^10\\\\.[0-9a-zA-Z]{4,}/[^\\\\s]+$\"\n
+        \             }, \n              \"citation\": { \n                \"type\":
+        \"string\", \n                \"title\": \"Publication Citation\"\n              }\n
+        \           }\n          }\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!sci:)\": {}\n      },\n      \"additionalProperties\": false\n
+        \   }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '5626'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 22 Jun 2023 14:02:14 GMT
+      ETag:
+      - '"60febab7-15fa"'
+      Last-Modified:
+      - Mon, 26 Jul 2021 13:37:59 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 5ea83589793339f846a18e56f6af5b00a48298a6
+      X-GitHub-Request-Id:
+      - E00C:33C4:260CFF:39B530:64945466
+      X-Served-By:
+      - cache-ewr18155-EWR
+      X-Timer:
+      - S1687442535.942196,VS0,VE54
+      expires:
+      - Thu, 22 Jun 2023 14:12:14 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

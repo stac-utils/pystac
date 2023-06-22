@@ -6,6 +6,8 @@ from random import choice
 from string import ascii_letters
 from typing import List
 
+import pytest
+
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import sar
@@ -39,6 +41,7 @@ class SarItemExtTest(unittest.TestCase):
     def test_stac_extensions(self) -> None:
         self.assertTrue(SarExtension.has_extension(self.item))
 
+    @pytest.mark.vcr()
     def test_required(self) -> None:
         mode: str = "Nonsense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
@@ -65,6 +68,7 @@ class SarItemExtTest(unittest.TestCase):
 
         self.item.validate()
 
+    @pytest.mark.vcr()
     def test_all(self) -> None:
         mode: str = "WV"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA

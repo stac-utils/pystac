@@ -99,10 +99,12 @@ def test_add_to_collection(collection: pystac.Collection) -> None:
     assert XarrayAssetsExtension.has_extension(collection)
 
 
+@pytest.mark.vcr
 def test_item_validate(ext_item: pystac.Item) -> None:
     assert ext_item.validate()
 
 
+@pytest.mark.vcr
 def test_collection_validate(ext_collection: pystac.Collection) -> None:
     assert ext_collection.validate()
 
@@ -133,6 +135,7 @@ def test_get_field(ext_asset: pystac.Asset, field: str) -> None:
         ("open_kwargs", {"engine": "zarr"}),
     ],
 )
+@pytest.mark.vcr
 def test_set_field(ext_asset: pystac.Asset, field: str, value) -> None:  # type: ignore
     original = ext_asset.extra_fields[f"xarray:{field}"]
     setattr(XarrayAssetsExtension.ext(ext_asset), field, value)

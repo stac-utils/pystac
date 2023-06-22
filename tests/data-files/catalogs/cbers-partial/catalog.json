@@ -6,7 +6,7 @@
   "links": [
     {
       "rel": "root",
-      "href": "https://cbers-stac-1-0.s3.amazonaws.com/catalog.json",
+      "href": "./catalog.json",
       "type": "application/json"
     },
     {

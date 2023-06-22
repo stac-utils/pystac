@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/sar/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"SAR Extension\",\n  \"description\": \"STAC
+        SAR Extension to a STAC Item\",\n  \"allOf\": [\n    {\n      \"$ref\": \"../../../item-spec/json-schema/item.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/sar\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"sar\": {\n      \"type\": \"object\",\n      \"required\": [\n        \"properties\",\n
+        \       \"assets\"\n      ],\n      \"properties\": {\n        \"properties\":
+        {\n          \"type\": \"object\",\n          \"required\": [\n            \"sar:instrument_mode\",\n
+        \           \"sar:frequency_band\",\n            \"sar:polarizations\",\n
+        \           \"sar:product_type\"\n          ],\n          \"properties\":
+        {\n            \"sar:instrument_mode\": {\n              \"title\": \"Instrument
+        Mode\",\n              \"type\": \"string\",\n              \"example\": \"WV\"\n
+        \           },\n            \"sar:frequency_band\": {\n              \"title\":
+        \"Frequency Band\",\n              \"type\": \"string\",\n              \"enum\":
+        [\n                \"P\",\n                \"L\",\n                \"S\",\n
+        \               \"C\",\n                \"X\",\n                \"Ku\",\n
+        \               \"K\",\n                \"Ka\"\n              ]\n            },\n
+        \           \"sar:center_frequency\": {\n              \"title\": \"Center
+        Frequency (GHz)\",\n              \"type\": \"number\"\n            },\n            \"sar:polarizations\":
+        {\n              \"title\": \"Polarizations\",\n              \"type\": \"array\",\n
+        \             \"minItems\": 1,\n              \"maxItems\": 4,\n              \"uniqueItems\":
+        true,\n              \"items\": {\n                \"type\": \"string\",\n
+        \               \"enum\": [\n                  \"HH\",\n                  \"VV\",\n
+        \                 \"HV\",\n                  \"VH\"\n                ]\n              }\n
+        \           },\n            \"sar:product_type\": {\n              \"title\":
+        \"Product type\",\n              \"type\": \"string\",\n              \"examples\":
+        [\n                \"SSC\",\n                \"MGD\",\n                \"SGC\"\n
+        \             ]\n            },\n            \"sar:resolution_range\": {\n
+        \             \"title\": \"Resolution range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:resolution_azimuth\":
+        {\n              \"title\": \"Resolution azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_range\":
+        {\n              \"title\": \"Pixel spacing range (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:pixel_spacing_azimuth\":
+        {\n              \"title\": \"Pixel spacing azimuth (m)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:looks_range\":
+        {\n              \"title\": \"Looks range\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_azimuth\":
+        {\n              \"title\": \"Looks azimuth\",\n              \"type\": \"integer\",\n
+        \             \"minimum\": 0\n            },\n            \"sar:looks_equivalent_number\":
+        {\n              \"title\": \"Equivalent number of looks (ENL)\",\n              \"type\":
+        \"number\",\n              \"minimum\": 0\n            },\n            \"sar:observation_direction\":
+        {\n              \"title\": \"Antenna pointing direction\",\n              \"type\":
+        \"string\",\n              \"enum\": [\n                \"left\",\n                \"right\"\n
+        \             ]\n            }\n          }\n        },\n        \"assets\":
+        {\n          \"type\": \"object\",\n          \"additionalProperties\": {\n
+        \           \"type\": \"object\",\n            \"properties\": {\n              \"sar:polarizations\":
+        {\n                \"title\": \"Polarizations\",\n                \"type\":
+        \"array\",\n                \"minItems\": 1,\n                \"items\": {\n
+        \                 \"type\": \"string\",\n                  \"enum\": [\n                    \"HH\",\n
+        \                   \"VV\",\n                    \"HV\",\n                    \"VH\"\n
+        \                 ]\n                }\n              }\n            }\n          }\n
+        \       }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '3946'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Thu, 22 Jun 2023 14:02:28 GMT
+      ETag:
+      - '"8546ced8239a833de59c3c153dab1ad77f34c598818da6695196e7449d680592"'
+      Expires:
+      - Thu, 22 Jun 2023 14:07:28 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 4480588e69e8bc869bf207dae20776647989f029
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 3172:7526:69079:7F52D:649449D1
+      X-Served-By:
+      - cache-ewr18161-EWR
+      X-Timer:
+      - S1687442548.143321,VS0,VE102
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

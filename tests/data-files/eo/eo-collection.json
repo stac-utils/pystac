@@ -5,15 +5,6 @@
   "description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
   "links": [
     {
-      "rel": "parent",
-      "href": "https://landsat-stac.s3.amazonaws.com/catalog.json"
-    },
-    {
-      "rel": "root",
-      "href": "https://landsat-stac.s3.amazonaws.com/catalog.json",
-      "type": "application/json"
-    },
-    {
       "rel": "child",
       "href": "https://landsat-stac.s3.amazonaws.com/landsat-8-l1/paths/catalog.json"
     }
