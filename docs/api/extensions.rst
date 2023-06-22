@@ -32,3 +32,4 @@ pystac.extensions
     timestamps.TimestampsExtension
     version.VersionExtension
     view.ViewExtension
+    xarray_assets.XarrayAssetsExtension

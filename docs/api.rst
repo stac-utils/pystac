@@ -107,6 +107,7 @@ PySTAC provides support for the following STAC Extensions:
 * :mod:`Timestamps <pystac.extensions.timestamps>`
 * :mod:`Versioning Indicators <pystac.extensions.version>`
 * :mod:`View Geometry <pystac.extensions.view>`
+* :mod:`Xarray Assets <pystac.extensions.xarray_assets>`
 
 The following classes are used internally to implement these extensions and may be used
 to create custom implementations of STAC Extensions not supported by the library (see
