@@ -20,6 +20,7 @@
 - `KML` as a built in media type ([#1127](https://github.com/stac-utils/pystac/issues/1127))
 - `move/copy/delete` operations for local Assets ([#1158](https://github.com/stac-utils/pystac/issues/1158))
 - Latest core STAC spec jsonshemas are included in pytstac and used for validation ([#1165](https://github.com/stac-utils/pystac/pull/1165))
+- Xarray Assets Extension class ([#1161](https://github.com/stac-utils/pystac/pull/1161))
 
 ### Changed
 
@@ -40,6 +41,7 @@
 - Improved error message when `.ext` is called on a Collection ([#1157](https://github.com/stac-utils/pystac/pull/1157))
 - `add_child` and `add_item` return a Link object instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
 - `add_children` and `add_items` return a list of Link objects instead of None ([#1160](https://github.com/stac-utils/pystac/pull/1160))
+- Include collection assets in `make_all_asset_hrefs_relative/absolute` ([#1168](https://github.com/stac-utils/pystac/pull/1168))
 - Use cassettes for all tests that pull files from remote ([#1162](https://github.com/stac-utils/pystac/pull/1162))
 
 ### Deprecated
