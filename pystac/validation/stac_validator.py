@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pystac
 import pystac.utils
+from pystac.errors import STACLocalValidationError, STACValidationError
 from pystac.stac_object import STACObjectType
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
@@ -12,8 +13,12 @@ try:
     import jsonschema
     import jsonschema.exceptions
     import jsonschema.validators
+
+    from pystac.validation.local_validator import LocalValidator
+
+    HAS_JSONSCHEMA = True
 except ImportError:
-    jsonschema = None
+    HAS_JSONSCHEMA = False
 
 logger = logging.getLogger(__name__)
 
@@ -136,8 +141,8 @@ class JsonSchemaSTACValidator(STACValidator):
     schema_cache: Dict[str, Dict[str, Any]]
 
     def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None) -> None:
-        if jsonschema is None:
-            raise Exception("Cannot instantiate, requires jsonschema package")
+        if not HAS_JSONSCHEMA:
+            raise ImportError("Cannot instantiate, requires jsonschema package")
 
         if schema_uri_map is not None:
             self.schema_uri_map = schema_uri_map
@@ -164,53 +169,40 @@ class JsonSchemaSTACValidator(STACValidator):
         stac_dict: Dict[str, Any],
         stac_object_type: STACObjectType,
         schema_uri: str,
-        extension_id: Optional[str] = None,
         href: Optional[str] = None,
     ) -> None:
         try:
-            schema, resolver = self.get_schema_from_uri(schema_uri)
-            # This block is cribbed (w/ change in error handling) from
-            # jsonschema.validate
-            cls = jsonschema.validators.validator_for(schema)
-            cls.check_schema(schema)
-            validator = cls(schema, resolver=resolver)
-            errors = list(validator.iter_errors(stac_dict))
+            resolver = None
+            try:
+                errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
+            except STACLocalValidationError:
+                schema, resolver = self.get_schema_from_uri(schema_uri)
+                # This block is cribbed (w/ change in error handling) from
+                # jsonschema.validate
+                cls = jsonschema.validators.validator_for(schema)
+                cls.check_schema(schema)
+                validator = cls(schema, resolver=resolver)
+                errors = list(validator.iter_errors(stac_dict))
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)
             raise
         if errors:
-            msg = self._get_error_message(
-                schema_uri,
-                stac_object_type,
-                extension_id,
-                href,
-                stac_dict.get("id", None),
-            )
+            stac_id = stac_dict.get("id", None)
+            msg = f"Validation failed for {stac_object_type} "
+            if href is not None:
+                msg += f"at {href} "
+            if stac_id is not None:
+                msg += f"with ID {stac_id} "
+            msg += f"against schema at {schema_uri}"
+
             best = jsonschema.exceptions.best_match(errors)
-            raise pystac.STACValidationError(msg, source=errors) from best
-        for uri in resolver.store:
-            if uri not in self.schema_cache:
-                self.schema_cache[uri] = resolver.store[uri]
+            raise STACValidationError(msg, source=errors) from best
 
-    def _get_error_message(
-        self,
-        schema_uri: str,
-        stac_object_type: STACObjectType,
-        extension_id: Optional[str],
-        href: Optional[str],
-        stac_id: Optional[str],
-    ) -> str:
-        s = "Validation failed for {} ".format(stac_object_type)
-        if href is not None:
-            s += "at {} ".format(href)
-        if stac_id is not None:
-            s += "with ID {} ".format(stac_id)
-        s += "against schema at {}".format(schema_uri)
-        if extension_id is not None:
-            s += " for STAC extension '{}'".format(extension_id)
-
-        return s
+        if resolver is not None:
+            for uri in resolver.store:
+                if uri not in self.schema_cache:
+                    self.schema_cache[uri] = resolver.store[uri]
 
     def validate_core(
         self,
@@ -248,6 +240,7 @@ class JsonSchemaSTACValidator(STACValidator):
             return None
 
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href=href)
+
         return schema_uri
 
     def validate_extension(
@@ -284,9 +277,9 @@ class JsonSchemaSTACValidator(STACValidator):
 
         if schema_uri is None:
             return None
+
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
-        self._validate_from_uri(
-            stac_dict, stac_object_type, schema_uri, extension_id, href
-        )
+        self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
+
         return schema_uri

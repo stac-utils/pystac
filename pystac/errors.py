@@ -95,6 +95,10 @@ class RequiredPropertyMissing(Exception):
         super().__init__(msg)
 
 
+class STACLocalValidationError(Exception):
+    """Schema not available locally"""
+
+
 class STACValidationError(Exception):
     """Represents a validation error. Thrown by validation calls if the STAC JSON
     is invalid.
