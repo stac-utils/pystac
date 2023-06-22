@@ -18,33 +18,32 @@ pip as follows:
 
 Testing
 ^^^^^^^
-PySTAC runs tests using ``pytest``. You can find unit tests in the ``tests/``
+tl;dr: Run ``./scripts/test`` to run all tests as they run on CI.
+
+PySTAC runs tests using `pytest <https://docs.pytest.org/en/latest/>`_. You can find unit tests in the ``tests/``
 directory.
 
-Run a single test with:
+To run the tests and generate the coverage report:
 
 .. code-block:: bash
 
-    pytest tests/test_catalog.py::CatalogTest::test_create_and_read
+    $ pytest -v -s --block-network --cov pystac --cov-report term-missing
 
-or an entire folder using:
-
-.. code-block:: bash
-
-    pytest tests/extensions
-
-or the entire project using:
-
-.. code-block:: bash
-
-    ./scripts/test
-
-The last command will also check test coverage. To view the coverage report, you can run
+To view the coverage report, you can run
 `coverage report` (to view the report in the terminal) or `coverage html` (to generate
 an HTML report that can be opened in a browser).
 
-More details on using ``pytest`` are `here
-<https://docs.pytest.org>`_.
+The PySTAC tests use `vcrpy <https://vcrpy.readthedocs.io/en/latest/>`_ to mock API calls
+with "pre-recorded" API responses. This often comes up when testing validation.
+
+When adding new tests that require pulling remote files use the ``@pytest.mark.vcr``
+decorator. Record the new responses and commit them to the repository.
+
+.. code-block:: bash
+
+    $ pytest -v -s --record-mode new_episodes
+    $ git add <new files here>
+    $ git commit -a -m 'new test episodes'
 
 Code quality checks
 ^^^^^^^^^^^^^^^^^^^
