@@ -13,7 +13,7 @@ import pytest
 
 import pystac
 import pystac.serialization.common_properties
-from pystac import Asset, Catalog, Item
+from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.utils import (
     datetime_to_str,
     get_opt,
@@ -586,3 +586,24 @@ def test_delete_asset_relative_no_self_link_fails(tmp_asset: pystac.Asset) -> No
     assert asset.href in str(e.value)
     assert name in item.assets
     assert os.path.exists(href)
+
+
+def test_resolve_collection_with_root(
+    tmp_path: Path, item: Item, collection: Collection
+) -> None:
+    # Motivated by https://github.com/stac-utils/pystac-client/issues/548
+    catalog = Catalog("root", "the description")
+    item.set_root(catalog)
+
+    collection_path = str(tmp_path / "collection.json")
+    collection.save_object(
+        include_self_link=False,
+        dest_href=collection_path,
+    )
+    item.add_link(Link(rel="collection", target=collection_path))
+
+    read_collection = item.get_collection()
+    assert read_collection
+    root = read_collection.get_root()
+    assert root
+    assert root.id == "root"
