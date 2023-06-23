@@ -137,7 +137,7 @@ class STACObject(ABC):
         self.links = keep
         return remove
 
-    def get_target_hierarchy(self) -> Set[Union[str, STACObject]]:
+    def target_in_hierarchy(self, target: Union[str, STACObject]) -> bool:
         """Recursively collects all the targets referred to by the hierarchical
         links of the current STACObject.
 
@@ -157,7 +157,7 @@ class STACObject(ABC):
                 visited = traverse(target, visited.union(set([target])))
             return visited
 
-        return traverse(self, set([self]))
+        return target in traverse(self, set([self]))
 
     def get_single_link(
         self,
