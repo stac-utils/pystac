@@ -607,3 +607,19 @@ def test_resolve_collection_with_root(
     root = read_collection.get_root()
     assert root
     assert root.id == "root"
+
+
+def test_non_hierarchical_relative_link() -> None:
+    root = pystac.Catalog("root", "root")
+    a = pystac.Catalog("a", "a")
+    b = pystac.Catalog("b", "b")
+
+    root.add_child(a)
+    root.add_child(b)
+    a.add_link(pystac.Link("related", b))
+
+    root.catalog_type = pystac.catalog.CatalogType.SELF_CONTAINED
+    root.normalize_hrefs("test_output")
+    related_href = [link for link in a.links if link.rel == "related"][0].get_href()
+
+    assert related_href is not None and not is_absolute_href(related_href)
