@@ -617,9 +617,15 @@ def test_non_hierarchical_relative_link() -> None:
     root.add_child(a)
     root.add_child(b)
     a.add_link(pystac.Link("related", b))
+    b.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
 
     root.catalog_type = pystac.catalog.CatalogType.SELF_CONTAINED
     root.normalize_hrefs("test_output")
     related_href = [link for link in a.links if link.rel == "related"][0].get_href()
 
     assert related_href is not None and not is_absolute_href(related_href)
+    assert a.target_in_hierarchy(b)
+    assert root.target_in_hierarchy(next(b.get_items()))
+    assert root.target_in_hierarchy(root)
