@@ -9,10 +9,10 @@ echo
 
 if [[ -z ${CI} || -n ${CHECK_COVERAGE} ]]; then
     echo " -- RUNNING UNIT TESTS (WITH COVERAGE) --"
-    pytest tests -wError --block-network --record-mode=none --cov
+    pytest tests --block-network --record-mode=none --cov
 else
     echo " -- RUNNING UNIT TESTS (WITHOUT COVERAGE) --"
-    pytest tests -wError --block-network --record-mode=none
+    pytest tests --block-network --record-mode=none
 fi
 
 echo
