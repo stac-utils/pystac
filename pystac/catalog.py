@@ -658,14 +658,14 @@ class Catalog(STACObject):
 
     def make_all_asset_hrefs_relative(self) -> None:
         """Recursively makes all the HREFs of assets in this catalog relative"""
-        for item in self.get_all_items():
+        for item in self.get_items(recursive=True):
             item.make_asset_hrefs_relative()
         for collection in self.get_all_collections():
             collection.make_asset_hrefs_relative()
 
     def make_all_asset_hrefs_absolute(self) -> None:
         """Recursively makes all the HREFs of assets in this catalog absolute"""
-        for item in self.get_all_items():
+        for item in self.get_items(recursive=True):
             item.make_asset_hrefs_absolute()
         for collection in self.get_all_collections():
             collection.make_asset_hrefs_absolute()

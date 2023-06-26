@@ -44,14 +44,15 @@
 - Include collection assets in `make_all_asset_hrefs_relative/absolute` ([#1168](https://github.com/stac-utils/pystac/pull/1168))
 - Use cassettes for all tests that pull files from remote ([#1162](https://github.com/stac-utils/pystac/pull/1162))
 
+### Fixed
+
+- Include the item's root when resolving its collection link ([#1171](https://github.com/stac-utils/pystac/pull/1171))
+
 ### Deprecated
 
 - `pystac.summaries.FIELDS_JSON_URL` ([#1045](https://github.com/stac-utils/pystac/pull/1045))
 - Catalog `get_item()`. Use `get_items(id)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
 - Catalog and Collection `get_all_items`. Use `get_items(recursive=True)` instead ([#1075](https://github.com/stac-utils/pystac/pull/1075))
-
-### Fixed
-
 
 ## [v1.7.3]
 

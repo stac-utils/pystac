@@ -349,7 +349,9 @@ class Item(STACObject):
         if collection_link is None:
             return None
         else:
-            return cast(Collection, collection_link.resolve_stac_object().target)
+            return cast(
+                Collection, collection_link.resolve_stac_object(self.get_root()).target
+            )
 
     def add_derived_from(self, *items: Union[Item, str]) -> Item:
         """Add one or more items that this is derived from.
