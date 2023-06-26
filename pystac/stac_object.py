@@ -138,26 +138,41 @@ class STACObject(ABC):
         return remove
 
     def target_in_hierarchy(self, target: Union[str, STACObject]) -> bool:
-        """Recursively collects all the targets referred to by the hierarchical
-        links of the current STACObject.
+        """Determine if target lin is somewhere in the hierarchical link tree of
+        a STACObject.
+
+        Args:
+            target: A string or STACObject describing the target to search for
 
         Returns:
-            Set[Union[str, STACObject]]: All encountered targets
+            bool: Returns True if the target was found in the hierarchical link tree
+                for the current STACObject
         """
 
         def traverse(
             obj: Union[str, STACObject], visited: Set[Union[str, STACObject]]
-        ) -> Set[Union[str, STACObject]]:
+        ) -> bool:
+            if obj == target:
+                return True
             if isinstance(obj, str):
-                return visited
+                return False
 
-            hierarchical_links = [link for link in obj.links if link.is_hierarchical()]
-            new_targets = set([link.target for link in hierarchical_links]) - visited
-            for target in new_targets:
-                visited = traverse(target, visited.union(set([target])))
-            return visited
+            new_targets = [
+                link.target
+                for link in obj.links
+                if link.is_hierarchical() and link.target not in visited
+            ]
+            if target in new_targets:
+                return True
 
-        return target in traverse(self, set([self]))
+            for subtree in new_targets:
+                visited.add(subtree)
+                if traverse(subtree, visited):
+                    return True
+
+            return False
+
+        return traverse(self, set([self]))
 
     def get_single_link(
         self,
