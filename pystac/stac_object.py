@@ -138,7 +138,7 @@ class STACObject(ABC):
         return remove
 
     def target_in_hierarchy(self, target: Union[str, STACObject]) -> bool:
-        """Determine if target lin is somewhere in the hierarchical link tree of
+        """Determine if target is somewhere in the hierarchical link tree of
         a STACObject.
 
         Args:
