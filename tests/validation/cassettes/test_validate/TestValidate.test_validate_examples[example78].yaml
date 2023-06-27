@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json
   response:
@@ -55,7 +55,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:29 GMT
+      - Tue, 27 Jun 2023 22:40:00 GMT
       ETag:
       - '"647f85f4-805"'
       Last-Modified:
@@ -67,19 +67,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 7d6d7cd752a38711e13fed876637ab3a27284446
+      - 5dda9a1755f6ec9c09af3f259ee518e4d1dca2bc
       X-GitHub-Request-Id:
-      - B3FC:570A:38FEBE:58E081:649449D3
+      - 8D60:2D29:219519:2E9867:649B6540
       X-Served-By:
-      - cache-ewr18162-EWR
+      - cache-den8241-DEN
       X-Timer:
-      - S1687442549.483884,VS0,VE14
+      - S1687905601.619442,VS0,VE61
       expires:
-      - Thu, 22 Jun 2023 13:27:07 GMT
+      - Tue, 27 Jun 2023 22:50:00 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -93,7 +95,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json
   response:
@@ -142,7 +144,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:29 GMT
+      - Tue, 27 Jun 2023 22:40:00 GMT
       ETag:
       - '"647f85f4-829"'
       Last-Modified:
@@ -154,19 +156,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 94e6a52ddc666400b5a32f8ffa03e6a4c2be5ed8
+      - 2bb3541c18aa4107f6cda5de7e880fdbf0a4458e
       X-GitHub-Request-Id:
-      - C858:23C7:41038C:60E769:649449D3
+      - 3B3A:284B:1FA095:2C9F48:649B6540
       X-Served-By:
-      - cache-ewr18175-EWR
+      - cache-den8225-DEN
       X-Timer:
-      - S1687442550.579141,VS0,VE17
+      - S1687905601.807772,VS0,VE58
       expires:
-      - Thu, 22 Jun 2023 13:27:07 GMT
+      - Tue, 27 Jun 2023 22:50:00 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:

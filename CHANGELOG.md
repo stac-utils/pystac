@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.8.0] - 2023-06-27
+
 ### Added
 
 - `sort_links_by_id` to Catalog `get_child()` and `modify_links` to `get_stac_objects()` ([#1064](https://github.com/stac-utils/pystac/pull/1064))
@@ -735,7 +737,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.7.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.0..main>
+[v1.8.0]: <https://github.com/stac-utils/pystac/compare/v1.7.3..v1.8.0>
 [v1.7.3]: <https://github.com/stac-utils/pystac/compare/v1.7.2..v1.7.3>
 [v1.7.2]: <https://github.com/stac-utils/pystac/compare/v1.7.1..v1.7.2>
 [v1.7.1]: <https://github.com/stac-utils/pystac/compare/v1.7.0..v1.7.1>

@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.8
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json
   response:
@@ -94,11 +94,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Tue, 27 Jun 2023 14:42:50 GMT
+      - Tue, 27 Jun 2023 22:39:16 GMT
       ETag:
       - '"7b5b9590049813a43b1a9c064eb61dd6b9c25e8e649fff820d3ac83580b7e559"'
       Expires:
-      - Tue, 27 Jun 2023 14:47:50 GMT
+      - Tue, 27 Jun 2023 22:44:16 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -114,15 +114,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - e6f3b9fe41946ac3e378d2af0fb3a39aa86ec656
+      - f059809432a6dbc9ef9401ee96cde68f7af60b89
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - A0E8:5E35:4235C:4D583:649AF569
+      - F4F0:50B7:1AEE35:1FBBB1:649B6514
       X-Served-By:
-      - cache-ewr18137-EWR
+      - cache-den8252-DEN
       X-Timer:
-      - S1687876971.626913,VS0,VE91
+      - S1687905557.825812,VS0,VE163
       X-XSS-Protection:
       - 1; mode=block
     status:
