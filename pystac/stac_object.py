@@ -10,6 +10,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Set,
     Type,
     TypeVar,
     Union,
@@ -135,6 +136,43 @@ class STACObject(ABC):
                 keep.append(link)
         self.links = keep
         return remove
+
+    def target_in_hierarchy(self, target: Union[str, STACObject]) -> bool:
+        """Determine if target is somewhere in the hierarchical link tree of
+        a STACObject.
+
+        Args:
+            target: A string or STACObject to search for
+
+        Returns:
+            bool: Returns True if the target was found in the hierarchical link tree
+                for the current STACObject
+        """
+
+        def traverse(
+            obj: Union[str, STACObject], visited: Set[Union[str, STACObject]]
+        ) -> bool:
+            if obj == target:
+                return True
+            if isinstance(obj, str):
+                return False
+
+            new_targets = [
+                link.target
+                for link in obj.links
+                if link.is_hierarchical() and link.target not in visited
+            ]
+            if target in new_targets:
+                return True
+
+            for subtree in new_targets:
+                visited.add(subtree)
+                if traverse(subtree, visited):
+                    return True
+
+            return False
+
+        return traverse(self, set([self]))
 
     def get_single_link(
         self,

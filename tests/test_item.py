@@ -514,8 +514,8 @@ def test_add_derived_from(test_case_1_catalog: Catalog) -> None:
         link for link in item_0.links if link.rel == pystac.RelType.DERIVED_FROM
     ]
     assert len(filtered) == 2
-    assert filtered[0].to_dict()["href"] == item_1.self_href
-    assert filtered[1].to_dict()["href"] == item_2.self_href
+    assert filtered[0].to_dict(transform_href=False)["href"] == item_1.self_href
+    assert filtered[1].to_dict(transform_href=False)["href"] == item_2.self_href
 
 
 def test_get_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
@@ -607,3 +607,26 @@ def test_resolve_collection_with_root(
     root = read_collection.get_root()
     assert root
     assert root.id == "root"
+
+
+@pytest.mark.vcr()
+def test_non_hierarchical_relative_link() -> None:
+    root = pystac.Catalog("root", "root")
+    a = pystac.Catalog("a", "a")
+    b = pystac.Catalog("b", "b")
+
+    root.add_child(a)
+    root.add_child(b)
+    a.add_link(pystac.Link("related", b))
+    b.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
+
+    root.catalog_type = pystac.catalog.CatalogType.SELF_CONTAINED
+    root.normalize_hrefs("test_output")
+    related_href = [link for link in a.links if link.rel == "related"][0].get_href()
+
+    assert related_href is not None and not is_absolute_href(related_href)
+    assert a.target_in_hierarchy(b)
+    assert root.target_in_hierarchy(next(b.get_items()))
+    assert root.target_in_hierarchy(root)

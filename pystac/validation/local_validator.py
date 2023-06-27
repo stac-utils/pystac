@@ -16,7 +16,10 @@ VERSION = STACVersion.DEFAULT_STAC_VERSION
 ITEM_SCHEMA_URI = (
     f"https://schemas.stacspec.org/v{VERSION}/item-spec/json-schema/item.json"
 )
-COLLECTION_SCHEMA_URI = f"https://schemas.stacspec.org/v{VERSION}/collection-spec/json-schema/collection.json"
+COLLECTION_SCHEMA_URI = (
+    f"https://schemas.stacspec.org/v{VERSION}/"
+    "collection-spec/json-schema/collection.json"
+)
 CATALOG_SCHEMA_URI = (
     f"https://schemas.stacspec.org/v{VERSION}/catalog-spec/json-schema/catalog.json"
 )
