@@ -609,6 +609,7 @@ def test_resolve_collection_with_root(
     assert root.id == "root"
 
 
+@pytest.mark.vcr()
 def test_non_hierarchical_relative_link() -> None:
     root = pystac.Catalog("root", "root")
     a = pystac.Catalog("a", "a")
