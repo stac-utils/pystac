@@ -142,7 +142,7 @@ class STACObject(ABC):
         a STACObject.
 
         Args:
-            target: A string or STACObject describing the target to search for
+            target: A string or STACObject to search for
 
         Returns:
             bool: Returns True if the target was found in the hierarchical link tree
