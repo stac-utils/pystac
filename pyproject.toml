@@ -71,7 +71,7 @@ test = [
     "types-urllib3~=1.26",
     # pytest-recording breakage with v5.0.0, need release of
     # https://github.com/kiwicom/pytest-recording/pull/110 to remove this ceil
-    "vcrpy<5",
+    "vcrpy<6",
 ]
 urllib3 = ["urllib3>=1.26"]
 validation = ["jsonschema>=4.0.1"]
