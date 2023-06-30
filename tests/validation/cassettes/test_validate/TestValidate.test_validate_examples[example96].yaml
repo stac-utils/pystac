@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/scientific/json-schema/schema.json
   response:
@@ -61,7 +61,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:31 GMT
+      - Tue, 27 Jun 2023 22:40:03 GMT
       ETag:
       - '"647f85f4-9a3"'
       Last-Modified:
@@ -73,19 +73,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 3cb80bd0b98bb1fe511b6500d7df40059768ca3e
+      - e85f25f922882b2c125ac0640a0e594622801941
       X-GitHub-Request-Id:
-      - 6024:48BE:38C10B:58A7FF:649449D4
+      - 24B8:807C:20FA76:2DFDE4:649B6543
       X-Served-By:
-      - cache-ewr18180-EWR
+      - cache-den8260-DEN
       X-Timer:
-      - S1687442551.109859,VS0,VE30
+      - S1687905604.707522,VS0,VE58
       expires:
-      - Thu, 22 Jun 2023 13:27:08 GMT
+      - Tue, 27 Jun 2023 22:50:03 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:

@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
   response:
@@ -77,7 +77,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:17 GMT
+      - Tue, 27 Jun 2023 22:39:40 GMT
       ETag:
       - '"60414dd7-e82"'
       Last-Modified:
@@ -95,15 +95,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 814ac0cea9d9c8f8673c03c7f8119d8e442e59af
+      - 396bc8c58e9a77e8d48eb01bca6a04c2ee0d9122
       X-GitHub-Request-Id:
-      - 7C4E:0926:23D4F4:377C81:64945469
+      - 2FCA:5EDA:1CCB9A:29CA67:649B652C
       X-Served-By:
-      - cache-ewr18128-EWR
+      - cache-den8227-DEN
       X-Timer:
-      - S1687442538.836497,VS0,VE19
+      - S1687905580.012110,VS0,VE54
       expires:
-      - Thu, 22 Jun 2023 14:12:17 GMT
+      - Tue, 27 Jun 2023 22:49:40 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -119,7 +119,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/processing/v1.0.0/schema.json
   response:
@@ -214,7 +214,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:17 GMT
+      - Tue, 27 Jun 2023 22:39:40 GMT
       ETag:
       - '"63cb122e-1661"'
       Last-Modified:
@@ -232,15 +232,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 3d958f600c8c16539eeb37b817705f5e2f6b9c40
+      - 5bef13757169744a6a419f11f8732bbdc0dc9beb
       X-GitHub-Request-Id:
-      - 7B26:6B88:2DE1AA:42A7F4:64945469
+      - 0A06:3AC7:216533:2E6715:649B652C
       X-Served-By:
-      - cache-ewr18163-EWR
+      - cache-den8273-DEN
       X-Timer:
-      - S1687442538.952919,VS0,VE14
+      - S1687905580.192022,VS0,VE62
       expires:
-      - Thu, 22 Jun 2023 14:12:17 GMT
+      - Tue, 27 Jun 2023 22:49:40 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

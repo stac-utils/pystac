@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/tiled-assets/json-schema/schema.json
   response:
@@ -124,7 +124,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:31 GMT
+      - Tue, 27 Jun 2023 22:40:04 GMT
       ETag:
       - '"647f85f4-1c4b"'
       Last-Modified:
@@ -136,19 +136,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - b1f036f2496527156e8cd174ed1c4d9da7262f72
+      - 8650215bc59b9de7c2639d099a9761444d809e31
       X-GitHub-Request-Id:
-      - EE30:0D6A:3BCD9B:5BB555:649449D5
+      - CD96:9110:2097CD:2D9CA4:649B6544
       X-Served-By:
-      - cache-ewr18181-EWR
+      - cache-den8279-DEN
       X-Timer:
-      - S1687442551.251983,VS0,VE13
+      - S1687905604.980215,VS0,VE59
       expires:
-      - Thu, 22 Jun 2023 13:27:09 GMT
+      - Tue, 27 Jun 2023 22:50:04 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:

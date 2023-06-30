@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json
   response:
@@ -47,7 +47,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:30 GMT
+      - Tue, 27 Jun 2023 22:40:03 GMT
       ETag:
       - '"647f85f4-5bb"'
       Last-Modified:
@@ -59,19 +59,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 42488cf47e4911cfb7e20c6a7b34156bdc8e0a32
+      - 8f0f1a51946d88aa880ca2e260801fe1f7cf1850
       X-GitHub-Request-Id:
-      - E9EA:6A59:375364:56EFF9:649449D4
+      - C87E:9110:2097B7:2D9C7C:649B6543
       X-Served-By:
-      - cache-ewr18138-EWR
+      - cache-den8281-DEN
       X-Timer:
-      - S1687442551.865287,VS0,VE11
+      - S1687905603.252028,VS0,VE60
       expires:
-      - Thu, 22 Jun 2023 13:27:08 GMT
+      - Tue, 27 Jun 2023 22:50:03 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -87,7 +87,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sar/json-schema/schema.json
   response:
@@ -164,7 +164,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:30 GMT
+      - Tue, 27 Jun 2023 22:40:03 GMT
       ETag:
       - '"647f85f4-10cd"'
       Last-Modified:
@@ -176,21 +176,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - cc66e15e3aa92a19c15c8588fbac4d5839f81a24
+      - 4fefb8be44f4113ef97f2e47cd517a31d2463dad
       X-GitHub-Request-Id:
-      - 2FF2:4765:33D18A:53B24F:649449D4
+      - 7612:0FC3:217479:2E7960:649B6543
       X-Served-By:
-      - cache-ewr18143-EWR
+      - cache-den8230-DEN
       X-Timer:
-      - S1687442551.968539,VS0,VE28
+      - S1687905603.432145,VS0,VE60
       expires:
-      - Thu, 22 Jun 2023 13:27:08 GMT
-      x-origin-cache:
-      - HIT
+      - Tue, 27 Jun 2023 22:50:03 GMT
       x-proxy-cache:
       - MISS
     status:

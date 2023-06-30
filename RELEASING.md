@@ -17,16 +17,12 @@ This is a checklist to use when releasing a new PySTAC version.
     - All notable changes are captured in the CHANGELOG.
     - The type of release is appropriate for the new version number, i.e. if there are breaking changes, the MAJOR version number must be increased.
     - All deprecated items that were marked for removal in this version are removed.
-8. Craft draft release notes (<https://github.com/stac-utils/pystac/releases/new>).
-   These should be short, readable, and call out any significant changes, especially changes in default behavior or significant new features.
-   These should also include a link back to the Github milestone for this release, if there is one.
-   These should _not_ be a complete listing of changes -- those will be auto-generated later, after the tag is pushed.
-9. Commit your changes, push your branch to Github, and request a review.
-10. Once approved, merge the PR.
-11. Once the PR is merged, create a tag with the version name, e.g. `vX.Y.Z`.
+8. Commit your changes, push your branch to Github, and request a review.
+9. Once approved, merge the PR.
+10. Once the PR is merged, create a tag with the version name, e.g. `vX.Y.Z`.
    Prefer a signed tag, if possible.
    Push the tag to Github.
-12. Use the tag to finish your release notes, and publish those.
+11. Use the tag to finish your release notes, and publish those.
     The "auto generate" feature is your friend, here.
     When the release is published, this will trigger the build and release on PyPI.
-13. Announced the release in [Gitter](https://matrix.to/#/#SpatioTemporal-Asset-Catalog_python:gitter.im) and on any relevant social media.
+12. Announced the release in [Gitter](https://matrix.to/#/#SpatioTemporal-Asset-Catalog_python:gitter.im) and on any relevant social media.

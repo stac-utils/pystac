@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -112,11 +112,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 22 Jun 2023 14:02:20 GMT
+      - Tue, 27 Jun 2023 22:39:45 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Thu, 22 Jun 2023 14:07:20 GMT
+      - Tue, 27 Jun 2023 22:44:45 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -126,21 +126,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - aa9e39b81f61e026d105c4797a0e86ef5333e5c2
+      - b2c11c783a45dae00ae88ad11b1034f592763fa3
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - AAE4:6A38:2E795C:38AB79:649449C9
+      - 32D8:0EED:1E209D:22EF73:649B6531
       X-Served-By:
-      - cache-ewr18165-EWR
+      - cache-den8259-DEN
       X-Timer:
-      - S1687442540.137862,VS0,VE136
+      - S1687905585.105456,VS0,VE141
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -154,7 +154,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/eo/json-schema/schema.json
   response:
@@ -220,11 +220,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 22 Jun 2023 14:02:20 GMT
+      - Tue, 27 Jun 2023 22:39:45 GMT
       ETag:
       - '"c8576d5ea3fcee4039dcddbdcf9e59fed3f3086419a33aa96f18f4617203b76d"'
       Expires:
-      - Thu, 22 Jun 2023 14:07:20 GMT
+      - Tue, 27 Jun 2023 22:44:45 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -234,21 +234,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f2a8c501a37871340fe1789fdba38fc2492b6ad0
+      - b8400cb6fd8ab8e50c230c5089f4272a7f32ff9c
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6A4E:84C9:2FFFD9:3A324E:649449C9
+      - EFF0:0B82:10DC1E:1449C5:649B6531
       X-Served-By:
-      - cache-ewr18128-EWR
+      - cache-den8241-DEN
       X-Timer:
-      - S1687442540.359354,VS0,VE88
+      - S1687905585.359430,VS0,VE132
       X-XSS-Protection:
       - 1; mode=block
     status:

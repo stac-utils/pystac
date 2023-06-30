@@ -2,12 +2,14 @@ interactions:
 - request:
     body: null
     headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
       Connection:
-      - close
-      Host:
-      - proj.org
+      - keep-alive
       User-Agent:
-      - Python-urllib/3.9
+      - python-requests/2.31.0
     method: GET
     uri: https://proj.org/schemas/v0.5/projjson.schema.json
   response:
@@ -19,11 +21,11 @@ interactions:
       CF-Cache-Status:
       - EXPIRED
       CF-RAY:
-      - 7db5072d7dee18b8-EWR
+      - 7de12fe60ad31f30-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - close
+      - keep-alive
       Content-Language:
       - en
       Content-Length:
@@ -31,7 +33,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 22 Jun 2023 14:02:16 GMT
+      - Tue, 27 Jun 2023 22:39:38 GMT
       Location:
       - https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
       Referrer-Policy:
@@ -41,7 +43,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-0be2b2166956703a3
+      - web-i-0cf0cc6ad56a438d8
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -66,12 +68,14 @@ interactions:
 - request:
     body: null
     headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
       Connection:
-      - close
-      Host:
-      - proj.org
+      - keep-alive
       User-Agent:
-      - Python-urllib/3.9
+      - python-requests/2.31.0
     method: GET
     uri: https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
   response:
@@ -583,17 +587,19 @@ interactions:
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - MISS
+      - HIT
       CF-RAY:
-      - 7db5072ee9341859-EWR
+      - 7de12fe83cfe1f49-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - close
+      - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Type:
       - application/json
       Date:
-      - Thu, 22 Jun 2023 14:02:16 GMT
+      - Tue, 27 Jun 2023 22:39:38 GMT
       ETag:
       - W/"567e3992b5fd3188af907a4cdc4781b3"
       Last-Modified:
@@ -607,7 +613,7 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-0be2b2166956703a3
+      - web-i-03f3aca85d9550755
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -627,11 +633,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - sJKyXzmq4vWH5RDsYO3/oFDC4upCi7cn8DaQfG4+V/L98LGKJrO9rnHOpwTZ/dl0XQbSrS3ImkY=
+      - fYqUFPmmiOSj/j3lE4sAkbZO/ipfI1x0myw3OlxRouJ8LIoWQUzbRr3OGFUF+LLkvHrfDm4AuJE=
       x-amz-meta-mtime:
       - '1679863309.472925768'
       x-amz-request-id:
-      - 41D7J19008SY9GEW
+      - F1DQJ0J4SEQD7JH3
       x-amz-server-side-encryption:
       - AES256
     status:
