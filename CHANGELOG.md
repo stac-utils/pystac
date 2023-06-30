@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [v1.8.1] - 2023-06-30
+
+### Fixed
+
+- Include jsonschemas in package
+
 ## [v1.8.0] - 2023-06-27
 
 ### Added
@@ -737,7 +743,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.1..main>
+[v1.8.1]: <https://github.com/stac-utils/pystac/compare/v1.8.0..v1.8.1>
 [v1.8.0]: <https://github.com/stac-utils/pystac/compare/v1.7.3..v1.8.0>
 [v1.7.3]: <https://github.com/stac-utils/pystac/compare/v1.7.2..v1.7.3>
 [v1.7.2]: <https://github.com/stac-utils/pystac/compare/v1.7.1..v1.7.2>
