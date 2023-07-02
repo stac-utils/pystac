@@ -83,6 +83,12 @@ repository = "https://github.com/stac-utils/pystac.git"
 changelog = "https://github.com/stac-utils/pystac/blob/main/CHANGELOG.md"
 discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/stac-software"
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"pystac.static" = ["*.json"]
+
 [tool.setuptools.packages.find]
 include = ["pystac*"]
 exclude = ["tests*", "benchmarks*"]
