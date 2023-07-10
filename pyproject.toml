@@ -97,6 +97,9 @@ select = ["E", "F", "I"]
 [tool.pytest.ini_options]
 filterwarnings = [
     "error",
+    # Allows jsonschema's RefResolver deprecation warning through until we're
+    # updated to support jsonschema v4.18
+    "default::DeprecationWarning:pystac.validation.*"
 ]
 
 [build-system]
