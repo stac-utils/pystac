@@ -2,11 +2,17 @@
 
 ## [Unreleased]
 
+## [v1.8.2] - 2023-06-30
+
+### Fixed
+
+- Explicitly re-export HREF from `link` ([#1182](https://github.com/stac-utils/pystac/pull/1182))
+
 ## [v1.8.1] - 2023-06-30
 
 ### Fixed
 
-- Include jsonschemas in package
+- Include jsonschemas in package ([#1181](https://github.com/stac-utils/pystac/pull/1181))
 
 ## [v1.8.0] - 2023-06-27
 
@@ -743,7 +749,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.2..main>
+[v1.8.2]: <https://github.com/stac-utils/pystac/compare/v1.8.1..v1.8.2>
 [v1.8.1]: <https://github.com/stac-utils/pystac/compare/v1.8.0..v1.8.1>
 [v1.8.0]: <https://github.com/stac-utils/pystac/compare/v1.7.3..v1.8.0>
 [v1.7.3]: <https://github.com/stac-utils/pystac/compare/v1.7.2..v1.7.3>

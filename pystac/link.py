@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, TypeVar, Union
 import pystac
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import (
-    HREF,
+    HREF as HREF,
+)
+from pystac.utils import (
     is_absolute_href,
     make_absolute_href,
     make_posix_style,
