@@ -74,7 +74,8 @@ test = [
     "vcrpy<5",
 ]
 urllib3 = ["urllib3>=1.26"]
-validation = ["jsonschema>=4.0.1"]
+# jsonschema v4.18.2 breaks validation, and it feels safer to set a ceiling rather than just skip this version. The ceiling should be removed when the v4.18 lineage has settled down and feels safer.
+validation = ["jsonschema>=4.0.1,<4.18"]
 
 [project.urls]
 homepage = "https://github.com/stac-utils/pystac"
