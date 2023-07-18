@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Pin jsonschema version to <4.18 until regresssions are fixed
+
 ## [v1.8.2] - 2023-07-12
 
 ### Fixed

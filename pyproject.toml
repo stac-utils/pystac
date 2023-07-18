@@ -56,7 +56,7 @@ test = [
     "doc8~=1.1",
     "html5lib~=1.1",
     "jinja2<4.0",
-    "jsonschema~=4.17",
+    "jsonschema>=4.0.1,<4.18",
     "mypy~=1.2",
     "orjson~=3.8",
     "pre-commit~=3.2",
