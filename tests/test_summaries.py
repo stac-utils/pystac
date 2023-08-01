@@ -2,7 +2,7 @@ import socket
 import unittest
 from typing import Any
 
-from pystac.summaries import RangeSummary, Summaries, Summarizer
+from pystac.summaries import RangeSummary, Summaries, Summarizer, SummaryStrategy
 from tests.utils import TestCases
 
 
@@ -26,6 +26,20 @@ class SummariesTest(unittest.TestCase):
         coll = TestCases.case_5()
         path = TestCases.get_path("data-files/summaries/fields_no_bands.json")
         summaries = Summarizer(path).summarize(coll.get_items(recursive=True))
+        summaries_dict = summaries.to_dict()
+        self.assertIsNone(summaries_dict.get("eo:bands"))
+        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+
+    def test_summary_custom_fields_dict(self) -> None:
+        coll = TestCases.case_5()
+        spec = {
+            "eo:bands": SummaryStrategy.DONT_SUMMARIZE,
+            "proj:epsg": SummaryStrategy.ARRAY,
+        }
+        obj = Summarizer(spec)
+        self.assertTrue("eo:bands" not in obj.summaryfields)
+        self.assertEqual(obj.summaryfields["proj:epsg"], SummaryStrategy.ARRAY)
+        summaries = obj.summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
         self.assertEqual(len(summaries_dict["proj:epsg"]), 1)

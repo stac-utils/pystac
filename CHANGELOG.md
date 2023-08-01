@@ -2,9 +2,17 @@
 
 ## [Unreleased]
 
+### Added
+
+- Allow to pass a Dict with field names and summary strategies to the `fields` parameter in the `Summarizer` constructor
+
 ### Changed
 
 - Pin jsonschema version to <4.18 until regresssions are fixed
+
+### Fixed
+
+- Fix the documentation rendering of the `fields` parameter in the `Summarizer` constructor
 
 ## [v1.8.2] - 2023-07-12
 
