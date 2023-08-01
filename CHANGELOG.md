@@ -4,7 +4,7 @@
 
 ### Added
 
-- Allow to pass a Dict with field names and summary strategies to the `fields` parameter in the `Summarizer` constructor
+- Allow to pass a Dict with field names and summary strategies to the `fields` parameter in the `Summarizer` constructor ([#1195](https://github.com/stac-utils/pystac/pull/1195))
 
 ### Changed
 
@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- Fix the documentation rendering of the `fields` parameter in the `Summarizer` constructor
+- Fix the documentation rendering of the `fields` parameter in the `Summarizer` constructor ([#1195](https://github.com/stac-utils/pystac/pull/1195))
 
 ## [v1.8.2] - 2023-07-12
 
