@@ -130,36 +130,53 @@ class SummaryStrategy(Enum):
 
 class Summarizer:
     """The Summarizer computes summaries from values, following the definition of fields
-    to summarize provided in a json file.
+    to summarize.
 
-    For more information about the structure of the fields json file, see:
+    The fields to summarize can be provided as a JSON file or as a dictionary of
+    field names and SummaryStrategys. If nothing is provided, a default JSON file
+    will be used.
 
+    Only fields that are in the Item `properties` can be summarized.
+    Thus it is not possible to summarize the top-level fields such as `id` or `assets`.
+
+    For more information about the structure of the fields JSON file, see:
     https://github.com/stac-utils/stac-fields
 
+    The default JSON file used is a snapshot of the following file at the time of
+    the pystac release:
+    https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
+
     Args:
-        fields (str): the path to the json file with field descriptions.
-        If no file is passed, a default one will be used.
+        fields: A string containing the path to the json file with field descriptions.
+            Alternatively, a dict with the field names as keys and SummaryStrategys
+            as values.
+            If nothing is passed, a default file with field descriptions will be used.
     """
 
     summaryfields: Dict[str, SummaryStrategy]
 
-    def __init__(self, fields: Optional[str] = None):
-        jsonfields = _get_fields_json(fields)
-        self._set_field_definitions(jsonfields)
+    def __init__(self, fields: Optional[Union[str, Dict[str, SummaryStrategy]]] = None):
+        if isinstance(fields, dict):
+            self._set_field_definitions(fields)
+        else:
+            jsonfields = _get_fields_json(fields)
+            self._set_field_definitions(jsonfields["metadata"])
 
     def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
         self.summaryfields = {}
-        for name, desc in fields["metadata"].items():
-            if isinstance(desc, dict):
+        for name, desc in fields.items():
+            strategy: SummaryStrategy = SummaryStrategy.DEFAULT
+            if isinstance(desc, SummaryStrategy):
+                strategy = desc
+            elif isinstance(desc, dict):
                 strategy_value = desc.get("summary", True)
                 try:
-                    strategy: SummaryStrategy = SummaryStrategy(strategy_value)
+                    strategy = SummaryStrategy(strategy_value)
                 except ValueError:
-                    strategy = SummaryStrategy.DEFAULT
-                if strategy != SummaryStrategy.DONT_SUMMARIZE:
-                    self.summaryfields[name] = strategy
-            else:
-                self.summaryfields[name] = SummaryStrategy.DEFAULT
+                    pass
+
+            if strategy != SummaryStrategy.DONT_SUMMARIZE:
+                self.summaryfields[name] = strategy
 
     def _update_with_item(self, summaries: Summaries, item: Item) -> None:
         for k, v in item.properties.items():
