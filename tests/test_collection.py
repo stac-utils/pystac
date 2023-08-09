@@ -61,7 +61,7 @@ class CollectionTest(unittest.TestCase):
         bbox = extent.bboxes[0]
         self.assertEqual(len(bbox), 4)
         for x in bbox:
-            self.assertTrue(type(x) is float)
+            self.assertTrue(isinstance(x, float))
 
     def test_read_eo_items_are_heritable(self) -> None:
         cat = TestCases.case_5()
