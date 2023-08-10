@@ -585,12 +585,12 @@ class Catalog(STACObject):
                 child links.
         """
         warnings.warn(
-            "get_item is deprecated and will be removed in v2",
+            "get_all_items is deprecated and will be removed in v2",
             DeprecationWarning,
         )
         return chain(
             self.get_items(),
-            *(child.get_all_items() for child in self.get_children()),
+            *(child.get_items(recursive=True) for child in self.get_children()),
         )
 
     def get_item_links(self) -> List[Link]:
