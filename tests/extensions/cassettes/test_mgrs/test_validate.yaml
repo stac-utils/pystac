@@ -67,7 +67,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Tue, 27 Jun 2023 22:39:37 GMT
+      - Thu, 10 Aug 2023 18:33:33 GMT
       ETag:
       - '"60c20ce1-b49"'
       Last-Modified:
@@ -81,19 +81,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 0fe150879930d6f533a610922d50f442abadb71d
+      - 5e0f45face5d33d759bafa1318acafefae88626a
       X-GitHub-Request-Id:
-      - 50B4:79DE:1FB123:2CB32C:649B6529
+      - 23FA:4A34:F4889B:155D3D0:64D4F891
       X-Served-By:
-      - cache-den8282-DEN
+      - cache-den8228-DEN
       X-Timer:
-      - S1687905577.187016,VS0,VE61
+      - S1691692413.088561,VS0,VE58
       expires:
-      - Tue, 27 Jun 2023 22:49:37 GMT
+      - Thu, 10 Aug 2023 14:57:47 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

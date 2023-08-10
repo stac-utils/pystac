@@ -135,22 +135,26 @@ interactions:
         service description","href":"https://planetarycomputer.microsoft.com/api/stac/v1/openapi.json"},{"rel":"service-doc","type":"text/html","title":"OpenAPI
         service documentation","href":"https://planetarycomputer.microsoft.com/api/stac/v1/docs"}]}'
     headers:
+      Accept-Ranges:
+      - bytes
       Access-Control-Allow-Credentials:
       - 'true'
       Access-Control-Allow-Origin:
       - '*'
+      Connection:
+      - keep-alive
       Content-Length:
       - '23957'
       Content-Type:
       - application/json
       Date:
-      - Tue, 27 Jun 2023 22:39:17 GMT
+      - Thu, 10 Aug 2023 18:32:39 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
-      X-Azure-Ref:
-      - 0FWWbZAAAAAAkZu5NuLtsQoiLfdmgO7cAREVOMzAxMDAwMTA5MDI3ADkyN2FiZmE2LTE5ZjYtNGFmMS1hMDlkLWM5NTlkOWExZTY0NA==
       X-Cache:
       - CONFIG_NOCACHE
+      x-azure-ref:
+      - 20230810T183238Z-78zuku1e3h63h046udqyb49u0g00000000hg00000001ea11
     status:
       code: 200
       message: OK
