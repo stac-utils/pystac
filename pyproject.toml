@@ -4,14 +4,12 @@ description = "Python library for working with the SpatioTemporal Asset Catalog 
 readme = "README.md"
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
-    { name = "Jon Duckworth", email = "duckontheweb@gmail.com" }
+    { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
 ]
-maintainers = [
-    { name = "Pete Gadomski", email = "pete.gadomski@gmail.com" }
-]
+maintainers = [{ name = "Pete Gadomski", email = "pete.gadomski@gmail.com" }]
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC"]
 license = { text = "Apache-2.0" }
-classifiers=[
+classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
@@ -30,10 +28,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-bench = [
-    "asv~=0.5",
-    "virtualenv~=20.22",
-]
+bench = ["asv~=0.5", "virtualenv~=20.22"]
 docs = [
     "Sphinx~=6.2",
     "ipython~=8.12",
@@ -45,9 +40,7 @@ docs = [
     "sphinx-design~=0.4",
     "sphinxcontrib-fulltoc~=1.2",
 ]
-jinja2 = [
-    "jinja2<4.0",
-]
+jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
 test = [
     "black~=23.3",
@@ -62,16 +55,13 @@ test = [
     "pre-commit~=3.2",
     "pytest-cov~=4.0",
     "pytest-mock~=3.10",
-    "pytest-recording~=0.12",
+    "pytest-recording~=0.13",
     "pytest~=7.3",
     "ruff==0.0.284",
     "types-html5lib~=1.1",
     "types-orjson~=3.6",
     "types-python-dateutil~=2.8",
     "types-urllib3~=1.26",
-    # pytest-recording breakage with v5.0.0, need release of
-    # https://github.com/kiwicom/pytest-recording/pull/110 to remove this ceil
-    "vcrpy<5",
 ]
 urllib3 = ["urllib3>=1.26"]
 # jsonschema v4.18.2 breaks validation, and it feels safer to set a ceiling rather than just skip this version. The ceiling should be removed when the v4.18 lineage has settled down and feels safer.
@@ -100,7 +90,7 @@ filterwarnings = [
     "error",
     # Allows jsonschema's RefResolver deprecation warning through until we're
     # updated to support jsonschema v4.18
-    "default::DeprecationWarning:pystac.validation.*"
+    "default::DeprecationWarning:pystac.validation.*",
 ]
 
 [build-system]
