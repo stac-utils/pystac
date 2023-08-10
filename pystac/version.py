@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-__version__ = "1.8.2"
+__version__ = "1.8.3"
 """Library version"""
 
 
