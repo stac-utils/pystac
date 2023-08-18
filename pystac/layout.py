@@ -188,7 +188,7 @@ class LayoutTemplate:
 
             v: Any = prop_source
             for prop in template_var.split("."):
-                if type(v) is dict:
+                if isinstance(v, dict):
                     if prop not in v:
                         raise error
                     v = v[prop]
