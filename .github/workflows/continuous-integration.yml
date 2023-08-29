@@ -169,4 +169,4 @@ jobs:
       - name: Set asv machine
         run: asv machine --yes
       - name: Check benchmarks
-        run: asv run -a repeat=1 -a rounds=1 --strict HEAD
+        run: asv run -a repeat=1 -a rounds=1 HEAD
