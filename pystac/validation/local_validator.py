@@ -2,7 +2,9 @@ import json
 import sys
 from typing import Any, Dict, List, cast
 
-from jsonschema import Draft7Validator, RefResolver, ValidationError
+from jsonschema import Draft7Validator, ValidationError
+from referencing import Registry
+from referencing.jsonschema import DRAFT7
 
 from pystac.errors import STACLocalValidationError
 from pystac.version import STACVersion
@@ -43,22 +45,46 @@ class LocalValidator:
 
     def _validator(self, stac_type: str, version: str) -> Draft7Validator:
         schema = _read_schema(f"stac-spec/v{version}/{stac_type}.json")
-        resolver = RefResolver.from_schema(schema)
-        resolver.store[
-            f"https://schemas.stacspec.org/v{version}/collection-spec/json-schema/collection.json"
-        ] = _read_schema(f"stac-spec/v{version}/collection.json")
-        resolver.store[
-            f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/item.json"
-        ] = _read_schema(f"stac-spec/v{version}/item.json")
-        for name in ("Feature", "Geometry"):
-            resolver.store[f"https://geojson.org/schema/{name}.json"] = _read_schema(
-                f"geojson/{name}.json"
-            )
-        for name in ("basics", "datetime", "instrument", "licensing", "provider"):
-            resolver.store[
-                f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/{name}.json"
-            ] = _read_schema(f"stac-spec/v{version}/{name}.json")
-        return Draft7Validator(schema, resolver=resolver)
+        registry = Registry().with_resources(  # type: ignore
+            [
+                (
+                    f"https://schemas.stacspec.org/v{version}/collection-spec/json-schema/collection.json",
+                    DRAFT7.create_resource(
+                        _read_schema(f"stac-spec/v{version}/collection.json")
+                    ),
+                ),
+                (
+                    f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/item.json",
+                    DRAFT7.create_resource(
+                        _read_schema(f"stac-spec/v{version}/item.json")
+                    ),
+                ),
+                *[
+                    (
+                        f"https://geojson.org/schema/{name}.json",
+                        DRAFT7.create_resource(_read_schema(f"geojson/{name}.json")),
+                    )
+                    for name in ("Feature", "Geometry")
+                ],
+                *[
+                    (
+                        f"https://schemas.stacspec.org/v{version}/item-spec/json-schema/{name}.json",
+                        DRAFT7.create_resource(
+                            _read_schema(f"stac-spec/v{version}/{name}.json")
+                        ),
+                    )
+                    for name in (
+                        "basics",
+                        "datetime",
+                        "instrument",
+                        "licensing",
+                        "provider",
+                    )
+                ],
+            ]
+        )
+
+        return Draft7Validator(schema, registry=registry)
 
     def catalog_validator(self, version: str = VERSION) -> Draft7Validator:
         return self._validator("catalog", version)

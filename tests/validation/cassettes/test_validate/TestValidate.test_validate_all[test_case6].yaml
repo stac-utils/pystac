@@ -1,0 +1,154 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-rc.3/item-spec/json-schema/item.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-rc.3/item-spec/json-schema/item.json#\",\n
+        \ \"title\": \"STAC Item\",\n  \"type\": \"object\",\n  \"description\": \"This
+        object represents the metadata for an item in a SpatioTemporal Asset Catalog.\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"#/definitions/core\"\n    }\n  ],\n
+        \ \"definitions\": {\n    \"common_metadata\": {\n      \"allOf\": [\n        {\n
+        \         \"$ref\": \"basics.json\"\n        },\n        {\n          \"$ref\":
+        \"datetime.json\"\n        },\n        {\n          \"$ref\": \"instrument.json\"\n
+        \       },\n        {\n          \"$ref\": \"licensing.json\"\n        },\n
+        \       {\n          \"$ref\": \"provider.json\"\n        }\n      ]\n    },\n
+        \   \"core\": {\n      \"allOf\": [\n        {\n          \"$ref\": \"https://geojson.org/schema/Feature.json\"\n
+        \       },\n        {\n          \"oneOf\": [\n            {\n              \"type\":
+        \"object\",\n              \"required\": [\n                \"geometry\",\n
+        \               \"bbox\"\n              ],\n              \"properties\":
+        {\n                \"geometry\": {\n                  \"$ref\": \"https://geojson.org/schema/Geometry.json\"\n
+        \               },\n                \"bbox\": {\n                  \"type\":
+        \"array\",\n                  \"oneOf\": [\n                    {\n                      \"minItems\":
+        4,\n                      \"maxItems\": 4\n                    },\n                    {\n
+        \                     \"minItems\": 6,\n                      \"maxItems\":
+        6\n                    }\n                  ],\n                  \"items\":
+        {\n                    \"type\": \"number\"\n                  }\n                }\n
+        \             }\n            },\n            {\n              \"type\": \"object\",\n
+        \             \"required\": [\n                \"geometry\"\n              ],\n
+        \             \"properties\": {\n                \"geometry\": {\n                  \"type\":
+        \"null\"\n                },\n                \"bbox\": {\n                  \"not\":
+        {}\n                }\n              }\n            }\n          ]\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"stac_version\",\n
+        \           \"id\",\n            \"links\",\n            \"assets\",\n            \"properties\"\n
+        \         ],\n          \"properties\": {\n            \"stac_version\": {\n
+        \             \"title\": \"STAC version\",\n              \"type\": \"string\",\n
+        \             \"const\": \"1.0.0-rc.3\"\n            },\n            \"stac_extensions\":
+        {\n              \"title\": \"STAC extensions\",\n              \"type\":
+        \"array\",\n              \"uniqueItems\": true,\n              \"items\":
+        {\n                \"anyOf\": [\n                  {\n                    \"title\":
+        \"Reference to a JSON Schema\",\n                    \"type\": \"string\",\n
+        \                   \"format\": \"iri\"\n                  },\n                  {\n
+        \                   \"title\": \"Reference to a core extension\",\n                    \"type\":
+        \"string\"\n                  }\n                ]\n              }\n            },\n
+        \           \"id\": {\n              \"title\": \"Provider ID\",\n              \"description\":
+        \"Provider item ID\",\n              \"type\": \"string\",\n              \"minLength\":
+        1\n            },\n            \"links\": {\n              \"title\": \"Item
+        links\",\n              \"description\": \"Links to item relations\",\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"$ref\": \"#/definitions/link\"\n
+        \             }\n            },\n            \"assets\": {\n              \"$ref\":
+        \"#/definitions/assets\"\n            },\n            \"properties\": {\n
+        \             \"allOf\": [\n                {\n                  \"$ref\":
+        \"#/definitions/common_metadata\"\n                },\n                {\n
+        \                 \"anyOf\": [\n                    {\n                      \"required\":
+        [\n                        \"datetime\"\n                      ],\n                      \"properties\":
+        {\n                        \"datetime\": {\n                          \"not\":
+        {\n                            \"type\": \"null\"\n                          }\n
+        \                       }\n                      }\n                    },\n
+        \                   {\n                      \"required\": [\n                        \"datetime\",\n
+        \                       \"start_datetime\",\n                        \"end_datetime\"\n
+        \                     ]\n                    }\n                  ]\n                }\n
+        \             ]\n            }\n          },\n          \"if\": {\n            \"properties\":
+        {\n              \"links\": {\n                \"contains\": {\n                  \"required\":
+        [\n                    \"rel\"\n                  ],\n                  \"properties\":
+        {\n                    \"rel\": {\n                      \"const\": \"collection\"\n
+        \                   }\n                  }\n                }\n              }\n
+        \           }\n          },\n          \"then\": {\n            \"required\":
+        [\n              \"collection\"\n            ],\n            \"properties\":
+        {\n              \"collection\": {\n                \"title\": \"Collection
+        ID\",\n                \"description\": \"The ID of the STAC Collection this
+        Item references to.\",\n                \"type\": \"string\",\n                \"minLength\":
+        1\n              }\n            }\n          },\n          \"else\": {\n            \"properties\":
+        {\n              \"collection\": {\n                \"not\": {}\n              }\n
+        \           }\n          }\n        }\n      ]\n    },\n    \"link\": {\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n        \"href\"\n
+        \     ],\n      \"properties\": {\n        \"href\": {\n          \"title\":
+        \"Link reference\",\n          \"type\": \"string\",\n          \"format\":
+        \"iri-reference\",\n          \"minLength\": 1\n        },\n        \"rel\":
+        {\n          \"title\": \"Link relation type\",\n          \"type\": \"string\",\n
+        \         \"minLength\": 1\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    },\n    \"assets\": {\n      \"title\": \"Asset links\",\n
+        \     \"description\": \"Links to assets\",\n      \"type\": \"object\",\n
+        \     \"additionalProperties\": {\n        \"$ref\": \"#/definitions/asset\"\n
+        \     }\n    },\n    \"asset\": {\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"href\"\n          ],\n
+        \         \"properties\": {\n            \"href\": {\n              \"title\":
+        \"Asset reference\",\n              \"type\": \"string\",\n              \"format\":
+        \"iri-reference\",\n              \"minLength\": 1\n            },\n            \"title\":
+        {\n              \"title\": \"Asset title\",\n              \"type\": \"string\"\n
+        \           },\n            \"description\": {\n              \"title\": \"Asset
+        description\",\n              \"type\": \"string\"\n            },\n            \"type\":
+        {\n              \"title\": \"Asset type\",\n              \"type\": \"string\"\n
+        \           },\n            \"roles\": {\n              \"title\": \"Asset
+        roles\",\n              \"type\": \"array\",\n              \"items\": {\n
+        \               \"type\": \"string\"\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/common_metadata\"\n
+        \       }\n      ]\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '6970'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 08 Sep 2023 17:46:08 GMT
+      ETag:
+      - '"647f85f4-1b3a"'
+      Last-Modified:
+      - Tue, 06 Jun 2023 19:16:04 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - a64fd85282b475805059fa81bd88de47a1c7b647
+      X-GitHub-Request-Id:
+      - C372:5094:13C491C:1A94523:64FB5DDF
+      X-Served-By:
+      - cache-ewr18149-EWR
+      X-Timer:
+      - S1694195168.398172,VS0,VE19
+      expires:
+      - Fri, 08 Sep 2023 17:56:08 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

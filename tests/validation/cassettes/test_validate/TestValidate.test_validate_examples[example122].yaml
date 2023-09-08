@@ -1,0 +1,119 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/remote-data/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/remote-data/v1.0.0/schema.json\",\n  \"title\":
+        \"Remote Data (Example) Extension\",\n  \"description\": \"STAC Example Extension
+        for fictional vendor Remote Data\",\n  \"oneOf\": [\n    {\n      \"$comment\":
+        \"This is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Required fields here for item properties.\",\n                  \"required\":
+        [\n                    \"rd:type\",\n                    \"rd:product_level\",\n
+        \                   \"rd:sat_id\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"rd:visibility\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$comment\": \"Remove this
+        and the following object if this is not an extension to a Collection.\",\n
+        \         \"$ref\": \"#/definitions/stac_extensions\"\n        },\n        {\n
+        \         \"$ref\": \"#/definitions/collection_fields\"\n        }\n      ]\n
+        \   }\n  ],\n  \"definitions\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_extensions\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/remote-data/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"collection_fields\": {\n      \"properties\":
+        {\n        \"rd:visibility\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"public\",\n            \"protected\",\n            \"private\"\n
+        \         ]\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Remote Data fictional fields.\",\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"rd:type\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"scene\"\n          ]\n        },\n        \"rd:product_level\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"LV1A\",\n
+        \           \"LV1B\",\n            \"LV2A\",\n            \"LV2B\",\n            \"LV3A\",\n
+        \           \"LV3B\"\n          ]\n        }, \n        \"rd:runs\": {\n          \"type\":
+        \"array\", \n          \"items\": {\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"rd:parsecs\": {\n          \"type\": \"array\", \n          \"items\":
+        {\n            \"type\": \"number\"\n          }\n        },\n        \"rd:anomalous_pixels\":
+        {\n          \"type\": \"number\"\n        },\n        \"rd:sat_id\": {\n
+        \         \"type\": \"string\"\n        },\n        \"rd:earth_sun_distance\":
+        {\n          \"type\": \"number\"\n        },\n        \"rd:flux_capacitor\":
+        {\n          \"type\": \"boolean\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!rd:)\": {\n          \"$comment\": \"Disallow other fields
+        with rd: prefix\"\n        }\n      },\n      \"additionalProperties\": false\n
+        \   }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '3991'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 08 Sep 2023 17:46:07 GMT
+      ETag:
+      - '"6046b731-f97"'
+      Last-Modified:
+      - Mon, 08 Mar 2021 23:45:53 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 4e0ddc6b575491738c0eea9fb27e3fd2d4cfc1ee
+      X-GitHub-Request-Id:
+      - C372:5094:13C48AF:1A944A4:64FB5DDE
+      X-Served-By:
+      - cache-ewr18172-EWR
+      X-Timer:
+      - S1694195167.387503,VS0,VE19
+      expires:
+      - Fri, 08 Sep 2023 17:56:07 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

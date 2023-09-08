@@ -13,6 +13,7 @@ try:
     import jsonschema
     import jsonschema.exceptions
     import jsonschema.validators
+    from referencing import Registry, Resource
 
     from pystac.validation.local_validator import LocalValidator
 
@@ -157,12 +158,13 @@ class JsonSchemaSTACValidator(STACValidator):
             self.schema_cache[schema_uri] = s
 
         schema = self.schema_cache[schema_uri]
-
-        resolver = jsonschema.validators.RefResolver(
-            base_uri=schema_uri, referrer=schema, store=self.schema_cache
+        registry = Registry().with_resources(
+            [
+                (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
+            ]  # type: ignore
         )
 
-        return schema, resolver
+        return schema, registry
 
     def _validate_from_uri(
         self,
@@ -172,16 +174,15 @@ class JsonSchemaSTACValidator(STACValidator):
         href: Optional[str] = None,
     ) -> None:
         try:
-            resolver = None
             try:
                 errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
-                schema, resolver = self.get_schema_from_uri(schema_uri)
+                schema, registry = self.get_schema_from_uri(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
                 # jsonschema.validate
                 cls = jsonschema.validators.validator_for(schema)
                 cls.check_schema(schema)
-                validator = cls(schema, resolver=resolver)
+                validator = cls(schema, registry=registry)
                 errors = list(validator.iter_errors(stac_dict))
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
@@ -198,11 +199,6 @@ class JsonSchemaSTACValidator(STACValidator):
 
             best = jsonschema.exceptions.best_match(errors)
             raise STACValidationError(msg, source=errors) from best
-
-        if resolver is not None:
-            for uri in resolver.store:
-                if uri not in self.schema_cache:
-                    self.schema_cache[uri] = resolver.store[uri]
 
     def validate_core(
         self,
