@@ -159,12 +159,12 @@ class JsonSchemaSTACValidator(STACValidator):
             self.schema_cache[schema_uri] = s
         return self.schema_cache[schema_uri]
 
-    def _retrieve(self, schema_uri: str) -> Resource[Dict[str, Any]]:
-        return Resource.from_contents(self._get_schema(schema_uri))
+    def _get_registry(self, schema_uri: str) -> Registry[Dict[str, Any]]:
+        def retrieve(ref: str) -> Resource[Dict[str, Any]]:
+            ref = pystac.utils.make_absolute_href(ref, schema_uri)
+            return Resource.from_contents(self._get_schema(ref))
 
-    @property
-    def registry(self) -> Registry[Dict[str, Any]]:
-        return Registry(retrieve=self._retrieve).with_resources(  # type: ignore
+        return Registry(retrieve=retrieve).with_resources(  # type: ignore
             [
                 (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
             ]  # type: ignore
@@ -176,7 +176,7 @@ class JsonSchemaSTACValidator(STACValidator):
             "get_schema_from_uri is deprecated and will be removed in v2.",
             DeprecationWarning,
         )
-        return self._get_schema(schema_uri), self.registry
+        return self._get_schema(schema_uri), self._get_registry(schema_uri)
 
     def _validate_from_uri(
         self,
@@ -187,20 +187,23 @@ class JsonSchemaSTACValidator(STACValidator):
     ) -> None:
         try:
             try:
-                errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
+                error = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
                 schema = self._get_schema(schema_uri)
+                registry = self._get_registry(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
                 # jsonschema.validate
                 cls = jsonschema.validators.validator_for(schema)
                 cls.check_schema(schema)
-                validator = cls(schema, registry=self.registry)
-                errors = list(validator.iter_errors(stac_dict))
+                validator = cls(schema, registry=registry)
+                error = jsonschema.exceptions.best_match(
+                    validator.iter_errors(stac_dict)
+                )
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)
             raise
-        if errors:
+        if error:
             stac_id = stac_dict.get("id", None)
             msg = f"Validation failed for {stac_object_type} "
             if href is not None:
@@ -209,8 +212,7 @@ class JsonSchemaSTACValidator(STACValidator):
                 msg += f"with ID {stac_id} "
             msg += f"against schema at {schema_uri}"
 
-            best = jsonschema.exceptions.best_match(errors)
-            raise STACValidationError(msg, source=errors) from best
+            raise STACValidationError(msg, source=error)
 
     def validate_core(
         self,

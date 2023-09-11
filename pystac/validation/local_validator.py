@@ -1,7 +1,8 @@
 import json
 import sys
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, cast
 
+import jsonschema.exceptions
 from jsonschema import Draft7Validator, ValidationError
 from referencing import Registry
 from referencing.jsonschema import DRAFT7
@@ -30,7 +31,7 @@ CATALOG_SCHEMA_URI = (
 class LocalValidator:
     def _validate_from_local(
         self, schema_uri: str, stac_dict: Dict[str, Any]
-    ) -> List[ValidationError]:
+    ) -> ValidationError:
         if schema_uri == ITEM_SCHEMA_URI:
             validator = self.item_validator(VERSION)
         elif schema_uri == COLLECTION_SCHEMA_URI:
@@ -41,7 +42,7 @@ class LocalValidator:
             raise STACLocalValidationError(
                 f"Schema not available locally: {schema_uri}"
             )
-        return list(validator.iter_errors(stac_dict))
+        return jsonschema.exceptions.best_match(validator.iter_errors(stac_dict))
 
     def _validator(self, stac_type: str, version: str) -> Draft7Validator:
         schema = _read_schema(f"stac-spec/v{version}/{stac_type}.json")
