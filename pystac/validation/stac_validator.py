@@ -1,5 +1,6 @@
 import json
 import logging
+import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -152,19 +153,30 @@ class JsonSchemaSTACValidator(STACValidator):
 
         self.schema_cache = {}
 
-    def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
+    def _get_schema(self, schema_uri: str) -> Dict[str, Any]:
         if schema_uri not in self.schema_cache:
             s = json.loads(pystac.StacIO.default().read_text(schema_uri))
             self.schema_cache[schema_uri] = s
+        return self.schema_cache[schema_uri]
 
-        schema = self.schema_cache[schema_uri]
-        registry = Registry().with_resources(
+    def _retrieve(self, schema_uri: str) -> Resource[Dict[str, Any]]:
+        return Resource.from_contents(self._get_schema(schema_uri))
+
+    @property
+    def registry(self) -> Registry[Dict[str, Any]]:
+        return Registry(retrieve=self._retrieve).with_resources(  # type: ignore
             [
                 (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
             ]  # type: ignore
         )
 
-        return schema, registry
+    def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
+        """DEPRECATED"""
+        warnings.warn(
+            "get_schema_from_uri is deprecated and will be removed in v2.",
+            DeprecationWarning,
+        )
+        return self._get_schema(schema_uri), self.registry
 
     def _validate_from_uri(
         self,
@@ -177,12 +189,12 @@ class JsonSchemaSTACValidator(STACValidator):
             try:
                 errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
-                schema, registry = self.get_schema_from_uri(schema_uri)
+                schema = self._get_schema(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
                 # jsonschema.validate
                 cls = jsonschema.validators.validator_for(schema)
                 cls.check_schema(schema)
-                validator = cls(schema, registry=registry)
+                validator = cls(schema, registry=self.registry)
                 errors = list(validator.iter_errors(stac_dict))
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")

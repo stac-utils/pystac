@@ -640,4 +640,128 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.9
+    method: GET
+    uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\",\n  \"title\":
+        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
+        for STAC Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the
+        schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Require fields here for item properties.\",\n                  \"required\":
+        [\n                    \"proj:epsg\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n
+        \         \"title\":\"EPSG code\",\n          \"type\":[\n            \"integer\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
+        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.2/projjson.schema.json\"\n
+        \           },\n            {\n              \"type\": \"null\"\n            }\n
+        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
+        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
+        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
+        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
+        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
+        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
+        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
+        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
+        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
+        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
+        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
+        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
+        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
+        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
+        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '4646'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 11 Sep 2023 17:38:58 GMT
+      ETag:
+      - '"63e6651b-1226"'
+      Last-Modified:
+      - Fri, 10 Feb 2023 15:39:07 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 9f1f000463b2d2de24adf9f519897de31ecb6a47
+      X-GitHub-Request-Id:
+      - DC38:6CF7:5D71BC:852D52:64FF4C4A
+      X-Served-By:
+      - cache-bos4627-BOS
+      X-Timer:
+      - S1694453938.437417,VS0,VE33
+      expires:
+      - Mon, 11 Sep 2023 17:30:10 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
 version: 1

@@ -4,11 +4,12 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import pystac
 from pystac.serialization.identify import STACVersionID, identify_stac_object
+from pystac.stac_object import STACObjectType
 from pystac.utils import make_absolute_href
 from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
 
 if TYPE_CHECKING:
-    from pystac.stac_object import STACObject, STACObjectType
+    from pystac.stac_object import STACObject
 
 
 # Import after above class definition
