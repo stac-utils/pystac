@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -85,7 +85,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '537'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,7 +95,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:28 GMT
+      - Wed, 13 Sep 2023 17:52:14 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - b1a06ab34f733c6e9dc6a4f5b276c235e2c79930
+      - 575c2899c256a5d819285784bd9794438ae0a255
       X-GitHub-Request-Id:
-      - 1438:49DA:91006E:FE43B3:64D4F8F0
+      - 3C3E:113B:AE396C:E291C2:6501F4B4
       X-Served-By:
-      - cache-den8265-DEN
+      - cache-bos4622-BOS
       X-Timer:
-      - S1691692349.668141,VS0,VE55
+      - S1694627535.634779,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 14:59:21 GMT
+      - Wed, 13 Sep 2023 17:53:17 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -137,7 +137,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.1.0/schema.json
   response:
@@ -205,7 +205,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '537'
       Cache-Control:
       - max-age=600
       Connection:
@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:28 GMT
+      - Wed, 13 Sep 2023 17:52:14 GMT
       ETag:
       - '"63e6651b-1111"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - f2785d13a06b151272071228f0879eae436212a1
+      - 1479c11f216ec30493c3bc660eabe9f21c3a13b9
       X-GitHub-Request-Id:
-      - D120:37B9:DAE123:13C31FE:64D4F892
+      - 54F8:490E:12C00D7:1918B41:6501F4B5
       X-Served-By:
-      - cache-den8239-DEN
+      - cache-bos4685-BOS
       X-Timer:
-      - S1691692349.805841,VS0,VE69
+      - S1694627535.710139,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 14:57:47 GMT
+      - Wed, 13 Sep 2023 17:53:17 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -257,7 +257,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -315,7 +315,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '537'
       Cache-Control:
       - max-age=600
       Connection:
@@ -325,7 +325,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:29 GMT
+      - Wed, 13 Sep 2023 17:52:14 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -343,15 +343,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 905a0ed8a572185507cf2d3c0f00495afaf1a7ea
+      - 86133ec2dd8bbb40d40af98d0f4909ad821a9ab2
       X-GitHub-Request-Id:
-      - 7F3A:2669:F18598:152D77F:64D4F893
+      - D07E:1E67:12A1725:18CDDE3:6501D907
       X-Served-By:
-      - cache-den8260-DEN
+      - cache-bos4650-BOS
       X-Timer:
-      - S1691692349.934889,VS0,VE83
+      - S1694627535.832032,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 14:57:47 GMT
+      - Wed, 13 Sep 2023 15:55:12 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

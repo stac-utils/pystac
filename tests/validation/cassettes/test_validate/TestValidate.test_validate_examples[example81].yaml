@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/label/json-schema/schema.json
   response:
@@ -77,7 +77,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '518'
       Cache-Control:
       - max-age=600
       Connection:
@@ -87,7 +87,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:34:11 GMT
+      - Wed, 13 Sep 2023 17:52:38 GMT
       ETag:
       - '"647f85f4-1226"'
       Last-Modified:
@@ -99,21 +99,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 8ffea53a7c080c62bc0b1f1c7e55805f49c00573
-      X-GitHub-Request-Id:
-      - 47AA:7727:E7A888:15E56D5:64D52DA2
-      X-Served-By:
-      - cache-den8281-DEN
-      X-Timer:
-      - S1691692451.272396,VS0,VE54
-      expires:
-      - Thu, 10 Aug 2023 18:44:11 GMT
-      x-origin-cache:
       - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 6b190657ced704bd95b6dd808bdd914b58b9adc7
+      X-GitHub-Request-Id:
+      - E54C:3A46:12F4D37:1A4C6C3:6501F4DF
+      X-Served-By:
+      - cache-bos4682-BOS
+      X-Timer:
+      - S1694627558.245994,VS0,VE1
+      expires:
+      - Wed, 13 Sep 2023 17:53:59 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -127,7 +125,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/version/json-schema/schema.json
   response:
@@ -162,7 +160,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '518'
       Cache-Control:
       - max-age=600
       Connection:
@@ -172,7 +170,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:34:11 GMT
+      - Wed, 13 Sep 2023 17:52:38 GMT
       ETag:
       - '"647f85f4-70b"'
       Last-Modified:
@@ -184,19 +182,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - c668002f0e155d42831257cfa330e20c84a2a4a5
+      - d712c70adf54599d87509d18b536f235d403bea5
       X-GitHub-Request-Id:
-      - F424:0A79:7542F:C0A46:64D52D9F
+      - 902C:2F38:1331876:1A8901E:6501F4DF
       X-Served-By:
-      - cache-den8230-DEN
+      - cache-bos4642-BOS
       X-Timer:
-      - S1691692451.405960,VS0,VE53
+      - S1694627558.318440,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 18:44:11 GMT
+      - Wed, 13 Sep 2023 17:54:00 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:

@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
   response:
@@ -104,7 +104,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '533'
       Cache-Control:
       - max-age=600
       Connection:
@@ -114,7 +114,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:33:29 GMT
+      - Wed, 13 Sep 2023 17:52:26 GMT
       ETag:
       - '"60e44dd0-18ae"'
       Last-Modified:
@@ -132,15 +132,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 679c14d7093430016cee9ef0f3e6baf9d25b3d4f
+      - 3372f270bbc16b57b3a8165a51987c7485eecd63
       X-GitHub-Request-Id:
-      - 63D0:2669:F18553:152D729:64D4F893
+      - 4550:6E8C:13E08E9:1A3951D:6501F4C4
       X-Served-By:
-      - cache-den8266-DEN
+      - cache-bos4633-BOS
       X-Timer:
-      - S1691692409.342978,VS0,VE58
+      - S1694627546.238889,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 14:57:47 GMT
+      - Wed, 13 Sep 2023 17:53:33 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -156,7 +156,7 @@ interactions:
       Host:
       - landsat.usgs.gov
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json
   response:
@@ -222,7 +222,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Aug 2023 18:33:29 GMT
+      - Wed, 13 Sep 2023 17:52:26 GMT
       ETag:
       - '"f5d-5c78e5c04950e"'
       Last-Modified:
@@ -230,8 +230,8 @@ interactions:
       Server:
       - Apache
       Set-Cookie:
-      - fwb=429bb9b17ca48ed3eeddde07792dd564;max-age=300;Path=/;Secure;HttpOnly
-      - cookiesession1=678A3E66A41CA2387993E8A96EA0EE03;Expires=Fri, 09 Aug 2024 18:33:29
+      - fwb=429bb9b17ca48ed3eeddde07daf60165;max-age=300;Path=/;Secure;HttpOnly
+      - cookiesession1=678A3E65879D989516300E969678CB8F;Expires=Thu, 12 Sep 2024 17:52:26
         GMT;Path=/;HttpOnly
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -250,7 +250,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -336,7 +336,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '533'
       Cache-Control:
       - max-age=600
       Connection:
@@ -346,7 +346,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:33:29 GMT
+      - Wed, 13 Sep 2023 17:52:26 GMT
       ETag:
       - '"60febab7-15fa"'
       Last-Modified:
@@ -360,19 +360,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 229b1a27c3fbd32669fa68f86cac0795d0ea1d6d
+      - 68aaf4bb7b444fee2e922cdb2fb16c3533692f8a
       X-GitHub-Request-Id:
-      - 3C64:6104:FAB24E:1613C18:64D52D77
+      - 2A00:14A2:12FBFF6:1955089:6501F4C4
       X-Served-By:
-      - cache-den8263-DEN
+      - cache-bos4620-BOS
       X-Timer:
-      - S1691692410.646201,VS0,VE56
+      - S1694627547.612455,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 18:43:29 GMT
+      - Wed, 13 Sep 2023 17:53:33 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

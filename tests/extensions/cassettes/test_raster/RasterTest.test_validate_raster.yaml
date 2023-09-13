@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
   response:
@@ -67,7 +67,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '532'
       Cache-Control:
       - max-age=600
       Connection:
@@ -77,7 +77,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:33:38 GMT
+      - Wed, 13 Sep 2023 17:52:29 GMT
       ETag:
       - '"60414dd7-e82"'
       Last-Modified:
@@ -95,15 +95,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 8a97d5e6241bb841c6647d5d424934befd09320d
+      - 5a53346fc034b784486d84e1e89cffebec8bc51d
       X-GitHub-Request-Id:
-      - 9432:7175:E8FBDA:14A4E3F:64D4F891
+      - 7C72:469C:13581EF:19B0F35:6501F4C8
       X-Served-By:
-      - cache-den8257-DEN
+      - cache-bos4647-BOS
       X-Timer:
-      - S1691692418.028452,VS0,VE54
+      - S1694627549.007097,VS0,VE1
       expires:
-      - Thu, 10 Aug 2023 14:57:47 GMT
+      - Wed, 13 Sep 2023 17:53:37 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -119,7 +119,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://stac-extensions.github.io/processing/v1.0.0/schema.json
   response:
@@ -204,7 +204,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '532'
       Cache-Control:
       - max-age=600
       Connection:
@@ -214,7 +214,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:33:38 GMT
+      - Wed, 13 Sep 2023 17:52:29 GMT
       ETag:
       - '"63cb122e-1661"'
       Last-Modified:
@@ -228,19 +228,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 348f8bcad3048c13f6313c5dfeee53a83f11c00b
+      - e30aafb2abfe63c84979b9f1139a9a381c57b0d3
       X-GitHub-Request-Id:
-      - F8B4:2383:F05D8A:156F093:64D52D81
+      - C322:4B82:14697C5:1AC230C:6501F4C6
       X-Served-By:
-      - cache-den8243-DEN
+      - cache-bos4660-BOS
       X-Timer:
-      - S1691692418.176541,VS0,VE56
+      - S1694627549.083092,VS0,VE13
       expires:
-      - Thu, 10 Aug 2023 18:43:38 GMT
+      - Wed, 13 Sep 2023 17:53:37 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

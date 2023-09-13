@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -112,13 +112,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 10 Aug 2023 18:33:52 GMT
+      - Wed, 13 Sep 2023 17:52:31 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Thu, 10 Aug 2023 18:38:52 GMT
+      - Wed, 13 Sep 2023 17:57:31 GMT
       Source-Age:
-      - '0'
+      - '53'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -126,21 +126,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - e0a36738db85d48496c7f8a7a1d8af90d408163b
+      - 813eb5060f33a01df5ed98b380ef2c3838c04369
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0946:52AA:3ACE98:45F4B5:64D52D8F
+      - D476:1C76:83015F:9D3AC8:6501E49B
       X-Served-By:
-      - cache-den8262-DEN
+      - cache-bos4647-BOS
       X-Timer:
-      - S1691692433.528494,VS0,VE147
+      - S1694627551.222550,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -154,7 +154,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.9
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/eo/json-schema/schema.json
   response:
@@ -220,13 +220,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 10 Aug 2023 18:33:52 GMT
+      - Wed, 13 Sep 2023 17:52:31 GMT
       ETag:
       - '"c8576d5ea3fcee4039dcddbdcf9e59fed3f3086419a33aa96f18f4617203b76d"'
       Expires:
-      - Thu, 10 Aug 2023 18:38:52 GMT
+      - Wed, 13 Sep 2023 17:57:31 GMT
       Source-Age:
-      - '0'
+      - '53'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -234,21 +234,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - c26a9301e8bd4fe29222cc4d8b470718da8bb3c7
+      - 4278403861d25553a1102fc8a6bd19421d9defe4
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - E640:4633:3F708B:4A9749:64D52D8E
+      - 54CE:4F38:806AC3:9B509D:6501F4CC
       X-Served-By:
-      - cache-den8250-DEN
+      - cache-bos4677-BOS
       X-Timer:
-      - S1691692433.753722,VS0,VE128
+      - S1694627551.290553,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

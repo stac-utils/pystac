@@ -2,40 +2,42 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - proj.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.9
     method: GET
     uri: https://proj.org/schemas/v0.5/projjson.schema.json
   response:
     body:
       string: ''
     headers:
+      Age:
+      - '533'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
       - HIT
       CF-RAY:
-      - 7f4a53f6abba8e9c-DEN
+      - 80623e80680e4cd9-BOS
       Cache-Control:
       - max-age=1200
       Connection:
-      - keep-alive
+      - close
       Content-Language:
       - en
       Content-Length:
       - '0'
       Content-Type:
       - text/html; charset=utf-8
+      Cross-Origin-Opener-Policy:
+      - same-origin
       Date:
-      - Thu, 10 Aug 2023 18:33:34 GMT
+      - Wed, 13 Sep 2023 17:52:28 GMT
       Location:
-      - https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
+      - https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -43,7 +45,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-0af453b05f751b1c1
+      - web-i-05b41b5bde85ce720
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -58,8 +60,6 @@ interactions:
       - path
       X-Served:
       - Proxito-404
-      X-XSS-Protection:
-      - 1; mode=block
       alt-svc:
       - h3=":443"; ma=86400
     status:
@@ -68,16 +68,14 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - proj.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.9
     method: GET
-    uri: https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
+    uri: https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
   response:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.5/projjson.schema.json\",\n
@@ -584,26 +582,26 @@ interactions:
         \"ids\": {}\n      },\n      \"required\" : [ \"name\" ],\n      \"additionalProperties\":
         false\n    }\n\n  }\n}\n"
     headers:
+      Age:
+      - '532'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
       - HIT
       CF-RAY:
-      - 7f4a53f7ab442707-DEN
+      - 80623e80eab64cf3-BOS
       Cache-Control:
       - max-age=1200
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Aug 2023 18:33:34 GMT
+      - Wed, 13 Sep 2023 17:52:28 GMT
       ETag:
       - W/"567e3992b5fd3188af907a4cdc4781b3"
       Last-Modified:
-      - Sun, 26 Mar 2023 20:41:58 GMT
+      - Sun, 03 Sep 2023 09:10:52 GMT
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -613,19 +611,19 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-0ce285365dad369d0
+      - web-i-07232e850df1093dd
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
       - proj.org
       X-RTD-Path:
-      - /proxito/html/osgeo-proj/9.2/schemas/v0.5/projjson.schema.json
+      - /proxito/html/osgeo-proj/9.3/schemas/v0.5/projjson.schema.json
       X-RTD-Project:
       - osgeo-proj
       X-RTD-Project-Method:
       - custom_domain
       X-RTD-Version:
-      - '9.2'
+      - '9.3'
       X-RTD-Version-Method:
       - path
       X-Served:
@@ -633,11 +631,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - 6+R2ERq+o0hFlVyw5HgQKnhfuJTSPaafSHVNUnLV5AbGfJxgak1oqHUYjkk/bA+papAlR/EtYCU=
+      - jNbyJJEcjvr1AlJ7nK8DOdMrJIdV5ehdOjp4CA9IxL5W2F6aygDfY1Z+0vo5lQx8gqhD4EYcOMg=
       x-amz-meta-mtime:
-      - '1679863309.472925768'
+      - '1693732240.238196845'
       x-amz-request-id:
-      - QS6E5MKCXMPKQ7GS
+      - QD5E2M4H1BDHYJMF
       x-amz-server-side-encryption:
       - AES256
     status:
