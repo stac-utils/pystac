@@ -162,12 +162,12 @@ class JsonSchemaSTACValidator(STACValidator):
                 s[id_field] = schema_uri
         return self.schema_cache[schema_uri]
 
-    def _retrieve(self, schema_uri: str) -> Resource[Dict[str, Any]]:
-        return Resource.from_contents(self._get_schema(schema_uri))
-
     @property
-    def registry(self) -> Registry[Dict[str, Any]]:
-        return Registry(retrieve=self._retrieve).with_resources(  # type: ignore
+    def registry(self) -> Any:
+        def retrieve(schema_uri: str) -> Resource[Dict[str, Any]]:
+            return Resource.from_contents(self._get_schema(schema_uri))
+
+        return Registry(retrieve=retrieve).with_resources(  # type: ignore
             [
                 (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
             ]  # type: ignore
