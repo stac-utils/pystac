@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pystac
 import pystac.utils
-from pystac.errors import STACLocalValidationError, STACValidationError
+from pystac.errors import STACValidationError
 from pystac.stac_object import STACObjectType
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap, SchemaUriMap
 
@@ -16,7 +16,7 @@ try:
     import jsonschema.validators
     from referencing import Registry, Resource
 
-    from pystac.validation.local_validator import LocalValidator
+    from pystac.validation.local_validator import get_local_schema_cache
 
     HAS_JSONSCHEMA = True
 except ImportError:
@@ -151,7 +151,7 @@ class JsonSchemaSTACValidator(STACValidator):
         else:
             self.schema_uri_map = DefaultSchemaUriMap()
 
-        self.schema_cache = {}
+        self.schema_cache = get_local_schema_cache()
 
     def _get_schema(self, schema_uri: str) -> Dict[str, Any]:
         if schema_uri not in self.schema_cache:
@@ -189,16 +189,13 @@ class JsonSchemaSTACValidator(STACValidator):
         href: Optional[str] = None,
     ) -> None:
         try:
-            try:
-                errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
-            except STACLocalValidationError:
-                schema = self._get_schema(schema_uri)
-                # This block is cribbed (w/ change in error handling) from
-                # jsonschema.validate
-                cls = jsonschema.validators.validator_for(schema)
-                cls.check_schema(schema)
-                validator = cls(schema, registry=self.registry)
-                errors = list(validator.iter_errors(stac_dict))
+            schema = self._get_schema(schema_uri)
+            # This block is cribbed (w/ change in error handling) from
+            # jsonschema.validate
+            cls = jsonschema.validators.validator_for(schema)
+            cls.check_schema(schema)
+            validator = cls(schema, registry=self.registry)
+            errors = list(validator.iter_errors(stac_dict))
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)
