@@ -162,12 +162,12 @@ class JsonSchemaSTACValidator(STACValidator):
                 s[id_field] = schema_uri
         return self.schema_cache[schema_uri]
 
-    def _get_registry(self, schema_uri: str) -> Registry[Dict[str, Any]]:
-        def retrieve(ref: str) -> Resource[Dict[str, Any]]:
-            ref = pystac.utils.make_absolute_href(ref, schema_uri)
-            return Resource.from_contents(self._get_schema(ref))
+    def _retrieve(self, schema_uri: str) -> Resource[Dict[str, Any]]:
+        return Resource.from_contents(self._get_schema(schema_uri))
 
-        return Registry(retrieve=retrieve).with_resources(  # type: ignore
+    @property
+    def registry(self) -> Registry[Dict[str, Any]]:
+        return Registry(retrieve=self._retrieve).with_resources(  # type: ignore
             [
                 (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
             ]  # type: ignore
@@ -179,7 +179,7 @@ class JsonSchemaSTACValidator(STACValidator):
             "get_schema_from_uri is deprecated and will be removed in v2.",
             DeprecationWarning,
         )
-        return self._get_schema(schema_uri), self._get_registry(schema_uri)
+        return self._get_schema(schema_uri), self.registry
 
     def _validate_from_uri(
         self,
@@ -193,12 +193,11 @@ class JsonSchemaSTACValidator(STACValidator):
                 error = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
                 schema = self._get_schema(schema_uri)
-                registry = self._get_registry(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
                 # jsonschema.validate
                 cls = jsonschema.validators.validator_for(schema)
                 cls.check_schema(schema)
-                validator = cls(schema, registry=registry)
+                validator = cls(schema, registry=self.registry)
                 error = jsonschema.exceptions.best_match(
                     validator.iter_errors(stac_dict)
                 )
