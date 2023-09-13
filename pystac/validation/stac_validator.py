@@ -190,7 +190,7 @@ class JsonSchemaSTACValidator(STACValidator):
     ) -> None:
         try:
             try:
-                error = LocalValidator()._validate_from_local(schema_uri, stac_dict)
+                errors = LocalValidator()._validate_from_local(schema_uri, stac_dict)
             except STACLocalValidationError:
                 schema = self._get_schema(schema_uri)
                 # This block is cribbed (w/ change in error handling) from
@@ -198,14 +198,12 @@ class JsonSchemaSTACValidator(STACValidator):
                 cls = jsonschema.validators.validator_for(schema)
                 cls.check_schema(schema)
                 validator = cls(schema, registry=self.registry)
-                error = jsonschema.exceptions.best_match(
-                    validator.iter_errors(stac_dict)
-                )
+                errors = list(validator.iter_errors(stac_dict))
         except Exception as e:
             logger.error(f"Exception while validating {stac_object_type} href: {href}")
             logger.exception(e)
             raise
-        if error:
+        if errors:
             stac_id = stac_dict.get("id", None)
             msg = f"Validation failed for {stac_object_type} "
             if href is not None:
@@ -214,7 +212,8 @@ class JsonSchemaSTACValidator(STACValidator):
                 msg += f"with ID {stac_id} "
             msg += f"against schema at {schema_uri}"
 
-            raise STACValidationError(msg, source=error)
+            best = jsonschema.exceptions.best_match(errors)
+            raise STACValidationError(msg, source=errors) from best
 
     def validate_core(
         self,
