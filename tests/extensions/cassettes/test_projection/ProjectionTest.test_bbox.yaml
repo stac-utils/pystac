@@ -2,42 +2,40 @@ interactions:
 - request:
     body: null
     headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
       Connection:
-      - close
-      Host:
-      - proj.org
+      - keep-alive
       User-Agent:
-      - Python-urllib/3.9
+      - python-requests/2.31.0
     method: GET
     uri: https://proj.org/schemas/v0.5/projjson.schema.json
   response:
     body:
       string: ''
     headers:
-      Age:
-      - '911'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
       - HIT
       CF-RAY:
-      - 806247ba1be94d14-BOS
+      - 7f4a53f6abba8e9c-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - close
+      - keep-alive
       Content-Language:
       - en
       Content-Length:
       - '0'
       Content-Type:
       - text/html; charset=utf-8
-      Cross-Origin-Opener-Policy:
-      - same-origin
       Date:
-      - Wed, 13 Sep 2023 17:58:46 GMT
+      - Thu, 10 Aug 2023 18:33:34 GMT
       Location:
-      - https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
+      - https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -45,7 +43,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-05b41b5bde85ce720
+      - web-i-0af453b05f751b1c1
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -60,6 +58,8 @@ interactions:
       - path
       X-Served:
       - Proxito-404
+      X-XSS-Protection:
+      - 1; mode=block
       alt-svc:
       - h3=":443"; ma=86400
     status:
@@ -68,14 +68,16 @@ interactions:
 - request:
     body: null
     headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
       Connection:
-      - close
-      Host:
-      - proj.org
+      - keep-alive
       User-Agent:
-      - Python-urllib/3.9
+      - python-requests/2.31.0
     method: GET
-    uri: https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
+    uri: https://proj.org/en/9.2/schemas/v0.5/projjson.schema.json
   response:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.5/projjson.schema.json\",\n
@@ -585,21 +587,23 @@ interactions:
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - EXPIRED
+      - HIT
       CF-RAY:
-      - 806247ba9aa23049-BOS
+      - 7f4a53f7ab442707-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - close
+      - keep-alive
+      Content-Encoding:
+      - gzip
       Content-Type:
       - application/json
       Date:
-      - Wed, 13 Sep 2023 17:58:46 GMT
+      - Thu, 10 Aug 2023 18:33:34 GMT
       ETag:
       - W/"567e3992b5fd3188af907a4cdc4781b3"
       Last-Modified:
-      - Sun, 03 Sep 2023 09:10:52 GMT
+      - Sun, 26 Mar 2023 20:41:58 GMT
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -609,19 +613,19 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-0f31132cba2d0d43c
+      - web-i-0ce285365dad369d0
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
       - proj.org
       X-RTD-Path:
-      - /proxito/html/osgeo-proj/9.3/schemas/v0.5/projjson.schema.json
+      - /proxito/html/osgeo-proj/9.2/schemas/v0.5/projjson.schema.json
       X-RTD-Project:
       - osgeo-proj
       X-RTD-Project-Method:
       - custom_domain
       X-RTD-Version:
-      - '9.3'
+      - '9.2'
       X-RTD-Version-Method:
       - path
       X-Served:
@@ -629,11 +633,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - XxX51MDzOPuu0LIGNU+IpAJEdTmzcVA3YSX1gSw3xt5VA9l/xDf149PSiYTQZcdiFXSQGIw2SCQ=
+      - 6+R2ERq+o0hFlVyw5HgQKnhfuJTSPaafSHVNUnLV5AbGfJxgak1oqHUYjkk/bA+papAlR/EtYCU=
       x-amz-meta-mtime:
-      - '1693732240.238196845'
+      - '1679863309.472925768'
       x-amz-request-id:
-      - Z6JTEXMRQSTCF3JG
+      - QS6E5MKCXMPKQ7GS
       x-amz-server-side-encryption:
       - AES256
     status:

@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sat/json-schema/schema.json
   response:
@@ -47,7 +47,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 13 Sep 2023 17:59:01 GMT
+      - Thu, 10 Aug 2023 18:34:12 GMT
       ETag:
       - '"647f85f4-5bb"'
       Last-Modified:
@@ -59,19 +59,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 82242db626c3ef37d137c753ae8c360f6fc8b0eb
+      - 818e754516656d7dc36f94ae60f8b7b6962f8c35
       X-GitHub-Request-Id:
-      - 3A8C:333D:1147B1D:189F4ED:6501F4E0
+      - 2B66:5BFB:F05A93:1670BBB:64D52DA4
       X-Served-By:
-      - cache-bos4679-BOS
+      - cache-den8225-DEN
       X-Timer:
-      - S1694627941.046424,VS0,VE30
+      - S1691692453.805192,VS0,VE54
       expires:
-      - Wed, 13 Sep 2023 17:54:01 GMT
+      - Thu, 10 Aug 2023 18:44:12 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -87,7 +87,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/sar/json-schema/schema.json
   response:
@@ -164,7 +164,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 13 Sep 2023 17:59:01 GMT
+      - Thu, 10 Aug 2023 18:34:12 GMT
       ETag:
       - '"647f85f4-10cd"'
       Last-Modified:
@@ -176,19 +176,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 7e2dcf52fc238f410cac588d6f01e8f8e95ab511
+      - def27e50bf09234e783ea2039417a24cabf16f78
       X-GitHub-Request-Id:
-      - A75C:37B8:135D610:1AB52A8:6501F4E0
+      - 71CE:9CC2:E73E34:15DF4E6:64D52DA4
       X-Served-By:
-      - cache-bos4622-BOS
+      - cache-den8269-DEN
       X-Timer:
-      - S1694627941.164775,VS0,VE31
+      - S1691692453.917480,VS0,VE52
       expires:
-      - Wed, 13 Sep 2023 17:54:01 GMT
+      - Thu, 10 Aug 2023 18:44:12 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:

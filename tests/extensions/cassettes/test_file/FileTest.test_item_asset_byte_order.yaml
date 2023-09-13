@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/file/v2.0.0/schema.json
   response:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 13 Sep 2023 17:58:44 GMT
+      - Thu, 10 Aug 2023 18:33:31 GMT
       ETag:
       - '"61b4cf00-d9d"'
       Last-Modified:
@@ -89,19 +89,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 63309362a9114b65718d6b6608c8f6ed1a84df92
+      - 7d737ed054704997d8ead93fa84f55d8e8c9542f
       X-GitHub-Request-Id:
-      - 8CD6:55CA:1374966:19CD586:6501F4C4
+      - C72C:553B:EDEA01:1547022:64D52D7A
       X-Served-By:
-      - cache-bos4646-BOS
+      - cache-den8262-DEN
       X-Timer:
-      - S1694627925.847634,VS0,VE22
+      - S1691692411.204200,VS0,VE56
       expires:
-      - Wed, 13 Sep 2023 17:53:34 GMT
+      - Thu, 10 Aug 2023 18:43:31 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

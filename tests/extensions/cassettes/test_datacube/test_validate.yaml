@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.9
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/datacube/v2.0.0/schema.json
   response:
@@ -187,7 +187,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 13 Sep 2023 17:58:44 GMT
+      - Thu, 10 Aug 2023 18:33:30 GMT
       ETag:
       - '"64527b1d-2e90"'
       Last-Modified:
@@ -201,19 +201,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - eb7090bf396d2db739a2ff6dbee3886423452994
+      - 40bbeb0e2c9545c30125eb1256fe30838ccebf1b
       X-GitHub-Request-Id:
-      - 0CF6:0880:13863D8:19DE42B:6501F4C4
+      - 3C64:6104:FAB268:1613C40:64D52D79
       X-Served-By:
-      - cache-bos4670-BOS
+      - cache-den8243-DEN
       X-Timer:
-      - S1694627924.486031,VS0,VE34
+      - S1691692410.093332,VS0,VE59
       expires:
-      - Wed, 13 Sep 2023 17:53:33 GMT
+      - Thu, 10 Aug 2023 18:43:30 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

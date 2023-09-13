@@ -1,0 +1,31 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://planetarycomputer.microsoft.com/api/stac/v1/collections/not-a-collection-id
+  response:
+    body:
+      string: '{"code":"NotFoundError","description":"No collection with id ''not-a-collection-id''
+        found!"}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Allow-Origin:
+      - '*'
+      Content-Length:
+      - '91'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 10 Aug 2023 18:32:39 GMT
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+      X-Azure-Ref:
+      - 0Ry3VZAAAAADat3Scuc39TqVdKLHETilFREVOMzAxMDAwMTA5MDQ3ADkyN2FiZmE2LTE5ZjYtNGFmMS1hMDlkLWM5NTlkOWExZTY0NA==
+      X-Cache:
+      - CONFIG_NOCACHE
+    status:
+      code: 404
+      message: Not Found
+version: 1
