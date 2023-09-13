@@ -24,7 +24,7 @@ def get_local_schema_cache() -> Dict[str, Dict[str, Any]]:
         **{
             (
                 f"https://schemas.stacspec.org/v{VERSION}/"
-                "{name}-spec/json-schema/{name}.json"
+                f"{name}-spec/json-schema/{name}.json"
             ): _read_schema(f"stac-spec/v{VERSION}/{name}.json")
             for name in ("item", "catalog", "collection")
         },
@@ -37,7 +37,7 @@ def get_local_schema_cache() -> Dict[str, Dict[str, Any]]:
         **{
             (
                 f"https://schemas.stacspec.org/v{VERSION}/"
-                "item-spec/json-schema/{name}.json"
+                f"item-spec/json-schema/{name}.json"
             ): _read_schema(f"stac-spec/v{VERSION}/{name}.json")
             for name in (
                 "basics",
