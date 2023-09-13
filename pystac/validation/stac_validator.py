@@ -157,6 +157,9 @@ class JsonSchemaSTACValidator(STACValidator):
         if schema_uri not in self.schema_cache:
             s = json.loads(pystac.StacIO.default().read_text(schema_uri))
             self.schema_cache[schema_uri] = s
+            id_field = "$id" if "$id" in s else "id"
+            if not s[id_field].startswith("http"):
+                s[id_field] = schema_uri
         return self.schema_cache[schema_uri]
 
     def _get_registry(self, schema_uri: str) -> Registry[Dict[str, Any]]:
