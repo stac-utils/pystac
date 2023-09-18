@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Update usage of jsonschema ([#1215](https://github.com/stac-utils/pystac/pull/1215))
+
+### Deprecated
+
+- `pystac.validation.local_validator.LocalValidator` ([#1215](https://github.com/stac-utils/pystac/pull/1215))
+
+
 ## [v1.8.3] - 2023-07-12
 
 ### Added
