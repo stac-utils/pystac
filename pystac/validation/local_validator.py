@@ -57,16 +57,25 @@ def get_local_schema_cache() -> Dict[str, Dict[str, Any]]:
 
 ############################### DEPRECATED #################################
 
-ITEM_SCHEMA_URI = (
+_deprecated_ITEM_SCHEMA_URI = (
     f"https://schemas.stacspec.org/v{VERSION}/item-spec/json-schema/item.json"
 )
-COLLECTION_SCHEMA_URI = (
+_deprecated_COLLECTION_SCHEMA_URI = (
     f"https://schemas.stacspec.org/v{VERSION}/"
     "collection-spec/json-schema/collection.json"
 )
-CATALOG_SCHEMA_URI = (
+_deprecated_CATALOG_SCHEMA_URI = (
     f"https://schemas.stacspec.org/v{VERSION}/catalog-spec/json-schema/catalog.json"
 )
+
+deprecated_names = ["ITEM_SCHEMA_URI", "COLLECTION_SCHEMA_URI", "CATALOG_SCHEMA_URI"]
+
+
+def __getattr__(name: str) -> Any:
+    if name in deprecated_names:
+        warnings.warn(f"{name} is deprecated and will be removed in v2.", FutureWarning)
+        return globals()[f"_deprecated_{name}"]
+    raise AttributeError(f"module {__name__} has no attribute {name}")
 
 
 class LocalValidator:
@@ -88,11 +97,11 @@ class LocalValidator:
     def _validate_from_local(
         self, schema_uri: str, stac_dict: Dict[str, Any]
     ) -> List[ValidationError]:
-        if schema_uri == ITEM_SCHEMA_URI:
+        if schema_uri == _deprecated_ITEM_SCHEMA_URI:
             validator = self.item_validator(VERSION)
-        elif schema_uri == COLLECTION_SCHEMA_URI:
+        elif schema_uri == _deprecated_COLLECTION_SCHEMA_URI:
             validator = self.collection_validator(VERSION)
-        elif schema_uri == CATALOG_SCHEMA_URI:
+        elif schema_uri == _deprecated_CATALOG_SCHEMA_URI:
             validator = self.catalog_validator(VERSION)
         else:
             raise STACLocalValidationError(
