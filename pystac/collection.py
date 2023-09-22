@@ -257,6 +257,20 @@ class TemporalExtent:
         """
         parsed_intervals: List[List[Optional[datetime]]] = []
         for i in d["interval"]:
+            if isinstance(i, str):
+                # d["interval"] is a list of strings, so we correct the list and
+                # try again
+                # https://github.com/stac-utils/pystac/issues/1221
+                warnings.warn(
+                    "A collection's temporal extent should be a list of lists, but "
+                    "is instead a "
+                    "list of strings. pystac is fixing this issue and continuing "
+                    "deserialization, but note that the source "
+                    "collection is invalid STAC.",
+                    UserWarning,
+                )
+                d["interval"] = [d["interval"]]
+                return TemporalExtent.from_dict(d)
             start = None
             end = None
 
