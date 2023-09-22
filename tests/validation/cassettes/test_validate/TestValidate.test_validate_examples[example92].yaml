@@ -71,7 +71,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:34:11 GMT
+      - Fri, 22 Sep 2023 19:14:40 GMT
       ETag:
       - '"647f85f4-dc7"'
       Last-Modified:
@@ -87,15 +87,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - dfc807f8d23029d8dc343a2d45199719b34b95df
+      - 64ca658ec6fae3e683633fd380406aed9209e1ec
       X-GitHub-Request-Id:
-      - 543C:7494:D630B4:14CE71B:64D52DA3
+      - 1BE0:2578:CAFC75:11653D2:650DE79F
       X-Served-By:
-      - cache-den8260-DEN
+      - cache-den8245-DEN
       X-Timer:
-      - S1691692452.845371,VS0,VE54
+      - S1695410080.318247,VS0,VE59
       expires:
-      - Thu, 10 Aug 2023 18:44:11 GMT
+      - Fri, 22 Sep 2023 19:24:40 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -106,14 +106,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - proj.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://proj.org/schemas/v0.2/projjson.schema.json
   response:
@@ -125,21 +123,23 @@ interactions:
       CF-Cache-Status:
       - EXPIRED
       CF-RAY:
-      - 7f4a54e129791f41-DEN
+      - 80acdf4b08771f2c-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - keep-alive
+      - close
       Content-Language:
       - en
       Content-Length:
       - '0'
       Content-Type:
       - text/html; charset=utf-8
+      Cross-Origin-Opener-Policy:
+      - same-origin
       Date:
-      - Thu, 10 Aug 2023 18:34:12 GMT
+      - Fri, 22 Sep 2023 19:14:40 GMT
       Location:
-      - https://proj.org/en/9.2/schemas/v0.2/projjson.schema.json
+      - https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -147,7 +147,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-0fc76138b5d2ebf8f
+      - web-i-0ea49865695837130
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -162,8 +162,6 @@ interactions:
       - path
       X-Served:
       - Proxito-404
-      X-XSS-Protection:
-      - 1; mode=block
       alt-svc:
       - h3=":443"; ma=86400
     status:
@@ -172,16 +170,14 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - proj.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
-    uri: https://proj.org/en/9.2/schemas/v0.2/projjson.schema.json
+    uri: https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
   response:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.2/projjson.schema.json\",\n
@@ -622,26 +618,26 @@ interactions:
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
     headers:
+      Access-Control-Allow-Origin:
+      - '*'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - REVALIDATED
+      - MISS
       CF-RAY:
-      - 7f4a54e2efd18eae-DEN
+      - 80acdf4d8dde51a9-DEN
       Cache-Control:
       - max-age=1200
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Type:
       - application/json
       Date:
-      - Thu, 10 Aug 2023 18:34:12 GMT
+      - Fri, 22 Sep 2023 19:14:41 GMT
       ETag:
       - W/"229554e540c67351947cd45680c62eef"
       Last-Modified:
-      - Sun, 26 Mar 2023 20:41:58 GMT
+      - Sun, 03 Sep 2023 09:10:52 GMT
       Referrer-Policy:
       - no-referrer-when-downgrade
       Server:
@@ -651,19 +647,19 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-00d2e73186fa632dd
+      - web-i-09c30d073841be0a2
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
       - proj.org
       X-RTD-Path:
-      - /proxito/html/osgeo-proj/9.2/schemas/v0.2/projjson.schema.json
+      - /proxito/html/osgeo-proj/9.3/schemas/v0.2/projjson.schema.json
       X-RTD-Project:
       - osgeo-proj
       X-RTD-Project-Method:
       - custom_domain
       X-RTD-Version:
-      - '9.2'
+      - '9.3'
       X-RTD-Version-Method:
       - path
       X-Served:
@@ -671,11 +667,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - 3zTDt+hm1vNhtAcUeaphWvMNNSx1/381ranvDY5Fg8702UR/OGeX4pd5git4lmtxqS828NkMaog=
+      - 9vpCRHiasDyBzVs+iDlJakiSvCYFrL7I6RsSnmkVN8hHP3qSCnZI12+ogkVAMgkBJlin1qxkdBI=
       x-amz-meta-mtime:
-      - '1679863309.472925768'
+      - '1693732240.238196845'
       x-amz-request-id:
-      - 5GR0F6M29E0MN4C7
+      - 2W2PFASQ01MAR5FC
       x-amz-server-side-encryption:
       - AES256
     status:
@@ -684,14 +680,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - geojson.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://geojson.org/schema/Polygon.json
   response:
@@ -717,17 +711,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '273'
+      - '703'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:34:12 GMT
+      - Fri, 22 Sep 2023 19:14:41 GMT
       ETag:
-      - W/"613924d8-2bf"
+      - '"613924d8-2bf"'
       Last-Modified:
       - Wed, 08 Sep 2021 21:02:16 GMT
       Server:
@@ -741,15 +733,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 33e99d1fa66d0948bed525abe1af016c7777013e
+      - 14e82ac0e5e60a7af874672623c2d8e7c54facfa
       X-GitHub-Request-Id:
-      - 9312:17F1:EA9ADE:16155CE:64D52DA4
+      - 9666:072C:CE23DB:11974C3:650DE7A1
       X-Served-By:
-      - cache-den8227-DEN
+      - cache-den8260-DEN
       X-Timer:
-      - S1691692453.627583,VS0,VE54
+      - S1695410081.388650,VS0,VE61
       expires:
-      - Thu, 10 Aug 2023 18:44:12 GMT
+      - Fri, 22 Sep 2023 19:24:41 GMT
       x-proxy-cache:
       - MISS
     status:

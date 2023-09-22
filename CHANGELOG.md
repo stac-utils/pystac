@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.8.4] - 2023-09-22
+
 ### Added
 
 - Permissive deserialization of Collection temporal extents ([#1222](https://github.com/stac-utils/pystac/pull/1222))
@@ -776,7 +778,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.3..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.4..main>
+[v1.8.4]: <https://github.com/stac-utils/pystac/compare/v1.8.3..v1.8.4>
 [v1.8.3]: <https://github.com/stac-utils/pystac/compare/v1.8.2..v1.8.3>
 [v1.8.2]: <https://github.com/stac-utils/pystac/compare/v1.8.1..v1.8.2>
 [v1.8.1]: <https://github.com/stac-utils/pystac/compare/v1.8.0..v1.8.1>
