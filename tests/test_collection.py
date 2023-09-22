@@ -660,3 +660,13 @@ def test_delete_asset_relative_no_self_link_fails(
     assert asset.href in str(e.value)
     assert name in collection.assets
     assert os.path.exists(href)
+
+
+def test_permissive_temporal_extent_deserialization(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1221
+    collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
+    collection_dict["extent"]["temporal"]["interval"] = collection_dict["extent"][
+        "temporal"
+    ]["interval"][0]
+    with pytest.warns(UserWarning):
+        Collection.from_dict(collection_dict)
