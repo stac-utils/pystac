@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:34 GMT
+      - Fri, 22 Sep 2023 19:13:53 GMT
       ETag:
       - '"647f85f4-147c"'
       Last-Modified:
@@ -115,15 +115,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - e6266a7eaae4b5c24a80c54699707e99c0ab03fe
+      - d2e77400358f2dded53fb96ae1cb917f85241854
       X-GitHub-Request-Id:
-      - 49FE:3C45:E0A7BB:14474D9:64D52D41
+      - E90A:10AA:3C688F:5584EA:650DE771
       X-Served-By:
-      - cache-den8266-DEN
+      - cache-den8260-DEN
       X-Timer:
-      - S1691692355.769801,VS0,VE54
+      - S1695410034.621027,VS0,VE60
       expires:
-      - Thu, 10 Aug 2023 18:42:34 GMT
+      - Fri, 22 Sep 2023 19:23:53 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -132,380 +132,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - schemas.stacspec.org
       User-Agent:
-      - python-requests/2.31.0
-    method: GET
-    uri: https://geojson.org/schema/Feature.json
-  response:
-    body:
-      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://geojson.org/schema/Feature.json\",\n  \"title\": \"GeoJSON Feature\",\n
-        \ \"type\": \"object\",\n  \"required\": [\n    \"type\",\n    \"properties\",\n
-        \   \"geometry\"\n  ],\n  \"properties\": {\n    \"type\": {\n      \"type\":
-        \"string\",\n      \"enum\": [\n        \"Feature\"\n      ]\n    },\n    \"id\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"number\"\n        },\n
-        \       {\n          \"type\": \"string\"\n        }\n      ]\n    },\n    \"properties\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"null\"\n        },\n
-        \       {\n          \"type\": \"object\"\n        }\n      ]\n    },\n    \"geometry\":
-        {\n      \"oneOf\": [\n        {\n          \"type\": \"null\"\n        },\n
-        \       {\n          \"title\": \"GeoJSON Point\",\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"coordinates\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"Point\"\n              ]\n
-        \           },\n            \"coordinates\": {\n              \"type\": \"array\",\n
-        \             \"minItems\": 2,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            },\n            \"bbox\": {\n              \"type\":
-        \"array\",\n              \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        {\n
-        \         \"title\": \"GeoJSON LineString\",\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"coordinates\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"LineString\"\n              ]\n
-        \           },\n            \"coordinates\": {\n              \"type\": \"array\",\n
-        \             \"minItems\": 2,\n              \"items\": {\n                \"type\":
-        \"array\",\n                \"minItems\": 2,\n                \"items\": {\n
-        \                 \"type\": \"number\"\n                }\n              }\n
-        \           },\n            \"bbox\": {\n              \"type\": \"array\",\n
-        \             \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        {\n
-        \         \"title\": \"GeoJSON Polygon\",\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"coordinates\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"Polygon\"\n              ]\n
-        \           },\n            \"coordinates\": {\n              \"type\": \"array\",\n
-        \             \"items\": {\n                \"type\": \"array\",\n                \"minItems\":
-        4,\n                \"items\": {\n                  \"type\": \"array\",\n
-        \                 \"minItems\": 2,\n                  \"items\": {\n                    \"type\":
-        \"number\"\n                  }\n                }\n              }\n            },\n
-        \           \"bbox\": {\n              \"type\": \"array\",\n              \"minItems\":
-        4,\n              \"items\": {\n                \"type\": \"number\"\n              }\n
-        \           }\n          }\n        },\n        {\n          \"title\": \"GeoJSON
-        MultiPoint\",\n          \"type\": \"object\",\n          \"required\": [\n
-        \           \"type\",\n            \"coordinates\"\n          ],\n          \"properties\":
-        {\n            \"type\": {\n              \"type\": \"string\",\n              \"enum\":
-        [\n                \"MultiPoint\"\n              ]\n            },\n            \"coordinates\":
-        {\n              \"type\": \"array\",\n              \"items\": {\n                \"type\":
-        \"array\",\n                \"minItems\": 2,\n                \"items\": {\n
-        \                 \"type\": \"number\"\n                }\n              }\n
-        \           },\n            \"bbox\": {\n              \"type\": \"array\",\n
-        \             \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        {\n
-        \         \"title\": \"GeoJSON MultiLineString\",\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"coordinates\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"MultiLineString\"\n
-        \             ]\n            },\n            \"coordinates\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"array\",\n
-        \               \"minItems\": 2,\n                \"items\": {\n                  \"type\":
-        \"array\",\n                  \"minItems\": 2,\n                  \"items\":
-        {\n                    \"type\": \"number\"\n                  }\n                }\n
-        \             }\n            },\n            \"bbox\": {\n              \"type\":
-        \"array\",\n              \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        {\n
-        \         \"title\": \"GeoJSON MultiPolygon\",\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"coordinates\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"MultiPolygon\"\n
-        \             ]\n            },\n            \"coordinates\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"type\": \"array\",\n
-        \               \"items\": {\n                  \"type\": \"array\",\n                  \"minItems\":
-        4,\n                  \"items\": {\n                    \"type\": \"array\",\n
-        \                   \"minItems\": 2,\n                    \"items\": {\n                      \"type\":
-        \"number\"\n                    }\n                  }\n                }\n
-        \             }\n            },\n            \"bbox\": {\n              \"type\":
-        \"array\",\n              \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        {\n
-        \         \"title\": \"GeoJSON GeometryCollection\",\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\",\n            \"geometries\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"type\":
-        \"string\",\n              \"enum\": [\n                \"GeometryCollection\"\n
-        \             ]\n            },\n            \"geometries\": {\n              \"type\":
-        \"array\",\n              \"items\": {\n                \"oneOf\": [\n                  {\n
-        \                   \"title\": \"GeoJSON Point\",\n                    \"type\":
-        \"object\",\n                    \"required\": [\n                      \"type\",\n
-        \                     \"coordinates\"\n                    ],\n                    \"properties\":
-        {\n                      \"type\": {\n                        \"type\": \"string\",\n
-        \                       \"enum\": [\n                          \"Point\"\n
-        \                       ]\n                      },\n                      \"coordinates\":
-        {\n                        \"type\": \"array\",\n                        \"minItems\":
-        2,\n                        \"items\": {\n                          \"type\":
-        \"number\"\n                        }\n                      },\n                      \"bbox\":
-        {\n                        \"type\": \"array\",\n                        \"minItems\":
-        4,\n                        \"items\": {\n                          \"type\":
-        \"number\"\n                        }\n                      }\n                    }\n
-        \                 },\n                  {\n                    \"title\":
-        \"GeoJSON LineString\",\n                    \"type\": \"object\",\n                    \"required\":
-        [\n                      \"type\",\n                      \"coordinates\"\n
-        \                   ],\n                    \"properties\": {\n                      \"type\":
-        {\n                        \"type\": \"string\",\n                        \"enum\":
-        [\n                          \"LineString\"\n                        ]\n                      },\n
-        \                     \"coordinates\": {\n                        \"type\":
-        \"array\",\n                        \"minItems\": 2,\n                        \"items\":
-        {\n                          \"type\": \"array\",\n                          \"minItems\":
-        2,\n                          \"items\": {\n                            \"type\":
-        \"number\"\n                          }\n                        }\n                      },\n
-        \                     \"bbox\": {\n                        \"type\": \"array\",\n
-        \                       \"minItems\": 4,\n                        \"items\":
-        {\n                          \"type\": \"number\"\n                        }\n
-        \                     }\n                    }\n                  },\n                  {\n
-        \                   \"title\": \"GeoJSON Polygon\",\n                    \"type\":
-        \"object\",\n                    \"required\": [\n                      \"type\",\n
-        \                     \"coordinates\"\n                    ],\n                    \"properties\":
-        {\n                      \"type\": {\n                        \"type\": \"string\",\n
-        \                       \"enum\": [\n                          \"Polygon\"\n
-        \                       ]\n                      },\n                      \"coordinates\":
-        {\n                        \"type\": \"array\",\n                        \"items\":
-        {\n                          \"type\": \"array\",\n                          \"minItems\":
-        4,\n                          \"items\": {\n                            \"type\":
-        \"array\",\n                            \"minItems\": 2,\n                            \"items\":
-        {\n                              \"type\": \"number\"\n                            }\n
-        \                         }\n                        }\n                      },\n
-        \                     \"bbox\": {\n                        \"type\": \"array\",\n
-        \                       \"minItems\": 4,\n                        \"items\":
-        {\n                          \"type\": \"number\"\n                        }\n
-        \                     }\n                    }\n                  },\n                  {\n
-        \                   \"title\": \"GeoJSON MultiPoint\",\n                    \"type\":
-        \"object\",\n                    \"required\": [\n                      \"type\",\n
-        \                     \"coordinates\"\n                    ],\n                    \"properties\":
-        {\n                      \"type\": {\n                        \"type\": \"string\",\n
-        \                       \"enum\": [\n                          \"MultiPoint\"\n
-        \                       ]\n                      },\n                      \"coordinates\":
-        {\n                        \"type\": \"array\",\n                        \"items\":
-        {\n                          \"type\": \"array\",\n                          \"minItems\":
-        2,\n                          \"items\": {\n                            \"type\":
-        \"number\"\n                          }\n                        }\n                      },\n
-        \                     \"bbox\": {\n                        \"type\": \"array\",\n
-        \                       \"minItems\": 4,\n                        \"items\":
-        {\n                          \"type\": \"number\"\n                        }\n
-        \                     }\n                    }\n                  },\n                  {\n
-        \                   \"title\": \"GeoJSON MultiLineString\",\n                    \"type\":
-        \"object\",\n                    \"required\": [\n                      \"type\",\n
-        \                     \"coordinates\"\n                    ],\n                    \"properties\":
-        {\n                      \"type\": {\n                        \"type\": \"string\",\n
-        \                       \"enum\": [\n                          \"MultiLineString\"\n
-        \                       ]\n                      },\n                      \"coordinates\":
-        {\n                        \"type\": \"array\",\n                        \"items\":
-        {\n                          \"type\": \"array\",\n                          \"minItems\":
-        2,\n                          \"items\": {\n                            \"type\":
-        \"array\",\n                            \"minItems\": 2,\n                            \"items\":
-        {\n                              \"type\": \"number\"\n                            }\n
-        \                         }\n                        }\n                      },\n
-        \                     \"bbox\": {\n                        \"type\": \"array\",\n
-        \                       \"minItems\": 4,\n                        \"items\":
-        {\n                          \"type\": \"number\"\n                        }\n
-        \                     }\n                    }\n                  },\n                  {\n
-        \                   \"title\": \"GeoJSON MultiPolygon\",\n                    \"type\":
-        \"object\",\n                    \"required\": [\n                      \"type\",\n
-        \                     \"coordinates\"\n                    ],\n                    \"properties\":
-        {\n                      \"type\": {\n                        \"type\": \"string\",\n
-        \                       \"enum\": [\n                          \"MultiPolygon\"\n
-        \                       ]\n                      },\n                      \"coordinates\":
-        {\n                        \"type\": \"array\",\n                        \"items\":
-        {\n                          \"type\": \"array\",\n                          \"items\":
-        {\n                            \"type\": \"array\",\n                            \"minItems\":
-        4,\n                            \"items\": {\n                              \"type\":
-        \"array\",\n                              \"minItems\": 2,\n                              \"items\":
-        {\n                                \"type\": \"number\"\n                              }\n
-        \                           }\n                          }\n                        }\n
-        \                     },\n                      \"bbox\": {\n                        \"type\":
-        \"array\",\n                        \"minItems\": 4,\n                        \"items\":
-        {\n                          \"type\": \"number\"\n                        }\n
-        \                     }\n                    }\n                  }\n                ]\n
-        \             }\n            },\n            \"bbox\": {\n              \"type\":
-        \"array\",\n              \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        }\n      ]\n
-        \   },\n    \"bbox\": {\n      \"type\": \"array\",\n      \"minItems\": 4,\n
-        \     \"items\": {\n        \"type\": \"number\"\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '886'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
-      ETag:
-      - W/"613924d8-35d1"
-      Last-Modified:
-      - Wed, 08 Sep 2021 21:02:16 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - d473fa341be8f94c0aca5d4ac6f0ad22bdb14d75
-      X-GitHub-Request-Id:
-      - EC30:4CBB:FB6A5E:161EFD7:64D52D42
-      X-Served-By:
-      - cache-den8248-DEN
-      X-Timer:
-      - S1691692355.002369,VS0,VE54
-      expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
-      x-proxy-cache:
-      - MISS
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.31.0
-    method: GET
-    uri: https://geojson.org/schema/Geometry.json
-  response:
-    body:
-      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://geojson.org/schema/Geometry.json\",\n  \"title\": \"GeoJSON Geometry\",\n
-        \ \"oneOf\": [\n    {\n      \"title\": \"GeoJSON Point\",\n      \"type\":
-        \"object\",\n      \"required\": [\n        \"type\",\n        \"coordinates\"\n
-        \     ],\n      \"properties\": {\n        \"type\": {\n          \"type\":
-        \"string\",\n          \"enum\": [\n            \"Point\"\n          ]\n        },\n
-        \       \"coordinates\": {\n          \"type\": \"array\",\n          \"minItems\":
-        2,\n          \"items\": {\n            \"type\": \"number\"\n          }\n
-        \       },\n        \"bbox\": {\n          \"type\": \"array\",\n          \"minItems\":
-        4,\n          \"items\": {\n            \"type\": \"number\"\n          }\n
-        \       }\n      }\n    },\n    {\n      \"title\": \"GeoJSON LineString\",\n
-        \     \"type\": \"object\",\n      \"required\": [\n        \"type\",\n        \"coordinates\"\n
-        \     ],\n      \"properties\": {\n        \"type\": {\n          \"type\":
-        \"string\",\n          \"enum\": [\n            \"LineString\"\n          ]\n
-        \       },\n        \"coordinates\": {\n          \"type\": \"array\",\n          \"minItems\":
-        2,\n          \"items\": {\n            \"type\": \"array\",\n            \"minItems\":
-        2,\n            \"items\": {\n              \"type\": \"number\"\n            }\n
-        \         }\n        },\n        \"bbox\": {\n          \"type\": \"array\",\n
-        \         \"minItems\": 4,\n          \"items\": {\n            \"type\":
-        \"number\"\n          }\n        }\n      }\n    },\n    {\n      \"title\":
-        \"GeoJSON Polygon\",\n      \"type\": \"object\",\n      \"required\": [\n
-        \       \"type\",\n        \"coordinates\"\n      ],\n      \"properties\":
-        {\n        \"type\": {\n          \"type\": \"string\",\n          \"enum\":
-        [\n            \"Polygon\"\n          ]\n        },\n        \"coordinates\":
-        {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
-        \"array\",\n            \"minItems\": 4,\n            \"items\": {\n              \"type\":
-        \"array\",\n              \"minItems\": 2,\n              \"items\": {\n                \"type\":
-        \"number\"\n              }\n            }\n          }\n        },\n        \"bbox\":
-        {\n          \"type\": \"array\",\n          \"minItems\": 4,\n          \"items\":
-        {\n            \"type\": \"number\"\n          }\n        }\n      }\n    },\n
-        \   {\n      \"title\": \"GeoJSON MultiPoint\",\n      \"type\": \"object\",\n
-        \     \"required\": [\n        \"type\",\n        \"coordinates\"\n      ],\n
-        \     \"properties\": {\n        \"type\": {\n          \"type\": \"string\",\n
-        \         \"enum\": [\n            \"MultiPoint\"\n          ]\n        },\n
-        \       \"coordinates\": {\n          \"type\": \"array\",\n          \"items\":
-        {\n            \"type\": \"array\",\n            \"minItems\": 2,\n            \"items\":
-        {\n              \"type\": \"number\"\n            }\n          }\n        },\n
-        \       \"bbox\": {\n          \"type\": \"array\",\n          \"minItems\":
-        4,\n          \"items\": {\n            \"type\": \"number\"\n          }\n
-        \       }\n      }\n    },\n    {\n      \"title\": \"GeoJSON MultiLineString\",\n
-        \     \"type\": \"object\",\n      \"required\": [\n        \"type\",\n        \"coordinates\"\n
-        \     ],\n      \"properties\": {\n        \"type\": {\n          \"type\":
-        \"string\",\n          \"enum\": [\n            \"MultiLineString\"\n          ]\n
-        \       },\n        \"coordinates\": {\n          \"type\": \"array\",\n          \"items\":
-        {\n            \"type\": \"array\",\n            \"minItems\": 2,\n            \"items\":
-        {\n              \"type\": \"array\",\n              \"minItems\": 2,\n              \"items\":
-        {\n                \"type\": \"number\"\n              }\n            }\n
-        \         }\n        },\n        \"bbox\": {\n          \"type\": \"array\",\n
-        \         \"minItems\": 4,\n          \"items\": {\n            \"type\":
-        \"number\"\n          }\n        }\n      }\n    },\n    {\n      \"title\":
-        \"GeoJSON MultiPolygon\",\n      \"type\": \"object\",\n      \"required\":
-        [\n        \"type\",\n        \"coordinates\"\n      ],\n      \"properties\":
-        {\n        \"type\": {\n          \"type\": \"string\",\n          \"enum\":
-        [\n            \"MultiPolygon\"\n          ]\n        },\n        \"coordinates\":
-        {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
-        \"array\",\n            \"items\": {\n              \"type\": \"array\",\n
-        \             \"minItems\": 4,\n              \"items\": {\n                \"type\":
-        \"array\",\n                \"minItems\": 2,\n                \"items\": {\n
-        \                 \"type\": \"number\"\n                }\n              }\n
-        \           }\n          }\n        },\n        \"bbox\": {\n          \"type\":
-        \"array\",\n          \"minItems\": 4,\n          \"items\": {\n            \"type\":
-        \"number\"\n          }\n        }\n      }\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Length:
-      - '426'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
-      ETag:
-      - W/"613924d8-1124"
-      Last-Modified:
-      - Wed, 08 Sep 2021 21:02:16 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - fbc3c24b33c422eff0fbc0e2160a20515408d62d
-      X-GitHub-Request-Id:
-      - 3C64:6104:FAA4E5:1612952:64D52D42
-      X-Served-By:
-      - cache-den8245-DEN
-      X-Timer:
-      - S1691692355.126027,VS0,VE65
-      expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
-      x-proxy-cache:
-      - MISS
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Connection:
-      - keep-alive
-      User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/basics.json
   response:
@@ -528,17 +160,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '274'
+      - '540'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
+      - Fri, 22 Sep 2023 19:13:53 GMT
       ETag:
-      - W/"647f85f4-21c"
+      - '"647f85f4-21c"'
       Last-Modified:
       - Tue, 06 Jun 2023 19:16:04 GMT
       Server:
@@ -552,17 +182,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 09c1dfb33cc6d02e553dc66e715586920916f76b
+      - 8fa62bea01ba92bd2b5300f2a3ee654c71cef57c
       X-GitHub-Request-Id:
-      - 9BBA:149B:F46D03:15AF327:64D52D42
+      - 2FD8:3952:CD18A6:1243801:650DE76F
       X-Served-By:
-      - cache-den8233-DEN
+      - cache-den8273-DEN
       X-Timer:
-      - S1691692355.258353,VS0,VE51
+      - S1695410034.787395,VS0,VE68
       expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
-      x-origin-cache:
-      - HIT
+      - Fri, 22 Sep 2023 19:23:53 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -571,14 +199,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - schemas.stacspec.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/datetime.json
   response:
@@ -631,17 +257,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '579'
+      - '2690'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
+      - Fri, 22 Sep 2023 19:13:54 GMT
       ETag:
-      - W/"647f85f4-a82"
+      - '"647f85f4-a82"'
       Last-Modified:
       - Tue, 06 Jun 2023 19:16:04 GMT
       Server:
@@ -655,17 +279,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 630aa672dad241b1e3ab2dcda8d0bf3a318b1dcf
+      - d30e484a5d8afe2ffda6d1ebd2887ae42fe4d8ac
       X-GitHub-Request-Id:
-      - 8130:278A:FBDB49:162628C:64D52D42
+      - 3DDE:5F5A:C41375:11B2BFB:650DE771
       X-Served-By:
-      - cache-den8244-DEN
+      - cache-den8246-DEN
       X-Timer:
-      - S1691692355.393568,VS0,VE55
+      - S1695410034.967056,VS0,VE59
       expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
-      x-origin-cache:
-      - HIT
+      - Fri, 22 Sep 2023 19:23:54 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -674,14 +296,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - schemas.stacspec.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/instrument.json
   response:
@@ -706,17 +326,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '281'
+      - '674'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
+      - Fri, 22 Sep 2023 19:13:54 GMT
       ETag:
-      - W/"647f85f4-2a2"
+      - '"647f85f4-2a2"'
       Last-Modified:
       - Tue, 06 Jun 2023 19:16:04 GMT
       Server:
@@ -730,15 +348,17 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 12b6f07e74ba1d766e1dd2a059a98101012f630e
+      - 06560147c7c18ac6ecd77939106296d7eb6b9540
       X-GitHub-Request-Id:
-      - 201E:2383:F0510D:156DDA0:64D52D42
+      - CAF2:6545:C45CB5:11B7006:650DE771
       X-Served-By:
-      - cache-den8253-DEN
+      - cache-den8236-DEN
       X-Timer:
-      - S1691692356.518994,VS0,VE54
+      - S1695410034.125754,VS0,VE59
       expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
+      - Fri, 22 Sep 2023 19:23:54 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -747,14 +367,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - schemas.stacspec.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/licensing.json
   response:
@@ -774,17 +392,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '203'
+      - '309'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
+      - Fri, 22 Sep 2023 19:13:54 GMT
       ETag:
-      - W/"647f85f4-135"
+      - '"647f85f4-135"'
       Last-Modified:
       - Tue, 06 Jun 2023 19:16:04 GMT
       Server:
@@ -798,17 +414,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - a10636482ab9e48c4196160dcbb3c27cfa4b8b76
+      - f93f9caa08592f047b691546736f9794e2ba2af3
       X-GitHub-Request-Id:
-      - 390C:591A:100D418:16757A1:64D52D42
+      - C654:3952:CD18C7:1243831:650DE771
       X-Served-By:
-      - cache-den8234-DEN
+      - cache-den8280-DEN
       X-Timer:
-      - S1691692356.664297,VS0,VE52
+      - S1695410034.293604,VS0,VE64
       expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
-      x-origin-cache:
-      - HIT
+      - Fri, 22 Sep 2023 19:23:54 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -817,14 +431,12 @@ interactions:
 - request:
     body: null
     headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
       Connection:
-      - keep-alive
+      - close
+      Host:
+      - schemas.stacspec.org
       User-Agent:
-      - python-requests/2.31.0
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/provider.json
   response:
@@ -854,17 +466,15 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
+      - close
       Content-Length:
-      - '332'
+      - '1038'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 10 Aug 2023 18:32:35 GMT
+      - Fri, 22 Sep 2023 19:13:54 GMT
       ETag:
-      - W/"647f85f4-40e"
+      - '"647f85f4-40e"'
       Last-Modified:
       - Tue, 06 Jun 2023 19:16:04 GMT
       Server:
@@ -878,15 +488,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - c58d0a8eb734b703d48d59d9a80e4dae60a0c003
+      - a2a73ec212cafed7589c65ce8349567ab16ed703
       X-GitHub-Request-Id:
-      - 84CE:3665:B889ED:11AFF5D:64D52D42
+      - 4D88:10FE:45A0B2:675F26:650DE770
       X-Served-By:
-      - cache-den8256-DEN
+      - cache-den8241-DEN
       X-Timer:
-      - S1691692356.807286,VS0,VE51
+      - S1695410034.466669,VS0,VE57
       expires:
-      - Thu, 10 Aug 2023 18:42:35 GMT
+      - Fri, 22 Sep 2023 19:23:54 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
