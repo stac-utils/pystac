@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import (
     Any,
     Dict,
@@ -385,6 +386,10 @@ class EOExtension(
 
     @classmethod
     def get_schema_uris(cls) -> List[str]:
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return SCHEMA_URIS
 
     @classmethod

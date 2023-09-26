@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import (
     Any,
     Dict,
@@ -32,6 +33,7 @@ SCHEMA_URIS = [
     "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
+SCHEMA_STARTWITH = "https://stac-extensions.github.io/raster/"
 BANDS_PROP = "raster:bands"
 
 
@@ -715,6 +717,10 @@ class RasterExtension(
 
     @classmethod
     def get_schema_uris(cls) -> List[str]:
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return SCHEMA_URIS
 
     @classmethod

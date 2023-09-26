@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
 
 import pystac
@@ -696,6 +697,10 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
 
     @classmethod
     def get_schema_uris(cls) -> List[str]:
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return SCHEMA_URIS
 
     @classmethod

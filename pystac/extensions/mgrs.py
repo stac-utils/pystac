@@ -8,6 +8,7 @@ from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/mgrs/v1.0.0/schema.json"
+SCHEMA_STARTSWITH: str = "https://stac-extensions.github.io/mgrs/"
 PREFIX: str = "mgrs:"
 
 # Field names

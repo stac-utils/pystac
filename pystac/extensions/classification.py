@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from typing import (
     Any,
     Dict,
@@ -510,6 +511,10 @@ class ClassificationExtension(
 
     @classmethod
     def get_schema_uris(cls) -> List[str]:
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return [SCHEMA_URI_PATTERN.format(version=v) for v in SUPPORTED_VERSIONS]
 
     @classmethod
@@ -637,9 +642,11 @@ class SummariesClassificationExtension(SummariesExtension):
 
 class ClassificationExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-    prev_extension_ids = set(ClassificationExtension.get_schema_uris()) - set(
-        [ClassificationExtension.get_schema_uri()]
-    )
+    prev_extension_ids = {
+        SCHEMA_URI_PATTERN.format(version=v)
+        for v in SUPPORTED_VERSIONS
+        if v != DEFAULT_VERSION
+    }
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(

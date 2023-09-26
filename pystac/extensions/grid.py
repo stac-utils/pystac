@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from typing import Any, Dict, List, Optional, Pattern, Set, Union
 
 import pystac
@@ -86,6 +87,10 @@ class GridExtension(
 
     @classmethod
     def get_schema_uris(cls) -> List[str]:
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return SCHEMA_URIS
 
     @classmethod
