@@ -9,6 +9,582 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"item.json#\",\n  \"title\": \"STAC Item\",\n  \"type\": \"object\",\n  \"description\":
+        \"This object represents the metadata for an item in a SpatioTemporal Asset
+        Catalog.\",\n  \"additionalProperties\": true,\n  \"allOf\": [\n    {\n      \"$ref\":
+        \"#/definitions/core\"\n    }\n  ],\n  \"definitions\": {\n    \"common_metadata\":
+        {\n      \"allOf\": [\n        {\n          \"$ref\": \"basics.json\"\n        },\n
+        \       {\n          \"$ref\": \"datetimerange.json\"\n        },\n        {\n
+        \         \"$ref\": \"instrument.json\"\n        },\n        {\n          \"$ref\":
+        \"licensing.json\"\n        },\n        {\n          \"$ref\": \"metadata.json\"\n
+        \       },\n        {\n          \"$ref\": \"provider.json\"\n        }\n
+        \     ]\n    },\n    \"core\": {\n      \"allOf\": [\n        {\n          \"$ref\":
+        \"https://geojson.org/schema/Feature.json\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"stac_version\",\n            \"id\",\n
+        \           \"links\",\n            \"assets\",\n            \"bbox\",\n            \"properties\"\n
+        \         ],\n          \"properties\": {\n            \"stac_version\": {\n
+        \             \"title\": \"STAC version\",\n              \"type\": \"string\",\n
+        \             \"const\": \"0.9.0\"\n            },\n            \"stac_extensions\":
+        {\n              \"title\": \"STAC extensions\",\n              \"type\":
+        \"array\",\n              \"uniqueItems\": true,\n              \"items\":
+        {\n                \"anyOf\": [\n                  {\n                    \"title\":
+        \"Reference to a JSON Schema\",\n                    \"type\": \"string\",\n
+        \                   \"format\": \"uri\"\n                  },\n                  {\n
+        \                   \"title\": \"Reference to a core extension\",\n                    \"type\":
+        \"string\",\n                    \"enum\": [\n                      \"checksum\",\n
+        \                     \"commons\",\n                      \"datacube\",\n
+        \                     \"eo\",\n                      \"label\",\n                      \"pointcloud\",\n
+        \                     \"projection\",\n                      \"sar\",\n                      \"sat\",\n
+        \                     \"scientific\",\n                      \"version\",\n
+        \                     \"view\"\n                    ]\n                  }\n
+        \               ]\n              }\n            },\n            \"id\": {\n
+        \             \"title\": \"Provider ID\",\n              \"description\":
+        \"Provider item ID\",\n              \"type\": \"string\"\n            },\n
+        \           \"bbox\": {\n              \"type\": \"array\",\n              \"minItems\":
+        4,\n              \"items\": {\n                \"type\": \"number\"\n              }\n
+        \           },\n            \"links\": {\n              \"title\": \"Item
+        links\",\n              \"description\": \"Links to item relations\",\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"$ref\": \"#/definitions/link\"\n
+        \             }\n            },\n            \"assets\": {\n              \"title\":
+        \"Asset links\",\n              \"description\": \"Links to assets\",\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/asset\"\n              }\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"type\":
+        \"object\",\n                  \"required\": [\n                    \"datetime\"\n
+        \                 ],\n                  \"properties\": {\n                    \"datetime\":
+        {\n                      \"title\": \"Date and Time\",\n                      \"description\":
+        \"The searchable date/time of the assets, in UTC (Formatted in RFC 3339) \",\n
+        \                     \"type\": \"string\",\n                      \"format\":
+        \"date-time\"\n                    }\n                  }\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/common_metadata\"\n
+        \               }\n              ]\n            },\n            \"collection\":
+        {\n              \"title\": \"Collection ID\",\n              \"description\":
+        \"The ID of the STAC Collection this Item references to.\",\n              \"type\":
+        \"string\"\n            }\n          }\n        }\n      ]\n    },\n    \"link\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n
+        \       \"href\"\n      ],\n      \"properties\": {\n        \"href\": {\n
+        \         \"title\": \"Link reference\",\n          \"type\": \"string\"\n
+        \       },\n        \"rel\": {\n          \"title\": \"Link relation type\",\n
+        \         \"type\": \"string\"\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    },\n    \"asset\": {\n      \"type\": \"object\",\n
+        \     \"required\": [\n        \"href\"\n      ],\n      \"properties\": {\n
+        \       \"href\": {\n          \"title\": \"Asset reference\",\n          \"type\":
+        \"string\"\n        },\n        \"title\": {\n          \"title\": \"Asset
+        title\",\n          \"type\": \"string\"\n        },\n        \"description\":
+        {\n          \"title\": \"Asset description\",\n          \"type\": \"string\"\n
+        \       },\n        \"type\": {\n          \"title\": \"Asset type\",\n          \"type\":
+        \"string\"\n        },\n        \"roles\": {\n          \"title\": \"Asset
+        roles\",\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '5137'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:12 GMT
+      ETag:
+      - '"eb4ef35f5071c45c7b53e7fe6ef92a682455a0de207fcbe27507488c4bfcc9ca"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:12 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - bece66765242583bd5679cb6c98769332f38fd7f
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 80C0:9989:4651:58BD:65149AB8
+      X-Served-By:
+      - cache-lga21971-LGA
+      X-Timer:
+      - S1695849673.742381,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/basics.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"basics.json#\",\n  \"title\": \"Basic Descriptive Fields\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"title\": {\n      \"title\": \"Item
+        Title\",\n      \"description\": \"A human-readable title describing the Item.\",\n
+        \     \"type\": \"string\"\n    },\n    \"description\": {\n      \"title\":
+        \"Item Description\",\n      \"description\": \"Detailed multi-line description
+        to fully explain the Item.\",\n      \"type\": \"string\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '475'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:12 GMT
+      ETag:
+      - '"2436fa8ce8356cb57ec6581098dc3ea04f5395558aaca6e4008e09eb43f0a9db"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:12 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 80bda157096e0e2ecda9e89bf35bdbb294ffb399
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 7904:9289:1DB2:2B65:65149AB8
+      X-Served-By:
+      - cache-lga21959-LGA
+      X-Timer:
+      - S1695849673.843370,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/datetimerange.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"Date and Time Range Fields\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"start_datetime\": {\n      \"title\":
+        \"Start Date and Time\",\n      \"description\": \"The searchable start date/time
+        of the assets, in UTC (Formatted in RFC 3339) \",\n      \"type\": \"string\",\n
+        \     \"format\": \"date-time\"\n    }, \n    \"end_datetime\": {\n      \"title\":
+        \"End Date and Time\", \n      \"description\": \"The searchable end date/time
+        of the assets, in UTC (Formatted in RFC 3339) \",                  \n      \"type\":
+        \"string\",\n      \"format\": \"date-time\"\n    }\n  },\n  \"dependencies\":
+        {\n    \"start_datetime\": {\n      \"required\": [\n        \"end_datetime\"\n
+        \     ]\n    },\n    \"end_datetime\": {\n      \"required\": [\n        \"start_datetime\"\n
+        \     ]\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '814'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:12 GMT
+      ETag:
+      - '"e1248a7fa9f6feeddb9c683a0fcfcab1b8ea66ae5db2d9a36f0602d44879a0f8"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:12 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 93f4bb839786db1adf5fedbe44eb7fb598117fed
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - F4CA:822A:2AB6:3BEA:65149AB9
+      X-Served-By:
+      - cache-lga21956-LGA
+      X-Timer:
+      - S1695849673.950418,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/instrument.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"instrument.json#\",\n  \"title\": \"Instrument Fields\",\n  \"type\": \"object\",\n
+        \ \"properties\": {\n    \"platform\": {\n      \"title\": \"Platform\",\n
+        \     \"type\": \"string\"\n    },\n    \"instruments\": {\n      \"title\":
+        \"Instruments\",\n      \"type\": \"array\",\n      \"items\": {\n        \"type\":
+        \"string\"\n      }\n    },\n    \"constellation\": {\n      \"title\": \"Constellation\",\n
+        \     \"type\": \"string\"\n    },\n    \"mission\": {\n      \"title\": \"Mission\",\n
+        \     \"type\": \"string\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '525'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:13 GMT
+      ETag:
+      - '"84c39a084fe100d85a10cdeef11399cb06ceed2c623ee37cfbdb03f85d39477c"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:13 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - a9c29c5440f15e326e2eb195829afa264002ec58
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 351C:3EC2:4601:584F:65149AB9
+      X-Served-By:
+      - cache-lga21938-LGA
+      X-Timer:
+      - S1695849673.077387,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/licensing.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"licensing.json#\",\n  \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n
+        \ \"properties\": {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\":
+        \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '244'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:13 GMT
+      ETag:
+      - '"d2cd4998f5154410f2dc79b42af5baaf118454186cee8d12066a5f42d3e821fc"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:13 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - fe26c33cfeb657c5a97c38d8590e250bf6bbb618
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 0DF8:9989:4669:58DD:65149AB9
+      X-Served-By:
+      - cache-lga21956-LGA
+      X-Timer:
+      - S1695849673.172198,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/metadata.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"metadata.json#\",\n  \"title\": \"Metadata Fields\",\n  \"type\": \"object\",\n
+        \ \"properties\": {\n    \"created\": {\n      \"title\": \"Metadata Creation\",\n
+        \     \"type\": \"string\",\n      \"format\": \"date-time\"\n    },\n    \"updated\":
+        {\n      \"title\": \"Metadata Last Update\",\n      \"type\": \"string\",\n
+        \     \"format\": \"date-time\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '384'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:13 GMT
+      ETag:
+      - '"a99228769e5d0400f7b006fa153262053fb7a6ffdb3b8bbf51c4df37a82098f6"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:13 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - fc8a069ccb5d3f1da88365be4cee4c0bacba619f
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - DE6A:152E:1D56:2AF7:65149AB9
+      X-Served-By:
+      - cache-lga21943-LGA
+      X-Timer:
+      - S1695849673.267964,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/provider.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"provider.json#\",\n  \"title\": \"Provider Fields\",\n  \"type\": \"object\",\n
+        \ \"properties\": {\n    \"providers\": {\n      \"title\": \"Providers\",\n
+        \     \"type\": \"array\",\n      \"items\": {\n        \"properties\": {\n
+        \         \"name\": {\n            \"title\": \"Organization name\",\n            \"type\":
+        \"string\"\n          },\n          \"description\": {\n            \"title\":
+        \"Organization description\",\n            \"type\": \"string\"\n          },\n
+        \         \"roles\": {\n            \"title\": \"Organization roles\",\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"string\",\n
+        \             \"enum\": [\n                \"producer\",\n                \"licensor\",\n
+        \               \"processor\",\n                \"host\"\n              ]\n
+        \           }\n          },\n          \"url\": {\n            \"title\":
+        \"Organization homepage\",\n            \"type\": \"string\",\n            \"format\":
+        \"url\"\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '973'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:21:13 GMT
+      ETag:
+      - '"a92eac8e15643dce5b9165724ce350d2ee5edad5f8baca7140c79ce8ce0da8c6"'
+      Expires:
+      - Wed, 27 Sep 2023 21:26:13 GMT
+      Source-Age:
+      - '2'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 16b4c164c30c83f50a57086a221b7d8ac4f32bf9
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - CC28:19A7:5ED4:7137:65149AB9
+      X-Served-By:
+      - cache-lga21953-LGA
+      X-Timer:
+      - S1695849673.363612,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/checksum/json-schema/schema.json
   response:
     body:
@@ -45,11 +621,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:35 GMT
+      - Wed, 27 Sep 2023 21:21:13 GMT
       ETag:
       - '"9bde8b6875408a186b283e6e3dd3edb01bc2b938e55a0491b0b7f4e06f0faccb"'
       Expires:
-      - Fri, 22 Sep 2023 19:19:35 GMT
+      - Wed, 27 Sep 2023 21:26:13 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -59,21 +635,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 5c008114f723e189f04210ca159f6e715e1154c6
+      - 55ca61bc8a95ae68e2ce15df454433015a176ba6
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 27FE:25E4:461ABC:552485:650DE799
+      - 31C8:14EE:4B22:5D82:65149AB9
       X-Served-By:
-      - cache-den8248-DEN
+      - cache-lga21935-LGA
       X-Timer:
-      - S1695410076.803100,VS0,VE144
+      - S1695849673.457488,VS0,VE85
       X-XSS-Protection:
       - 1; mode=block
     status:

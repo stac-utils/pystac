@@ -13,20 +13,18 @@ interactions:
       - 'true'
       Access-Control-Allow-Origin:
       - '*'
-      Connection:
-      - keep-alive
       Content-Length:
       - '91'
       Content-Type:
       - application/json
       Date:
-      - Fri, 22 Sep 2023 19:13:57 GMT
+      - Wed, 27 Sep 2023 21:20:05 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
+      X-Azure-Ref:
+      - 0hZwUZQAAAADvyvhAJ0UlT5d19SkjNUbBTU5aMjIxMDYwNjEyMDIzADkyN2FiZmE2LTE5ZjYtNGFmMS1hMDlkLWM5NTlkOWExZTY0NA==
       X-Cache:
       - CONFIG_NOCACHE
-      x-azure-ref:
-      - 20230922T191356Z-h3bkbtr83x2m5133xb9z9rzw1g0000000dk000000000xwqr
     status:
       code: 404
       message: Not Found
