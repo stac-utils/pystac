@@ -6,6 +6,10 @@
 
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 
+### Fixed
+
+- Typing of `href` arguments ([#1234](https://github.com/stac-utils/pystac/pull/1234))
+
 ## [v1.8.4] - 2023-09-22
 
 ### Added

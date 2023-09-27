@@ -36,6 +36,7 @@ from pystac.serialization import (
 )
 from pystac.stac_object import STACObject, STACObjectType
 from pystac.utils import (
+    HREF,
     StringEnum,
     is_absolute_href,
     make_absolute_href,
@@ -1245,7 +1246,7 @@ class Catalog(STACObject):
 
     @classmethod
     def from_file(
-        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
+        cls: Type[C], href: HREF, stac_io: Optional[pystac.StacIO] = None
     ) -> C:
         if stac_io is None:
             stac_io = pystac.StacIO.default()

@@ -1720,7 +1720,7 @@ def test_set_parent_false_stores_in_proper_place_on_save(
     nested_catalog.normalize_and_save(
         root_href=str(tmp_path), catalog_type=pystac.CatalogType.ABSOLUTE_PUBLISHED
     )
-    root = pystac.Catalog.from_file(str(tmp_path / "catalog.json"))
+    root = pystac.Catalog.from_file(tmp_path / "catalog.json")
     product_a = next(root.get_child("products").get_children())  # type: ignore
     variable_a = next(root.get_child("variables").get_children())  # type: ignore
 

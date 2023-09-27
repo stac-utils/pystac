@@ -488,7 +488,7 @@ def test_duplicate_self_links(tmp_path: Path, sample_item: pystac.Item) -> None:
     assert len(sample_item.get_links(rel="self")) == 1
     path = tmp_path / "item.json"
     sample_item.save_object(include_self_link=True, dest_href=str(path))
-    sample_item = Item.from_file(str(path))
+    sample_item = Item.from_file(path)
     assert len(sample_item.get_links(rel="self")) == 1
 
 
@@ -630,3 +630,9 @@ def test_non_hierarchical_relative_link() -> None:
     assert a.target_in_hierarchy(b)
     assert root.target_in_hierarchy(next(b.get_items()))
     assert root.target_in_hierarchy(root)
+
+
+def test_pathlib() -> None:
+    # This works, but breaks mypy until we fix
+    # https://github.com/stac-utils/pystac/issues/1216
+    Item.from_file(Path(TestCases.get_path("data-files/item/sample-item.json")))
