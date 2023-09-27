@@ -13,7 +13,7 @@ import pytest
 
 import pystac
 import pystac.serialization.common_properties
-from pystac import Asset, Catalog, Collection, Item, Link
+from pystac import Asset, Catalog, Collection, Item, Link, STACValidationError
 from pystac.utils import (
     datetime_to_str,
     get_opt,
@@ -636,3 +636,10 @@ def test_pathlib() -> None:
     # This works, but breaks mypy until we fix
     # https://github.com/stac-utils/pystac/issues/1216
     Item.from_file(Path(TestCases.get_path("data-files/item/sample-item.json")))
+
+
+def test_invalid_error_message(item: Item) -> None:
+    item.extra_fields["collection"] = "can't have a collection"
+    with pytest.raises(STACValidationError) as error:
+        item.validate()
+    assert "can't have a collection" in str(error.value)
