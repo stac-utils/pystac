@@ -1,3 +1,5 @@
+import re
+import warnings
 from abc import ABC, abstractmethod
 from typing import (
     Any,
@@ -13,6 +15,8 @@ from typing import (
 )
 
 import pystac
+
+VERSION_REGEX = re.compile("/v[0-9].[0-9].*/")
 
 
 class SummariesExtension:
@@ -115,6 +119,10 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def get_schema_uris(cls) -> List[str]:
         """Gets a list of schema URIs associated with this extension."""
+        warnings.warn(
+            "get_schema_uris is deprecated and will be removed in v2",
+            DeprecationWarning,
+        )
         return [cls.get_schema_uri()]
 
     @classmethod
@@ -140,8 +148,10 @@ class ExtensionManagementMixin(Generic[S], ABC):
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
+        schema_startswith = re.split(VERSION_REGEX, cls.get_schema_uri())[0] + "/"
+
         return obj.stac_extensions is not None and any(
-            uri in obj.stac_extensions for uri in cls.get_schema_uris()
+            uri.startswith(schema_startswith) for uri in obj.stac_extensions
         )
 
     @classmethod

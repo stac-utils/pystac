@@ -94,12 +94,13 @@ def test_bitfield_object() -> None:
 
 
 def test_get_schema_uri(landsat_item: Item) -> None:
-    assert any(
-        [
-            uri in landsat_item.stac_extensions
-            for uri in ClassificationExtension.get_schema_uris()
-        ]
-    )
+    with pytest.raises(DeprecationWarning):
+        assert any(
+            [
+                uri in landsat_item.stac_extensions
+                for uri in ClassificationExtension.get_schema_uris()
+            ]
+        )
 
 
 def test_ext_raises_if_item_does_not_conform(plain_item: Item) -> None:
