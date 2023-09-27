@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
+from pystac.band import Band
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning
@@ -113,6 +114,10 @@ class Item(STACObject, Assets):
     operations. This is set when an item is read by a StacIO instance.
     """
 
+    _bands: list[Band] | None = None
+    """Optional list of :class:`~pystac.Band` objects representing all the bands
+    associated with this Item."""
+
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
     def __init__(
@@ -129,6 +134,7 @@ class Item(STACObject, Assets):
         collection: str | Collection | None = None,
         extra_fields: dict[str, Any] | None = None,
         assets: dict[str, Asset] | None = None,
+        bands: list[Band] | None = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -175,6 +181,8 @@ class Item(STACObject, Assets):
         if assets is not None:
             for k, asset in assets.items():
                 self.add_asset(k, asset)
+
+        self._bands = bands
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
@@ -353,6 +361,16 @@ class Item(STACObject, Assets):
                 "Link failed to resolve. Use get_links instead."
             ) from e
 
+    @property
+    def bands(self) -> Optional[List[Band]]:
+        """Returns the bands set on this item."""
+        return self._bands
+
+    @bands.setter
+    def bands(self, bands: Optional[List[Band]]) -> None:
+        """Sets the bands on this item."""
+        self._bands = bands
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> dict[str, Any]:
@@ -388,6 +406,9 @@ class Item(STACObject, Assets):
         # This field is prohibited if there's no geometry
         if not self.geometry:
             d.pop("bbox")
+
+        if self.bands is not None:
+            d["properties"]["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -464,6 +485,12 @@ class Item(STACObject, Assets):
             if k not in [*pass_through_fields, *parse_fields, *exclude_fields]
         }
 
+        bands = properties.pop("bands", None)
+        if bands is not None:
+            deserialized_bands = [Band.from_dict(d) for d in bands]
+        else:
+            deserialized_bands = None
+
         item = cls(
             **{k: d.get(k) for k in pass_through_fields},  # type: ignore
             datetime=datetime,
@@ -471,6 +498,7 @@ class Item(STACObject, Assets):
             extra_fields=extra_fields,
             href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
+            bands=deserialized_bands,
         )
 
         for link in links:

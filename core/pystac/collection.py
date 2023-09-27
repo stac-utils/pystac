@@ -14,6 +14,7 @@ from typing import (
 import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
+from pystac.band import Band
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, STACTypeError
 from pystac.item_assets import ItemAssetDefinition, _ItemAssets
@@ -519,6 +520,8 @@ class Collection(Catalog, Assets):
     """Default file name that will be given to this STAC object
     in a canonical format."""
 
+    _bands: Optional[List[Band]]
+
     def __init__(
         self,
         id: str,
@@ -535,6 +538,7 @@ class Collection(Catalog, Assets):
         summaries: Summaries | None = None,
         assets: dict[str, Asset] | None = None,
         strategy: HrefLayoutStrategy | None = None,
+        bands: list[Band] | None = None,
     ):
         super().__init__(
             id,
@@ -559,6 +563,8 @@ class Collection(Catalog, Assets):
         if assets is not None:
             for k, asset in assets.items():
                 self.add_asset(k, asset)
+
+        self._bands = bands
 
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
@@ -592,6 +598,9 @@ class Collection(Catalog, Assets):
             d["summaries"] = self.summaries.to_dict()
         if any(self.assets):
             d["assets"] = {k: v.to_dict() for k, v in self.assets.items()}
+
+        if self.bands is not None:
+            d["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -679,6 +688,12 @@ class Collection(Catalog, Assets):
             assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
+        bands = d.pop("bands", None)
+        if bands is not None:
+            deserialized_bands = [Band.from_dict(band) for band in bands]
+        else:
+            deserialized_bands = None
+
         d.pop("stac_version")
 
         collection = cls(
@@ -695,6 +710,7 @@ class Collection(Catalog, Assets):
             href=href,
             catalog_type=catalog_type,
             assets=assets,
+            bands=deserialized_bands,
         )
 
         for link in links:
@@ -893,3 +909,13 @@ class Collection(Catalog, Assets):
             _raise_for_missing_ext(e)
 
         return CollectionExt(stac_object=self)
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Returns the bands set on this collection."""
+        return self._bands
+
+    @bands.setter
+    def bands(self, bands: list[Band] | None) -> None:
+        """Sets the bands on this collection."""
+        self._bands = bands
