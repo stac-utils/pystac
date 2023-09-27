@@ -6,6 +6,7 @@ import pytest
 
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, Band, EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
@@ -487,3 +488,20 @@ def test_exception_should_include_hint_if_obj_is_collection(
         match="Hint: Did you mean to use `EOExtension.summaries` instead?",
     ):
         EOExtension.ext(collection)  # type:ignore
+
+
+def test_ext_syntax(ext_item: pystac.Item) -> None:
+    assert ext_item.ext.eo.cloud_cover == 78
+    assert (bands := ext_item.assets["B1"].ext.eo.bands)
+    assert bands[0].name == "B1"
+
+
+def test_ext_syntax_remove(ext_item: pystac.Item) -> None:
+    ext_item.ext.remove("eo")
+    with pytest.raises(ExtensionNotImplemented):
+        ext_item.ext.eo
+
+
+def test_ext_syntax_add(item: pystac.Item) -> None:
+    item.ext.add("eo")
+    assert isinstance(item.ext.eo, EOExtension)

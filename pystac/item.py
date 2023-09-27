@@ -31,6 +31,8 @@ if TYPE_CHECKING:
     # avoids conflicts since there are also kwargs and attrs called `datetime`
     from datetime import datetime as Datetime
 
+    from pystac.extensions.ext import ItemExt
+
 
 class Item(STACObject):
     """An Item is the core granular entity in a STAC, containing the core metadata
@@ -575,3 +577,9 @@ class Item(STACObject):
             Dict[str, Any]: This item as a dictionary.
         """
         return self.to_dict(include_self_link=False, transform_hrefs=False)
+
+    @property
+    def ext(self) -> ItemExt:
+        from pystac.extensions.ext import ItemExt
+
+        return ItemExt(stac_object=self)

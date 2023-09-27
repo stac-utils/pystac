@@ -12,6 +12,7 @@ from pystac.html.jinja_env import get_jinja_env
 if TYPE_CHECKING:
     from pystac.collection import Collection
     from pystac.common_metadata import CommonMetadata
+    from pystac.extensions.ext import AssetExt
     from pystac.item import Item
 
 A = TypeVar("A", bound="Asset")
@@ -260,6 +261,12 @@ class Asset:
         """
         href = _absolute_href(self.href, self.owner, "delete")
         os.remove(href)
+
+    @property
+    def ext(self) -> AssetExt:
+        from pystac.extensions.ext import AssetExt
+
+        return AssetExt(stac_object=self)
 
 
 def _absolute_href(
