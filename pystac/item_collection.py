@@ -19,7 +19,7 @@ import pystac
 from pystac.errors import STACTypeError
 from pystac.html.jinja_env import get_jinja_env
 from pystac.serialization.identify import identify_stac_object_type
-from pystac.utils import is_absolute_href, make_absolute_href
+from pystac.utils import HREF, is_absolute_href, make_absolute_href, make_posix_style
 
 ItemLike = Union[pystac.Item, Dict[str, Any]]
 
@@ -195,7 +195,7 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_file(
-        cls: Type[C], href: str, stac_io: Optional[pystac.StacIO] = None
+        cls: Type[C], href: HREF, stac_io: Optional[pystac.StacIO] = None
     ) -> C:
         """Reads a :class:`ItemCollection` from a JSON file.
 
@@ -206,6 +206,7 @@ class ItemCollection(Collection[pystac.Item]):
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
+        href = make_posix_style(href)
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 

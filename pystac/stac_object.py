@@ -22,6 +22,7 @@ from pystac import STACError
 from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.utils import (
+    HREF,
     StringEnum,
     is_absolute_href,
     make_absolute_href,
@@ -603,7 +604,7 @@ class STACObject(ABC):
 
     @classmethod
     def from_file(
-        cls: Type[S], href: str, stac_io: Optional[pystac.StacIO] = None
+        cls: Type[S], href: HREF, stac_io: Optional[pystac.StacIO] = None
     ) -> S:
         """Reads a STACObject implementation from a file.
 
