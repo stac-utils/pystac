@@ -328,7 +328,7 @@ def test_relative_self_link(tmp_path: Path) -> None:
     collection.save_object(
         include_self_link=False, dest_href=str(tmp_path / "collection.json")
     )
-    collection = Collection.from_file(str(tmp_path / "collection.json"))
+    collection = Collection.from_file(tmp_path / "collection.json")
     read_item = collection.get_item("an-id")
     assert read_item
     asset_href = read_item.assets["data"].get_absolute_href()
