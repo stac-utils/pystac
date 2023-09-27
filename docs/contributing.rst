@@ -13,8 +13,8 @@ pip as follows:
 .. code-block:: bash
 
     git clone git@github.com:your_user_name/pystac.git
-    cd  pystac
-    pip install -e '.[dev]'
+    cd pystac
+    pip install -e '.[test]'
 
 Testing
 ^^^^^^^
