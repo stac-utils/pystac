@@ -22,6 +22,7 @@ from dateutil import tz
 import pystac
 from pystac import CatalogType, STACError, STACObjectType
 from pystac.asset import Asset
+from pystac.band import Band
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
 from pystac.layout import HrefLayoutStrategy
@@ -517,6 +518,8 @@ class Collection(Catalog):
     """Default file name that will be given to this STAC object
     in a canonical format."""
 
+    _bands: Optional[List[Band]]
+
     def __init__(
         self,
         id: str,
@@ -532,6 +535,7 @@ class Collection(Catalog):
         providers: Optional[List[Provider]] = None,
         summaries: Optional[Summaries] = None,
         assets: Optional[Dict[str, Asset]] = None,
+        bands: Optional[List[Band]] = None,
     ):
         super().__init__(
             id,
@@ -554,6 +558,8 @@ class Collection(Catalog):
         if assets is not None:
             for k, asset in assets.items():
                 self.add_asset(k, asset)
+
+        self._bands = bands
 
     def __repr__(self) -> str:
         return "<Collection id={}>".format(self.id)
@@ -587,6 +593,9 @@ class Collection(Catalog):
             d["summaries"] = self.summaries.to_dict()
         if any(self.assets):
             d["assets"] = {k: v.to_dict() for k, v in self.assets.items()}
+
+        if self.bands is not None:
+            d["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -664,6 +673,12 @@ class Collection(Catalog):
             assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
+        bands = d.pop("bands", None)
+        if bands is not None:
+            deserialized_bands = [Band.from_dict(band) for band in bands]
+        else:
+            deserialized_bands = None
+
         d.pop("stac_version")
 
         collection = cls(
@@ -680,6 +695,7 @@ class Collection(Catalog):
             href=href,
             catalog_type=catalog_type,
             assets=assets,
+            bands=deserialized_bands,
         )
 
         for link in links:
@@ -830,3 +846,13 @@ class Collection(Catalog):
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.COLLECTION
+
+    @property
+    def bands(self) -> Optional[List[Band]]:
+        """Returns the bands set on this collection."""
+        return self._bands
+
+    @bands.setter
+    def bands(self, bands: Optional[List[Band]]) -> None:
+        """Sets the bands on this collection."""
+        self._bands = bands

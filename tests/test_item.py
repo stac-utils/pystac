@@ -13,7 +13,7 @@ import pytest
 
 import pystac
 import pystac.serialization.common_properties
-from pystac import Asset, Catalog, Collection, Item, Link
+from pystac import Asset, Band, Catalog, Collection, Item, Link
 from pystac.utils import (
     datetime_to_str,
     get_opt,
@@ -636,3 +636,42 @@ def test_pathlib() -> None:
     # This works, but breaks mypy until we fix
     # https://github.com/stac-utils/pystac/issues/1216
     Item.from_file(Path(TestCases.get_path("data-files/item/sample-item.json")))
+
+
+def test_bands_do_not_exist(sample_item: Item) -> None:
+    sample_item.assets["analytic"].bands is None
+
+
+def test_set_bands(sample_item: Item) -> None:
+    sample_item.assets["analytic"].bands = [Band(name="analytic")]
+    assert sample_item.assets["analytic"].bands[0].name == "analytic"
+
+
+def test_set_bands_on_item(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="analytic")]
+    assert sample_item.assets["analytic"].bands
+    assert sample_item.assets["analytic"].bands[0].name == "analytic"
+
+
+def test_bands_roundtrip_on_asset(sample_item: Item) -> None:
+    sample_item_dict = sample_item.to_dict(
+        include_self_link=False, transform_hrefs=False
+    )
+    sample_item_dict["assets"]["analytic"]["bands"] = [{"name": "analytic"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.assets["analytic"].bands
+    assert item.assets["analytic"].bands[0].name == "analytic"
+    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+    assert item_dict["assets"]["analytic"]["bands"][0]["name"] == "analytic"
+
+
+def test_bands_roundtrip_on_item(sample_item: Item) -> None:
+    sample_item_dict = sample_item.to_dict(
+        include_self_link=False, transform_hrefs=False
+    )
+    sample_item_dict["properties"]["bands"] = [{"name": "analytic"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.assets["analytic"].bands
+    assert item.assets["analytic"].bands[0].name == "analytic"
+    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+    assert item_dict["properties"]["bands"][0]["name"] == "analytic"

@@ -21,6 +21,7 @@ __all__ = [
     "STACObjectType",
     "Link",
     "HIERARCHICAL_LINKS",
+    "Band",
     "Catalog",
     "CatalogType",
     "Collection",
@@ -75,6 +76,7 @@ from pystac.collection import (
     SpatialExtent,
     TemporalExtent,
 )
+from pystac.band import Band
 from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary, Summaries
 from pystac.asset import Asset
