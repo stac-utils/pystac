@@ -74,6 +74,7 @@ class VirtualAssetsExtension(
         return SCHEMA_URI
 
     @classmethod
+    # TODO: remove this once extension is released.
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
