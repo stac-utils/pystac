@@ -10,6 +10,7 @@
 
 - Typing of `href` arguments ([#1234](https://github.com/stac-utils/pystac/pull/1234))
 - Interactions between **pytest-recording** and the validator schema cache ([#1242](https://github.com/stac-utils/pystac/pull/1242))
+- Call `registry` when instantiating `Draft7Validator` ([#1240](https://github.com/stac-utils/pystac/pull/1240))
 
 ## [v1.8.4] - 2023-09-22
 

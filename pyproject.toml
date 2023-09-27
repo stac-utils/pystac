@@ -60,6 +60,7 @@ test = [
     "ruff==0.0.291",
     "types-html5lib~=1.1",
     "types-orjson~=3.6",
+    "types-jsonschema~=4.18",
     "types-python-dateutil~=2.8",
     "types-urllib3~=1.26",
 ]
@@ -79,6 +80,14 @@ exclude = ["tests*", "benchmarks*"]
 
 [tool.setuptools.dynamic]
 version = { attr = "pystac.version.__version__" }
+
+[tool.mypy]
+show_error_codes = true
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["jinja2"]
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 88
