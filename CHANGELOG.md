@@ -10,6 +10,10 @@
 
 - Typing of `href` arguments ([#1234](https://github.com/stac-utils/pystac/pull/1234))
 
+### Removed
+
+- Python 3.8 support ([#1236](https://github.com/stac-utils/pystac/pull/1236))
+
 ## [v1.8.4] - 2023-09-22
 
 ### Added

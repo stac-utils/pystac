@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import importlib.resources
 import json
 import numbers
-import sys
 from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum
@@ -19,11 +19,6 @@ from typing import (
     TypeVar,
     Union,
 )
-
-if sys.version_info[:2] < (3, 9):
-    from importlib_resources import files as importlib_resources_files
-else:
-    from importlib.resources import files as importlib_resources_files
 
 import pystac
 from pystac.utils import get_required
@@ -112,7 +107,7 @@ def _get_fields_json(url: Optional[str]) -> Dict[str, Any]:
         # Every time pystac is released this file gets pulled from
         # https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
         jsonfields: Dict[str, Any] = json.loads(
-            importlib_resources_files("pystac.static")
+            importlib.resources.files("pystac.static")
             .joinpath("fields-normalized.json")
             .read_text()
         )
