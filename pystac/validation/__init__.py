@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+import warnings
+from collections.abc import Iterable, Mapping
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import pystac
 from pystac.serialization.identify import STACVersionID, identify_stac_object
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
 from pystac.validation.stac_validator import JsonSchemaSTACValidator, STACValidator
 
 
-def validate(stac_object: STACObject) -> List[Any]:
+def validate(stac_object: STACObject) -> list[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
@@ -40,12 +42,12 @@ def validate(stac_object: STACObject) -> List[Any]:
 
 
 def validate_dict(
-    stac_dict: Dict[str, Any],
+    stac_dict: dict[str, Any],
     stac_object_type: Optional[STACObjectType] = None,
     stac_version: Optional[str] = None,
-    extensions: Optional[List[str]] = None,
+    extensions: Optional[list[str]] = None,
     href: Optional[str] = None,
-) -> List[Any]:
+) -> list[Any]:
     """Validate a stac object serialized as JSON into a dict.
 
     This method delegates to the call to
@@ -107,24 +109,77 @@ def validate_dict(
 
 
 def validate_all(
-    stac_dict: Dict[str, Any], href: str, stac_io: Optional[pystac.StacIO] = None
+    stac_object: Union[STACObject, dict[str, Any]],
+    href: Optional[str] = None,
+    stac_io: Optional[pystac.StacIO] = None,
 ) -> None:
-    """Validate STAC JSON and all contained catalogs, collections and items.
+    """Validate a :class:`~pystac.STACObject`, or a STAC object serialized as
+    JSON into a dict.
 
-    If this stac_dict represents a catalog or collection, this method will
-    recursively be called for each child link and all contained items.
+    If the STAC object represents a catalog or collection, this function will be
+    called recursively for each child link and all contained items.
 
     Args:
-
-        stac_dict : Dictionary that is the STAC json of the object.
+        stac_object : STAC object to validate
         href : HREF of the STAC object being validated. Used for error
             reporting and resolving relative links.
-        stac_io: Optional StacIO instance to use for reading hrefs. If None,
+        stac_io : Optional StacIO instance to use for reading hrefs. If None,
             the StacIO.default() instance is used.
 
     Raises:
-        STACValidationError: This will raise a STACValidationError if this or any
-            contained catalog, collection or item has a validation error.
+        STACValidationError: if the STAC object or any contained catalog, collection,
+            or item has a validation error
+        ValueError: if stac_object is a STACObject and href is not None, or if
+            stacl_object is a dict and href is None
+    """
+    if stac_io is None:
+        stac_io = pystac.StacIO.default()
+
+    if isinstance(stac_object, dict):
+        warnings.warn(
+            "validating a STAC object as a dict is deprecated;"
+            " use validate_all_dict instead",
+            DeprecationWarning,
+        )
+
+        if href is None:
+            raise ValueError(
+                "href must be set if stac_object is a dict; it will be removed"
+                " once support for validating a STAC object as a dict is removed from"
+                " validate_all, due to the introduction of validate_all_dict"
+            )
+
+        validate_all_dict(stac_object, href, stac_io)
+    elif href is not None:
+        raise ValueError(
+            "href must be None if stac_object is a STACObject; it will be removed"
+            " once support for validating a STAC object as a dict is removed from"
+            " validate_all, due to the introduction of validate_all_dict"
+        )
+    else:
+        validate_all_dict(stac_object.to_dict(), stac_object.get_self_href(), stac_io)
+
+
+def validate_all_dict(
+    stac_dict: dict[str, Any],
+    href: Optional[str],
+    stac_io: Optional[pystac.StacIO] = None,
+) -> None:
+    """Validate a stac object serialized as JSON into a dict.
+
+    If the STAC object represents a catalog or collection, this function will be
+    called recursively for each child link and all contained items.
+
+    Args:
+        stac_dict : Dictionary that is the STAC json of the object.
+        href : HREF of the STAC object being validated. Used for error
+            reporting and resolving relative links.
+        stac_io : Optional StacIO instance to use for reading hrefs. If None,
+            the StacIO.default() instance is used.
+
+    Raises:
+        STACValidationError: if the STAC object or any contained catalog, collection,
+        or item has a validation error
     """
     if stac_io is None:
         stac_io = pystac.StacIO.default()
@@ -140,22 +195,20 @@ def validate_all(
         href=href,
     )
 
-    if info.object_type != pystac.STACObjectType.ITEM:
-        if "links" in stac_dict:
+    if info.object_type != pystac.STACObjectType.ITEM and "links" in stac_dict:
+        links = (
             # Account for 0.6 links
-            if isinstance(stac_dict["links"], dict):
-                links: List[Dict[str, Any]] = list(stac_dict["links"].values())
-            else:
-                links = cast(List[Dict[str, Any]], stac_dict.get("links"))
-            for link in links:
-                rel = link.get("rel")
-                if rel in [pystac.RelType.ITEM, pystac.RelType.CHILD]:
-                    link_href = make_absolute_href(
-                        cast(str, link.get("href")), start_href=href
-                    )
-                    if link_href is not None:
-                        d = stac_io.read_json(link_href)
-                        validate_all(d, link_href)
+            stac_dict["links"].values()
+            if isinstance(stac_dict["links"], dict)
+            else stac_dict.get("links")
+        )
+
+        for link in cast(Iterable[Mapping[str, Any]], links):
+            if link.get("rel") in [pystac.RelType.ITEM, pystac.RelType.CHILD]:
+                link_href = make_absolute_href(
+                    cast(str, link.get("href")), start_href=href
+                )
+                validate_all_dict(stac_io.read_json(link_href), link_href, stac_io)
 
 
 class RegisteredValidator:
