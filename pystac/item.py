@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Unio
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset
+from pystac.band import Band
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
@@ -106,6 +107,8 @@ class Item(STACObject):
     stac_extensions: List[str]
     """List of extensions the Item implements."""
 
+    _bands: Optional[List[Band]]
+
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
     def __init__(
@@ -122,6 +125,7 @@ class Item(STACObject):
         collection: Optional[Union[str, Collection]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
         assets: Optional[Dict[str, Asset]] = None,
+        bands: Optional[List[Band]] = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -166,6 +170,8 @@ class Item(STACObject):
         if assets is not None:
             for k, asset in assets.items():
                 self.add_asset(k, asset)
+
+        self._bands = bands
 
     def __repr__(self) -> str:
         return "<Item id={}>".format(self.id)
@@ -406,6 +412,16 @@ class Item(STACObject):
                 "Link failed to resolve. Use get_links instead."
             ) from e
 
+    @property
+    def bands(self) -> Optional[List[Band]]:
+        """Returns the bands set on this item."""
+        return self._bands
+
+    @bands.setter
+    def bands(self, bands: Optional[List[Band]]) -> None:
+        """Sets the bands on this item."""
+        self._bands = bands
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> Dict[str, Any]:
@@ -441,6 +457,9 @@ class Item(STACObject):
 
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
+
+        if self.bands is not None:
+            d["properties"]["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -516,6 +535,12 @@ class Item(STACObject):
             if k not in [*pass_through_fields, *parse_fields, *exclude_fields]
         }
 
+        bands = properties.pop("bands", None)
+        if bands is not None:
+            deserialized_bands = [Band.from_dict(d) for d in bands]
+        else:
+            deserialized_bands = None
+
         item = cls(
             **{k: d.get(k) for k in pass_through_fields},  # type: ignore
             datetime=datetime,
@@ -523,6 +548,7 @@ class Item(STACObject):
             extra_fields=extra_fields,
             href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
+            bands=deserialized_bands,
         )
 
         for link in links:
