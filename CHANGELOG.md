@@ -6,6 +6,10 @@
 
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 
+### Changed
+
+- Deprecated `ExtensionManagementMixin.validate_has_extension` and replaced with `ExtensionManagementMixin.ensure_has_extension`. Calling `ExtensionManagementMixin.validate_has_extension` will raise a `DeprecationWarning` and call `ExtensionManagementMixin.ensure_has_extension` ([#1248](https://github.com/stac-utils/pystac/pull/1248))
+
 ## [v1.8.4] - 2023-09-22
 
 ### Added
