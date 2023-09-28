@@ -42,6 +42,7 @@ from pystac.utils import (
 )
 
 if TYPE_CHECKING:
+    from pystac.extensions.ext import CollectionExt
     from pystac.item import Item
 
 C = TypeVar("C", bound="Collection")
@@ -830,3 +831,9 @@ class Collection(Catalog):
     @classmethod
     def matches_object_type(cls, d: Dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.COLLECTION
+
+    @property
+    def ext(self) -> CollectionExt:
+        from pystac.extensions.ext import CollectionExt
+
+        return CollectionExt(stac_object=self)

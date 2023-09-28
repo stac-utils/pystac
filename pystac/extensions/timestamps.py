@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -42,6 +42,8 @@ class TimestampsExtension(
        >>> item: pystac.Item = ...
        >>> ts_ext = TimestampsExtension.ext(item)
     """
+
+    name: Literal["timestamps"] = "timestamps"
 
     def apply(
         self,

@@ -370,7 +370,7 @@ class ViewSummariesTest(unittest.TestCase):
         collection.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'ViewExtension' is not implemented",
+            match="Extension 'view' is not implemented",
         ):
             ViewExtension.summaries(collection, add_if_missing=False)
 

@@ -10,6 +10,7 @@ from typing import (
     Generic,
     Iterable,
     List,
+    Literal,
     Optional,
     Pattern,
     TypeVar,
@@ -426,6 +427,7 @@ class ClassificationExtension(
     method can be used to construct the proper class for you.
     """
 
+    name: Literal["classification"] = "classification"
     properties: Dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 

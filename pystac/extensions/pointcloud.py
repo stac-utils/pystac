@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac.extensions.base import (
@@ -337,6 +348,8 @@ class PointcloudExtension(
        >>> item: pystac.Item = ...
        >>> pc_ext = PointcloudExtension.ext(item)
     """
+
+    name: Literal["pc"] = "pc"
 
     def apply(
         self,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -468,6 +468,8 @@ class DatacubeExtension(
        >>> item: pystac.Item = ...
        >>> dc_ext = DatacubeExtension.ext(item)
     """
+
+    name: Literal["cube"] = "cube"
 
     def apply(
         self,

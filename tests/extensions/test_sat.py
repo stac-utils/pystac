@@ -348,7 +348,7 @@ class SatSummariesTest(unittest.TestCase):
         col.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'SatExtension' is not implemented",
+            match="Extension 'sat' is not implemented",
         ):
             SatExtension.summaries(col, add_if_missing=False)
 

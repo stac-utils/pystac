@@ -202,7 +202,7 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         col.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'StorageExtension' is not implemented",
+            match="Extension 'storage' is not implemented",
         ):
             StorageExtension.summaries(col, add_if_missing=False)
 

@@ -268,7 +268,7 @@ class RasterTest(unittest.TestCase):
         col.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'RasterExtension' is not implemented",
+            match="Extension 'raster' is not implemented",
         ):
             RasterExtension.summaries(col, add_if_missing=False)
 

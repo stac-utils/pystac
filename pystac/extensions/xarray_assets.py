@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -37,6 +37,8 @@ class XarrayAssetsExtension(
         >>> xr_ext = XarrayAssetsExtension.ext(item)
 
     """
+
+    name: Literal["xarray"] = "xarray"
 
     @classmethod
     def get_schema_uri(cls) -> str:

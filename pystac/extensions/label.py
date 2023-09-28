@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Union, cast
+from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Union, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
@@ -447,6 +447,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
        >>> label_ext = LabelExtension.ext(item)
     """
 
+    name: Literal["label"] = "label"
     obj: pystac.Item
     schema_uri: str
 

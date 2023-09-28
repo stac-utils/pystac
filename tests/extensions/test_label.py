@@ -474,7 +474,7 @@ class LabelSummariesTest(unittest.TestCase):
         col.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'LabelExtension' is not implemented",
+            match="Extension 'label' is not implemented",
         ):
             LabelExtension.summaries(col, add_if_missing=False)
 

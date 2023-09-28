@@ -9,6 +9,7 @@ from typing import (
     Generic,
     Iterable,
     List,
+    Literal,
     Optional,
     Set,
     TypeVar,
@@ -677,6 +678,8 @@ class RasterExtension(
     prefer to use the `ext` class method of this class to construct the correct
     instance type for you.
     """
+
+    name: Literal["raster"] = "raster"
 
     properties: Dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""

@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
 from urllib import parse
 
 import pystac
@@ -117,6 +117,7 @@ class ScientificExtension(
        >>> sci_ext = ScientificExtension.ext(item)
     """
 
+    name: Literal["sci"] = "sci"
     obj: pystac.STACObject
 
     def __init__(self, obj: pystac.STACObject) -> None:

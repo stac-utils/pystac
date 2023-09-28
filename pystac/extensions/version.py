@@ -3,7 +3,18 @@ from __future__ import annotations
 
 import warnings
 from contextlib import contextmanager
-from typing import Any, Dict, Generator, Generic, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generator,
+    Generic,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac.errors import DeprecatedWarning
@@ -60,6 +71,7 @@ class VersionExtension(
        >>> version_ext = VersionExtension.ext(item)
     """
 
+    name: Literal["version"] = "version"
     obj: pystac.STACObject
 
     def __init__(self, obj: pystac.STACObject) -> None:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any, Dict, List, Optional, Pattern, Set, Union
+from typing import Any, Dict, List, Literal, Optional, Pattern, Set, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -50,6 +50,8 @@ class GridExtension(
        >>> item: pystac.Item = ...
        >>> proj_ext = GridExtension.ext(item)
     """
+
+    name: Literal["grid"] = "grid"
 
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""

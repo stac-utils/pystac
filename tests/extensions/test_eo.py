@@ -496,10 +496,12 @@ def test_ext_syntax(ext_item: pystac.Item) -> None:
 
 def test_ext_syntax_remove(ext_item: pystac.Item) -> None:
     ext_item.ext.remove("eo")
+    assert ext_item.ext.has("eo") is False
     with pytest.raises(ExtensionNotImplemented):
         ext_item.ext.eo
 
 
 def test_ext_syntax_add(item: pystac.Item) -> None:
     item.ext.add("eo")
+    assert item.ext.has("eo") is True
     assert isinstance(item.ext.eo, EOExtension)

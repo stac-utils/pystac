@@ -11,6 +11,7 @@ from typing import (
     Generic,
     Iterable,
     List,
+    Literal,
     Optional,
     Set,
     TypeVar,
@@ -68,6 +69,8 @@ class StorageExtension(
        >>> item: pystac.Item = ...
        >>> storage_ext = StorageExtension.ext(item)
     """
+
+    name: Literal["storage"] = "storage"
 
     def apply(
         self,

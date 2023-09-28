@@ -349,7 +349,7 @@ class TimestampsSummariesTest(unittest.TestCase):
         collection.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'TimestampsExtension' is not implemented",
+            match="Extension 'timestamps' is not implemented",
         ):
             TimestampsExtension.summaries(collection, add_if_missing=False)
 

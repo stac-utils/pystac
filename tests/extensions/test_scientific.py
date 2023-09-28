@@ -483,7 +483,7 @@ class SummariesScientificTest(unittest.TestCase):
         collection.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented,
-            match="Extension 'ScientificExtension' is not implemented",
+            match="Extension 'sci' is not implemented",
         ):
             ScientificExtension.summaries(collection, add_if_missing=False)
 

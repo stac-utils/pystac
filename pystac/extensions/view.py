@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -43,6 +43,8 @@ class ViewExtension(
        >>> item: pystac.Item = ...
        >>> view_ext = ViewExtension.ext(item)
     """
+
+    name: Literal["view"] = "view"
 
     def apply(
         self,

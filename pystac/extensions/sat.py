@@ -3,7 +3,18 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac.extensions.base import (
@@ -54,6 +65,8 @@ class SatExtension(
        >>> item: pystac.Item = ...
        >>> sat_ext = SatExtension.ext(item)
     """
+
+    name: Literal["sat"] = "sat"
 
     def apply(
         self,

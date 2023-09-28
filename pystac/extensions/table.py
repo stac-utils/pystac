@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -135,6 +135,8 @@ class TableExtension(
         >>> tbl_ext = TableExtension.ext(item)
 
     """
+
+    name: Literal["table"] = "table"
 
     @classmethod
     def get_schema_uri(cls) -> str:

@@ -1,7 +1,7 @@
 """Implements the :stac-ext:`MGRS Extension <mgrs>`."""
 
 import re
-from typing import Any, Dict, FrozenSet, Optional, Pattern, Set, Union
+from typing import Any, Dict, FrozenSet, Literal, Optional, Pattern, Set, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -156,6 +156,7 @@ class MgrsExtension(
        >>> proj_ext = MgrsExtension.ext(item)
     """
 
+    name: Literal["mgrs"] = "mgrs"
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
