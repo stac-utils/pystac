@@ -5,6 +5,7 @@
 ### Added
 
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
+- Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
 
 ### Fixed
 

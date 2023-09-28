@@ -210,6 +210,8 @@ class JsonSchemaSTACValidator(STACValidator):
             msg += f"against schema at {schema_uri}"
 
             best = jsonschema.exceptions.best_match(errors)
+            if best:
+                msg += "\n" + str(best)
             raise STACValidationError(msg, source=errors) from best
 
     def validate_core(
