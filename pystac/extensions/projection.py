@@ -4,7 +4,18 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
 from pystac.extensions.base import (
@@ -52,6 +63,8 @@ class ProjectionExtension(
        >>> item: pystac.Item = ...
        >>> proj_ext = ProjectionExtension.ext(item)
     """
+
+    name: Literal["proj"] = "proj"
 
     def apply(
         self,

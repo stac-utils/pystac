@@ -536,14 +536,12 @@ class ProjectionSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.example_uri)
         col.stac_extensions = []
-        self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            ProjectionExtension.summaries,
-            col,
-            False,
-        )
-        _ = ProjectionExtension.summaries(col, True)
+        with pytest.raises(
+            pystac.ExtensionNotImplemented, match="Extension 'proj' is not implemented"
+        ):
+            ProjectionExtension.summaries(col, add_if_missing=False)
+
+        ProjectionExtension.summaries(col, True)
 
         self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
 

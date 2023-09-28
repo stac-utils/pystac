@@ -26,9 +26,16 @@ def test_ext_syntax_ext_can_be_added(eo_ext_item: pystac.Item) -> None:
     assert eo_ext_item.ext.proj.epsg is None
 
 
+def test_ext_syntax_trying_to_add_invalid_ext_raises(item: pystac.Item) -> None:
+    with pytest.raises(KeyError, match="Extension 'foo' is not a valid extension"):
+        item.ext.add("foo")  # type: ignore
+
+
 def test_ext_syntax_ext_can_be_removed(eo_ext_item: pystac.Item) -> None:
     original_n = len(eo_ext_item.stac_extensions)
     eo_ext_item.ext.remove("eo")
-    with pytest.raises(ExtensionNotImplemented):
+    with pytest.raises(
+        ExtensionNotImplemented, match="Extension 'eo' is not implemented"
+    ):
         eo_ext_item.ext.eo
     assert len(eo_ext_item.stac_extensions) == original_n - 1

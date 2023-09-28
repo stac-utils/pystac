@@ -347,13 +347,12 @@ class TimestampsSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection()
         collection.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            TimestampsExtension.summaries,
-            collection,
-            False,
-        )
+            match="Extension 'TimestampsExtension' is not implemented",
+        ):
+            TimestampsExtension.summaries(collection, add_if_missing=False)
+
         _ = TimestampsExtension.summaries(collection, True)
 
         self.assertIn(TimestampsExtension.get_schema_uri(), collection.stac_extensions)

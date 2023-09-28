@@ -223,8 +223,16 @@ class ExtensionManagementMixin(Generic[S], ABC):
             cls.add_to(obj)
 
         if not cls.has_extension(obj):
+            name = getattr(cls, "name", cls.__name__)
+            suggestion = (
+                f"``obj.ext.add('{name}')"
+                if hasattr(cls, "name")
+                else f"``{name}.add_to(obj)``"
+            )
+
             raise pystac.ExtensionNotImplemented(
-                f"Could not find extension schema URI {cls.get_schema_uri()} in object."
+                f"Extension '{name}' is not implemented on object."
+                f"STAC producers can add the extension using {suggestion}"
             )
 
     @classmethod

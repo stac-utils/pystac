@@ -235,14 +235,12 @@ class EOTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
         col.stac_extensions = []
-        self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            EOExtension.summaries,
-            col,
-            False,
-        )
-        _ = EOExtension.summaries(col, add_if_missing=True)
+        with pytest.raises(
+            pystac.ExtensionNotImplemented, match="Extension 'eo' is not implemented"
+        ):
+            EOExtension.summaries(col, add_if_missing=False)
+
+        EOExtension.summaries(col, add_if_missing=True)
 
         self.assertIn(EOExtension.get_schema_uri(), col.stac_extensions)
 

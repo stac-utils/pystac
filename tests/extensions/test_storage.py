@@ -200,13 +200,12 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
     def test_summaries_adds_uri(self) -> None:
         col = self.naip_collection
         col.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            StorageExtension.summaries,
-            col,
-            False,
-        )
+            match="Extension 'StorageExtension' is not implemented",
+        ):
+            StorageExtension.summaries(col, add_if_missing=False)
+
         _ = StorageExtension.summaries(col, add_if_missing=True)
 
         self.assertIn(StorageExtension.get_schema_uri(), col.stac_extensions)

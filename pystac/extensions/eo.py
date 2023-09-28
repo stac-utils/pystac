@@ -9,6 +9,7 @@ from typing import (
     Generic,
     Iterable,
     List,
+    Literal,
     Optional,
     Tuple,
     TypeVar,
@@ -308,6 +309,8 @@ class EOExtension(
        >>> item: pystac.Item = ...
        >>> eo_ext = EOExtension.ext(item)
     """
+
+    name: Literal["eo"] = "eo"
 
     def apply(
         self,

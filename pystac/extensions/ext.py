@@ -1,42 +1,37 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Union
+from typing import Any, Dict, Literal, cast
 
 import pystac
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.projection import ProjectionExtension
-from pystac.utils import StringEnum
 
+EXTENSION_NAMES = Literal["eo", "proj"]
 
-class ExtensionName(StringEnum):
-    EO = "eo"
-    PROJ = "proj"
-
-    @staticmethod
-    def get_class(name: Union[str, "ExtensionName"]) -> Any:
-        try:
-            return EXTENSION_NAME_MAPPING[name]
-        except KeyError as e:
-            raise KeyError(
-                f"Extension '{name}' is not a valid extension. "
-                f"Options are {list(EXTENSION_NAME_MAPPING)}"
-            ) from e
-
-
-EXTENSION_NAME_MAPPING: Dict[Union[str, ExtensionName], Any] = {
-    ExtensionName.EO: EOExtension,
-    ExtensionName.PROJ: ProjectionExtension,
+EXTENSION_NAME_MAPPING: Dict[EXTENSION_NAMES, Any] = {
+    EOExtension.name: EOExtension,
+    ProjectionExtension.name: ProjectionExtension,
 }
+
+
+def _get_class_by_name(name: str) -> Any:
+    try:
+        return EXTENSION_NAME_MAPPING[cast(EXTENSION_NAMES, name)]
+    except KeyError as e:
+        raise KeyError(
+            f"Extension '{name}' is not a valid extension. "
+            f"Options are {list(EXTENSION_NAME_MAPPING)}"
+        ) from e
 
 
 @dataclass
 class ItemExt:
     stac_object: pystac.Item
 
-    def add(self, name: Union[str, ExtensionName]) -> None:
-        ExtensionName.get_class(name).add_to(self.stac_object)
+    def add(self, name: EXTENSION_NAMES) -> None:
+        _get_class_by_name(name).add_to(self.stac_object)
 
-    def remove(self, name: Union[str, ExtensionName]) -> None:
-        ExtensionName.get_class(name).remove_from(self.stac_object)
+    def remove(self, name: EXTENSION_NAMES) -> None:
+        _get_class_by_name(name).remove_from(self.stac_object)
 
     @property
     def proj(self) -> ProjectionExtension[pystac.Item]:
@@ -51,23 +46,23 @@ class ItemExt:
 class AssetExt:
     stac_object: pystac.Asset
 
-    def add(self, name: Union[str, ExtensionName]) -> None:
+    def add(self, name: EXTENSION_NAMES) -> None:
         if self.stac_object.owner is None:
             raise pystac.STACError(
                 f"Attempted to add extension='{name}' for an Asset with no owner. "
                 "Use Asset.set_owner and then try to add the extension again."
             )
         else:
-            ExtensionName.get_class(name).add_to(self.stac_object.owner)
+            _get_class_by_name(name).add_to(self.stac_object.owner)
 
-    def remove(self, name: Union[str, ExtensionName]) -> None:
+    def remove(self, name: EXTENSION_NAMES) -> None:
         if self.stac_object.owner is None:
             raise pystac.STACError(
                 f"Attempted to remove extension='{name}' for an Asset with no owner. "
                 "Use Asset.set_owner and then try to remove the extension again."
             )
         else:
-            ExtensionName.get_class(name).remove_from(self.stac_object.owner)
+            _get_class_by_name(name).remove_from(self.stac_object.owner)
 
     @property
     def proj(self) -> ProjectionExtension[pystac.Asset]:
