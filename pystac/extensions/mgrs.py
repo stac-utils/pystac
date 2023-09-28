@@ -233,7 +233,7 @@ class MgrsExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return MgrsExtension(obj)
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))

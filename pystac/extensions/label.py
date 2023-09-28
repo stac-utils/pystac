@@ -711,7 +711,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         This extension can be applied to instances of :class:`~pystac.Item`.
         """
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
@@ -721,7 +721,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesLabelExtension:
         """Returns the extended summaries object for the given collection."""
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesLabelExtension(obj)
 
 
