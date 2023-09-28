@@ -308,6 +308,8 @@ def test_item_assets_extension(collection: Collection) -> None:
     ]
     ext = ClassificationExtension.ext(item_asset)
     ext.__repr__()
+    assert ClassificationExtension.get_schema_uri() in collection.stac_extensions
+    assert collection.ext.item_assets["cloud-mask-raster"].ext.has("classification")
 
 
 def test_older_extension_version(landsat_item: Item) -> None:

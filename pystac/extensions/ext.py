@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Literal, cast
+from typing import TYPE_CHECKING, Any, Dict, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.classification import ClassificationExtension
@@ -7,7 +7,7 @@ from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
-from pystac.extensions.label import LabelExtension
+from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
@@ -22,13 +22,16 @@ from pystac.extensions.version import VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
+if TYPE_CHECKING:
+    T = TypeVar("T", pystac.Asset, AssetDefinition)
+
 EXTENSION_NAMES = Literal[
     "classification",
     "cube",
     "eo",
     "file",
     "grid",
-    "label",
+    "item_assets",
     "mgrs",
     "pc",
     "proj",
@@ -50,7 +53,7 @@ EXTENSION_NAME_MAPPING: Dict[EXTENSION_NAMES, Any] = {
     EOExtension.name: EOExtension,
     FileExtension.name: FileExtension,
     GridExtension.name: GridExtension,
-    LabelExtension.name: LabelExtension,
+    ItemAssetsExtension.name: ItemAssetsExtension,
     MgrsExtension.name: MgrsExtension,
     PointcloudExtension.name: PointcloudExtension,
     ProjectionExtension.name: ProjectionExtension,
@@ -93,6 +96,10 @@ class CollectionExt:
     @property
     def cube(self) -> DatacubeExtension[pystac.Collection]:
         return DatacubeExtension.ext(self.stac_object)
+
+    @property
+    def item_assets(self) -> Dict[str, AssetDefinition]:
+        return ItemAssetsExtension.ext(self.stac_object).item_assets
 
     @property
     def sci(self) -> ScientificExtension[pystac.Collection]:
@@ -141,10 +148,6 @@ class ItemExt:
         return GridExtension.ext(self.stac_object)
 
     @property
-    def label(self) -> LabelExtension:
-        return LabelExtension.ext(self.stac_object)
-
-    @property
     def mgrs(self) -> MgrsExtension:
         return MgrsExtension.ext(self.stac_object)
 
@@ -190,7 +193,7 @@ class ItemExt:
 
 
 @dataclass
-class AssetExt:
+class AssetExt(Generic[T]):
     stac_object: pystac.Asset
 
     def has(self, name: EXTENSION_NAMES) -> bool:
@@ -223,15 +226,15 @@ class AssetExt:
             _get_class_by_name(name).remove_from(self.stac_object.owner)
 
     @property
-    def classification(self) -> ClassificationExtension[pystac.Asset]:
+    def classification(self) -> ClassificationExtension[T]:
         return ClassificationExtension.ext(self.stac_object)
 
     @property
-    def cube(self) -> DatacubeExtension[pystac.Asset]:
+    def cube(self) -> DatacubeExtension[T]:
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def eo(self) -> EOExtension[pystac.Asset]:
+    def eo(self) -> EOExtension[T]:
         return EOExtension.ext(self.stac_object)
 
     @property
@@ -239,41 +242,41 @@ class AssetExt:
         return FileExtension.ext(self.stac_object)
 
     @property
-    def pc(self) -> PointcloudExtension[pystac.Asset]:
+    def pc(self) -> PointcloudExtension[T]:
         return PointcloudExtension.ext(self.stac_object)
 
     @property
-    def proj(self) -> ProjectionExtension[pystac.Asset]:
+    def proj(self) -> ProjectionExtension[T]:
         return ProjectionExtension.ext(self.stac_object)
 
     @property
-    def raster(self) -> RasterExtension[pystac.Asset]:
+    def raster(self) -> RasterExtension[T]:
         return RasterExtension.ext(self.stac_object)
 
     @property
-    def sar(self) -> SarExtension[pystac.Asset]:
+    def sar(self) -> SarExtension[T]:
         return SarExtension.ext(self.stac_object)
 
     @property
-    def sat(self) -> SatExtension[pystac.Asset]:
+    def sat(self) -> SatExtension[T]:
         return SatExtension.ext(self.stac_object)
 
     @property
-    def storage(self) -> StorageExtension[pystac.Asset]:
+    def storage(self) -> StorageExtension[T]:
         return StorageExtension.ext(self.stac_object)
 
     @property
-    def table(self) -> TableExtension[pystac.Asset]:
+    def table(self) -> TableExtension[T]:
         return TableExtension.ext(self.stac_object)
 
     @property
-    def timestamps(self) -> TimestampsExtension[pystac.Asset]:
+    def timestamps(self) -> TimestampsExtension[T]:
         return TimestampsExtension.ext(self.stac_object)
 
     @property
-    def view(self) -> ViewExtension[pystac.Asset]:
+    def view(self) -> ViewExtension[T]:
         return ViewExtension.ext(self.stac_object)
 
     @property
-    def xarray(self) -> XarrayAssetsExtension[pystac.Asset]:
+    def xarray(self) -> XarrayAssetsExtension[T]:
         return XarrayAssetsExtension.ext(self.stac_object)

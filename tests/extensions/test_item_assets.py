@@ -109,3 +109,10 @@ def test_extra_fields(collection: Collection) -> None:
     assert collection_as_dict["item_assets"]["data"]["raster:bands"] == [{"nodata": 42}]
     asset = asset_definition.create_asset("asset.tif")
     assert asset.extra_fields["raster:bands"] == [{"nodata": 42}]
+
+    collection.ext.item_assets["data"].ext.add("raster")
+    assert (bands := collection.ext.item_assets["data"].ext.raster.bands)
+    assert bands[0].nodata == 42
+
+    assert collection.ext.item_assets["data"].ext.has("raster")
+    assert collection.ext.has("raster")

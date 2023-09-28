@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required
+
+if TYPE_CHECKING:
+    from pystac.extensions.ext import AssetExt
 
 SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 
@@ -204,8 +207,15 @@ class AssetDefinition:
             },
         )
 
+    @property
+    def ext(self) -> AssetExt:
+        from pystac.extensions.ext import AssetExt
+
+        return AssetExt(stac_object=self)
+
 
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+    name: Literal["item_assets"] = "item_assets"
     collection: pystac.Collection
 
     def __init__(self, collection: pystac.Collection) -> None:
