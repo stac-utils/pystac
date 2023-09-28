@@ -64,3 +64,10 @@ def tmp_asset(tmp_path: Path) -> Asset:
     catalog = Catalog.from_file(f"{dst}/catalog.json")
     item = next(catalog.get_items(recursive=True))
     return next(v for v in item.assets.values())
+
+
+@pytest.fixture(autouse=True)
+def clear_validator() -> None:
+    from pystac.validation import RegisteredValidator
+
+    RegisteredValidator._validator = None

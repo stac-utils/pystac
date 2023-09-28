@@ -1,0 +1,224 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/datacube/v2.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/datacube/v2.0.0/schema.json\",\n  \"title\":
+        \"Datacube Extension\",\n  \"description\": \"Datacube Extension for STAC
+        Items and STAC Collections.\",\n  \"oneOf\": [\n    {\n      \"$comment\":
+        \"This is the schema for STAC Items. Remove this object if this extension
+        only applies to Collections.\",\n      \"allOf\": [\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Require fields here for Item Properties.\",\n                  \"required\":
+        [\n                    \"cube:dimensions\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"$comment\": \"This validates the fields in Item Assets,
+        but does not require them.\",\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        }\n      ]\n    },\n    {\n      \"$comment\": \"This
+        is the schema for STAC Collections.\",\n      \"type\": \"object\",\n      \"allOf\":
+        [\n        {\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        }\n      ],\n      \"anyOf\": [\n
+        \       {\n          \"$comment\": \"This is the schema for the top-level
+        fields in a Collection. Remove this if this extension does not define top-level
+        fields for Collections.\",\n          \"allOf\": [\n            {\n              \"$comment\":
+        \"Require fields here for Collections (top-level).\",\n              \"required\":
+        [\n                \"cube:dimensions\"\n              ]\n            },\n
+        \           {\n              \"$ref\": \"#/definitions/fields\"\n            }\n
+        \         ]\n        },\n        {\n          \"$comment\": \"This validates
+        the fields in Collection Assets, but does not require them.\",\n          \"required\":
+        [\n            \"assets\"\n          ],\n          \"properties\": {\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Item Asset Definitions. It doesn't
+        require any fields.\",\n          \"required\": [\n            \"item_assets\"\n
+        \         ],\n          \"properties\": {\n            \"item_assets\": {\n
+        \             \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Summaries. By default, only checks
+        the existance of the properties, but not the schema of the summaries.\",\n
+        \         \"required\": [\n            \"summaries\"\n          ],\n          \"properties\":
+        {\n            \"summaries\": {\n              \"$ref\": \"#/definitions/require_any_field\"\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"https://stac-extensions.github.io/datacube/v2.0.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"require_any_field\": {\n      \"$comment\":
+        \"Please list all fields here so that we can force the existance of one of
+        them in other parts of the schemas.\",\n      \"anyOf\": [\n        {\"required\":
+        [\"cube:dimensions\"]},\n        {\"required\": [\"cube:variables\"]}\n      ]\n
+        \   },\n    \"fields\": {\n      \"$comment\": \"Add your new fields here.
+        Don't require them here, do that above in the corresponding schema.\",\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"cube:dimensions\": {\n          \"$ref\":
+        \"#/definitions/cube:dimensions\"\n        },\n        \"cube:variables\":
+        {\n          \"$ref\": \"#/definitions/cube:variables\"\n        }\n      },\n
+        \     \"patternProperties\": {\n        \"^(?!cube:)\": {}\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"cube:dimensions\": {\n      \"type\": \"object\",\n      \"additionalProperties\":
+        {\n        \"anyOf\": [\n          {\n            \"$ref\": \"#/definitions/additional_dimension\"\n
+        \         },\n          {\n            \"$ref\": \"#/definitions/horizontal_spatial_dimension\"\n
+        \         },\n          {\n            \"$ref\": \"#/definitions/vertical_spatial_dimension\"\n
+        \         },\n          {\n            \"$ref\": \"#/definitions/temporal_dimension\"\n
+        \         }\n        ]\n      }\n    },\n    \"cube:variables\": {\n      \"type\":
+        \"object\",\n      \"additionalProperties\": {\n          \"$ref\": \"#/definitions/variable\"\n
+        \     }\n    },\n    \"additional_dimension\": {\n      \"title\": \"Additional
+        Dimension Object\",\n      \"type\": \"object\",\n      \"anyOf\": [\n        {\n
+        \         \"required\": [\n            \"type\",\n            \"extent\"\n
+        \         ]\n        },\n        {\n          \"required\": [\n            \"type\",\n
+        \           \"values\"\n          ]\n        }\n      ],\n      \"not\": {\n
+        \       \"required\": [\n          \"axis\"\n        ]\n      },\n      \"properties\":
+        {\n        \"type\": {\n          \"allOf\": [\n            {\n              \"type\":
+        \"string\"\n            },\n            {\n              \"not\": {\n                \"type\":
+        \"string\",\n                \"const\": \"spatial\"\n              }\n            }\n
+        \         ]\n        },\n        \"description\": {\n          \"$ref\": \"#/definitions/description\"\n
+        \       },\n        \"extent\": {\n          \"$ref\": \"#/definitions/extent_open\"\n
+        \       },\n        \"values\": {\n          \"$ref\": \"#/definitions/values\"\n
+        \       },\n        \"step\": {\n          \"$ref\": \"#/definitions/step\"\n
+        \       },\n        \"unit\": {\n          \"$ref\": \"#/definitions/unit\"\n
+        \       },\n        \"reference_system\": {\n          \"type\": \"string\"\n
+        \       },\n        \"dimensions\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"type\": [\n              \"string\"\n            ]\n          }\n
+        \       }\n      }\n    },\n    \"horizontal_spatial_dimension\": {\n      \"title\":
+        \"Horizontal Spatial Dimension Object\",\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"type\",\n        \"axis\",\n        \"extent\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"$ref\": \"#/definitions/type_spatial\"\n
+        \       },\n        \"axis\": {\n          \"$ref\": \"#/definitions/axis_xy\"\n
+        \       },\n        \"description\": {\n          \"$ref\": \"#/definitions/description\"\n
+        \       },\n        \"extent\": {\n          \"$ref\": \"#/definitions/extent_closed\"\n
+        \       },\n        \"values\": {\n          \"$ref\": \"#/definitions/values_numeric\"\n
+        \       },\n        \"step\": {\n          \"$ref\": \"#/definitions/step\"\n
+        \       },\n        \"reference_system\": {\n          \"$ref\": \"#/definitions/reference_system_spatial\"\n
+        \       }\n      }\n    },\n    \"vertical_spatial_dimension\": {\n      \"title\":
+        \"Vertical Spatial Dimension Object\",\n      \"type\": \"object\",\n      \"anyOf\":
+        [\n        {\n          \"required\": [\n            \"type\",\n            \"axis\",\n
+        \           \"extent\"\n          ]\n        },\n        {\n          \"required\":
+        [\n            \"type\",\n            \"axis\",\n            \"values\"\n
+        \         ]\n        }\n      ],\n      \"properties\": {\n        \"type\":
+        {\n          \"$ref\": \"#/definitions/type_spatial\"\n        },\n        \"axis\":
+        {\n          \"$ref\": \"#/definitions/axis_z\"\n        },\n        \"description\":
+        {\n          \"$ref\": \"#/definitions/description\"\n        },\n        \"extent\":
+        {\n          \"$ref\": \"#/definitions/extent_open\"\n        },\n        \"values\":
+        {\n          \"$ref\": \"#/definitions/values\"\n        },\n        \"step\":
+        {\n          \"$ref\": \"#/definitions/step\"\n        },\n        \"unit\":
+        {\n          \"$ref\": \"#/definitions/unit\"\n        },\n        \"reference_system\":
+        {\n          \"$ref\": \"#/definitions/reference_system_spatial\"\n        }\n
+        \     }\n    },\n    \"temporal_dimension\": {\n      \"title\": \"Temporal
+        Dimension Object\",\n      \"type\": \"object\",\n      \"required\": [\n
+        \       \"type\",\n        \"extent\"\n      ],\n      \"not\": {\n        \"required\":
+        [\n          \"axis\"\n        ]\n      },\n      \"properties\": {\n        \"type\":
+        {\n          \"type\": \"string\",\n          \"const\": \"temporal\"\n        },\n
+        \       \"description\": {\n          \"$ref\": \"#/definitions/description\"\n
+        \       },\n        \"values\": {\n          \"type\": \"array\",\n          \"minItems\":
+        1,\n          \"items\": {\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"extent\": {\n          \"type\": \"array\",\n          \"minItems\":
+        2,\n          \"maxItems\": 2,\n          \"items\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ]\n          }\n
+        \       },\n        \"step\": {\n          \"type\": [\n            \"string\",\n
+        \           \"null\"\n          ]\n        }\n      }\n    },\n    \"variable\":
+        {\n      \"title\": \"Variable Object\",\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"dimensions\"\n      ],\n      \"properties\": {\n        \"variable_type\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"data\",\n
+        \           \"auxiliary\"\n          ]\n        },\n        \"description\":
+        {\n          \"$ref\": \"#/definitions/description\"\n        },\n        \"dimensions\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"values\": {\n          \"type\":
+        \"array\",\n          \"minItems\": 1\n        },\n        \"extent\": {\n
+        \         \"type\": \"array\",\n          \"minItems\": 2,\n          \"maxItems\":
+        2,\n          \"items\": {\n            \"type\": [\n              \"string\",\n
+        \             \"number\",\n              \"null\"\n            ]\n          }\n
+        \       },\n        \"unit\": {\n          \"$ref\": \"#/definitions/unit\"\n
+        \       }\n      }\n    },\n    \"type_spatial\": {\n      \"type\": \"string\",\n
+        \     \"const\": \"spatial\"\n    },\n    \"axis_xy\": {\n      \"type\":
+        \"string\",\n      \"enum\": [\n        \"x\",\n        \"y\"\n      ]\n    },\n
+        \   \"axis_z\": {\n      \"type\": \"string\",\n      \"const\": \"z\"\n    },\n
+        \   \"extent_closed\": {\n      \"type\": \"array\",\n      \"minItems\":
+        2,\n      \"maxItems\": 2,\n      \"items\": {\n        \"type\": \"number\"\n
+        \     }\n    },\n    \"extent_open\": {\n      \"type\": \"array\",\n      \"minItems\":
+        2,\n      \"maxItems\": 2,\n      \"items\": {\n        \"type\": [\n          \"number\",\n
+        \         \"null\"\n        ]\n      }\n    },\n    \"values_numeric\": {\n
+        \     \"type\": \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"type\":
+        \"number\"\n      }\n    },\n    \"values\": {\n      \"type\": \"array\",\n
+        \     \"minItems\": 1,\n      \"items\": {\n        \"oneOf\": [\n          {\n
+        \           \"type\": \"number\"\n          },\n          {\n            \"type\":
+        \"string\"\n          }\n        ]\n      }\n    },\n    \"step\": {\n      \"type\":
+        [\n        \"number\",\n        \"null\"\n      ]\n    },\n    \"unit\": {\n
+        \     \"type\": \"string\"\n    },\n    \"reference_system_spatial\": {\n
+        \     \"type\": [\n        \"string\",\n        \"number\",\n        \"object\"\n
+        \     ],\n      \"default\": 4326\n    },\n    \"description\": {\n      \"type\":
+        \"string\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '502'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '11920'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:20:29 GMT
+      ETag:
+      - '"64527b1d-2e90"'
+      Last-Modified:
+      - Wed, 03 May 2023 15:17:49 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 71f26459c55644735a4670270079a8b6697a853d
+      X-GitHub-Request-Id:
+      - AAC6:3224:2D88AB:3D9637:65149AA7
+      X-Served-By:
+      - cache-lga21932-LGA
+      X-Timer:
+      - S1695849629.409080,VS0,VE2
+      expires:
+      - Wed, 27 Sep 2023 21:22:07 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

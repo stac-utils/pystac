@@ -5,6 +5,388 @@ interactions:
       Connection:
       - close
       Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/label/v1.0.1/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/label/v1.0.1/schema.json#\",\n  \"title\":
+        \"Label Extension\",\n  \"description\": \"STAC Label Extension for STAC Items
+        and STAC Collections.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This
+        is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"links\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"allOf\": [\n                {\n
+        \                 \"$comment\": \"Require fields here for item properties.\",\n
+        \                 \"required\": [\n                    \"label:properties\",\n
+        \                   \"label:description\",\n                    \"label:type\"\n
+        \                 ]\n                },\n                {\n                  \"$ref\":
+        \"#/definitions/fields\"\n                }\n              ]\n            },\n
+        \           \"links\": {\n              \"type\": \"array\",\n              \"items\":
+        {\n                \"$ref\": \"#/definitions/link_fields\"\n              }\n
+        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
+        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        }\n      ]\n    },\n    {\n      \"$comment\":
+        \"This is the schema for STAC Collections.\",\n      \"allOf\": [\n        {\n
+        \         \"type\": \"object\",\n          \"required\": [\n            \"type\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/label/v1.0.1/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"link_fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"label:assets\": {\n          \"type\":
+        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n
+        \       }\n      },\n      \"patternProperties\": {\n        \"^(?!label:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    },\n    \"fields\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"label:properties\":
+        {\n          \"title\": \"Property\",\n          \"oneOf\": [\n            {\n
+        \             \"type\": \"array\",\n              \"minItems\": 1,\n              \"items\":
+        {\n                \"type\": \"string\"\n              }\n            },\n
+        \           {\n              \"type\": \"null\"\n            }\n          ]\n
+        \       },\n        \"label:classes\": {\n          \"title\": \"Classes\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"object\",\n            \"required\": [\n              \"name\",\n              \"classes\"\n
+        \           ],\n            \"properties\": {\n              \"name\": {\n
+        \               \"title\": \"Name\"\n              },\n              \"classes\":
+        {\n                \"title\": \"Classes\",\n                \"oneOf\": [\n
+        \                 {\n                    \"type\": \"array\",\n                    \"items\":
+        {\n                      \"type\": \"string\"\n                    }\n                  },\n
+        \                 {\n                    \"type\": \"array\",\n                    \"items\":
+        {\n                      \"type\": \"number\"\n                    }\n                  }\n
+        \               ]\n              }\n            }\n          }\n        },\n
+        \       \"label:description\": {\n          \"title\": \"Description\",\n
+        \         \"type\": \"string\",\n          \"minLength\": 1\n        },\n
+        \       \"label:type\": {\n          \"title\": \"Type\",\n          \"type\":
+        \"string\",\n          \"enum\": [\n            \"raster\",\n            \"vector\"\n
+        \         ]\n        },\n        \"label:tasks\": {\n          \"title\":
+        \"Task\",\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"label:methods\": {\n          \"title\":
+        \"Method\",\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"label:overviews\": {\n          \"title\":
+        \"Overview\",\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"property_key\":
+        {\n                \"title\": \"Property Key\",\n                \"type\":
+        \"string\"\n              },\n              \"counts\": {\n                \"title\":
+        \"Counts\",\n                \"type\": \"array\",\n                \"items\":
+        {\n                  \"type\": \"object\",\n                  \"properties\":
+        {\n                    \"name\": {\n                      \"title\": \"Class
+        Name\",\n                      \"type\": \"string\"\n                    },\n
+        \                   \"count\": {\n                      \"title\": \"Count\",\n
+        \                     \"type\": \"integer\"\n                    }\n                  }\n
+        \               }\n              },\n              \"statistics\": {\n                \"title\":
+        \"Statistics\",\n                \"type\": \"array\",\n                \"items\":
+        {\n                  \"type\": \"object\",\n                  \"properties\":
+        {\n                    \"name\": {\n                      \"title\": \"Stat
+        Name\",\n                      \"type\": \"string\"\n                    },\n
+        \                   \"value\": {\n                      \"title\": \"Value\",\n
+        \                     \"type\": \"number\"\n                    }\n                  }\n
+        \               }\n              }\n            }\n          }\n        }\n
+        \     },\n      \"if\": {\n        \"properties\": {\n          \"label:type\":
+        {\n            \"const\": \"raster\"\n          }\n        }\n      },\n      \"then\":
+        {\n        \"properties\": {\n          \"label:classes\": {\n            \"items\":
+        {\n              \"properties\": {\n                \"name\": {\n                  \"type\":
+        \"null\"\n                }\n              }\n            }\n          }\n
+        \       }\n      },\n      \"else\": {\n        \"properties\": {\n          \"label:classes\":
+        {\n            \"items\": {\n              \"properties\": {\n                \"name\":
+        {\n                  \"type\": \"string\",\n                  \"minLength\":
+        1\n                }\n              }\n            }\n          }\n        }\n
+        \     },\n      \"patternProperties\": {\n        \"^(?!label:)\": {}\n      },\n
+        \     \"additionalProperties\": false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '6847'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:22:19 GMT
+      ETag:
+      - '"61eb1dc9-1abf"'
+      Last-Modified:
+      - Fri, 21 Jan 2022 20:55:37 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - a24358205321661fa3c9db38190a910b8e2c0687
+      X-GitHub-Request-Id:
+      - 821C:0FF5:2D086F:420327:6514696C
+      X-Served-By:
+      - cache-lga21969-LGA
+      X-Timer:
+      - S1695849739.101030,VS0,VE16
+      expires:
+      - Wed, 27 Sep 2023 17:52:04 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"catalog.json#\",\n  \"title\": \"STAC Catalog Specification\",\n  \"description\":
+        \"This object represents Catalogs in a SpatioTemporal Asset Catalog.\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"#/definitions/catalog\"\n    }\n
+        \ ],\n  \"definitions\": {\n    \"catalog\": {\n      \"title\": \"Catalog\",\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"stac_version\",\n
+        \       \"id\",\n        \"description\",\n        \"links\"\n      ],\n      \"properties\":
+        {\n        \"stac_version\": {\n          \"title\": \"STAC version\",\n          \"type\":
+        \"string\",\n          \"const\": \"0.8.1\"\n        },\n        \"stac_extensions\":
+        {\n          \"title\": \"STAC extensions\",\n          \"type\": \"array\",\n
+        \         \"uniqueItems\": true,\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"id\": {\n          \"title\":
+        \"Identifier\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Title\",\n          \"type\": \"string\"\n        },\n
+        \       \"description\": {\n          \"title\": \"Description\",\n          \"type\":
+        \"string\"\n        },\n        \"links\": {\n          \"title\": \"Links\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/link\"\n          }\n        },\n        \"summaries\": {\n
+        \         \"$ref\": \"#/definitions/summaries\"\n        }\n      }\n    },\n
+        \   \"summaries\": {\n      \"type\": \"object\",\n      \"additionalProperties\":
+        {\n        \"oneOf\": [\n          {\n            \"title\": \"Stats\",\n
+        \           \"type\": \"object\",\n            \"required\": [\n              \"min\",\n
+        \             \"max\"\n            ],\n            \"properties\": {\n              \"min\":
+        {\n                \"title\": \"Minimum value\",\n                \"type\":
+        [\"number\", \"string\"]\n              },\n              \"max\": {\n                \"title\":
+        \"Maximum value\",\n                \"type\": [\"number\", \"string\"]\n              }\n
+        \           }\n          },\n          {\n            \"title\": \"Set of
+        values\",\n            \"type\": \"array\",\n            \"minItems\": 1,\n
+        \           \"items\": {\n              \"description\": \"Any data type could
+        occur.\"\n            }\n          }\n        ]\n      }\n    },\n    \"link\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n
+        \       \"href\"\n      ],\n      \"properties\": {\n        \"href\": {\n
+        \         \"title\": \"Link reference\",\n          \"type\": \"string\"\n
+        \       },\n        \"rel\": {\n          \"title\": \"Link relation type\",\n
+        \         \"type\": \"string\"\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '2638'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:22:19 GMT
+      ETag:
+      - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
+      Expires:
+      - Wed, 27 Sep 2023 21:27:19 GMT
+      Source-Age:
+      - '84'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 0dd654b4dd16058a17e9eef5abd7fb6ce7b3f2c8
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 146A:2756:778FB:90182:65149AAF
+      X-Served-By:
+      - cache-lga21933-LGA
+      X-Timer:
+      - S1695849739.420011,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"collection.json#\",\n  \"title\": \"STAC Collection Specification\",\n  \"description\":
+        \"This object represents Collections in a SpatioTemporal Asset Catalog.\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"../../catalog-spec/json-schema/catalog.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/collection\"\n    }\n  ],\n
+        \ \"definitions\": {\n    \"collection\": {\n      \"title\": \"STAC Collection\",\n
+        \     \"description\": \"These are the fields specific to a STAC Collection.
+        All other fields are inherited from STAC Catalog.\",\n      \"type\": \"object\",\n
+        \     \"required\": [\n        \"license\",\n        \"extent\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"title\":
+        \"STAC extensions\",\n          \"type\": \"array\",\n          \"uniqueItems\":
+        true,\n          \"items\": {\n            \"anyOf\": [\n              {\n
+        \               \"title\": \"Reference to a JSON Schema\",\n                \"type\":
+        \"string\",\n                \"format\": \"uri\"\n              },\n              {\n
+        \               \"title\": \"Reference to a core extension\",\n                \"type\":
+        \"string\",\n                \"enum\": [\n                  \"asset\",\n                  \"checksum\",\n
+        \                 \"scientific\"\n                ]\n              }\n            ]\n
+        \         }\n        },\n        \"keywords\": {\n          \"title\": \"Keywords\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"version\": {\n          \"title\":
+        \"Collection Version\",\n          \"type\": \"string\"\n        },\n        \"license\":
+        {\n          \"title\": \"Collection License Name\",\n          \"type\":
+        \"string\"\n        },\n        \"providers\": {\n          \"type\": \"array\",\n
+        \         \"items\": {\n            \"properties\": {\n              \"name\":
+        {\n                \"title\": \"Organization name\",\n                \"type\":
+        \"string\"\n              },\n              \"description\": {\n                \"title\":
+        \"Provider description\",\n                \"type\": \"string\"\n              },\n
+        \             \"roles\": {\n                \"title\": \"Organization roles\",\n
+        \               \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"string\",\n                  \"enum\": [\n                    \"producer\",\n
+        \                   \"licensor\",\n                    \"processor\",\n                    \"host\"\n
+        \                 ]\n                }\n              },\n              \"url\":
+        {\n                \"title\": \"Homepage\",\n                \"type\": \"string\",\n
+        \               \"format\": \"url\"\n              }\n            }\n          }\n
+        \       },\n        \"extent\": {\n          \"title\": \"Extents\",\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"spatial\",\n            \"temporal\"\n
+        \         ],\n          \"properties\": {\n            \"spatial\": {\n              \"title\":
+        \"Spatial extent object\",\n              \"type\": \"object\",\n              \"required\":
+        [\n                \"bbox\"\n              ],\n              \"properties\":
+        {\n                \"bbox\": {\n                  \"title\": \"Spatial extents\",\n
+        \                 \"type\": \"array\",\n                  \"minItems\": 1,\n
+        \                 \"items\": {\n                    \"title\": \"Spatial extent\",\n
+        \                   \"type\": \"array\",\n                    \"minItems\":
+        4,\n                    \"maxItems\": 6,\n                    \"items\": {\n
+        \                     \"type\": \"number\"\n                    }\n                  }\n
+        \               }\n              }\n            },\n            \"temporal\":
+        {\n              \"title\": \"Temporal extent object\",\n              \"type\":
+        \"object\",\n              \"required\": [\n                \"interval\"\n
+        \             ],\n              \"properties\": {\n                \"interval\":
+        {\n                  \"title\": \"Temporal extents\",\n                  \"type\":
+        \"array\",\n                  \"minItems\": 1,\n                  \"items\":
+        {\n                    \"title\": \"Temporal extent\",\n                    \"type\":
+        \"array\",\n                    \"minItems\": 2,\n                    \"maxItems\":
+        2,\n                    \"items\": {\n                      \"type\": [\n
+        \                       \"string\",\n                        \"null\"\n                      ],\n
+        \                     \"format\": \"date-time\"\n                    }\n                  }\n
+        \               }\n              }\n            }\n          }\n        },\n
+        \       \"properties\": {\n          \"title\": \"Common properties\",\n          \"type\":
+        \"object\"\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '4394'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:22:19 GMT
+      ETag:
+      - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
+      Expires:
+      - Wed, 27 Sep 2023 21:27:19 GMT
+      Source-Age:
+      - '84'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - d158dd098ff36cd8f413d931c0897b2d87797c75
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - D9DE:5675:4608:5765:65149AAF
+      X-Served-By:
+      - cache-lga21946-LGA
+      X-Timer:
+      - S1695849740.522750,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
       - schemas.stacspec.org
       User-Agent:
       - Python-urllib/3.11
@@ -111,7 +493,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -121,11 +503,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:47 GMT
+      - Wed, 27 Sep 2023 21:22:19 GMT
       ETag:
-      - '"647f85f4-1b3a"'
+      - '"65147dc1-1b3a"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -133,19 +515,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 4e11d54f897edd1d9d7c2887d904c11cd159ab27
+      - fcb876ec908e22f5bc1c87bc8413a866c543bde7
       X-GitHub-Request-Id:
-      - 103A:8553:D6379C:1218FF0:650DE7A7
+      - B090:10B4:DB7D7:145642:65148555
       X-Served-By:
-      - cache-den8246-DEN
+      - cache-lga21960-LGA
       X-Timer:
-      - S1695410088.735920,VS0,VE70
+      - S1695849740.626821,VS0,VE3
       expires:
-      - Fri, 22 Sep 2023 19:24:47 GMT
+      - Wed, 27 Sep 2023 19:51:09 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -178,7 +560,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -188,11 +570,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:48 GMT
+      - Wed, 27 Sep 2023 21:22:19 GMT
       ETag:
-      - '"647f85f4-21a"'
+      - '"65147dc1-21a"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -200,21 +582,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 9f2892b64847c882d8ffae199684cc202805ea49
-      X-GitHub-Request-Id:
-      - 3750:33E5:BF7F14:10ACE14:650DE7A7
-      X-Served-By:
-      - cache-den8259-DEN
-      X-Timer:
-      - S1695410088.945309,VS0,VE60
-      expires:
-      - Fri, 22 Sep 2023 19:24:47 GMT
-      x-origin-cache:
       - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - e95d2942b5130ae2c7d2b6152fc4218c74b1f350
+      X-GitHub-Request-Id:
+      - FB64:6E26:1C4B8F:28510C:65148554
+      X-Served-By:
+      - cache-lga21980-LGA
+      X-Timer:
+      - S1695849740.746531,VS0,VE2
+      expires:
+      - Wed, 27 Sep 2023 19:51:09 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -260,7 +640,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -270,11 +650,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:48 GMT
+      - Wed, 27 Sep 2023 21:22:19 GMT
       ETag:
-      - '"647f85f4-5c5"'
+      - '"65147dc1-5c5"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -282,19 +662,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 1baa493e9d55c32c66a8b7ffc7a070eea2687f77
+      - cea4a695daf98b92d38015d4ba95011a8fe12a7f
       X-GitHub-Request-Id:
-      - E440:56FF:CBA3B7:116F4E3:650DE7A6
+      - B9DC:56D7:1E2E33:2A5D31:65148555
       X-Served-By:
-      - cache-den8259-DEN
+      - cache-lga21976-LGA
       X-Timer:
-      - S1695410088.104539,VS0,VE61
+      - S1695849740.851432,VS0,VE2
       expires:
-      - Fri, 22 Sep 2023 19:24:48 GMT
+      - Wed, 27 Sep 2023 19:51:09 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -329,7 +711,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -339,11 +721,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:48 GMT
+      - Wed, 27 Sep 2023 21:22:19 GMT
       ETag:
-      - '"647f85f4-2bd"'
+      - '"65147dc1-2bd"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -351,21 +733,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 03287b0e2f04b97d3a8246847bcf5f6b1172405d
-      X-GitHub-Request-Id:
-      - 41A0:855E:C8CC0D:11421FE:650DE7A6
-      X-Served-By:
-      - cache-den8232-DEN
-      X-Timer:
-      - S1695410088.285417,VS0,VE57
-      expires:
-      - Fri, 22 Sep 2023 19:24:48 GMT
-      x-origin-cache:
       - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 84b0549c3ab37b7eba14ad307b0fa36dc7c3d731
+      X-GitHub-Request-Id:
+      - 66F0:1234:5B27E9:86E197:65148555
+      X-Served-By:
+      - cache-lga21964-LGA
+      X-Timer:
+      - S1695849740.952927,VS0,VE2
+      expires:
+      - Wed, 27 Sep 2023 19:51:09 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -395,7 +775,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -405,11 +785,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:48 GMT
+      - Wed, 27 Sep 2023 21:22:20 GMT
       ETag:
-      - '"647f85f4-133"'
+      - '"65147dc1-133"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -417,19 +797,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - c1e55f57ae498e484507c88fd3fd687e700271b0
+      - f324fa3cbf2c017837cc53d295fb032cb688cc08
       X-GitHub-Request-Id:
-      - E440:56FF:CBA3D8:116F50D:650DE7A8
+      - FD56:23F1:6A8C75:9641FD:65148555
       X-Served-By:
-      - cache-den8221-DEN
+      - cache-lga21933-LGA
       X-Timer:
-      - S1695410088.457654,VS0,VE57
+      - S1695849740.075026,VS0,VE1
       expires:
-      - Fri, 22 Sep 2023 19:24:48 GMT
+      - Wed, 27 Sep 2023 19:51:09 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -472,7 +852,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '582'
       Cache-Control:
       - max-age=600
       Connection:
@@ -482,11 +862,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:48 GMT
+      - Wed, 27 Sep 2023 21:22:20 GMT
       ETag:
-      - '"647f85f4-474"'
+      - '"65147dc1-474"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -494,23 +874,102 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - cfde34becd069f84c363086bc3b47c3acb2f2ac7
+      - 9081c74c536eeeefa487d45bbc43c8dbdfb6b41b
       X-GitHub-Request-Id:
-      - 57B0:1114:C499AB:10FE991:650DE7A8
+      - DACE:9613:642736:8FE3FD:65148555
       X-Served-By:
-      - cache-den8232-DEN
+      - cache-lga21978-LGA
       X-Timer:
-      - S1695410089.639305,VS0,VE59
+      - S1695849740.191386,VS0,VE1
       expires:
-      - Fri, 22 Sep 2023 19:24:48 GMT
+      - Wed, 27 Sep 2023 19:51:10 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
       - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/asset/json-schema/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"schema.json#\",\n  \"title\": \"Asset Definition Extension Specification\",\n
+        \ \"description\": \"STAC Asset Definition Extension to a STAC Collection\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"../../../collection-spec/json-schema/collection.json\"\n
+        \   },\n    {\n      \"$ref\": \"#/definitions/assets\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"assets\": {\n      \"title\": \"Asset schemas\",\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"assets\": {\n          \"type\": \"object\",\n          \"additionalProperties\":
+        {\n            \"$ref\": \"#/definitions/asset\"\n          }\n        }\n
+        \     }\n    },\n    \"asset\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"title\",\n        \"type\"\n      ],\n      \"properties\": {\n
+        \       \"title\": {\n          \"title\": \"Asset title\",\n          \"type\":
+        \"string\"\n        },\n        \"type\": {\n          \"title\": \"Asset
+        type\",\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '1002'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:22:21 GMT
+      ETag:
+      - '"cffbb0036f526b016f24477e0ad674e75b6fefb89708ca796686de9d2e2a67ed"'
+      Expires:
+      - Wed, 27 Sep 2023 21:27:21 GMT
+      Source-Age:
+      - '84'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 6186950057600a6a3e4b311b851bc9518e528a5f
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - A022:6156:4B68:5D65:65149AB0
+      X-Served-By:
+      - cache-lga21939-LGA
+      X-Timer:
+      - S1695849741.226506,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
     status:
       code: 200
       message: OK

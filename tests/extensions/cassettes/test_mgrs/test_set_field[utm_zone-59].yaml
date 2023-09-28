@@ -1,0 +1,104 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/mgrs/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/mgrs/v1.0.0/schema.json#\",\n  \"title\":
+        \"MGRS Extension\",\n  \"description\": \"STAC MGRS Extension for STAC Items.\",\n
+        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"properties\": {\n              \"allOf\":
+        [\n                {\n                  \"$comment\": \"Require fields here
+        for item properties.\",\n                  \"required\": [\n                    \"mgrs:latitude_band\",\n
+        \                   \"mgrs:grid_square\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/mgrs/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"mgrs:latitude_band\":
+        {\n          \"type\": \"string\"\n        },\n        \"mgrs:grid_square\":
+        {\n          \"type\": \"string\"\n        },\n        \"mgrs:utm_zone\":
+        {\n          \"type\": \"integer\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!mgrs:)\": {\n          \"$comment\": \"Do not allow other
+        fields with this prefix\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '505'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2889'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:20:34 GMT
+      ETag:
+      - '"60c20ce1-b49"'
+      Last-Modified:
+      - Thu, 10 Jun 2021 13:00:17 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 4b954d8f3442d32a7b917759f177c25c33115a90
+      X-GitHub-Request-Id:
+      - 7960:22B5:28EFF5:38AE77:65149AA8
+      X-Served-By:
+      - cache-lga21979-LGA
+      X-Timer:
+      - S1695849634.463547,VS0,VE1
+      expires:
+      - Wed, 27 Sep 2023 21:22:09 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1

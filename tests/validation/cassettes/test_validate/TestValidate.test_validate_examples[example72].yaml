@@ -89,7 +89,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '551'
       Cache-Control:
       - max-age=600
       Connection:
@@ -99,11 +99,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 22 Sep 2023 19:14:38 GMT
+      - Wed, 27 Sep 2023 21:21:39 GMT
       ETag:
-      - '"647f85f4-14e2"'
+      - '"65147dc1-14e2"'
       Last-Modified:
-      - Tue, 06 Jun 2023 19:16:04 GMT
+      - Wed, 27 Sep 2023 19:08:49 GMT
       Server:
       - GitHub.com
       Vary:
@@ -111,21 +111,109 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 4ca9da301e60dc8df1844b60f209f5f131cda628
-      X-GitHub-Request-Id:
-      - 5B30:1039:34786E:47F5EF:650DE79E
-      X-Served-By:
-      - cache-den8244-DEN
-      X-Timer:
-      - S1695410078.419417,VS0,VE128
-      expires:
-      - Fri, 22 Sep 2023 19:24:38 GMT
-      x-origin-cache:
       - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 0b5fdadaa19116d7d03cb28cfd9786c36cba3f1f
+      X-GitHub-Request-Id:
+      - DC8C:6FEB:26F7FB:34E32D:6514878E
+      X-Served-By:
+      - cache-lga21923-LGA
+      X-Timer:
+      - S1695849700.598315,VS0,VE2
+      expires:
+      - Wed, 27 Sep 2023 20:00:38 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json#\",\n
+        \ \"title\": \"STAC Catalog Specification\",\n  \"description\": \"This object
+        represents Catalogs in a SpatioTemporal Asset Catalog.\",\n  \"allOf\": [\n
+        \   {\n      \"$ref\": \"#/definitions/catalog\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"catalog\": {\n      \"title\": \"Catalog\",\n      \"type\": \"object\",\n
+        \     \"required\": [\n        \"stac_version\",\n        \"id\",\n        \"description\",\n
+        \       \"links\"\n      ],\n      \"properties\": {\n        \"stac_version\":
+        {\n          \"title\": \"STAC version\",\n          \"type\": \"string\",\n
+        \         \"const\": \"1.0.0-beta.2\"\n        },\n        \"stac_extensions\":
+        {\n          \"title\": \"STAC extensions\",\n          \"type\": \"array\",\n
+        \         \"uniqueItems\": true,\n          \"items\": {\n            \"anyOf\":
+        [\n              {\n                \"title\": \"Reference to a JSON Schema\",\n
+        \               \"type\": \"string\",\n                \"format\": \"uri\"\n
+        \             },\n              {\n                \"title\": \"Reference
+        to a core extension\",\n                \"type\": \"string\"\n              }\n
+        \           ]\n          }\n        },\n        \"id\": {\n          \"title\":
+        \"Identifier\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Title\",\n          \"type\": \"string\"\n        },\n
+        \       \"description\": {\n          \"title\": \"Description\",\n          \"type\":
+        \"string\"\n        },\n        \"links\": {\n          \"title\": \"Links\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/link\"\n          }\n        }\n      }\n    },\n    \"link\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n
+        \       \"href\"\n      ],\n      \"properties\": {\n        \"href\": {\n
+        \         \"title\": \"Link reference\",\n          \"type\": \"string\"\n
+        \       },\n        \"rel\": {\n          \"title\": \"Link relation type\",\n
+        \         \"type\": \"string\"\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '551'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '2126'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:21:39 GMT
+      ETag:
+      - '"65147dc1-84e"'
+      Last-Modified:
+      - Wed, 27 Sep 2023 19:08:49 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - d5e4d89fa7d34a137dfe2c66d058c1a487ce0980
+      X-GitHub-Request-Id:
+      - B38E:8027:25BC98:33E9C0:6514878E
+      X-Served-By:
+      - cache-lga21952-LGA
+      X-Timer:
+      - S1695849700.727486,VS0,VE1
+      expires:
+      - Wed, 27 Sep 2023 20:00:38 GMT
       x-proxy-cache:
       - MISS
     status:

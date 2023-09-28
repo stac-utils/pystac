@@ -148,7 +148,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
-        schema_startswith = re.split(VERSION_REGEX, cls.get_schema_uri())[0] + "/"
+        schema_startswith = VERSION_REGEX.split(cls.get_schema_uri())[0] + "/"
 
         return obj.stac_extensions is not None and any(
             uri.startswith(schema_startswith) for uri in obj.stac_extensions

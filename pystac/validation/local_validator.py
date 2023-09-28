@@ -106,7 +106,7 @@ class LocalValidator:
 
     def _validator(self, stac_type: str, version: str) -> Draft7Validator:
         schema = _read_schema(f"stac-spec/v{version}/{stac_type}.json")
-        return Draft7Validator(schema, registry=self.registry)
+        return Draft7Validator(schema, registry=self.registry())
 
     def catalog_validator(self, version: str = VERSION) -> Draft7Validator:
         return self._validator("catalog", version)

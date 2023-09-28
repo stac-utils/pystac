@@ -68,11 +68,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:24 GMT
+      - Wed, 27 Sep 2023 21:20:55 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Fri, 22 Sep 2023 19:19:24 GMT
+      - Wed, 27 Sep 2023 21:25:55 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -82,21 +82,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 5958b6ac7cfbc0b0c297bf784cccdd3d75be614d
+      - 6d9bff922ae67273c8c34a9c1d50297c9d4e3367
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 392E:0B1A:39E50F:44C0C5:650DE790
+      - 146A:2756:778FB:90182:65149AAF
       X-Served-By:
-      - cache-den8227-DEN
+      - cache-lga21970-LGA
       X-Timer:
-      - S1695410064.408500,VS0,VE135
+      - S1695849655.498771,VS0,VE71
       X-XSS-Protection:
       - 1; mode=block
     status:

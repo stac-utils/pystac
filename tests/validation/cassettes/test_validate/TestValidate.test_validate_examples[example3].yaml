@@ -112,11 +112,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:25 GMT
+      - Wed, 27 Sep 2023 21:20:56 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Fri, 22 Sep 2023 19:19:25 GMT
+      - Wed, 27 Sep 2023 21:25:56 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -126,21 +126,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3c049047e7a5b15561c2754b7bae735aec96268b
+      - 2b719f82463db286eb12ec44eccae32b70cebb3f
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - B430:41DB:368154:415D0C:650DE78F
+      - 2630:09BA:1F7C:2D49:65149AB0
       X-Served-By:
-      - cache-den8268-DEN
+      - cache-lga21971-LGA
       X-Timer:
-      - S1695410065.900118,VS0,VE135
+      - S1695849656.154987,VS0,VE74
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -220,11 +220,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:25 GMT
+      - Wed, 27 Sep 2023 21:20:56 GMT
       ETag:
       - '"c8576d5ea3fcee4039dcddbdcf9e59fed3f3086419a33aa96f18f4617203b76d"'
       Expires:
-      - Fri, 22 Sep 2023 19:19:25 GMT
+      - Wed, 27 Sep 2023 21:25:56 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -234,21 +234,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - ea44113f70e61527d0f9880ca146c3d73b2bcdd3
+      - 1a72c01c11c584a7ba57ee94df9f14947a626b42
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 1CC6:4B3B:312501:3C005D:650DE790
+      - 6F72:822A:2999:3A71:65149AAF
       X-Served-By:
-      - cache-den8228-DEN
+      - cache-lga21942-LGA
       X-Timer:
-      - S1695410065.134715,VS0,VE142
+      - S1695849656.345344,VS0,VE71
       X-XSS-Protection:
       - 1; mode=block
     status:
