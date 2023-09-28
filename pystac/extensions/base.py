@@ -182,7 +182,6 @@ class ExtensionManagementMixin(Generic[S], ABC):
             else:
                 return
         return cls.ensure_has_extension(cast(S, asset.owner), add_if_missing)
-    
 
     @classmethod
     def validate_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
@@ -207,8 +206,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
             DeprecationWarning,
         )
 
-        return cls.ensure_has_extension(cls, obj, add_if_missing)
-
+        return cls.ensure_has_extension(obj, add_if_missing)
 
     @classmethod
     def ensure_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
@@ -228,7 +226,6 @@ class ExtensionManagementMixin(Generic[S], ABC):
             raise pystac.ExtensionNotImplemented(
                 f"Could not find extension schema URI {cls.get_schema_uri()} in object."
             )
-        
 
     @classmethod
     def _ext_error_message(cls, obj: Any) -> str:
