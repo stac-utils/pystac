@@ -5,6 +5,256 @@ interactions:
       Connection:
       - close
       Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/eo/v1.1.0/schema.json#\",\n  \"title\":
+        \"EO Extension\",\n  \"description\": \"STAC EO Extension for STAC Items.\",\n
+        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"properties\": {\n              \"$ref\":
+        \"#/definitions/fields\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            }\n          },\n          \"$comment\":
+        \"The if-then-else below checks whether the eo:bands is given in assets or
+        not. If yes, allows eo:bands in properties (else), otherwise, disallows eo:bands
+        in properties (then).\",\n          \"if\": {\n            \"required\": [\n
+        \             \"assets\"\n            ],\n            \"properties\": {\n
+        \             \"assets\": {\n                \"type\": \"object\",\n                \"additionalProperties\":
+        {\n                  \"properties\": {\n                    \"eo:bands\":
+        false\n                  }\n                }\n              }\n            }\n
+        \         },\n          \"then\": {\n            \"properties\": {\n              \"properties\":
+        {\n                \"properties\": {\n                  \"eo:bands\": false\n
+        \               }\n              }\n            }\n          },\n          \"else\":
+        {\n            \"properties\": {\n              \"properties\": {\n                \"properties\":
+        {\n                  \"eo:bands\": {\n                    \"$ref\": \"#/definitions/bands\"\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/eo/v1.1.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"eo:cloud_cover\": {\n          \"title\":
+        \"Cloud Cover\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"eo:snow_cover\": {\n
+        \         \"title\": \"Snow and Ice Cover\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0,\n          \"maximum\": 100\n        },\n        \"eo:bands\":
+        {\n          \"$ref\": \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!eo:)\": {}\n      },\n      \"additionalProperties\": false\n
+        \   },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\": \"array\",\n
+        \     \"minItems\": 1,\n      \"items\": {\n        \"title\": \"Band\",\n
+        \       \"type\": \"object\",\n        \"minProperties\": 1,\n        \"properties\":
+        {\n          \"name\": {\n            \"title\": \"Name of the band\",\n            \"type\":
+        \"string\"\n          },\n          \"common_name\": {\n            \"title\":
+        \"Common Name of the band\",\n            \"type\": \"string\",\n            \"enum\":
+        [\n              \"coastal\",\n              \"blue\",\n              \"green\",\n
+        \             \"red\",\n              \"rededge\",\n              \"yellow\",\n
+        \             \"pan\",\n              \"nir\",\n              \"nir08\",\n
+        \             \"nir09\",\n              \"cirrus\",\n              \"swir16\",\n
+        \             \"swir22\",\n              \"lwir\",\n              \"lwir11\",\n
+        \             \"lwir12\"\n            ]\n          },\n          \"description\":
+        {\n            \"title\": \"Description of the band\",\n            \"type\":
+        \"string\",\n            \"minLength\": 1\n          },\n          \"center_wavelength\":
+        {\n            \"title\": \"Center Wavelength\",\n            \"type\": \"number\",\n
+        \           \"minimumExclusive\": 0\n          },\n          \"full_width_half_max\":
+        {\n            \"title\": \"Full Width Half Max (FWHM)\",\n            \"type\":
+        \"number\",\n            \"minimumExclusive\": 0\n          },\n          \"solar_illumination\":
+        {\n            \"title\": \"Solar Illumination\",\n            \"type\": \"number\",\n
+        \           \"minimum\": 0\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '534'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '5052'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:20:35 GMT
+      ETag:
+      - '"63e664c8-13bc"'
+      Last-Modified:
+      - Fri, 10 Feb 2023 15:37:44 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - bea1dc2edcb9ae4ac8a9912d05a8a1efe364d4ab
+      X-GitHub-Request-Id:
+      - 784C:6B89:1EE369:2AD4C5:65148553
+      X-Served-By:
+      - cache-lga21924-LGA
+      X-Timer:
+      - S1695849636.600949,VS0,VE2
+      expires:
+      - Wed, 27 Sep 2023 19:51:07 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/projection/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\",\n  \"title\":
+        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
+        for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
+        are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
+        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        }\n      ]\n    },\n
+        \   {\n      \"$comment\": \"This is the schema for STAC Collections.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Collection\"\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
+        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n          \"title\":\"EPSG
+        code\",\n          \"type\":[\n            \"integer\",\n            \"null\"\n
+        \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
+        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.5/projjson.schema.json\"\n
+        \           },\n            {\n              \"type\": \"null\"\n            }\n
+        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
+        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
+        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
+        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
+        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
+        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
+        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
+        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
+        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
+        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
+        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
+        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
+        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
+        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
+        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '534'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '4369'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 27 Sep 2023 21:20:35 GMT
+      ETag:
+      - '"63e6651b-1111"'
+      Last-Modified:
+      - Fri, 10 Feb 2023 15:39:07 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 0422e25767d3bfeea270649a298d958ba6f0add5
+      X-GitHub-Request-Id:
+      - 303E:20A2:70F70E:9F20FD:65149A8D
+      X-Served-By:
+      - cache-lga21964-LGA
+      X-Timer:
+      - S1695849636.698176,VS0,VE1
+      expires:
+      - Wed, 27 Sep 2023 21:21:41 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
       - proj.org
       User-Agent:
       - Python-urllib/3.11
@@ -14,12 +264,14 @@ interactions:
     body:
       string: ''
     headers:
+      Age:
+      - '506'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - EXPIRED
-      CF-RAY:
-      - 80acdebd1b305380-DEN
+      - HIT
+      CF-Ray:
+      - 80d6caa0d808c427-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -33,7 +285,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:17 GMT
+      - Wed, 27 Sep 2023 21:20:36 GMT
       Location:
       - https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
       Referrer-Policy:
@@ -43,7 +295,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-097db139fd15f93c3
+      - web-i-00190b17db4987e5f
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -580,14 +832,18 @@ interactions:
         \"ids\": {}\n      },\n      \"required\" : [ \"name\" ],\n      \"additionalProperties\":
         false\n    }\n\n  }\n}\n"
     headers:
+      Access-Control-Allow-Methods:
+      - HEAD, OPTIONS, GET
       Access-Control-Allow-Origin:
       - '*'
+      Age:
+      - '506'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - MISS
-      CF-RAY:
-      - 80acdebf0c5c5202-DEN
+      - HIT
+      CF-Ray:
+      - 80d6caa1a8120f75-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -595,7 +851,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 22 Sep 2023 19:14:18 GMT
+      - Wed, 27 Sep 2023 21:20:36 GMT
       ETag:
       - W/"567e3992b5fd3188af907a4cdc4781b3"
       Last-Modified:
@@ -609,7 +865,7 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-01770b2aec355d681
+      - web-i-04a0936e538e90895
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -629,11 +885,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - MffyiA0jKwkdmkXWqTjJEwAy/Dj8yOSr7y/l96hy9mlvPhMc2fWkHzRhbxn7AmCvClLP8LihAsE=
+      - UBlptQ6CoU1gOcZjt2RSY1lr3wEiR3bA6BF4Ck7ffEb2Gvy2wrxxhJ3mNAJRYDJ1sJ9j4auUgjI=
       x-amz-meta-mtime:
       - '1693732240.238196845'
       x-amz-request-id:
-      - 26C0710CPSESA837
+      - 7M5G3K3ZTHPYERHZ
       x-amz-server-side-encryption:
       - AES256
     status:

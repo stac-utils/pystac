@@ -89,11 +89,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Fri, 22 Sep 2023 19:14:24 GMT
+      - Wed, 27 Sep 2023 21:20:55 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Fri, 22 Sep 2023 19:19:24 GMT
+      - Wed, 27 Sep 2023 21:25:55 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -103,21 +103,124 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 6b9d8db1230f196f778aa9d05b1575f159061bdb
+      - f52fd67cefa5a1c29ecd7fabed83ee2f5f5f71b1
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 8CFA:69B9:34FF9C:3FDB01:650DE78D
+      - D9DE:5675:4608:5765:65149AAF
       X-Served-By:
-      - cache-den8282-DEN
+      - cache-lga21973-LGA
       X-Timer:
-      - S1695410065.662307,VS0,VE141
+      - S1695849656.839280,VS0,VE92
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - raw.githubusercontent.com
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"catalog.json#\",\n  \"title\": \"STAC Catalog Specification\",\n  \"description\":
+        \"This object represents Catalogs in a SpatioTemporal Asset Catalog.\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"#/definitions/catalog\"\n    }\n
+        \ ],\n  \"definitions\": {\n    \"catalog\": {\n      \"title\": \"Catalog\",\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"stac_version\",\n
+        \       \"id\",\n        \"description\",\n        \"links\"\n      ],\n      \"properties\":
+        {\n        \"stac_version\": {\n          \"title\": \"STAC version\",\n          \"type\":
+        \"string\",\n          \"const\": \"0.8.1\"\n        },\n        \"stac_extensions\":
+        {\n          \"title\": \"STAC extensions\",\n          \"type\": \"array\",\n
+        \         \"uniqueItems\": true,\n          \"items\": {\n            \"type\":
+        \"string\"\n          }\n        },\n        \"id\": {\n          \"title\":
+        \"Identifier\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Title\",\n          \"type\": \"string\"\n        },\n
+        \       \"description\": {\n          \"title\": \"Description\",\n          \"type\":
+        \"string\"\n        },\n        \"links\": {\n          \"title\": \"Links\",\n
+        \         \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/link\"\n          }\n        },\n        \"summaries\": {\n
+        \         \"$ref\": \"#/definitions/summaries\"\n        }\n      }\n    },\n
+        \   \"summaries\": {\n      \"type\": \"object\",\n      \"additionalProperties\":
+        {\n        \"oneOf\": [\n          {\n            \"title\": \"Stats\",\n
+        \           \"type\": \"object\",\n            \"required\": [\n              \"min\",\n
+        \             \"max\"\n            ],\n            \"properties\": {\n              \"min\":
+        {\n                \"title\": \"Minimum value\",\n                \"type\":
+        [\"number\", \"string\"]\n              },\n              \"max\": {\n                \"title\":
+        \"Maximum value\",\n                \"type\": [\"number\", \"string\"]\n              }\n
+        \           }\n          },\n          {\n            \"title\": \"Set of
+        values\",\n            \"type\": \"array\",\n            \"minItems\": 1,\n
+        \           \"items\": {\n              \"description\": \"Any data type could
+        occur.\"\n            }\n          }\n        ]\n      }\n    },\n    \"link\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n
+        \       \"href\"\n      ],\n      \"properties\": {\n        \"href\": {\n
+        \         \"title\": \"Link reference\",\n          \"type\": \"string\"\n
+        \       },\n        \"rel\": {\n          \"title\": \"Link relation type\",\n
+        \         \"type\": \"string\"\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - close
+      Content-Length:
+      - '2638'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Wed, 27 Sep 2023 21:20:56 GMT
+      ETag:
+      - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
+      Expires:
+      - Wed, 27 Sep 2023 21:25:56 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - eaa001ca74652e590bb14c1273d38eb3a8426bc6
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 146A:2756:778FB:90182:65149AAF
+      X-Served-By:
+      - cache-lga21920-LGA
+      X-Timer:
+      - S1695849656.038970,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

@@ -34,7 +34,8 @@ interactions:
         3DEP Lidar Height above Ground","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/3dep-lidar-hag"},{"rel":"child","type":"application/json","title":"USGS
         3DEP Lidar Intensity","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/3dep-lidar-intensity"},{"rel":"child","type":"application/json","title":"USGS
         3DEP Lidar Point Source","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/3dep-lidar-pointsourceid"},{"rel":"child","type":"application/json","title":"MTBS:
-        Monitoring Trends in Burn Severity","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/mtbs"},{"rel":"child","type":"application/json","title":"C-CAP
+        Monitoring Trends in Burn Severity","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/mtbs"},{"rel":"child","type":"application/json","title":"Landsat
+        8 Collection 2 Level-2","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/landsat-8-c2-l2"},{"rel":"child","type":"application/json","title":"C-CAP
         Regional Land Cover and Change","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/noaa-c-cap"},{"rel":"child","type":"application/json","title":"USGS
         3DEP Lidar Point Cloud","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/3dep-lidar-copc"},{"rel":"child","type":"application/json","title":"MODIS
         Burned Area Monthly","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-64A1-061"},{"rel":"child","type":"application/json","title":"ALOS
@@ -140,15 +141,15 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Content-Length:
-      - '23957'
+      - '24129'
       Content-Type:
       - application/json
       Date:
-      - Fri, 22 Sep 2023 19:13:55 GMT
+      - Wed, 27 Sep 2023 21:20:04 GMT
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
       X-Azure-Ref:
-      - 0c+cNZQAAAADu4qrKOq7CTqJo34iEVhR8REVOMzAxMDAwMTA5MDE5ADkyN2FiZmE2LTE5ZjYtNGFmMS1hMDlkLWM5NTlkOWExZTY0NA==
+      - 0hJwUZQAAAAAXJe5yFrMBRKpJnPgmkEPUTU5aMjIxMDYwNjExMDE3ADkyN2FiZmE2LTE5ZjYtNGFmMS1hMDlkLWM5NTlkOWExZTY0NA==
       X-Cache:
       - CONFIG_NOCACHE
     status:
