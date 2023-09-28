@@ -6,6 +6,7 @@ import pytest
 
 import pystac
 import pystac.extensions.datacube as dc
+from pystac import Item
 from pystac.errors import ExtensionTypeError
 from tests.conftest import get_data_file
 
@@ -16,22 +17,22 @@ def ext_item_uri() -> str:
 
 
 @pytest.fixture
-def ext_item(ext_item_uri: str) -> pystac.Item:
-    return pystac.Item.from_file(ext_item_uri)
+def ext_item(ext_item_uri: str) -> Item:
+    return Item.from_file(ext_item_uri)
 
 
 @pytest.fixture
-def horizontal_dimension(ext_item: pystac.Item) -> dc.Dimension:
+def horizontal_dimension(ext_item: Item) -> dc.Dimension:
     return dc.DatacubeExtension.ext(ext_item).dimensions["x"]
 
 
 @pytest.fixture
-def temporal_dimension(ext_item: pystac.Item) -> dc.Dimension:
+def temporal_dimension(ext_item: Item) -> dc.Dimension:
     return dc.DatacubeExtension.ext(ext_item).dimensions["time"]
 
 
 @pytest.fixture
-def additional_dimension(ext_item: pystac.Item) -> dc.Dimension:
+def additional_dimension(ext_item: Item) -> dc.Dimension:
     return dc.DatacubeExtension.ext(ext_item).dimensions["spectral"]
 
 
@@ -108,26 +109,26 @@ def test_temporal_dimension_description(
     assert "description" not in temporal_dimension.properties
 
 
-def test_stac_extensions(ext_item: pystac.Item) -> None:
+def test_stac_extensions(ext_item: Item) -> None:
     assert dc.DatacubeExtension.has_extension(ext_item)
 
 
-def test_get_schema_uri(ext_item: pystac.Item) -> None:
+def test_get_schema_uri(ext_item: Item) -> None:
     assert dc.DatacubeExtension.get_schema_uri() in ext_item.stac_extensions
 
 
-def test_ext_raises_if_item_does_not_conform(item: pystac.Item) -> None:
+def test_ext_raises_if_item_does_not_conform(item: Item) -> None:
     with pytest.raises(pystac.errors.ExtensionNotImplemented):
         dc.DatacubeExtension.ext(item)
 
 
-def test_ext_raises_if_asset_does_not_conform(sample_item: pystac.Item) -> None:
+def test_ext_raises_if_asset_does_not_conform(sample_item: Item) -> None:
     asset = sample_item.assets["analytic"]
     with pytest.raises(pystac.errors.ExtensionNotImplemented):
         dc.DatacubeExtension.ext(asset)
 
 
-def test_ext_always_passes_if_asset_has_no_owner(sample_item: pystac.Item) -> None:
+def test_ext_always_passes_if_asset_has_no_owner(sample_item: Item) -> None:
     asset = sample_item.assets["analytic"]
 
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
@@ -141,7 +142,7 @@ def test_ext_raises_if_passed_a_non_stac_object() -> None:
         dc.DatacubeExtension.ext(object())  # type: ignore
 
 
-def test_to_from_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
+def test_to_from_dict(ext_item_uri: str, ext_item: Item) -> None:
     with open(ext_item_uri) as f:
         d = json.load(f)
     actual = ext_item.to_dict(include_self_link=False)
@@ -167,7 +168,7 @@ def test_add_ext_to_collection(collection: pystac.Collection) -> None:
     assert dc.DatacubeExtension.get_schema_uri() in collection.stac_extensions
 
 
-def test_add_to_item(item: pystac.Item) -> None:
+def test_add_to_item(item: Item) -> None:
     assert not dc.DatacubeExtension.has_extension(item)
     dc.DatacubeExtension.add_to(item)
 
@@ -175,7 +176,7 @@ def test_add_to_item(item: pystac.Item) -> None:
     assert dc.DatacubeExtension.get_schema_uri() in item.stac_extensions
 
 
-def test_add_ext_to_item(item: pystac.Item) -> None:
+def test_add_ext_to_item(item: Item) -> None:
     assert not dc.DatacubeExtension.has_extension(item)
     dc.DatacubeExtension.ext(item, add_if_missing=True)
 
@@ -183,7 +184,7 @@ def test_add_ext_to_item(item: pystac.Item) -> None:
     assert dc.DatacubeExtension.get_schema_uri() in item.stac_extensions
 
 
-def test_add_ext_to_asset(sample_item: pystac.Item) -> None:
+def test_add_ext_to_asset(sample_item: Item) -> None:
     assert not dc.DatacubeExtension.has_extension(sample_item)
     asset = sample_item.assets["analytic"]
     dc.DatacubeExtension.ext(asset, add_if_missing=True)
@@ -192,7 +193,7 @@ def test_add_ext_to_asset(sample_item: pystac.Item) -> None:
     assert dc.DatacubeExtension.get_schema_uri() in sample_item.stac_extensions
 
 
-def test_apply(item: pystac.Item) -> None:
+def test_apply(item: Item) -> None:
     dc.DatacubeExtension.add_to(item)
     dc.DatacubeExtension.ext(item).apply(
         dimensions={
@@ -214,18 +215,18 @@ def test_apply(item: pystac.Item) -> None:
     assert dc.DatacubeExtension.ext(item).variables
 
 
-def test_apply_without_required_fields_raises(item: pystac.Item) -> None:
+def test_apply_without_required_fields_raises(item: Item) -> None:
     dc.DatacubeExtension.add_to(item)
     with pytest.raises(TypeError, match="missing 1 required positional argument"):
         dc.DatacubeExtension.ext(item).apply()  # type: ignore
 
 
 @pytest.mark.vcr()
-def test_validate(ext_item: pystac.Item) -> None:
+def test_validate(ext_item: Item) -> None:
     assert ext_item.validate()
 
 
-def test_get_variables(ext_item: pystac.Item) -> None:
+def test_get_variables(ext_item: Item) -> None:
     prop = ext_item.properties[dc.VARIABLES_PROP]
     attr = dc.DatacubeExtension.ext(ext_item).variables
 
@@ -234,7 +235,7 @@ def test_get_variables(ext_item: pystac.Item) -> None:
     assert attr["temp"].to_dict() == prop["temp"]
 
 
-def test_get_dimensions(ext_item: pystac.Item) -> None:
+def test_get_dimensions(ext_item: Item) -> None:
     prop = ext_item.properties[dc.DIMENSIONS_PROP]
     attr = dc.DatacubeExtension.ext(ext_item).dimensions
 
@@ -245,7 +246,7 @@ def test_get_dimensions(ext_item: pystac.Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_set_variables(ext_item: pystac.Item) -> None:
+def test_set_variables(ext_item: Item) -> None:
     original = ext_item.properties[dc.VARIABLES_PROP]
     value = dc.Variable({"dimensions": ["foo"]})
 
@@ -258,7 +259,7 @@ def test_set_variables(ext_item: pystac.Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_set_dimensions(ext_item: pystac.Item) -> None:
+def test_set_dimensions(ext_item: Item) -> None:
     original = ext_item.properties[dc.DIMENSIONS_PROP]
     value = dc.Dimension(
         {"type": "bands", "values": ["red", "coastal", "green", "blue"]}
@@ -270,3 +271,16 @@ def test_set_dimensions(ext_item: pystac.Item) -> None:
     assert new != original
     assert new == {"spectral": value.to_dict()}
     assert ext_item.validate()
+
+
+@pytest.mark.parametrize("version", ["v1.0.0"])
+def test_migrate(version: str, ext_item: Item) -> None:
+    item_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["stac_extensions"] = [
+        f"https://stac-extensions.github.io/datacube/{version}/schema.json"
+    ]
+    item = Item.from_dict(item_dict, migrate=True)
+    assert (
+        "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
+        in item.stac_extensions
+    )
