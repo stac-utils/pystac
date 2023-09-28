@@ -27,9 +27,9 @@ Install from source
 Dependencies
 ============
 
-PySTAC requires Python >= 3.8. This project follows the recommendations of
+PySTAC requires Python >= 3.9. This project follows the recommendations of
 `NEP-29 <https://numpy.org/neps/nep-0029-deprecation_policy.html>`__ in deprecating support
-for Python versions. This means that users can expect support for Python 3.8 to be
+for Python versions. This means that users can expect support for Python 3.9 to be
 removed from the ``main`` branch after Apr 14, 2023 and therefore from the next release
 after that date.
 
