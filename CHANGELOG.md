@@ -6,6 +6,11 @@
 
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 - Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
+- `validate_all_dict` replaces the previous implementation of `validate_all` (i.e., `validate_all` was renamed to `validate_all_dict`, and `validate_all` was changed as described below) ([#1246](https://github.com/stac-utils/pystac/pull/1246))
+
+### Changed
+
+- `validate_all` now accepts a `STACObject` (in addition to accepting a dict, which is now deprecated), but prohibits supplying a value for `href`, which must be supplied _only_ when supplying an object as a dict.  Once `validate_all` removes support for an object as a dict, the `href` parameter will also be removed. ([#1246](https://github.com/stac-utils/pystac/pull/1246))
 
 ### Fixed
 
@@ -17,9 +22,11 @@
 
 - Python 3.8 support ([#1236](https://github.com/stac-utils/pystac/pull/1236))
 
-### Changed
 
-- Deprecated `ExtensionManagementMixin.validate_has_extension` and replaced with `ExtensionManagementMixin.ensure_has_extension`. Calling `ExtensionManagementMixin.validate_has_extension` will raise a `DeprecationWarning` and call `ExtensionManagementMixin.ensure_has_extension` ([#1248](https://github.com/stac-utils/pystac/pull/1248))
+### Deprecated
+
+- `ExtensionManagementMixin.validate_has_extension` is replaced with `ExtensionManagementMixin.ensure_has_extension`. Calling `ExtensionManagementMixin.validate_has_extension` will raise a `DeprecationWarning` and call `ExtensionManagementMixin.ensure_has_extension` ([#1248](https://github.com/stac-utils/pystac/pull/1248))
+- `validate_all` for dicts; use `validate_all_dict` instead ([#1246](https://github.com/stac-utils/pystac/pull/1246))
 
 ## [v1.8.4] - 2023-09-22
 

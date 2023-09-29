@@ -48,10 +48,9 @@ class TestValidate:
             stac_json = json.load(f)
 
         # Check if common properties need to be merged
-        if stac_version < "1.0":
-            if example.object_type == pystac.STACObjectType.ITEM:
-                collection_cache = CollectionCache()
-                merge_common_properties(stac_json, collection_cache, path)
+        if stac_version < "1.0" and example.object_type == pystac.STACObjectType.ITEM:
+            collection_cache = CollectionCache()
+            merge_common_properties(stac_json, collection_cache, path)
 
         if valid:
             pystac.validation.validate_dict(stac_json)
@@ -81,13 +80,41 @@ class TestValidate:
                 raise e
 
     @pytest.mark.vcr()
+    def test_validate_all_deprecated_dict_arg(self) -> None:
+        catalog = TestCases.case_1()
+
+        with pytest.warns(DeprecationWarning, match="use validate_all_dict"):
+            pystac.validation.validate_all(catalog.to_dict(), catalog.get_self_href())
+
+    @pytest.mark.vcr()
+    def test_validate_all_deprecated_dict_arg_missing_href(self) -> None:
+        catalog = TestCases.case_1()
+
+        with pytest.warns(DeprecationWarning, match="use validate_all_dict"):
+            with pytest.raises(ValueError, match="href must be set"):
+                pystac.validation.validate_all(catalog.to_dict())
+
+    @pytest.mark.vcr()
+    def test_validate_all_unexpected_href(self) -> None:
+        catalog = TestCases.case_1()
+
+        with pytest.raises(ValueError, match="href must be None"):
+            pystac.validation.validate_all(catalog, catalog.get_self_href())
+
+    @pytest.mark.vcr()
+    def test_validate_all(self) -> None:
+        catalog = TestCases.case_1()
+
+        pystac.validation.validate_all(catalog)
+
+    @pytest.mark.vcr()
     @pytest.mark.parametrize("test_case", TestCases.all_test_catalogs())
-    def test_validate_all(self, test_case: pystac.Catalog) -> None:
+    def test_validate_all_dict(self, test_case: pystac.Catalog) -> None:
         catalog_href = test_case.get_self_href()
         if catalog_href is not None:
             stac_dict = pystac.StacIO.default().read_json(catalog_href)
 
-            pystac.validation.validate_all(stac_dict, catalog_href)
+            pystac.validation.validate_all_dict(stac_dict, catalog_href)
 
         # Modify a 0.8.1 collection in a catalog to be invalid with a
         # since-renamed extension and make sure it catches the validation error.
@@ -101,7 +128,7 @@ class TestValidate:
             new_cat_href = os.path.join(dst_dir, "catalog.json")
 
             # Make sure it's valid before modification
-            pystac.validation.validate_all(
+            pystac.validation.validate_all_dict(
                 pystac.StacIO.default().read_json(new_cat_href), new_cat_href
             )
 
@@ -120,7 +147,7 @@ class TestValidate:
             stac_dict = pystac.StacIO.default().read_json(new_cat_href)
 
             with pytest.raises(pystac.STACValidationError):
-                pystac.validation.validate_all(stac_dict, new_cat_href)
+                pystac.validation.validate_all_dict(stac_dict, new_cat_href)
 
     @pytest.mark.vcr()
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
