@@ -97,7 +97,6 @@ class TestValidate:
     @pytest.mark.vcr()
     def test_validate_all_unexpected_href(self) -> None:
         catalog = TestCases.case_1()
-        catalog.fully_resolve()
 
         with pytest.raises(ValueError, match="href must be None"):
             pystac.validation.validate_all(catalog, catalog.get_self_href())
