@@ -238,10 +238,10 @@ class ScientificExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Collection):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(ScientificExtension[T], CollectionScientificExtension(obj))
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(ScientificExtension[T], ItemScientificExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
@@ -251,7 +251,7 @@ class ScientificExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesScientificExtension:
         """Returns the extended summaries object for the given collection."""
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesScientificExtension(obj)
 
 

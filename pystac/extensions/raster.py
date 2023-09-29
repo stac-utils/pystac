@@ -738,7 +738,7 @@ class RasterExtension(
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], AssetRasterExtension(obj))
         elif isinstance(obj, item_assets.AssetDefinition):
-            cls.validate_has_extension(
+            cls.ensure_has_extension(
                 cast(Union[pystac.Item, pystac.Collection], obj.owner), add_if_missing
             )
             return cast(RasterExtension[T], ItemAssetsRasterExtension(obj))
@@ -749,7 +749,7 @@ class RasterExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesRasterExtension:
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
 
 

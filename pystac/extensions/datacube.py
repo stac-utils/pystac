@@ -537,10 +537,10 @@ class DatacubeExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Collection):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], CollectionDatacubeExtension(obj))
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, pystac.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)

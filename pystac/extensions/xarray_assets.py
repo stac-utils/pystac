@@ -54,10 +54,10 @@ class XarrayAssetsExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Collection):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return CollectionXarrayAssetsExtension(obj)
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return ItemXarrayAssetsExtension(obj)
         if isinstance(obj, pystac.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)

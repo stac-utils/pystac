@@ -285,7 +285,7 @@ class ProjectionExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(ProjectionExtension[T], ItemProjectionExtension(obj))
         elif isinstance(obj, pystac.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
@@ -298,7 +298,7 @@ class ProjectionExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesProjectionExtension:
         """Returns the extended summaries object for the given collection."""
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesProjectionExtension(obj)
 
 

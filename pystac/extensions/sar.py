@@ -312,7 +312,7 @@ class SarExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
         elif isinstance(obj, pystac.Asset):
             if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
@@ -329,7 +329,7 @@ class SarExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesSarExtension:
         """Returns the extended summaries object for the given collection."""
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesSarExtension(obj)
 
 

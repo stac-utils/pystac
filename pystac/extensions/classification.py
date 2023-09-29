@@ -531,13 +531,13 @@ class ClassificationExtension(
             pystac.ExtensionTypeError : If an invalid object type is passed
         """
         if isinstance(obj, pystac.Item):
-            cls.validate_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], ItemClassificationExtension(obj))
         elif isinstance(obj, pystac.Asset):
             cls.validate_owner_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], AssetClassificationExtension(obj))
         elif isinstance(obj, item_assets.AssetDefinition):
-            cls.validate_has_extension(
+            cls.ensure_has_extension(
                 cast(Union[pystac.Item, pystac.Collection], obj.owner), add_if_missing
             )
             return cast(
@@ -554,7 +554,7 @@ class ClassificationExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesClassificationExtension:
-        cls.validate_has_extension(obj, add_if_missing)
+        cls.ensure_has_extension(obj, add_if_missing)
         return SummariesClassificationExtension(obj)
 
 

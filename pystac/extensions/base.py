@@ -181,10 +181,35 @@ class ExtensionManagementMixin(Generic[S], ABC):
                 )
             else:
                 return
-        return cls.validate_has_extension(cast(S, asset.owner), add_if_missing)
+        return cls.ensure_has_extension(cast(S, asset.owner), add_if_missing)
 
     @classmethod
     def validate_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
+        """
+        DEPRECATED
+
+        .. deprecated:: 1.9
+            Use :meth:`ensure_has_extension` instead.
+
+        Given a :class:`~pystac.STACObject`, checks if the object has this
+        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+        If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
+
+        Args:
+            obj : The object to validate.
+            add_if_missing : Whether to add the schema URI to the object if it is
+                not already present. Defaults to False.
+        """
+        warnings.warn(
+            "validate_has_extension is deprecated and will be removed in v1.9. "
+            "Use ensure_has_extension instead",
+            DeprecationWarning,
+        )
+
+        return cls.ensure_has_extension(obj, add_if_missing)
+
+    @classmethod
+    def ensure_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
         """Given a :class:`~pystac.STACObject`, checks if the object has this
         extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
         If ``add_if_missing`` is ``True``, the schema URI will be added to the object.
