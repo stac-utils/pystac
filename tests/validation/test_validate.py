@@ -104,7 +104,6 @@ class TestValidate:
     @pytest.mark.vcr()
     def test_validate_all(self) -> None:
         catalog = TestCases.case_1()
-        catalog.fully_resolve()
 
         pystac.validation.validate_all(catalog)
 
