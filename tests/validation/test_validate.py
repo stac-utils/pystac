@@ -89,7 +89,6 @@ class TestValidate:
     @pytest.mark.vcr()
     def test_validate_all_deprecated_dict_arg_missing_href(self) -> None:
         catalog = TestCases.case_1()
-        catalog.fully_resolve()
 
         with pytest.warns(DeprecationWarning, match="use validate_all_dict"):
             with pytest.raises(ValueError, match="href must be set"):
