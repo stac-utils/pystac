@@ -19,7 +19,7 @@ from typing import (
 )
 
 import pystac
-import pystac.extensions.item_assets as item_assets
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -536,12 +536,10 @@ class ClassificationExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], ItemClassificationExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], AssetClassificationExtension(obj))
         elif isinstance(obj, item_assets.AssetDefinition):
-            cls.ensure_has_extension(
-                cast(Union[pystac.Item, pystac.Collection], obj.owner), add_if_missing
-            )
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(
                 ClassificationExtension[T], ItemAssetsClassificationExtension(obj)
             )

@@ -54,7 +54,7 @@ class CustomExtension(
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "CustomExtension[T]":
         if isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], AssetCustomExtension(obj))
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)

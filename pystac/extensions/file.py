@@ -226,7 +226,7 @@ class FileExtension(
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
         if isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))

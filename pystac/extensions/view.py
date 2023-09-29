@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -13,7 +14,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
 PREFIX: str = "view:"
@@ -162,8 +163,11 @@ class ViewExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], ItemViewExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], AssetViewExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(ViewExtension[T], ItemAssetsViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -226,6 +230,15 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetViewExtension Asset href={}>".format(self.asset_href)
+
+
+class ItemAssetsViewExtension(ViewExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesViewExtension(SummariesExtension):

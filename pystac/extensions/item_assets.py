@@ -12,7 +12,7 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required
 
 if TYPE_CHECKING:
-    from pystac.extensions.ext import AssetExt
+    from pystac.extensions.ext import ItemAssetExt
 
 SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 
@@ -208,10 +208,10 @@ class AssetDefinition:
         )
 
     @property
-    def ext(self) -> AssetExt:
-        from pystac.extensions.ext import AssetExt
+    def ext(self) -> ItemAssetExt:
+        from pystac.extensions.ext import ItemAssetExt
 
-        return AssetExt(stac_object=self)
+        return ItemAssetExt(stac_object=self)
 
 
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):

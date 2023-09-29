@@ -16,6 +16,7 @@ from typing import (
 )
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -26,7 +27,7 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
 PREFIX: str = "sar:"
@@ -332,8 +333,11 @@ class SarExtension(
                 raise pystac.ExtensionTypeError(
                     "SAR extension does not apply to Collection Assets."
                 )
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(SarExtension[T], ItemAssetsSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -396,6 +400,15 @@ class AssetSarExtension(SarExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetSarExtension Asset href={}>".format(self.asset_href)
+
+
+class ItemAssetsSarExtension(SarExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesSarExtension(SummariesExtension):

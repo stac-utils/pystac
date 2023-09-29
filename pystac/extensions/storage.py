@@ -20,6 +20,7 @@ from typing import (
 )
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -28,7 +29,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
 PREFIX: str = "storage:"
@@ -155,8 +156,11 @@ class StorageExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(StorageExtension[T], ItemStorageExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(StorageExtension[T], AssetStorageExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(StorageExtension[T], ItemAssetsStorageExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -219,6 +223,15 @@ class AssetStorageExtension(StorageExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetStorageExtension Asset href={}>".format(self.asset_href)
+
+
+class ItemAssetsStorageExtension(StorageExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesStorageExtension(SummariesExtension):

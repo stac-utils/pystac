@@ -18,7 +18,7 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import projection, view
+from pystac.extensions import item_assets, projection, view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -29,7 +29,7 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
 SCHEMA_URIS: List[str] = [
@@ -411,8 +411,11 @@ class EOExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemEOExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(EOExtension[T], ItemAssetsEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -535,6 +538,25 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetEOExtension Asset href={}>".format(self.asset_href)
+
+
+class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def _get_bands(self) -> Optional[List[Band]]:
+        if BANDS_PROP not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: Band(band),
+                cast(List[Dict[str, Any]], self.properties.get(BANDS_PROP)),
+            )
+        )
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesEOExtension(SummariesExtension):

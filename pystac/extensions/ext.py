@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Dict, Generic, Literal, TypeVar, cast
+from typing import Any, Dict, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.classification import ClassificationExtension
@@ -22,8 +22,7 @@ from pystac.extensions.version import VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
-if TYPE_CHECKING:
-    T = TypeVar("T", pystac.Asset, AssetDefinition)
+T = TypeVar("T", pystac.Asset, AssetDefinition)
 
 EXTENSION_NAMES = Literal[
     "classification",
@@ -192,9 +191,8 @@ class ItemExt:
         return XarrayAssetsExtension.ext(self.stac_object)
 
 
-@dataclass
-class AssetExt(Generic[T]):
-    stac_object: pystac.Asset
+class _AssetExt(Generic[T]):
+    stac_object: T
 
     def has(self, name: EXTENSION_NAMES) -> bool:
         if self.stac_object.owner is None:
@@ -238,10 +236,6 @@ class AssetExt(Generic[T]):
         return EOExtension.ext(self.stac_object)
 
     @property
-    def file(self) -> FileExtension:
-        return FileExtension.ext(self.stac_object)
-
-    @property
     def pc(self) -> PointcloudExtension[T]:
         return PointcloudExtension.ext(self.stac_object)
 
@@ -270,13 +264,27 @@ class AssetExt(Generic[T]):
         return TableExtension.ext(self.stac_object)
 
     @property
-    def timestamps(self) -> TimestampsExtension[T]:
-        return TimestampsExtension.ext(self.stac_object)
-
-    @property
     def view(self) -> ViewExtension[T]:
         return ViewExtension.ext(self.stac_object)
 
+
+@dataclass
+class AssetExt(_AssetExt[pystac.Asset]):
+    stac_object: pystac.Asset
+
     @property
-    def xarray(self) -> XarrayAssetsExtension[T]:
+    def file(self) -> FileExtension:
+        return FileExtension.ext(self.stac_object)
+
+    @property
+    def timestamps(self) -> TimestampsExtension[pystac.Asset]:
+        return TimestampsExtension.ext(self.stac_object)
+
+    @property
+    def xarray(self) -> XarrayAssetsExtension[pystac.Asset]:
         return XarrayAssetsExtension.ext(self.stac_object)
+
+
+@dataclass
+class ItemAssetExt(_AssetExt[AssetDefinition]):
+    stac_object: AssetDefinition
