@@ -153,7 +153,7 @@ class TestValidate:
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
         dict has tuples instead of lists for the coordinate sequence,
-        which can be produced by shapely, then the geometry still passses
+        which can be produced by shapely, then the geometry still passes
         validation.
         """
         geom: Dict[str, Any] = {
