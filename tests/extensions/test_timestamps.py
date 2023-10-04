@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime
@@ -362,3 +362,16 @@ class TimestampsSummariesTest(unittest.TestCase):
         self.assertNotIn(
             TimestampsExtension.get_schema_uri(), collection.stac_extensions
         )
+
+
+@pytest.mark.parametrize(
+    "schema_uri",
+    ("https://stac-extensions.github.io/timestamps/v1.0.0/schema.json",),
+)
+def test_migrate(schema_uri: str, item: Item) -> None:
+    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["stac_extensions"] = [schema_uri]
+    item = Item.from_dict(item_dict, migrate=True)
+    assert item.stac_extensions == [
+        "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json"
+    ]

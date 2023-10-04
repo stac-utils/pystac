@@ -9,61 +9,73 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://stac-extensions.github.io/timestamps/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/timestamps/v1.1.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/timestamps/v1.0.0/schema.json#\",\n  \"title\":
+        \"https://stac-extensions.github.io/timestamps/v1.1.0/schema.json#\",\n  \"title\":
         \"Timestamps Extension\",\n  \"description\": \"STAC Timestamps Extension
         to a STAC Item.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the
         schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
         \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
-        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
-        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
-        {\n              \"$ref\": \"#/definitions/fields\"\n            },\n            \"assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \           \"assets\",\n            \"links\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            \"assets\": {\n              \"$ref\": \"#/definitions/assets\"\n
+        \           },\n            \"links\": {\n              \"$ref\": \"#/definitions/links\"\n
+        \           }\n          }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
         \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
         for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
         \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
         \         \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"$ref\":
+        \"#/definitions/assets\"\n            },\n            \"item_assets\": {\n
+        \             \"$ref\": \"#/definitions/assets\"\n            },\n            \"links\":
+        {\n              \"$ref\": \"#/definitions/links\"\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/fields\"\n        },\n
+        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
+        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
+        Catalogs.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
+        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Catalog\"\n            },\n
+        \           \"links\": {\n              \"$ref\": \"#/definitions/links\"\n
+        \           }\n          }\n        },\n        {\n          \"$ref\": \"#/definitions/fields\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/timestamps/v1.0.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"published\": {\n          \"title\":
-        \"Publish Time\",\n          \"type\": \"string\",\n          \"format\":
-        \"date-time\"\n        },\n        \"unpublished\": {\n          \"title\":
-        \"Removal Time\",\n          \"type\": \"string\",\n          \"format\":
-        \"date-time\"\n        },\n        \"expires\": {\n          \"title\": \"Expiry
-        Time\",\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n
-        \       }\n      }\n    }\n  }\n}"
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/timestamps/v1.1.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"links\": {\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"$ref\": \"#/definitions/fields\"\n
+        \     }\n    },\n    \"assets\": {\n      \"type\": \"object\",\n      \"additionalProperties\":
+        {\n        \"$ref\": \"#/definitions/fields\"\n      }\n    },\n    \"fields\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"published\":
+        {\n          \"title\": \"Publish Time\",\n          \"type\": \"string\",\n
+        \         \"format\": \"date-time\",\n          \"pattern\": \"(\\\\+00:00|Z)$\"\n
+        \       },\n        \"unpublished\": {\n          \"title\": \"Removal Time\",\n
+        \         \"type\": \"string\",\n          \"format\": \"date-time\",\n          \"pattern\":
+        \"(\\\\+00:00|Z)$\"\n        },\n        \"expires\": {\n          \"title\":
+        \"Expiry Time\",\n          \"type\": \"string\",\n          \"format\": \"date-time\",\n
+        \         \"pattern\": \"(\\\\+00:00|Z)$\"\n        }\n      }\n    }\n  }\n}"
     headers:
       Accept-Ranges:
       - bytes
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '515'
+      - '22'
       Cache-Control:
       - max-age=600
       Connection:
       - close
       Content-Length:
-      - '2417'
+      - '3337'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:48 GMT
+      - Wed, 04 Oct 2023 15:58:59 GMT
       ETag:
-      - '"63b6c089-971"'
+      - '"63b6c089-d09"'
       Last-Modified:
       - Thu, 05 Jan 2023 12:20:25 GMT
       Server:
@@ -77,17 +89,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - 6b3adb727b5d2ae22e9feecabe9db354cc77dcc3
+      - 3481e4be34e0eaee14e32ede98d4bb0ce6d308be
       X-GitHub-Request-Id:
-      - 5C7C:558C:2C301B:3BDDAD:65149AAB
+      - C12A:547D:1BE0C8:247FB3:651D8BAC
       X-Served-By:
-      - cache-lga21935-LGA
+      - cache-den8240-DEN
       X-Timer:
-      - S1695849649.784342,VS0,VE2
+      - S1696435139.473510,VS0,VE1
       expires:
-      - Wed, 27 Sep 2023 21:22:13 GMT
+      - Wed, 04 Oct 2023 16:08:36 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
