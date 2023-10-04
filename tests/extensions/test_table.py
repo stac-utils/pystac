@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.extensions.table import Column, TableExtension
 from tests.utils import TestCases
 
@@ -83,3 +83,20 @@ def test_item_with_table_extension_is_serilalizable_and_roundtrips(
         before.properties == after.properties
         for before, after in zip(columns, tab_ext.columns)
     )
+
+
+@pytest.mark.parametrize(
+    "schema_uri",
+    (
+        "https://stac-extensions.github.io/table/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/table/v1.0.1/schema.json",
+        "https://stac-extensions.github.io/table/v1.1.0/schema.json",
+    ),
+)
+def test_migrate(schema_uri: str, item: Item) -> None:
+    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["stac_extensions"] = [schema_uri]
+    item = Item.from_dict(item_dict, migrate=True)
+    assert item.stac_extensions == [
+        "https://stac-extensions.github.io/table/v1.2.0/schema.json"
+    ]
