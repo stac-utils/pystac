@@ -577,8 +577,22 @@ class Collection(Catalog):
         )
         d["extent"] = self.extent.to_dict()
         d["license"] = self.license
+
+        # we use the fact that in recent Python versions, dict keys are ordered
+        # by default
+        stac_extensions: Optional[Dict[str, None]] = None
         if self.stac_extensions:
-            d["stac_extensions"] = self.stac_extensions
+            stac_extensions = dict.fromkeys(self.stac_extensions)
+
+        for asset in self.assets.values():
+            if stac_extensions and asset.stac_extensions:
+                stac_extensions.update(dict.fromkeys(asset.stac_extensions))
+            elif asset.stac_extensions:
+                stac_extensions = dict.fromkeys(asset.stac_extensions)
+
+        if stac_extensions is not None:
+            d["stac_extensions"] = list(stac_extensions.keys())
+
         if self.keywords:
             d["keywords"] = self.keywords
         if self.providers:

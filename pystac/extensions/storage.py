@@ -152,7 +152,7 @@ class StorageExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(StorageExtension[T], ItemStorageExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(StorageExtension[T], AssetStorageExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))

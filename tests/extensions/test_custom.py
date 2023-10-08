@@ -54,7 +54,7 @@ class CustomExtension(
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> "CustomExtension[T]":
         if isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(CustomExtension[T], AssetCustomExtension(obj))
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
@@ -151,6 +151,14 @@ class CustomExtensionTest(unittest.TestCase):
         custom.test_prop = "foo"
         catalog_as_dict = catalog.to_dict()
         assert catalog_as_dict["test:prop"] == "foo"
+
+    def test_add_to_asset_no_owner(self) -> None:
+        asset = Asset("http://pystac.test/asset.tif")
+        custom = CustomExtension.ext(asset, add_if_missing=True)
+        assert CustomExtension.has_extension(asset)
+        custom.apply("bar")
+        asset_as_dict = asset.to_dict()
+        assert asset_as_dict["test:prop"] == "bar"
 
     def test_add_to_collection(self) -> None:
         collection = Collection(

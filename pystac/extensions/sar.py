@@ -319,7 +319,7 @@ class SarExtension(
                 raise pystac.ExtensionTypeError(
                     "SAR extension does not apply to Collection Assets."
                 )
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))

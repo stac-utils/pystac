@@ -160,7 +160,7 @@ class ViewExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], ItemViewExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_has_extension(obj, add_if_missing)
             return cast(ViewExtension[T], AssetViewExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
