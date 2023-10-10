@@ -17,11 +17,11 @@
 - Typing of `href` arguments ([#1234](https://github.com/stac-utils/pystac/pull/1234))
 - Interactions between **pytest-recording** and the validator schema cache ([#1242](https://github.com/stac-utils/pystac/pull/1242))
 - Call `registry` when instantiating `Draft7Validator` ([#1240](https://github.com/stac-utils/pystac/pull/1240))
+- Migration for the classification, datacube, table, and timestamps extensions ([#1258](https://github.com/stac-utils/pystac/pull/1258))
 
 ### Removed
 
 - Python 3.8 support ([#1236](https://github.com/stac-utils/pystac/pull/1236))
-
 
 ### Deprecated
 
