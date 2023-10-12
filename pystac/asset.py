@@ -66,7 +66,7 @@ class Asset:
     """Optional, additional fields for this asset. This is used by extensions as a
     way to serialize and deserialize properties on asset object JSON."""
 
-    stac_extensions: List[str]
+    _stac_extensions: List[str]
     """A list of schema URIs for STAC Extensions implemented by this STAC Asset."""
 
     def __init__(
@@ -77,6 +77,7 @@ class Asset:
         media_type: Optional[str] = None,
         roles: Optional[List[str]] = None,
         extra_fields: Optional[Dict[str, Any]] = None,
+        stac_extensions: Optional[List[str]] = None,
     ) -> None:
         self.href = utils.make_posix_style(href)
         self.title = title
@@ -84,7 +85,7 @@ class Asset:
         self.media_type = media_type
         self.roles = roles
         self.extra_fields = extra_fields or {}
-        self.stac_extensions = None
+        self._stac_extensions = stac_extensions
 
         # The Item which owns this Asset.
         self.owner = None

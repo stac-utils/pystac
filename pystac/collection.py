@@ -585,10 +585,10 @@ class Collection(Catalog):
             stac_extensions = dict.fromkeys(self.stac_extensions)
 
         for asset in self.assets.values():
-            if stac_extensions and asset.stac_extensions:
-                stac_extensions.update(dict.fromkeys(asset.stac_extensions))
-            elif asset.stac_extensions:
-                stac_extensions = dict.fromkeys(asset.stac_extensions)
+            if stac_extensions and asset._stac_extensions:
+                stac_extensions.update(dict.fromkeys(asset._stac_extensions))
+            elif asset._stac_extensions:
+                stac_extensions = dict.fromkeys(asset._stac_extensions)
 
         if stac_extensions is not None:
             d["stac_extensions"] = list(stac_extensions.keys())
