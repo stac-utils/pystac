@@ -173,7 +173,7 @@ class Classification:
         Returns:
             Optional[str]
         """
-        return self.properties.get("color-hint")
+        return self.properties.get("color_hint")
 
     @color_hint.setter
     def color_hint(self, v: Optional[str]) -> None:
@@ -182,9 +182,9 @@ class Classification:
             assert (
                 v is None or match is not None and match.group() == v
             ), "Must format color hints as '^([0-9A-F]{6})$'"
-            self.properties["color-hint"] = v
+            self.properties["color_hint"] = v
         else:
-            self.properties.pop("color-hint", None)
+            self.properties.pop("color_hint", None)
 
     def to_dict(self) -> Dict[str, Any]:
         """Returns the dictionary encoding of this class
@@ -652,6 +652,17 @@ class ClassificationExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
+        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
+            for asset in obj.get("assets", {}).values():
+                classification_classes = asset.get(CLASSES_PROP, None)
+                if classification_classes is None or not isinstance(
+                    classification_classes, list
+                ):
+                    continue
+                for class_object in classification_classes:
+                    if "color-hint" in class_object:
+                        class_object["color_hint"] = class_object["color-hint"]
+                        del class_object["color-hint"]
         super().migrate(obj, version, info)
 
 

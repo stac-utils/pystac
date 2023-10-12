@@ -305,7 +305,12 @@ class ItemAssetsTableExtension(TableExtension[item_assets.AssetDefinition]):
 
 class TableExtensinoHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids = {"table"}
+    prev_extension_ids = {
+        "table",
+        "https://stac-extensions.github.io/table/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/table/v1.0.1/schema.json",
+        "https://stac-extensions.github.io/table/v1.1.0/schema.json",
+    }
     stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
 

@@ -633,7 +633,10 @@ class ItemAssetsDatacubeExtension(DatacubeExtension[item_assets.AssetDefinition]
 
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids = {"datacube"}
+    prev_extension_ids = {
+        "datacube",
+        "https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
+    }
     stac_object_types = {
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.ITEM,
