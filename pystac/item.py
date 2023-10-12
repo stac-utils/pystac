@@ -433,7 +433,22 @@ class Item(STACObject):
         if self.bbox is not None:
             d["bbox"] = self.bbox
 
-        if self.stac_extensions is not None:
+        # we use the fact that in recent Python versions, dict keys are ordered
+        # by default
+        stac_extensions: Optional[Dict[str, None]] = None
+        if self.stac_extensions:
+            stac_extensions = dict.fromkeys(self.stac_extensions)
+
+        for asset in self.assets.values():
+            if stac_extensions and asset._stac_extensions:
+                stac_extensions.update(dict.fromkeys(asset._stac_extensions))
+            elif asset._stac_extensions:
+                stac_extensions = dict.fromkeys(asset._stac_extensions)
+
+        if stac_extensions is not None:
+            d["stac_extensions"] = list(stac_extensions.keys())
+
+        if stac_extensions is not None:
             d["stac_extensions"] = self.stac_extensions
 
         if self.collection_id:

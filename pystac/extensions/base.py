@@ -11,7 +11,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    cast,
+    Protocol,
 )
 
 import pystac
@@ -96,7 +96,7 @@ class PropertiesExtension(ABC):
             self.properties[prop_name] = v
 
 
-S = TypeVar("S", bound=pystac.STACObject)
+S = TypeVar("S", bound=Union[pystac.STACObject, pystac.Asset])
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
@@ -130,25 +130,57 @@ class ExtensionManagementMixin(Generic[S], ABC):
         """Add the schema URI for this extension to the
         :attr:`~pystac.STACObject.stac_extensions` list for the given object, if it is
         not already present."""
-        if obj.stac_extensions is None:
-            obj.stac_extensions = [cls.get_schema_uri()]
-        elif not cls.has_extension(obj):
-            obj.stac_extensions.append(cls.get_schema_uri())
+        if isinstance(obj, pystac.Asset):
+            if obj._stac_extensions is None:
+                obj._stac_extensions = [cls.get_schema_uri()]
+            elif not cls.has_extension(obj):
+                obj._stac_extensions.append(cls.get_schema_uri())
+        else:
+            if obj.stac_extensions is None:
+                obj.stac_extensions = [cls.get_schema_uri()]
+            elif not cls.has_extension(obj):
+                obj.stac_extensions.append(cls.get_schema_uri())
 
     @classmethod
     def remove_from(cls, obj: S) -> None:
         """Remove the schema URI for this extension from the
         :attr:`pystac.STACObject.stac_extensions` list for the given object."""
+
         if obj.stac_extensions is not None:
-            obj.stac_extensions = [
-                uri for uri in obj.stac_extensions if uri != cls.get_schema_uri()
-            ]
+            if isinstance(obj, pystac.Asset):
+                obj._stac_extensions = [
+                    uri for uri in obj._stac_extensions if uri != cls.get_schema_uri()
+                ]
+            else:
+                obj.stac_extensions = [
+                    uri for uri in obj.stac_extensions if uri != cls.get_schema_uri()
+                ]
 
     @classmethod
     def has_extension(cls, obj: S) -> bool:
         """Check if the given object implements this extension by checking
         :attr:`pystac.STACObject.stac_extensions` for this extension's schema URI."""
         schema_startswith = VERSION_REGEX.split(cls.get_schema_uri())[0] + "/"
+
+        if isinstance(obj, (pystac.Item, pystac.Collection)):
+            for asset in obj.assets.values():
+                if asset._stac_extensions is not None and any(
+                    uri.startswith(schema_startswith)
+                    for uri in asset._stac_extensions
+                ):
+                    return True
+
+        elif isinstance(obj, pystac.Asset):
+            if obj.owner and obj.owner.stac_extensions is not None and any(
+                uri.startswith(schema_startswith)
+                for uri in obj.owner.stac_extensions
+            ):
+                return True
+            else:
+                return obj._stac_extensions is not None and any(
+                    uri.startswith(schema_startswith)
+                    for uri in obj._stac_extensions
+                )
 
         return obj.stac_extensions is not None and any(
             uri.startswith(schema_startswith) for uri in obj.stac_extensions
@@ -173,15 +205,13 @@ class ExtensionManagementMixin(Generic[S], ABC):
             STACError : If ``add_if_missing`` is ``True`` and ``asset.owner`` is
                 ``None``.
         """
-        if asset.owner is None:
-            if add_if_missing:
-                raise pystac.STACError(
-                    "Attempted to use add_if_missing=True for an Asset with no owner. "
-                    "Use Asset.set_owner or set add_if_missing=False."
-                )
-            else:
-                return
-        return cls.ensure_has_extension(cast(S, asset.owner), add_if_missing)
+
+        warnings.warn(
+            "validate_owner_has_extension is deprecated and will be removed in v2.0. "
+            "Use ensure_has_extension instead",
+            DeprecationWarning,
+        )
+        return cls.ensure_has_extension(asset, add_if_missing)
 
     @classmethod
     def validate_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
@@ -224,7 +254,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
 
         if not cls.has_extension(obj):
             raise pystac.ExtensionNotImplemented(
-                f"Could not find extension schema URI {cls.get_schema_uri()} in object."
+                f"Could not find extension schema URI {cls.get_schema_uri()} "
+                "in object."
             )
 
     @classmethod
