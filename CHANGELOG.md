@@ -14,6 +14,7 @@
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 - Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
 - `validate_all_dict` replaces the previous implementation of `validate_all` (i.e., `validate_all` was renamed to `validate_all_dict`, and `validate_all` was changed as described below) ([#1246](https://github.com/stac-utils/pystac/pull/1246))
+- Python 3.12 ([#1260](https://github.com/stac-utils/pystac/pull/1260))
 
 ### Changed
 
