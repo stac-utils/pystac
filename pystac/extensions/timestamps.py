@@ -15,9 +15,9 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.Collection)
 
-SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json"
 
 PUBLISHED_PROP = "published"
 EXPIRES_PROP = "expires"
@@ -281,7 +281,10 @@ class SummariesTimestampsExtension(SummariesExtension):
 
 class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids = {"timestamps"}
+    prev_extension_ids = {
+        "timestamps",
+        "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json",
+    }
     stac_object_types = {pystac.STACObjectType.ITEM}
 
 

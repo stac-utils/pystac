@@ -86,6 +86,6 @@
     60.63437
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json"
+    "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json"
   ]
 }

@@ -327,3 +327,17 @@ def test_older_extension_version(landsat_item: Item) -> None:
     migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
     assert ClassificationExtension.has_extension(migrated_item)
     assert new in migrated_item.stac_extensions
+
+
+def test_migrate_color_hint(plain_item: Item) -> None:
+    item_dict = plain_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["stac_extensions"] = [
+        "https://stac-extensions.github.io/classification/v1.0.0/schema.json"
+    ]
+    item_dict["assets"]["analytic"]["classification:classes"] = [
+        {"value": 42, "color-hint": "#ffffff"}
+    ]
+    item = Item.from_dict(item_dict, migrate=True)
+    classification = ClassificationExtension.ext(item.assets["analytic"])
+    assert classification.classes
+    assert classification.classes[0].color_hint == "#ffffff"
