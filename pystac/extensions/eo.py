@@ -10,8 +10,6 @@ from typing import (
     Iterable,
     List,
     Literal,
-    Optional,
-    Tuple,
     TypeVar,
     Union,
     cast,
@@ -32,7 +30,7 @@ from pystac.utils import get_required, map_opt
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
-SCHEMA_URIS: List[str] = [
+SCHEMA_URIS: list[str] = [
     "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
@@ -44,7 +42,7 @@ CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
 SNOW_COVER_PROP: str = PREFIX + "snow_cover"
 
 
-def validated_percentage(v: Optional[float]) -> Optional[float]:
+def validated_percentage(v: float | None) -> float | None:
     if v is not None and not isinstance(v, (float, int)) or isinstance(v, bool):
         raise ValueError(f"Invalid percentage: {v} must be number")
     if v is not None and not 0 <= v <= 100:
@@ -58,19 +56,19 @@ class Band:
     Use :meth:`Band.create` to create a new Band.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     def apply(
         self,
         name: str,
-        common_name: Optional[str] = None,
-        description: Optional[str] = None,
-        center_wavelength: Optional[float] = None,
-        full_width_half_max: Optional[float] = None,
-        solar_illumination: Optional[float] = None,
+        common_name: str | None = None,
+        description: str | None = None,
+        center_wavelength: float | None = None,
+        full_width_half_max: float | None = None,
+        solar_illumination: float | None = None,
     ) -> None:
         """
         Sets the properties for this Band.
@@ -98,11 +96,11 @@ class Band:
     def create(
         cls,
         name: str,
-        common_name: Optional[str] = None,
-        description: Optional[str] = None,
-        center_wavelength: Optional[float] = None,
-        full_width_half_max: Optional[float] = None,
-        solar_illumination: Optional[float] = None,
+        common_name: str | None = None,
+        description: str | None = None,
+        center_wavelength: float | None = None,
+        full_width_half_max: float | None = None,
+        solar_illumination: float | None = None,
     ) -> Band:
         """
         Creates a new band.
@@ -144,7 +142,7 @@ class Band:
         self.properties["name"] = v
 
     @property
-    def common_name(self) -> Optional[str]:
+    def common_name(self) -> str | None:
         """Get or sets the name commonly used to refer to the band to make it easier
             to search for bands across instruments. See the :stac-ext:`list of accepted
             common names <eo#common-band-names>`.
@@ -155,14 +153,14 @@ class Band:
         return self.properties.get("common_name")
 
     @common_name.setter
-    def common_name(self, v: Optional[str]) -> None:
+    def common_name(self, v: str | None) -> None:
         if v is not None:
             self.properties["common_name"] = v
         else:
             self.properties.pop("common_name", None)
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Get or sets the description to fully explain the band. CommonMark 0.29
         syntax MAY be used for rich text representation.
 
@@ -172,14 +170,14 @@ class Band:
         return self.properties.get("description")
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is not None:
             self.properties["description"] = v
         else:
             self.properties.pop("description", None)
 
     @property
-    def center_wavelength(self) -> Optional[float]:
+    def center_wavelength(self) -> float | None:
         """Get or sets the center wavelength of the band, in micrometers (μm).
 
         Returns:
@@ -188,14 +186,14 @@ class Band:
         return self.properties.get("center_wavelength")
 
     @center_wavelength.setter
-    def center_wavelength(self, v: Optional[float]) -> None:
+    def center_wavelength(self, v: float | None) -> None:
         if v is not None:
             self.properties["center_wavelength"] = v
         else:
             self.properties.pop("center_wavelength", None)
 
     @property
-    def full_width_half_max(self) -> Optional[float]:
+    def full_width_half_max(self) -> float | None:
         """Get or sets the full width at half maximum (FWHM). The width of the band,
             as measured at half the maximum transmission, in micrometers (μm).
 
@@ -205,14 +203,14 @@ class Band:
         return self.properties.get("full_width_half_max")
 
     @full_width_half_max.setter
-    def full_width_half_max(self, v: Optional[float]) -> None:
+    def full_width_half_max(self, v: float | None) -> None:
         if v is not None:
             self.properties["full_width_half_max"] = v
         else:
             self.properties.pop("full_width_half_max", None)
 
     @property
-    def solar_illumination(self) -> Optional[float]:
+    def solar_illumination(self) -> float | None:
         """Get or sets the solar illumination of the band,
             as measured at half the maximum transmission, in W/m2/micrometers.
 
@@ -222,7 +220,7 @@ class Band:
         return self.properties.get("solar_illumination")
 
     @solar_illumination.setter
-    def solar_illumination(self, v: Optional[float]) -> None:
+    def solar_illumination(self, v: float | None) -> None:
         if v is not None:
             self.properties["solar_illumination"] = v
         else:
@@ -231,7 +229,7 @@ class Band:
     def __repr__(self) -> str:
         return "<Band name={}>".format(self.name)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this band as a dictionary.
 
         Returns:
@@ -240,7 +238,7 @@ class Band:
         return self.properties
 
     @staticmethod
-    def band_range(common_name: str) -> Optional[Tuple[float, float]]:
+    def band_range(common_name: str) -> tuple[float, float] | None:
         """Gets the band range for a common band name.
 
         Args:
@@ -273,7 +271,7 @@ class Band:
         return name_to_range.get(common_name)
 
     @staticmethod
-    def band_description(common_name: str) -> Optional[str]:
+    def band_description(common_name: str) -> str | None:
         """Returns a description of the band for one with a common name.
 
         Args:
@@ -314,9 +312,9 @@ class EOExtension(
 
     def apply(
         self,
-        bands: Optional[List[Band]] = None,
-        cloud_cover: Optional[float] = None,
-        snow_cover: Optional[float] = None,
+        bands: list[Band] | None = None,
+        cloud_cover: float | None = None,
+        snow_cover: float | None = None,
     ) -> None:
         """Applies Electro-Optical Extension properties to the extended
         :class:`~pystac.Item` or :class:`~pystac.Asset`.
@@ -336,7 +334,7 @@ class EOExtension(
         self.snow_cover = validated_percentage(snow_cover)
 
     @property
-    def bands(self) -> Optional[List[Band]]:
+    def bands(self) -> list[Band] | None:
         """Gets or sets a list of available bands where each item is a :class:`~Band`
         object (or ``None`` if no bands have been set). If not available the field
         should not be provided.
@@ -344,19 +342,19 @@ class EOExtension(
         return self._get_bands()
 
     @bands.setter
-    def bands(self, v: Optional[List[Band]]) -> None:
+    def bands(self, v: list[Band] | None) -> None:
         self._set_property(
             BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
         )
 
-    def _get_bands(self) -> Optional[List[Band]]:
+    def _get_bands(self) -> list[Band] | None:
         return map_opt(
             lambda bands: [Band(b) for b in bands],
             self._get_property(BANDS_PROP, List[Dict[str, Any]]),
         )
 
     @property
-    def cloud_cover(self) -> Optional[float]:
+    def cloud_cover(self) -> float | None:
         """Get or sets the estimate of cloud cover as a percentage
         (0-100) of the entire scene. If not available the field should not be provided.
 
@@ -366,11 +364,11 @@ class EOExtension(
         return self._get_property(CLOUD_COVER_PROP, float)
 
     @cloud_cover.setter
-    def cloud_cover(self, v: Optional[float]) -> None:
+    def cloud_cover(self, v: float | None) -> None:
         self._set_property(CLOUD_COVER_PROP, validated_percentage(v), pop_if_none=True)
 
     @property
-    def snow_cover(self) -> Optional[float]:
+    def snow_cover(self) -> float | None:
         """Get or sets the estimate of snow cover as a percentage
         (0-100) of the entire scene. If not available the field should not be provided.
 
@@ -380,7 +378,7 @@ class EOExtension(
         return self._get_property(SNOW_COVER_PROP, float)
 
     @snow_cover.setter
-    def snow_cover(self, v: Optional[float]) -> None:
+    def snow_cover(self, v: float | None) -> None:
         self._set_property(SNOW_COVER_PROP, validated_percentage(v), pop_if_none=True)
 
     @classmethod
@@ -388,7 +386,7 @@ class EOExtension(
         return SCHEMA_URI
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -440,14 +438,14 @@ class ItemEOExtension(EOExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
-    def _get_bands(self) -> Optional[List[Band]]:
+    def _get_bands(self) -> list[Band] | None:
         """Get or sets a list of :class:`~pystac.Band` objects that represent
         the available bands.
         """
@@ -455,7 +453,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
 
         # get assets with eo:bands even if not in item
         if bands is None:
-            asset_bands: List[Dict[str, Any]] = []
+            asset_bands: list[dict[str, Any]] = []
             for _, value in self.item.get_assets().items():
                 if BANDS_PROP in value.extra_fields:
                     asset_bands.extend(
@@ -470,9 +468,9 @@ class ItemEOExtension(EOExtension[pystac.Item]):
 
     def get_assets(
         self,
-        name: Optional[str] = None,
-        common_name: Optional[str] = None,
-    ) -> Dict[str, pystac.Asset]:
+        name: str | None = None,
+        common_name: str | None = None,
+    ) -> dict[str, pystac.Asset]:
         """Get the item's assets where eo:bands are defined.
 
         Args:
@@ -513,14 +511,14 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def _get_bands(self) -> Optional[List[Band]]:
+    def _get_bands(self) -> list[Band] | None:
         if BANDS_PROP not in self.properties:
             return None
         return list(
@@ -541,10 +539,10 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
 
 
 class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
-    def _get_bands(self) -> Optional[List[Band]]:
+    def _get_bands(self) -> list[Band] | None:
         if BANDS_PROP not in self.properties:
             return None
         return list(
@@ -566,7 +564,7 @@ class SummariesEOExtension(SummariesExtension):
     """
 
     @property
-    def bands(self) -> Optional[List[Band]]:
+    def bands(self) -> list[Band] | None:
         """Get or sets the summary of :attr:`EOExtension.bands` values
         for this Collection.
         """
@@ -577,29 +575,29 @@ class SummariesEOExtension(SummariesExtension):
         )
 
     @bands.setter
-    def bands(self, v: Optional[List[Band]]) -> None:
+    def bands(self, v: list[Band] | None) -> None:
         self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
 
     @property
-    def cloud_cover(self) -> Optional[RangeSummary[float]]:
+    def cloud_cover(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`EOExtension.cloud_cover` values
         for this Collection.
         """
         return self.summaries.get_range(CLOUD_COVER_PROP)
 
     @cloud_cover.setter
-    def cloud_cover(self, v: Optional[RangeSummary[float]]) -> None:
+    def cloud_cover(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(CLOUD_COVER_PROP, v)
 
     @property
-    def snow_cover(self) -> Optional[RangeSummary[float]]:
+    def snow_cover(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`EOExtension.snow_cover` values
         for this Collection.
         """
         return self.summaries.get_range(SNOW_COVER_PROP)
 
     @snow_cover.setter
-    def snow_cover(self, v: Optional[RangeSummary[float]]) -> None:
+    def snow_cover(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(SNOW_COVER_PROP, v)
 
 
@@ -612,7 +610,7 @@ class EOExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         if version < "0.9":
             # Some eo fields became common_metadata
@@ -689,7 +687,7 @@ class EOExtensionHooks(ExtensionHooks):
                 bands = obj["properties"]["eo:bands"]
                 for asset in obj["assets"].values():
                     if "eo:bands" in asset:
-                        new_bands: List[Dict[str, Any]] = []
+                        new_bands: list[dict[str, Any]] = []
                         for band_index in asset["eo:bands"]:
                             new_bands.append(bands[band_index])
                         asset["eo:bands"] = new_bands

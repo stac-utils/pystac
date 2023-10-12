@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin
@@ -31,12 +31,12 @@ class AssetDefinition:
     See the :stac-ext:`Asset Object <item-assets#asset-object>` for details.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    owner: Optional[pystac.Collection]
+    owner: pystac.Collection | None
 
     def __init__(
-        self, properties: Dict[str, Any], owner: Optional[pystac.Collection] = None
+        self, properties: dict[str, Any], owner: pystac.Collection | None = None
     ) -> None:
         self.properties = properties
         self.owner = owner
@@ -49,11 +49,11 @@ class AssetDefinition:
     @classmethod
     def create(
         cls,
-        title: Optional[str],
-        description: Optional[str],
-        media_type: Optional[str],
-        roles: Optional[List[str]],
-        extra_fields: Optional[Dict[str, Any]] = None,
+        title: str | None,
+        description: str | None,
+        media_type: str | None,
+        roles: list[str] | None,
+        extra_fields: dict[str, Any] | None = None,
     ) -> AssetDefinition:
         """
         Creates a new asset definition.
@@ -85,11 +85,11 @@ class AssetDefinition:
 
     def apply(
         self,
-        title: Optional[str],
-        description: Optional[str],
-        media_type: Optional[str],
-        roles: Optional[List[str]],
-        extra_fields: Optional[Dict[str, Any]] = None,
+        title: str | None,
+        description: str | None,
+        media_type: str | None,
+        roles: list[str] | None,
+        extra_fields: dict[str, Any] | None = None,
     ) -> None:
         """
         Sets the properties for this asset definition.
@@ -128,60 +128,60 @@ class AssetDefinition:
         self.owner = obj
 
     @property
-    def title(self) -> Optional[str]:
+    def title(self) -> str | None:
         """Gets or sets the displayed title for clients and users."""
         return self.properties.get(ASSET_TITLE_PROP)
 
     @title.setter
-    def title(self, v: Optional[str]) -> None:
+    def title(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(ASSET_TITLE_PROP, None)
         else:
             self.properties[ASSET_TITLE_PROP] = v
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Gets or sets a description of the Asset providing additional details, such as
         how it was processed or created. `CommonMark 0.29 <http://commonmark.org/>`__
         syntax MAY be used for rich text representation."""
         return self.properties.get(ASSET_DESC_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(ASSET_DESC_PROP, None)
         else:
             self.properties[ASSET_DESC_PROP] = v
 
     @property
-    def media_type(self) -> Optional[str]:
+    def media_type(self) -> str | None:
         """Gets or sets the `media type
         <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
         of the asset."""
         return self.properties.get(ASSET_TYPE_PROP)
 
     @media_type.setter
-    def media_type(self, v: Optional[str]) -> None:
+    def media_type(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(ASSET_TYPE_PROP, None)
         else:
             self.properties[ASSET_TYPE_PROP] = v
 
     @property
-    def roles(self) -> Optional[List[str]]:
+    def roles(self) -> list[str] | None:
         """Gets or sets the `semantic roles
         <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
         of the asset, similar to the use of rel in links."""
         return self.properties.get(ASSET_ROLES_PROP)
 
     @roles.setter
-    def roles(self, v: Optional[List[str]]) -> None:
+    def roles(self, v: list[str] | None) -> None:
         if v is None:
             self.properties.pop(ASSET_ROLES_PROP, None)
         else:
             self.properties[ASSET_ROLES_PROP] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``AssetDefinition``."""
         return deepcopy(self.properties)
 
@@ -228,16 +228,16 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         self.collection = collection
 
     @property
-    def item_assets(self) -> Dict[str, AssetDefinition]:
+    def item_assets(self) -> dict[str, AssetDefinition]:
         """Gets or sets a dictionary of assets that can be found in member Items. Maps
         the asset key to an :class:`AssetDefinition` instance."""
-        result: Dict[str, Any] = get_required(
+        result: dict[str, Any] = get_required(
             self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
         )
         return {k: AssetDefinition(v, self.collection) for k, v in result.items()}
 
     @item_assets.setter
-    def item_assets(self, v: Dict[str, AssetDefinition]) -> None:
+    def item_assets(self, v: dict[str, AssetDefinition]) -> None:
         self.collection.extra_fields[ITEM_ASSETS_PROP] = {
             k: asset_def.properties for k, asset_def in v.items()
         }
@@ -273,7 +273,7 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.COLLECTION}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         # Handle that the "item-assets" extension had the id of "assets", before
         # collection assets (since removed) took over the ID of "assets"

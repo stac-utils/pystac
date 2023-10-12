@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
@@ -68,13 +68,13 @@ class Dimension(ABC):
     <datacube#dimension-object>` docs for details.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     @property
-    def dim_type(self) -> Union[DimensionType, str]:
+    def dim_type(self) -> DimensionType | str:
         """The type of the dimension. Must be ``"spatial"`` for :stac-ext:`Horizontal
         Spatial Dimension Objects <datacube#horizontal-spatial-dimension-object>` or
         :stac-ext:`Vertical Spatial Dimension Objects
@@ -87,27 +87,27 @@ class Dimension(ABC):
         )
 
     @dim_type.setter
-    def dim_type(self, v: Union[DimensionType, str]) -> None:
+    def dim_type(self, v: DimensionType | str) -> None:
         self.properties[DIM_TYPE_PROP] = v
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Detailed multi-line description to explain the dimension. `CommonMark 0.29
         <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
         return self.properties.get(DIM_DESC_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(DIM_DESC_PROP, None)
         else:
             self.properties[DIM_DESC_PROP] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.properties
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> Dimension:
+    def from_dict(d: dict[str, Any]) -> Dimension:
         dim_type: str = get_required(
             d.get(DIM_TYPE_PROP), "cube_dimension", DIM_TYPE_PROP
         )
@@ -131,7 +131,7 @@ class Dimension(ABC):
 
 class SpatialDimension(Dimension):
     @property
-    def extent(self) -> List[float]:
+    def extent(self) -> list[float]:
         """Extent (lower and upper bounds) of the dimension as two-dimensional array.
         Open intervals with ``None`` are not allowed."""
         return get_required(
@@ -139,28 +139,28 @@ class SpatialDimension(Dimension):
         )
 
     @extent.setter
-    def extent(self, v: List[float]) -> None:
+    def extent(self, v: list[float]) -> None:
         self.properties[DIM_EXTENT_PROP] = v
 
     @property
-    def values(self) -> Optional[List[float]]:
+    def values(self) -> list[float] | None:
         """Optional set of all potential values."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
-    def values(self, v: Optional[List[float]]) -> None:
+    def values(self, v: list[float] | None) -> None:
         if v is None:
             self.properties.pop(DIM_VALUES_PROP, None)
         else:
             self.properties[DIM_VALUES_PROP] = v
 
     @property
-    def step(self) -> Optional[float]:
+    def step(self) -> float | None:
         """The space between the values. Use ``None`` for irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
-    def step(self, v: Optional[float]) -> None:
+    def step(self, v: float | None) -> None:
         self.properties[DIM_STEP_PROP] = v
 
     def clear_step(self) -> None:
@@ -170,7 +170,7 @@ class SpatialDimension(Dimension):
         self.properties.pop(DIM_STEP_PROP, None)
 
     @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
+    def reference_system(self) -> str | float | dict[str, Any] | None:
         """The spatial reference system for the data, specified as `numerical EPSG code
         <http://www.epsg-registry.org/>`__, `WKT2 (ISO 19162) string
         <http://docs.opengeospatial.org/is/18-010r7/18-010r7.html>`__ or `PROJJSON
@@ -179,7 +179,7 @@ class SpatialDimension(Dimension):
         return self.properties.get(DIM_REF_SYS_PROP)
 
     @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
+    def reference_system(self, v: str | float | dict[str, Any] | None) -> None:
         if v is None:
             self.properties.pop(DIM_REF_SYS_PROP, None)
         else:
@@ -212,13 +212,13 @@ class VerticalSpatialDimension(SpatialDimension):
         self.properties[DIM_AXIS_PROP] = v
 
     @property
-    def unit(self) -> Optional[str]:
+    def unit(self) -> str | None:
         """The unit of measurement for the data, preferably compliant to `UDUNITS-2
         <https://ncics.org/portfolio/other-resources/udunits2/>`__ units (singular)."""
         return self.properties.get(DIM_UNIT_PROP)
 
     @unit.setter
-    def unit(self, v: Optional[str]) -> None:
+    def unit(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(DIM_UNIT_PROP, None)
         else:
@@ -227,7 +227,7 @@ class VerticalSpatialDimension(SpatialDimension):
 
 class TemporalDimension(Dimension):
     @property
-    def extent(self) -> Optional[List[Optional[str]]]:
+    def extent(self) -> list[str | None] | None:
         """Extent (lower and upper bounds) of the dimension as two-dimensional array.
         The dates and/or times must be strings compliant to `ISO 8601
         <https://en.wikipedia.org/wiki/ISO_8601>`__. ``None`` is allowed for open date
@@ -235,35 +235,35 @@ class TemporalDimension(Dimension):
         return self.properties.get(DIM_EXTENT_PROP)
 
     @extent.setter
-    def extent(self, v: Optional[List[Optional[str]]]) -> None:
+    def extent(self, v: list[str | None] | None) -> None:
         if v is None:
             self.properties.pop(DIM_EXTENT_PROP, None)
         else:
             self.properties[DIM_EXTENT_PROP] = v
 
     @property
-    def values(self) -> Optional[List[str]]:
+    def values(self) -> list[str] | None:
         """If the dimension consists of set of specific values they can be listed here.
         The dates and/or times must be strings compliant to `ISO 8601
         <https://en.wikipedia.org/wiki/ISO_8601>`__."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
-    def values(self, v: Optional[List[str]]) -> None:
+    def values(self, v: list[str] | None) -> None:
         if v is None:
             self.properties.pop(DIM_VALUES_PROP, None)
         else:
             self.properties[DIM_VALUES_PROP] = v
 
     @property
-    def step(self) -> Optional[str]:
+    def step(self) -> str | None:
         """The space between the temporal instances as `ISO 8601 duration
         <https://en.wikipedia.org/wiki/ISO_8601#Durations>`__, e.g. P1D. Use null for
         irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
-    def step(self, v: Optional[str]) -> None:
+    def step(self, v: str | None) -> None:
         self.properties[DIM_STEP_PROP] = v
 
     def clear_step(self) -> None:
@@ -275,7 +275,7 @@ class TemporalDimension(Dimension):
 
 class AdditionalDimension(Dimension):
     @property
-    def extent(self) -> Optional[List[Optional[float]]]:
+    def extent(self) -> list[float | None] | None:
         """If the dimension consists of `ordinal
         <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`__ values,
         the extent (lower and upper bounds) of the values as two-dimensional array. Use
@@ -283,34 +283,34 @@ class AdditionalDimension(Dimension):
         return self.properties.get(DIM_EXTENT_PROP)
 
     @extent.setter
-    def extent(self, v: Optional[List[Optional[float]]]) -> None:
+    def extent(self, v: list[float | None] | None) -> None:
         if v is None:
             self.properties.pop(DIM_EXTENT_PROP, None)
         else:
             self.properties[DIM_EXTENT_PROP] = v
 
     @property
-    def values(self) -> Optional[Union[List[str], List[float]]]:
+    def values(self) -> list[str] | list[float] | None:
         """A set of all potential values, especially useful for `nominal
         <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`__ values."""
         return self.properties.get(DIM_VALUES_PROP)
 
     @values.setter
-    def values(self, v: Optional[Union[List[str], List[float]]]) -> None:
+    def values(self, v: list[str] | list[float] | None) -> None:
         if v is None:
             self.properties.pop(DIM_VALUES_PROP, None)
         else:
             self.properties[DIM_VALUES_PROP] = v
 
     @property
-    def step(self) -> Optional[float]:
+    def step(self) -> float | None:
         """If the dimension consists of `interval
         <https://en.wikipedia.org/wiki/Level_of_measurement#Interval_scale>`__ values,
         the space between the values. Use null for irregularly spaced steps."""
         return self.properties.get(DIM_STEP_PROP)
 
     @step.setter
-    def step(self, v: Optional[float]) -> None:
+    def step(self, v: float | None) -> None:
         self.properties[DIM_STEP_PROP] = v
 
     def clear_step(self) -> None:
@@ -320,25 +320,25 @@ class AdditionalDimension(Dimension):
         self.properties.pop(DIM_STEP_PROP, None)
 
     @property
-    def unit(self) -> Optional[str]:
+    def unit(self) -> str | None:
         """The unit of measurement for the data, preferably compliant to `UDUNITS-2
         units <https://ncics.org/portfolio/other-resources/udunits2/>`__ (singular)."""
         return self.properties.get(DIM_UNIT_PROP)
 
     @unit.setter
-    def unit(self, v: Optional[str]) -> None:
+    def unit(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(DIM_UNIT_PROP, None)
         else:
             self.properties[DIM_UNIT_PROP] = v
 
     @property
-    def reference_system(self) -> Optional[Union[str, float, Dict[str, Any]]]:
+    def reference_system(self) -> str | float | dict[str, Any] | None:
         """The reference system for the data."""
         return self.properties.get(DIM_REF_SYS_PROP)
 
     @reference_system.setter
-    def reference_system(self, v: Optional[Union[str, float, Dict[str, Any]]]) -> None:
+    def reference_system(self, v: str | float | dict[str, Any] | None) -> None:
         if v is None:
             self.properties.pop(DIM_REF_SYS_PROP, None)
         else:
@@ -359,13 +359,13 @@ class Variable:
     <datacube#variable-object>` docs for details.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     @property
-    def dimensions(self) -> List[str]:
+    def dimensions(self) -> list[str]:
         """The dimensions of the variable. Should refer to keys in the
         ``cube:dimensions`` object or be an empty list if the variable has no
         dimensions
@@ -377,35 +377,35 @@ class Variable:
         )
 
     @dimensions.setter
-    def dimensions(self, v: List[str]) -> None:
+    def dimensions(self, v: list[str]) -> None:
         self.properties[VAR_DIMENSIONS_PROP] = v
 
     @property
-    def var_type(self) -> Union[VariableType, str]:
+    def var_type(self) -> VariableType | str:
         """Type of the variable, either ``data`` or ``auxiliary``"""
         return get_required(
             self.properties.get(VAR_TYPE_PROP), "cube:variable", VAR_TYPE_PROP
         )
 
     @var_type.setter
-    def var_type(self, v: Union[VariableType, str]) -> None:
+    def var_type(self, v: VariableType | str) -> None:
         self.properties[VAR_TYPE_PROP] = v
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Detailed multi-line description to explain the variable. `CommonMark 0.29
         <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
         return self.properties.get(VAR_DESC_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(VAR_DESC_PROP, None)
         else:
             self.properties[VAR_DESC_PROP] = v
 
     @property
-    def extent(self) -> List[Union[float, str, None]]:
+    def extent(self) -> list[float | str | None]:
         """If the variable consists of `ordinal values
         <https://en.wikipedia.org/wiki/Level_of_measurement#Ordinal_scale>`, the extent
         (lower and upper bounds) of the values as two-dimensional array. Use ``None``
@@ -415,40 +415,40 @@ class Variable:
         )
 
     @extent.setter
-    def extent(self, v: List[Union[float, str, None]]) -> None:
+    def extent(self, v: list[float | str | None]) -> None:
         self.properties[VAR_EXTENT_PROP] = v
 
     @property
-    def values(self) -> Optional[List[Union[float, str]]]:
+    def values(self) -> list[float | str] | None:
         """A set of all potential values, especially useful for `nominal values
         <https://en.wikipedia.org/wiki/Level_of_measurement#Nominal_level>`."""
         return self.properties.get(VAR_VALUES_PROP)
 
     @values.setter
-    def values(self, v: Optional[List[Union[float, str]]]) -> None:
+    def values(self, v: list[float | str] | None) -> None:
         if v is None:
             self.properties.pop(VAR_VALUES_PROP)
         else:
             self.properties[VAR_VALUES_PROP] = v
 
     @property
-    def unit(self) -> Optional[str]:
+    def unit(self) -> str | None:
         """The unit of measurement for the data, preferably compliant to `UDUNITS-2
         <https://ncics.org/portfolio/other-resources/udunits2/>` units (singular)"""
         return self.properties.get(VAR_UNIT_PROP)
 
     @unit.setter
-    def unit(self, v: Optional[str]) -> None:
+    def unit(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(VAR_UNIT_PROP)
         else:
             self.properties[VAR_UNIT_PROP] = v
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> Variable:
+    def from_dict(d: dict[str, Any]) -> Variable:
         return Variable(d)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.properties
 
 
@@ -476,8 +476,8 @@ class DatacubeExtension(
 
     def apply(
         self,
-        dimensions: Dict[str, Dimension],
-        variables: Optional[Dict[str, Variable]] = None,
+        dimensions: dict[str, Dimension],
+        variables: dict[str, Variable] | None = None,
     ) -> None:
         """Applies Datacube Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
@@ -492,7 +492,7 @@ class DatacubeExtension(
         self.variables = variables
 
     @property
-    def dimensions(self) -> Dict[str, Dimension]:
+    def dimensions(self) -> dict[str, Dimension]:
         """A dictionary where each key is the name of a dimension and each
         value is a :class:`~Dimension` object.
         """
@@ -502,11 +502,11 @@ class DatacubeExtension(
         return {k: Dimension.from_dict(v) for k, v in result.items()}
 
     @dimensions.setter
-    def dimensions(self, v: Dict[str, Dimension]) -> None:
+    def dimensions(self, v: dict[str, Dimension]) -> None:
         self._set_property(DIMENSIONS_PROP, {k: dim.to_dict() for k, dim in v.items()})
 
     @property
-    def variables(self) -> Optional[Dict[str, Variable]]:
+    def variables(self) -> dict[str, Variable] | None:
         """A dictionary where each key is the name of a variable and each
         value is a :class:`~Variable` object.
         """
@@ -517,7 +517,7 @@ class DatacubeExtension(
         return {k: Variable.from_dict(v) for k, v in result.items()}
 
     @variables.setter
-    def variables(self, v: Optional[Dict[str, Variable]]) -> None:
+    def variables(self, v: dict[str, Variable] | None) -> None:
         self._set_property(
             VARIABLES_PROP,
             map_opt(
@@ -567,7 +567,7 @@ class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
     """
 
     collection: pystac.Collection
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
@@ -587,7 +587,7 @@ class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
     """
 
     item: pystac.Item
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
@@ -607,8 +607,8 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
     """
 
     asset_href: str
-    properties: Dict[str, Any]
-    additional_read_properties: Optional[List[Dict[str, Any]]]
+    properties: dict[str, Any]
+    additional_read_properties: list[dict[str, Any]] | None
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
@@ -623,7 +623,7 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
 
 class ItemAssetsDatacubeExtension(DatacubeExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):

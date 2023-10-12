@@ -313,7 +313,7 @@ def test_item_assets_extension(collection: Collection) -> None:
 
 
 def test_older_extension_version(landsat_item: Item) -> None:
-    OLD_VERSION = list(set(SUPPORTED_VERSIONS) - set([DEFAULT_VERSION]))[0]
+    OLD_VERSION = list(set(SUPPORTED_VERSIONS) - {DEFAULT_VERSION})[0]
     new = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
     old = SCHEMA_URI_PATTERN.format(version=OLD_VERSION)
 

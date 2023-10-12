@@ -9,7 +9,6 @@ from typing import (
     Iterable,
     List,
     Literal,
-    Optional,
     TypeVar,
     Union,
     cast,
@@ -66,9 +65,9 @@ class Schema:
     properties.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     def apply(self, name: str, size: int, type: SchemaType) -> None:
@@ -136,7 +135,7 @@ class Schema:
             self.properties.get("type"),
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this schema as a dictionary."""
         return self.properties
 
@@ -147,21 +146,21 @@ class Statistic:
     Use :meth:`Statistic.create` to create a new instance of
     ``Statistic`` from property values."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     def apply(
         self,
         name: str,
-        position: Optional[int] = None,
-        average: Optional[float] = None,
-        count: Optional[int] = None,
-        maximum: Optional[float] = None,
-        minimum: Optional[float] = None,
-        stddev: Optional[float] = None,
-        variance: Optional[float] = None,
+        position: int | None = None,
+        average: float | None = None,
+        count: int | None = None,
+        maximum: float | None = None,
+        minimum: float | None = None,
+        stddev: float | None = None,
+        variance: float | None = None,
     ) -> None:
         """Sets the properties for this Statistic.
 
@@ -188,13 +187,13 @@ class Statistic:
     def create(
         cls,
         name: str,
-        position: Optional[int] = None,
-        average: Optional[float] = None,
-        count: Optional[int] = None,
-        maximum: Optional[float] = None,
-        minimum: Optional[float] = None,
-        stddev: Optional[float] = None,
-        variance: Optional[float] = None,
+        position: int | None = None,
+        average: float | None = None,
+        count: int | None = None,
+        maximum: float | None = None,
+        minimum: float | None = None,
+        stddev: float | None = None,
+        variance: float | None = None,
     ) -> Statistic:
         """Creates a new Statistic class.
 
@@ -234,84 +233,84 @@ class Statistic:
             self.properties.pop("name", None)
 
     @property
-    def position(self) -> Optional[int]:
+    def position(self) -> int | None:
         """Gets or sets the position property."""
         return self.properties.get("position")
 
     @position.setter
-    def position(self, v: Optional[int]) -> None:
+    def position(self, v: int | None) -> None:
         if v is not None:
             self.properties["position"] = v
         else:
             self.properties.pop("position", None)
 
     @property
-    def average(self) -> Optional[float]:
+    def average(self) -> float | None:
         """Gets or sets the average property."""
         return self.properties.get("average")
 
     @average.setter
-    def average(self, v: Optional[float]) -> None:
+    def average(self, v: float | None) -> None:
         if v is not None:
             self.properties["average"] = v
         else:
             self.properties.pop("average", None)
 
     @property
-    def count(self) -> Optional[int]:
+    def count(self) -> int | None:
         """Gets or sets the count property."""
         return self.properties.get("count")
 
     @count.setter
-    def count(self, v: Optional[int]) -> None:
+    def count(self, v: int | None) -> None:
         if v is not None:
             self.properties["count"] = v
         else:
             self.properties.pop("count", None)
 
     @property
-    def maximum(self) -> Optional[float]:
+    def maximum(self) -> float | None:
         """Gets or sets the maximum property."""
         return self.properties.get("maximum")
 
     @maximum.setter
-    def maximum(self, v: Optional[float]) -> None:
+    def maximum(self, v: float | None) -> None:
         if v is not None:
             self.properties["maximum"] = v
         else:
             self.properties.pop("maximum", None)
 
     @property
-    def minimum(self) -> Optional[float]:
+    def minimum(self) -> float | None:
         """Gets or sets the minimum property."""
         return self.properties.get("minimum")
 
     @minimum.setter
-    def minimum(self, v: Optional[float]) -> None:
+    def minimum(self, v: float | None) -> None:
         if v is not None:
             self.properties["minimum"] = v
         else:
             self.properties.pop("minimum", None)
 
     @property
-    def stddev(self) -> Optional[float]:
+    def stddev(self) -> float | None:
         """Gets or sets the stddev property."""
         return self.properties.get("stddev")
 
     @stddev.setter
-    def stddev(self, v: Optional[float]) -> None:
+    def stddev(self, v: float | None) -> None:
         if v is not None:
             self.properties["stddev"] = v
         else:
             self.properties.pop("stddev", None)
 
     @property
-    def variance(self) -> Optional[float]:
+    def variance(self) -> float | None:
         """Gets or sets the variance property."""
         return self.properties.get("variance")
 
     @variance.setter
-    def variance(self, v: Optional[float]) -> None:
+    def variance(self, v: float | None) -> None:
         if v is not None:
             self.properties["variance"] = v
         else:
@@ -320,7 +319,7 @@ class Statistic:
     def __repr__(self) -> str:
         return "<Statistic statistics={}>".format(str(self.properties))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this statistic as a dictionary."""
         return self.properties
 
@@ -355,11 +354,11 @@ class PointcloudExtension(
     def apply(
         self,
         count: int,
-        type: Union[PhenomenologyType, str],
+        type: PhenomenologyType | str,
         encoding: str,
-        schemas: List[Schema],
-        density: Optional[float] = None,
-        statistics: Optional[List[Statistic]] = None,
+        schemas: list[Schema],
+        density: float | None = None,
+        statistics: list[Statistic] | None = None,
     ) -> None:
         """Applies Pointcloud extension properties to the extended Item.
 
@@ -392,12 +391,12 @@ class PointcloudExtension(
         self._set_property(COUNT_PROP, v, pop_if_none=False)
 
     @property
-    def type(self) -> Union[PhenomenologyType, str]:
+    def type(self) -> PhenomenologyType | str:
         """Gets or sets the phenomenology type for the point cloud."""
         return get_required(self._get_property(TYPE_PROP, str), self, TYPE_PROP)
 
     @type.setter
-    def type(self, v: Union[PhenomenologyType, str]) -> None:
+    def type(self, v: PhenomenologyType | str) -> None:
         self._set_property(TYPE_PROP, v, pop_if_none=False)
 
     @property
@@ -410,7 +409,7 @@ class PointcloudExtension(
         self._set_property(ENCODING_PROP, v, pop_if_none=False)
 
     @property
-    def schemas(self) -> List[Schema]:
+    def schemas(self) -> list[Schema]:
         """Gets or sets the list of :class:`Schema` instances defining
         dimensions and types for the data.
         """
@@ -420,20 +419,20 @@ class PointcloudExtension(
         return [Schema(s) for s in result]
 
     @schemas.setter
-    def schemas(self, v: List[Schema]) -> None:
+    def schemas(self, v: list[Schema]) -> None:
         self._set_property(SCHEMAS_PROP, [x.to_dict() for x in v], pop_if_none=False)
 
     @property
-    def density(self) -> Optional[float]:
+    def density(self) -> float | None:
         """Gets or sets the number of points per square unit area."""
         return self._get_property(DENSITY_PROP, float)
 
     @density.setter
-    def density(self, v: Optional[float]) -> None:
+    def density(self, v: float | None) -> None:
         self._set_property(DENSITY_PROP, v)
 
     @property
-    def statistics(self) -> Optional[List[Statistic]]:
+    def statistics(self) -> list[Statistic] | None:
         """Gets or sets the list of :class:`Statistic` instances describing
         the pre-channel statistics. Elements in this list map to elements in the
         :attr:`PointcloudExtension.schemas` list."""
@@ -441,7 +440,7 @@ class PointcloudExtension(
         return map_opt(lambda stats: [Statistic(s) for s in stats], result)
 
     @statistics.setter
-    def statistics(self, v: Optional[List[Statistic]]) -> None:
+    def statistics(self, v: list[Statistic] | None) -> None:
         set_value = map_opt(lambda stats: [s.to_dict() for s in stats], v)
         self._set_property(STATISTICS_PROP, set_value)
 
@@ -495,7 +494,7 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
     """
 
     item: pystac.Item
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
@@ -517,10 +516,10 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -538,7 +537,7 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
 
 class ItemAssetsPointcloudExtension(PointcloudExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -553,46 +552,46 @@ class SummariesPointcloudExtension(SummariesExtension):
     """
 
     @property
-    def count(self) -> Optional[RangeSummary[int]]:
+    def count(self) -> RangeSummary[int] | None:
         return self.summaries.get_range(COUNT_PROP)
 
     @count.setter
-    def count(self, v: Optional[RangeSummary[int]]) -> None:
+    def count(self, v: RangeSummary[int] | None) -> None:
         self._set_summary(COUNT_PROP, v)
 
     @property
-    def type(self) -> Optional[List[Union[PhenomenologyType, str]]]:
+    def type(self) -> list[PhenomenologyType | str] | None:
         return self.summaries.get_list(TYPE_PROP)
 
     @type.setter
-    def type(self, v: Optional[List[Union[PhenomenologyType, str]]]) -> None:
+    def type(self, v: list[PhenomenologyType | str] | None) -> None:
         self._set_summary(TYPE_PROP, v)
 
     @property
-    def encoding(self) -> Optional[List[str]]:
+    def encoding(self) -> list[str] | None:
         return self.summaries.get_list(ENCODING_PROP)
 
     @encoding.setter
-    def encoding(self, v: Optional[List[str]]) -> None:
+    def encoding(self, v: list[str] | None) -> None:
         self._set_summary(ENCODING_PROP, v)
 
     @property
-    def density(self) -> Optional[RangeSummary[float]]:
+    def density(self) -> RangeSummary[float] | None:
         return self.summaries.get_range(DENSITY_PROP)
 
     @density.setter
-    def density(self, v: Optional[RangeSummary[float]]) -> None:
+    def density(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(DENSITY_PROP, v)
 
     @property
-    def statistics(self) -> Optional[List[Statistic]]:
+    def statistics(self) -> list[Statistic] | None:
         return map_opt(
             lambda stats: [Statistic(d) for d in stats],
             self.summaries.get_list(STATISTICS_PROP),
         )
 
     @statistics.setter
-    def statistics(self, v: Optional[List[Statistic]]) -> None:
+    def statistics(self, v: list[Statistic] | None) -> None:
         self._set_summary(
             STATISTICS_PROP,
             map_opt(lambda stats: [s.to_dict() for s in stats], v),

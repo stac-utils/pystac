@@ -70,12 +70,12 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            set(merged.cached_ids.keys()), set([cat.id for cat in [cat1, cat3]])
+            set(merged.cached_ids.keys()), {cat.id for cat in [cat1, cat3]}
         )
         self.assertIs(merged.get_by_id(cat1.id), cat1)
         self.assertEqual(
             set(merged.cached_hrefs.keys()),
-            set([cat.get_self_href() for cat in [cat2, cat4]]),
+            {cat.get_self_href() for cat in [cat2, cat4]},
         )
         self.assertIs(merged.get_by_href(get_opt(cat2.get_self_href())), cat2)
 

@@ -8,9 +8,6 @@ from typing import (
     Dict,
     Iterable,
     Iterator,
-    List,
-    Optional,
-    Type,
     TypeVar,
     Union,
 )
@@ -86,17 +83,17 @@ class ItemCollection(Collection[pystac.Item]):
         # If an item is present in both ItemCollections it will occur twice
     """
 
-    items: List[pystac.Item]
+    items: list[pystac.Item]
     """List of :class:`pystac.Item` instances contained in this ``ItemCollection``."""
 
-    extra_fields: Dict[str, Any]
+    extra_fields: dict[str, Any]
     """Dictionary of additional top-level fields for the GeoJSON
     FeatureCollection."""
 
     def __init__(
         self,
         items: Iterable[ItemLike],
-        extra_fields: Optional[Dict[str, Any]] = None,
+        extra_fields: dict[str, Any] | None = None,
         clone_items: bool = True,
     ):
         def map_item(item_or_dict: ItemLike) -> pystac.Item:
@@ -121,14 +118,14 @@ class ItemCollection(Collection[pystac.Item]):
     def __contains__(self, __x: object) -> bool:
         return __x in self.items
 
-    def __add__(self, other: object) -> "ItemCollection":
+    def __add__(self, other: object) -> ItemCollection:
         if not isinstance(other, ItemCollection):
             return NotImplemented
 
         combined = [*self.items, *other.items]
         return ItemCollection(items=combined)
 
-    def to_dict(self, transform_hrefs: bool = False) -> Dict[str, Any]:
+    def to_dict(self, transform_hrefs: bool = False) -> dict[str, Any]:
         """Serializes an :class:`ItemCollection` instance to a dictionary.
 
         Args:
@@ -167,10 +164,10 @@ class ItemCollection(Collection[pystac.Item]):
 
     @classmethod
     def from_dict(
-        cls: Type[C],
-        d: Dict[str, Any],
+        cls: type[C],
+        d: dict[str, Any],
         preserve_dict: bool = True,
-        root: Optional[pystac.Catalog] = None,
+        root: pystac.Catalog | None = None,
     ) -> C:
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
@@ -194,9 +191,7 @@ class ItemCollection(Collection[pystac.Item]):
         return cls(items=items, extra_fields=extra_fields)
 
     @classmethod
-    def from_file(
-        cls: Type[C], href: HREF, stac_io: Optional[pystac.StacIO] = None
-    ) -> C:
+    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
         """Reads a :class:`ItemCollection` from a JSON file.
 
         Arguments:
@@ -217,7 +212,7 @@ class ItemCollection(Collection[pystac.Item]):
     def save_object(
         self,
         dest_href: str,
-        stac_io: Optional[pystac.StacIO] = None,
+        stac_io: pystac.StacIO | None = None,
     ) -> None:
         """Saves this instance to the ``dest_href`` location.
 
@@ -232,7 +227,7 @@ class ItemCollection(Collection[pystac.Item]):
         stac_io.save_json(dest_href, self.to_dict())
 
     @staticmethod
-    def is_item_collection(d: Dict[str, Any]) -> bool:
+    def is_item_collection(d: dict[str, Any]) -> bool:
         """Checks if the given dictionary represents a valid :class:`ItemCollection`.
 
         Args:

@@ -35,7 +35,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         parts = template.get_template_values(item)
 
-        self.assertEqual(set(parts), set(["year", "month", "day", "date"]))
+        self.assertEqual(set(parts), {"year", "month", "day", "date"})
 
         self.assertEqual(parts["year"], year)
         self.assertEqual(parts["month"], month)
@@ -67,7 +67,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         parts = template.get_template_values(item)
 
-        self.assertEqual(set(parts), set(["year", "month", "day", "date"]))
+        self.assertEqual(set(parts), {"year", "month", "day", "date"})
 
         self.assertEqual(parts["year"], year)
         self.assertEqual(parts["month"], month)
@@ -121,7 +121,7 @@ class LayoutTemplateTest(unittest.TestCase):
 
         parts = template.get_template_values(item)
 
-        self.assertEqual(set(parts), set(["test.prop", "ext:extra.test.prop"]))
+        self.assertEqual(set(parts), {"test.prop", "ext:extra.test.prop"})
 
         self.assertEqual(parts["test.prop"], 4326)
         self.assertEqual(parts["ext:extra.test.prop"], 3857)

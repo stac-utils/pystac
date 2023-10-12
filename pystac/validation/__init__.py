@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable, Mapping
-from typing import TYPE_CHECKING, Any, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pystac
 from pystac.serialization.identify import STACVersionID, identify_stac_object
@@ -43,10 +43,10 @@ def validate(stac_object: STACObject) -> list[Any]:
 
 def validate_dict(
     stac_dict: dict[str, Any],
-    stac_object_type: Optional[STACObjectType] = None,
-    stac_version: Optional[str] = None,
-    extensions: Optional[list[str]] = None,
-    href: Optional[str] = None,
+    stac_object_type: STACObjectType | None = None,
+    stac_version: str | None = None,
+    extensions: list[str] | None = None,
+    href: str | None = None,
 ) -> list[Any]:
     """Validate a stac object serialized as JSON into a dict.
 
@@ -94,7 +94,7 @@ def validate_dict(
     # their schemas.
     if stac_version_id < "1.0.0-rc.2":
 
-        def _get_uri(ext: str) -> Optional[str]:
+        def _get_uri(ext: str) -> str | None:
             return OldExtensionSchemaUriMap.get_extension_schema_uri(
                 ext,
                 stac_object_type,
@@ -109,9 +109,9 @@ def validate_dict(
 
 
 def validate_all(
-    stac_object: Union[STACObject, dict[str, Any]],
-    href: Optional[str] = None,
-    stac_io: Optional[pystac.StacIO] = None,
+    stac_object: STACObject | dict[str, Any],
+    href: str | None = None,
+    stac_io: pystac.StacIO | None = None,
 ) -> None:
     """Validate a :class:`~pystac.STACObject`, or a STAC object serialized as
     JSON into a dict.
@@ -162,8 +162,8 @@ def validate_all(
 
 def validate_all_dict(
     stac_dict: dict[str, Any],
-    href: Optional[str],
-    stac_io: Optional[pystac.StacIO] = None,
+    href: str | None,
+    stac_io: pystac.StacIO | None = None,
 ) -> None:
     """Validate a stac object serialized as JSON into a dict.
 
@@ -212,7 +212,7 @@ def validate_all_dict(
 
 
 class RegisteredValidator:
-    _validator: Optional[STACValidator] = None
+    _validator: STACValidator | None = None
 
     @classmethod
     def get_validator(cls) -> STACValidator:

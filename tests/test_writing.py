@@ -55,7 +55,7 @@ class TestSTACWriting:
                     else:
                         assert is_absolute_href(link.href)
 
-            rels = set([link["rel"] for link in item_dict["links"]])
+            rels = {link["rel"] for link in item_dict["links"]}
             assert ("self" in rels) == should_include_self
 
         def validate_catalog_link_type(
@@ -65,7 +65,7 @@ class TestSTACWriting:
             cat = pystac.read_file(href)
             assert isinstance(cat, Catalog)
 
-            rels = set([link["rel"] for link in cat_dict["links"]])
+            rels = {link["rel"] for link in cat_dict["links"]}
             assert ("self" in rels) == should_include_self
 
             for child_link in cat.get_child_links():

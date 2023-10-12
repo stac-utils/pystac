@@ -9,7 +9,7 @@ from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union, cast
+from typing import Any, Iterator, cast
 
 import pytest
 
@@ -404,13 +404,13 @@ class TestCatalog:
                 actual_catalog_iterations += 1
                 expected_catalog_iterations += len(list(root.get_children()))
 
-                assert set([c.id for c in root.get_children()]) == set(
-                    [c.id for c in children]
-                ), "Children unequal"
+                assert {c.id for c in root.get_children()} == {
+                    c.id for c in children
+                }, "Children unequal"
 
-                assert set([c.id for c in root.get_items()]) == set(
-                    [c.id for c in items]
-                ), "Items unequal"
+                assert {c.id for c in root.get_items()} == {
+                    c.id for c in items
+                }, "Items unequal"
 
             assert actual_catalog_iterations == expected_catalog_iterations
 
@@ -685,9 +685,9 @@ class TestCatalog:
 
         month_cat = catalog.get_child("8", recursive=True)
         assert month_cat is not None
-        type_cats = set([cat.id for cat in month_cat.get_children()])
+        type_cats = {cat.id for cat in month_cat.get_children()}
 
-        assert type_cats == set(["PSScene4Band", "SkySatScene", "PlanetScope"])
+        assert type_cats == {"PSScene4Band", "SkySatScene", "PlanetScope"}
 
     def test_generate_subcatalogs_does_not_change_item_count(self) -> None:
         catalog = TestCases.case_7()
@@ -726,10 +726,10 @@ class TestCatalog:
             )
         result = catalog.generate_subcatalogs("${property1}_${property2}")
 
-        actual_subcats = set([cat.id for cat in result])
-        expected_subcats = set(
-            ["{}_{}".format(d["property1"], d["property2"]) for d in item_properties]
-        )
+        actual_subcats = {cat.id for cat in result}
+        expected_subcats = {
+            "{}_{}".format(d["property1"], d["property2"]) for d in item_properties
+        }
         assert len(result) == len(expected_subcats)
         assert actual_subcats == expected_subcats
 
@@ -804,7 +804,7 @@ class TestCatalog:
         result = catalog.generate_subcatalogs("${property1}/${property2}/${property3}")
         assert len(result) == 9
 
-        actual_subcats = set([cat.id for cat in result])
+        actual_subcats = {cat.id for cat in result}
         expected_subcats = {"A", "B", "1", "2", "i", "j"}
         assert actual_subcats == expected_subcats
 
@@ -861,7 +861,7 @@ class TestCatalog:
                 assert "ITEM_MAPPER" not in item.properties
 
     def test_map_items_multiple(self) -> None:
-        def item_mapper(item: pystac.Item) -> List[pystac.Item]:
+        def item_mapper(item: pystac.Item) -> list[pystac.Item]:
             item2 = item.clone()
             item2.id = item2.id + "_2"
             item.properties["ITEM_MAPPER_1"] = "YEP"
@@ -927,7 +927,7 @@ class TestCatalog:
             item.properties["title"] = "Some title"
             return item
 
-        def create_label_item(item: pystac.Item) -> List[pystac.Item]:
+        def create_label_item(item: pystac.Item) -> list[pystac.Item]:
             # Assumes the GEOJSON labels are in the
             # same location as the image
             img_href = item.assets["ortho"].href
@@ -992,11 +992,11 @@ class TestCatalog:
             assert found
 
     def test_map_assets_tup(self) -> None:
-        changed_assets: List[str] = []
+        changed_assets: list[str] = []
 
         def asset_mapper(
             key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Tuple[str, pystac.Asset]]:
+        ) -> pystac.Asset | tuple[str, pystac.Asset]:
             if asset.media_type and "geotiff" in asset.media_type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
@@ -1033,7 +1033,7 @@ class TestCatalog:
 
         def asset_mapper(
             key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Dict[str, pystac.Asset]]:
+        ) -> pystac.Asset | dict[str, pystac.Asset]:
             if asset.media_type and "geotiff" in asset.media_type:
                 changed_assets.append(key)
                 mod1 = asset.clone()
@@ -1288,7 +1288,7 @@ class TestCatalog:
     def test_collections_cache_correctly(self, cat: Catalog) -> None:
         mock_io = MockStacIO()
         cat._stac_io = mock_io
-        expected_collection_reads = set([])
+        expected_collection_reads = set()
         for root, _, items in cat.walk():
             if isinstance(root, Collection) and root != cat:
                 expected_collection_reads.add(root.get_self_href())
@@ -1296,7 +1296,7 @@ class TestCatalog:
             # Iterate over items to make sure they are read
             assert list(items) is not None
 
-        call_uris: List[Any] = [
+        call_uris: list[Any] = [
             call[0][0]
             for call in mock_io.mock.read_text.call_args_list
             if call[0][0] in expected_collection_reads
@@ -1617,9 +1617,9 @@ def test_custom_catalog_from_dict(catalog: Catalog) -> None:
         @classmethod
         def from_dict(
             cls,
-            d: Dict[str, Any],
-            href: Optional[str] = None,
-            root: Optional[Catalog] = None,
+            d: dict[str, Any],
+            href: str | None = None,
+            root: Catalog | None = None,
             migrate: bool = False,
             preserve_dict: bool = True,
         ) -> CustomCatalog:

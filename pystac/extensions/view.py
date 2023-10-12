@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Generic, Iterable, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
@@ -49,11 +49,11 @@ class ViewExtension(
 
     def apply(
         self,
-        off_nadir: Optional[float] = None,
-        incidence_angle: Optional[float] = None,
-        azimuth: Optional[float] = None,
-        sun_azimuth: Optional[float] = None,
-        sun_elevation: Optional[float] = None,
+        off_nadir: float | None = None,
+        incidence_angle: float | None = None,
+        azimuth: float | None = None,
+        sun_azimuth: float | None = None,
+        sun_elevation: float | None = None,
     ) -> None:
         """Applies View Geometry extension properties to the extended
         :class:`~pystac.Item`.
@@ -82,18 +82,18 @@ class ViewExtension(
         self.sun_elevation = sun_elevation
 
     @property
-    def off_nadir(self) -> Optional[float]:
+    def off_nadir(self) -> float | None:
         """Get or sets the angle from the sensor between nadir (straight down)
         and the scene center. Measured in degrees (0-90).
         """
         return self._get_property(OFF_NADIR_PROP, float)
 
     @off_nadir.setter
-    def off_nadir(self, v: Optional[float]) -> None:
+    def off_nadir(self, v: float | None) -> None:
         self._set_property(OFF_NADIR_PROP, v)
 
     @property
-    def incidence_angle(self) -> Optional[float]:
+    def incidence_angle(self) -> float | None:
         """Get or sets the incidence angle is the angle between the vertical (normal)
         to the intercepting surface and the line of sight back to the satellite at
         the scene center. Measured in degrees (0-90).
@@ -101,11 +101,11 @@ class ViewExtension(
         return self._get_property(INCIDENCE_ANGLE_PROP, float)
 
     @incidence_angle.setter
-    def incidence_angle(self, v: Optional[float]) -> None:
+    def incidence_angle(self, v: float | None) -> None:
         self._set_property(INCIDENCE_ANGLE_PROP, v)
 
     @property
-    def azimuth(self) -> Optional[float]:
+    def azimuth(self) -> float | None:
         """Get or sets the viewing azimuth angle.
 
         The angle measured from the sub-satellite
@@ -115,11 +115,11 @@ class ViewExtension(
         return self._get_property(AZIMUTH_PROP, float)
 
     @azimuth.setter
-    def azimuth(self, v: Optional[float]) -> None:
+    def azimuth(self, v: float | None) -> None:
         self._set_property(AZIMUTH_PROP, v)
 
     @property
-    def sun_azimuth(self) -> Optional[float]:
+    def sun_azimuth(self) -> float | None:
         """Get or sets the sun azimuth angle.
 
         From the scene center point on the ground, this
@@ -129,18 +129,18 @@ class ViewExtension(
         return self._get_property(SUN_AZIMUTH_PROP, float)
 
     @sun_azimuth.setter
-    def sun_azimuth(self, v: Optional[float]) -> None:
+    def sun_azimuth(self, v: float | None) -> None:
         self._set_property(SUN_AZIMUTH_PROP, v)
 
     @property
-    def sun_elevation(self) -> Optional[float]:
+    def sun_elevation(self) -> float | None:
         """Get or sets the sun elevation angle. The angle from the tangent of the scene
         center point to the sun. Measured from the horizon in degrees (0-90).
         """
         return self._get_property(SUN_ELEVATION_PROP, float)
 
     @sun_elevation.setter
-    def sun_elevation(self, v: Optional[float]) -> None:
+    def sun_elevation(self, v: float | None) -> None:
         self._set_property(SUN_ELEVATION_PROP, v)
 
     @classmethod
@@ -192,7 +192,7 @@ class ItemViewExtension(ViewExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -215,10 +215,10 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -233,7 +233,7 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
 
 
 class ItemAssetsViewExtension(ViewExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -248,58 +248,58 @@ class SummariesViewExtension(SummariesExtension):
     """
 
     @property
-    def off_nadir(self) -> Optional[RangeSummary[float]]:
+    def off_nadir(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`ViewExtension.off_nadir` values for
         this Collection.
         """
         return self.summaries.get_range(OFF_NADIR_PROP)
 
     @off_nadir.setter
-    def off_nadir(self, v: Optional[RangeSummary[float]]) -> None:
+    def off_nadir(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(OFF_NADIR_PROP, v)
 
     @property
-    def incidence_angle(self) -> Optional[RangeSummary[float]]:
+    def incidence_angle(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`ViewExtension.incidence_angle` values
         for this Collection.
         """
         return self.summaries.get_range(INCIDENCE_ANGLE_PROP)
 
     @incidence_angle.setter
-    def incidence_angle(self, v: Optional[RangeSummary[float]]) -> None:
+    def incidence_angle(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(INCIDENCE_ANGLE_PROP, v)
 
     @property
-    def azimuth(self) -> Optional[RangeSummary[float]]:
+    def azimuth(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`ViewExtension.azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(AZIMUTH_PROP)
 
     @azimuth.setter
-    def azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def azimuth(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(AZIMUTH_PROP, v)
 
     @property
-    def sun_azimuth(self) -> Optional[RangeSummary[float]]:
+    def sun_azimuth(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`ViewExtension.sun_azimuth` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_AZIMUTH_PROP)
 
     @sun_azimuth.setter
-    def sun_azimuth(self, v: Optional[RangeSummary[float]]) -> None:
+    def sun_azimuth(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(SUN_AZIMUTH_PROP, v)
 
     @property
-    def sun_elevation(self) -> Optional[RangeSummary[float]]:
+    def sun_elevation(self) -> RangeSummary[float] | None:
         """Get or sets the summary of :attr:`ViewExtension.sun_elevation` values
         for this Collection.
         """
         return self.summaries.get_range(SUN_ELEVATION_PROP)
 
     @sun_elevation.setter
-    def sun_elevation(self, v: Optional[RangeSummary[float]]) -> None:
+    def sun_elevation(self, v: RangeSummary[float] | None) -> None:
         self._set_summary(SUN_ELEVATION_PROP, v)
 
 

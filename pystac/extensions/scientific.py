@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Literal, TypeVar, Union, cast
 from urllib import parse
 
 import pystac
@@ -54,10 +54,10 @@ def doi_to_url(doi: str) -> str:
 class Publication:
     """Helper for Publication entries."""
 
-    citation: Optional[str]
-    doi: Optional[str]
+    citation: str | None
+    doi: str | None
 
-    def __init__(self, doi: Optional[str], citation: Optional[str]) -> None:
+    def __init__(self, doi: str | None, citation: str | None) -> None:
         self.doi = doi
         self.citation = citation
 
@@ -70,14 +70,14 @@ class Publication:
     def __repr__(self) -> str:
         return f"<Publication doi={self.doi} target={self.citation}>"
 
-    def to_dict(self) -> Dict[str, Optional[str]]:
+    def to_dict(self) -> dict[str, str | None]:
         return copy.deepcopy({"doi": self.doi, "citation": self.citation})
 
     @staticmethod
-    def from_dict(d: Dict[str, str]) -> Publication:
+    def from_dict(d: dict[str, str]) -> Publication:
         return Publication(d.get("doi"), d.get("citation"))
 
-    def get_link(self) -> Optional[pystac.Link]:
+    def get_link(self) -> pystac.Link | None:
         """Gets a :class:`~pystac.Link` for the DOI for this publication. If
         :attr:`Publication.doi` is ``None``, this method will also return ``None``."""
         if self.doi is None:
@@ -85,7 +85,7 @@ class Publication:
         return pystac.Link(ScientificRelType.CITE_AS, doi_to_url(self.doi))
 
 
-def remove_link(links: List[pystac.Link], doi: Optional[str]) -> None:
+def remove_link(links: list[pystac.Link], doi: str | None) -> None:
     if doi is None:
         return
     url = doi_to_url(doi)
@@ -125,9 +125,9 @@ class ScientificExtension(
 
     def apply(
         self,
-        doi: Optional[str] = None,
-        citation: Optional[str] = None,
-        publications: Optional[List[Publication]] = None,
+        doi: str | None = None,
+        citation: str | None = None,
+        publications: list[Publication] | None = None,
     ) -> None:
         """Applies scientific extension properties to the extended
         :class:`~pystac.Item`.
@@ -143,7 +143,7 @@ class ScientificExtension(
         self.publications = publications
 
     @property
-    def doi(self) -> Optional[str]:
+    def doi(self) -> str | None:
         """Get or sets the DOI for the item.
 
         This MUST NOT be a DOIs link. For all DOI names respective DOI links SHOULD be
@@ -152,7 +152,7 @@ class ScientificExtension(
         return self._get_property(DOI_PROP, str)
 
     @doi.setter
-    def doi(self, v: Optional[str]) -> None:
+    def doi(self, v: str | None) -> None:
         if DOI_PROP in self.properties:
             if v == self.properties[DOI_PROP]:
                 return
@@ -164,7 +164,7 @@ class ScientificExtension(
             self.obj.add_link(pystac.Link(ScientificRelType.CITE_AS, url))
 
     @property
-    def citation(self) -> Optional[str]:
+    def citation(self) -> str | None:
         """Get or sets the recommended human-readable reference (citation) to be used by
         publications citing the data.
 
@@ -174,11 +174,11 @@ class ScientificExtension(
         return self._get_property(CITATION_PROP, str)
 
     @citation.setter
-    def citation(self, v: Optional[str]) -> None:
+    def citation(self, v: str | None) -> None:
         self._set_property(CITATION_PROP, v)
 
     @property
-    def publications(self) -> Optional[List[Publication]]:
+    def publications(self) -> list[Publication] | None:
         """Get or sets the list of relevant publications referencing and describing the
         data."""
         return map_opt(
@@ -187,7 +187,7 @@ class ScientificExtension(
         )
 
     @publications.setter
-    def publications(self, v: Optional[List[Publication]]) -> None:
+    def publications(self, v: list[Publication] | None) -> None:
         self._set_property(
             PUBLICATIONS_PROP, map_opt(lambda pubs: [pub.to_dict() for pub in pubs], v)
         )
@@ -198,7 +198,7 @@ class ScientificExtension(
                     self.obj.add_link(pub_link)
 
     # None for publication will clear all.
-    def remove_publication(self, publication: Optional[Publication] = None) -> None:
+    def remove_publication(self, publication: Publication | None = None) -> None:
         """Removes the given :class:`Publication` from the extended
         :class:`~pystac.Item`. If the ``publication`` argument is ``None``, all
         publications will be removed from the :class:`~pystac.Item`."""
@@ -268,10 +268,10 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
     collection: pystac.Collection
     """The :class:`~pystac.Collection` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Collection` properties, including extension properties."""
 
-    links: List[pystac.Link]
+    links: list[pystac.Link]
     """The list of :class:`~pystac.Link` objects associated with the
     :class:`~pystac.Collection` being extended, including links added by this extension.
     """
@@ -301,10 +301,10 @@ class ItemScientificExtension(ScientificExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
-    links: List[pystac.Link]
+    links: list[pystac.Link]
     """The list of :class:`~pystac.Link` objects associated with the
     :class:`~pystac.Item` being extended, including links added by this extension.
     """
@@ -326,25 +326,25 @@ class SummariesScientificExtension(SummariesExtension):
     """
 
     @property
-    def citation(self) -> Optional[List[str]]:
+    def citation(self) -> list[str] | None:
         """Get or sets the summary of :attr:`ScientificExtension.citation` values
         for this Collection.
         """
         return self.summaries.get_list(CITATION_PROP)
 
     @citation.setter
-    def citation(self, v: Optional[List[str]]) -> None:
+    def citation(self, v: list[str] | None) -> None:
         self._set_summary(CITATION_PROP, v)
 
     @property
-    def doi(self) -> Optional[List[str]]:
+    def doi(self) -> list[str] | None:
         """Get or sets the summary of :attr:`ScientificExtension.citation` values
         for this Collection.
         """
         return self.summaries.get_list(DOI_PROP)
 
     @doi.setter
-    def doi(self, v: Optional[List[str]]) -> None:
+    def doi(self, v: list[str] | None) -> None:
         self._set_summary(DOI_PROP, v)
 
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
@@ -36,9 +36,9 @@ TBL_DESCRIPTION_PROP = "description"
 class Column:
     """Object representing a column of a table."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     @property
@@ -53,32 +53,32 @@ class Column:
         self.properties[COL_NAME_PROP] = v
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Detailed multi-line description to explain the column. `CommonMark 0.29
         <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
         return self.properties.get(COL_DESCRIPTION_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(COL_DESCRIPTION_PROP, None)
         else:
             self.properties[COL_DESCRIPTION_PROP] = v
 
     @property
-    def col_type(self) -> Optional[str]:
+    def col_type(self) -> str | None:
         """Data type of the column. If using a file format with a type system (like
         Parquet), we recommend you use those types"""
         return self.properties.get(COL_TYPE_PROP)
 
     @col_type.setter
-    def col_type(self, v: Optional[str]) -> None:
+    def col_type(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(COL_TYPE_PROP, None)
         else:
             self.properties[COL_TYPE_PROP] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``Column``."""
         return self.properties
 
@@ -86,9 +86,9 @@ class Column:
 class Table:
     """Object containing a high-level summary about a table"""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     @property
@@ -101,19 +101,19 @@ class Table:
         self.properties[COL_NAME_PROP] = v
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Detailed multi-line description to explain the table. `CommonMark 0.29
         <http://commonmark.org/>`__ syntax MAY be used for rich text representation."""
         return self.properties.get(COL_DESCRIPTION_PROP)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(COL_DESCRIPTION_PROP, None)
         else:
             self.properties[COL_DESCRIPTION_PROP] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``Table``."""
         return self.properties
 
@@ -172,7 +172,7 @@ class TableExtension(
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @property
-    def columns(self) -> Optional[List[Column]]:
+    def columns(self) -> list[Column] | None:
         """A list of :class:`Column` objects describing each column"""
         v = self.properties.get(COLUMNS_PROP)
         if v is None:
@@ -180,28 +180,28 @@ class TableExtension(
         return [Column(x) for x in v]
 
     @columns.setter
-    def columns(self, v: Optional[List[Column]]) -> None:
+    def columns(self, v: list[Column] | None) -> None:
         self._set_property(COLUMNS_PROP, v)
 
     @property
-    def primary_geometry(self) -> Optional[str]:
+    def primary_geometry(self) -> str | None:
         """The primary geometry column name"""
         return self._get_property(PRIMARY_GEOMETRY_PROP, str)
 
     @primary_geometry.setter
-    def primary_geometry(self, v: Optional[str]) -> None:
+    def primary_geometry(self, v: str | None) -> None:
         if v is None:
             self.properties.pop(PRIMARY_GEOMETRY_PROP, None)
         else:
             self.properties[PRIMARY_GEOMETRY_PROP] = v
 
     @property
-    def row_count(self) -> Optional[int]:
+    def row_count(self) -> int | None:
         """The number of rows in the dataset"""
         return self._get_property(ROW_COUNT_PROP, int)
 
     @row_count.setter
-    def row_count(self, v: Optional[int]) -> None:
+    def row_count(self, v: int | None) -> None:
         if v is None:
             self.properties.pop(ROW_COUNT_PROP, None)
         else:
@@ -218,19 +218,19 @@ class CollectionTableExtension(TableExtension[pystac.Collection]):
     """
 
     collection: pystac.Collection
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
 
     @property
-    def tables(self) -> Dict[str, Table]:
+    def tables(self) -> dict[str, Table]:
         """A mapping of table names to table objects"""
         return get_required(self.properties.get(TABLES_PROP), self, TABLES_PROP)
 
     @tables.setter
-    def tables(self, v: Dict[str, Table]) -> None:
+    def tables(self, v: dict[str, Table]) -> None:
         self.properties[TABLES_PROP] = v
 
     def __repr__(self) -> str:
@@ -247,7 +247,7 @@ class ItemTableExtension(TableExtension[pystac.Item]):
     """
 
     item: pystac.Item
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
@@ -267,8 +267,8 @@ class AssetTableExtension(TableExtension[pystac.Asset]):
     """
 
     asset_href: str
-    properties: Dict[str, Any]
-    additional_read_properties: Optional[List[Dict[str, Any]]]
+    properties: dict[str, Any]
+    additional_read_properties: list[dict[str, Any]] | None
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
@@ -279,12 +279,12 @@ class AssetTableExtension(TableExtension[pystac.Asset]):
             self.additional_read_properties = None
 
     @property
-    def storage_options(self) -> Optional[Dict[str, Any]]:
+    def storage_options(self) -> dict[str, Any] | None:
         """Additional keywords for opening the dataset"""
         return self.properties.get(STORAGE_OPTIONS_PROP)
 
     @storage_options.setter
-    def storage_options(self, v: Optional[Dict[str, Any]]) -> Any:
+    def storage_options(self, v: dict[str, Any] | None) -> Any:
         if v is None:
             self.properties.pop(STORAGE_OPTIONS_PROP, None)
         else:
@@ -295,7 +295,7 @@ class AssetTableExtension(TableExtension[pystac.Asset]):
 
 
 class ItemAssetsTableExtension(TableExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):

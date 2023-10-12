@@ -100,16 +100,15 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
 
 class CustomExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set(
-        ["custom", "https://example.com/v1.0/custom-schema.json"]
-    )
-    stac_object_types: Set[pystac.STACObjectType] = set(
-        [
-            pystac.STACObjectType.CATALOG,
-            pystac.STACObjectType.COLLECTION,
-            pystac.STACObjectType.ITEM,
-        ]
-    )
+    prev_extension_ids: Set[str] = {
+        "custom",
+        "https://example.com/v1.0/custom-schema.json",
+    }
+    stac_object_types: Set[pystac.STACObjectType] = {
+        pystac.STACObjectType.CATALOG,
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
 
     def migrate(
         self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription

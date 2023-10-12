@@ -68,7 +68,7 @@ if __name__ == "__main__":
         for root, _, _ in os.walk(tmp_dir):
             example_dirs.append(os.path.join(root))
 
-        example_csv_lines = set([])
+        example_csv_lines = set()
 
         for example_dir in example_dirs:
             for root, _, files in os.walk(example_dir):

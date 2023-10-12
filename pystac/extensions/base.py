@@ -6,14 +6,9 @@ from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
     Iterable,
-    List,
-    Optional,
-    Type,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -42,7 +37,7 @@ class SummariesExtension:
     def _set_summary(
         self,
         prop_key: str,
-        v: Optional[Union[List[Any], pystac.RangeSummary[Any], Dict[str, Any]]],
+        v: list[Any] | pystac.RangeSummary[Any] | dict[str, Any] | None,
     ) -> None:
         if v is None:
             self.summaries.remove(prop_key)
@@ -62,14 +57,14 @@ class PropertiesExtension(ABC):
     :class:`~pystac.extensions.eo.PropertiesEOExtension` for an example.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The properties that this extension wraps.
 
     The extension which implements PropertiesExtension can use ``_get_property`` and
     ``_set_property`` to get and set values on this instance. Note that _set_properties
     mutates the properties directly."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """Additional read-only properties accessible from the extended object.
 
     These are used when extending an :class:`~pystac.Asset` to give access to the
@@ -78,19 +73,19 @@ class PropertiesExtension(ABC):
     ``additional_read_properties`` will take precedence.
     """
 
-    def _get_property(self, prop_name: str, _typ: Type[P]) -> Optional[P]:
-        maybe_property: Optional[P] = self.properties.get(prop_name)
+    def _get_property(self, prop_name: str, _typ: type[P]) -> P | None:
+        maybe_property: P | None = self.properties.get(prop_name)
         if maybe_property is not None:
             return maybe_property
         if self.additional_read_properties is not None:
             for props in self.additional_read_properties:
-                maybe_additional_property: Optional[P] = props.get(prop_name)
+                maybe_additional_property: P | None = props.get(prop_name)
                 if maybe_additional_property is not None:
                     return maybe_additional_property
         return None
 
     def _set_property(
-        self, prop_name: str, v: Optional[Any], pop_if_none: bool = True
+        self, prop_name: str, v: Any | None, pop_if_none: bool = True
     ) -> None:
         if v is None and pop_if_none:
             self.properties.pop(prop_name, None)
@@ -123,7 +118,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
         raise NotImplementedError
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         """Gets a list of schema URIs associated with this extension."""
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
@@ -163,7 +158,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def validate_owner_has_extension(
         cls,
-        asset: Union[pystac.Asset, AssetDefinition],
+        asset: pystac.Asset | AssetDefinition,
         add_if_missing: bool = False,
     ) -> None:
         """
@@ -195,7 +190,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def ensure_owner_has_extension(
         cls,
-        asset: Union[pystac.Asset, AssetDefinition],
+        asset: pystac.Asset | AssetDefinition,
         add_if_missing: bool = False,
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this

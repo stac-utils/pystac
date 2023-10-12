@@ -41,7 +41,7 @@ class MockStacIO(pystac.StacIO):
         self.wrapped_stac_io.write_text(dest, txt)
 
 
-class MockDefaultStacIO(object):
+class MockDefaultStacIO:
     """Context manager for mocking StacIO."""
 
     def __enter__(self) -> MockStacIO:

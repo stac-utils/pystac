@@ -11,7 +11,6 @@ from typing import (
     Iterable,
     List,
     Literal,
-    Optional,
     TypeVar,
     Union,
     cast,
@@ -29,7 +28,7 @@ from pystac.extensions.hooks import ExtensionHooks
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
-SCHEMA_URIS: List[str] = [
+SCHEMA_URIS: list[str] = [
     "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
@@ -69,14 +68,14 @@ class ProjectionExtension(
 
     def apply(
         self,
-        epsg: Optional[int],
-        wkt2: Optional[str] = None,
-        projjson: Optional[Dict[str, Any]] = None,
-        geometry: Optional[Dict[str, Any]] = None,
-        bbox: Optional[List[float]] = None,
-        centroid: Optional[Dict[str, float]] = None,
-        shape: Optional[List[int]] = None,
-        transform: Optional[List[float]] = None,
+        epsg: int | None,
+        wkt2: str | None = None,
+        projjson: dict[str, Any] | None = None,
+        geometry: dict[str, Any] | None = None,
+        bbox: list[float] | None = None,
+        centroid: dict[str, float] | None = None,
+        shape: list[int] | None = None,
+        transform: list[float] | None = None,
     ) -> None:
         """Applies Projection extension properties to the extended Item.
 
@@ -110,7 +109,7 @@ class ProjectionExtension(
         self.transform = transform
 
     @property
-    def epsg(self) -> Optional[int]:
+    def epsg(self) -> int | None:
         """Get or sets the EPSG code of the datasource.
 
         A Coordinate Reference System (CRS) is the data reference system (sometimes
@@ -124,11 +123,11 @@ class ProjectionExtension(
         return self._get_property(EPSG_PROP, int)
 
     @epsg.setter
-    def epsg(self, v: Optional[int]) -> None:
+    def epsg(self, v: int | None) -> None:
         self._set_property(EPSG_PROP, v, pop_if_none=False)
 
     @property
-    def wkt2(self) -> Optional[str]:
+    def wkt2(self) -> str | None:
         """Get or sets the WKT2 string representing the Coordinate Reference System
         (CRS) that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
@@ -141,11 +140,11 @@ class ProjectionExtension(
         return self._get_property(WKT2_PROP, str)
 
     @wkt2.setter
-    def wkt2(self, v: Optional[str]) -> None:
+    def wkt2(self, v: str | None) -> None:
         self._set_property(WKT2_PROP, v)
 
     @property
-    def projjson(self) -> Optional[Dict[str, Any]]:
+    def projjson(self) -> dict[str, Any] | None:
         """Get or sets the PROJJSON string representing the Coordinate Reference System
         (CRS) that the ``proj:geometry`` and ``proj:bbox`` fields represent
 
@@ -162,11 +161,11 @@ class ProjectionExtension(
         return self._get_property(PROJJSON_PROP, Dict[str, Any])
 
     @projjson.setter
-    def projjson(self, v: Optional[Dict[str, Any]]) -> None:
+    def projjson(self, v: dict[str, Any] | None) -> None:
         self._set_property(PROJJSON_PROP, v)
 
     @property
-    def crs_string(self) -> Optional[str]:
+    def crs_string(self) -> str | None:
         """Returns the coordinate reference system (CRS) string for the extension.
 
         This string can be used to feed, e.g., ``rasterio.crs.CRS.from_string``.
@@ -187,7 +186,7 @@ class ProjectionExtension(
             return None
 
     @property
-    def geometry(self) -> Optional[Dict[str, Any]]:
+    def geometry(self) -> dict[str, Any] | None:
         """Get or sets a Polygon GeoJSON dict representing the footprint of this item.
 
         This dict should be formatted according the Polygon object format specified in
@@ -200,11 +199,11 @@ class ProjectionExtension(
         return self._get_property(GEOM_PROP, Dict[str, Any])
 
     @geometry.setter
-    def geometry(self, v: Optional[Dict[str, Any]]) -> None:
+    def geometry(self, v: dict[str, Any] | None) -> None:
         self._set_property(GEOM_PROP, v)
 
     @property
-    def bbox(self) -> Optional[List[float]]:
+    def bbox(self) -> list[float] | None:
         """Get or sets the bounding box of the assets represented by this item in the
         asset data CRS.
 
@@ -219,11 +218,11 @@ class ProjectionExtension(
         return self._get_property(BBOX_PROP, List[float])
 
     @bbox.setter
-    def bbox(self, v: Optional[List[float]]) -> None:
+    def bbox(self, v: list[float] | None) -> None:
         self._set_property(BBOX_PROP, v)
 
     @property
-    def centroid(self) -> Optional[Dict[str, float]]:
+    def centroid(self) -> dict[str, float] | None:
         """Get or sets coordinates representing the centroid of the item in the asset
         data CRS.
 
@@ -237,11 +236,11 @@ class ProjectionExtension(
         return self._get_property(CENTROID_PROP, Dict[str, float])
 
     @centroid.setter
-    def centroid(self, v: Optional[Dict[str, float]]) -> None:
+    def centroid(self, v: dict[str, float] | None) -> None:
         self._set_property(CENTROID_PROP, v)
 
     @property
-    def shape(self) -> Optional[List[int]]:
+    def shape(self) -> list[int] | None:
         """Get or sets the number of pixels in Y and X directions for the default grid.
 
         The shape is an array of integers that represents the number of pixels in the
@@ -252,11 +251,11 @@ class ProjectionExtension(
         return self._get_property(SHAPE_PROP, List[int])
 
     @shape.setter
-    def shape(self, v: Optional[List[int]]) -> None:
+    def shape(self, v: list[int] | None) -> None:
         self._set_property(SHAPE_PROP, v)
 
     @property
-    def transform(self) -> Optional[List[float]]:
+    def transform(self) -> list[float] | None:
         """Get or sets the the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
@@ -271,7 +270,7 @@ class ProjectionExtension(
         return self._get_property(TRANSFORM_PROP, List[float])
 
     @transform.setter
-    def transform(self, v: Optional[List[float]]) -> None:
+    def transform(self, v: list[float] | None) -> None:
         self._set_property(TRANSFORM_PROP, v)
 
     @classmethod
@@ -279,7 +278,7 @@ class ProjectionExtension(
         return SCHEMA_URI
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -331,7 +330,7 @@ class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -354,10 +353,10 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -372,7 +371,7 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
 
 
 class ItemAssetsProjectionExtension(ProjectionExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -387,14 +386,14 @@ class SummariesProjectionExtension(SummariesExtension):
     """
 
     @property
-    def epsg(self) -> Optional[List[int]]:
+    def epsg(self) -> list[int] | None:
         """Get or sets the summary of :attr:`ProjectionExtension.epsg` values
         for this Collection.
         """
         return self.summaries.get_list(EPSG_PROP)
 
     @epsg.setter
-    def epsg(self, v: Optional[List[int]]) -> None:
+    def epsg(self, v: list[int] | None) -> None:
         self._set_summary(EPSG_PROP, v)
 
 

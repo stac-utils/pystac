@@ -139,7 +139,7 @@ class LabelTest(unittest.TestCase):
         cat = TestCases.case_1()
 
         items = list(cat.get_items(recursive=True))
-        item_ids = set([i.id for i in items])
+        item_ids = {i.id for i in items}
 
         for li in items:
             if LabelExtension.has_extension(li):

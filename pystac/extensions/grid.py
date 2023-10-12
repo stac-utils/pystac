@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any, Dict, List, Literal, Optional, Pattern, Set, Union
+from typing import Any, Literal, Pattern, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/grid/v1.1.0/schema.json"
-SCHEMA_URIS: List[str] = [
+SCHEMA_URIS: list[str] = [
     "https://stac-extensions.github.io/grid/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
@@ -56,7 +56,7 @@ class GridExtension(
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -75,7 +75,7 @@ class GridExtension(
         self.code = validated_code(code)
 
     @property
-    def code(self) -> Optional[str]:
+    def code(self) -> str | None:
         """Get or sets the latitude band of the datasource."""
         return self._get_property(CODE_PROP, str)
 
@@ -88,7 +88,7 @@ class GridExtension(
         return SCHEMA_URI
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -115,7 +115,7 @@ class GridExtension(
 
 class GridExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
+    prev_extension_ids: set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
     stac_object_types = {pystac.STACObjectType.ITEM}
 
 

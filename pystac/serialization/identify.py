@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import total_ordering
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.version import STACVersion
@@ -41,7 +41,7 @@ class STACVersionID:
 
     version_string: str
     version_core: str
-    version_prerelease: Optional[str]
+    version_prerelease: str | None
 
     def __init__(self, version_string: str) -> None:
         self.version_string = version_string
@@ -87,8 +87,8 @@ class STACVersionRange:
 
     def __init__(
         self,
-        min_version: Union[str, STACVersionID] = "0.8.0",
-        max_version: Optional[Union[str, STACVersionID]] = None,
+        min_version: str | STACVersionID = "0.8.0",
+        max_version: str | STACVersionID | None = None,
     ):
         if isinstance(min_version, str):
             self.min_version = STACVersionID(min_version)
@@ -124,7 +124,7 @@ class STACVersionRange:
     def latest_valid_version(self) -> STACVersionID:
         return self.max_version
 
-    def contains(self, v: Union[str, STACVersionID]) -> bool:
+    def contains(self, v: str | STACVersionID) -> bool:
         if isinstance(v, str):
             v = STACVersionID(v)
         return self.min_version <= v <= self.max_version
@@ -132,12 +132,12 @@ class STACVersionRange:
     def is_single_version(self) -> bool:
         return self.min_version >= self.max_version
 
-    def is_earlier_than(self, v: Union[str, STACVersionID]) -> bool:
+    def is_earlier_than(self, v: str | STACVersionID) -> bool:
         if isinstance(v, str):
             v = STACVersionID(v)
         return self.max_version < v
 
-    def is_later_than(self, v: Union[str, STACVersionID]) -> bool:
+    def is_later_than(self, v: str | STACVersionID) -> bool:
         if isinstance(v, str):
             v = STACVersionID(v)
         return v < self.min_version
@@ -160,13 +160,13 @@ class STACJSONDescription:
 
     object_type: STACObjectType
     version_range: STACVersionRange
-    extensions: List[str]
+    extensions: list[str]
 
     def __init__(
         self,
         object_type: STACObjectType,
         version_range: STACVersionRange,
-        extensions: List[str],
+        extensions: list[str],
     ) -> None:
         self.object_type = object_type
         self.version_range = version_range
@@ -178,7 +178,7 @@ class STACJSONDescription:
         )
 
 
-def identify_stac_object_type(json_dict: Dict[str, Any]) -> Optional[STACObjectType]:
+def identify_stac_object_type(json_dict: dict[str, Any]) -> STACObjectType | None:
     """Determines the STACObjectType of the provided JSON dict. If the JSON dict does
     not represent a STAC object, returns ``None``.
 
@@ -235,7 +235,7 @@ def identify_stac_object_type(json_dict: Dict[str, Any]) -> Optional[STACObjectT
     return None
 
 
-def identify_stac_object(json_dict: Dict[str, Any]) -> STACJSONDescription:
+def identify_stac_object(json_dict: dict[str, Any]) -> STACJSONDescription:
     """Determines the STACJSONDescription of the provided JSON dict.
 
     Args:

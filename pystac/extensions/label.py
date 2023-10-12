@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Union, cast
+from typing import Any, Iterable, Literal, Sequence, Union, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
@@ -70,15 +70,15 @@ class LabelClasses:
     Use :meth:`LabelClasses.create` to create a new instance from property values.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     def apply(
         self,
-        classes: Sequence[Union[str, int, float]],
-        name: Optional[str] = None,
+        classes: Sequence[str | int | float],
+        name: str | None = None,
     ) -> None:
         """Sets the properties for this instance.
 
@@ -94,8 +94,8 @@ class LabelClasses:
     @classmethod
     def create(
         cls,
-        classes: Sequence[Union[str, int, float]],
-        name: Optional[str] = None,
+        classes: Sequence[str | int | float],
+        name: str | None = None,
     ) -> LabelClasses:
         """Creates a new :class:`~LabelClasses` instance.
 
@@ -110,23 +110,23 @@ class LabelClasses:
         return c
 
     @property
-    def classes(self) -> Sequence[Union[str, int, float]]:
+    def classes(self) -> Sequence[str | int | float]:
         """Gets or sets the class values."""
         return get_required(self.properties.get("classes"), self, "classes")
 
     @classes.setter
-    def classes(self, v: Sequence[Union[str, int, float]]) -> None:
+    def classes(self, v: Sequence[str | int | float]) -> None:
         self.properties["classes"] = v
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Gets or sets the property key within each Feature in the asset corresponding
         to class labels. If labels are raster-formatted, use ``None``.
         """
         return self.properties.get("name")
 
     @name.setter
-    def name(self, v: Optional[str]) -> None:
+    def name(self, v: str | None) -> None:
         # The "name" property is required but may be null
         self.properties["name"] = v
 
@@ -144,7 +144,7 @@ class LabelClasses:
 
         return self.to_dict() == o
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this label classes object as a dictionary."""
         return self.properties
 
@@ -155,9 +155,9 @@ class LabelCount:
     Use :meth:`LabelCount.create` to create a new instance.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     def apply(self, name: str, count: int) -> None:
@@ -200,7 +200,7 @@ class LabelCount:
     def count(self, v: int) -> None:
         self.properties["count"] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this label count object as a dictionary."""
         return self.properties
 
@@ -220,9 +220,9 @@ class LabelStatistics:
     Use :meth:`LabelStatistics.create` to create a new instance.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     def apply(self, name: str, value: float) -> None:
@@ -265,7 +265,7 @@ class LabelStatistics:
     def value(self, v: float) -> None:
         self.properties["value"] = v
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this label statistics object as a dictionary."""
         return self.properties
 
@@ -286,16 +286,16 @@ class LabelOverview:
     Use :meth:`LabelOverview.create` to create a new instance.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     def apply(
         self,
-        property_key: Optional[str],
-        counts: Optional[List[LabelCount]] = None,
-        statistics: Optional[List[LabelStatistics]] = None,
+        property_key: str | None,
+        counts: list[LabelCount] | None = None,
+        statistics: list[LabelStatistics] | None = None,
     ) -> None:
         """Sets the properties for this instance.
 
@@ -318,9 +318,9 @@ class LabelOverview:
     @classmethod
     def create(
         cls,
-        property_key: Optional[str],
-        counts: Optional[List[LabelCount]] = None,
-        statistics: Optional[List[LabelStatistics]] = None,
+        property_key: str | None,
+        counts: list[LabelCount] | None = None,
+        statistics: list[LabelStatistics] | None = None,
     ) -> LabelOverview:
         """Creates a new instance.
 
@@ -340,17 +340,17 @@ class LabelOverview:
         return x
 
     @property
-    def property_key(self) -> Optional[str]:
+    def property_key(self) -> str | None:
         """Gets or sets the property key within the asset corresponding to class
         labels."""
         return self.properties.get("property_key")
 
     @property_key.setter
-    def property_key(self, v: Optional[str]) -> None:
+    def property_key(self, v: str | None) -> None:
         self.properties["property_key"] = v
 
     @property
-    def counts(self) -> Optional[List[LabelCount]]:
+    def counts(self) -> list[LabelCount] | None:
         """Gets or sets the list of :class:`LabelCounts` containing counts for
         categorical data."""
         counts = self.properties.get("counts")
@@ -359,7 +359,7 @@ class LabelOverview:
         return [LabelCount(c) for c in counts]
 
     @counts.setter
-    def counts(self, v: Optional[List[LabelCount]]) -> None:
+    def counts(self, v: list[LabelCount] | None) -> None:
         if v is None:
             self.properties.pop("counts", None)
         else:
@@ -371,7 +371,7 @@ class LabelOverview:
             self.properties["counts"] = [c.to_dict() for c in v]
 
     @property
-    def statistics(self) -> Optional[List[LabelStatistics]]:
+    def statistics(self) -> list[LabelStatistics] | None:
         """Gets or sets the list of :class:`LabelStatistics` containing statistics for
         regression/continuous numeric value data."""
         statistics = self.properties.get("statistics")
@@ -381,13 +381,13 @@ class LabelOverview:
         return [LabelStatistics(s) for s in statistics]
 
     @statistics.setter
-    def statistics(self, v: Optional[List[LabelStatistics]]) -> None:
+    def statistics(self, v: list[LabelStatistics] | None) -> None:
         if v is None:
             self.properties.pop("statistics", None)
         else:
             self.properties["statistics"] = [s.to_dict() for s in v]
 
-    def merge_counts(self, other: "LabelOverview") -> LabelOverview:
+    def merge_counts(self, other: LabelOverview) -> LabelOverview:
         """Merges the counts associated with this overview with another overview.
         Creates a new instance.
 
@@ -406,9 +406,9 @@ class LabelOverview:
             if other.counts is None:
                 new_counts = self.counts
             else:
-                count_by_prop: Dict[str, int] = {}
+                count_by_prop: dict[str, int] = {}
 
-                def add_counts(counts: List[LabelCount]) -> None:
+                def add_counts(counts: list[LabelCount]) -> None:
                     for c in counts:
                         if c.name not in count_by_prop:
                             count_by_prop[c.name] = c.count
@@ -420,7 +420,7 @@ class LabelOverview:
                 new_counts = [LabelCount.create(k, v) for k, v in count_by_prop.items()]
         return LabelOverview.create(self.property_key, counts=new_counts)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this label overview as a dictionary."""
         return self.properties
 
@@ -459,11 +459,11 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         self,
         label_description: str,
         label_type: LabelType,
-        label_properties: Optional[List[str]] = None,
-        label_classes: Optional[List[LabelClasses]] = None,
-        label_tasks: Optional[List[Union[LabelTask, str]]] = None,
-        label_methods: Optional[List[Union[LabelMethod, str]]] = None,
-        label_overviews: Optional[List[LabelOverview]] = None,
+        label_properties: list[str] | None = None,
+        label_classes: list[LabelClasses] | None = None,
+        label_tasks: list[LabelTask | str] | None = None,
+        label_methods: list[LabelMethod | str] | None = None,
+        label_overviews: list[LabelOverview] | None = None,
     ) -> None:
         """Applies label extension properties to the extended Item.
 
@@ -520,7 +520,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         self.obj.properties[TYPE_PROP] = v
 
     @property
-    def label_properties(self) -> Optional[List[str]]:
+    def label_properties(self) -> list[str] | None:
         """Gets or sets the names of the property field(s) in each
         Feature of the label asset's FeatureCollection that contains the classes
         (keywords from label:classes if the property defines classes).
@@ -528,11 +528,11 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         return self.obj.properties.get(PROPERTIES_PROP)
 
     @label_properties.setter
-    def label_properties(self, v: Optional[List[str]]) -> None:
+    def label_properties(self, v: list[str] | None) -> None:
         self.obj.properties[PROPERTIES_PROP] = v
 
     @property
-    def label_classes(self) -> Optional[List[LabelClasses]]:
+    def label_classes(self) -> list[LabelClasses] | None:
         """Gets or set a list of :class:`LabelClasses` defining the list of possible
         class names for each label:properties. (e.g., tree, building, car, hippo).
 
@@ -544,7 +544,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             return None
 
     @label_classes.setter
-    def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
+    def label_classes(self, v: list[LabelClasses] | None) -> None:
         if v is None:
             self.obj.properties.pop(CLASSES_PROP, None)
         else:
@@ -557,35 +557,35 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             self.obj.properties[CLASSES_PROP] = classes
 
     @property
-    def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
+    def label_tasks(self) -> list[LabelTask | str] | None:
         """Gets or set a list of tasks these labels apply to. Usually a subset of
         'regression', 'classification', 'detection', or 'segmentation', but may be
         arbitrary values."""
         return self.obj.properties.get(TASKS_PROP)
 
     @label_tasks.setter
-    def label_tasks(self, v: Optional[List[Union[LabelTask, str]]]) -> None:
+    def label_tasks(self, v: list[LabelTask | str] | None) -> None:
         if v is None:
             self.obj.properties.pop(TASKS_PROP, None)
         else:
             self.obj.properties[TASKS_PROP] = v
 
     @property
-    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
+    def label_methods(self) -> list[LabelMethod | str] | None:
         """Gets or set a list of methods used for labeling.
 
         Usually a subset of 'automated' or 'manual', but may be arbitrary values."""
         return self.obj.properties.get("label:methods")
 
     @label_methods.setter
-    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
+    def label_methods(self, v: list[LabelMethod | str] | None) -> None:
         if v is None:
             self.obj.properties.pop("label:methods", None)
         else:
             self.obj.properties["label:methods"] = v
 
     @property
-    def label_overviews(self) -> Optional[List[LabelOverview]]:
+    def label_overviews(self) -> list[LabelOverview] | None:
         """Gets or set a list of :class:`LabelOverview` instances
         that store counts (for classification-type data) or summary statistics (for
         continuous numerical/regression data)."""
@@ -596,7 +596,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             return None
 
     @label_overviews.setter
-    def label_overviews(self, v: Optional[List[LabelOverview]]) -> None:
+    def label_overviews(self, v: list[LabelOverview] | None) -> None:
         if v is None:
             self.obj.properties.pop(OVERVIEWS_PROP, None)
         else:
@@ -608,8 +608,8 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
     def add_source(
         self,
         source_item: pystac.Item,
-        title: Optional[str] = None,
-        assets: Optional[List[str]] = None,
+        title: str | None = None,
+        assets: list[str] | None = None,
     ) -> None:
         """Adds a link to a source item.
 
@@ -644,9 +644,9 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
     def add_labels(
         self,
         href: str,
-        title: Optional[str] = None,
-        media_type: Optional[str] = None,
-        properties: Optional[Dict[str, Any]] = None,
+        title: str | None = None,
+        media_type: str | None = None,
+        properties: dict[str, Any] | None = None,
     ) -> None:
         """Adds a label asset to this LabelItem.
 
@@ -672,8 +672,8 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
     def add_geojson_labels(
         self,
         href: str,
-        title: Optional[str] = None,
-        properties: Optional[Dict[str, Any]] = None,
+        title: str | None = None,
+        properties: dict[str, Any] | None = None,
     ) -> None:
         """Adds a GeoJSON label asset to this LabelItem.
 
@@ -697,7 +697,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         return SCHEMA_URI
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -733,7 +733,7 @@ class SummariesLabelExtension(SummariesExtension):
     """
 
     @property
-    def label_properties(self) -> Optional[List[str]]:
+    def label_properties(self) -> list[str] | None:
         """Get or sets the summary of :attr:`LabelExtension.label_properties` values
         for this Collection.
         """
@@ -741,11 +741,11 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(PROPERTIES_PROP)
 
     @label_properties.setter
-    def label_properties(self, v: Optional[List[str]]) -> None:
+    def label_properties(self, v: list[str] | None) -> None:
         self._set_summary(PROPERTIES_PROP, v)
 
     @property
-    def label_classes(self) -> Optional[List[LabelClasses]]:
+    def label_classes(self) -> list[LabelClasses] | None:
         """Get or sets the summary of :attr:`LabelExtension.label_classes` values
         for this Collection.
         """
@@ -756,13 +756,13 @@ class SummariesLabelExtension(SummariesExtension):
         )
 
     @label_classes.setter
-    def label_classes(self, v: Optional[List[LabelClasses]]) -> None:
+    def label_classes(self, v: list[LabelClasses] | None) -> None:
         self._set_summary(
             CLASSES_PROP, map_opt(lambda classes: [c.to_dict() for c in classes], v)
         )
 
     @property
-    def label_type(self) -> Optional[List[LabelType]]:
+    def label_type(self) -> list[LabelType] | None:
         """Get or sets the summary of :attr:`LabelExtension.label_type` values
         for this Collection.
         """
@@ -770,11 +770,11 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(TYPE_PROP)
 
     @label_type.setter
-    def label_type(self, v: Optional[List[LabelType]]) -> None:
+    def label_type(self, v: list[LabelType] | None) -> None:
         self._set_summary(TYPE_PROP, v)
 
     @property
-    def label_tasks(self) -> Optional[List[Union[LabelTask, str]]]:
+    def label_tasks(self) -> list[LabelTask | str] | None:
         """Get or sets the summary of :attr:`LabelExtension.label_tasks` values
         for this Collection.
         """
@@ -782,11 +782,11 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(TASKS_PROP)
 
     @label_tasks.setter
-    def label_tasks(self, v: Optional[List[Union[LabelTask, str]]]) -> None:
+    def label_tasks(self, v: list[LabelTask | str] | None) -> None:
         self._set_summary(TASKS_PROP, v)
 
     @property
-    def label_methods(self) -> Optional[List[Union[LabelMethod, str]]]:
+    def label_methods(self) -> list[LabelMethod | str] | None:
         """Get or sets the summary of :attr:`LabelExtension.label_methods` values
         for this Collection.
         """
@@ -794,7 +794,7 @@ class SummariesLabelExtension(SummariesExtension):
         return self.summaries.get_list(METHODS_PROP)
 
     @label_methods.setter
-    def label_methods(self, v: Optional[List[Union[LabelMethod, str]]]) -> None:
+    def label_methods(self, v: list[LabelMethod | str] | None) -> None:
         self._set_summary(METHODS_PROP, v)
 
 
@@ -808,13 +808,13 @@ class LabelExtensionHooks(ExtensionHooks):
 
     def get_object_links(
         self, so: pystac.STACObject
-    ) -> Optional[List[Union[str, pystac.RelType]]]:
+    ) -> list[str | pystac.RelType] | None:
         if isinstance(so, pystac.Item):
             return [LabelRelType.SOURCE]
         return None
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         if info.object_type == pystac.STACObjectType.ITEM and version < "1.0.0":
             props = obj["properties"]

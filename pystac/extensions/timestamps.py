@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
+from typing import Any, Generic, Iterable, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -47,9 +47,9 @@ class TimestampsExtension(
 
     def apply(
         self,
-        published: Optional[datetime] = None,
-        expires: Optional[datetime] = None,
-        unpublished: Optional[datetime] = None,
+        published: datetime | None = None,
+        expires: datetime | None = None,
+        unpublished: datetime | None = None,
     ) -> None:
         """Applies timestamps extension properties to the extended Item.
 
@@ -66,7 +66,7 @@ class TimestampsExtension(
         self.unpublished = unpublished
 
     @property
-    def published(self) -> Optional[datetime]:
+    def published(self) -> datetime | None:
         """Gets or sets a datetime object that represents the date and time that the
         corresponding data was published the first time.
 
@@ -78,11 +78,11 @@ class TimestampsExtension(
         return map_opt(str_to_datetime, self._get_property(PUBLISHED_PROP, str))
 
     @published.setter
-    def published(self, v: Optional[datetime]) -> None:
+    def published(self, v: datetime | None) -> None:
         self._set_property(PUBLISHED_PROP, map_opt(datetime_to_str, v))
 
     @property
-    def expires(self) -> Optional[datetime]:
+    def expires(self) -> datetime | None:
         """Gets or sets a datetime object that represents the date and time the
         corresponding data expires (is not valid any longer).
 
@@ -94,11 +94,11 @@ class TimestampsExtension(
         return map_opt(str_to_datetime, self._get_property(EXPIRES_PROP, str))
 
     @expires.setter
-    def expires(self, v: Optional[datetime]) -> None:
+    def expires(self, v: datetime | None) -> None:
         self._set_property(EXPIRES_PROP, map_opt(datetime_to_str, v))
 
     @property
-    def unpublished(self) -> Optional[datetime]:
+    def unpublished(self) -> datetime | None:
         """Gets or sets a datetime object that represents the date and time the
         corresponding data was unpublished.
 
@@ -110,7 +110,7 @@ class TimestampsExtension(
         return map_opt(str_to_datetime, self._get_property(UNPUBLISHED_PROP, str))
 
     @unpublished.setter
-    def unpublished(self, v: Optional[datetime]) -> None:
+    def unpublished(self, v: datetime | None) -> None:
         self._set_property(UNPUBLISHED_PROP, map_opt(datetime_to_str, v))
 
     @classmethod
@@ -159,7 +159,7 @@ class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -182,10 +182,10 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -206,7 +206,7 @@ class SummariesTimestampsExtension(SummariesExtension):
     """
 
     @property
-    def published(self) -> Optional[RangeSummary[datetime]]:
+    def published(self) -> RangeSummary[datetime] | None:
         """Get or sets the summary of :attr:`TimestampsExtension.published` values
         for this Collection.
         """
@@ -219,7 +219,7 @@ class SummariesTimestampsExtension(SummariesExtension):
         )
 
     @published.setter
-    def published(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def published(self, v: RangeSummary[datetime] | None) -> None:
         self._set_summary(
             PUBLISHED_PROP,
             map_opt(
@@ -231,7 +231,7 @@ class SummariesTimestampsExtension(SummariesExtension):
         )
 
     @property
-    def expires(self) -> Optional[RangeSummary[datetime]]:
+    def expires(self) -> RangeSummary[datetime] | None:
         """Get or sets the summary of :attr:`TimestampsExtension.expires` values
         for this Collection.
         """
@@ -244,7 +244,7 @@ class SummariesTimestampsExtension(SummariesExtension):
         )
 
     @expires.setter
-    def expires(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def expires(self, v: RangeSummary[datetime] | None) -> None:
         self._set_summary(
             EXPIRES_PROP,
             map_opt(
@@ -256,7 +256,7 @@ class SummariesTimestampsExtension(SummariesExtension):
         )
 
     @property
-    def unpublished(self) -> Optional[RangeSummary[datetime]]:
+    def unpublished(self) -> RangeSummary[datetime] | None:
         """Get or sets the summary of :attr:`TimestampsExtension.unpublished` values
         for this Collection.
         """
@@ -269,7 +269,7 @@ class SummariesTimestampsExtension(SummariesExtension):
         )
 
     @unpublished.setter
-    def unpublished(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def unpublished(self, v: RangeSummary[datetime] | None) -> None:
         self._set_summary(
             UNPUBLISHED_PROP,
             map_opt(

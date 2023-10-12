@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 
 import pystac
 from pystac.serialization.identify import (
@@ -16,13 +16,13 @@ if TYPE_CHECKING:
 
 
 def _migrate_catalog(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     d["type"] = pystac.STACObjectType.CATALOG
 
 
 def _migrate_collection_summaries(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     if version < "1.0.0-rc.1":
         for prop, summary in d.get("summaries", {}).items():
@@ -34,14 +34,14 @@ def _migrate_collection_summaries(
 
 
 def _migrate_collection(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     d["type"] = pystac.STACObjectType.COLLECTION
     _migrate_collection_summaries(d, version, info)
 
 
 def _migrate_item(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     # No migrations necessary for supported STAC versions (>=0.8)
     pass
@@ -49,8 +49,8 @@ def _migrate_item(
 
 # Extensions
 def _migrate_item_assets(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
-) -> Optional[Set[str]]:
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> set[str] | None:
     if version < "1.0.0-beta.2":
         if info.object_type == pystac.STACObjectType.COLLECTION:
             if "assets" in d:
@@ -60,8 +60,8 @@ def _migrate_item_assets(
 
 
 def _migrate_datetime_range(
-    d: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
-) -> Optional[Set[str]]:
+    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+) -> set[str] | None:
     if version < "0.9":
         # Datetime range was removed
         if (
@@ -82,7 +82,7 @@ def _migrate_datetime_range(
 
 
 def _get_object_migrations() -> (
-    Dict[str, Callable[[Dict[str, Any], STACVersionID, STACJSONDescription], None]]
+    dict[str, Callable[[dict[str, Any], STACVersionID, STACJSONDescription], None]]
 ):
     return {
         pystac.STACObjectType.CATALOG: _migrate_catalog,
@@ -92,16 +92,17 @@ def _get_object_migrations() -> (
 
 
 def _get_removed_extension_migrations() -> (
-    Dict[
+    dict[
         str,
-        Tuple[
-            Optional[List[STACObjectType]],
-            Optional[
+        tuple[
+            list[STACObjectType] | None,
+            None
+            | (
                 Callable[
-                    [Dict[str, Any], STACVersionID, STACJSONDescription],
-                    Optional[Set[str]],
+                    [dict[str, Any], STACVersionID, STACJSONDescription],
+                    set[str] | None,
                 ]
-            ],
+            ),
         ],
     ]
 ):
@@ -157,13 +158,13 @@ def _get_removed_extension_migrations() -> (
 
 
 # TODO: Item Assets
-def _get_extension_renames() -> Dict[str, str]:
+def _get_extension_renames() -> dict[str, str]:
     return {"asset": "item-assets"}
 
 
 def migrate_to_latest(
-    json_dict: Dict[str, Any], info: STACJSONDescription
-) -> Dict[str, Any]:
+    json_dict: dict[str, Any], info: STACJSONDescription
+) -> dict[str, Any]:
     """Migrates the STAC JSON to the latest version
 
     Args:

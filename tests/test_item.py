@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import dateutil.relativedelta
 import pytest
@@ -26,10 +26,10 @@ from tests.utils import TestCases, assert_to_from_dict
 
 
 class ItemTest(unittest.TestCase):
-    def get_example_item_dict(self) -> Dict[str, Any]:
+    def get_example_item_dict(self) -> dict[str, Any]:
         m = TestCases.get_path("data-files/item/sample-item.json")
         with open(m) as f:
-            item_dict: Dict[str, Any] = json.load(f)
+            item_dict: dict[str, Any] = json.load(f)
         return item_dict
 
     def test_to_from_dict(self) -> None:
@@ -435,9 +435,9 @@ def test_custom_item_from_dict(item: Item) -> None:
         @classmethod
         def from_dict(
             cls,
-            d: Dict[str, Any],
-            href: Optional[str] = None,
-            root: Optional[Catalog] = None,
+            d: dict[str, Any],
+            href: str | None = None,
+            root: Catalog | None = None,
             migrate: bool = False,
             preserve_dict: bool = True,
         ) -> CustomItem:
