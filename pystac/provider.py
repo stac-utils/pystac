@@ -1,5 +1,5 @@
 from html import escape
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import StringEnum
@@ -41,7 +41,7 @@ class Provider:
     information such as processing details for processors and producers,
     hosting details for hosts or basic contact information."""
 
-    roles: Optional[List[ProviderRole]]
+    roles: Optional[list[ProviderRole]]
     """Optional roles of the provider. Any of
     licensor, producer, processor or host."""
 
@@ -49,7 +49,7 @@ class Provider:
     """Optional homepage on which the provider describes the dataset
     and publishes contact information."""
 
-    extra_fields: Dict[str, Any]
+    extra_fields: dict[str, Any]
     """Dictionary containing additional top-level fields defined on the Provider
     object."""
 
@@ -57,9 +57,9 @@ class Provider:
         self,
         name: str,
         description: Optional[str] = None,
-        roles: Optional[List[ProviderRole]] = None,
+        roles: Optional[list[ProviderRole]] = None,
         url: Optional[str] = None,
-        extra_fields: Optional[Dict[str, Any]] = None,
+        extra_fields: Optional[dict[str, Any]] = None,
     ):
         self.name = name
         self.description = description
@@ -80,13 +80,13 @@ class Provider:
         else:
             return escape(repr(self))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this provider as a dictionary.
 
         Returns:
             dict: A serialization of the Provider.
         """
-        d: Dict[str, Any] = {"name": self.name}
+        d: dict[str, Any] = {"name": self.name}
         if self.description is not None:
             d["description"] = self.description
         if self.roles is not None:
@@ -99,7 +99,7 @@ class Provider:
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> "Provider":
+    def from_dict(d: dict[str, Any]) -> "Provider":
         """Constructs an Provider from a dict.
 
         Returns:

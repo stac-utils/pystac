@@ -115,7 +115,7 @@ class LayoutTemplate:
             v = formatter_parse_result[1]
             if v is not None:
                 if formatter_parse_result[2] != "":
-                    v = "{}:{}".format(v, formatter_parse_result[2])
+                    v = f"{v}:{formatter_parse_result[2]}"
                 template_vars.append(v)
         self.template_vars = template_vars
 
@@ -248,7 +248,7 @@ class LayoutTemplate:
 
         s = self.template
         for key, value in parts.items():
-            s = s.replace("${" + "{}".format(key) + "}", "{}".format(value))
+            s = s.replace("${" + f"{key}" + "}", f"{value}")
         return s
 
 
@@ -265,7 +265,7 @@ class HrefLayoutStrategy(ABC):
         elif isinstance(stac_object, pystac.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise pystac.STACError("Unknown STAC object type {}".format(stac_object))
+            raise pystac.STACError(f"Unknown STAC object type {stac_object}")
 
     @abstractmethod
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
@@ -451,7 +451,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
         else:
             template_path = self.item_template.substitute(item)
             if not template_path.endswith(".json"):
-                template_path = posixpath.join(template_path, "{}.json".format(item.id))
+                template_path = posixpath.join(template_path, f"{item.id}.json")
 
             return posixpath.join(parent_dir, template_path)
 
@@ -475,7 +475,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         if is_root:
             cat_root = parent_dir
         else:
-            cat_root = posixpath.join(parent_dir, "{}".format(cat.id))
+            cat_root = posixpath.join(parent_dir, f"{cat.id}")
 
         return posixpath.join(cat_root, cat.DEFAULT_FILE_NAME)
 
@@ -485,14 +485,14 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         if is_root:
             col_root = parent_dir
         else:
-            col_root = posixpath.join(parent_dir, "{}".format(col.id))
+            col_root = posixpath.join(parent_dir, f"{col.id}")
 
         return posixpath.join(col_root, col.DEFAULT_FILE_NAME)
 
     def get_item_href(self, item: Item, parent_dir: str) -> str:
-        item_root = posixpath.join(parent_dir, "{}".format(item.id))
+        item_root = posixpath.join(parent_dir, f"{item.id}")
 
-        return posixpath.join(item_root, "{}.json".format(item.id))
+        return posixpath.join(item_root, f"{item.id}.json")
 
 
 class AsIsLayoutStrategy(HrefLayoutStrategy):

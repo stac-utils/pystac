@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
 
 import pystac
 from pystac import utils
@@ -41,7 +41,7 @@ class CommonMetadata:
             else:
                 item.properties[prop_name] = v
         elif hasattr(self.object, "extra_fields") and isinstance(
-            self.object.extra_fields, Dict
+            self.object.extra_fields, dict
         ):
             if v is None:
                 self.object.extra_fields.pop(prop_name, None)
@@ -57,7 +57,7 @@ class CommonMetadata:
             item = cast(pystac.Item, self.object)
             return item.properties.get(prop_name)
         elif hasattr(self.object, "extra_fields") and isinstance(
-            self.object.extra_fields, Dict
+            self.object.extra_fields, dict
         ):
             return self.object.extra_fields.get(prop_name)
         else:
@@ -121,7 +121,7 @@ class CommonMetadata:
         """Get or set a list of the object's providers."""
         return utils.map_opt(
             lambda providers: [pystac.Provider.from_dict(d) for d in providers],
-            self._get_field("providers", List[Dict[str, Any]]),
+            self._get_field("providers", list[dict[str, Any]]),
         )
 
     @providers.setter
@@ -144,7 +144,7 @@ class CommonMetadata:
     @property
     def instruments(self) -> list[str] | None:
         """Gets or sets the names of the instruments used."""
-        return self._get_field("instruments", List[str])
+        return self._get_field("instruments", list[str])
 
     @instruments.setter
     def instruments(self, v: list[str] | None) -> None:

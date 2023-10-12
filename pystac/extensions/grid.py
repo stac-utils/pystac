@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any, Literal, Pattern, Union
+from re import Pattern
+from typing import Any, Literal, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -64,7 +65,7 @@ class GridExtension(
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemGridExtension Item id={}>".format(self.item.id)
+        return f"<ItemGridExtension Item id={self.item.id}>"
 
     def apply(self, code: str) -> None:
         """Applies Grid extension properties to the extended Item.

@@ -300,7 +300,7 @@ class DefaultStacIO(StacIO):
                 with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
             except HTTPError as e:
-                raise Exception("Could not read uri {}".format(href)) from e
+                raise Exception(f"Could not read uri {href}") from e
         else:
             with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
@@ -442,6 +442,6 @@ if HAS_URLLIB3:
                     )
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
-                    raise Exception("Could not read uri {}".format(href)) from e
+                    raise Exception(f"Could not read uri {href}") from e
             else:
                 return super().read_text_from_href(href)

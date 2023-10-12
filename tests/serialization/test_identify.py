@@ -30,7 +30,7 @@ class TestIdentify:
         str_info = str(actual)
         assert isinstance(str_info, str)
 
-        msg = "Failed {}:".format(path)
+        msg = f"Failed {path}:"
 
         assert actual.object_type == example.object_type, msg
         version_contained_in_range = actual.version_range.contains(example.stac_version)

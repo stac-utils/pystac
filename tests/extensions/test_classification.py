@@ -2,7 +2,7 @@ import json
 import logging
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 import pytest
 from dateutil.parser import parse
@@ -35,9 +35,9 @@ PLAIN_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 
 
 @pytest.fixture
-def item_dict() -> Dict[str, Any]:
+def item_dict() -> dict[str, Any]:
     with open(LANDSAT_EXAMPLE_URI) as f:
-        return cast(Dict[str, Any], json.load(f))
+        return cast(dict[str, Any], json.load(f))
 
 
 @pytest.fixture
@@ -136,17 +136,17 @@ def test_apply_bitfields(plain_item: Item) -> None:
     plain_item.validate()
     assert (
         ClassificationExtension.ext(plain_item).bitfields is not None
-        and len(cast(List[Bitfield], ClassificationExtension.ext(plain_item).bitfields))
+        and len(cast(list[Bitfield], ClassificationExtension.ext(plain_item).bitfields))
         == 1
     )
     assert (
-        cast(List[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
+        cast(list[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
             0
         ].offset
         == 0
     )
     assert (
-        cast(List[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
+        cast(list[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
             0
         ].length
         == 1
@@ -154,7 +154,7 @@ def test_apply_bitfields(plain_item: Item) -> None:
     assert (
         ClassificationExtension.ext(plain_item).bitfields is not None
         and len(
-            cast(List[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
+            cast(list[Bitfield], ClassificationExtension.ext(plain_item).bitfields)[
                 0
             ].classes
         )
@@ -226,8 +226,8 @@ def test_color_hint_formatting() -> None:
     Classification.create(value=0, description="water", color_hint="0000FF")
 
 
-def test_to_from_dict(item_dict: Dict[str, Any]) -> None:
-    def _parse_times(a_dict: Dict[str, Any]) -> None:
+def test_to_from_dict(item_dict: dict[str, Any]) -> None:
+    def _parse_times(a_dict: dict[str, Any]) -> None:
         for k, v in a_dict.items():
             if isinstance(v, dict):
                 _parse_times(v)
@@ -296,7 +296,7 @@ def test_item_asset_raster_classes(collection: Collection) -> None:
     item_asset = ItemAssetsExtension.ext(collection, add_if_missing=True).item_assets[
         "cloud-mask-raster"
     ]
-    raster_bands = cast(List[RasterBand], RasterExtension.ext(item_asset).bands)
+    raster_bands = cast(list[RasterBand], RasterExtension.ext(item_asset).bands)
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None

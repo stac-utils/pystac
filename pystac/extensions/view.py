@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Generic, Iterable, Literal, TypeVar, Union, cast
+from collections.abc import Iterable
+from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
@@ -200,7 +201,7 @@ class ItemViewExtension(ViewExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemViewExtension Item id={}>".format(self.item.id)
+        return f"<ItemViewExtension Item id={self.item.id}>"
 
 
 class AssetViewExtension(ViewExtension[pystac.Asset]):
@@ -229,7 +230,7 @@ class AssetViewExtension(ViewExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetViewExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetViewExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsViewExtension(ViewExtension[item_assets.AssetDefinition]):

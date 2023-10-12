@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from copy import deepcopy
 from datetime import datetime
 from typing import (
     TYPE_CHECKING,
     Any,
-    Iterable,
-    List,
     Optional,
     TypeVar,
     Union,
@@ -44,9 +43,9 @@ if TYPE_CHECKING:
 
 C = TypeVar("C", bound="Collection")
 
-TemporalIntervals = Union[List[List[datetime]], List[List[Optional[datetime]]]]
+TemporalIntervals = Union[list[list[datetime]], list[list[Optional[datetime]]]]
 TemporalIntervalsLike = Union[
-    TemporalIntervals, List[datetime], List[Optional[datetime]]
+    TemporalIntervals, list[datetime], list[Optional[datetime]]
 ]
 
 
@@ -81,9 +80,9 @@ class SpatialExtent:
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
         if isinstance(bboxes, list) and isinstance(bboxes[0], float):
-            self.bboxes: list[list[float]] = [cast(List[float], bboxes)]
+            self.bboxes: list[list[float]] = [cast(list[float], bboxes)]
         else:
-            self.bboxes = cast(List[List[float]], bboxes)
+            self.bboxes = cast(list[list[float]], bboxes)
 
         self.extra_fields = extra_fields or {}
 
@@ -554,7 +553,7 @@ class Collection(Catalog):
                 self.add_asset(k, asset)
 
     def __repr__(self) -> str:
-        return "<Collection id={}>".format(self.id)
+        return f"<Collection id={self.id}>"
 
     def add_item(
         self,

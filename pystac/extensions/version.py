@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Generator
 from contextlib import contextmanager
 from typing import (
     Any,
-    Generator,
     Generic,
     Literal,
     TypeVar,
@@ -252,7 +252,7 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return "<CollectionVersionExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionVersionExtension Item id={self.collection.id}>"
 
 
 class ItemVersionExtension(VersionExtension[pystac.Item]):
@@ -275,7 +275,7 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
         super().__init__(self.item)
 
     def __repr__(self) -> str:
-        return "<ItemVersionExtension Item id={}>".format(self.item.id)
+        return f"<ItemVersionExtension Item id={self.item.id}>"
 
 
 class VersionExtensionHooks(ExtensionHooks):

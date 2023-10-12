@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import (
     Any,
     Generic,
-    Iterable,
-    List,
     Literal,
     TypeVar,
     Union,
@@ -199,7 +198,7 @@ class SarExtension(
         return get_required(
             map_opt(
                 lambda values: [Polarization(v) for v in values],
-                self._get_property(POLARIZATIONS_PROP, List[str]),
+                self._get_property(POLARIZATIONS_PROP, list[str]),
             ),
             self,
             POLARIZATIONS_PROP,
@@ -368,7 +367,7 @@ class ItemSarExtension(SarExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemSarExtension Item id={}>".format(self.item.id)
+        return f"<ItemSarExtension Item id={self.item.id}>"
 
 
 class AssetSarExtension(SarExtension[pystac.Asset]):
@@ -397,7 +396,7 @@ class AssetSarExtension(SarExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetSarExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetSarExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsSarExtension(SarExtension[item_assets.AssetDefinition]):

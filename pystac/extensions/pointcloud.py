@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
     TypeVar,
     Union,
@@ -105,7 +103,7 @@ class Schema:
     @size.setter
     def size(self, v: int) -> None:
         if not isinstance(v, int):
-            raise pystac.STACError("size must be an int! Invalid input: {}".format(v))
+            raise pystac.STACError(f"size must be an int! Invalid input: {v}")
 
         self.properties["size"] = v
 
@@ -317,7 +315,7 @@ class Statistic:
             self.properties.pop("variance", None)
 
     def __repr__(self) -> str:
-        return "<Statistic statistics={}>".format(str(self.properties))
+        return f"<Statistic statistics={str(self.properties)}>"
 
     def to_dict(self) -> dict[str, Any]:
         """Returns this statistic as a dictionary."""
@@ -414,7 +412,7 @@ class PointcloudExtension(
         dimensions and types for the data.
         """
         result = get_required(
-            self._get_property(SCHEMAS_PROP, List[Dict[str, Any]]), self, SCHEMAS_PROP
+            self._get_property(SCHEMAS_PROP, list[dict[str, Any]]), self, SCHEMAS_PROP
         )
         return [Schema(s) for s in result]
 
@@ -436,7 +434,7 @@ class PointcloudExtension(
         """Gets or sets the list of :class:`Statistic` instances describing
         the pre-channel statistics. Elements in this list map to elements in the
         :attr:`PointcloudExtension.schemas` list."""
-        result = self._get_property(STATISTICS_PROP, List[Dict[str, Any]])
+        result = self._get_property(STATISTICS_PROP, list[dict[str, Any]])
         return map_opt(lambda stats: [Statistic(s) for s in stats], result)
 
     @statistics.setter
@@ -501,7 +499,7 @@ class ItemPointcloudExtension(PointcloudExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemPointcloudExtension Item id={}>".format(self.item.id)
+        return f"<ItemPointcloudExtension Item id={self.item.id}>"
 
 
 class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):

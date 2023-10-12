@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Dict, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
@@ -497,7 +497,7 @@ class DatacubeExtension(
         value is a :class:`~Dimension` object.
         """
         result = get_required(
-            self._get_property(DIMENSIONS_PROP, Dict[str, Any]), self, DIMENSIONS_PROP
+            self._get_property(DIMENSIONS_PROP, dict[str, Any]), self, DIMENSIONS_PROP
         )
         return {k: Dimension.from_dict(v) for k, v in result.items()}
 
@@ -510,7 +510,7 @@ class DatacubeExtension(
         """A dictionary where each key is the name of a variable and each
         value is a :class:`~Variable` object.
         """
-        result = self._get_property(VARIABLES_PROP, Dict[str, Any])
+        result = self._get_property(VARIABLES_PROP, dict[str, Any])
 
         if result is None:
             return None
@@ -574,7 +574,7 @@ class CollectionDatacubeExtension(DatacubeExtension[pystac.Collection]):
         self.properties = collection.extra_fields
 
     def __repr__(self) -> str:
-        return "<CollectionDatacubeExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionDatacubeExtension Item id={self.collection.id}>"
 
 
 class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
@@ -594,7 +594,7 @@ class ItemDatacubeExtension(DatacubeExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemDatacubeExtension Item id={}>".format(self.item.id)
+        return f"<ItemDatacubeExtension Item id={self.item.id}>"
 
 
 class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
@@ -619,7 +619,7 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
             self.additional_read_properties = None
 
     def __repr__(self) -> str:
-        return "<AssetDatacubeExtension Item id={}>".format(self.asset_href)
+        return f"<AssetDatacubeExtension Item id={self.asset_href}>"
 
 
 class ItemAssetsDatacubeExtension(DatacubeExtension[item_assets.AssetDefinition]):

@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, List
+from typing import Any
 
 import pytest
 
@@ -227,7 +227,7 @@ class StaticLinkTest(unittest.TestCase):
         )
 
     def test_from_dict_round_trip(self) -> None:
-        test_cases: List[Dict[str, Any]] = [
+        test_cases: list[dict[str, Any]] = [
             {"rel": "", "href": ""},  # Not valid, but works.
             {"rel": "r", "href": "t"},
             {"rel": "r", "href": "/t"},
@@ -241,7 +241,7 @@ class StaticLinkTest(unittest.TestCase):
         self.assertEqual(pystac.Link.from_dict(d).to_dict(), d2)
 
     def test_from_dict_failures(self) -> None:
-        dicts: List[Dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
+        dicts: list[dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
         for d in dicts:
             with self.assertRaises(KeyError):
                 pystac.Link.from_dict(d)

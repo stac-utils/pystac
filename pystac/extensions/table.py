@@ -234,7 +234,7 @@ class CollectionTableExtension(TableExtension[pystac.Collection]):
         self.properties[TABLES_PROP] = v
 
     def __repr__(self) -> str:
-        return "<CollectionTableExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionTableExtension Item id={self.collection.id}>"
 
 
 class ItemTableExtension(TableExtension[pystac.Item]):
@@ -254,7 +254,7 @@ class ItemTableExtension(TableExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemTableExtension Item id={}>".format(self.item.id)
+        return f"<ItemTableExtension Item id={self.item.id}>"
 
 
 class AssetTableExtension(TableExtension[pystac.Asset]):
@@ -291,7 +291,7 @@ class AssetTableExtension(TableExtension[pystac.Asset]):
             self.properties[STORAGE_OPTIONS_PROP] = v
 
     def __repr__(self) -> str:
-        return "<AssetTableExtension Item id={}>".format(self.asset_href)
+        return f"<AssetTableExtension Item id={self.asset_href}>"
 
 
 class ItemAssetsTableExtension(TableExtension[item_assets.AssetDefinition]):

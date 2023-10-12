@@ -143,7 +143,7 @@ class STACVersionRange:
         return v < self.min_version
 
     def __repr__(self) -> str:
-        return "<VERSIONS {}-{}>".format(self.min_version, self.max_version)
+        return f"<VERSIONS {self.min_version}-{self.max_version}>"
 
 
 class STACJSONDescription:

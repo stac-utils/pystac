@@ -5,10 +5,10 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import (
     Any,
     Generic,
-    Iterable,
     Literal,
     TypeVar,
     Union,
@@ -189,7 +189,7 @@ class ItemStorageExtension(StorageExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemStorageExtension Item id={}>".format(self.item.id)
+        return f"<ItemStorageExtension Item id={self.item.id}>"
 
 
 class AssetStorageExtension(StorageExtension[pystac.Asset]):
@@ -218,7 +218,7 @@ class AssetStorageExtension(StorageExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetStorageExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetStorageExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsStorageExtension(StorageExtension[item_assets.AssetDefinition]):

@@ -1,13 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Collection, Iterable, Iterator
 from copy import deepcopy
 from html import escape
 from typing import (
     Any,
-    Collection,
-    Dict,
-    Iterable,
-    Iterator,
     TypeVar,
     Union,
 )
@@ -18,7 +15,7 @@ from pystac.html.jinja_env import get_jinja_env
 from pystac.serialization.identify import identify_stac_object_type
 from pystac.utils import HREF, is_absolute_href, make_absolute_href, make_posix_style
 
-ItemLike = Union[pystac.Item, Dict[str, Any]]
+ItemLike = Union[pystac.Item, dict[str, Any]]
 
 C = TypeVar("C", bound="ItemCollection")
 

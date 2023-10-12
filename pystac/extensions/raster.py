@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
     TypeVar,
     Union,
@@ -709,7 +707,7 @@ class RasterExtension(
     def _get_bands(self) -> list[RasterBand] | None:
         return map_opt(
             lambda bands: [RasterBand(b) for b in bands],
-            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
+            self._get_property(BANDS_PROP, list[dict[str, Any]]),
         )
 
     @classmethod
@@ -770,7 +768,7 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetRasterExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetRasterExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsRasterExtension(RasterExtension[item_assets.AssetDefinition]):

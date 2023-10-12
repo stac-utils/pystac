@@ -1,4 +1,5 @@
-from typing import Any, Dict, Iterable, List, Optional, Union, cast
+from collections.abc import Iterable
+from typing import Any, Optional, Union, cast
 
 import pystac
 from pystac.cache import CollectionCache
@@ -7,7 +8,7 @@ from pystac.utils import make_absolute_href
 
 
 def merge_common_properties(
-    item_dict: Dict[str, Any],
+    item_dict: dict[str, Any],
     collection_cache: Optional[CollectionCache] = None,
     json_href: Optional[str] = None,
 ) -> bool:
@@ -28,7 +29,7 @@ def merge_common_properties(
     """
     properties_merged = False
 
-    collection: Optional[Union[pystac.Collection, Dict[str, Any]]] = None
+    collection: Optional[Union[pystac.Collection, dict[str, Any]]] = None
     collection_href: Optional[str] = None
 
     stac_version = item_dict.get("stac_version")
@@ -59,9 +60,9 @@ def merge_common_properties(
     if collection is None:
         # Account for 0.5 links, which were dicts
         if isinstance(item_dict["links"], dict):
-            links = list(cast(Iterable[Dict[str, Any]], item_dict["links"].values()))
+            links = list(cast(Iterable[dict[str, Any]], item_dict["links"].values()))
         else:
-            links = cast(List[Dict[str, Any]], item_dict["links"])
+            links = cast(list[dict[str, Any]], item_dict["links"])
 
         collection_link = next(
             (link for link in links if link["rel"] == pystac.RelType.COLLECTION), None
@@ -78,7 +79,7 @@ def merge_common_properties(
                     collection = pystac.StacIO.default().read_json(collection_href)
 
     if collection is not None:
-        collection_props: Optional[Dict[str, Any]] = None
+        collection_props: Optional[dict[str, Any]] = None
         if isinstance(collection, pystac.Collection):
             collection_id = collection.id
             collection_props = collection.extra_fields.get("properties")

@@ -4,14 +4,12 @@ from __future__ import annotations
 
 import re
 import warnings
+from collections.abc import Iterable
+from re import Pattern
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
-    Pattern,
     TypeVar,
     Union,
     cast,
@@ -330,7 +328,7 @@ class Bitfield:
         return [
             Classification(d)
             for d in cast(
-                List[Dict[str, Any]],
+                list[dict[str, Any]],
                 get_required(
                     self.properties.get("classes"),
                     self,
@@ -476,7 +474,7 @@ class ClassificationExtension(
     def _get_classes(self) -> list[Classification] | None:
         return map_opt(
             lambda classes: [Classification(c) for c in classes],
-            self._get_property(CLASSES_PROP, List[Dict[str, Any]]),
+            self._get_property(CLASSES_PROP, list[dict[str, Any]]),
         )
 
     @property
@@ -503,7 +501,7 @@ class ClassificationExtension(
     def _get_bitfields(self) -> list[Bitfield] | None:
         return map_opt(
             lambda bitfields: [Bitfield(b) for b in bitfields],
-            self._get_property(BITFIELDS_PROP, List[Dict[str, Any]]),
+            self._get_property(BITFIELDS_PROP, list[dict[str, Any]]),
         )
 
     @classmethod

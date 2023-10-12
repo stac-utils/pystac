@@ -2,7 +2,7 @@
 
 import unittest
 from datetime import datetime
-from typing import Any, Dict, Generic, Optional, Set, TypeVar, Union, cast
+from typing import Any, Generic, Optional, TypeVar, Union, cast
 
 import pytest
 
@@ -100,18 +100,18 @@ class AssetCustomExtension(CustomExtension[pystac.Asset]):
 
 class CustomExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = {
+    prev_extension_ids: set[str] = {
         "custom",
         "https://example.com/v1.0/custom-schema.json",
     }
-    stac_object_types: Set[pystac.STACObjectType] = {
+    stac_object_types: set[pystac.STACObjectType] = {
         pystac.STACObjectType.CATALOG,
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.ITEM,
     }
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         if version < "1.0.0-rc2" and info.object_type == pystac.STACObjectType.ITEM:
             if "test:old-prop-name" in obj["properties"]:

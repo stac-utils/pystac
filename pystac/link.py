@@ -266,7 +266,7 @@ class Link(PathLike):
         return self.absolute_href
 
     def __repr__(self) -> str:
-        return "<Link rel={} target={}>".format(self.rel, self.target)
+        return f"<Link rel={self.rel} target={self.target}>"
 
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()

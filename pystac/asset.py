@@ -179,7 +179,7 @@ class Asset:
         return common_metadata.CommonMetadata(self)
 
     def __repr__(self) -> str:
-        return "<Asset href={}>".format(self.href)
+        return f"<Asset href={self.href}>"
 
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()

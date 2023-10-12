@@ -170,7 +170,7 @@ class Item(STACObject):
                 self.add_asset(k, asset)
 
     def __repr__(self) -> str:
-        return "<Item id={}>".format(self.id)
+        return f"<Item id={self.id}>"
 
     def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``

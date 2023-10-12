@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Optional
 
 import pystac
 from pystac.serialization import STACVersionRange
@@ -43,10 +43,10 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # for a particular version uses the base URI associated with the version range which
     # contains it. If the version it outside of any VersionRange, there is no URI for
     # the schema.
-    BASE_URIS: List[Tuple[STACVersionRange, Callable[[str], str]]] = [
+    BASE_URIS: list[tuple[STACVersionRange, Callable[[str], str]]] = [
         (
             STACVersionRange(min_version="1.0.0-beta.2"),
-            lambda version: "https://schemas.stacspec.org/v{}".format(version),
+            lambda version: f"https://schemas.stacspec.org/v{version}",
         ),
         (
             STACVersionRange(min_version="0.8.0", max_version="1.0.0-beta.1"),
@@ -64,7 +64,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
     # is the latest version. If it's a previous version, the stac_version that matches
     # the listed version range is used, or else the URI from the latest version is used
     # if there are no overrides for previous versions.
-    DEFAULT_SCHEMA_MAP: Dict[str, Any] = {
+    DEFAULT_SCHEMA_MAP: dict[str, Any] = {
         STACObjectType.CATALOG: ("catalog-spec/json-schema/catalog.json", None),
         STACObjectType.COLLECTION: (
             "collection-spec/json-schema/collection.json",
@@ -80,7 +80,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
             for version_range, f in cls.BASE_URIS:
                 if version_range.contains(stac_version):
                     base_uri = f(stac_version)
-                    return "{}/{}".format(base_uri, uri)
+                    return f"{base_uri}/{uri}"
 
             # We don't have JSON schema validation for this version of PySTAC
             return None
@@ -93,7 +93,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
         is_latest = stac_version == pystac.get_stac_version()
 
         if object_type not in self.DEFAULT_SCHEMA_MAP:
-            raise KeyError("Unknown STAC object type {}".format(object_type))
+            raise KeyError(f"Unknown STAC object type {object_type}")
         uri = self.DEFAULT_SCHEMA_MAP[object_type][0]
         if not is_latest:
             if self.DEFAULT_SCHEMA_MAP[object_type][1]:
@@ -118,10 +118,10 @@ class OldExtensionSchemaUriMap:
     # contains it. If the version it outside of any VersionRange, there is no URI for
     # the schema.
     @classmethod
-    @lru_cache()
+    @lru_cache
     def get_base_uris(
         cls,
-    ) -> List[Tuple[STACVersionRange, Callable[[STACVersionID], str]]]:
+    ) -> list[tuple[STACVersionRange, Callable[[STACVersionID], str]]]:
         return [
             (
                 STACVersionRange(min_version="1.0.0-beta.2"),
@@ -144,8 +144,8 @@ class OldExtensionSchemaUriMap:
     # that matches the listed version range is used, or else the URI from the latest
     # version is used if there are no overrides for previous versions.
     @classmethod
-    @lru_cache()
-    def get_schema_map(cls) -> Dict[str, Any]:
+    @lru_cache
+    def get_schema_map(cls) -> dict[str, Any]:
         return {
             OldExtensionShortIDs.CHECKSUM.value: (
                 {
@@ -316,7 +316,7 @@ class OldExtensionSchemaUriMap:
             for version_range, f in cls.get_base_uris():
                 if version_range.contains(stac_version):
                     base_uri = f(stac_version)
-                    return "{}/{}".format(base_uri, uri)
+                    return f"{base_uri}/{uri}"
 
             # No JSON Schema for the old extension
             return None

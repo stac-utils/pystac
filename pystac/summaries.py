@@ -4,6 +4,7 @@ import importlib.resources
 import json
 import numbers
 from abc import abstractmethod
+from collections.abc import Iterable
 from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
@@ -11,7 +12,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Generic,
-    Iterable,
     Protocol,
     TypeVar,
     Union,

@@ -85,7 +85,7 @@ class CollectionXarrayAssetsExtension(XarrayAssetsExtension[pystac.Collection]):
         self.properties = collection.extra_fields
 
     def __repr__(self) -> str:
-        return "<CollectionXarrayAssetsExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionXarrayAssetsExtension Item id={self.collection.id}>"
 
 
 class ItemXarrayAssetsExtension(XarrayAssetsExtension[pystac.Item]):
@@ -105,7 +105,7 @@ class ItemXarrayAssetsExtension(XarrayAssetsExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemXarrayAssetsExtension Item id={}>".format(self.item.id)
+        return f"<ItemXarrayAssetsExtension Item id={self.item.id}>"
 
 
 class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
@@ -152,7 +152,7 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
             self.properties[OPEN_KWARGS_PROP] = v
 
     def __repr__(self) -> str:
-        return "<AssetXarrayAssetsExtension Asset href={}>".format(self.asset.href)
+        return f"<AssetXarrayAssetsExtension Asset href={self.asset.href}>"
 
 
 class XarrayAssetsExtensionHooks(ExtensionHooks):

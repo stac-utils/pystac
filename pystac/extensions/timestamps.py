@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Generic, Iterable, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -167,7 +168,7 @@ class ItemTimestampsExtension(TimestampsExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemTimestampsExtension Item id={}>".format(self.item.id)
+        return f"<ItemTimestampsExtension Item id={self.item.id}>"
 
 
 class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
@@ -196,7 +197,7 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetTimestampsExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetTimestampsExtension Asset href={self.asset_href}>"
 
 
 class SummariesTimestampsExtension(SummariesExtension):

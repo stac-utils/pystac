@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 
 class TemplateError(Exception):
@@ -26,7 +26,7 @@ class STACTypeError(Exception):
 
     def __init__(
         self,
-        bad_dict: Dict[str, Any],
+        bad_dict: dict[str, Any],
         expected: type,
         extra_message: Optional[str] = "",
     ):

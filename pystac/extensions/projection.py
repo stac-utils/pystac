@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import json
 import warnings
+from collections.abc import Iterable
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
     TypeVar,
     Union,
@@ -158,7 +156,7 @@ class ProjectionExtension(
         The schema for this object can be found
         `here <https://proj.org/schemas/v0.2/projjson.schema.json>`_.
         """
-        return self._get_property(PROJJSON_PROP, Dict[str, Any])
+        return self._get_property(PROJJSON_PROP, dict[str, Any])
 
     @projjson.setter
     def projjson(self, v: dict[str, Any] | None) -> None:
@@ -196,7 +194,7 @@ class ProjectionExtension(
         Ideally, this will be represented by a Polygon with five coordinates, as the
         item in the asset data CRS should be a square aligned to the original CRS grid.
         """
-        return self._get_property(GEOM_PROP, Dict[str, Any])
+        return self._get_property(GEOM_PROP, dict[str, Any])
 
     @geometry.setter
     def geometry(self, v: dict[str, Any] | None) -> None:
@@ -215,7 +213,7 @@ class ProjectionExtension(
         highest]``. The length of the array must be 2*n where n is the number of
         dimensions.
         """
-        return self._get_property(BBOX_PROP, List[float])
+        return self._get_property(BBOX_PROP, list[float])
 
     @bbox.setter
     def bbox(self, v: list[float] | None) -> None:
@@ -233,7 +231,7 @@ class ProjectionExtension(
 
             item.ext.proj.centroid = { 'lat': 0.0, 'lon': 0.0 }
         """
-        return self._get_property(CENTROID_PROP, Dict[str, float])
+        return self._get_property(CENTROID_PROP, dict[str, float])
 
     @centroid.setter
     def centroid(self, v: dict[str, float] | None) -> None:
@@ -248,7 +246,7 @@ class ProjectionExtension(
         be specified in Y, X order. If the shape is defined in an item's properties it
         is used as the default shape for all assets that don't have an overriding shape.
         """
-        return self._get_property(SHAPE_PROP, List[int])
+        return self._get_property(SHAPE_PROP, list[int])
 
     @shape.setter
     def shape(self, v: list[int] | None) -> None:
@@ -267,7 +265,7 @@ class ProjectionExtension(
         or the Rasterio `Transform <https://rasterio.readthedocs.io/en/stable/api\
 /rasterio.io.html#rasterio.io.BufferedDatasetWriter.transform>`_.
         """
-        return self._get_property(TRANSFORM_PROP, List[float])
+        return self._get_property(TRANSFORM_PROP, list[float])
 
     @transform.setter
     def transform(self, v: list[float] | None) -> None:
@@ -338,7 +336,7 @@ class ItemProjectionExtension(ProjectionExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemProjectionExtension Item id={}>".format(self.item.id)
+        return f"<ItemProjectionExtension Item id={self.item.id}>"
 
 
 class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
@@ -367,7 +365,7 @@ class AssetProjectionExtension(ProjectionExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetProjectionExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetProjectionExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsProjectionExtension(ProjectionExtension[item_assets.AssetDefinition]):

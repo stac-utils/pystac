@@ -6,10 +6,11 @@ import posixpath
 import tempfile
 import unittest
 from collections import defaultdict
+from collections.abc import Iterator
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterator, cast
+from typing import Any, cast
 
 import pytest
 
@@ -83,7 +84,7 @@ class TestCatalog:
                 cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED
             )
 
-            read_catalog = Catalog.from_file("{}/catalog.json".format(cat_dir))
+            read_catalog = Catalog.from_file(f"{cat_dir}/catalog.json")
 
             collections = catalog.get_children()
             assert len(list(collections)) == 2
@@ -707,7 +708,7 @@ class TestCatalog:
             for child in cat2.get_children():
                 actual = len(list(child.get_items(recursive=True)))
                 expected = item_counts[child.id]
-                assert actual == expected, " for child '{}'".format(child.id)
+                assert actual == expected, f" for child '{child.id}'"
 
     def test_generate_subcatalogs_merge_template_elements(self) -> None:
         catalog = Catalog(id="test", description="Test")
@@ -717,7 +718,7 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
@@ -748,7 +749,7 @@ class TestCatalog:
         for item in catalog.get_items(recursive=True):
             assert (
                 item.get_self_href() == expected_hrefs[item.id]
-            ), " for item '{}'".format(item.id)
+            ), f" for item '{item.id}'"
 
     def test_generate_subcatalogs_works_after_adding_more_items(self) -> None:
         catalog = Catalog(id="test", description="Test")
@@ -794,7 +795,7 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
@@ -819,7 +820,7 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
                     datetime=datetime.utcnow(),
@@ -837,7 +838,7 @@ class TestCatalog:
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
             subcats = [el for el in path_to_parent.split("/") if el]
-            assert len(subcats) == 2, " for item '{}'".format(item.id)
+            assert len(subcats) == 2, f" for item '{item.id}'"
 
     def test_map_items(self) -> None:
         def item_mapper(item: pystac.Item) -> pystac.Item:
@@ -931,7 +932,7 @@ class TestCatalog:
             # Assumes the GEOJSON labels are in the
             # same location as the image
             img_href = item.assets["ortho"].href
-            label_href = "{}.geojson".format(os.path.splitext(img_href)[0])
+            label_href = f"{os.path.splitext(img_href)[0]}.geojson"
             label_item = Item(
                 id="Labels",
                 geometry=item.geometry,
@@ -1000,7 +1001,7 @@ class TestCatalog:
             if asset.media_type and "geotiff" in asset.media_type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
-                return ("{}-modified".format(key), asset)
+                return (f"{key}-modified", asset)
             else:
                 return asset
 
@@ -1040,7 +1041,7 @@ class TestCatalog:
                 mod1.title = "NEW TITLE 1"
                 mod2 = asset.clone()
                 mod2.title = "NEW TITLE 2"
-                return {"{}-mod-1".format(key): mod1, "{}-mod-2".format(key): mod2}
+                return {f"{key}-mod-1": mod1, f"{key}-mod-2": mod2}
             else:
                 return asset
 
@@ -1275,8 +1276,8 @@ class TestCatalog:
                 for item in items:
                     assert item.datetime is not None
                     end = posixpath.join(
-                        "{}-{}".format(item.datetime.year, item.datetime.month),
-                        "{}.json".format(item.id),
+                        f"{item.datetime.year}-{item.datetime.month}",
+                        f"{item.id}.json",
                     )
                     self_href = item.get_self_href()
                     assert self_href is not None
@@ -1495,7 +1496,7 @@ class FullCopyTest(unittest.TestCase):
             for key in ["ortho", "dsm"]:
                 image_item.add_asset(
                     key,
-                    Asset(href="some/{}.tif".format(key), media_type=MediaType.GEOTIFF),
+                    Asset(href=f"some/{key}.tif", media_type=MediaType.GEOTIFF),
                 )
 
             label_item = Item(

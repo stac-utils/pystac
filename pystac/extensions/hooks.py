@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -34,7 +35,7 @@ class ExtensionHooks(ABC):
         """A set of STACObjectType for which migration logic will be applied."""
         raise NotImplementedError
 
-    @lru_cache()
+    @lru_cache
     def _get_stac_object_types(self) -> set[str]:
         """Translation of stac_object_types to strings, cached"""
         return {x.value for x in self.stac_object_types}
@@ -73,7 +74,7 @@ class RegisteredExtensionHooks:
         e_id = hooks.schema_uri
         if e_id in self.hooks:
             raise pystac.ExtensionAlreadyExistsError(
-                "ExtensionDefinition with id '{}' already exists.".format(e_id)
+                f"ExtensionDefinition with id '{e_id}' already exists."
             )
 
         self.hooks[e_id] = hooks

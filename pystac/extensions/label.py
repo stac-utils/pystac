@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Iterable, Literal, Sequence, Union, cast
+from collections.abc import Iterable, Sequence
+from typing import Any, Literal, Union, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
@@ -364,9 +365,7 @@ class LabelOverview:
             self.properties.pop("counts", None)
         else:
             if not isinstance(v, list):
-                raise pystac.STACError(
-                    "counts must be a list! Invalid input: {}".format(v)
-                )
+                raise pystac.STACError(f"counts must be a list! Invalid input: {v}")
 
             self.properties["counts"] = [c.to_dict() for c in v]
 
@@ -550,7 +549,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
         else:
             if not isinstance(v, list):
                 raise pystac.STACError(
-                    "label_classes must be a list! Invalid input: {}".format(v)
+                    f"label_classes must be a list! Invalid input: {v}"
                 )
 
             classes = [x.to_dict() for x in v]
@@ -603,7 +602,7 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
             self.obj.properties[OVERVIEWS_PROP] = [x.to_dict() for x in v]
 
     def __repr__(self) -> str:
-        return "<LabelItemExt Item id={}>".format(self.obj.id)
+        return f"<LabelItemExt Item id={self.obj.id}>"
 
     def add_source(
         self,

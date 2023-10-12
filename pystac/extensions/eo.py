@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
     TypeVar,
     Union,
@@ -227,7 +225,7 @@ class Band:
             self.properties.pop("solar_illumination", None)
 
     def __repr__(self) -> str:
-        return "<Band name={}>".format(self.name)
+        return f"<Band name={self.name}>"
 
     def to_dict(self) -> dict[str, Any]:
         """Returns this band as a dictionary.
@@ -284,7 +282,7 @@ class Band:
         """
         r = Band.band_range(common_name)
         if r is not None:
-            return "Common name: {}, Range: {} to {}".format(common_name, r[0], r[1])
+            return f"Common name: {common_name}, Range: {r[0]} to {r[1]}"
         return None
 
 
@@ -350,7 +348,7 @@ class EOExtension(
     def _get_bands(self) -> list[Band] | None:
         return map_opt(
             lambda bands: [Band(b) for b in bands],
-            self._get_property(BANDS_PROP, List[Dict[str, Any]]),
+            self._get_property(BANDS_PROP, list[dict[str, Any]]),
         )
 
     @property
@@ -449,7 +447,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         """Get or sets a list of :class:`~pystac.Band` objects that represent
         the available bands.
         """
-        bands = self._get_property(BANDS_PROP, List[Dict[str, Any]])
+        bands = self._get_property(BANDS_PROP, list[dict[str, Any]])
 
         # get assets with eo:bands even if not in item
         if bands is None:
@@ -457,7 +455,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
             for _, value in self.item.get_assets().items():
                 if BANDS_PROP in value.extra_fields:
                     asset_bands.extend(
-                        cast(List[Dict[str, Any]], value.extra_fields.get(BANDS_PROP))
+                        cast(list[dict[str, Any]], value.extra_fields.get(BANDS_PROP))
                     )
             if any(asset_bands):
                 bands = asset_bands
@@ -496,7 +494,7 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         }
 
     def __repr__(self) -> str:
-        return "<ItemEOExtension Item id={}>".format(self.item.id)
+        return f"<ItemEOExtension Item id={self.item.id}>"
 
 
 class AssetEOExtension(EOExtension[pystac.Asset]):
@@ -524,7 +522,7 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
         return list(
             map(
                 lambda band: Band(band),
-                cast(List[Dict[str, Any]], self.properties.get(BANDS_PROP)),
+                cast(list[dict[str, Any]], self.properties.get(BANDS_PROP)),
             )
         )
 
@@ -535,7 +533,7 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetEOExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetEOExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
@@ -548,7 +546,7 @@ class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
         return list(
             map(
                 lambda band: Band(band),
-                cast(List[Dict[str, Any]], self.properties.get(BANDS_PROP)),
+                cast(list[dict[str, Any]], self.properties.get(BANDS_PROP)),
             )
         )
 
@@ -647,16 +645,16 @@ class EOExtensionHooks(ExtensionHooks):
             ]
 
             for field in eo_to_view_fields:
-                if "eo:{}".format(field) in obj["properties"]:
+                if f"eo:{field}" in obj["properties"]:
                     if "stac_extensions" not in obj:
                         obj["stac_extensions"] = []
                     if view.SCHEMA_URI not in obj["stac_extensions"]:
                         obj["stac_extensions"].append(view.SCHEMA_URI)
-                    if "view:{}".format(field) not in obj["properties"]:
-                        obj["properties"]["view:{}".format(field)] = obj["properties"][
-                            "eo:{}".format(field)
+                    if f"view:{field}" not in obj["properties"]:
+                        obj["properties"][f"view:{field}"] = obj["properties"][
+                            f"eo:{field}"
                         ]
-                        del obj["properties"]["eo:{}".format(field)]
+                        del obj["properties"][f"eo:{field}"]
 
             # eo:epsg became proj:epsg
             eo_epsg = PREFIX + "epsg"

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import (
     Any,
     Generic,
-    Iterable,
     Literal,
     TypeVar,
     Union,
@@ -199,7 +199,7 @@ class ItemSatExtension(SatExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemSatExtension Item id={}>".format(self.item.id)
+        return f"<ItemSatExtension Item id={self.item.id}>"
 
 
 class AssetSatExtension(SatExtension[pystac.Asset]):
@@ -229,7 +229,7 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetSatExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetSatExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsSatExtension(SatExtension[item_assets.AssetDefinition]):

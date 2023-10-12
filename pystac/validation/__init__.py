@@ -233,7 +233,7 @@ class RegisteredValidator:
     @classmethod
     def set_validator(cls, validator: STACValidator) -> None:
         if not issubclass(type(validator), STACValidator):
-            raise Exception("Validator must be a subclass of {}".format(STACValidator))
+            raise Exception(f"Validator must be a subclass of {STACValidator}")
         cls._validator = validator
 
 

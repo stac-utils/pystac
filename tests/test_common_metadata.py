@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
 from tests.utils import TestCases
@@ -18,7 +18,7 @@ class CommonMetadataTest(unittest.TestCase):
         )
         self.ITEM_2 = Item.from_file(self.URI_2)
 
-        self.EXAMPLE_CM_DICT: Dict[str, Any] = {
+        self.EXAMPLE_CM_DICT: dict[str, Any] = {
             "start_datetime": "2020-05-21T16:42:24.896Z",
             "platform": "example platform",
             "providers": [
@@ -106,7 +106,7 @@ class CommonMetadataTest(unittest.TestCase):
     def test_common_metadata_providers(self) -> None:
         x = self.ITEM_2.clone()
 
-        providers_dict_list: List[Dict[str, Any]] = [
+        providers_dict_list: list[dict[str, Any]] = [
             {
                 "name": "CoolSat",
                 "roles": ["producer", "licensor"],
@@ -115,7 +115,7 @@ class CommonMetadataTest(unittest.TestCase):
         ]
         providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
 
-        example_providers_dict_list: List[Dict[str, Any]] = [
+        example_providers_dict_list: list[dict[str, Any]] = [
             {
                 "name": "ExampleProvider_1",
                 "roles": ["example_role_1", "example_role_2"],

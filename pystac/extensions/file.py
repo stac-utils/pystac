@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Literal, Union
+from collections.abc import Iterable
+from typing import Any, Literal, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -124,7 +125,7 @@ class FileExtension(
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetFileExtension Asset href={self.asset_href}>"
 
     def apply(
         self,
@@ -202,7 +203,7 @@ class FileExtension(
             lambda values: [
                 MappingObject.from_dict(mapping_obj) for mapping_obj in values
             ],
-            self._get_property(VALUES_PROP, List[Dict[str, Any]]),
+            self._get_property(VALUES_PROP, list[dict[str, Any]]),
         )
 
     @values.setter

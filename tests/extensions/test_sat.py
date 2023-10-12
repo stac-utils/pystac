@@ -2,7 +2,7 @@
 
 import unittest
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -138,7 +138,7 @@ class SatTest(unittest.TestCase):
     def test_from_dict(self) -> None:
         orbit_state = sat.OrbitState.GEOSTATIONARY
         relative_orbit = 1001
-        d: Dict[str, Any] = {
+        d: dict[str, Any] = {
             "type": "Feature",
             "stac_version": "1.0.0-beta.2",
             "id": "an/asset",

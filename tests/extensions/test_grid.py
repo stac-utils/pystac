@@ -4,7 +4,7 @@
 
 import unittest
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -65,7 +65,7 @@ class GridTest(unittest.TestCase):
         self.item.validate()
 
     def test_from_dict(self) -> None:
-        d: Dict[str, Any] = {
+        d: dict[str, Any] = {
             "type": "Feature",
             "stac_version": "1.0.0",
             "id": "an/asset",

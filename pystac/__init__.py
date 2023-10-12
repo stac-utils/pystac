@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pystac.errors import (
     TemplateError,
@@ -197,7 +197,7 @@ def write_file(
 
 
 def read_dict(
-    d: Dict[str, Any],
+    d: dict[str, Any],
     href: Optional[str] = None,
     root: Optional[Catalog] = None,
     stac_io: Optional[StacIO] = None,

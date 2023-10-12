@@ -14,7 +14,7 @@
 import os
 import subprocess
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -151,7 +151,7 @@ html_static_path = ["_static"]
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars: Dict[str, List[str]] = {"index": []}
+html_sidebars: dict[str, list[str]] = {"index": []}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -162,7 +162,7 @@ htmlhelp_basename = "pystacdoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements: Dict[str, Any] = {
+latex_elements: dict[str, Any] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',

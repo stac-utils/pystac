@@ -7,8 +7,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    List,
     Optional,
     TypeVar,
     Union,
@@ -59,10 +57,10 @@ def safe_urlparse(href: str) -> URLParseResult:
     """
     parsed = urlparse(href)
     if parsed.scheme != "" and (
-        href.lower().startswith("{}:\\".format(parsed.scheme))
+        href.lower().startswith(f"{parsed.scheme}:\\")
         or (
-            href.lower().startswith("{}:/".format(parsed.scheme))
-            and not href.lower().startswith("{}://".format(parsed.scheme))
+            href.lower().startswith(f"{parsed.scheme}:/")
+            and not href.lower().startswith(f"{parsed.scheme}://")
         )
     ):
         return URLParseResult(
@@ -396,7 +394,7 @@ def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
     timestamp = dt.isoformat(timespec=timespec)
     zulu = "+00:00"
     if timestamp.endswith(zulu):
-        timestamp = "{}Z".format(timestamp[: -len(zulu)])
+        timestamp = f"{timestamp[: -len(zulu)]}Z"
 
     return timestamp
 
@@ -426,7 +424,7 @@ def now_to_rfc3339_str() -> str:
     return datetime_to_str(now_in_utc())
 
 
-def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
+def geometry_to_bbox(geometry: dict[str, Any]) -> list[float]:
     """Extract the bounding box from a geojson geometry
 
     Args:
@@ -438,10 +436,10 @@ def geometry_to_bbox(geometry: Dict[str, Any]) -> List[float]:
     """
     coords = geometry["coordinates"]
 
-    lats: List[float] = []
-    lons: List[float] = []
+    lats: list[float] = []
+    lons: list[float] = []
 
-    def extract_coords(coords: List[Union[List[float], List[List[Any]]]]) -> None:
+    def extract_coords(coords: list[Union[list[float], list[list[Any]]]]) -> None:
         for x in coords:
             # This handles points
             if isinstance(x, float):

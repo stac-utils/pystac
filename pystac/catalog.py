@@ -2,14 +2,13 @@ from __future__ import annotations
 
 import os
 import warnings
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Iterable,
-    Iterator,
     TypeVar,
     Union,
     cast,
@@ -199,7 +198,7 @@ class Catalog(STACObject):
         self._resolved_objects.cache(self)
 
     def __repr__(self) -> str:
-        return "<Catalog id={}>".format(self.id)
+        return f"<Catalog id={self.id}>"
 
     def set_root(self, root: Catalog | None) -> None:
         STACObject.set_root(self, root)
@@ -857,9 +856,7 @@ class Catalog(STACObject):
             item = cast(pystac.Item, link.target)
             subcat_ids = layout_template.substitute(item).split("/")
             id_iter = reversed(parent_ids)
-            if all(
-                ["{}".format(id) == next(id_iter, None) for id in reversed(subcat_ids)]
-            ):
+            if all([f"{id}" == next(id_iter, None) for id in reversed(subcat_ids)]):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
                 # elements on the root side, so compare the reversed sequences.
@@ -1168,14 +1165,14 @@ class Catalog(STACObject):
         """
         s = "{}* {}".format(" " * _indent, self)
         if include_hrefs:
-            s += " {}".format(self.get_self_href())
+            s += f" {self.get_self_href()}"
         print(s)
         for child in self.get_children():
             child.describe(include_hrefs=include_hrefs, _indent=_indent + 4)
         for item in self.get_items():
             s = "{}* {}".format(" " * (_indent + 2), item)
             if include_hrefs:
-                s += " {}".format(item.get_self_href())
+                s += f" {item.get_self_href()}"
             print(s)
 
     @classmethod

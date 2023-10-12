@@ -1,6 +1,6 @@
 import json
 import unittest
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -176,7 +176,7 @@ class PointcloudTest(unittest.TestCase):
         pc_item.validate()
 
     def test_pointcloud_schema(self) -> None:
-        props: Dict[str, Any] = {
+        props: dict[str, Any] = {
             "name": "test",
             "size": 8,
             "type": "floating",
@@ -208,7 +208,7 @@ class PointcloudTest(unittest.TestCase):
                     getattr(empty_schema, required_prop)
 
     def test_pointcloud_statistics(self) -> None:
-        props: Dict[str, Any] = {
+        props: dict[str, Any] = {
             "average": 1,
             "count": 1,
             "maximum": 1,

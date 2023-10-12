@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, Generic, List, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, Union, cast
 from urllib import parse
 
 import pystac
@@ -183,7 +183,7 @@ class ScientificExtension(
         data."""
         return map_opt(
             lambda pubs: [Publication.from_dict(pub) for pub in pubs],
-            self._get_property(PUBLICATIONS_PROP, List[Dict[str, Any]]),
+            self._get_property(PUBLICATIONS_PROP, list[dict[str, Any]]),
         )
 
     @publications.setter
@@ -316,7 +316,7 @@ class ItemScientificExtension(ScientificExtension[pystac.Item]):
         super().__init__(self.item)
 
     def __repr__(self) -> str:
-        return "<ItemScientificExtension Item id={}>".format(self.item.id)
+        return f"<ItemScientificExtension Item id={self.item.id}>"
 
 
 class SummariesScientificExtension(SummariesExtension):

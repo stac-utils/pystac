@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict
+from typing import Any
 
 import pystac
 from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
@@ -9,13 +9,9 @@ from tests.utils import TestCases
 
 def create_catalog(suffix: Any, include_href: bool = True) -> pystac.Catalog:
     return pystac.Catalog(
-        id="test {}".format(suffix),
-        description="test desc {}".format(suffix),
-        href=(
-            "http://example.com/catalog_{}.json".format(suffix)
-            if include_href
-            else None
-        ),
+        id=f"test {suffix}",
+        description=f"test desc {suffix}",
+        href=(f"http://example.com/catalog_{suffix}.json" if include_href else None),
     )
 
 
@@ -51,10 +47,10 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         identical_cat1 = create_catalog(1, include_href=False)
         identical_cat2 = create_catalog(2)
 
-        cached_ids_1: Dict[str, Any] = {cat1.id: cat1}
-        cached_hrefs_1: Dict[str, Any] = {get_opt(cat2.get_self_href()): cat2}
-        cached_ids_2: Dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
-        cached_hrefs_2: Dict[str, Any] = {
+        cached_ids_1: dict[str, Any] = {cat1.id: cat1}
+        cached_hrefs_1: dict[str, Any] = {get_opt(cat2.get_self_href()): cat2}
+        cached_ids_2: dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
+        cached_hrefs_2: dict[str, Any] = {
             get_opt(cat4.get_self_href()): cat4,
             get_opt(cat2.get_self_href()): identical_cat2,
         }

@@ -1,5 +1,5 @@
 import tempfile
-from typing import Any, List
+from typing import Any
 
 import pytest
 
@@ -34,7 +34,7 @@ class TestSTACWriting:
 
         return validated_count
 
-    def validate_file(self, path: str, object_type: str) -> List[Any]:
+    def validate_file(self, path: str, object_type: str) -> list[Any]:
         d = pystac.StacIO.default().read_json(path)
         return validate_dict(d, pystac.STACObjectType(object_type))
 
