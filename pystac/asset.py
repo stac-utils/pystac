@@ -264,6 +264,12 @@ class Asset:
 
     @property
     def ext(self) -> AssetExt:
+        """Accessor for extension classes on this asset
+
+        Example::
+
+            asset.ext.proj.epsg = 4326
+        """
         from pystac.extensions.ext import AssetExt
 
         return AssetExt(stac_object=self)

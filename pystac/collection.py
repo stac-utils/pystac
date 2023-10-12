@@ -834,6 +834,12 @@ class Collection(Catalog):
 
     @property
     def ext(self) -> CollectionExt:
+        """Accessor for extension classes on this collection
+
+        Example::
+
+            print(collection.ext.xarray)
+        """
         from pystac.extensions.ext import CollectionExt
 
         return CollectionExt(stac_object=self)

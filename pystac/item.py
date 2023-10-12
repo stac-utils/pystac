@@ -580,6 +580,12 @@ class Item(STACObject):
 
     @property
     def ext(self) -> ItemExt:
+        """Accessor for extension classes on this item
+
+        Example::
+
+            item.ext.proj.epsg = 4326
+        """
         from pystac.extensions.ext import ItemExt
 
         return ItemExt(stac_object=self)
