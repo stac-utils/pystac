@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
 
 import pystac
 from pystac import utils
@@ -25,13 +25,13 @@ class CommonMetadata:
         properties : Dictionary of attributes that is the Item's properties
     """
 
-    object: Union[Asset, Item]
+    object: Asset | Item
     """The object from which common metadata is obtained."""
 
-    def __init__(self, object: Union[Asset, Item]):
+    def __init__(self, object: Asset | Item):
         self.object = object
 
-    def _set_field(self, prop_name: str, v: Optional[Any]) -> None:
+    def _set_field(self, prop_name: str, v: Any | None) -> None:
         if hasattr(self.object, prop_name):
             setattr(self.object, prop_name, v)
         elif hasattr(self.object, "properties"):
@@ -41,7 +41,7 @@ class CommonMetadata:
             else:
                 item.properties[prop_name] = v
         elif hasattr(self.object, "extra_fields") and isinstance(
-            self.object.extra_fields, Dict
+            self.object.extra_fields, dict
         ):
             if v is None:
                 self.object.extra_fields.pop(prop_name, None)
@@ -50,14 +50,14 @@ class CommonMetadata:
         else:
             raise pystac.STACError(f"Cannot set field {prop_name} on {self}.")
 
-    def _get_field(self, prop_name: str, _typ: Type[P]) -> Optional[P]:
+    def _get_field(self, prop_name: str, _typ: type[P]) -> P | None:
         if hasattr(self.object, prop_name):
             return cast(Optional[P], getattr(self.object, prop_name))
         elif hasattr(self.object, "properties"):
             item = cast(pystac.Item, self.object)
             return item.properties.get(prop_name)
         elif hasattr(self.object, "extra_fields") and isinstance(
-            self.object.extra_fields, Dict
+            self.object.extra_fields, dict
         ):
             return self.object.extra_fields.get(prop_name)
         else:
@@ -65,67 +65,67 @@ class CommonMetadata:
 
     # Basics
     @property
-    def title(self) -> Optional[str]:
+    def title(self) -> str | None:
         """Gets or set the object's title."""
         return self._get_field("title", str)
 
     @title.setter
-    def title(self, v: Optional[str]) -> None:
+    def title(self, v: str | None) -> None:
         self._set_field("title", v)
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Gets or set the object's description."""
         return self._get_field("description", str)
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         self._set_field("description", v)
 
     # Date and Time Range
     @property
-    def start_datetime(self) -> Optional[datetime]:
+    def start_datetime(self) -> datetime | None:
         """Get or set the object's start_datetime."""
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("start_datetime", str)
         )
 
     @start_datetime.setter
-    def start_datetime(self, v: Optional[datetime]) -> None:
+    def start_datetime(self, v: datetime | None) -> None:
         self._set_field("start_datetime", utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def end_datetime(self) -> Optional[datetime]:
+    def end_datetime(self) -> datetime | None:
         """Get or set the item's end_datetime."""
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("end_datetime", str)
         )
 
     @end_datetime.setter
-    def end_datetime(self, v: Optional[datetime]) -> None:
+    def end_datetime(self, v: datetime | None) -> None:
         self._set_field("end_datetime", utils.map_opt(utils.datetime_to_str, v))
 
     # License
     @property
-    def license(self) -> Optional[str]:
+    def license(self) -> str | None:
         """Get or set the current license."""
         return self._get_field("license", str)
 
     @license.setter
-    def license(self, v: Optional[str]) -> None:
+    def license(self, v: str | None) -> None:
         self._set_field("license", v)
 
     # Providers
     @property
-    def providers(self) -> Optional[List[Provider]]:
+    def providers(self) -> list[Provider] | None:
         """Get or set a list of the object's providers."""
         return utils.map_opt(
             lambda providers: [pystac.Provider.from_dict(d) for d in providers],
-            self._get_field("providers", List[Dict[str, Any]]),
+            self._get_field("providers", list[dict[str, Any]]),
         )
 
     @providers.setter
-    def providers(self, v: Optional[List[Provider]]) -> None:
+    def providers(self, v: list[Provider] | None) -> None:
         self._set_field(
             "providers",
             utils.map_opt(lambda providers: [p.to_dict() for p in providers], v),
@@ -133,53 +133,53 @@ class CommonMetadata:
 
     # Instrument
     @property
-    def platform(self) -> Optional[str]:
+    def platform(self) -> str | None:
         """Gets or set the object's platform attribute."""
         return self._get_field("platform", str)
 
     @platform.setter
-    def platform(self, v: Optional[str]) -> None:
+    def platform(self, v: str | None) -> None:
         self._set_field("platform", v)
 
     @property
-    def instruments(self) -> Optional[List[str]]:
+    def instruments(self) -> list[str] | None:
         """Gets or sets the names of the instruments used."""
-        return self._get_field("instruments", List[str])
+        return self._get_field("instruments", list[str])
 
     @instruments.setter
-    def instruments(self, v: Optional[List[str]]) -> None:
+    def instruments(self, v: list[str] | None) -> None:
         self._set_field("instruments", v)
 
     @property
-    def constellation(self) -> Optional[str]:
+    def constellation(self) -> str | None:
         """Gets or set the name of the constellation associate with an object."""
         return self._get_field("constellation", str)
 
     @constellation.setter
-    def constellation(self, v: Optional[str]) -> None:
+    def constellation(self, v: str | None) -> None:
         self._set_field("constellation", v)
 
     @property
-    def mission(self) -> Optional[str]:
+    def mission(self) -> str | None:
         """Gets or set the name of the mission associated with an object."""
         return self._get_field("mission", str)
 
     @mission.setter
-    def mission(self, v: Optional[str]) -> None:
+    def mission(self, v: str | None) -> None:
         self._set_field("mission", v)
 
     @property
-    def gsd(self) -> Optional[float]:
+    def gsd(self) -> float | None:
         """Gets or sets the Ground Sample Distance at the sensor."""
         return self._get_field("gsd", float)
 
     @gsd.setter
-    def gsd(self, v: Optional[float]) -> None:
+    def gsd(self, v: float | None) -> None:
         self._set_field("gsd", v)
 
     # Metadata
     @property
-    def created(self) -> Optional[datetime]:
+    def created(self) -> datetime | None:
         """Get or set the metadata file's creation date. All datetime attributes have
         setters that can take either a string or a datetime, but always stores
         the attribute as a string.
@@ -193,11 +193,11 @@ class CommonMetadata:
         return utils.map_opt(utils.str_to_datetime, self._get_field("created", str))
 
     @created.setter
-    def created(self, v: Optional[datetime]) -> None:
+    def created(self, v: datetime | None) -> None:
         self._set_field("created", utils.map_opt(utils.datetime_to_str, v))
 
     @property
-    def updated(self) -> Optional[datetime]:
+    def updated(self) -> datetime | None:
         """Get or set the metadata file's update date. All datetime attributes have
         setters that can take either a string or a datetime, but always stores
         the attribute as a string
@@ -211,5 +211,5 @@ class CommonMetadata:
         return utils.map_opt(utils.str_to_datetime, self._get_field("updated", str))
 
     @updated.setter
-    def updated(self, v: Optional[datetime]) -> None:
+    def updated(self, v: datetime | None) -> None:
         self._set_field("updated", utils.map_opt(utils.datetime_to_str, v))

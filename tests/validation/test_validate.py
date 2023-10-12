@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 import jsonschema
 import pytest
@@ -156,7 +156,7 @@ class TestValidate:
         which can be produced by shapely, then the geometry still passes
         validation.
         """
-        geom: Dict[str, Any] = {
+        geom: dict[str, Any] = {
             "type": "Polygon",
             # Last , is required to ensure tuple creation.
             "coordinates": (

@@ -2,15 +2,12 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Generator
 from contextlib import contextmanager
 from typing import (
     Any,
-    Dict,
-    Generator,
     Generic,
-    List,
     Literal,
-    Optional,
     TypeVar,
     Union,
     cast,
@@ -80,10 +77,10 @@ class VersionExtension(
     def apply(
         self,
         version: str,
-        deprecated: Optional[bool] = None,
-        latest: Optional[T] = None,
-        predecessor: Optional[T] = None,
-        successor: Optional[T] = None,
+        deprecated: bool | None = None,
+        latest: T | None = None,
+        predecessor: T | None = None,
+        successor: T | None = None,
     ) -> None:
         """Applies version extension properties to the extended :class:`~pystac.Item` or
         :class:`~pystac.Collection`.
@@ -119,7 +116,7 @@ class VersionExtension(
         self._set_property(VERSION, v, pop_if_none=False)
 
     @property
-    def deprecated(self) -> Optional[bool]:
+    def deprecated(self) -> bool | None:
         """Get or sets whether the item is deprecated.
 
         A value of ``True`` specifies that the Collection or Item is deprecated with the
@@ -141,11 +138,11 @@ class VersionExtension(
         return self._get_property(DEPRECATED, bool)
 
     @deprecated.setter
-    def deprecated(self, v: Optional[bool]) -> None:
+    def deprecated(self, v: bool | None) -> None:
         self._set_property(DEPRECATED, v)
 
     @property
-    def latest(self) -> Optional[T]:
+    def latest(self) -> T | None:
         """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
         representing the most recent version.
         """
@@ -155,7 +152,7 @@ class VersionExtension(
         )
 
     @latest.setter
-    def latest(self, item_or_collection: Optional[T]) -> None:
+    def latest(self, item_or_collection: T | None) -> None:
         self.obj.clear_links(VersionRelType.LATEST)
         if item_or_collection is not None:
             self.obj.add_link(
@@ -165,7 +162,7 @@ class VersionExtension(
             )
 
     @property
-    def predecessor(self) -> Optional[T]:
+    def predecessor(self) -> T | None:
         """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
         representing the resource containing the predecessor version in the version
         history.
@@ -176,7 +173,7 @@ class VersionExtension(
         )
 
     @predecessor.setter
-    def predecessor(self, item_or_collection: Optional[T]) -> None:
+    def predecessor(self, item_or_collection: T | None) -> None:
         self.obj.clear_links(VersionRelType.PREDECESSOR)
         if item_or_collection is not None:
             self.obj.add_link(
@@ -188,7 +185,7 @@ class VersionExtension(
             )
 
     @property
-    def successor(self) -> Optional[T]:
+    def successor(self) -> T | None:
         """Gets or sets the :class:`~pystac.Link` to the :class:`~pystac.Item`
         representing the resource containing the successor version in the version
         history.
@@ -199,7 +196,7 @@ class VersionExtension(
         )
 
     @successor.setter
-    def successor(self, item_or_collection: Optional[T]) -> None:
+    def successor(self, item_or_collection: T | None) -> None:
         self.obj.clear_links(VersionRelType.SUCCESSOR)
         if item_or_collection is not None:
             self.obj.add_link(
@@ -245,8 +242,8 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
     """
 
     collection: pystac.Collection
-    links: List[pystac.Link]
-    properties: Dict[str, Any]
+    links: list[pystac.Link]
+    properties: dict[str, Any]
 
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
@@ -255,7 +252,7 @@ class CollectionVersionExtension(VersionExtension[pystac.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return "<CollectionVersionExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionVersionExtension Item id={self.collection.id}>"
 
 
 class ItemVersionExtension(VersionExtension[pystac.Item]):
@@ -268,8 +265,8 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
     """
 
     item: pystac.Item
-    links: List[pystac.Link]
-    properties: Dict[str, Any]
+    links: list[pystac.Link]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
@@ -278,7 +275,7 @@ class ItemVersionExtension(VersionExtension[pystac.Item]):
         super().__init__(self.item)
 
     def __repr__(self) -> str:
-        return "<ItemVersionExtension Item id={}>".format(self.item.id)
+        return f"<ItemVersionExtension Item id={self.item.id}>"
 
 
 class VersionExtensionHooks(ExtensionHooks):
@@ -286,7 +283,7 @@ class VersionExtensionHooks(ExtensionHooks):
     prev_extension_ids = {"version"}
     stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
 
-    def get_object_links(self, so: pystac.STACObject) -> Optional[List[str]]:
+    def get_object_links(self, so: pystac.STACObject) -> list[str] | None:
         if isinstance(so, pystac.Collection) or isinstance(so, pystac.Item):
             return [
                 VersionRelType.LATEST,

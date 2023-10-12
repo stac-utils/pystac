@@ -5,15 +5,11 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
-    Optional,
-    Set,
     TypeVar,
     Union,
     cast,
@@ -75,10 +71,10 @@ class StorageExtension(
 
     def apply(
         self,
-        platform: Optional[CloudPlatform] = None,
-        region: Optional[str] = None,
-        requester_pays: Optional[bool] = None,
-        tier: Optional[str] = None,
+        platform: CloudPlatform | None = None,
+        region: str | None = None,
+        requester_pays: bool | None = None,
+        tier: str | None = None,
     ) -> None:
         """Applies Storage Extension properties to the extended :class:`~pystac.Item` or
         :class:`~pystac.Asset`.
@@ -97,7 +93,7 @@ class StorageExtension(
         self.tier = tier
 
     @property
-    def platform(self) -> Optional[CloudPlatform]:
+    def platform(self) -> CloudPlatform | None:
         """Get or sets the cloud provider where data is stored.
 
         Returns:
@@ -106,34 +102,34 @@ class StorageExtension(
         return self._get_property(PLATFORM_PROP, CloudPlatform)
 
     @platform.setter
-    def platform(self, v: Optional[CloudPlatform]) -> None:
+    def platform(self, v: CloudPlatform | None) -> None:
         self._set_property(PLATFORM_PROP, v)
 
     @property
-    def region(self) -> Optional[str]:
+    def region(self) -> str | None:
         """Gets or sets the region where the data is stored. Relevant to speed of
         access and inter-region egress costs (as defined by PaaS provider)."""
         return self._get_property(REGION_PROP, str)
 
     @region.setter
-    def region(self, v: Optional[str]) -> None:
+    def region(self, v: str | None) -> None:
         self._set_property(REGION_PROP, v)
 
     @property
-    def requester_pays(self) -> Optional[bool]:
+    def requester_pays(self) -> bool | None:
         # This value "defaults to false", according to the extension spec.
         return self._get_property(REQUESTER_PAYS_PROP, bool)
 
     @requester_pays.setter
-    def requester_pays(self, v: Optional[bool]) -> None:
+    def requester_pays(self, v: bool | None) -> None:
         self._set_property(REQUESTER_PAYS_PROP, v)
 
     @property
-    def tier(self) -> Optional[str]:
+    def tier(self) -> str | None:
         return self._get_property(TIER_PROP, str)
 
     @tier.setter
-    def tier(self, v: Optional[str]) -> None:
+    def tier(self, v: str | None) -> None:
         self._set_property(TIER_PROP, v)
 
     @classmethod
@@ -185,7 +181,7 @@ class ItemStorageExtension(StorageExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -193,7 +189,7 @@ class ItemStorageExtension(StorageExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemStorageExtension Item id={}>".format(self.item.id)
+        return f"<ItemStorageExtension Item id={self.item.id}>"
 
 
 class AssetStorageExtension(StorageExtension[pystac.Asset]):
@@ -208,10 +204,10 @@ class AssetStorageExtension(StorageExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -222,11 +218,11 @@ class AssetStorageExtension(StorageExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetStorageExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetStorageExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsStorageExtension(StorageExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -241,53 +237,53 @@ class SummariesStorageExtension(SummariesExtension):
     """
 
     @property
-    def platform(self) -> Optional[List[CloudPlatform]]:
+    def platform(self) -> list[CloudPlatform] | None:
         """Get or sets the summary of :attr:`StorageExtension.platform` values
         for this Collection.
         """
         return self.summaries.get_list(PLATFORM_PROP)
 
     @platform.setter
-    def platform(self, v: Optional[List[CloudPlatform]]) -> None:
+    def platform(self, v: list[CloudPlatform] | None) -> None:
         self._set_summary(PLATFORM_PROP, v)
 
     @property
-    def region(self) -> Optional[List[str]]:
+    def region(self) -> list[str] | None:
         """Get or sets the summary of :attr:`StorageExtension.region` values
         for this Collection.
         """
         return self.summaries.get_list(REGION_PROP)
 
     @region.setter
-    def region(self, v: Optional[List[str]]) -> None:
+    def region(self, v: list[str] | None) -> None:
         self._set_summary(REGION_PROP, v)
 
     @property
-    def requester_pays(self) -> Optional[List[bool]]:
+    def requester_pays(self) -> list[bool] | None:
         """Get or sets the summary of :attr:`StorageExtension.requester_pays` values
         for this Collection.
         """
         return self.summaries.get_list(REQUESTER_PAYS_PROP)
 
     @requester_pays.setter
-    def requester_pays(self, v: Optional[List[bool]]) -> None:
+    def requester_pays(self, v: list[bool] | None) -> None:
         self._set_summary(REQUESTER_PAYS_PROP, v)
 
     @property
-    def tier(self) -> Optional[List[str]]:
+    def tier(self) -> list[str] | None:
         """Get or sets the summary of :attr:`StorageExtension.tier` values
         for this Collection.
         """
         return self.summaries.get_list(TIER_PROP)
 
     @tier.setter
-    def tier(self, v: Optional[List[str]]) -> None:
+    def tier(self, v: list[str] | None) -> None:
         self._set_summary(TIER_PROP, v)
 
 
 class StorageExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: Set[str] = set()
+    prev_extension_ids: set[str] = set()
     stac_object_types = {
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.ITEM,

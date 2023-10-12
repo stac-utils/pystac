@@ -4,9 +4,10 @@ import json
 import os
 import tempfile
 import unittest
+from collections.abc import Iterator
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, Iterator, Optional
+from typing import Any
 
 import pytest
 from dateutil import tz
@@ -258,7 +259,7 @@ class CollectionTest(unittest.TestCase):
 
     def test_removing_optional_attributes(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
-        with open(path, "r") as file:
+        with open(path) as file:
             data = json.load(file)
         data["title"] = "dummy title"
         data["stac_extensions"] = ["dummy extension"]
@@ -559,9 +560,9 @@ def test_custom_collection_from_dict(collection: Collection) -> None:
         @classmethod
         def from_dict(
             cls,
-            d: Dict[str, Any],
-            href: Optional[str] = None,
-            root: Optional[Catalog] = None,
+            d: dict[str, Any],
+            href: str | None = None,
+            root: Catalog | None = None,
             migrate: bool = False,
             preserve_dict: bool = True,
         ) -> CustomCollection:

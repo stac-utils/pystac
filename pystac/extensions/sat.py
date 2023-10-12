@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
-    Optional,
     TypeVar,
     Union,
     cast,
@@ -71,11 +68,11 @@ class SatExtension(
 
     def apply(
         self,
-        orbit_state: Optional[OrbitState] = None,
-        relative_orbit: Optional[int] = None,
-        absolute_orbit: Optional[int] = None,
-        platform_international_designator: Optional[str] = None,
-        anx_datetime: Optional[datetime] = None,
+        orbit_state: OrbitState | None = None,
+        relative_orbit: int | None = None,
+        absolute_orbit: int | None = None,
+        platform_international_designator: str | None = None,
+        anx_datetime: datetime | None = None,
     ) -> None:
         """Applies ext extension properties to the extended :class:`~pystac.Item` or
         class:`~pystac.Asset`.
@@ -98,50 +95,50 @@ class SatExtension(
         self.anx_datetime = anx_datetime
 
     @property
-    def platform_international_designator(self) -> Optional[str]:
+    def platform_international_designator(self) -> str | None:
         """Gets or sets the International Designator, also known as COSPAR ID, and
         NSSDCA ID."""
         return self._get_property(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, str)
 
     @platform_international_designator.setter
-    def platform_international_designator(self, v: Optional[str]) -> None:
+    def platform_international_designator(self, v: str | None) -> None:
         self._set_property(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, v)
 
     @property
-    def orbit_state(self) -> Optional[OrbitState]:
+    def orbit_state(self) -> OrbitState | None:
         """Get or sets an orbit state of the object."""
         return map_opt(
             lambda x: OrbitState(x), self._get_property(ORBIT_STATE_PROP, str)
         )
 
     @orbit_state.setter
-    def orbit_state(self, v: Optional[OrbitState]) -> None:
+    def orbit_state(self, v: OrbitState | None) -> None:
         self._set_property(ORBIT_STATE_PROP, map_opt(lambda x: x.value, v))
 
     @property
-    def absolute_orbit(self) -> Optional[int]:
+    def absolute_orbit(self) -> int | None:
         """Get or sets a absolute orbit number of the item."""
         return self._get_property(ABSOLUTE_ORBIT_PROP, int)
 
     @absolute_orbit.setter
-    def absolute_orbit(self, v: Optional[int]) -> None:
+    def absolute_orbit(self, v: int | None) -> None:
         self._set_property(ABSOLUTE_ORBIT_PROP, v)
 
     @property
-    def relative_orbit(self) -> Optional[int]:
+    def relative_orbit(self) -> int | None:
         """Get or sets a relative orbit number of the item."""
         return self._get_property(RELATIVE_ORBIT_PROP, int)
 
     @relative_orbit.setter
-    def relative_orbit(self, v: Optional[int]) -> None:
+    def relative_orbit(self, v: int | None) -> None:
         self._set_property(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[datetime]:
+    def anx_datetime(self) -> datetime | None:
         return map_opt(str_to_datetime, self._get_property(ANX_DATETIME_PROP, str))
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[datetime]) -> None:
+    def anx_datetime(self, v: datetime | None) -> None:
         self._set_property(ANX_DATETIME_PROP, map_opt(datetime_to_str, v))
 
     @classmethod
@@ -194,7 +191,7 @@ class ItemSatExtension(SatExtension[pystac.Item]):
     item: pystac.Item
     """The :class:`~pystac.Item` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Item` properties, including extension properties."""
 
     def __init__(self, item: pystac.Item):
@@ -202,7 +199,7 @@ class ItemSatExtension(SatExtension[pystac.Item]):
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemSatExtension Item id={}>".format(self.item.id)
+        return f"<ItemSatExtension Item id={self.item.id}>"
 
 
 class AssetSatExtension(SatExtension[pystac.Asset]):
@@ -218,10 +215,10 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -232,11 +229,11 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetSatExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetSatExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsSatExtension(SatExtension[item_assets.AssetDefinition]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -251,7 +248,7 @@ class SummariesSatExtension(SummariesExtension):
     """
 
     @property
-    def platform_international_designator(self) -> Optional[List[str]]:
+    def platform_international_designator(self) -> list[str] | None:
         """Get or sets the summary of
         :attr:`SatExtension.platform_international_designator` values for this
         Collection.
@@ -260,11 +257,11 @@ class SummariesSatExtension(SummariesExtension):
         return self.summaries.get_list(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP)
 
     @platform_international_designator.setter
-    def platform_international_designator(self, v: Optional[List[str]]) -> None:
+    def platform_international_designator(self, v: list[str] | None) -> None:
         self._set_summary(PLATFORM_INTERNATIONAL_DESIGNATOR_PROP, v)
 
     @property
-    def orbit_state(self) -> Optional[List[OrbitState]]:
+    def orbit_state(self) -> list[OrbitState] | None:
         """Get or sets the summary of :attr:`SatExtension.orbit_state` values
         for this Collection.
         """
@@ -272,27 +269,27 @@ class SummariesSatExtension(SummariesExtension):
         return self.summaries.get_list(ORBIT_STATE_PROP)
 
     @orbit_state.setter
-    def orbit_state(self, v: Optional[List[OrbitState]]) -> None:
+    def orbit_state(self, v: list[OrbitState] | None) -> None:
         self._set_summary(ORBIT_STATE_PROP, v)
 
     @property
-    def absolute_orbit(self) -> Optional[RangeSummary[int]]:
+    def absolute_orbit(self) -> RangeSummary[int] | None:
         return self.summaries.get_range(ABSOLUTE_ORBIT_PROP)
 
     @absolute_orbit.setter
-    def absolute_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+    def absolute_orbit(self, v: RangeSummary[int] | None) -> None:
         self._set_summary(ABSOLUTE_ORBIT_PROP, v)
 
     @property
-    def relative_orbit(self) -> Optional[RangeSummary[int]]:
+    def relative_orbit(self) -> RangeSummary[int] | None:
         return self.summaries.get_range(RELATIVE_ORBIT_PROP)
 
     @relative_orbit.setter
-    def relative_orbit(self, v: Optional[RangeSummary[int]]) -> None:
+    def relative_orbit(self, v: RangeSummary[int] | None) -> None:
         self._set_summary(RELATIVE_ORBIT_PROP, v)
 
     @property
-    def anx_datetime(self) -> Optional[RangeSummary[datetime]]:
+    def anx_datetime(self) -> RangeSummary[datetime] | None:
         return map_opt(
             lambda s: RangeSummary(
                 str_to_datetime(s.minimum), str_to_datetime(s.maximum)
@@ -301,7 +298,7 @@ class SummariesSatExtension(SummariesExtension):
         )
 
     @anx_datetime.setter
-    def anx_datetime(self, v: Optional[RangeSummary[datetime]]) -> None:
+    def anx_datetime(self, v: RangeSummary[datetime] | None) -> None:
         self._set_summary(
             ANX_DATETIME_PROP,
             map_opt(

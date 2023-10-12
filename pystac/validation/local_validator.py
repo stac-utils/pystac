@@ -1,7 +1,7 @@
 import importlib.resources
 import json
 import warnings
-from typing import Any, Dict, List, cast
+from typing import Any, cast
 
 from jsonschema import Draft7Validator, ValidationError
 from referencing import Registry, Resource
@@ -12,14 +12,14 @@ from pystac.version import STACVersion
 VERSION = STACVersion.DEFAULT_STAC_VERSION
 
 
-def _read_schema(file_name: str) -> Dict[str, Any]:
+def _read_schema(file_name: str) -> dict[str, Any]:
     with importlib.resources.files("pystac.validation.jsonschemas").joinpath(
         file_name
     ).open("r") as f:
-        return cast(Dict[str, Any], json.load(f))
+        return cast(dict[str, Any], json.load(f))
 
 
-def get_local_schema_cache() -> Dict[str, Dict[str, Any]]:
+def get_local_schema_cache() -> dict[str, dict[str, Any]]:
     return {
         **{
             (
@@ -90,8 +90,8 @@ class LocalValidator:
         )
 
     def _validate_from_local(
-        self, schema_uri: str, stac_dict: Dict[str, Any]
-    ) -> List[ValidationError]:
+        self, schema_uri: str, stac_dict: dict[str, Any]
+    ) -> list[ValidationError]:
         if schema_uri == _deprecated_ITEM_SCHEMA_URI:
             validator = self.item_validator(VERSION)
         elif schema_uri == _deprecated_COLLECTION_SCHEMA_URI:

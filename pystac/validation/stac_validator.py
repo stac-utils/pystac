@@ -2,7 +2,7 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional
 
 import pystac
 import pystac.utils
@@ -36,7 +36,7 @@ class STACValidator(ABC):
     @abstractmethod
     def validate_core(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
         href: Optional[str] = None,
@@ -57,7 +57,7 @@ class STACValidator(ABC):
     @abstractmethod
     def validate_extension(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
         extension_id: str,
@@ -79,12 +79,12 @@ class STACValidator(ABC):
 
     def validate(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
-        extensions: List[str],
+        extensions: list[str],
         href: Optional[str] = None,
-    ) -> List[Any]:
+    ) -> list[Any]:
         """Validate a STAC object JSON.
 
         Args:
@@ -100,7 +100,7 @@ class STACValidator(ABC):
                core object and any extensions. Element type is specific to the
                STACValidator implementation.
         """
-        results: List[Any] = []
+        results: list[Any] = []
 
         # Pass the dict through JSON serialization and parsing, otherwise
         # some valid properties can be marked as invalid (e.g. tuples in
@@ -140,7 +140,7 @@ class JsonSchemaSTACValidator(STACValidator):
     """
 
     schema_uri_map: SchemaUriMap
-    schema_cache: Dict[str, Dict[str, Any]]
+    schema_cache: dict[str, dict[str, Any]]
 
     def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None) -> None:
         if not HAS_JSONSCHEMA:
@@ -153,7 +153,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
         self.schema_cache = get_local_schema_cache()
 
-    def _get_schema(self, schema_uri: str) -> Dict[str, Any]:
+    def _get_schema(self, schema_uri: str) -> dict[str, Any]:
         if schema_uri not in self.schema_cache:
             s = json.loads(pystac.StacIO.default().read_text(schema_uri))
             self.schema_cache[schema_uri] = s
@@ -164,7 +164,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     @property
     def registry(self) -> Any:
-        def retrieve(schema_uri: str) -> Resource[Dict[str, Any]]:
+        def retrieve(schema_uri: str) -> Resource[dict[str, Any]]:
             return Resource.from_contents(self._get_schema(schema_uri))
 
         return Registry(retrieve=retrieve).with_resources(  # type: ignore
@@ -173,7 +173,7 @@ class JsonSchemaSTACValidator(STACValidator):
             ]  # type: ignore
         )
 
-    def get_schema_from_uri(self, schema_uri: str) -> Tuple[Dict[str, Any], Any]:
+    def get_schema_from_uri(self, schema_uri: str) -> tuple[dict[str, Any], Any]:
         """DEPRECATED"""
         warnings.warn(
             "get_schema_from_uri is deprecated and will be removed in v2.",
@@ -183,7 +183,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def _validate_from_uri(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         schema_uri: str,
         href: Optional[str] = None,
@@ -216,7 +216,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def validate_core(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
         href: Optional[str] = None,
@@ -255,7 +255,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def validate_extension(
         self,
-        stac_dict: Dict[str, Any],
+        stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
         extension_id: str,

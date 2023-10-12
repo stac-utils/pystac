@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict
+from typing import Any
 
 import pystac
 from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
@@ -9,13 +9,9 @@ from tests.utils import TestCases
 
 def create_catalog(suffix: Any, include_href: bool = True) -> pystac.Catalog:
     return pystac.Catalog(
-        id="test {}".format(suffix),
-        description="test desc {}".format(suffix),
-        href=(
-            "http://example.com/catalog_{}.json".format(suffix)
-            if include_href
-            else None
-        ),
+        id=f"test {suffix}",
+        description=f"test desc {suffix}",
+        href=(f"http://example.com/catalog_{suffix}.json" if include_href else None),
     )
 
 
@@ -51,10 +47,10 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         identical_cat1 = create_catalog(1, include_href=False)
         identical_cat2 = create_catalog(2)
 
-        cached_ids_1: Dict[str, Any] = {cat1.id: cat1}
-        cached_hrefs_1: Dict[str, Any] = {get_opt(cat2.get_self_href()): cat2}
-        cached_ids_2: Dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
-        cached_hrefs_2: Dict[str, Any] = {
+        cached_ids_1: dict[str, Any] = {cat1.id: cat1}
+        cached_hrefs_1: dict[str, Any] = {get_opt(cat2.get_self_href()): cat2}
+        cached_ids_2: dict[str, Any] = {cat3.id: cat3, cat1.id: identical_cat1}
+        cached_hrefs_2: dict[str, Any] = {
             get_opt(cat4.get_self_href()): cat4,
             get_opt(cat2.get_self_href()): identical_cat2,
         }
@@ -70,12 +66,12 @@ class ResolvedObjectCollectionCacheTest(unittest.TestCase):
         )
 
         self.assertEqual(
-            set(merged.cached_ids.keys()), set([cat.id for cat in [cat1, cat3]])
+            set(merged.cached_ids.keys()), {cat.id for cat in [cat1, cat3]}
         )
         self.assertIs(merged.get_by_id(cat1.id), cat1)
         self.assertEqual(
             set(merged.cached_hrefs.keys()),
-            set([cat.get_self_href() for cat in [cat2, cat4]]),
+            {cat.get_self_href() for cat in [cat2, cat4]},
         )
         self.assertIs(merged.get_by_href(get_opt(cat2.get_self_href())), cat2)
 

@@ -2,19 +2,13 @@ from __future__ import annotations
 
 import os
 import warnings
+from collections.abc import Iterable, Iterator
 from copy import deepcopy
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Optional,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -83,7 +77,7 @@ class CatalogType(StringEnum):
     """
 
     @classmethod
-    def determine_type(cls, stac_json: Dict[str, Any]) -> Optional[CatalogType]:
+    def determine_type(cls, stac_json: dict[str, Any]) -> CatalogType | None:
         """Determines the catalog type based on a STAC JSON dict.
 
         Only applies to Catalogs or Collections
@@ -141,27 +135,27 @@ class Catalog(STACObject):
     description: str
     """Detailed multi-line description to fully explain the catalog."""
 
-    extra_fields: Dict[str, Any]
+    extra_fields: dict[str, Any]
     """Extra fields that are part of the top-level JSON properties of the Catalog."""
 
     id: str
     """Identifier for the catalog."""
 
-    links: List[Link]
+    links: list[Link]
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Catalog."""
 
-    title: Optional[str]
+    title: str | None
     """Optional short descriptive one-line title for the catalog."""
 
-    stac_extensions: List[str]
+    stac_extensions: list[str]
     """List of extensions the Catalog implements."""
 
     _resolved_objects: ResolvedObjectCache
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
 
-    _stac_io: Optional[pystac.StacIO] = None
+    _stac_io: pystac.StacIO | None = None
     """Optional instance of StacIO that will be used by default
     for any IO operations on objects contained by this catalog.
     Set while reading in a catalog. This is set when a catalog
@@ -176,10 +170,10 @@ class Catalog(STACObject):
         self,
         id: str,
         description: str,
-        title: Optional[str] = None,
-        stac_extensions: Optional[List[str]] = None,
-        extra_fields: Optional[Dict[str, Any]] = None,
-        href: Optional[str] = None,
+        title: str | None = None,
+        stac_extensions: list[str] | None = None,
+        extra_fields: dict[str, Any] | None = None,
+        href: str | None = None,
         catalog_type: CatalogType = CatalogType.ABSOLUTE_PUBLISHED,
     ):
         super().__init__(stac_extensions or [])
@@ -204,9 +198,9 @@ class Catalog(STACObject):
         self._resolved_objects.cache(self)
 
     def __repr__(self) -> str:
-        return "<Catalog id={}>".format(self.id)
+        return f"<Catalog id={self.id}>"
 
-    def set_root(self, root: Optional["Catalog"]) -> None:
+    def set_root(self, root: Catalog | None) -> None:
         STACObject.set_root(self, root)
         if root is not None:
             root._resolved_objects = ResolvedObjectCache.merge(
@@ -228,9 +222,9 @@ class Catalog(STACObject):
 
     def add_child(
         self,
-        child: Union["Catalog", Collection],
-        title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        child: Catalog | Collection,
+        title: str | None = None,
+        strategy: HrefLayoutStrategy | None = None,
         set_parent: bool = True,
     ) -> Link:
         """Adds a link to a child :class:`~pystac.Catalog` or
@@ -277,9 +271,7 @@ class Catalog(STACObject):
         self.add_link(child_link)
         return child_link
 
-    def add_children(
-        self, children: Iterable[Union["Catalog", Collection]]
-    ) -> List[Link]:
+    def add_children(self, children: Iterable[Catalog | Collection]) -> list[Link]:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
         objects. This method will set each child's parent to this object, and their
         root to this Catalog's root.
@@ -295,8 +287,8 @@ class Catalog(STACObject):
     def add_item(
         self,
         item: Item,
-        title: Optional[str] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        title: str | None = None,
+        strategy: HrefLayoutStrategy | None = None,
         set_parent: bool = True,
     ) -> Link:
         """Adds a link to an :class:`~pystac.Item`.
@@ -345,8 +337,8 @@ class Catalog(STACObject):
     def add_items(
         self,
         items: Iterable[Item],
-        strategy: Optional[HrefLayoutStrategy] = None,
-    ) -> List[Link]:
+        strategy: HrefLayoutStrategy | None = None,
+    ) -> list[Link]:
         """Adds links to multiple :class:`Items <pystac.Item>`.
 
         This method will set each item's parent to this object, and their root to
@@ -365,7 +357,7 @@ class Catalog(STACObject):
 
     def get_child(
         self, id: str, recursive: bool = False, sort_links_by_id: bool = True
-    ) -> Optional[Union["Catalog", Collection]]:
+    ) -> Catalog | Collection | None:
         """Gets the child of this catalog with the given ID, if it exists.
 
         Args:
@@ -382,12 +374,12 @@ class Catalog(STACObject):
             or None if not found.
         """
         if not recursive:
-            children: Iterable[Union[pystac.Catalog, pystac.Collection]]
+            children: Iterable[pystac.Catalog | pystac.Collection]
             if not sort_links_by_id:
                 children = self.get_children()
             else:
 
-                def sort_function(links: List[Link]) -> List[Link]:
+                def sort_function(links: list[Link]) -> list[Link]:
                     return sorted(
                         links,
                         key=lambda x: (href := x.get_href()) is None or id not in href,
@@ -407,7 +399,7 @@ class Catalog(STACObject):
                     return child
             return None
 
-    def get_children(self) -> Iterable[Union["Catalog", Collection]]:
+    def get_children(self) -> Iterable[Catalog | Collection]:
         """Return all children of this catalog.
 
         Return:
@@ -434,7 +426,7 @@ class Catalog(STACObject):
         for child in self.get_children():
             yield from child.get_collections()
 
-    def get_child_links(self) -> List[Link]:
+    def get_child_links(self) -> list[Link]:
         """Return all child links of this catalog.
 
         Return:
@@ -458,7 +450,7 @@ class Catalog(STACObject):
         Args:
             child_id : The ID of the child to remove.
         """
-        new_links: List[pystac.Link] = []
+        new_links: list[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
             if link.rel != pystac.RelType.CHILD:
@@ -473,7 +465,7 @@ class Catalog(STACObject):
                     child.set_root(None)
         self.links = new_links
 
-    def get_item(self, id: str, recursive: bool = False) -> Optional[Item]:
+    def get_item(self, id: str, recursive: bool = False) -> Item | None:
         """
         DEPRECATED.
 
@@ -555,7 +547,7 @@ class Catalog(STACObject):
         Args:
             item_id : The ID of the item to remove.
         """
-        new_links: List[pystac.Link] = []
+        new_links: list[pystac.Link] = []
         root = self.get_root()
         for link in self.links:
             if link.rel != pystac.RelType.ITEM:
@@ -594,7 +586,7 @@ class Catalog(STACObject):
             *(child.get_items(recursive=True) for child in self.get_children()),
         )
 
-    def get_item_links(self) -> List[Link]:
+    def get_item_links(self) -> list[Link]:
         """Return all item links of this catalog.
 
         Return:
@@ -604,7 +596,7 @@ class Catalog(STACObject):
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         links = [
             x
             for x in self.links
@@ -613,7 +605,7 @@ class Catalog(STACObject):
         if not include_self_link:
             links = [x for x in links if x.rel != pystac.RelType.SELF]
 
-        d: Dict[str, Any] = {
+        d: dict[str, Any] = {
             "type": self.STAC_OBJECT_TYPE.value.title(),
             "id": self.id,
             "stac_version": pystac.get_stac_version(),
@@ -674,9 +666,9 @@ class Catalog(STACObject):
     def normalize_and_save(
         self,
         root_href: str,
-        catalog_type: Optional[CatalogType] = None,
-        strategy: Optional[HrefLayoutStrategy] = None,
-        stac_io: Optional[pystac.StacIO] = None,
+        catalog_type: CatalogType | None = None,
+        strategy: HrefLayoutStrategy | None = None,
+        stac_io: pystac.StacIO | None = None,
         skip_unresolved: bool = False,
     ) -> None:
         """Normalizes link HREFs to the given root_href, and saves the catalog.
@@ -711,7 +703,7 @@ class Catalog(STACObject):
     def normalize_hrefs(
         self,
         root_href: str,
-        strategy: Optional[HrefLayoutStrategy] = None,
+        strategy: HrefLayoutStrategy | None = None,
         skip_unresolved: bool = False,
     ) -> None:
         """Normalize HREFs will regenerate all link HREFs based on
@@ -746,8 +738,8 @@ class Catalog(STACObject):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         def process_item(
-            item: Item, _root_href: str, parent: Optional[Catalog]
-        ) -> Optional[Callable[[], None]]:
+            item: Item, _root_href: str, parent: Catalog | None
+        ) -> Callable[[], None] | None:
             if not skip_unresolved:
                 item.resolve_links()
 
@@ -767,9 +759,9 @@ class Catalog(STACObject):
             cat: Catalog,
             _root_href: str,
             is_root: bool,
-            parent: Optional[Catalog] = None,
-        ) -> List[Callable[[], None]]:
-            setter_funcs: List[Callable[[], None]] = []
+            parent: Catalog | None = None,
+        ) -> list[Callable[[], None]]:
+            setter_funcs: list[Callable[[], None]] = []
 
             if not skip_unresolved:
                 cat.resolve_links()
@@ -821,9 +813,9 @@ class Catalog(STACObject):
     def generate_subcatalogs(
         self,
         template: str,
-        defaults: Optional[Dict[str, Any]] = None,
-        parent_ids: Optional[List[str]] = None,
-    ) -> List["Catalog"]:
+        defaults: dict[str, Any] | None = None,
+        parent_ids: list[str] | None = None,
+    ) -> list[Catalog]:
         """Walks through the catalog and generates subcatalogs
         for items based on the template string.
 
@@ -845,7 +837,7 @@ class Catalog(STACObject):
         Returns:
             [catalog]: List of new catalogs created
         """
-        result: List[Catalog] = []
+        result: list[Catalog] = []
         parent_ids = parent_ids or list()
         parent_ids.append(self.id)
         for child in self.get_children():
@@ -857,16 +849,14 @@ class Catalog(STACObject):
 
         layout_template = LayoutTemplate(template, defaults=defaults)
 
-        keep_item_links: List[Link] = []
+        keep_item_links: list[Link] = []
         item_links = [lk for lk in self.links if lk.rel == pystac.RelType.ITEM]
         for link in item_links:
             link.resolve_stac_object(root=self.get_root())
             item = cast(pystac.Item, link.target)
             subcat_ids = layout_template.substitute(item).split("/")
             id_iter = reversed(parent_ids)
-            if all(
-                ["{}".format(id) == next(id_iter, None) for id in reversed(subcat_ids)]
-            ):
+            if all([f"{id}" == next(id_iter, None) for id in reversed(subcat_ids)]):
                 # Skip items for which the sub-catalog structure already
                 # matches the template. The list of parent IDs can include more
                 # elements on the root side, so compare the reversed sequences.
@@ -900,9 +890,9 @@ class Catalog(STACObject):
 
     def save(
         self,
-        catalog_type: Optional[CatalogType] = None,
-        dest_href: Optional[str] = None,
-        stac_io: Optional[pystac.StacIO] = None,
+        catalog_type: CatalogType | None = None,
+        dest_href: str | None = None,
+        stac_io: pystac.StacIO | None = None,
     ) -> None:
         """Save this catalog and all it's children/item to files determined by the
         object's self link HREF or a specified path.
@@ -996,7 +986,7 @@ class Catalog(STACObject):
 
     def walk(
         self,
-    ) -> Iterable[Tuple["Catalog", Iterable["Catalog"], Iterable[Item]]]:
+    ) -> Iterable[tuple[Catalog, Iterable[Catalog], Iterable[Item]]]:
         """Walks through children and items of catalogs.
 
         For each catalog in the STAC's tree rooted at this catalog (including this
@@ -1032,9 +1022,7 @@ class Catalog(STACObject):
             for item in items:
                 pass
 
-    def validate_all(
-        self, max_items: Optional[int] = None, recursive: bool = True
-    ) -> int:
+    def validate_all(self, max_items: int | None = None, recursive: bool = True) -> int:
         """Validates each catalog, collection, item contained within this catalog.
 
         Walks through the children and items of the catalog and validates each
@@ -1068,7 +1056,7 @@ class Catalog(STACObject):
             n += 1
         return n
 
-    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+    def _object_links(self) -> list[str | pystac.RelType]:
         return [
             pystac.RelType.CHILD,
             pystac.RelType.ITEM,
@@ -1077,7 +1065,7 @@ class Catalog(STACObject):
 
     def map_items(
         self,
-        item_mapper: Callable[[Item], Union[Item, List[Item]]],
+        item_mapper: Callable[[Item], Item | list[Item]],
     ) -> Catalog:
         """Creates a copy of a catalog, with each item passed through the
         item_mapper function.
@@ -1098,7 +1086,7 @@ class Catalog(STACObject):
             for child in catalog.get_children():
                 process_catalog(child)
 
-            item_links: List[Link] = []
+            item_links: list[Link] = []
             for item_link in catalog.get_item_links():
                 item_link.resolve_stac_object(root=self.get_root())
                 mapped = item_mapper(cast(pystac.Item, item_link.target))
@@ -1122,7 +1110,7 @@ class Catalog(STACObject):
         self,
         asset_mapper: Callable[
             [str, Asset],
-            Union[Asset, Tuple[str, Asset], Dict[str, Asset]],
+            Asset | tuple[str, Asset] | dict[str, Asset],
         ],
     ) -> Catalog:
         """Creates a copy of a catalog, with each Asset for each Item passed
@@ -1140,8 +1128,8 @@ class Catalog(STACObject):
         """
 
         def apply_asset_mapper(
-            tup: Tuple[str, Asset]
-        ) -> List[Tuple[str, pystac.Asset]]:
+            tup: tuple[str, Asset]
+        ) -> list[tuple[str, pystac.Asset]]:
             k, v = tup
             result = asset_mapper(k, v)
             if result is None:
@@ -1177,22 +1165,22 @@ class Catalog(STACObject):
         """
         s = "{}* {}".format(" " * _indent, self)
         if include_hrefs:
-            s += " {}".format(self.get_self_href())
+            s += f" {self.get_self_href()}"
         print(s)
         for child in self.get_children():
             child.describe(include_hrefs=include_hrefs, _indent=_indent + 4)
         for item in self.get_items():
             s = "{}* {}".format(" " * (_indent + 2), item)
             if include_hrefs:
-                s += " {}".format(item.get_self_href())
+                s += f" {item.get_self_href()}"
             print(s)
 
     @classmethod
     def from_dict(
-        cls: Type[C],
-        d: Dict[str, Any],
-        href: Optional[str] = None,
-        root: Optional["Catalog"] = None,
+        cls: type[C],
+        d: dict[str, Any],
+        href: str | None = None,
+        root: Catalog | None = None,
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> C:
@@ -1240,14 +1228,12 @@ class Catalog(STACObject):
         return cat
 
     def full_copy(
-        self, root: Optional["Catalog"] = None, parent: Optional["Catalog"] = None
+        self, root: Catalog | None = None, parent: Catalog | None = None
     ) -> Catalog:
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(
-        cls: Type[C], href: HREF, stac_io: Optional[pystac.StacIO] = None
-    ) -> C:
+    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
@@ -1257,5 +1243,5 @@ class Catalog(STACObject):
         return result
 
     @classmethod
-    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+    def matches_object_type(cls, d: dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.CATALOG

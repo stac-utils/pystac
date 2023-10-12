@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Literal, Optional, Union
+from collections.abc import Iterable
+from typing import Any, Literal, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -36,12 +37,12 @@ class MappingObject:
     """Represents a value map used by assets that are used as classification layers, and
     give details about the values in the asset and their meanings."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
-    def apply(self, values: List[Any], summary: str) -> None:
+    def apply(self, values: list[Any], summary: str) -> None:
         """Sets the properties for this :class:`~MappingObject` instance.
 
         Args:
@@ -52,7 +53,7 @@ class MappingObject:
         self.summary = summary
 
     @classmethod
-    def create(cls, values: List[Any], summary: str) -> MappingObject:
+    def create(cls, values: list[Any], summary: str) -> MappingObject:
         """Creates a new :class:`~MappingObject` instance.
 
         Args:
@@ -64,13 +65,13 @@ class MappingObject:
         return m
 
     @property
-    def values(self) -> List[Any]:
+    def values(self) -> list[Any]:
         """Gets or sets the list of value(s) in the file. At least one array element is
         required."""
         return get_required(self.properties.get("values"), self, "values")
 
     @values.setter
-    def values(self, v: List[Any]) -> None:
+    def values(self, v: list[Any]) -> None:
         self.properties["values"] = v
 
     @property
@@ -83,10 +84,10 @@ class MappingObject:
         self.properties["summary"] = v
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> MappingObject:
+    def from_dict(cls, d: dict[str, Any]) -> MappingObject:
         return cls.create(**d)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.properties
 
 
@@ -110,10 +111,10 @@ class FileExtension(
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
@@ -124,15 +125,15 @@ class FileExtension(
             self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return "<AssetFileExtension Asset href={}>".format(self.asset_href)
+        return f"<AssetFileExtension Asset href={self.asset_href}>"
 
     def apply(
         self,
-        byte_order: Optional[ByteOrder] = None,
-        checksum: Optional[str] = None,
-        header_size: Optional[int] = None,
-        size: Optional[int] = None,
-        values: Optional[List[MappingObject]] = None,
+        byte_order: ByteOrder | None = None,
+        checksum: str | None = None,
+        header_size: int | None = None,
+        size: int | None = None,
+        values: list[MappingObject] | None = None,
     ) -> None:
         """Applies file extension properties to the extended Item.
 
@@ -155,45 +156,45 @@ class FileExtension(
         self.values = values
 
     @property
-    def byte_order(self) -> Optional[ByteOrder]:
+    def byte_order(self) -> ByteOrder | None:
         """Gets or sets the byte order of integer values in the file. One of big-endian
         or little-endian."""
         return self._get_property(BYTE_ORDER_PROP, ByteOrder)
 
     @byte_order.setter
-    def byte_order(self, v: Optional[ByteOrder]) -> None:
+    def byte_order(self, v: ByteOrder | None) -> None:
         self._set_property(BYTE_ORDER_PROP, v)
 
     @property
-    def checksum(self) -> Optional[str]:
+    def checksum(self) -> str | None:
         """Get or sets the multihash for the corresponding file, encoded as hexadecimal
         (base 16) string with lowercase letters."""
         return self._get_property(CHECKSUM_PROP, str)
 
     @checksum.setter
-    def checksum(self, v: Optional[str]) -> None:
+    def checksum(self, v: str | None) -> None:
         self._set_property(CHECKSUM_PROP, v)
 
     @property
-    def header_size(self) -> Optional[int]:
+    def header_size(self) -> int | None:
         """Get or sets the header size of the file, in bytes."""
         return self._get_property(HEADER_SIZE_PROP, int)
 
     @header_size.setter
-    def header_size(self, v: Optional[int]) -> None:
+    def header_size(self, v: int | None) -> None:
         self._set_property(HEADER_SIZE_PROP, v)
 
     @property
-    def size(self) -> Optional[int]:
+    def size(self) -> int | None:
         """Get or sets the size of the file, in bytes."""
         return self._get_property(SIZE_PROP, int)
 
     @size.setter
-    def size(self, v: Optional[int]) -> None:
+    def size(self, v: int | None) -> None:
         self._set_property(SIZE_PROP, v)
 
     @property
-    def values(self) -> Optional[List[MappingObject]]:
+    def values(self) -> list[MappingObject] | None:
         """Get or sets the list of :class:`~MappingObject` instances that lists the
         values that are in the file and describe their meaning. See the
         :stac-ext:`Mapping Object <file#mapping-object>` docs for an example. If given,
@@ -202,11 +203,11 @@ class FileExtension(
             lambda values: [
                 MappingObject.from_dict(mapping_obj) for mapping_obj in values
             ],
-            self._get_property(VALUES_PROP, List[Dict[str, Any]]),
+            self._get_property(VALUES_PROP, list[dict[str, Any]]),
         )
 
     @values.setter
-    def values(self, v: Optional[List[MappingObject]]) -> None:
+    def values(self, v: list[MappingObject] | None) -> None:
         self._set_property(
             VALUES_PROP,
             map_opt(
@@ -238,10 +239,10 @@ class FileExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         # The checksum field was previously it's own extension.
-        old_checksum: Optional[Dict[str, str]] = None
+        old_checksum: dict[str, str] | None = None
         if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
             if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
                 old_item_checksum = obj["properties"].get("checksum:multihash")

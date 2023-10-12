@@ -1,7 +1,7 @@
 import json
 import unittest
 from copy import deepcopy
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -291,7 +291,7 @@ class ProjectionTest(unittest.TestCase):
         self.assertEqual(asset_prop_geometry["coordinates"][0][0], [0.0, 0.0])
 
         # Set to Asset
-        asset_value: Dict[str, Any] = {"type": "Point", "coordinates": [1.0, 2.0]}
+        asset_value: dict[str, Any] = {"type": "Point", "coordinates": [1.0, 2.0]}
         ProjectionExtension.ext(asset_no_prop).geometry = asset_value
         self.assertNotEqual(
             ProjectionExtension.ext(asset_no_prop).geometry,

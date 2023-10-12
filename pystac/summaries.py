@@ -4,17 +4,14 @@ import importlib.resources
 import json
 import numbers
 from abc import abstractmethod
+from collections.abc import Iterable
 from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
-    Optional,
     Protocol,
     TypeVar,
     Union,
@@ -51,7 +48,7 @@ class _Comparable_x(Protocol):
     """
 
     @abstractmethod
-    def __lt__(self: "T", x: "T") -> bool:
+    def __lt__(self: T, x: T) -> bool:
         return NotImplemented
 
 
@@ -63,7 +60,7 @@ class _Comparable_other(Protocol):
     """
 
     @abstractmethod
-    def __lt__(self: "T", other: "T") -> bool:
+    def __lt__(self: T, other: T) -> bool:
         return NotImplemented
 
 
@@ -78,7 +75,7 @@ class RangeSummary(Generic[T]):
         self.minimum = minimum
         self.maximum = maximum
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {"minimum": self.minimum, "maximum": self.maximum}
 
     def update_with_value(self, v: T) -> None:
@@ -86,7 +83,7 @@ class RangeSummary(Generic[T]):
         self.maximum = max(self.maximum, v)
 
     @classmethod
-    def from_dict(cls, d: Dict[str, Any]) -> RangeSummary[T]:
+    def from_dict(cls, d: dict[str, Any]) -> RangeSummary[T]:
         minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
         maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
         return cls(minimum=minimum, maximum=maximum)
@@ -102,11 +99,11 @@ class RangeSummary(Generic[T]):
 
 
 @lru_cache(maxsize=None)
-def _get_fields_json(url: Optional[str]) -> Dict[str, Any]:
+def _get_fields_json(url: str | None) -> dict[str, Any]:
     if url is None:
         # Every time pystac is released this file gets pulled from
         # https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
-        jsonfields: Dict[str, Any] = json.loads(
+        jsonfields: dict[str, Any] = json.loads(
             importlib.resources.files("pystac.static")
             .joinpath("fields-normalized.json")
             .read_text()
@@ -148,16 +145,16 @@ class Summarizer:
             If nothing is passed, a default file with field descriptions will be used.
     """
 
-    summaryfields: Dict[str, SummaryStrategy]
+    summaryfields: dict[str, SummaryStrategy]
 
-    def __init__(self, fields: Optional[Union[str, Dict[str, SummaryStrategy]]] = None):
+    def __init__(self, fields: str | dict[str, SummaryStrategy] | None = None):
         if isinstance(fields, dict):
             self._set_field_definitions(fields)
         else:
             jsonfields = _get_fields_json(fields)
             self._set_field_definitions(jsonfields["metadata"])
 
-    def _set_field_definitions(self, fields: Dict[str, Any]) -> None:
+    def _set_field_definitions(self, fields: dict[str, Any]) -> None:
         self.summaryfields = {}
         for name, desc in fields.items():
             strategy: SummaryStrategy = SummaryStrategy.DEFAULT
@@ -182,7 +179,7 @@ class Summarizer:
                     and isinstance(v, numbers.Number)
                     and not isinstance(v, bool)
                 ):
-                    rangesummary: Optional[RangeSummary[Any]] = summaries.get_range(k)
+                    rangesummary: RangeSummary[Any] | None = summaries.get_range(k)
                     if rangesummary is None:
                         summaries.add(k, RangeSummary(v, v))
                     else:
@@ -190,7 +187,7 @@ class Summarizer:
                 elif strategy == SummaryStrategy.ARRAY or (
                     strategy == SummaryStrategy.DEFAULT and isinstance(v, list)
                 ):
-                    listsummary: List[Any] = summaries.get_list(k) or []
+                    listsummary: list[Any] = summaries.get_list(k) or []
                     if not isinstance(v, list):
                         v = [v]
                     for element in v:
@@ -198,12 +195,12 @@ class Summarizer:
                             listsummary.append(element)
                     summaries.add(k, listsummary)
                 else:
-                    summary: List[Any] = summaries.get_list(k) or []
+                    summary: list[Any] = summaries.get_list(k) or []
                     if v not in summary:
                         summary.append(v)
                     summaries.add(k, summary)
 
-    def summarize(self, source: Union[Collection, Iterable[Item]]) -> Summaries:
+    def summarize(self, source: Collection | Iterable[Item]) -> Summaries:
         """Creates summaries from items"""
         summaries = Summaries.empty()
         if isinstance(source, pystac.Collection):
@@ -220,16 +217,16 @@ DEFAULT_MAXCOUNT = 25
 
 
 class Summaries:
-    _summaries: Dict[str, Any]
+    _summaries: dict[str, Any]
 
-    lists: Dict[str, List[Any]]
-    other: Dict[str, Any]
-    ranges: Dict[str, RangeSummary[Any]]
-    schemas: Dict[str, Dict[str, Any]]
+    lists: dict[str, list[Any]]
+    other: dict[str, Any]
+    ranges: dict[str, RangeSummary[Any]]
+    schemas: dict[str, dict[str, Any]]
     maxcount: int
 
     def __init__(
-        self, summaries: Dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
+        self, summaries: dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
     ) -> None:
         self._summaries = summaries
         self.maxcount = maxcount
@@ -242,19 +239,19 @@ class Summaries:
         for prop_key, summary in summaries.items():
             self.add(prop_key, summary)
 
-    def get_list(self, prop: str) -> Optional[List[Any]]:
+    def get_list(self, prop: str) -> list[Any] | None:
         return self.lists.get(prop)
 
-    def get_range(self, prop: str) -> Optional[RangeSummary[Any]]:
+    def get_range(self, prop: str) -> RangeSummary[Any] | None:
         return self.ranges.get(prop)
 
-    def get_schema(self, prop: str) -> Optional[Dict[str, Any]]:
+    def get_schema(self, prop: str) -> dict[str, Any] | None:
         return self.schemas.get(prop)
 
     def add(
         self,
         prop_key: str,
-        summary: Union[List[Any], RangeSummary[Any], Dict[str, Any]],
+        summary: list[Any] | RangeSummary[Any] | dict[str, Any],
     ) -> None:
         if isinstance(summary, list):
             self.lists[prop_key] = summary
@@ -322,7 +319,7 @@ class Summaries:
         summaries.schemas = deepcopy(self.schemas)
         return summaries
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **{k: v for k, v in self.lists.items() if len(v) < self.maxcount},
             **{k: v.to_dict() for k, v in self.ranges.items()},

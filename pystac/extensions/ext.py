@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, Literal, TypeVar, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.classification import ClassificationExtension
@@ -46,7 +46,7 @@ EXTENSION_NAMES = Literal[
     "xarray",
 ]
 
-EXTENSION_NAME_MAPPING: Dict[EXTENSION_NAMES, Any] = {
+EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
     EOExtension.name: EOExtension,
@@ -97,7 +97,7 @@ class CollectionExt:
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def item_assets(self) -> Dict[str, AssetDefinition]:
+    def item_assets(self) -> dict[str, AssetDefinition]:
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
     @property

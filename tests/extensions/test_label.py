@@ -2,7 +2,7 @@ import json
 import os
 import tempfile
 import unittest
-from typing import List, Union
+from typing import Union
 
 import pytest
 
@@ -139,7 +139,7 @@ class LabelTest(unittest.TestCase):
         cat = TestCases.case_1()
 
         items = list(cat.get_items(recursive=True))
-        item_ids = set([i.id for i in items])
+        item_ids = {i.id for i in items}
 
         for li in items:
             if LabelExtension.has_extension(li):
@@ -264,7 +264,7 @@ class LabelTest(unittest.TestCase):
         label_item.validate()
 
     def test_label_classes_typing(self) -> None:
-        classes: List[str] = ["foo", "bar"]
+        classes: list[str] = ["foo", "bar"]
         LabelClasses.create(classes=classes)
 
     @pytest.mark.vcr()
@@ -545,7 +545,7 @@ class LabelSummariesTest(unittest.TestCase):
         self.assertListEqual(label_types, label_type_summary_ext)
 
     def test_label_task_summary(self) -> None:
-        label_tasks: List[Union[LabelTask, str]] = [LabelTask.REGRESSION]
+        label_tasks: list[Union[LabelTask, str]] = [LabelTask.REGRESSION]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
         label_ext_summaries = LabelExtension.summaries(collection, True)
 
@@ -562,7 +562,7 @@ class LabelSummariesTest(unittest.TestCase):
         self.assertListEqual(label_tasks, label_tasks_summary_ext)
 
     def test_label_methods_summary(self) -> None:
-        label_methods: List[Union[LabelMethod, str]] = [LabelMethod.AUTOMATED]
+        label_methods: list[Union[LabelMethod, str]] = [LabelMethod.AUTOMATED]
         collection = Collection.from_file(self.EXAMPLE_COLLECTION)
         label_ext_summaries = LabelExtension.summaries(collection, True)
 

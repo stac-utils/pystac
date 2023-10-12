@@ -4,7 +4,6 @@ import unittest
 from datetime import datetime
 from random import choice
 from string import ascii_letters
-from typing import List
 
 import pytest
 
@@ -45,7 +44,7 @@ class SarItemExtTest(unittest.TestCase):
     def test_required(self) -> None:
         mode: str = "Nonsense mode"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
-        polarizations: List[sar.Polarization] = [
+        polarizations: list[sar.Polarization] = [
             sar.Polarization.HV,
             sar.Polarization.VH,
         ]
@@ -72,7 +71,7 @@ class SarItemExtTest(unittest.TestCase):
     def test_all(self) -> None:
         mode: str = "WV"
         frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
-        polarizations: List[sar.Polarization] = [
+        polarizations: list[sar.Polarization] = [
             sar.Polarization.VV,
             sar.Polarization.HH,
         ]

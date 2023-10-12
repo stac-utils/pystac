@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import re
 import warnings
+from collections.abc import Iterable
+from re import Pattern
 from typing import (
     Any,
-    Dict,
     Generic,
-    Iterable,
-    List,
     Literal,
-    Optional,
-    Pattern,
     TypeVar,
     Union,
     cast,
@@ -36,7 +33,7 @@ SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
 )
 DEFAULT_VERSION: str = "1.1.0"
-SUPPORTED_VERSIONS: List[str] = ["1.1.0", "1.0.0"]
+SUPPORTED_VERSIONS: list[str] = ["1.1.0", "1.0.0"]
 
 # Field names
 PREFIX: str = "classification:"
@@ -53,17 +50,17 @@ class Classification:
     Use Classification.create to create a new Classification.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]) -> None:
+    def __init__(self, properties: dict[str, Any]) -> None:
         self.properties = properties
 
     def apply(
         self,
         value: int,
         description: str,
-        name: Optional[str] = None,
-        color_hint: Optional[str] = None,
+        name: str | None = None,
+        color_hint: str | None = None,
     ) -> None:
         """
         Set the properties for a new Classification.
@@ -98,8 +95,8 @@ class Classification:
         cls,
         value: int,
         description: str,
-        name: Optional[str] = None,
-        color_hint: Optional[str] = None,
+        name: str | None = None,
+        color_hint: str | None = None,
     ) -> Classification:
         """
         Create a new Classification.
@@ -148,7 +145,7 @@ class Classification:
         self.properties["description"] = v
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Get or set the name of the class
 
         Returns:
@@ -157,14 +154,14 @@ class Classification:
         return self.properties.get("name")
 
     @name.setter
-    def name(self, v: Optional[str]) -> None:
+    def name(self, v: str | None) -> None:
         if v is not None:
             self.properties["name"] = v
         else:
             self.properties.pop("name", None)
 
     @property
-    def color_hint(self) -> Optional[str]:
+    def color_hint(self) -> str | None:
         """Get or set the optional color hint for this class.
 
         The color hint must be a six-character string of capitalized hexadecimal
@@ -176,7 +173,7 @@ class Classification:
         return self.properties.get("color_hint")
 
     @color_hint.setter
-    def color_hint(self, v: Optional[str]) -> None:
+    def color_hint(self, v: str | None) -> None:
         if v is not None:
             match = COLOR_HINT_PATTERN.match(v)
             assert (
@@ -186,7 +183,7 @@ class Classification:
         else:
             self.properties.pop("color_hint", None)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns the dictionary encoding of this class
 
         Returns:
@@ -214,19 +211,19 @@ class Bitfield:
     Use Bitfield.create to create a new Bitfield.
     """
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
-    def __init__(self, properties: Dict[str, Any]):
+    def __init__(self, properties: dict[str, Any]):
         self.properties = properties
 
     def apply(
         self,
         offset: int,
         length: int,
-        classes: List[Classification],
-        roles: Optional[List[str]] = None,
-        description: Optional[str] = None,
-        name: Optional[str] = None,
+        classes: list[Classification],
+        roles: list[str] | None = None,
+        description: str | None = None,
+        name: str | None = None,
     ) -> None:
         """Sets the properties for this Bitfield.
 
@@ -261,10 +258,10 @@ class Bitfield:
         cls,
         offset: int,
         length: int,
-        classes: List[Classification],
-        roles: Optional[List[str]] = None,
-        description: Optional[str] = None,
-        name: Optional[str] = None,
+        classes: list[Classification],
+        roles: list[str] | None = None,
+        description: str | None = None,
+        name: str | None = None,
     ) -> Bitfield:
         """Sets the properties for this Bitfield.
 
@@ -321,7 +318,7 @@ class Bitfield:
         self.properties["length"] = v
 
     @property
-    def classes(self) -> List[Classification]:
+    def classes(self) -> list[Classification]:
         """Get or set the class definitions for the bitfield
 
         Returns:
@@ -331,7 +328,7 @@ class Bitfield:
         return [
             Classification(d)
             for d in cast(
-                List[Dict[str, Any]],
+                list[dict[str, Any]],
                 get_required(
                     self.properties.get("classes"),
                     self,
@@ -341,11 +338,11 @@ class Bitfield:
         ]
 
     @classes.setter
-    def classes(self, v: List[Classification]) -> None:
+    def classes(self, v: list[Classification]) -> None:
         self.properties["classes"] = [c.to_dict() for c in v]
 
     @property
-    def roles(self) -> Optional[List[str]]:
+    def roles(self) -> list[str] | None:
         """Get or set the role of the bitfield.
 
         See `Asset Roles
@@ -357,14 +354,14 @@ class Bitfield:
         return self.properties.get("roles")
 
     @roles.setter
-    def roles(self, v: Optional[List[str]]) -> None:
+    def roles(self, v: list[str] | None) -> None:
         if v is not None:
             self.properties["roles"] = v
         else:
             self.properties.pop("roles", None)
 
     @property
-    def description(self) -> Optional[str]:
+    def description(self) -> str | None:
         """Get or set the optional description of a bitfield.
 
         Returns:
@@ -373,14 +370,14 @@ class Bitfield:
         return self.properties.get("description")
 
     @description.setter
-    def description(self, v: Optional[str]) -> None:
+    def description(self, v: str | None) -> None:
         if v is not None:
             self.properties["description"] = v
         else:
             self.properties.pop("description", None)
 
     @property
-    def name(self) -> Optional[str]:
+    def name(self) -> str | None:
         """Get or set the optional name of the bitfield.
 
         Returns:
@@ -389,7 +386,7 @@ class Bitfield:
         return self.properties.get("name")
 
     @name.setter
-    def name(self, v: Optional[str]) -> None:
+    def name(self, v: str | None) -> None:
         if v is not None:
             self.properties["name"] = v
         else:
@@ -401,7 +398,7 @@ class Bitfield:
             f"classes={self.classes}>"
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns the dictionary encoding of this bitfield
 
         Returns:
@@ -428,13 +425,13 @@ class ClassificationExtension(
     """
 
     name: Literal["classification"] = "classification"
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
     def apply(
         self,
-        classes: Optional[List[Classification]] = None,
-        bitfields: Optional[List[Bitfield]] = None,
+        classes: list[Classification] | None = None,
+        bitfields: list[Bitfield] | None = None,
     ) -> None:
         """Applies the classifiation extension fields to the extended object.
 
@@ -455,7 +452,7 @@ class ClassificationExtension(
         self.bitfields = bitfields
 
     @property
-    def classes(self) -> Optional[List[Classification]]:
+    def classes(self) -> list[Classification] | None:
         """Get or set the classes for the base object
 
         Note: Setting the classes will clear the object's bitfields if they are
@@ -467,21 +464,21 @@ class ClassificationExtension(
         return self._get_classes()
 
     @classes.setter
-    def classes(self, v: Optional[List[Classification]]) -> None:
+    def classes(self, v: list[Classification] | None) -> None:
         if self._get_bitfields() is not None:
             self.bitfields = None
         self._set_property(
             CLASSES_PROP, map_opt(lambda classes: [c.to_dict() for c in classes], v)
         )
 
-    def _get_classes(self) -> Optional[List[Classification]]:
+    def _get_classes(self) -> list[Classification] | None:
         return map_opt(
             lambda classes: [Classification(c) for c in classes],
-            self._get_property(CLASSES_PROP, List[Dict[str, Any]]),
+            self._get_property(CLASSES_PROP, list[dict[str, Any]]),
         )
 
     @property
-    def bitfields(self) -> Optional[List[Bitfield]]:
+    def bitfields(self) -> list[Bitfield] | None:
         """Get or set the bitfields for the base object
 
         Note: Setting the bitfields will clear the object's classes if they are
@@ -493,7 +490,7 @@ class ClassificationExtension(
         return self._get_bitfields()
 
     @bitfields.setter
-    def bitfields(self, v: Optional[List[Bitfield]]) -> None:
+    def bitfields(self, v: list[Bitfield] | None) -> None:
         if self._get_classes() is not None:
             self.classes = None
         self._set_property(
@@ -501,10 +498,10 @@ class ClassificationExtension(
             map_opt(lambda bitfields: [b.to_dict() for b in bitfields], v),
         )
 
-    def _get_bitfields(self) -> Optional[List[Bitfield]]:
+    def _get_bitfields(self) -> list[Bitfield] | None:
         return map_opt(
             lambda bitfields: [Bitfield(b) for b in bitfields],
-            self._get_property(BITFIELDS_PROP, List[Dict[str, Any]]),
+            self._get_property(BITFIELDS_PROP, list[dict[str, Any]]),
         )
 
     @classmethod
@@ -512,7 +509,7 @@ class ClassificationExtension(
         return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
 
     @classmethod
-    def get_schema_uris(cls) -> List[str]:
+    def get_schema_uris(cls) -> list[str]:
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -561,7 +558,7 @@ class ClassificationExtension(
 class ItemClassificationExtension(ClassificationExtension[pystac.Item]):
     item: pystac.Item
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
@@ -574,8 +571,8 @@ class ItemClassificationExtension(ClassificationExtension[pystac.Item]):
 class AssetClassificationExtension(ClassificationExtension[pystac.Asset]):
     asset: pystac.Asset
     asset_href: str
-    properties: Dict[str, Any]
-    additional_read_properties: Optional[Iterable[Dict[str, Any]]]
+    properties: dict[str, Any]
+    additional_read_properties: Iterable[dict[str, Any]] | None
 
     def __init__(self, asset: pystac.Asset):
         self.asset = asset
@@ -591,7 +588,7 @@ class AssetClassificationExtension(ClassificationExtension[pystac.Asset]):
 class ItemAssetsClassificationExtension(
     ClassificationExtension[item_assets.AssetDefinition]
 ):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
     def __init__(self, item_asset: item_assets.AssetDefinition):
@@ -603,7 +600,7 @@ class ItemAssetsClassificationExtension(
 
 
 class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     raster_band: RasterBand
 
     def __init__(self, raster_band: RasterBand):
@@ -616,25 +613,25 @@ class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):
 
 class SummariesClassificationExtension(SummariesExtension):
     @property
-    def classes(self) -> Optional[List[Classification]]:
+    def classes(self) -> list[Classification] | None:
         return map_opt(
             lambda classes: [Classification(c) for c in classes],
             self.summaries.get_list(CLASSES_PROP),
         )
 
     @classes.setter
-    def classes(self, v: Optional[List[Classification]]) -> None:
+    def classes(self, v: list[Classification] | None) -> None:
         self._set_summary(CLASSES_PROP, map_opt(lambda x: [c.to_dict() for c in x], v))
 
     @property
-    def bitfields(self) -> Optional[List[Bitfield]]:
+    def bitfields(self) -> list[Bitfield] | None:
         return map_opt(
             lambda bitfields: [Bitfield(b) for b in bitfields],
             self.summaries.get_list(BITFIELDS_PROP),
         )
 
     @bitfields.setter
-    def bitfields(self, v: Optional[List[Bitfield]]) -> None:
+    def bitfields(self, v: list[Bitfield] | None) -> None:
         self._set_summary(
             BITFIELDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v)
         )
@@ -650,7 +647,7 @@ class ClassificationExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
             for asset in obj.get("assets", {}).values():

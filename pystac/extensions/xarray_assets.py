@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union
+from typing import Any, Generic, Literal, TypeVar, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -78,14 +78,14 @@ class CollectionXarrayAssetsExtension(XarrayAssetsExtension[pystac.Collection]):
     """
 
     collection: pystac.Collection
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
 
     def __repr__(self) -> str:
-        return "<CollectionXarrayAssetsExtension Item id={}>".format(self.collection.id)
+        return f"<CollectionXarrayAssetsExtension Item id={self.collection.id}>"
 
 
 class ItemXarrayAssetsExtension(XarrayAssetsExtension[pystac.Item]):
@@ -98,14 +98,14 @@ class ItemXarrayAssetsExtension(XarrayAssetsExtension[pystac.Item]):
     """
 
     item: pystac.Item
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
 
     def __repr__(self) -> str:
-        return "<ItemXarrayAssetsExtension Item id={}>".format(self.item.id)
+        return f"<ItemXarrayAssetsExtension Item id={self.item.id}>"
 
 
 class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
@@ -118,8 +118,8 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
     """
 
     asset: pystac.Asset
-    properties: Dict[str, Any]
-    additional_read_properties: Optional[List[Dict[str, Any]]] = None
+    properties: dict[str, Any]
+    additional_read_properties: list[dict[str, Any]] | None = None
 
     def __init__(self, asset: pystac.Asset):
         self.asset = asset
@@ -128,31 +128,31 @@ class AssetXarrayAssetsExtension(XarrayAssetsExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.properties]
 
     @property
-    def storage_options(self) -> Optional[Dict[str, Any]]:
+    def storage_options(self) -> dict[str, Any] | None:
         """Additional keywords for accessing the dataset from remote storage"""
         return self.properties.get(STORAGE_OPTIONS_PROP)
 
     @storage_options.setter
-    def storage_options(self, v: Optional[Dict[str, Any]]) -> Any:
+    def storage_options(self, v: dict[str, Any] | None) -> Any:
         if v is None:
             self.properties.pop(STORAGE_OPTIONS_PROP, None)
         else:
             self.properties[STORAGE_OPTIONS_PROP] = v
 
     @property
-    def open_kwargs(self) -> Optional[Dict[str, Any]]:
+    def open_kwargs(self) -> dict[str, Any] | None:
         """Additional keywords for opening the dataset"""
         return self.properties.get(OPEN_KWARGS_PROP)
 
     @open_kwargs.setter
-    def open_kwargs(self, v: Optional[Dict[str, Any]]) -> Any:
+    def open_kwargs(self, v: dict[str, Any] | None) -> Any:
         if v is None:
             self.properties.pop(OPEN_KWARGS_PROP, None)
         else:
             self.properties[OPEN_KWARGS_PROP] = v
 
     def __repr__(self) -> str:
-        return "<AssetXarrayAssetsExtension Asset href={}>".format(self.asset.href)
+        return f"<AssetXarrayAssetsExtension Asset href={self.asset.href}>"
 
 
 class XarrayAssetsExtensionHooks(ExtensionHooks):

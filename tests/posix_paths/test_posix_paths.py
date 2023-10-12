@@ -164,7 +164,7 @@ def test_all_existing_links_converted_to_posix_hrefs() -> None:
     item = pystac.Item.from_file(href)
     for link in item.links:
         check_link(link)
-    with open(href, "r") as f:
+    with open(href) as f:
         item_dict = json.load(f)
     item2 = pystac.Item.from_dict(item_dict)
     for link in item2.links:
@@ -174,7 +174,7 @@ def test_all_existing_links_converted_to_posix_hrefs() -> None:
     collection = pystac.Collection.from_file(href)
     for link in collection.links:
         check_link(link)
-    with open(href, "r") as f:
+    with open(href) as f:
         collection_dict = json.load(f)
     collection2 = pystac.Collection.from_dict(collection_dict)
     for link in collection2.links:
@@ -184,7 +184,7 @@ def test_all_existing_links_converted_to_posix_hrefs() -> None:
     catalog = pystac.Catalog.from_file(href)
     for link in catalog.links:
         check_link(link)
-    with open(href, "r") as f:
+    with open(href) as f:
         catalog_dict = json.load(f)
     catalog2 = pystac.Catalog.from_dict(catalog_dict)
     for link in catalog2.links:

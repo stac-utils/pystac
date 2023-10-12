@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Union
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
@@ -20,7 +21,7 @@ class ExtensionHooks(ABC):
 
     @property
     @abstractmethod
-    def prev_extension_ids(self) -> Set[str]:
+    def prev_extension_ids(self) -> set[str]:
         """A set of previous extension IDs (schema URIs or old short ids)
         that should be migrated to the latest schema URI in the 'stac_extensions'
         property. Override with a class attribute so that the set of previous
@@ -30,22 +31,20 @@ class ExtensionHooks(ABC):
 
     @property
     @abstractmethod
-    def stac_object_types(self) -> Set[pystac.STACObjectType]:
+    def stac_object_types(self) -> set[pystac.STACObjectType]:
         """A set of STACObjectType for which migration logic will be applied."""
         raise NotImplementedError
 
-    @lru_cache()
-    def _get_stac_object_types(self) -> Set[str]:
+    @lru_cache
+    def _get_stac_object_types(self) -> set[str]:
         """Translation of stac_object_types to strings, cached"""
-        return set([x.value for x in self.stac_object_types])
+        return {x.value for x in self.stac_object_types}
 
-    def get_object_links(
-        self, obj: STACObject
-    ) -> Optional[List[Union[str, pystac.RelType]]]:
+    def get_object_links(self, obj: STACObject) -> list[str | pystac.RelType] | None:
         return None
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         """Migrate a STAC Object in dict format from a previous version.
         The base implementation will update the stac_extensions to the latest
@@ -66,16 +65,16 @@ class ExtensionHooks(ABC):
 
 
 class RegisteredExtensionHooks:
-    hooks: Dict[str, ExtensionHooks]
+    hooks: dict[str, ExtensionHooks]
 
     def __init__(self, hooks: Iterable[ExtensionHooks]):
-        self.hooks = dict([(e.schema_uri, e) for e in hooks])
+        self.hooks = {e.schema_uri: e for e in hooks}
 
     def add_extension_hooks(self, hooks: ExtensionHooks) -> None:
         e_id = hooks.schema_uri
         if e_id in self.hooks:
             raise pystac.ExtensionAlreadyExistsError(
-                "ExtensionDefinition with id '{}' already exists.".format(e_id)
+                f"ExtensionDefinition with id '{e_id}' already exists."
             )
 
         self.hooks[e_id] = hooks
@@ -84,10 +83,8 @@ class RegisteredExtensionHooks:
         if extension_id in self.hooks:
             del self.hooks[extension_id]
 
-    def get_extended_object_links(
-        self, obj: STACObject
-    ) -> List[Union[str, pystac.RelType]]:
-        result: Optional[List[Union[str, pystac.RelType]]] = None
+    def get_extended_object_links(self, obj: STACObject) -> list[str | pystac.RelType]:
+        result: list[str | pystac.RelType] | None = None
         for ext in obj.stac_extensions:
             if ext in self.hooks:
                 ext_result = self.hooks[ext].get_object_links(obj)
@@ -99,7 +96,7 @@ class RegisteredExtensionHooks:
         return result or []
 
     def migrate(
-        self, obj: Dict[str, Any], version: STACVersionID, info: STACJSONDescription
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         for hooks in self.hooks.values():
             if info.object_type in hooks._get_stac_object_types():

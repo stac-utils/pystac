@@ -1,6 +1,5 @@
 import json
 import unittest
-from typing import Dict
 
 import pytest
 
@@ -458,7 +457,7 @@ def test_older_extension_version(ext_item: Item) -> None:
         ({"name": "B4", "common_name": "green"}, 0),
     ],
 )
-def test_get_assets(ext_item: pystac.Item, filter: Dict[str, str], count: int) -> None:
+def test_get_assets(ext_item: pystac.Item, filter: dict[str, str], count: int) -> None:
     assets = EOExtension.ext(ext_item).get_assets(**filter)  # type:ignore
     assert len(assets) == count
 

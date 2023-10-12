@@ -1,8 +1,9 @@
 """Tests for pystac.extensions.version."""
 
 import unittest
+from collections.abc import Generator
 from datetime import datetime
-from typing import Generator, List, Optional
+from typing import Optional
 
 import pytest
 
@@ -268,7 +269,7 @@ def make_collection(year: int) -> pystac.Collection:
     end = datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    intervals: List[List[Optional[datetime]]] = [[start, end]]
+    intervals: list[list[Optional[datetime]]] = [[start, end]]
     temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
 

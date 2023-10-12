@@ -1,7 +1,7 @@
 import csv
 import os
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any
 
 import pystac
 from pystac import (
@@ -49,7 +49,7 @@ TEST_LABEL_CATALOG = {
     },
 }
 
-ARBITRARY_GEOM: Dict[str, Any] = {
+ARBITRARY_GEOM: dict[str, Any] = {
     "type": "Polygon",
     "coordinates": [
         [
@@ -62,7 +62,7 @@ ARBITRARY_GEOM: Dict[str, Any] = {
     ],
 }
 
-ARBITRARY_BBOX: List[float] = [
+ARBITRARY_BBOX: list[float] = [
     ARBITRARY_GEOM["coordinates"][0][0][0],
     ARBITRARY_GEOM["coordinates"][0][0][1],
     ARBITRARY_GEOM["coordinates"][0][1][0],
@@ -81,7 +81,7 @@ class ExampleInfo:
         path: str,
         object_type: pystac.STACObjectType,
         stac_version: str,
-        extensions: List[str],
+        extensions: list[str],
         valid: bool,
     ) -> None:
         self.path = path
@@ -99,8 +99,8 @@ class TestCases:
         return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", rel_path))
 
     @staticmethod
-    def get_examples_info() -> List[ExampleInfo]:
-        examples: List[ExampleInfo] = []
+    def get_examples_info() -> list[ExampleInfo]:
+        examples: list[ExampleInfo] = []
 
         info_path = TestCases.get_path("data-files/examples/example-info.csv")
         with open(TestCases.get_path("data-files/examples/example-info.csv")) as f:
@@ -108,7 +108,7 @@ class TestCases:
                 path = os.path.abspath(os.path.join(os.path.dirname(info_path), row[0]))
                 object_type = row[1]
                 stac_version = row[2]
-                extensions: List[str] = []
+                extensions: list[str] = []
                 if row[3]:
                     extensions = row[3].split("|")
 
@@ -130,7 +130,7 @@ class TestCases:
         return examples
 
     @staticmethod
-    def all_test_catalogs() -> List[Catalog]:
+    def all_test_catalogs() -> list[Catalog]:
         return [
             TestCases.case_1(),
             TestCases.case_2(),

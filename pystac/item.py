@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import pystac
 from pystac import RelType, STACError, STACObjectType
@@ -67,30 +67,30 @@ class Item(STACObject):
             :attr:`~pystac.Asset.owner` attribute set to the created Item.
     """
 
-    assets: Dict[str, Asset]
+    assets: dict[str, Asset]
     """Dictionary of :class:`~pystac.Asset` objects, each with a unique key."""
 
-    bbox: Optional[List[float]]
+    bbox: list[float] | None
     """Bounding Box of the asset represented by this item using either 2D or 3D
     geometries. The length of the array is 2*n where n is the number of dimensions.
     Could also be None in the case of a null geometry."""
 
-    collection: Optional[Collection]
+    collection: Collection | None
     """:class:`~pystac.Collection` to which this Item belongs, if any."""
 
-    collection_id: Optional[str]
+    collection_id: str | None
     """The Collection ID that this item belongs to, if any."""
 
-    datetime: Optional[Datetime]
+    datetime: Datetime | None
     """Datetime associated with this item. If ``None``, then
     :attr:`~pystac.CommonMetadata.start_datetime` and
     :attr:`~pystac.CommonMetadata.end_datetime` in :attr:`~pystac.Item.common_metadata`
     will supply the datetime range of the Item."""
 
-    extra_fields: Dict[str, Any]
+    extra_fields: dict[str, Any]
     """Extra fields that are part of the top-level JSON fields the Item."""
 
-    geometry: Optional[Dict[str, Any]]
+    geometry: dict[str, Any] | None
     """Defines the full footprint of the asset represented by this item, formatted
     according to `RFC 7946, section 3.1 (GeoJSON)
     <https://tools.ietf.org/html/rfc7946>`_."""
@@ -98,14 +98,14 @@ class Item(STACObject):
     id: str
     """Provider identifier. Unique within the STAC."""
 
-    links: List[Link]
+    links: list[Link]
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Item."""
 
-    properties: Dict[str, Any]
+    properties: dict[str, Any]
     """A dictionary of additional metadata for the Item."""
 
-    stac_extensions: List[str]
+    stac_extensions: list[str]
     """List of extensions the Item implements."""
 
     STAC_OBJECT_TYPE = STACObjectType.ITEM
@@ -113,17 +113,17 @@ class Item(STACObject):
     def __init__(
         self,
         id: str,
-        geometry: Optional[Dict[str, Any]],
-        bbox: Optional[List[float]],
-        datetime: Optional[Datetime],
-        properties: Dict[str, Any],
-        start_datetime: Optional[Datetime] = None,
-        end_datetime: Optional[Datetime] = None,
-        stac_extensions: Optional[List[str]] = None,
-        href: Optional[str] = None,
-        collection: Optional[Union[str, Collection]] = None,
-        extra_fields: Optional[Dict[str, Any]] = None,
-        assets: Optional[Dict[str, Asset]] = None,
+        geometry: dict[str, Any] | None,
+        bbox: list[float] | None,
+        datetime: Datetime | None,
+        properties: dict[str, Any],
+        start_datetime: Datetime | None = None,
+        end_datetime: Datetime | None = None,
+        stac_extensions: list[str] | None = None,
+        href: str | None = None,
+        collection: str | Collection | None = None,
+        extra_fields: dict[str, Any] | None = None,
+        assets: dict[str, Asset] | None = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -136,9 +136,9 @@ class Item(STACObject):
         else:
             self.extra_fields = extra_fields
 
-        self.assets: Dict[str, Asset] = {}
+        self.assets: dict[str, Asset] = {}
 
-        self.datetime: Optional[Datetime] = None
+        self.datetime: Datetime | None = None
         if start_datetime:
             properties["start_datetime"] = datetime_to_str(start_datetime)
         if end_datetime:
@@ -157,7 +157,7 @@ class Item(STACObject):
         if href is not None:
             self.set_self_href(href)
 
-        self.collection_id: Optional[str] = None
+        self.collection_id: str | None = None
         if collection is not None:
             if isinstance(collection, Collection):
                 self.set_collection(collection)
@@ -170,9 +170,9 @@ class Item(STACObject):
                 self.add_asset(k, asset)
 
     def __repr__(self) -> str:
-        return "<Item id={}>".format(self.id)
+        return f"<Item id={self.id}>"
 
-    def set_self_href(self, href: Optional[str]) -> None:
+    def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.
 
@@ -202,7 +202,7 @@ class Item(STACObject):
                     new_relative_href = make_relative_href(abs_href, new_href)
                     asset.href = new_relative_href
 
-    def get_datetime(self, asset: Optional[Asset] = None) -> Optional[Datetime]:
+    def get_datetime(self, asset: Asset | None = None) -> Datetime | None:
         """Gets an Item or an Asset datetime.
 
         If an Asset is supplied and the Item property exists on the Asset,
@@ -220,7 +220,7 @@ class Item(STACObject):
             else:
                 return str_to_datetime(asset_dt)
 
-    def set_datetime(self, datetime: Datetime, asset: Optional[Asset] = None) -> None:
+    def set_datetime(self, datetime: Datetime, asset: Asset | None = None) -> None:
         """Set an Item or an Asset datetime.
 
         If an Asset is supplied, sets the property on the Asset.
@@ -233,9 +233,9 @@ class Item(STACObject):
 
     def get_assets(
         self,
-        media_type: Optional[Union[str, pystac.MediaType]] = None,
-        role: Optional[str] = None,
-    ) -> Dict[str, Asset]:
+        media_type: str | pystac.MediaType | None = None,
+        role: str | None = None,
+    ) -> dict[str, Asset]:
         """Get this item's assets.
 
         Args:
@@ -319,7 +319,7 @@ class Item(STACObject):
                 asset.href = make_absolute_href(asset.href, self_href)
         return self
 
-    def set_collection(self, collection: Optional[Collection]) -> Item:
+    def set_collection(self, collection: Collection | None) -> Item:
         """Set the collection of this item.
 
         This method will replace any existing Collection link and attribute for
@@ -340,7 +340,7 @@ class Item(STACObject):
 
         return self
 
-    def get_collection(self) -> Optional[Collection]:
+    def get_collection(self) -> Collection | None:
         """Gets the collection of this item, if one exists.
 
         Returns:
@@ -355,7 +355,7 @@ class Item(STACObject):
                 Collection, collection_link.resolve_stac_object(self.get_root()).target
             )
 
-    def add_derived_from(self, *items: Union[Item, str]) -> Item:
+    def add_derived_from(self, *items: Item | str) -> Item:
         """Add one or more items that this is derived from.
 
         This method will add to any existing "derived_from" links.
@@ -378,7 +378,7 @@ class Item(STACObject):
         Args:
             item_id : ID of item to remove from derived_from links.
         """
-        new_links: List[pystac.Link] = []
+        new_links: list[pystac.Link] = []
 
         for link in self.links:
             if link.rel != pystac.RelType.DERIVED_FROM:
@@ -394,7 +394,7 @@ class Item(STACObject):
                     new_links.append(link)
         self.links = new_links
 
-    def get_derived_from(self) -> List[Item]:
+    def get_derived_from(self) -> list[Item]:
         """Get the items that this is derived from.
 
         Returns:
@@ -410,7 +410,7 @@ class Item(STACObject):
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         links = self.links
         if not include_self_link:
             links = [x for x in links if x.rel != pystac.RelType.SELF]
@@ -422,7 +422,7 @@ class Item(STACObject):
         else:
             self.properties["datetime"] = None
 
-        d: Dict[str, Any] = {
+        d: dict[str, Any] = {
             "type": "Feature",
             "stac_version": pystac.get_stac_version(),
             "id": self.id,
@@ -463,7 +463,7 @@ class Item(STACObject):
 
         return clone
 
-    def _object_links(self) -> List[Union[str, pystac.RelType]]:
+    def _object_links(self) -> list[str | pystac.RelType]:
         return [
             pystac.RelType.COLLECTION,
             *pystac.EXTENSION_HOOKS.get_extended_object_links(self),
@@ -471,10 +471,10 @@ class Item(STACObject):
 
     @classmethod
     def from_dict(
-        cls: Type[T],
-        d: Dict[str, Any],
-        href: Optional[str] = None,
-        root: Optional[Catalog] = None,
+        cls: type[T],
+        d: dict[str, Any],
+        href: str | None = None,
+        root: Catalog | None = None,
         migrate: bool = False,
         preserve_dict: bool = True,
     ) -> T:
@@ -554,19 +554,19 @@ class Item(STACObject):
         return pystac.CommonMetadata(self)
 
     def full_copy(
-        self, root: Optional[Catalog] = None, parent: Optional[Catalog] = None
+        self, root: Catalog | None = None, parent: Catalog | None = None
     ) -> Item:
         return cast(Item, super().full_copy(root, parent))
 
     @classmethod
-    def matches_object_type(cls, d: Dict[str, Any]) -> bool:
+    def matches_object_type(cls, d: dict[str, Any]) -> bool:
         for field in ("type", "stac_version"):
             if field not in d:
                 raise pystac.STACTypeError(d, cls, f"'{field}' is missing.")
         return identify_stac_object_type(d) == STACObjectType.ITEM
 
     @property
-    def __geo_interface__(self) -> Dict[str, Any]:
+    def __geo_interface__(self) -> dict[str, Any]:
         """Returns this item as a dictionary.
 
         This just calls `to_dict` without self links or transforming any hrefs.

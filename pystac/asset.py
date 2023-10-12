@@ -4,7 +4,7 @@ import os
 import shutil
 from copy import copy, deepcopy
 from html import escape
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from pystac import common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
@@ -41,38 +41,38 @@ class Asset:
     href: str
     """Link to the asset object. Relative and absolute links are both allowed."""
 
-    title: Optional[str]
+    title: str | None
     """Optional displayed title for clients and users."""
 
-    description: Optional[str]
+    description: str | None
     """A description of the Asset providing additional details, such as how it was
     processed or created. CommonMark 0.29 syntax MAY be used for rich text
     representation."""
 
-    media_type: Optional[str]
+    media_type: str | None
     """Optional description of the media type. Registered Media Types are preferred.
     See :class:`~pystac.MediaType` for common media types."""
 
-    roles: Optional[List[str]]
+    roles: list[str] | None
     """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
     asset."""
 
-    owner: Optional[Union[Item, Collection]]
+    owner: Item | Collection | None
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
-    extra_fields: Dict[str, Any]
+    extra_fields: dict[str, Any]
     """Optional, additional fields for this asset. This is used by extensions as a
     way to serialize and deserialize properties on asset object JSON."""
 
     def __init__(
         self,
         href: str,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        media_type: Optional[str] = None,
-        roles: Optional[List[str]] = None,
-        extra_fields: Optional[Dict[str, Any]] = None,
+        title: str | None = None,
+        description: str | None = None,
+        media_type: str | None = None,
+        roles: list[str] | None = None,
+        extra_fields: dict[str, Any] | None = None,
     ) -> None:
         self.href = utils.make_posix_style(href)
         self.title = title
@@ -84,7 +84,7 @@ class Asset:
         # The Item which owns this Asset.
         self.owner = None
 
-    def set_owner(self, obj: Union[Collection, Item]) -> None:
+    def set_owner(self, obj: Collection | Item) -> None:
         """Sets the owning item of this Asset.
 
         The owning item will be used to resolve relative HREFs of this asset.
@@ -94,7 +94,7 @@ class Asset:
         """
         self.owner = obj
 
-    def get_absolute_href(self) -> Optional[str]:
+    def get_absolute_href(self) -> str | None:
         """Gets the absolute href for this asset, if possible.
 
         If this Asset has no associated Item, and the asset HREF is a relative path,
@@ -114,14 +114,14 @@ class Asset:
                     return utils.make_absolute_href(self.href, item_self)
             return None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Returns this Asset as a dictionary.
 
         Returns:
             dict: A serialization of the Asset.
         """
 
-        d: Dict[str, Any] = {"href": self.href}
+        d: dict[str, Any] = {"href": self.href}
 
         if self.media_type is not None:
             d["type"] = self.media_type
@@ -179,7 +179,7 @@ class Asset:
         return common_metadata.CommonMetadata(self)
 
     def __repr__(self) -> str:
-        return "<Asset href={}>".format(self.href)
+        return f"<Asset href={self.href}>"
 
     def _repr_html_(self) -> str:
         jinja_env = get_jinja_env()
@@ -190,7 +190,7 @@ class Asset:
             return escape(repr(self))
 
     @classmethod
-    def from_dict(cls: Type[A], d: Dict[str, Any]) -> A:
+    def from_dict(cls: type[A], d: dict[str, Any]) -> A:
         """Constructs an Asset from a dict.
 
         Returns:
@@ -276,7 +276,7 @@ class Asset:
 
 
 def _absolute_href(
-    href: str, owner: Optional[Union[Item, Collection]], action: str = "access"
+    href: str, owner: Item | Collection | None, action: str = "access"
 ) -> str:
     if utils.is_absolute_href(href):
         return href

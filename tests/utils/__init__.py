@@ -8,7 +8,7 @@ __all__ = [
 import unittest
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, Type
+from typing import Any
 
 from dateutil.parser import parse
 
@@ -24,10 +24,10 @@ from tests.utils.test_cases import (
 
 def assert_to_from_dict(
     test_class: unittest.TestCase,
-    stac_object_class: Type[pystac.STACObject],
-    d: Dict[str, Any],
+    stac_object_class: type[pystac.STACObject],
+    d: dict[str, Any],
 ) -> None:
-    def _parse_times(a_dict: Dict[str, Any]) -> None:
+    def _parse_times(a_dict: dict[str, Any]) -> None:
         for k, v in a_dict.items():
             if isinstance(v, dict):
                 _parse_times(v)

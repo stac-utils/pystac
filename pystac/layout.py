@@ -5,7 +5,7 @@ import warnings
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 import pystac
 
@@ -95,19 +95,17 @@ class LayoutTemplate:
     template: str
     """The template string to use."""
 
-    defaults: Dict[str, str]
+    defaults: dict[str, str]
     """A dictionary of template vars to values. These values will be used in case a
     value cannot be derived from a stac object."""
 
-    template_vars: List[str]
+    template_vars: list[str]
     """List of template vars to use when templating."""
 
     # Special template vars specific to Items
     ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
-    def __init__(
-        self, template: str, defaults: Optional[Dict[str, str]] = None
-    ) -> None:
+    def __init__(self, template: str, defaults: dict[str, str] | None = None) -> None:
         self.template = template
         self.defaults = defaults or {}
 
@@ -117,7 +115,7 @@ class LayoutTemplate:
             v = formatter_parse_result[1]
             if v is not None:
                 if formatter_parse_result[2] != "":
-                    v = "{}:{}".format(v, formatter_parse_result[2])
+                    v = f"{v}:{formatter_parse_result[2]}"
                 template_vars.append(v)
         self.template_vars = template_vars
 
@@ -162,7 +160,7 @@ class LayoutTemplate:
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
-        prop_source: Optional[Union[pystac.STACObject, Dict[str, Any]]] = None
+        prop_source: pystac.STACObject | dict[str, Any] | None = None
         error = pystac.TemplateError(
             "Cannot find property {} on {} for template {}".format(
                 template_var, stac_object, self.template
@@ -174,12 +172,12 @@ class LayoutTemplate:
                 prop_source = stac_object
 
             if prop_source is None and hasattr(stac_object, "properties"):
-                obj_props: Optional[Dict[str, Any]] = stac_object.properties
+                obj_props: dict[str, Any] | None = stac_object.properties
                 if obj_props is not None and props[0] in obj_props:
                     prop_source = obj_props
 
             if prop_source is None and hasattr(stac_object, "extra_fields"):
-                extra_fields: Optional[Dict[str, Any]] = stac_object.extra_fields
+                extra_fields: dict[str, Any] | None = stac_object.extra_fields
                 if extra_fields is not None and props[0] in extra_fields:
                     prop_source = extra_fields
 
@@ -203,7 +201,7 @@ class LayoutTemplate:
 
         return v
 
-    def get_template_values(self, stac_object: STACObject) -> Dict[str, Any]:
+    def get_template_values(self, stac_object: STACObject) -> dict[str, Any]:
         """Gets a dictionary of template variables to values derived from
         the given stac_object. If the template vars cannot be found in the
         stac object, and defaults was supplied to this template, a default
@@ -250,7 +248,7 @@ class LayoutTemplate:
 
         s = self.template
         for key, value in parts.items():
-            s = s.replace("${" + "{}".format(key) + "}", "{}".format(value))
+            s = s.replace("${" + f"{key}" + "}", f"{value}")
         return s
 
 
@@ -267,7 +265,7 @@ class HrefLayoutStrategy(ABC):
         elif isinstance(stac_object, pystac.Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise pystac.STACError("Unknown STAC object type {}".format(stac_object))
+            raise pystac.STACError(f"Unknown STAC object type {stac_object}")
 
     @abstractmethod
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
@@ -305,13 +303,13 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
 
-    catalog_func: Optional[Callable[[Catalog, str, bool], str]]
+    catalog_func: Callable[[Catalog, str, bool], str] | None
     """A function that takes a :class:`~pystac.Catalog`, a parent directory, and a
     boolean specifying whether or not this Catalog is the root. If it is the root, it
     is usually best to not create a subdirectory and put the Catalog file directly
     in the parent directory. Must return the string path."""
 
-    collection_func: Optional[Callable[[Collection, str, bool], str]]
+    collection_func: Callable[[Collection, str, bool], str] | None
     """A function that is used for collections in the same manner as
     :attr:`~catalog_func`. This takes the same parameters."""
 
@@ -319,16 +317,16 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
     """The fallback strategy to use if a function is not provided for a stac object
     type. Defaults to :class:`~pystac.layout.BestPracticesLayoutStrategy`."""
 
-    item_func: Optional[Callable[[Item, str], str]]
+    item_func: Callable[[Item, str], str] | None
     """An optional function that takes an :class:`~pystac.Item` and a parent directory
     and returns the path to be used for the Item."""
 
     def __init__(
         self,
-        catalog_func: Optional[Callable[[Catalog, str, bool], str]] = None,
-        collection_func: Optional[Callable[[Collection, str, bool], str]] = None,
-        item_func: Optional[Callable[[Item, str], str]] = None,
-        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+        catalog_func: Callable[[Catalog, str, bool], str] | None = None,
+        collection_func: Callable[[Collection, str, bool], str] | None = None,
+        item_func: Callable[[Item, str], str] | None = None,
+        fallback_strategy: HrefLayoutStrategy | None = None,
     ):
         self.item_func = item_func
         self.collection_func = collection_func
@@ -386,11 +384,11 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`
     """
 
-    catalog_template: Optional[LayoutTemplate]
+    catalog_template: LayoutTemplate | None
     """The template string to use for catalog paths. Must be a valid template string
     that can be used by :class:`~pystac.layout.LayoutTemplate`."""
 
-    collection_template: Optional[LayoutTemplate]
+    collection_template: LayoutTemplate | None
     """The template string to use for collection paths. Must be a valid template string
     that can be used by :class:`~pystac.layout.LayoutTemplate`."""
 
@@ -398,16 +396,16 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
     """The fallback strategy to use if a template is not provided. Defaults to
     :class:`~pystac.layout.BestPracticesLayoutStrategy`."""
 
-    item_template: Optional[LayoutTemplate]
+    item_template: LayoutTemplate | None
     """The template string to use for item paths. Must be a valid template string that
     can be used by :class:`~pystac.layout.LayoutTemplate`."""
 
     def __init__(
         self,
-        catalog_template: Optional[str] = None,
-        collection_template: Optional[str] = None,
-        item_template: Optional[str] = None,
-        fallback_strategy: Optional[HrefLayoutStrategy] = None,
+        catalog_template: str | None = None,
+        collection_template: str | None = None,
+        item_template: str | None = None,
+        fallback_strategy: HrefLayoutStrategy | None = None,
     ):
         self.catalog_template = (
             LayoutTemplate(catalog_template) if catalog_template is not None else None
@@ -453,7 +451,7 @@ class TemplateLayoutStrategy(HrefLayoutStrategy):
         else:
             template_path = self.item_template.substitute(item)
             if not template_path.endswith(".json"):
-                template_path = posixpath.join(template_path, "{}.json".format(item.id))
+                template_path = posixpath.join(template_path, f"{item.id}.json")
 
             return posixpath.join(parent_dir, template_path)
 
@@ -477,7 +475,7 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         if is_root:
             cat_root = parent_dir
         else:
-            cat_root = posixpath.join(parent_dir, "{}".format(cat.id))
+            cat_root = posixpath.join(parent_dir, f"{cat.id}")
 
         return posixpath.join(cat_root, cat.DEFAULT_FILE_NAME)
 
@@ -487,14 +485,14 @@ class BestPracticesLayoutStrategy(HrefLayoutStrategy):
         if is_root:
             col_root = parent_dir
         else:
-            col_root = posixpath.join(parent_dir, "{}".format(col.id))
+            col_root = posixpath.join(parent_dir, f"{col.id}")
 
         return posixpath.join(col_root, col.DEFAULT_FILE_NAME)
 
     def get_item_href(self, item: Item, parent_dir: str) -> str:
-        item_root = posixpath.join(parent_dir, "{}".format(item.id))
+        item_root = posixpath.join(parent_dir, f"{item.id}")
 
-        return posixpath.join(item_root, "{}.json".format(item.id))
+        return posixpath.join(item_root, f"{item.id}.json")
 
 
 class AsIsLayoutStrategy(HrefLayoutStrategy):

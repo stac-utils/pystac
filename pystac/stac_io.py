@@ -4,7 +4,7 @@ import json
 import logging
 import os
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -40,9 +40,9 @@ logger = logging.getLogger(__name__)
 
 
 class StacIO(ABC):
-    _default_io: Optional[Callable[[], StacIO]] = None
+    _default_io: Callable[[], StacIO] | None = None
 
-    def __init__(self, headers: Optional[Dict[str, str]] = None):
+    def __init__(self, headers: dict[str, str] | None = None):
         self.headers = headers or {}
 
     @abstractmethod
@@ -90,7 +90,7 @@ class StacIO(ABC):
         """
         raise NotImplementedError
 
-    def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+    def json_loads(self, txt: str, *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Method used internally by :class:`StacIO` instances to deserialize a
         dictionary from a JSON string.
 
@@ -103,14 +103,14 @@ class StacIO(ABC):
 
             txt : The JSON string to deserialize to a dictionary.
         """
-        result: Dict[str, Any]
+        result: dict[str, Any]
         if orjson is not None:
             result = orjson.loads(txt)
         else:
             result = json.loads(txt, *args, **kwargs)
         return result
 
-    def json_dumps(self, json_dict: Dict[str, Any], *args: Any, **kwargs: Any) -> str:
+    def json_dumps(self, json_dict: dict[str, Any], *args: Any, **kwargs: Any) -> str:
         """Method used internally by :class:`StacIO` instances to serialize a dictionary
         to a JSON string.
 
@@ -132,9 +132,9 @@ class StacIO(ABC):
 
     def stac_object_from_dict(
         self,
-        d: Dict[str, Any],
-        href: Optional[HREF] = None,
-        root: Optional[Catalog] = None,
+        d: dict[str, Any],
+        href: HREF | None = None,
+        root: Catalog | None = None,
         preserve_dict: bool = True,
     ) -> STACObject:
         """Deserializes a :class:`~pystac.STACObject` sub-class instance from a
@@ -185,7 +185,7 @@ class StacIO(ABC):
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
-    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Read a dict from the given source.
 
         See :func:`StacIO.read_text <pystac.StacIO.read_text>` for usage of
@@ -208,7 +208,7 @@ class StacIO(ABC):
     def read_stac_object(
         self,
         source: HREF,
-        root: Optional[Catalog] = None,
+        root: Catalog | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> STACObject:
@@ -239,7 +239,7 @@ class StacIO(ABC):
     def save_json(
         self,
         dest: HREF,
-        json_dict: Dict[str, Any],
+        json_dict: dict[str, Any],
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -300,7 +300,7 @@ class DefaultStacIO(StacIO):
                 with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
             except HTTPError as e:
-                raise Exception("Could not read uri {}".format(href)) from e
+                raise Exception(f"Could not read uri {href}") from e
         else:
             with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
@@ -342,7 +342,7 @@ class DuplicateKeyReportingMixin(StacIO):
     See https://github.com/stac-utils/pystac/issues/313
     """
 
-    def json_loads(self, txt: str, *_: Any, **__: Any) -> Dict[str, Any]:
+    def json_loads(self, txt: str, *_: Any, **__: Any) -> dict[str, Any]:
         """Overwrites :meth:`StacIO.json_loads <pystac.StacIO.json_loads>` as the
         internal method used by :class:`DuplicateKeyReportingMixin` for deserializing
         a JSON string to a dictionary while checking for duplicate object keys.
@@ -351,12 +351,12 @@ class DuplicateKeyReportingMixin(StacIO):
 
             pystac.DuplicateObjectKeyError : If a duplicate object key is found.
         """
-        result: Dict[str, Any] = json.loads(
+        result: dict[str, Any] = json.loads(
             txt, object_pairs_hook=self._report_duplicate_object_names
         )
         return result
 
-    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> Dict[str, Any]:
+    def read_json(self, source: HREF, *args: Any, **kwargs: Any) -> dict[str, Any]:
         """Overwrites :meth:`StacIO.read_json <pystac.StacIO.read_json>` for
         deserializing a JSON file to a dictionary while checking for duplicate object
         keys.
@@ -375,9 +375,9 @@ class DuplicateKeyReportingMixin(StacIO):
 
     @staticmethod
     def _report_duplicate_object_names(
-        object_pairs: List[Tuple[str, Any]]
-    ) -> Dict[str, Any]:
-        result: Dict[str, Any] = {}
+        object_pairs: list[tuple[str, Any]]
+    ) -> dict[str, Any]:
+        result: dict[str, Any] = {}
         for key, value in object_pairs:
             if key in result:
                 raise pystac.DuplicateObjectKeyError(
@@ -420,8 +420,8 @@ if HAS_URLLIB3:
 
         def __init__(
             self,
-            headers: Optional[Dict[str, str]] = None,
-            retry: Optional[Retry] = None,
+            headers: dict[str, str] | None = None,
+            retry: Retry | None = None,
         ):
             super().__init__(headers)
             self.retry = retry or Retry()
@@ -442,6 +442,6 @@ if HAS_URLLIB3:
                     )
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
-                    raise Exception("Could not read uri {}".format(href)) from e
+                    raise Exception(f"Could not read uri {href}") from e
             else:
                 return super().read_text_from_href(href)
