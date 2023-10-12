@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import re
 import warnings
 from abc import ABC, abstractmethod
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Generic,
@@ -15,6 +18,9 @@ from typing import (
 )
 
 import pystac
+
+if TYPE_CHECKING:
+    from pystac.extensions.item_assets import AssetDefinition
 
 VERSION_REGEX = re.compile("/v[0-9].[0-9].*/")
 
@@ -157,7 +163,39 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def validate_owner_has_extension(
         cls,
-        asset: pystac.Asset,
+        asset: Union[pystac.Asset, AssetDefinition],
+        add_if_missing: bool = False,
+    ) -> None:
+        """
+        DEPRECATED
+
+        .. deprecated:: 1.9
+            Use :meth:`ensure_owner_has_extension` instead.
+
+        Given an :class:`~pystac.Asset`, checks if the asset's owner has this
+        extension's schema URI in its :attr:`~pystac.STACObject.stac_extensions` list.
+        If ``add_if_missing`` is ``True``, the schema URI will be added to the owner.
+
+        Args:
+            asset : The asset whose owner should be validated.
+            add_if_missing : Whether to add the schema URI to the owner if it is
+                not already present. Defaults to False.
+
+        Raises:
+            STACError : If ``add_if_missing`` is ``True`` and ``asset.owner`` is
+                ``None``.
+        """
+        warnings.warn(
+            "ensure_owner_has_extension is deprecated and will be removed in v1.9. "
+            "Use ensure_owner_has_extension instead",
+            DeprecationWarning,
+        )
+        return cls.ensure_owner_has_extension(asset, add_if_missing)
+
+    @classmethod
+    def ensure_owner_has_extension(
+        cls,
+        asset: Union[pystac.Asset, AssetDefinition],
         add_if_missing: bool = False,
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
@@ -176,8 +214,8 @@ class ExtensionManagementMixin(Generic[S], ABC):
         if asset.owner is None:
             if add_if_missing:
                 raise pystac.STACError(
-                    "Attempted to use add_if_missing=True for an Asset with no owner. "
-                    "Use Asset.set_owner or set add_if_missing=False."
+                    "Attempted to use add_if_missing=True for an Asset or ItemAsset "
+                    "with no owner. Use .set_owner or set add_if_missing=False."
                 )
             else:
                 return
@@ -223,8 +261,16 @@ class ExtensionManagementMixin(Generic[S], ABC):
             cls.add_to(obj)
 
         if not cls.has_extension(obj):
+            name = getattr(cls, "name", cls.__name__)
+            suggestion = (
+                f"``obj.ext.add('{name}')"
+                if hasattr(cls, "name")
+                else f"``{name}.add_to(obj)``"
+            )
+
             raise pystac.ExtensionNotImplemented(
-                f"Could not find extension schema URI {cls.get_schema_uri()} in object."
+                f"Extension '{name}' is not implemented on object."
+                f"STAC producers can add the extension using {suggestion}"
             )
 
     @classmethod

@@ -30,6 +30,12 @@ def item() -> Item:
 
 
 @pytest.fixture
+def asset(item: Item) -> Asset:
+    item.add_asset("foo", Asset("https://example.tif"))
+    return item.assets["foo"]
+
+
+@pytest.fixture
 def test_case_1_catalog() -> Catalog:
     return TestCases.case_1()
 

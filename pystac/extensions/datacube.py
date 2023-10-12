@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union, cast
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 
-T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
+T = TypeVar(
+    "T", pystac.Collection, pystac.Item, pystac.Asset, item_assets.AssetDefinition
+)
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
 
@@ -469,6 +472,8 @@ class DatacubeExtension(
        >>> dc_ext = DatacubeExtension.ext(item)
     """
 
+    name: Literal["cube"] = "cube"
+
     def apply(
         self,
         dimensions: Dict[str, Dimension],
@@ -543,8 +548,11 @@ class DatacubeExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemDatacubeExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(DatacubeExtension[T], ItemAssetsDatacubeExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -612,6 +620,15 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetDatacubeExtension Item id={}>".format(self.asset_href)
+
+
+class ItemAssetsDatacubeExtension(DatacubeExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class DatacubeExtensionHooks(ExtensionHooks):

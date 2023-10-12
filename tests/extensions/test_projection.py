@@ -7,6 +7,7 @@ import pytest
 
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
@@ -535,14 +536,12 @@ class ProjectionSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.example_uri)
         col.stac_extensions = []
-        self.assertRaisesRegex(
-            pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            ProjectionExtension.summaries,
-            col,
-            False,
-        )
-        _ = ProjectionExtension.summaries(col, True)
+        with pytest.raises(
+            pystac.ExtensionNotImplemented, match="Extension 'proj' is not implemented"
+        ):
+            ProjectionExtension.summaries(col, add_if_missing=False)
+
+        ProjectionExtension.summaries(col, True)
 
         self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
 
@@ -588,3 +587,21 @@ def test_newer_extension_version(projection_landsat8_item: Item) -> None:
     migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
     assert ProjectionExtension.has_extension(migrated_item)
     assert new in migrated_item.stac_extensions
+
+
+def test_ext_syntax(projection_landsat8_item: pystac.Item) -> None:
+    ext_item = projection_landsat8_item
+    assert ext_item.ext.proj.epsg == 32614
+    assert ext_item.assets["B1"].ext.proj.epsg == 32614
+
+
+def test_ext_syntax_remove(projection_landsat8_item: pystac.Item) -> None:
+    ext_item = projection_landsat8_item
+    ext_item.ext.remove("proj")
+    with pytest.raises(ExtensionNotImplemented):
+        ext_item.ext.proj
+
+
+def test_ext_syntax_add(item: pystac.Item) -> None:
+    item.ext.add("proj")
+    assert isinstance(item.ext.proj, ProjectionExtension)

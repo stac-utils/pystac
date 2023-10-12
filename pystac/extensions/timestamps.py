@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Generic, Iterable, Optional, TypeVar, Union, cast
+from typing import Any, Dict, Generic, Iterable, Literal, Optional, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -42,6 +42,8 @@ class TimestampsExtension(
        >>> item: pystac.Item = ...
        >>> ts_ext = TimestampsExtension.ext(item)
     """
+
+    name: Literal["timestamps"] = "timestamps"
 
     def apply(
         self,
@@ -131,7 +133,7 @@ class TimestampsExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], ItemTimestampsExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(TimestampsExtension[T], AssetTimestampsExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))

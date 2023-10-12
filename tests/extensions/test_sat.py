@@ -346,13 +346,12 @@ class SatSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         col = self.collection()
         col.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            SatExtension.summaries,
-            col,
-            False,
-        )
+            match="Extension 'sat' is not implemented",
+        ):
+            SatExtension.summaries(col, add_if_missing=False)
+
         _ = SatExtension.summaries(col, True)
 
         self.assertIn(SatExtension.get_schema_uri(), col.stac_extensions)

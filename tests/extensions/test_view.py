@@ -368,13 +368,12 @@ class ViewSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection.clone()
         collection.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            ViewExtension.summaries,
-            collection,
-            False,
-        )
+            match="Extension 'view' is not implemented",
+        ):
+            ViewExtension.summaries(collection, add_if_missing=False)
+
         _ = ViewExtension.summaries(collection, True)
 
         self.assertIn(ViewExtension.get_schema_uri(), collection.stac_extensions)

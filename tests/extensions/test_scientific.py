@@ -481,13 +481,12 @@ class SummariesScientificTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection.clone()
         collection.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            ScientificExtension.summaries,
-            collection,
-            False,
-        )
+            match="Extension 'sci' is not implemented",
+        ):
+            ScientificExtension.summaries(collection, add_if_missing=False)
+
         _ = ScientificExtension.summaries(collection, True)
 
         self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)

@@ -472,14 +472,13 @@ class LabelSummariesTest(unittest.TestCase):
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.EXAMPLE_COLLECTION)
         col.stac_extensions = []
-        self.assertRaisesRegex(
+        with pytest.raises(
             pystac.ExtensionNotImplemented,
-            r"Could not find extension schema URI.*",
-            LabelExtension.summaries,
-            col,
-            False,
-        )
-        _ = LabelExtension.summaries(col, True)
+            match="Extension 'label' is not implemented",
+        ):
+            LabelExtension.summaries(col, add_if_missing=False)
+
+        LabelExtension.summaries(col, True)
 
         self.assertIn(LabelExtension.get_schema_uri(), col.stac_extensions)
 

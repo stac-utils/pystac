@@ -3,9 +3,21 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -15,7 +27,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI = "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
 
@@ -54,6 +66,8 @@ class SatExtension(
        >>> item: pystac.Item = ...
        >>> sat_ext = SatExtension.ext(item)
     """
+
+    name: Literal["sat"] = "sat"
 
     def apply(
         self,
@@ -150,8 +164,11 @@ class SatExtension(
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], ItemSatExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(SatExtension[T], AssetSatExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(SatExtension[T], ItemAssetsSatExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -216,6 +233,15 @@ class AssetSatExtension(SatExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return "<AssetSatExtension Asset href={}>".format(self.asset_href)
+
+
+class ItemAssetsSatExtension(SatExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesSatExtension(SummariesExtension):

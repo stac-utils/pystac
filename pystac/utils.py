@@ -86,6 +86,9 @@ class StringEnum(str, Enum):
     """Base :class:`enum.Enum` class for string enums that will serialize as the string
     value."""
 
+    def __repr__(self) -> str:
+        return str(self.value)
+
     def __str__(self) -> str:
         return cast(str, self.value)
 

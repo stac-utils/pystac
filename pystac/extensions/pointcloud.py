@@ -2,9 +2,21 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Generic, Iterable, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import pystac
+from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -14,7 +26,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset)
+T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 PREFIX: str = "pc:"
@@ -338,6 +350,8 @@ class PointcloudExtension(
        >>> pc_ext = PointcloudExtension.ext(item)
     """
 
+    name: Literal["pc"] = "pc"
+
     def apply(
         self,
         count: int,
@@ -455,8 +469,11 @@ class PointcloudExtension(
                 raise pystac.ExtensionTypeError(
                     "Pointcloud extension does not apply to Collection Assets."
                 )
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
+        elif isinstance(obj, item_assets.AssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(PointcloudExtension[T], ItemAssetsPointcloudExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -518,6 +535,15 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return f"<AssetPointcloudExtension Asset {self.repr_id}>"
+
+
+class ItemAssetsPointcloudExtension(PointcloudExtension[item_assets.AssetDefinition]):
+    properties: Dict[str, Any]
+    asset_defn: item_assets.AssetDefinition
+
+    def __init__(self, item_asset: item_assets.AssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
 
 
 class SummariesPointcloudExtension(SummariesExtension):

@@ -475,44 +475,45 @@ Extension (e.g. Electro-Optical, Projection, etc.) and STAC Object
 (:class:`~pystac.Collection`, :class:`pystac.Item`, or :class:`pystac.Asset`). All
 classes that extend these objects inherit from
 :class:`pystac.extensions.base.PropertiesExtension`, and you can use the
-``ext`` method on these classes to extend an object.
+``ext`` accessor on the object to access the extension fields.
 
 For instance, if you have an item that implements the :stac-ext:`Electro-Optical
-Extension <eo>`, you can access the properties associated with that extension using
-:meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>`:
+Extension <eo>`, you can access the fields associated with that extension using
+:meth:`Item.ext <pystac.Item.ext>`:
 
 .. code-block:: python
 
    import pystac
-   from pystac.extensions.eo import EOExtension
 
    item = pystac.Item.from_file("tests/data-files/eo/eo-landsat-example.json")
 
-   # Check that the Item implements the EO Extension
-   if EOExtension.has_extension(item):
-      eo_ext = EOExtension.ext(item)
+   # As long as the Item implements the EO Extension you can access all the
+   # EO properties directly
+   bands = item.ext.eo.bands
+   cloud_cover = item.ext.eo.cloud_cover
+   ...
 
-      bands = eo_ext.bands
-      cloud_cover = eo_ext.cloud_cover
-      snow_cover = eo_ext.snow_cover
-      ...
-
-.. note:: The ``ext`` method will raise an :exc:`~pystac.ExtensionNotImplemented`
+.. note:: ``ext`` will raise an :exc:`~pystac.ExtensionNotImplemented`
    exception if the object does not implement that extension (e.g. if the extension
-   URI is not in that object's :attr:`~pystac.STACObject.stac_extensions` list). In
-   the example above, we check that the Item implements the EO Extension before calling
-   :meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>` to handle this. See
+   URI is not in that object's :attr:`~pystac.STACObject.stac_extensions` list). See
    the `Adding an Extension`_ section below for details on adding an extension to an
    object.
+
+If you don't want to raise an error you can use :meth:`~pystac.Item.ext.has`
+to first check if the extension is implemented on your pystac object:
+
+.. code-block:: python
+
+   if item.ext.has("eo"):
+      bands = item.ext.eo.bands
 
 See the documentation for each extension implementation for details on the supported
 properties and other functionality.
 
-Instances of :class:`~pystac.extensions.base.PropertiesExtension` have a
-:attr:`~pystac.extensions.base.PropertiesExtension.properties` attribute that gives
-access to the properties of the extended object. *This attribute is a reference to the
-properties of the* :class:`~pystac.Item` *or* :class:`~pystac.Asset` *being extended and
-can therefore mutate those properties.* For instance:
+Extensions have access to the properties of the object. *This attribute is a reference
+to the properties of the* :class:`~pystac.Collection`, :class:`~pystac.Item` *or*
+:class:`~pystac.Asset` *being extended and can therefore mutate those properties.*
+For instance:
 
 .. code-block:: python
 
@@ -520,11 +521,10 @@ can therefore mutate those properties.* For instance:
    print(item.properties["eo:cloud_cover"])
    # 78
 
-   eo_ext = EOExtension.ext(item)
-   print(eo_ext.cloud_cover)
+   print(item.ext.eo.cloud_cover)
    # 78
 
-   eo_ext.cloud_cover = 45
+   item.ext.eo.cloud_cover = 45
    print(item.properties["eo:cloud_cover"])
    # 45
 
@@ -545,24 +545,17 @@ have a default value of ``None``:
 .. code-block:: python
 
    # Can also omit cloud_cover entirely...
-   eo_ext.apply(0.5, bands, cloud_cover=None)
-
-
-If you attempt to extend an object that is not supported by an extension, PySTAC will
-throw a :class:`pystac.ExtensionTypeError`.
+   item.ext.eo.apply(0.5, bands, cloud_cover=None)
 
 
 Adding an Extension
 -------------------
 
 You can add an extension to a STAC object that does not already implement that extension
-using the :meth:`ExtensionManagementMixin.add_to
-<pystac.extensions.base.ExtensionManagementMixin.add_to>` method. Any concrete
-extension implementations that extend existing STAC objects should inherit from the
-:class:`~pystac.extensions.base.ExtensionManagementMixin` class, and will therefore have
-this method available. The
-:meth:`~pystac.extensions.base.ExtensionManagementMixin.add_to` adds the correct schema
-URI to the :attr:`~pystac.STACObject.stac_extensions` list for the object being
+using the :meth:`~pystac.Item.ext.add` method. Any concrete
+extension implementations that extend existing STAC objects should  have
+this method available. The :meth:`~pystac.Item.ext.add` method adds the correct schema
+URI to the :attr:`~pystac.Item.stac_extensions` list for the object being
 extended.
 
 .. code-block:: python
@@ -573,7 +566,7 @@ extended.
    # []
 
    # Add the Electro-Optical extension
-   EOExtension.add_to(item)
+   item.ext.add("eo")
    print(item.stac_extensions)
    # ['https://stac-extensions.github.io/eo/v1.1.0/schema.json']
 
@@ -617,7 +610,7 @@ Item Asset properties
 =====================
 
 Properties that apply to Items can be found in two places: the Item's properties or in
-any of an Item's Assets. If the property is on an Asset, it applies only that specific
+any of an Item's Assets. If the property is on an Asset, it applies only to that specific
 asset. For example, gsd defined for an Item represents the best Ground Sample Distance
 (resolution) for the data within the Item. However, some assets may be lower resolution
 and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.

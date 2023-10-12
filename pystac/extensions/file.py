@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Dict, Iterable, List, Literal, Optional, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -91,7 +91,7 @@ class MappingObject:
 
 
 class FileExtension(
-    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]
+    PropertiesExtension, ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]]
 ):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     with properties from the :stac-ext:`File Info Extension <file>`.
@@ -104,6 +104,8 @@ class FileExtension(
        >>> asset: pystac.Asset = ...
        >>> file_ext = FileExtension.ext(asset)
     """
+
+    name: Literal["file"] = "file"
 
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
@@ -224,7 +226,7 @@ class FileExtension(
         This extension can be applied to instances of :class:`~pystac.Asset`.
         """
         if isinstance(obj, pystac.Asset):
-            cls.validate_owner_has_extension(obj, add_if_missing)
+            cls.ensure_owner_has_extension(obj, add_if_missing)
             return cls(obj)
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
