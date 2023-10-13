@@ -38,7 +38,7 @@ class RasterTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.PLANET_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        assert_to_from_dict(self, Item, item_dict)
+        assert_to_from_dict(Item, item_dict)
 
     @pytest.mark.vcr()
     def test_validate_raster(self) -> None:

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item
+from pystac import Asset, Catalog, Collection, Item, Link
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 
@@ -33,6 +33,12 @@ def item() -> Item:
 def asset(item: Item) -> Asset:
     item.add_asset("foo", Asset("https://example.tif"))
     return item.assets["foo"]
+
+
+@pytest.fixture
+def link(item: Item) -> Link:
+    item.add_link(Link(rel="child", target="https://example.tif"))
+    return item.links[0]
 
 
 @pytest.fixture

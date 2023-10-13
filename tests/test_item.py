@@ -38,7 +38,7 @@ class ItemTest(unittest.TestCase):
         item_dict = self.get_example_item_dict()
         param_dict = deepcopy(item_dict)
 
-        assert_to_from_dict(self, Item, param_dict)
+        assert_to_from_dict(Item, param_dict)
         item = Item.from_dict(param_dict)
         self.assertEqual(item.id, "CS3-20160503_132131_05")
 

@@ -20,6 +20,7 @@ from pystac.utils import (
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.collection import Collection
+    from pystac.extensions.ext import LinkExt
     from pystac.item import Item
     from pystac.stac_object import STACObject
 
@@ -500,3 +501,15 @@ class Link(PathLike):
             title=title,
             media_type=pystac.MediaType.JSON,
         )
+
+    @property
+    def ext(self) -> LinkExt:
+        """Accessor for extension classes on this link
+
+        Example::
+
+            link.ext.file.size = 8675309
+        """
+        from pystac.extensions.ext import LinkExt
+
+        return LinkExt(stac_object=self)

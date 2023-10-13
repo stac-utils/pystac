@@ -273,7 +273,7 @@ class AssetExt(_AssetExt[pystac.Asset]):
     stac_object: pystac.Asset
 
     @property
-    def file(self) -> FileExtension:
+    def file(self) -> FileExtension[pystac.Asset]:
         return FileExtension.ext(self.stac_object)
 
     @property
@@ -288,3 +288,41 @@ class AssetExt(_AssetExt[pystac.Asset]):
 @dataclass
 class ItemAssetExt(_AssetExt[AssetDefinition]):
     stac_object: AssetDefinition
+
+
+@dataclass
+class LinkExt:
+    stac_object: pystac.Link
+
+    def has(self, name: EXTENSION_NAMES) -> bool:
+        if self.stac_object.owner is None:
+            raise pystac.STACError(
+                f"Attempted to add extension='{name}' for a Link with no owner. "
+                "Use Link.set_owner and then try to add the extension again."
+            )
+        else:
+            return cast(
+                bool, _get_class_by_name(name).has_extension(self.stac_object.owner)
+            )
+
+    def add(self, name: EXTENSION_NAMES) -> None:
+        if self.stac_object.owner is None:
+            raise pystac.STACError(
+                f"Attempted to add extension='{name}' for a Link with no owner. "
+                "Use Link.set_owner and then try to add the extension again."
+            )
+        else:
+            _get_class_by_name(name).add_to(self.stac_object.owner)
+
+    def remove(self, name: EXTENSION_NAMES) -> None:
+        if self.stac_object.owner is None:
+            raise pystac.STACError(
+                f"Attempted to remove extension='{name}' for a Link with no owner. "
+                "Use Link.set_owner and then try to remove the extension again."
+            )
+        else:
+            _get_class_by_name(name).remove_from(self.stac_object.owner)
+
+    @property
+    def file(self) -> FileExtension[pystac.Link]:
+        return FileExtension.ext(self.stac_object)

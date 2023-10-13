@@ -24,7 +24,7 @@ class TimestampsTest(unittest.TestCase):
         self.sample_datetime = str_to_datetime(self.sample_datetime_str)
 
     def test_to_from_dict(self) -> None:
-        assert_to_from_dict(self, pystac.Item, self.item_dict)
+        assert_to_from_dict(pystac.Item, self.item_dict)
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))

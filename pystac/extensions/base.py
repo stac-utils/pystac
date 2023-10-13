@@ -190,7 +190,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def ensure_owner_has_extension(
         cls,
-        asset: pystac.Asset | AssetDefinition,
+        asset_or_link: pystac.Asset | AssetDefinition | pystac.Link,
         add_if_missing: bool = False,
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this
@@ -206,15 +206,15 @@ class ExtensionManagementMixin(Generic[S], ABC):
             STACError : If ``add_if_missing`` is ``True`` and ``asset.owner`` is
                 ``None``.
         """
-        if asset.owner is None:
+        if asset_or_link.owner is None:
             if add_if_missing:
                 raise pystac.STACError(
-                    "Attempted to use add_if_missing=True for an Asset or ItemAsset "
+                    f"Attempted to use add_if_missing=True for a {type(asset_or_link)} "
                     "with no owner. Use .set_owner or set add_if_missing=False."
                 )
             else:
                 return
-        return cls.ensure_has_extension(cast(S, asset.owner), add_if_missing)
+        return cls.ensure_has_extension(cast(S, asset_or_link.owner), add_if_missing)
 
     @classmethod
     def validate_has_extension(cls, obj: S, add_if_missing: bool = False) -> None:
