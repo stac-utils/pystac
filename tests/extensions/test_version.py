@@ -445,6 +445,7 @@ def test_experimental(item: Item) -> None:
     assert "experimental" not in item.properties
 
 
+@pytest.mark.vcr
 def test_optional_version(item: Item) -> None:
     # Changed in v1.1.0
     assert item.ext.version.version is None
@@ -456,6 +457,7 @@ def test_optional_version(item: Item) -> None:
     assert "version" not in item.properties
 
 
+@pytest.mark.vcr
 def test_assets(item: Item) -> None:
     item.ext.remove("version")
     asset = Asset("example.tif")
