@@ -7,7 +7,15 @@ from typing import Optional
 
 import pytest
 
-import pystac
+from pystac import (
+    Collection,
+    ExtensionNotImplemented,
+    Extent,
+    Item,
+    SpatialExtent,
+    STACValidationError,
+    TemporalExtent,
+)
 from pystac.errors import DeprecatedWarning, ExtensionTypeError
 from pystac.extensions import version
 from pystac.extensions.version import (
@@ -22,14 +30,12 @@ from tests.utils import TestCases
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
 
 
-def make_item(year: int) -> pystac.Item:
+def make_item(year: int) -> Item:
     """Create basic test items that are only slightly different."""
     asset_id = f"USGS/GAP/CONUS/{year}"
     start = datetime(year, 1, 2)
 
-    item = pystac.Item(
-        id=asset_id, geometry=None, bbox=None, datetime=start, properties={}
-    )
+    item = Item(id=asset_id, geometry=None, bbox=None, datetime=start, properties={})
     item.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(item)
@@ -135,7 +141,7 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
     @pytest.mark.vcr()
     def test_fail_validate(self) -> None:
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             self.item.validate()
 
     @pytest.mark.vcr()
@@ -247,14 +253,14 @@ class ItemVersionExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(VersionExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = VersionExtension.ext(item)
 
     def test_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_item_uri)
+        item = Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(VersionExtension.get_schema_uri())
         self.assertNotIn(VersionExtension.get_schema_uri(), item.stac_extensions)
 
@@ -263,17 +269,17 @@ class ItemVersionExtensionTest(unittest.TestCase):
         self.assertIn(VersionExtension.get_schema_uri(), item.stac_extensions)
 
 
-def make_collection(year: int) -> pystac.Collection:
+def make_collection(year: int) -> Collection:
     asset_id = f"my/collection/of/things/{year}"
     start = datetime(2014, 8, 10)
     end = datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = pystac.SpatialExtent(bboxes)
+    spatial_extent = SpatialExtent(bboxes)
     intervals: list[list[Optional[datetime]]] = [[start, end]]
-    temporal_extent = pystac.TemporalExtent(intervals)
-    extent = pystac.Extent(spatial_extent, temporal_extent)
+    temporal_extent = TemporalExtent(intervals)
+    extent = Extent(spatial_extent, temporal_extent)
 
-    collection = pystac.Collection(asset_id, "desc", extent)
+    collection = Collection(asset_id, "desc", extent)
     collection.set_self_href(URL_TEMPLATE % year)
 
     VersionExtension.add_to(collection)
@@ -366,7 +372,7 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
     @pytest.mark.vcr()
     def test_fail_validate(self) -> None:
-        with self.assertRaises(pystac.STACValidationError):
+        with self.assertRaises(STACValidationError):
             self.collection.validate()
 
     @pytest.mark.vcr()
@@ -385,9 +391,9 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
         # Fetch two collections from the catalog
         col1 = cat.get_child("area-1-1", recursive=True)
-        assert isinstance(col1, pystac.Collection)
+        assert isinstance(col1, Collection)
         col2 = cat.get_child("area-2-2", recursive=True)
-        assert isinstance(col2, pystac.Collection)
+        assert isinstance(col2, Collection)
 
         # Enable the version extension on each, and link them
         # as if they are different versions of the same Collection
@@ -482,15 +488,15 @@ class CollectionVersionExtensionTest(unittest.TestCase):
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Collection does not include extension URI
         with ignore_deprecated():
-            collection = pystac.Collection.from_file(self.example_collection_uri)
+            collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with self.assertRaises(ExtensionNotImplemented):
             _ = VersionExtension.ext(collection)
 
     def test_ext_add_to(self) -> None:
         with ignore_deprecated():
-            collection = pystac.Collection.from_file(self.example_collection_uri)
+            collection = Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(VersionExtension.get_schema_uri())
         self.assertNotIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
 
@@ -500,32 +506,32 @@ class CollectionVersionExtensionTest(unittest.TestCase):
 
 
 def test_item_deprecation_warning(
-    item: pystac.Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
+    item: Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
 ) -> None:
     version = ItemVersionExtension.ext(item, add_if_missing=True)
     version.deprecated = True
     item_dict = item.to_dict()
     with pytest.warns(DeprecatedWarning, match="The item 'test-item' is deprecated."):
-        _ = pystac.Item.from_dict(item_dict)
+        _ = Item.from_dict(item_dict)
 
     version.deprecated = False
     item_dict = item.to_dict()
-    _ = pystac.Item.from_dict(item_dict)
+    _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
 
     version.deprecated = None
     item_dict = item.to_dict()
-    _ = pystac.Item.from_dict(item_dict)
+    _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
 
     ItemVersionExtension.remove_from(item)
     item_dict = item.to_dict()
-    _ = pystac.Item.from_dict(item_dict)
+    _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
 
 
 def test_collection_deprecation_warning(
-    collection: pystac.Collection,
+    collection: Collection,
     recwarn: Generator[pytest.WarningsRecorder, None, None],
 ) -> None:
     version = CollectionVersionExtension.ext(collection, add_if_missing=True)
@@ -534,31 +540,31 @@ def test_collection_deprecation_warning(
     with pytest.warns(
         DeprecatedWarning, match="The collection 'test-collection' is deprecated."
     ):
-        _ = pystac.Collection.from_dict(collection_dict)
+        _ = Collection.from_dict(collection_dict)
 
     version.deprecated = False
     collection.extra_fields["deprecated"] = False
     collection_dict = collection.to_dict()
-    _ = pystac.Collection.from_dict(collection_dict)
+    _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
 
     version.deprecated = None
     collection_dict = collection.to_dict()
-    _ = pystac.Collection.from_dict(collection_dict)
+    _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
 
     CollectionVersionExtension.remove_from(collection)
     collection_dict = collection.to_dict()
-    _ = pystac.Collection.from_dict(collection_dict)
+    _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
 
 
 def test_ignore_deprecated_context_manager(
-    item: pystac.Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
+    item: Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
 ) -> None:
     version = VersionExtension.ext(item, add_if_missing=True)
     version.deprecated = True
     item_dict = item.to_dict()
     with ignore_deprecated():
-        _ = pystac.Item.from_dict(item_dict)
+        _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
