@@ -576,6 +576,7 @@ def test_delete_asset_relative_no_self_link_fails(tmp_asset: pystac.Asset) -> No
 
     assert href is not None
     assert item is not None
+    assert isinstance(item, pystac.Item)
 
     item.set_self_href(None)
 

@@ -146,6 +146,7 @@ def test_set_field(ext_asset: pystac.Asset, field: str, value) -> None:  # type:
 
     item = ext_asset.owner
     assert item is not None
+    assert isinstance(item, pystac.Item)
     assert item.validate()
 
 

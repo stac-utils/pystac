@@ -16,8 +16,8 @@ from typing import (
 from dateutil import tz
 
 import pystac
-from pystac import CatalogType, STACError, STACObjectType
-from pystac.asset import Asset
+from pystac import CatalogType, STACObjectType
+from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
 from pystac.layout import HrefLayoutStrategy
@@ -31,9 +31,6 @@ from pystac.serialization import (
 from pystac.summaries import Summaries
 from pystac.utils import (
     datetime_to_str,
-    is_absolute_href,
-    make_absolute_href,
-    make_relative_href,
     str_to_datetime,
 )
 
@@ -437,7 +434,7 @@ class Extent:
         return Extent(spatial=spatial, temporal=temporal, extra_fields=extra_fields)
 
 
-class Collection(Catalog):
+class Collection(Catalog, Assets):
     """A Collection extends the Catalog spec with additional metadata that helps
     enable discovery.
 
@@ -471,9 +468,6 @@ class Collection(Catalog):
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Collection.
     """
-
-    assets: dict[str, Asset]
-    """Map of Assets"""
 
     description: str
     """Detailed multi-line description to fully explain the collection."""
@@ -723,95 +717,6 @@ class Collection(Catalog):
                 # See https://github.com/stac-utils/pystac-client/issues/485
                 return super().get_item(id, recursive=recursive)
             raise e
-
-    def get_assets(
-        self,
-        media_type: str | pystac.MediaType | None = None,
-        role: str | None = None,
-    ) -> dict[str, Asset]:
-        """Get this collection's assets.
-
-        Args:
-            media_type: If set, filter the assets such that only those with a
-                matching ``media_type`` are returned.
-            role: If set, filter the assets such that only those with a matching
-                ``role`` are returned.
-
-        Returns:
-            Dict[str, Asset]: A dictionary of assets that match ``media_type``
-            and/or ``role`` if set or else all of this collection's assets.
-        """
-        return {
-            k: deepcopy(v)
-            for k, v in self.assets.items()
-            if (media_type is None or v.media_type == media_type)
-            and (role is None or v.has_role(role))
-        }
-
-    def add_asset(self, key: str, asset: Asset) -> None:
-        """Adds an Asset to this collection.
-
-        Args:
-            key : The unique key of this asset.
-            asset : The Asset to add.
-        """
-        asset.set_owner(self)
-        self.assets[key] = asset
-
-    def delete_asset(self, key: str) -> None:
-        """Deletes the asset at the given key, and removes the asset's data
-        file from the local filesystem.
-
-        It is an error to attempt to delete an asset's file if it is on a
-        remote filesystem.
-
-        To delete the asset without removing the file, use
-        `del collection.assets["key"]`.
-
-        Args:
-            key: The unique key of this asset.
-        """
-        asset = self.assets[key]
-        asset.set_owner(self)
-        asset.delete()
-
-        del self.assets[key]
-
-    def make_asset_hrefs_relative(self) -> Collection:
-        """Modify each asset's HREF to be relative to this collection's self HREF.
-
-        Returns:
-            Collection: self
-        """
-        self_href = self.get_self_href()
-        for asset in self.assets.values():
-            if is_absolute_href(asset.href):
-                if self_href is None:
-                    raise STACError(
-                        "Cannot make asset HREFs relative " "if no self_href is set."
-                    )
-                asset.href = make_relative_href(asset.href, self_href)
-        return self
-
-    def make_asset_hrefs_absolute(self) -> Collection:
-        """Modify each asset's HREF to be absolute.
-
-        Any asset HREFs that are relative will be modified to absolute based on this
-        collection's self HREF.
-
-        Returns:
-            Collection: self
-        """
-        self_href = self.get_self_href()
-        for asset in self.assets.values():
-            if not is_absolute_href(asset.href):
-                if self_href is None:
-                    raise STACError(
-                        "Cannot make relative asset HREFs absolute "
-                        "if no self_href is set."
-                    )
-                asset.href = make_absolute_href(asset.href, self_href)
-        return self
 
     def update_extent_from_items(self) -> None:
         """
