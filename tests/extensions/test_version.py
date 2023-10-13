@@ -1,6 +1,5 @@
 """Tests for pystac.extensions.version."""
 
-import unittest
 from collections.abc import Generator
 from datetime import datetime
 from typing import Optional
@@ -8,6 +7,7 @@ from typing import Optional
 import pytest
 
 from pystac import (
+    Catalog,
     Collection,
     ExtensionNotImplemented,
     Extent,
@@ -17,10 +17,9 @@ from pystac import (
     TemporalExtent,
 )
 from pystac.errors import DeprecatedWarning, ExtensionTypeError
-from pystac.extensions import version
 from pystac.extensions.version import (
-    CollectionVersionExtension,
-    ItemVersionExtension,
+    DEPRECATED,
+    VERSION,
     VersionExtension,
     VersionRelType,
     ignore_deprecated,
@@ -28,6 +27,26 @@ from pystac.extensions.version import (
 from tests.utils import TestCases
 
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"
+
+
+@pytest.fixture
+def item() -> Item:
+    return make_item(2011)
+
+
+@pytest.fixture
+def item_from_file() -> Item:
+    return Item.from_file(TestCases.get_path("data-files/version/item.json"))
+
+
+@pytest.fixture
+def collection() -> Collection:
+    return make_collection(2011)
+
+
+@pytest.fixture
+def version() -> str:
+    return "1.2.3"
 
 
 def make_item(year: int) -> Item:
@@ -41,232 +60,6 @@ def make_item(year: int) -> Item:
     VersionExtension.add_to(item)
 
     return item
-
-
-class VersionExtensionTest(unittest.TestCase):
-    def test_should_raise_exception_when_passing_invalid_extension_object(
-        self,
-    ) -> None:
-        self.assertRaisesRegex(
-            ExtensionTypeError,
-            r"^VersionExtension does not apply to type 'object'$",
-            VersionExtension.ext,
-            object(),
-        )
-
-
-class ItemVersionExtensionTest(unittest.TestCase):
-    version: str = "1.2.3"
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.item = make_item(2011)
-        self.example_item_uri = TestCases.get_path("data-files/version/item.json")
-
-    def test_rel_types(self) -> None:
-        self.assertEqual(VersionRelType.LATEST.value, "latest-version")
-        self.assertEqual(VersionRelType.PREDECESSOR.value, "predecessor-version")
-        self.assertEqual(VersionRelType.SUCCESSOR.value, "successor-version")
-
-    def test_stac_extensions(self) -> None:
-        self.assertTrue(VersionExtension.has_extension(self.item))
-
-    @pytest.mark.vcr()
-    def test_add_version(self) -> None:
-        VersionExtension.ext(self.item).apply(self.version)
-        self.assertEqual(self.version, VersionExtension.ext(self.item).version)
-        self.assertNotIn(version.DEPRECATED, self.item.properties)
-        self.assertFalse(VersionExtension.ext(self.item).deprecated)
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_version_in_properties(self) -> None:
-        VersionExtension.ext(self.item).apply(self.version, deprecated=True)
-        self.assertIn(version.VERSION, self.item.properties)
-        self.assertIn(version.DEPRECATED, self.item.properties)
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_add_not_deprecated_version(self) -> None:
-        VersionExtension.ext(self.item).apply(self.version, deprecated=False)
-        self.assertIn(version.DEPRECATED, self.item.properties)
-        self.assertFalse(VersionExtension.ext(self.item).deprecated)
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_add_deprecated_version(self) -> None:
-        VersionExtension.ext(self.item).apply(self.version, deprecated=True)
-        self.assertIn(version.DEPRECATED, self.item.properties)
-        self.assertTrue(VersionExtension.ext(self.item).deprecated)
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_latest(self) -> None:
-        year = 2013
-        latest = make_item(year)
-        VersionExtension.ext(self.item).apply(self.version, latest=latest)
-        latest_result = VersionExtension.ext(self.item).latest
-        self.assertIs(latest, latest_result)
-
-        expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(VersionRelType.LATEST)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_predecessor(self) -> None:
-        year = 2010
-        predecessor = make_item(year)
-        VersionExtension.ext(self.item).apply(self.version, predecessor=predecessor)
-        predecessor_result = VersionExtension.ext(self.item).predecessor
-        self.assertIs(predecessor, predecessor_result)
-
-        expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(VersionRelType.PREDECESSOR)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_successor(self) -> None:
-        year = 2012
-        successor = make_item(year)
-        VersionExtension.ext(self.item).apply(self.version, successor=successor)
-        successor_result = VersionExtension.ext(self.item).successor
-        self.assertIs(successor, successor_result)
-
-        expected_href = URL_TEMPLATE % year
-        link = self.item.get_links(VersionRelType.SUCCESSOR)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_fail_validate(self) -> None:
-        with self.assertRaises(STACValidationError):
-            self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_all_links(self) -> None:
-        deprecated = True
-        latest = make_item(2013)
-        predecessor = make_item(2010)
-        successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(
-            self.version, deprecated, latest, predecessor, successor
-        )
-        self.item.validate()
-
-    def test_full_copy(self) -> None:
-        cat = TestCases.case_1()
-
-        # Fetch two items from the catalog
-        item1 = next(cat.get_items("area-1-1-imagery", recursive=True))
-        item2 = next(cat.get_items("area-2-2-imagery", recursive=True))
-
-        # Enable the version extension on each, and link them
-        # as if they are different versions of the same Item
-        VersionExtension.add_to(item1)
-        VersionExtension.add_to(item2)
-
-        VersionExtension.ext(item1).apply(version="2.0", predecessor=item2)
-        VersionExtension.ext(item2).apply(version="1.0", successor=item1, latest=item1)
-
-        # Make a full copy of the catalog
-        cat_copy = cat.full_copy()
-
-        # Retrieve the copied version of the items
-        item1_copy = next(cat_copy.get_items("area-1-1-imagery", recursive=True))
-        item2_copy = next(cat_copy.get_items("area-2-2-imagery", recursive=True))
-
-        # Check to see if the version links point to the instances of the
-        # item objects as they should.
-
-        predecessor = item1_copy.get_single_link(VersionRelType.PREDECESSOR)
-        assert predecessor is not None
-        predecessor_target = predecessor.target
-        successor = item2_copy.get_single_link(VersionRelType.SUCCESSOR)
-        assert successor is not None
-        successor_target = successor.target
-        latest = item2_copy.get_single_link(VersionRelType.LATEST)
-        assert latest is not None
-        latest_target = latest.target
-
-        self.assertIs(predecessor_target, item2_copy)
-        self.assertIs(successor_target, item1_copy)
-        self.assertIs(latest_target, item1_copy)
-
-    def test_setting_none_clears_link(self) -> None:
-        deprecated = False
-        latest = make_item(2013)
-        predecessor = make_item(2010)
-        successor = make_item(2012)
-        VersionExtension.ext(self.item).apply(
-            self.version, deprecated, latest, predecessor, successor
-        )
-
-        VersionExtension.ext(self.item).latest = None
-        links = self.item.get_links(VersionRelType.LATEST)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.item).latest)
-
-        VersionExtension.ext(self.item).predecessor = None
-        links = self.item.get_links(VersionRelType.PREDECESSOR)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.item).predecessor)
-
-        VersionExtension.ext(self.item).successor = None
-        links = self.item.get_links(VersionRelType.SUCCESSOR)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.item).successor)
-
-    def test_multiple_link_setting(self) -> None:
-        deprecated = False
-        latest1 = make_item(2013)
-        predecessor1 = make_item(2010)
-        successor1 = make_item(2012)
-        VersionExtension.ext(self.item).apply(
-            self.version, deprecated, latest1, predecessor1, successor1
-        )
-
-        year = 2015
-        latest2 = make_item(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.item).latest = latest2
-        links = self.item.get_links(VersionRelType.LATEST)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
-
-        year = 2009
-        predecessor2 = make_item(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.item).predecessor = predecessor2
-        links = self.item.get_links(VersionRelType.PREDECESSOR)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
-
-        year = 2014
-        successor2 = make_item(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.item).successor = successor2
-        links = self.item.get_links(VersionRelType.SUCCESSOR)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
-
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Item does not include extension URI
-        item = Item.from_file(self.example_item_uri)
-        item.stac_extensions.remove(VersionExtension.get_schema_uri())
-
-        with self.assertRaises(ExtensionNotImplemented):
-            _ = VersionExtension.ext(item)
-
-    def test_ext_add_to(self) -> None:
-        item = Item.from_file(self.example_item_uri)
-        item.stac_extensions.remove(VersionExtension.get_schema_uri())
-        self.assertNotIn(VersionExtension.get_schema_uri(), item.stac_extensions)
-
-        _ = VersionExtension.ext(item, add_if_missing=True)
-
-        self.assertIn(VersionExtension.get_schema_uri(), item.stac_extensions)
 
 
 def make_collection(year: int) -> Collection:
@@ -287,244 +80,266 @@ def make_collection(year: int) -> Collection:
     return collection
 
 
-class CollectionVersionExtensionTest(unittest.TestCase):
-    version: str = "1.2.3"
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(
+        ExtensionTypeError, match="^VersionExtension does not apply to type 'object'$"
+    ):
+        VersionExtension.ext(object())  # type: ignore
 
-    def setUp(self) -> None:
-        super().setUp()
-        self.collection = make_collection(2011)
-        self.example_collection_uri = TestCases.get_path(
-            "data-files/version/collection.json"
-        )
 
-    def test_stac_extensions(self) -> None:
-        self.assertTrue(VersionExtension.has_extension(self.collection))
+def test_rel_types() -> None:
+    assert VersionRelType.LATEST.value == "latest-version"
+    assert VersionRelType.PREDECESSOR.value == "predecessor-version"
+    assert VersionRelType.SUCCESSOR.value == "successor-version"
 
-    @pytest.mark.vcr()
-    def test_add_version(self) -> None:
-        VersionExtension.ext(self.collection).apply(self.version)
-        self.assertEqual(self.version, VersionExtension.ext(self.collection).version)
-        self.assertNotIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertFalse(VersionExtension.ext(self.collection).deprecated)
-        self.collection.validate()
 
-    @pytest.mark.vcr()
-    def test_version_deprecated(self) -> None:
-        VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
-        self.assertIn(version.VERSION, self.collection.extra_fields)
-        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
-        self.collection.validate()
+def test_stac_extensions(item: Item) -> None:
+    assert item.ext.has("version")
 
-    @pytest.mark.vcr()
-    def test_add_not_deprecated_version(self) -> None:
-        VersionExtension.ext(self.collection).apply(self.version, deprecated=False)
-        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertFalse(VersionExtension.ext(self.collection).deprecated)
-        self.collection.validate()
 
-    @pytest.mark.vcr()
-    def test_add_deprecated_version(self) -> None:
-        VersionExtension.ext(self.collection).apply(self.version, deprecated=True)
-        self.assertIn(version.DEPRECATED, self.collection.extra_fields)
-        self.assertTrue(VersionExtension.ext(self.collection).deprecated)
-        self.collection.validate()
+@pytest.mark.vcr()
+def test_add_version(item: Item, version: str) -> None:
+    item.ext.version.apply(version)
+    assert version == item.ext.version.version
+    assert DEPRECATED not in item.properties
+    assert not item.ext.version.deprecated
+    item.validate()
 
-    @pytest.mark.vcr()
-    def test_latest(self) -> None:
-        year = 2013
-        latest = make_collection(year)
-        VersionExtension.ext(self.collection).apply(self.version, latest=latest)
-        latest_result = VersionExtension.ext(self.collection).latest
-        self.assertIs(latest, latest_result)
 
-        expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(VersionRelType.LATEST)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.collection.validate()
+@pytest.mark.vcr()
+def test_version_in_properties(item: Item, version: str) -> None:
+    item.ext.version.apply(version, deprecated=True)
+    assert VERSION in item.properties
+    assert DEPRECATED in item.properties
+    item.validate()
 
-    @pytest.mark.vcr()
-    def test_predecessor(self) -> None:
-        year = 2010
-        predecessor = make_collection(year)
-        VersionExtension.ext(self.collection).apply(
-            self.version, predecessor=predecessor
-        )
-        predecessor_result = VersionExtension.ext(self.collection).predecessor
-        self.assertIs(predecessor, predecessor_result)
 
-        expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(VersionRelType.PREDECESSOR)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.collection.validate()
+@pytest.mark.vcr()
+def test_add_not_deprecated_version(item: Item, version: str) -> None:
+    item.ext.version.apply(version, deprecated=False)
+    assert DEPRECATED in item.properties
+    assert not item.ext.version.deprecated
+    item.validate()
 
-    @pytest.mark.vcr()
-    def test_successor(self) -> None:
-        year = 2012
-        successor = make_collection(year)
-        VersionExtension.ext(self.collection).apply(self.version, successor=successor)
-        successor_result = VersionExtension.ext(self.collection).successor
-        self.assertIs(successor, successor_result)
 
-        expected_href = URL_TEMPLATE % year
-        link = self.collection.get_links(VersionRelType.SUCCESSOR)[0]
-        self.assertEqual(expected_href, link.get_href())
-        self.collection.validate()
+@pytest.mark.vcr()
+def test_add_deprecated_version(item: Item, version: str) -> None:
+    item.ext.version.apply(version, deprecated=True)
+    assert DEPRECATED in item.properties
+    assert item.ext.version.deprecated
+    item.validate()
 
-    @pytest.mark.vcr()
-    def test_fail_validate(self) -> None:
-        with self.assertRaises(STACValidationError):
-            self.collection.validate()
 
-    @pytest.mark.vcr()
-    def test_validate_all(self) -> None:
-        deprecated = True
-        latest = make_collection(2013)
-        predecessor = make_collection(2010)
-        successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(
-            self.version, deprecated, latest, predecessor, successor
-        )
-        self.collection.validate()
+@pytest.mark.vcr()
+def test_latest(item: Item, version: str) -> None:
+    year = 2013
+    latest = make_item(year)
+    item.ext.version.apply(version, latest=latest)
+    assert item.ext.version.latest is latest
+    expected_href = URL_TEMPLATE % year
+    link = item.get_links(VersionRelType.LATEST)[0]
+    assert expected_href == link.get_href()
+    item.validate()
 
-    def test_full_copy(self) -> None:
-        cat = TestCases.case_1()
 
-        # Fetch two collections from the catalog
-        col1 = cat.get_child("area-1-1", recursive=True)
-        assert isinstance(col1, Collection)
-        col2 = cat.get_child("area-2-2", recursive=True)
-        assert isinstance(col2, Collection)
+@pytest.mark.vcr()
+def test_predecessor(item: Item, version: str) -> None:
+    year = 2010
+    predecessor = make_item(year)
+    item.ext.version.apply(version, predecessor=predecessor)
+    assert item.ext.version.predecessor is predecessor
+    expected_href = URL_TEMPLATE % year
+    link = item.get_links(VersionRelType.PREDECESSOR)[0]
+    assert expected_href == link.get_href()
+    item.validate()
 
-        # Enable the version extension on each, and link them
-        # as if they are different versions of the same Collection
-        VersionExtension.add_to(col1)
-        VersionExtension.add_to(col2)
 
-        VersionExtension.ext(col1).apply(version="2.0", predecessor=col2)
-        VersionExtension.ext(col2).apply(version="1.0", successor=col1, latest=col1)
+@pytest.mark.vcr()
+def test_successor(item: Item, version: str) -> None:
+    year = 2012
+    successor = make_item(year)
+    item.ext.version.apply(version, successor=successor)
+    assert item.ext.version.successor is successor
+    expected_href = URL_TEMPLATE % year
+    link = item.get_links(VersionRelType.SUCCESSOR)[0]
+    assert expected_href == link.get_href()
+    item.validate()
 
-        # Make a full copy of the catalog
-        cat_copy = cat.full_copy()
 
-        # Retrieve the copied version of the items
-        col1_copy = cat_copy.get_child("area-1-1", recursive=True)
-        assert col1_copy is not None
-        col2_copy = cat_copy.get_child("area-2-2", recursive=True)
-        assert col2_copy is not None
+@pytest.mark.vcr()
+def test_fail_validate(item: Item) -> None:
+    with pytest.raises(STACValidationError):
+        item.validate()
 
-        # Check to see if the version links point to the instances of the
-        # col objects as they should.
-        predecessor = col1_copy.get_single_link(VersionRelType.PREDECESSOR)
-        assert predecessor is not None
-        predecessor_target = predecessor.target
-        successor = col2_copy.get_single_link(VersionRelType.SUCCESSOR)
-        assert successor is not None
-        successor_target = successor.target
-        latest = col2_copy.get_single_link(VersionRelType.LATEST)
-        assert latest is not None
-        latest_target = latest.target
 
-        self.assertIs(predecessor_target, col2_copy)
-        self.assertIs(successor_target, col1_copy)
-        self.assertIs(latest_target, col1_copy)
+@pytest.mark.vcr()
+def test_all_links(item: Item, version: str) -> None:
+    deprecated = True
+    latest = make_item(2013)
+    predecessor = make_item(2010)
+    successor = make_item(2012)
+    item.ext.version.apply(
+        version,
+        deprecated=deprecated,
+        latest=latest,
+        predecessor=predecessor,
+        successor=successor,
+    )
+    item.validate()
 
-    def test_setting_none_clears_link(self) -> None:
-        deprecated = False
-        latest = make_collection(2013)
-        predecessor = make_collection(2010)
-        successor = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(
-            self.version, deprecated, latest, predecessor, successor
-        )
 
-        VersionExtension.ext(self.collection).latest = None
-        links = self.collection.get_links(VersionRelType.LATEST)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.collection).latest)
+def test_full_copy(test_case_1_catalog: Catalog) -> None:
+    # Fetch two items from the catalog
+    item1 = next(test_case_1_catalog.get_items("area-1-1-imagery", recursive=True))
+    item2 = next(test_case_1_catalog.get_items("area-2-2-imagery", recursive=True))
 
-        VersionExtension.ext(self.collection).predecessor = None
-        links = self.collection.get_links(VersionRelType.PREDECESSOR)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.collection).predecessor)
+    # Enable the version extension on each, and link them
+    # as if they are different versions of the same Item
+    item1.ext.add("version")
+    item2.ext.add("version")
 
-        VersionExtension.ext(self.collection).successor = None
-        links = self.collection.get_links(VersionRelType.SUCCESSOR)
-        self.assertEqual(0, len(links))
-        self.assertIsNone(VersionExtension.ext(self.collection).successor)
+    item1.ext.version.apply(version="2.0", predecessor=item2)
+    item2.ext.version.apply(version="1.0", successor=item1, latest=item1)
 
-    def test_multiple_link_setting(self) -> None:
-        deprecated = False
-        latest1 = make_collection(2013)
-        predecessor1 = make_collection(2010)
-        successor1 = make_collection(2012)
-        VersionExtension.ext(self.collection).apply(
-            self.version, deprecated, latest1, predecessor1, successor1
-        )
+    # Make a full copy of the catalog
+    cat_copy = test_case_1_catalog.full_copy()
 
-        year = 2015
-        latest2 = make_collection(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.collection).latest = latest2
-        links = self.collection.get_links(VersionRelType.LATEST)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
+    # Retrieve the copied version of the items
+    item1_copy = next(cat_copy.get_items("area-1-1-imagery", recursive=True))
+    item2_copy = next(cat_copy.get_items("area-2-2-imagery", recursive=True))
 
-        year = 2009
-        predecessor2 = make_collection(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.collection).predecessor = predecessor2
-        links = self.collection.get_links(VersionRelType.PREDECESSOR)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
+    # Check to see if the version links point to the instances of the
+    # item objects as they should.
 
-        year = 2014
-        successor2 = make_collection(year)
-        expected_href = URL_TEMPLATE % year
-        VersionExtension.ext(self.collection).successor = successor2
-        links = self.collection.get_links(VersionRelType.SUCCESSOR)
-        self.assertEqual(1, len(links))
-        self.assertEqual(expected_href, links[0].get_href())
+    predecessor = item1_copy.get_single_link(VersionRelType.PREDECESSOR)
+    assert predecessor is not None
+    predecessor_target = predecessor.target
+    successor = item2_copy.get_single_link(VersionRelType.SUCCESSOR)
+    assert successor is not None
+    successor_target = successor.target
+    latest = item2_copy.get_single_link(VersionRelType.LATEST)
+    assert latest is not None
+    latest_target = latest.target
 
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Collection does not include extension URI
-        with ignore_deprecated():
-            collection = Collection.from_file(self.example_collection_uri)
-        collection.stac_extensions.remove(VersionExtension.get_schema_uri())
+    assert predecessor_target is item2_copy
+    assert successor_target is item1_copy
+    assert latest_target is item1_copy
 
-        with self.assertRaises(ExtensionNotImplemented):
-            _ = VersionExtension.ext(collection)
 
-    def test_ext_add_to(self) -> None:
-        with ignore_deprecated():
-            collection = Collection.from_file(self.example_collection_uri)
-        collection.stac_extensions.remove(VersionExtension.get_schema_uri())
-        self.assertNotIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
+def test_setting_none_clears_link(item: Item, version: str) -> None:
+    deprecated = False
+    latest = make_item(2013)
+    predecessor = make_item(2010)
+    successor = make_item(2012)
+    item.ext.version.apply(version, deprecated, latest, predecessor, successor)
 
-        _ = VersionExtension.ext(collection, add_if_missing=True)
+    item.ext.version.latest = None
+    links = item.get_links(VersionRelType.LATEST)
+    assert 0 == len(links)
 
-        self.assertIn(VersionExtension.get_schema_uri(), collection.stac_extensions)
+    item.ext.version.predecessor = None
+    links = item.get_links(VersionRelType.PREDECESSOR)
+    assert 0 == len(links)
+
+    item.ext.version.successor = None
+    links = item.get_links(VersionRelType.SUCCESSOR)
+    assert 0 == len(links)
+
+
+def test_multiple_link_setting(item: Item, version: str) -> None:
+    deprecated = False
+    latest1 = make_item(2013)
+    predecessor1 = make_item(2010)
+    successor1 = make_item(2012)
+    item.ext.version.apply(version, deprecated, latest1, predecessor1, successor1)
+
+    year = 2015
+    latest2 = make_item(year)
+    expected_href = URL_TEMPLATE % year
+    item.ext.version.latest = latest2
+    links = item.get_links(VersionRelType.LATEST)
+    assert 1 == len(links)
+    assert expected_href == links[0].get_href()
+
+    year = 2009
+    predecessor2 = make_item(year)
+    expected_href = URL_TEMPLATE % year
+    item.ext.version.predecessor = predecessor2
+    links = item.get_links(VersionRelType.PREDECESSOR)
+    assert 1 == len(links)
+    assert expected_href == links[0].get_href()
+
+    year = 2014
+    successor2 = make_item(year)
+    expected_href = URL_TEMPLATE % year
+    item.ext.version.successor = successor2
+    links = item.get_links(VersionRelType.SUCCESSOR)
+    assert 1 == len(links)
+    assert expected_href == links[0].get_href()
+
+
+def test_extension_not_implemented(item_from_file: Item) -> None:
+    # Should raise exception if Item does not include extension URI
+    item_from_file.stac_extensions.remove(VersionExtension.get_schema_uri())
+    with pytest.raises(ExtensionNotImplemented):
+        item_from_file.ext.version
+
+
+def test_ext_add_to(item_from_file: Item) -> None:
+    item_from_file.stac_extensions.remove(VersionExtension.get_schema_uri())
+    item_from_file.ext.add("version")
+    assert VersionExtension.get_schema_uri() in item_from_file.stac_extensions
+
+
+def test_collection_stac_extensions(collection: Collection) -> None:
+    assert collection.ext.has("version")
+
+
+@pytest.mark.vcr()
+def test_collection_add_version(collection: Collection, version: str) -> None:
+    collection.ext.version.apply(version)
+    assert collection.ext.version.version == version
+    assert DEPRECATED not in collection.extra_fields
+    collection.validate()
+
+
+@pytest.mark.vcr()
+def test_collection_validate_all(collection: Collection, version: str) -> None:
+    deprecated = True
+    latest = make_collection(2013)
+    predecessor = make_collection(2010)
+    successor = make_collection(2012)
+    collection.ext.version.apply(version, deprecated, latest, predecessor, successor)
+
+    links = collection.get_links(VersionRelType.LATEST)
+    assert 1 == len(links)
+    links = collection.get_links(VersionRelType.PREDECESSOR)
+    assert 1 == len(links)
+    links = collection.get_links(VersionRelType.SUCCESSOR)
+    assert 1 == len(links)
+
+    collection.validate()
 
 
 def test_item_deprecation_warning(
     item: Item, recwarn: Generator[pytest.WarningsRecorder, None, None]
 ) -> None:
-    version = ItemVersionExtension.ext(item, add_if_missing=True)
-    version.deprecated = True
+    item.ext.version.deprecated = True
     item_dict = item.to_dict()
-    with pytest.warns(DeprecatedWarning, match="The item 'test-item' is deprecated."):
+    with pytest.warns(DeprecatedWarning, match="The item '.*' is deprecated."):
         _ = Item.from_dict(item_dict)
 
-    version.deprecated = False
+    item.ext.version.deprecated = False
     item_dict = item.to_dict()
     _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
 
-    version.deprecated = None
+    item.ext.version.deprecated = None
     item_dict = item.to_dict()
     _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
 
-    ItemVersionExtension.remove_from(item)
+    item.ext.remove("version")
     item_dict = item.to_dict()
     _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
@@ -534,26 +349,22 @@ def test_collection_deprecation_warning(
     collection: Collection,
     recwarn: Generator[pytest.WarningsRecorder, None, None],
 ) -> None:
-    version = CollectionVersionExtension.ext(collection, add_if_missing=True)
-    version.deprecated = True
+    collection.ext.version.deprecated = True
     collection_dict = collection.to_dict()
-    with pytest.warns(
-        DeprecatedWarning, match="The collection 'test-collection' is deprecated."
-    ):
+    with pytest.warns(DeprecatedWarning, match="The collection '.*' is deprecated."):
         _ = Collection.from_dict(collection_dict)
 
-    version.deprecated = False
-    collection.extra_fields["deprecated"] = False
+    collection.ext.version.deprecated = False
     collection_dict = collection.to_dict()
     _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
 
-    version.deprecated = None
+    collection.ext.version.deprecated = None
     collection_dict = collection.to_dict()
     _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
 
-    CollectionVersionExtension.remove_from(collection)
+    collection.ext.remove("version")
     collection_dict = collection.to_dict()
     _ = Collection.from_dict(collection_dict)
     assert len(list(recwarn)) == 0
