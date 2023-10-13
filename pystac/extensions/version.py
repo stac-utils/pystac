@@ -17,11 +17,11 @@ import pystac
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, get_required, map_opt
+from pystac.utils import StringEnum, map_opt
 
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
-SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/version/v1.2.0/schema.json"
 
 # STAC fields - These are unusual for an extension in that they do not have
 # a prefix.  e.g. nothing like "ver:"
@@ -107,14 +107,14 @@ class VersionExtension(
             self.successor = successor
 
     @property
-    def version(self) -> str:
+    def version(self) -> str | None:
         """Get or sets a version string of the :class:`~pystac.Item` or
         :class:`pystac.Collection`."""
-        return get_required(self._get_property(VERSION, str), self, VERSION)
+        return self._get_property(VERSION, str)
 
     @version.setter
     def version(self, v: str) -> None:
-        self._set_property(VERSION, v, pop_if_none=False)
+        self._set_property(VERSION, v, pop_if_none=True)
 
     @property
     def deprecated(self) -> bool | None:

@@ -9,74 +9,55 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://stac-extensions.github.io/version/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/version/v1.2.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/version/v1.0.0/schema.json#\",\n  \"title\":
+        \"https://stac-extensions.github.io/version/v1.2.0/schema.json#\",\n  \"title\":
         \"Versioning Indicators Extension\",\n  \"description\": \"STAC Versioning
         Indicators Extension for STAC Items and STAC Collections.\",\n  \"oneOf\":
-        [\n    {\n      \"$comment\": \"This is the schema for STAC Items. Remove
-        this object if this extension only applies to Collections.\",\n      \"allOf\":
+        [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
         [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
         \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
         \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
         {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
-        \           \"properties\": {\n              \"allOf\": [\n                {\n
-        \                 \"$comment\": \"Require fields here for item properties.\",\n
-        \                 \"required\": [\n                    \"version\"\n                  ]\n
-        \               },\n                {\n                  \"$ref\": \"#/definitions/fields\"\n
-        \               }\n              ]\n            },\n            \"assets\":
-        {\n              \"$comment\": \"This validates the fields in Item Assets,
-        but does not require them.\",\n              \"type\": \"object\",\n              \"additionalProperties\":
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
+        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        }\n      ]\n    },\n
+        \   {\n      \"$comment\": \"This is the schema for STAC Collections.\",\n
+        \     \"type\": \"object\",\n      \"allOf\": [\n        {\n          \"required\":
+        [\n            \"type\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Collection\"\n            }\n          }\n        },\n
+        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
+        \       {\n          \"$comment\": \"This is the schema for the top-level
+        fields in a Collection.\",\n          \"allOf\": [\n            {\n              \"$ref\":
+        \"#/definitions/fields\"\n            }\n          ]\n        },\n        {\n
+        \         \"$comment\": \"This validates the fields in Collection Assets.\",\n
+        \         \"properties\": {\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
+        \       {\n          \"$comment\": \"This is the schema for the fields in
+        Item Asset Definitions.\",\n          \"properties\": {\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
         \         }\n        }\n      ]\n    },\n    {\n      \"$comment\": \"This
-        is the schema for STAC Collections.\",\n      \"type\": \"object\",\n      \"allOf\":
-        [\n        {\n          \"required\": [\n            \"type\"\n          ],\n
+        is the schema for STAC Catalog.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
         \         \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Collection\"\n            }\n          }\n        },\n        {\n          \"$ref\":
-        \"#/definitions/stac_extensions\"\n        }\n      ],\n      \"anyOf\": [\n
-        \       {\n          \"$comment\": \"This is the schema for the top-level
-        fields in a Collection. Remove this if this extension does not define top-level
-        fields for Collections.\",\n          \"allOf\": [\n            {\n              \"$comment\":
-        \"Require fields here for Collections (top-level).\",\n              \"required\":
-        [\n                \"version\"\n              ]\n            },\n            {\n
-        \             \"$ref\": \"#/definitions/fields\"\n            }\n          ]\n
-        \       },\n        {\n          \"$comment\": \"This validates the fields
-        in Collection Assets, but does not require them.\",\n          \"required\":
-        [\n            \"assets\"\n          ],\n          \"properties\": {\n            \"assets\":
-        {\n              \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
-        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
-        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
-        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
-        \                     }\n                    ]\n                  }\n                }\n
-        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
-        \"This is the schema for the fields in Item Asset Definitions. It doesn't
-        require any fields.\",\n          \"required\": [\n            \"item_assets\"\n
-        \         ],\n          \"properties\": {\n            \"item_assets\": {\n
-        \             \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
-        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
-        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
-        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
-        \                     }\n                    ]\n                  }\n                }\n
-        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
-        \"This is the schema for the fields in Summaries. By default, only checks
-        the existance of the properties, but not the schema of the summaries.\",\n
-        \         \"required\": [\n            \"summaries\"\n          ],\n          \"properties\":
-        {\n            \"summaries\": {\n              \"$ref\": \"#/definitions/require_any_field\"\n
-        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        \"Catalog\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        },\n        {\n          \"$ref\":
+        \"#/definitions/fields\"\n        }\n      ]\n    }\n  ],\n  \"definitions\":
         {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
         [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
         {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
-        \"https://stac-extensions.github.io/version/v1.0.0/schema.json\"\n          }\n
-        \       }\n      }\n    },\n    \"require_any_field\": {\n      \"$comment\":
-        \"Please list all fields here so that we can force the existance of one of
-        them in other parts of the schemas.\",\n      \"anyOf\": [\n        {\"required\":
-        [\"version\"]},\n        {\"required\": [\"deprecated\"]}\n      ]\n    },\n
-        \   \"fields\": {\n      \"type\": \"object\",\n      \"properties\": {\n
-        \       \"version\": {\n          \"type\": \"string\",\n          \"title\":
-        \"Version\"\n        },\n        \"deprecated\": {\n          \"type\": \"boolean\",\n
-        \         \"title\": \"Deprecated\",\n          \"default\": false\n        }\n
+        \"https://stac-extensions.github.io/version/v1.2.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"fields\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"version\": {\n          \"type\": \"string\",\n
+        \         \"title\": \"Version\"\n        },\n        \"deprecated\": {\n
+        \         \"type\": \"boolean\",\n          \"title\": \"Deprecated\",\n          \"default\":
+        false\n        },\n        \"experimental\": {\n          \"type\": \"boolean\",\n
+        \         \"title\": \"Experimental\",\n          \"default\": false\n        }\n
         \     }\n    }\n  }\n}\n"
     headers:
       Accept-Ranges:
@@ -84,19 +65,19 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '160'
+      - '27'
       Cache-Control:
       - max-age=600
       Connection:
       - close
       Content-Length:
-      - '5009'
+      - '3405'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 13 Oct 2023 17:06:37 GMT
+      - Fri, 13 Oct 2023 17:24:28 GMT
       ETag:
-      - '"645249bd-1391"'
+      - '"645249bd-d4d"'
       Last-Modified:
       - Wed, 03 May 2023 11:47:09 GMT
       Server:
@@ -112,15 +93,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - df08dd4d458893a27b978d943506bd6fd7dce32d
+      - ee0a63e47dddcc05d0b86fba6ef0865d50d7e2f5
       X-GitHub-Request-Id:
-      - 3198:088E:8D4F65:BD7359:6529787C
+      - BC3A:66F5:8B5231:BC00EF:65297D31
       X-Served-By:
-      - cache-iad-kjyo7100082-IAD
+      - cache-iad-kjyo7100081-IAD
       X-Timer:
-      - S1697216797.254462,VS0,VE2
+      - S1697217869.614386,VS0,VE2
       expires:
-      - Fri, 13 Oct 2023 17:13:57 GMT
+      - Fri, 13 Oct 2023 17:34:01 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

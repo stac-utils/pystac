@@ -13,7 +13,6 @@ from pystac import (
     Extent,
     Item,
     SpatialExtent,
-    STACValidationError,
     TemporalExtent,
 )
 from pystac.errors import DeprecatedWarning, ExtensionTypeError
@@ -164,12 +163,6 @@ def test_successor(item: Item, version: str) -> None:
     link = item.get_links(VersionRelType.SUCCESSOR)[0]
     assert expected_href == link.get_href()
     item.validate()
-
-
-@pytest.mark.vcr()
-def test_fail_validate(item: Item) -> None:
-    with pytest.raises(STACValidationError):
-        item.validate()
 
 
 @pytest.mark.vcr()
@@ -392,3 +385,14 @@ def test_experimental(item: Item) -> None:
     assert not item.properties["experimental"]
     item.ext.version.experimental = None
     assert "experimental" not in item.properties
+
+
+def test_optional_version(item: Item) -> None:
+    # Changed in v1.1.0
+    assert item.ext.version.version is None
+    assert "version" not in item.properties
+    item.validate()
+    item.ext.version.version = "final_final_2"
+    assert "version" in item.properties
+    item.ext.version.version = None
+    assert "version" not in item.properties
