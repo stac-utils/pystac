@@ -18,7 +18,7 @@ from pystac.extensions.scientific import ScientificExtension
 from pystac.extensions.storage import StorageExtension
 from pystac.extensions.table import TableExtension
 from pystac.extensions.timestamps import TimestampsExtension
-from pystac.extensions.version import VersionExtension
+from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
@@ -267,6 +267,10 @@ class _AssetExt(Generic[T]):
     @property
     def table(self) -> TableExtension[T]:
         return TableExtension.ext(self.stac_object)
+
+    @property
+    def version(self) -> BaseVersionExtension[T]:
+        return BaseVersionExtension.ext(self.stac_object)
 
     @property
     def view(self) -> ViewExtension[T]:

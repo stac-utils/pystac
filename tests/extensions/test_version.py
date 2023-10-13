@@ -7,6 +7,7 @@ from typing import Optional
 import pytest
 
 from pystac import (
+    Asset,
     Catalog,
     Collection,
     ExtensionNotImplemented,
@@ -239,7 +240,9 @@ def test_setting_none_clears_link(item: Item, version: str) -> None:
     latest = make_item(2013)
     predecessor = make_item(2010)
     successor = make_item(2012)
-    item.ext.version.apply(version, deprecated, latest, predecessor, successor)
+    item.ext.version.apply(
+        version, deprecated, latest=latest, predecessor=predecessor, successor=successor
+    )
 
     item.ext.version.latest = None
     links = item.get_links(VersionRelType.LATEST)
@@ -259,7 +262,13 @@ def test_multiple_link_setting(item: Item, version: str) -> None:
     latest1 = make_item(2013)
     predecessor1 = make_item(2010)
     successor1 = make_item(2012)
-    item.ext.version.apply(version, deprecated, latest1, predecessor1, successor1)
+    item.ext.version.apply(
+        version,
+        deprecated,
+        latest=latest1,
+        predecessor=predecessor1,
+        successor=successor1,
+    )
 
     year = 2015
     latest2 = make_item(year)
@@ -317,7 +326,9 @@ def test_collection_validate_all(collection: Collection, version: str) -> None:
     latest = make_collection(2013)
     predecessor = make_collection(2010)
     successor = make_collection(2012)
-    collection.ext.version.apply(version, deprecated, latest, predecessor, successor)
+    collection.ext.version.apply(
+        version, deprecated, latest=latest, predecessor=predecessor, successor=successor
+    )
 
     links = collection.get_links(VersionRelType.LATEST)
     assert 1 == len(links)
@@ -347,7 +358,9 @@ def test_catalog_validate_all(catalog: Catalog, version: str) -> None:
     latest = make_collection(2013)
     predecessor = make_collection(2010)
     successor = make_collection(2012)
-    catalog.ext.version.apply(version, deprecated, latest, predecessor, successor)
+    catalog.ext.version.apply(
+        version, deprecated, latest=latest, predecessor=predecessor, successor=successor
+    )
 
     links = catalog.get_links(VersionRelType.LATEST)
     assert 1 == len(links)
@@ -441,3 +454,20 @@ def test_optional_version(item: Item) -> None:
     assert "version" in item.properties
     item.ext.version.version = None
     assert "version" not in item.properties
+
+
+def test_assets(item: Item) -> None:
+    item.ext.remove("version")
+    asset = Asset("example.tif")
+    item.add_asset("data", asset)
+
+    assert not asset.ext.has("version")
+    asset.ext.add("version")
+    assert asset.ext.has("version")
+    assert item.ext.has("version")
+
+    asset.ext.version.version = "final_final_2"
+    assert asset.ext.version.version == "final_final_2"
+    assert "version" in asset.extra_fields
+
+    item.validate()
