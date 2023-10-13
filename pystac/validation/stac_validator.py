@@ -25,6 +25,13 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+class GetSchemaError(Exception):
+    """Raised when unable to fetch a schema."""
+
+    def __init__(self, href: str, error: Exception) -> None:
+        super().__init__(f"Error when fetching schema {href}: {error}")
+
+
 class STACValidator(ABC):
     """STACValidator defines methods for validating STAC
     JSON. Implementations define methods for validating core objects and extension.
@@ -155,7 +162,10 @@ class JsonSchemaSTACValidator(STACValidator):
 
     def _get_schema(self, schema_uri: str) -> dict[str, Any]:
         if schema_uri not in self.schema_cache:
-            s = json.loads(pystac.StacIO.default().read_text(schema_uri))
+            try:
+                s = json.loads(pystac.StacIO.default().read_text(schema_uri))
+            except Exception as error:
+                raise GetSchemaError(schema_uri, error) from error
             self.schema_cache[schema_uri] = s
             id_field = "$id" if "$id" in s else "id"
             if not s[id_field].startswith("http"):
