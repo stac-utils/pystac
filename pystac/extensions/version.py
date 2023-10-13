@@ -402,8 +402,16 @@ class ItemAssetsViewExtension(BaseVersionExtension[AssetDefinition]):
 
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids = {"version"}
-    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
+    prev_extension_ids = {
+        "version",
+        "https://stac-extensions.github.io/version/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/version/v1.1.0/schema.json",
+    }
+    stac_object_types = {
+        STACObjectType.COLLECTION,
+        STACObjectType.ITEM,
+        STACObjectType.CATALOG,
+    }
 
     def get_object_links(self, so: STACObject) -> list[str] | None:
         if isinstance(so, Collection) or isinstance(so, Item):

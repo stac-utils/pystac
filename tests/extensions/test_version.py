@@ -471,3 +471,16 @@ def test_assets(item: Item) -> None:
     assert "version" in asset.extra_fields
 
     item.validate()
+
+
+@pytest.mark.parametrize("version", ["v1.0.0", "v1.1.0"])
+def test_migrate(version: str, item: Item) -> None:
+    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["stac_extensions"] = [
+        f"https://stac-extensions.github.io/version/{version}/schema.json"
+    ]
+    item = Item.from_dict(item_dict, migrate=True)
+    assert (
+        "https://stac-extensions.github.io/version/v1.2.0/schema.json"
+        in item.stac_extensions
+    )
