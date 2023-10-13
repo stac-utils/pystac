@@ -57,6 +57,13 @@ class VersionRelType(StringEnum):
     """Indicates a link pointing to a resource containing the successor version in the
     version history."""
 
+    HISTORY = "version-history"
+    """This link points to a version history or changelog.
+    
+    This can be for example a Markdown file with the corresponding media type or
+    a STAC Catalog or Collection.
+    """
+
 
 class VersionExtension(
     Generic[T],
