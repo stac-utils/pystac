@@ -7,12 +7,14 @@ from typing import Any
 
 import jsonschema
 import pytest
+from requests_mock import Mocker
 
 import pystac
 import pystac.validation
 from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.utils import get_opt
+from pystac.validation import GetSchemaError
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo
 
@@ -195,3 +197,14 @@ def test_collection_latest_version_uses_local(collection: pystac.Collection) -> 
 @pytest.mark.block_network
 def test_item_latest_version_uses_local(item: pystac.Item) -> None:
     assert item.validate()
+
+
+def test_404_schema_url(requests_mock: Mocker, item: pystac.Item) -> None:
+    requests_mock.get(
+        "http://pystac-extensions.test/a-fake-schema.json", status_code=404
+    )
+    item.stac_extensions = ["http://pystac-extensions.test/a-fake-schema.json"]
+    with pytest.raises(
+        GetSchemaError, match="http://pystac-extensions.test/a-fake.schema.json"
+    ):
+        item.validate()

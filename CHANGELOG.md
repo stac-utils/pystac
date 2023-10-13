@@ -11,6 +11,7 @@
 ### Changed
 
 - `validate_all` now accepts a `STACObject` (in addition to accepting a dict, which is now deprecated), but prohibits supplying a value for `href`, which must be supplied _only_ when supplying an object as a dict.  Once `validate_all` removes support for an object as a dict, the `href` parameter will also be removed. ([#1246](https://github.com/stac-utils/pystac/pull/1246))
+- Report `href` when schema url resolution fails ([#1263](https://github.com/stac-utils/pystac/pull/1263))
 
 ### Fixed
 

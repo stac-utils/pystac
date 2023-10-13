@@ -9,6 +9,7 @@ from pystac.serialization.identify import STACVersionID, identify_stac_object
 from pystac.stac_object import STACObjectType
 from pystac.utils import make_absolute_href
 from pystac.validation.schema_uri_map import OldExtensionSchemaUriMap
+from pystac.validation.stac_validator import GetSchemaError
 
 if TYPE_CHECKING:
     from pystac.stac_object import STACObject
@@ -245,3 +246,6 @@ def set_validator(validator: STACValidator) -> None:
             validation.
     """
     RegisteredValidator.set_validator(validator)
+
+
+__all__ = ["GetSchemaError"]
