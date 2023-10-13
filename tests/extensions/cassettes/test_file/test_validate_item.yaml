@@ -79,7 +79,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '256'
       Cache-Control:
       - max-age=600
       Connection:
@@ -89,7 +89,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Fri, 13 Oct 2023 17:47:06 GMT
+      - Fri, 13 Oct 2023 19:01:51 GMT
       ETag:
       - '"61b4cf00-11b8"'
       Last-Modified:
@@ -107,13 +107,13 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 0e3cf1fffd4cd1c5126be626939969fb45761af1
+      - af122a8d5fdff63fa2475d3ad3d4fe534981f747
       X-GitHub-Request-Id:
       - 6698:740C:98E867:C1093C:6529692E
       X-Served-By:
-      - cache-ewr18152-EWR
+      - cache-ewr18175-EWR
       X-Timer:
-      - S1697219227.851740,VS0,VE21
+      - S1697223712.761368,VS0,VE2
       expires:
       - Fri, 13 Oct 2023 16:08:38 GMT
       permissions-policy:
@@ -123,62 +123,4 @@ interactions:
     status:
       code: 200
       message: OK
-- request:
-    body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - example.com
-      User-Agent:
-      - Python-urllib/3.11
-    method: GET
-    uri: https://example.com/collections
-  response:
-    body:
-      string: "<!doctype html>\n<html>\n<head>\n    <title>Example Domain</title>\n\n
-        \   <meta charset=\"utf-8\" />\n    <meta http-equiv=\"Content-type\" content=\"text/html;
-        charset=utf-8\" />\n    <meta name=\"viewport\" content=\"width=device-width,
-        initial-scale=1\" />\n    <style type=\"text/css\">\n    body {\n        background-color:
-        #f0f0f2;\n        margin: 0;\n        padding: 0;\n        font-family: -apple-system,
-        system-ui, BlinkMacSystemFont, \"Segoe UI\", \"Open Sans\", \"Helvetica Neue\",
-        Helvetica, Arial, sans-serif;\n        \n    }\n    div {\n        width:
-        600px;\n        margin: 5em auto;\n        padding: 2em;\n        background-color:
-        #fdfdff;\n        border-radius: 0.5em;\n        box-shadow: 2px 3px 7px 2px
-        rgba(0,0,0,0.02);\n    }\n    a:link, a:visited {\n        color: #38488f;\n
-        \       text-decoration: none;\n    }\n    @media (max-width: 700px) {\n        div
-        {\n            margin: 0 auto;\n            width: auto;\n        }\n    }\n
-        \   </style>    \n</head>\n\n<body>\n<div>\n    <h1>Example Domain</h1>\n
-        \   <p>This domain is for use in illustrative examples in documents. You may
-        use this\n    domain in literature without prior coordination or asking for
-        permission.</p>\n    <p><a href=\"https://www.iana.org/domains/example\">More
-        information...</a></p>\n</div>\n</body>\n</html>\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Age:
-      - '269909'
-      Cache-Control:
-      - max-age=604800
-      Connection:
-      - close
-      Content-Length:
-      - '1256'
-      Content-Type:
-      - text/html; charset=UTF-8
-      Date:
-      - Fri, 13 Oct 2023 18:20:31 GMT
-      Expires:
-      - Fri, 20 Oct 2023 18:20:31 GMT
-      Last-Modified:
-      - Tue, 10 Oct 2023 15:22:02 GMT
-      Server:
-      - ECS (nyb/1D0D)
-      Vary:
-      - Accept-Encoding
-      X-Cache:
-      - 404-HIT
-    status:
-      code: 404
-      message: Not Found
 version: 1
