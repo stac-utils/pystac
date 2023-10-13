@@ -73,6 +73,11 @@ class BaseVersionExtension(
     PropertiesExtension,
     ExtensionManagementMixin[Union[Collection, Item, Catalog]],
 ):
+    """A base extension that just gets and sets attributes, not links.
+
+    Used for Assets and AssetDefinitions.
+    """
+
     name: Literal["version"] = "version"
 
     def apply_base(
@@ -81,14 +86,14 @@ class BaseVersionExtension(
         deprecated: bool | None = None,
         experimental: bool | None = None,
     ) -> None:
+        """Applies attributes to this extension object."""
         self.version = version
         self.deprecated = deprecated
         self.experimental = experimental
 
     @property
     def version(self) -> str | None:
-        """Get or sets a version string of the :class:`~pystac.Item` or
-        :class:`pystac.Collection`."""
+        """Get or sets a version string of this object."""
         return self._get_property(VERSION, str)
 
     @version.setter
@@ -97,20 +102,19 @@ class BaseVersionExtension(
 
     @property
     def deprecated(self) -> bool | None:
-        """Get or sets whether the item is deprecated.
+        """Get or sets whether this object is deprecated.
 
-        A value of ``True`` specifies that the Collection or Item is deprecated with the
-        potential to be removed. It should be transitioned out of usage as soon as
-        possible and users should refrain from using it in new projects. A link with
-        relation type ``latest-version`` SHOULD be added to the links and MUST refer to
-        the resource that can be used instead.
+        A value of ``True`` specifies that the object is deprecated with the
+        potential to be removed. It should be transitioned out of usage as soon
+        as possible and users should refrain from using it in new projects. A
+        link with relation type ``latest-version`` SHOULD be added to the links
+        and MUST refer to the resource that can be used instead.
 
         NOTE:
             A :class:`pystac.DeprecatedWarning` is issued if the ``deprecated``
-            property is ``True`` when deserializing a dictionary to an
-            :class:`~pystac.Item` or :class:`~pystac.Collection`. The
-            :meth:`~pystac.extensions.version.ignore_deprecated` context manager
-            is provided as a convenience to suppress these warnings:
+            property is ``True`` when deserializing a dictionary to an object.
+            The :meth:`~pystac.extensions.version.ignore_deprecated` context
+            manager is provided as a convenience to suppress these warnings:
 
             >>> with ignore_deprecated():
             ...    deprecated_item = pystac.Item.from_dict(deprecated_item_dict)
@@ -143,9 +147,6 @@ class BaseVersionExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Versioning
         Indicators Extension <version>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Collection`.
-
         Raises:
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
@@ -171,10 +172,10 @@ class VersionExtension(
     BaseVersionExtension[U],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
-    :stac-ext:`Versioning Indicators Extension <version>`. This class is generic over
-    the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Collection`).
+    :class:`~pystac.Item`, :class:`~pystac.Collection`, or
+    :class:`~pystac.Catalog` with properties from the :stac-ext:`Versioning
+    Indicators Extension <version>`. This class is generic over the type of STAC
+    Object to be extended.
 
     To create a concrete instance of :class:`VersionExtension`, use the
     :meth:`VersionExtension.ext` method. For example:
