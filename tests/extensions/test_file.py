@@ -169,6 +169,7 @@ def test_get_field_on_link(
     assert attr == prop == value
 
 
+@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "link_rel,field,value",
     [
