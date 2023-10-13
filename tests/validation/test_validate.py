@@ -188,7 +188,7 @@ def test_catalog_latest_version_uses_local(catalog: pystac.Catalog) -> None:
 
 
 @pytest.mark.block_network
-def test_collection_latest_versio_uses_localn(collection: pystac.Collection) -> None:
+def test_collection_latest_version_uses_local(collection: pystac.Collection) -> None:
     assert collection.validate()
 
 
