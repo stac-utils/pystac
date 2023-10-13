@@ -379,3 +379,16 @@ def test_ignore_deprecated_context_manager(
     with ignore_deprecated():
         _ = Item.from_dict(item_dict)
     assert len(list(recwarn)) == 0
+
+
+def test_experimental(item: Item) -> None:
+    # Added in v1.2.0
+    assert item.ext.version.experimental is None
+    assert "experimental" not in item.properties
+    item.ext.version.experimental = True
+    assert item.ext.version.experimental
+    assert item.properties["experimental"]
+    item.ext.version.experimental = False
+    assert not item.properties["experimental"]
+    item.ext.version.experimental = None
+    assert "experimental" not in item.properties

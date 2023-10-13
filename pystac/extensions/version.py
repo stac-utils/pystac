@@ -27,6 +27,7 @@ SCHEMA_URI = "https://stac-extensions.github.io/version/v1.0.0/schema.json"
 # a prefix.  e.g. nothing like "ver:"
 VERSION: str = "version"
 DEPRECATED: str = "deprecated"
+EXPERIMENTAL: str = "experimental"
 
 
 class VersionRelType(StringEnum):
@@ -140,6 +141,19 @@ class VersionExtension(
     @deprecated.setter
     def deprecated(self, v: bool | None) -> None:
         self._set_property(DEPRECATED, v)
+
+    @property
+    def experimental(self) -> bool | None:
+        """Get and set whether this object is experimental.
+
+        Specifies that the context this field is used in (e.g. Asset or
+        Collection) is experimental with the potential to break or be unstable.
+        """
+        return self._get_property(EXPERIMENTAL, bool)
+
+    @experimental.setter
+    def experimental(self, v: bool | None) -> None:
+        self._set_property(EXPERIMENTAL, v, pop_if_none=True)
 
     @property
     def latest(self) -> T | None:
