@@ -19,7 +19,7 @@ from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, map_opt
 
-T = TypeVar("T", pystac.Collection, pystac.Item)
+T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Catalog)
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.2.0/schema.json"
 
@@ -52,7 +52,7 @@ class VersionRelType(StringEnum):
 class VersionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item, pystac.Catalog]],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Collection` with properties from the
@@ -238,11 +238,38 @@ class VersionExtension(
         if isinstance(obj, pystac.Collection):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], CollectionVersionExtension(obj))
-        if isinstance(obj, pystac.Item):
+        elif isinstance(obj, pystac.Catalog):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(VersionExtension[T], CatalogVersionExtension(obj))
+        elif isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(VersionExtension[T], ItemVersionExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+
+
+class CatalogVersionExtension(VersionExtension[pystac.Catalog]):
+    """A concrete implementation of :class:`VersionExtension` on a
+    :class:`~pystac.Catalog` that extends the properties of the Catalog to
+    include properties defined in the :stac-ext:`Versioning Indicators Extension
+    <version>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`VersionExtension.ext` on an :class:`~pystac.Catalog` to extend it.
+    """
+
+    catalog: pystac.Catalog
+    links: list[pystac.Link]
+    properties: dict[str, Any]
+
+    def __init__(self, catalog: pystac.Catalog):
+        self.catalog = catalog
+        self.properties = catalog.extra_fields
+        self.links = catalog.links
+        super().__init__(self.catalog)
+
+    def __repr__(self) -> str:
+        return f"<CatalogVersionExtension Item id={self.catalog.id}>"
 
 
 class CollectionVersionExtension(VersionExtension[pystac.Collection]):

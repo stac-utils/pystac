@@ -44,6 +44,11 @@ def collection() -> Collection:
 
 
 @pytest.fixture
+def catalog() -> Catalog:
+    return make_catalog(2011)
+
+
+@pytest.fixture
 def version() -> str:
     return "1.2.3"
 
@@ -77,6 +82,16 @@ def make_collection(year: int) -> Collection:
     VersionExtension.add_to(collection)
 
     return collection
+
+
+def make_catalog(year: int) -> Catalog:
+    """Create basic test catalogs that are only slightly different."""
+    asset_id = f"USGS/GAP/CONUS/{year}"
+
+    catalog = Catalog(id=asset_id, description=str(year))
+    VersionExtension.add_to(catalog)
+
+    return catalog
 
 
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
@@ -312,6 +327,36 @@ def test_collection_validate_all(collection: Collection, version: str) -> None:
     assert 1 == len(links)
 
     collection.validate()
+
+
+def test_catalog_stac_extensions(catalog: Catalog) -> None:
+    assert catalog.ext.has("version")
+
+
+@pytest.mark.vcr()
+def test_catalog_add_version(catalog: Catalog, version: str) -> None:
+    catalog.ext.version.apply(version)
+    assert catalog.ext.version.version == version
+    assert DEPRECATED not in catalog.extra_fields
+    catalog.validate()
+
+
+@pytest.mark.vcr()
+def test_catalog_validate_all(catalog: Catalog, version: str) -> None:
+    deprecated = True
+    latest = make_collection(2013)
+    predecessor = make_collection(2010)
+    successor = make_collection(2012)
+    catalog.ext.version.apply(version, deprecated, latest, predecessor, successor)
+
+    links = catalog.get_links(VersionRelType.LATEST)
+    assert 1 == len(links)
+    links = catalog.get_links(VersionRelType.PREDECESSOR)
+    assert 1 == len(links)
+    links = catalog.get_links(VersionRelType.SUCCESSOR)
+    assert 1 == len(links)
+
+    catalog.validate()
 
 
 def test_item_deprecation_warning(
