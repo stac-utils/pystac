@@ -4,16 +4,15 @@ import os
 import shutil
 from copy import copy, deepcopy
 from html import escape
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
-from pystac import common_metadata, utils
+from pystac import MediaType, STACError, common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
+from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
-    from pystac.collection import Collection
     from pystac.common_metadata import CommonMetadata
     from pystac.extensions.ext import AssetExt
-    from pystac.item import Item
 
 A = TypeVar("A", bound="Asset")
 
@@ -57,7 +56,7 @@ class Asset:
     """Optional, Semantic roles (i.e. thumbnail, overview, data, metadata) of the
     asset."""
 
-    owner: Item | Collection | None
+    owner: Assets | None
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
@@ -84,7 +83,7 @@ class Asset:
         # The Item which owns this Asset.
         self.owner = None
 
-    def set_owner(self, obj: Collection | Item) -> None:
+    def set_owner(self, obj: Assets) -> None:
         """Sets the owning item of this Asset.
 
         The owning item will be used to resolve relative HREFs of this asset.
@@ -275,9 +274,111 @@ class Asset:
         return AssetExt(stac_object=self)
 
 
-def _absolute_href(
-    href: str, owner: Item | Collection | None, action: str = "access"
-) -> str:
+class Assets(Protocol):
+    """Protocol, with functionality, for STAC objects that have assets."""
+
+    assets: dict[str, Asset]
+    """The asset dictionary."""
+
+    def get_assets(
+        self,
+        media_type: str | MediaType | None = None,
+        role: str | None = None,
+    ) -> dict[str, Asset]:
+        """Get this object's assets.
+
+        Args:
+            media_type: If set, filter the assets such that only those with a
+                matching ``media_type`` are returned.
+            role: If set, filter the assets such that only those with a matching
+                ``role`` are returned.
+
+        Returns:
+            Dict[str, Asset]: A dictionary of assets that match ``media_type``
+                and/or ``role`` if set or else all of this object's assets.
+        """
+        return {
+            k: deepcopy(v)
+            for k, v in self.assets.items()
+            if (media_type is None or v.media_type == media_type)
+            and (role is None or v.has_role(role))
+        }
+
+    def add_asset(self, key: str, asset: Asset) -> None:
+        """Adds an Asset to this object.
+
+        Args:
+            key : The unique key of this asset.
+            asset : The Asset to add.
+        """
+        asset.set_owner(self)
+        self.assets[key] = asset
+
+    def delete_asset(self, key: str) -> None:
+        """Deletes the asset at the given key, and removes the asset's data
+        file from the local filesystem.
+
+        It is an error to attempt to delete an asset's file if it is on a
+        remote filesystem.
+
+        To delete the asset without removing the file, use `del item.assets["key"]`.
+
+        Args:
+            key: The unique key of this asset.
+        """
+        asset = self.assets[key]
+        asset.set_owner(self)
+        asset.delete()
+
+        del self.assets[key]
+
+    def make_asset_hrefs_relative(self) -> Assets:
+        """Modify each asset's HREF to be relative to this object's self HREF.
+
+        Returns:
+            Item: self
+        """
+        self_href = self.get_self_href()
+        for asset in self.assets.values():
+            if is_absolute_href(asset.href):
+                if self_href is None:
+                    raise STACError(
+                        "Cannot make asset HREFs relative if no self_href is set."
+                    )
+                asset.href = make_relative_href(asset.href, self_href)
+        return self
+
+    def make_asset_hrefs_absolute(self) -> Assets:
+        """Modify each asset's HREF to be absolute.
+
+        Any asset HREFs that are relative will be modified to absolute based on this
+        item's self HREF.
+
+        Returns:
+            Assets: self
+        """
+        self_href = self.get_self_href()
+        for asset in self.assets.values():
+            if not is_absolute_href(asset.href):
+                if self_href is None:
+                    raise STACError(
+                        "Cannot make relative asset HREFs absolute "
+                        "if no self_href is set."
+                    )
+                asset.href = make_absolute_href(asset.href, self_href)
+        return self
+
+    def get_self_href(self) -> str | None:
+        """Abstract definition of STACObject.get_self_href.
+
+        Needed to make the `make_asset_hrefs_{absolute|relative}` methods pass
+        type checking. Refactoring out all the link behavior in STACObject to
+        its own protocol would be too heavy, so we just use this stub instead.
+        """
+        ...
+
+
+def _absolute_href(href: str, owner: Assets | None, action: str = "access") -> str:
     if utils.is_absolute_href(href):
         return href
     else:
