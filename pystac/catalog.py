@@ -40,6 +40,7 @@ from pystac.utils import (
 if TYPE_CHECKING:
     from pystac.asset import Asset
     from pystac.collection import Collection
+    from pystac.extensions.ext import CatalogExt
     from pystac.item import Item
 
 C = TypeVar("C", bound="Catalog")
@@ -1245,3 +1246,15 @@ class Catalog(STACObject):
     @classmethod
     def matches_object_type(cls, d: dict[str, Any]) -> bool:
         return identify_stac_object_type(d) == STACObjectType.CATALOG
+
+    @property
+    def ext(self) -> CatalogExt:
+        """Accessor for extension classes on this catalog
+
+        Example::
+
+            print(collection.ext.version)
+        """
+        from pystac.extensions.ext import CatalogExt
+
+        return CatalogExt(stac_object=self)
