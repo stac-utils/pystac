@@ -123,7 +123,7 @@ class BaseVersionExtension(
 
     @deprecated.setter
     def deprecated(self, v: bool | None) -> None:
-        self._set_property(DEPRECATED, v)
+        self._set_property(DEPRECATED, v, pop_if_none=True)
 
     @property
     def experimental(self) -> bool | None:
