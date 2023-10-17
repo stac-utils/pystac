@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import pystac
 from pystac import RelType, STACError, STACObjectType
-from pystac.asset import Asset
+from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from pystac.extensions.ext import ItemExt
 
 
-class Item(STACObject):
+class Item(STACObject, Assets):
     """An Item is the core granular entity in a STAC, containing the core metadata
     that enables any client to search or crawl online catalogs of spatial 'assets' -
     satellite imagery, derived data, DEM's, etc.
@@ -230,94 +230,6 @@ class Item(STACObject):
             self.datetime = datetime
         else:
             asset.extra_fields["datetime"] = datetime_to_str(datetime)
-
-    def get_assets(
-        self,
-        media_type: str | pystac.MediaType | None = None,
-        role: str | None = None,
-    ) -> dict[str, Asset]:
-        """Get this item's assets.
-
-        Args:
-            media_type: If set, filter the assets such that only those with a
-                matching ``media_type`` are returned.
-            role: If set, filter the assets such that only those with a matching
-                ``role`` are returned.
-
-        Returns:
-            Dict[str, Asset]: A dictionary of assets that match ``media_type``
-                and/or ``role`` if set or else all of this item's assets.
-        """
-        return {
-            k: deepcopy(v)
-            for k, v in self.assets.items()
-            if (media_type is None or v.media_type == media_type)
-            and (role is None or v.has_role(role))
-        }
-
-    def add_asset(self, key: str, asset: Asset) -> None:
-        """Adds an Asset to this item.
-
-        Args:
-            key : The unique key of this asset.
-            asset : The Asset to add.
-        """
-        asset.set_owner(self)
-        self.assets[key] = asset
-
-    def delete_asset(self, key: str) -> None:
-        """Deletes the asset at the given key, and removes the asset's data
-        file from the local filesystem.
-
-        It is an error to attempt to delete an asset's file if it is on a
-        remote filesystem.
-
-        To delete the asset without removing the file, use `del item.assets["key"]`.
-
-        Args:
-            key: The unique key of this asset.
-        """
-        asset = self.assets[key]
-        asset.set_owner(self)
-        asset.delete()
-
-        del self.assets[key]
-
-    def make_asset_hrefs_relative(self) -> Item:
-        """Modify each asset's HREF to be relative to this item's self HREF.
-
-        Returns:
-            Item: self
-        """
-        self_href = self.get_self_href()
-        for asset in self.assets.values():
-            if is_absolute_href(asset.href):
-                if self_href is None:
-                    raise STACError(
-                        "Cannot make asset HREFs relative " "if no self_href is set."
-                    )
-                asset.href = make_relative_href(asset.href, self_href)
-        return self
-
-    def make_asset_hrefs_absolute(self) -> Item:
-        """Modify each asset's HREF to be absolute.
-
-        Any asset HREFs that are relative will be modified to absolute based on this
-        item's self HREF.
-
-        Returns:
-            Item: self
-        """
-        self_href = self.get_self_href()
-        for asset in self.assets.values():
-            if not is_absolute_href(asset.href):
-                if self_href is None:
-                    raise STACError(
-                        "Cannot make relative asset HREFs absolute "
-                        "if no self_href is set."
-                    )
-                asset.href = make_absolute_href(asset.href, self_href)
-        return self
 
     def set_collection(self, collection: Collection | None) -> Item:
         """Set the collection of this item.
