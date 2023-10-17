@@ -299,3 +299,23 @@ def test_migrate_from_v2_0_0() -> None:
     asset = item.assets["thumbnail"]
     assert FileExtension.get_schema_uri() in item.stac_extensions
     assert asset.ext.file.local_path is None
+
+
+@pytest.mark.vcr()
+def test_migrate_from_v1_0_0() -> None:
+    with pytest.warns(
+        UserWarning,
+        match=(
+            r"Assets \['measurement', 'thumbnail'\] contain fields: "
+            r"\['file:data_type'\] which were removed"
+        ),
+    ):
+        item = Item.from_file(
+            "https://raw.githubusercontent.com/stac-extensions/file/v1.0.0/examples/item.json"
+        )
+    asset = item.assets["measurement"]
+    assert FileExtension.get_schema_uri() in item.stac_extensions
+
+    assert not hasattr(asset.ext.file, "data_type")
+    assert asset.extra_fields["file:data_type"] == "uint16"
+    assert asset.ext.file.local_path is None

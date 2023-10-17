@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, Union, cast
 
@@ -306,12 +307,19 @@ class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {
         "file",
+        "https://stac-extensions.github.io/file/v1.0.0/schema.json",
         "https://stac-extensions.github.io/file/v2.0.0/schema.json",
     }
     stac_object_types = {
         pystac.STACObjectType.ITEM,
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.CATALOG,
+    }
+    removed_fields = {
+        "file:bits_per_sample",
+        "file:data_type",
+        "file:nodata",
+        "file:unit",
     }
 
     def migrate(
@@ -348,6 +356,22 @@ class FileExtensionHooks(ExtensionHooks):
                     obj["properties"][CHECKSUM_PROP] = old_checksum[key]
                 else:
                     obj["assets"][key][CHECKSUM_PROP] = old_checksum[key]
+
+        found_fields = {}
+        for asset_key, asset in obj.get("assets", {}).items():
+            if values := set(asset.keys()).intersection(self.removed_fields):
+                found_fields[asset_key] = values
+
+        if found_fields:
+            warnings.warn(
+                f"Assets {list(found_fields.keys())} contain fields: "
+                f"{list(set.union(*found_fields.values()))} which "
+                "were removed from the file extension spec in v2.0.0. Please "
+                "consult the release notes "
+                "(https://github.com/stac-extensions/file/releases/tag/v2.0.0) "
+                "for instructions on how to migrate these fields.",
+                UserWarning,
+            )
 
 
 FILE_EXTENSION_HOOKS: ExtensionHooks = FileExtensionHooks()
