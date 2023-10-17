@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item
+from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
     EXTENSION_NAME_MAPPING,
@@ -11,6 +11,7 @@ from pystac.extensions.ext import (
     CatalogExt,
     CollectionExt,
     ItemExt,
+    LinkExt,
 )
 from tests.conftest import get_data_file
 
@@ -57,6 +58,11 @@ def test_ext_syntax_ext_can_be_removed(eo_ext_item: Item) -> None:
     assert len(eo_ext_item.stac_extensions) == original_n - 1
 
 
+all_link_ext_props = {a for a in dir(LinkExt) if not a.startswith("_")} - {
+    "has",
+    "add",
+    "remove",
+}
 all_asset_ext_props = {a for a in dir(AssetExt) if not a.startswith("_")} - {
     "has",
     "add",
@@ -77,6 +83,20 @@ all_catalog_ext_props = {a for a in dir(CatalogExt) if not a.startswith("_")} - 
     "add",
     "remove",
 }
+
+
+@pytest.mark.parametrize("name", all_link_ext_props)
+def test_ext_syntax_every_prop_can_be_added_to_link(
+    link: Link, name: EXTENSION_NAMES
+) -> None:
+    assert link.ext.has(name) is False
+    link.ext.add(name)
+    assert link.ext.has(name) is True
+    link.ext.remove(name)
+    with pytest.raises(
+        ExtensionNotImplemented, match=f"Extension '{name}' is not implemented"
+    ):
+        getattr(link.ext, name)
 
 
 @pytest.mark.parametrize("name", all_asset_ext_props)

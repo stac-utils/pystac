@@ -103,7 +103,7 @@ class LabelTest(unittest.TestCase):
         with open(self.label_example_1_uri, encoding="utf-8") as f:
             label_example_1_dict = json.load(f)
 
-        assert_to_from_dict(self, Item, label_example_1_dict)
+        assert_to_from_dict(Item, label_example_1_dict)
 
     @pytest.mark.vcr()
     def test_from_file(self) -> None:

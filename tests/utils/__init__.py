@@ -5,7 +5,6 @@ __all__ = [
     "ARBITRARY_EXTENT",
     "MockStacIO",
 ]
-import unittest
 from copy import deepcopy
 from datetime import datetime
 from typing import Any
@@ -23,7 +22,6 @@ from tests.utils.test_cases import (
 
 
 def assert_to_from_dict(
-    test_class: unittest.TestCase,
     stac_object_class: type[pystac.STACObject],
     d: dict[str, Any],
 ) -> None:
@@ -45,4 +43,4 @@ def assert_to_from_dict(
     d2 = stac_object_class.from_dict(d).to_dict()
     _parse_times(d1)
     _parse_times(d2)
-    test_class.assertDictEqual(d1, d2)
+    assert d1 == d2

@@ -57,7 +57,7 @@ class EOTest(unittest.TestCase):
     def test_to_from_dict(self) -> None:
         with open(self.LANDSAT_EXAMPLE_URI) as f:
             item_dict = json.load(f)
-        assert_to_from_dict(self, Item, item_dict)
+        assert_to_from_dict(Item, item_dict)
 
     def test_add_to(self) -> None:
         item = Item.from_file(self.PLAIN_ITEM)

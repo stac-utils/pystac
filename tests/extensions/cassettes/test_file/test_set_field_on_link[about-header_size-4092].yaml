@@ -9,33 +9,45 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://stac-extensions.github.io/file/v2.0.0/schema.json
+    uri: https://stac-extensions.github.io/file/v2.1.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/file/v2.0.0/schema.json#\",\n  \"title\":
+        \"https://stac-extensions.github.io/file/v2.1.0/schema.json#\",\n  \"title\":
         \"File Info Extension\",\n  \"description\": \"STAC File Info Extension for
-        STAC Items and STAC Collections.\",\n  \"oneOf\": [\n    {\n      \"$comment\":
-        \"This is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\",\n            \"assets\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Feature\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
-        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
-        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
-        Collections.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
-        {\n            \"type\": {\n              \"const\": \"Collection\"\n            },\n
+        STAC Items, STAC Catalogs, and STAC Collections.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
+        [\n        {\n          \"type\": \"object\",\n          \"required\": [\n
+        \           \"type\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
         \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
-        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        \           \"links\": {\n              \"type\": \"array\",\n              \"items\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Catalogs.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Catalog\"\n            },\n            \"links\": {\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        }\n      ]\n    },\n    {\n      \"$comment\":
+        \"This is the schema for STAC Collections.\",\n      \"allOf\": [\n        {\n
+        \         \"type\": \"object\",\n          \"required\": [\n            \"type\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"links\":
+        {\n              \"type\": \"array\",\n              \"items\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
         \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
         \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/file/v2.0.0/schema.json\"\n
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/file/v2.1.0/schema.json\"\n
         \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
         \"Add your new fields here. Don't require them here, do that above in the
         item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"file:byte_order\":
@@ -55,29 +67,31 @@ interactions:
         \                 \"description\": \"Any data type is allowed\"\n                }\n
         \             },\n              \"summary\": {\n                \"type\":
         \"string\",\n                \"minLength\": 1\n              }\n            }\n
-        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!file:)\":
-        {\n          \"$comment\": \"Above, change `template` to the prefix of this
-        extension\"\n        }\n      },\n      \"additionalProperties\": false\n
-        \   }\n  }\n}\n"
+        \         }\n        },\n        \"file:local_path\": {\n          \"type\":
+        \"string\",\n          \"pattern\": \"^[^\\\\r\\\\n\\\\t\\\\\\\\:'\\\"/]+(/[^\\\\r\\\\n\\\\t\\\\\\\\:'\\\"/]+)*/?$\",\n
+        \         \"title\": \"Relative File Path\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!file:)\": {\n          \"$comment\": \"Above, change `template`
+        to the prefix of this extension\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    }\n  }\n}\n"
     headers:
       Accept-Ranges:
       - bytes
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '503'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
       - close
       Content-Length:
-      - '3485'
+      - '4536'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:31 GMT
+      - Fri, 13 Oct 2023 19:09:24 GMT
       ETag:
-      - '"61b4cf00-d9d"'
+      - '"61b4cf00-11b8"'
       Last-Modified:
       - Sat, 11 Dec 2021 16:17:04 GMT
       Server:
@@ -93,15 +107,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - ed9334cab7f8eb9cf4a1859db594a172dcf80897
+      - 8ff5ec6cd9d66ecfe0bb92d90255d77253238ce4
       X-GitHub-Request-Id:
-      - 1AF0:3FBB:2C04DD:3BB84C:65149AA8
+      - 6698:740C:98E867:C1093C:6529692E
       X-Served-By:
-      - cache-lga21929-LGA
+      - cache-ewr18181-EWR
       X-Timer:
-      - S1695849632.731124,VS0,VE2
+      - S1697224165.916193,VS0,VE1
       expires:
-      - Wed, 27 Sep 2023 21:22:08 GMT
+      - Fri, 13 Oct 2023 16:08:38 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

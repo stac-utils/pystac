@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, TypeVar, cast
 
-from pystac import Asset, Catalog, Collection, Item, STACError
+from pystac import Asset, Catalog, Collection, Item, Link, STACError
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
@@ -22,7 +22,8 @@ from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
-T = TypeVar("T", Asset, AssetDefinition)
+T = TypeVar("T", Asset, AssetDefinition, Link)
+U = TypeVar("U", Asset, AssetDefinition)
 
 EXTENSION_NAMES = Literal[
     "classification",
@@ -196,14 +197,14 @@ class ItemExt:
         return XarrayAssetsExtension.ext(self.stac_object)
 
 
-class _AssetExt(Generic[T]):
+class _AssetsExt(Generic[T]):
     stac_object: T
 
     def has(self, name: EXTENSION_NAMES) -> bool:
         if self.stac_object.owner is None:
             raise STACError(
-                f"Attempted to add extension='{name}' for an Asset with no owner. "
-                "Use Asset.set_owner and then try to add the extension again."
+                f"Attempted to add extension='{name}' for an object with no owner. "
+                "Use `.set_owner` and then try to add the extension again."
             )
         else:
             return cast(
@@ -213,8 +214,8 @@ class _AssetExt(Generic[T]):
     def add(self, name: EXTENSION_NAMES) -> None:
         if self.stac_object.owner is None:
             raise STACError(
-                f"Attempted to add extension='{name}' for an Asset with no owner. "
-                "Use Asset.set_owner and then try to add the extension again."
+                f"Attempted to add extension='{name}' for an object with no owner. "
+                "Use `.set_owner` and then try to add the extension again."
             )
         else:
             _get_class_by_name(name).add_to(self.stac_object.owner)
@@ -222,58 +223,62 @@ class _AssetExt(Generic[T]):
     def remove(self, name: EXTENSION_NAMES) -> None:
         if self.stac_object.owner is None:
             raise STACError(
-                f"Attempted to remove extension='{name}' for an Asset with no owner. "
-                "Use Asset.set_owner and then try to remove the extension again."
+                f"Attempted to remove extension='{name}' for an object with no owner. "
+                "Use `.set_owner` and then try to remove the extension again."
             )
         else:
             _get_class_by_name(name).remove_from(self.stac_object.owner)
 
+
+class _AssetExt(_AssetsExt[U]):
+    stac_object: U
+
     @property
-    def classification(self) -> ClassificationExtension[T]:
+    def classification(self) -> ClassificationExtension[U]:
         return ClassificationExtension.ext(self.stac_object)
 
     @property
-    def cube(self) -> DatacubeExtension[T]:
+    def cube(self) -> DatacubeExtension[U]:
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def eo(self) -> EOExtension[T]:
+    def eo(self) -> EOExtension[U]:
         return EOExtension.ext(self.stac_object)
 
     @property
-    def pc(self) -> PointcloudExtension[T]:
+    def pc(self) -> PointcloudExtension[U]:
         return PointcloudExtension.ext(self.stac_object)
 
     @property
-    def proj(self) -> ProjectionExtension[T]:
+    def proj(self) -> ProjectionExtension[U]:
         return ProjectionExtension.ext(self.stac_object)
 
     @property
-    def raster(self) -> RasterExtension[T]:
+    def raster(self) -> RasterExtension[U]:
         return RasterExtension.ext(self.stac_object)
 
     @property
-    def sar(self) -> SarExtension[T]:
+    def sar(self) -> SarExtension[U]:
         return SarExtension.ext(self.stac_object)
 
     @property
-    def sat(self) -> SatExtension[T]:
+    def sat(self) -> SatExtension[U]:
         return SatExtension.ext(self.stac_object)
 
     @property
-    def storage(self) -> StorageExtension[T]:
+    def storage(self) -> StorageExtension[U]:
         return StorageExtension.ext(self.stac_object)
 
     @property
-    def table(self) -> TableExtension[T]:
+    def table(self) -> TableExtension[U]:
         return TableExtension.ext(self.stac_object)
 
     @property
-    def version(self) -> BaseVersionExtension[T]:
+    def version(self) -> BaseVersionExtension[U]:
         return BaseVersionExtension.ext(self.stac_object)
 
     @property
-    def view(self) -> ViewExtension[T]:
+    def view(self) -> ViewExtension[U]:
         return ViewExtension.ext(self.stac_object)
 
 
@@ -282,7 +287,7 @@ class AssetExt(_AssetExt[Asset]):
     stac_object: Asset
 
     @property
-    def file(self) -> FileExtension:
+    def file(self) -> FileExtension[Asset]:
         return FileExtension.ext(self.stac_object)
 
     @property
@@ -297,3 +302,12 @@ class AssetExt(_AssetExt[Asset]):
 @dataclass
 class ItemAssetExt(_AssetExt[AssetDefinition]):
     stac_object: AssetDefinition
+
+
+@dataclass
+class LinkExt(_AssetsExt[Link]):
+    stac_object: Link
+
+    @property
+    def file(self) -> FileExtension[Link]:
+        return FileExtension.ext(self.stac_object)
