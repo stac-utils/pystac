@@ -6,7 +6,15 @@ import warnings
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, Union, cast
 
-import pystac
+from pystac import (
+    Asset,
+    Catalog,
+    Collection,
+    ExtensionTypeError,
+    Item,
+    Link,
+    STACObjectType,
+)
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import (
@@ -16,7 +24,7 @@ from pystac.serialization.identify import (
 )
 from pystac.utils import StringEnum, get_required, map_opt
 
-T = TypeVar("T", pystac.Asset, pystac.Link)
+T = TypeVar("T", Asset, Link)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.1.0/schema.json"
 
@@ -98,7 +106,7 @@ class MappingObject:
 class FileExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Catalog, pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union[Catalog, Collection, Item]],
 ):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     or :class:`~pystac.Link` with properties from the
@@ -226,26 +234,24 @@ class FileExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(
-        cls, obj: pystac.Asset | pystac.Link, add_if_missing: bool = False
-    ) -> FileExtension[T]:
+    def ext(cls, obj: Asset | Link, add_if_missing: bool = False) -> FileExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`File Info
         Extension <file>`.
 
         This extension can be applied to instances of :class:`~pystac.Asset` or
         :class:`~pystac.Link`
         """
-        if isinstance(obj, pystac.Asset):
+        if isinstance(obj, Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(FileExtension[T], AssetFileExtension(obj))
-        elif isinstance(obj, pystac.Link):
+        elif isinstance(obj, Link):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(FileExtension[T], LinkFileExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+            raise ExtensionTypeError(cls._ext_error_message(obj))
 
 
-class AssetFileExtension(FileExtension[pystac.Asset]):
+class AssetFileExtension(FileExtension[Asset]):
     """A concrete implementation of :class:`FileExtension` on an
     :class:`~pystac.Asset` that extends the Asset fields to include properties defined
     in the :stac-ext:`File Info Extension <file>`.
@@ -264,7 +270,7 @@ class AssetFileExtension(FileExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owner."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self, asset: Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
         if asset.owner and hasattr(asset.owner, "properties"):
@@ -274,7 +280,7 @@ class AssetFileExtension(FileExtension[pystac.Asset]):
         return f"<AssetFileExtension Asset href={self.asset_href}>"
 
 
-class LinkFileExtension(FileExtension[pystac.Link]):
+class LinkFileExtension(FileExtension[Link]):
     """A concrete implementation of :class:`FileExtension` on an
     :class:`~pystac.Link` that extends the Link fields to include properties defined
     in the :stac-ext:`File Info Extension <file>`.
@@ -293,7 +299,7 @@ class LinkFileExtension(FileExtension[pystac.Link]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owner."""
 
-    def __init__(self, link: pystac.Link):
+    def __init__(self, link: Link):
         self.link_href = link.href
         self.properties = link.extra_fields
         if link.owner and hasattr(link.owner, "properties"):
@@ -311,9 +317,9 @@ class FileExtensionHooks(ExtensionHooks):
         "https://stac-extensions.github.io/file/v2.0.0/schema.json",
     }
     stac_object_types = {
-        pystac.STACObjectType.ITEM,
-        pystac.STACObjectType.COLLECTION,
-        pystac.STACObjectType.CATALOG,
+        STACObjectType.ITEM,
+        STACObjectType.COLLECTION,
+        STACObjectType.CATALOG,
     }
     removed_fields = {
         "file:bits_per_sample",

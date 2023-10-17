@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item
+from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
     EXTENSION_NAME_MAPPING,
@@ -87,7 +87,7 @@ all_catalog_ext_props = {a for a in dir(CatalogExt) if not a.startswith("_")} - 
 
 @pytest.mark.parametrize("name", all_link_ext_props)
 def test_ext_syntax_every_prop_can_be_added_to_link(
-    link: pystac.Link, name: EXTENSION_NAMES
+    link: Link, name: EXTENSION_NAMES
 ) -> None:
     assert link.ext.has(name) is False
     link.ext.add(name)
