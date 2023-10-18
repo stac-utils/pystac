@@ -15,7 +15,7 @@ T = TypeVar(
     "T", pystac.Collection, pystac.Item, pystac.Asset, item_assets.AssetDefinition
 )
 
-SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
 
 PREFIX: str = "cube:"
 DIMENSIONS_PROP = PREFIX + "dimensions"
@@ -44,6 +44,7 @@ class DimensionType(StringEnum):
     """Dimension object types for spatial and temporal Dimension Objects."""
 
     SPATIAL = "spatial"
+    GEOMETRIES = "geometries"
     TEMPORAL = "temporal"
 
 
@@ -75,12 +76,16 @@ class Dimension(ABC):
 
     @property
     def dim_type(self) -> DimensionType | str:
-        """The type of the dimension. Must be ``"spatial"`` for :stac-ext:`Horizontal
-        Spatial Dimension Objects <datacube#horizontal-spatial-dimension-object>` or
+        """The type of the dimension. Must be ``"spatial"`` for
+        :stac-ext:`Horizontal Spatial Dimension Objects
+        <datacube#horizontal-raster-spatial-dimension-object>` or
         :stac-ext:`Vertical Spatial Dimension Objects
-        <datacube#vertical-spatial-dimension-object>`, and ``"temporal"`` for
-        :stac-ext:`Temporal Dimension Objects <datacube#temporal-dimension-object>`. May
-        be an arbitrary string for :stac-ext:`Additional Dimension Objects
+        <datacube#vertical-spatial-dimension-object>`, ``geometries`` for
+        :stac-ext:`Spatial Vector Dimension Objects
+        <datacube#spatial-vector-dimension-object>` ``"temporal"`` for
+        :stac-ext:`Temporal Dimension Objects
+        <datacube#temporal-dimension-object>`. May be an arbitrary string for
+        :stac-ext:`Additional Dimension Objects
         <datacube#additional-dimension-object>`."""
         return get_required(
             self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
@@ -119,6 +124,8 @@ class Dimension(ABC):
                 return VerticalSpatialDimension(d)
             else:
                 return HorizontalSpatialDimension(d)
+        elif dim_type == DimensionType.GEOMETRIES:
+            return VectorSpatialDimension(d)
         elif dim_type == DimensionType.TEMPORAL:
             # The v1.0.0 spec says that AdditionalDimensions can have
             # type 'temporal', but it is unclear how to differentiate that
@@ -223,6 +230,68 @@ class VerticalSpatialDimension(SpatialDimension):
             self.properties.pop(DIM_UNIT_PROP, None)
         else:
             self.properties[DIM_UNIT_PROP] = v
+
+
+class VectorSpatialDimension(Dimension):
+    @property
+    def axes(self) -> list[str] | None:
+        """Axes of the vector dimension as an ordered set of `x`, `y` and `z`."""
+        return self.properties.get("axes")
+
+    @axes.setter
+    def axes(self, v: list[str]) -> None:
+        if v is None:
+            self.properties.pop("axes", None)
+        else:
+            self.properties["axes"] = v
+
+    @property
+    def bbox(self) -> list[float]:
+        """A single bounding box of the geometries as defined for STAC
+        Collections but not nested."""
+        return get_required(self.properties.get("bbox"), "cube:bbox", "bbox")
+
+    @bbox.setter
+    def bbox(self, v: list[float]) -> None:
+        self.properties["bbox"] = v
+
+    @property
+    def values(self) -> list[str] | None:
+        """Optionally, a representation of the geometries. This could be a list
+        of WKT strings or other identifiers."""
+        return self.properties.get(DIM_VALUES_PROP)
+
+    @values.setter
+    def values(self, v: list[str] | None) -> None:
+        if v is None:
+            self.properties.pop(DIM_VALUES_PROP, None)
+        else:
+            self.properties[DIM_VALUES_PROP] = v
+
+    @property
+    def geometry_types(self) -> list[str] | None:
+        """A set of geometry types. If not present, mixed geometry types must be
+        assumed."""
+        return self.properties.get("geometry_types")
+
+    @geometry_types.setter
+    def geometry_types(self, v: list[str] | None) -> None:
+        if v is None:
+            self.properties.pop("geometry_types", None)
+        else:
+            self.properties["geometry_types"] = v
+
+    @property
+    def reference_system(self) -> str | float | dict[str, Any] | None:
+        """The reference system for the data."""
+        return self.properties.get(DIM_REF_SYS_PROP)
+
+    @reference_system.setter
+    def reference_system(self, v: str | float | dict[str, Any] | None) -> None:
+        if v is None:
+            self.properties.pop(DIM_REF_SYS_PROP, None)
+        else:
+            self.properties[DIM_REF_SYS_PROP] = v
 
 
 class TemporalDimension(Dimension):
@@ -636,6 +705,8 @@ class DatacubeExtensionHooks(ExtensionHooks):
     prev_extension_ids = {
         "datacube",
         "https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/datacube/v2.0.0/schema.json",
+        "https://stac-extensions.github.io/datacube/v2.1.0/schema.json",
     }
     stac_object_types = {
         pystac.STACObjectType.COLLECTION,
