@@ -20,6 +20,7 @@
 - Interactions between **pytest-recording** and the validator schema cache ([#1242](https://github.com/stac-utils/pystac/pull/1242))
 - Call `registry` when instantiating `Draft7Validator` ([#1240](https://github.com/stac-utils/pystac/pull/1240))
 - Migration for the classification, datacube, table, and timestamps extensions ([#1258](https://github.com/stac-utils/pystac/pull/1258))
+- Handling of `bboxes` and `intervals` arguments to `SpatialExtent` and `TemporalExtent`, respectively ([#1268](https://github.com/stac-utils/pystac/pull/1268))
 
 ### Removed
 
