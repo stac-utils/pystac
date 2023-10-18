@@ -207,7 +207,7 @@ class TemporalExtent:
         # list of intervals. Account for this by transforming the input
         # in that case.
         if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = intervals
+            self.intervals = [intervals]
         else:
             self.intervals = intervals
 
