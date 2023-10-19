@@ -181,7 +181,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
                 ``None``.
         """
         warnings.warn(
-            "ensure_owner_has_extension is deprecated and will be removed in v1.9. "
+            "ensure_owner_has_extension is deprecated. "
             "Use ensure_owner_has_extension instead",
             DeprecationWarning,
         )
@@ -234,8 +234,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
                 not already present. Defaults to False.
         """
         warnings.warn(
-            "validate_has_extension is deprecated and will be removed in v1.9. "
-            "Use ensure_has_extension instead",
+            "validate_has_extension is deprecated. Use ensure_has_extension instead",
             DeprecationWarning,
         )
 
