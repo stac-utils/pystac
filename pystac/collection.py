@@ -40,6 +40,7 @@ if TYPE_CHECKING:
 
 C = TypeVar("C", bound="Collection")
 
+Bboxes = list[list[Union[float, int]]]
 TemporalIntervals = Union[list[list[datetime]], list[list[Optional[datetime]]]]
 TemporalIntervalsLike = Union[
     TemporalIntervals, list[datetime], list[Optional[datetime]]
@@ -59,7 +60,7 @@ class SpatialExtent:
             Spatial Extent object.
     """
 
-    bboxes: list[list[float]]
+    bboxes: Bboxes
     """A list of bboxes that represent the spatial
     extent of the collection. Each bbox can be 2D or 3D. The length of the bbox
     array must be 2*n where n is the number of dimensions. For example, a
@@ -71,15 +72,18 @@ class SpatialExtent:
 
     def __init__(
         self,
-        bboxes: list[list[float]] | list[float],
+        bboxes: Bboxes | list[float | int],
         extra_fields: dict[str, Any] | None = None,
     ) -> None:
+        if not isinstance(bboxes, list):
+            raise TypeError("bboxes must be a list")
+
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
-        if isinstance(bboxes, list) and isinstance(bboxes[0], float):
-            self.bboxes: list[list[float]] = [cast(list[float], bboxes)]
+        if isinstance(bboxes[0], (float, int)):
+            self.bboxes = [cast(list[Union[float, int]], bboxes)]
         else:
-            self.bboxes = cast(list[list[float]], bboxes)
+            self.bboxes = cast(Bboxes, bboxes)
 
         self.extra_fields = extra_fields or {}
 
@@ -196,16 +200,18 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: TemporalIntervals,
+        intervals: TemporalIntervals | list[datetime | None],
         extra_fields: dict[str, Any] | None = None,
     ):
+        if not isinstance(intervals, list):
+            raise TypeError("intervals must be a list")
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
-        if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = intervals
+        if isinstance(intervals[0], datetime) or intervals[0] is None:
+            self.intervals = [cast(list[Optional[datetime]], intervals)]
         else:
-            self.intervals = intervals
+            self.intervals = cast(TemporalIntervals, intervals)
 
         self.extra_fields = extra_fields or {}
 
