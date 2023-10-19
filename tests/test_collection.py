@@ -424,6 +424,12 @@ class ExtentTest(unittest.TestCase):
 
         collection.validate()
 
+    @pytest.mark.block_network()
+    def test_spatial_extent_non_list_bboxes_fails(self) -> None:
+        with pytest.raises(TypeError):
+            # Pass in non-list bboxes
+            _ = SpatialExtent(bboxes=1)  # type: ignore
+
     def test_from_items(self) -> None:
         item1 = Item(
             id="test-item-1",
