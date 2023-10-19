@@ -382,6 +382,31 @@ class ExtentTest(unittest.TestCase):
         _ = TemporalExtent([[start_datetime, end_datetime]])
 
     @pytest.mark.block_network()
+    def test_temporal_extent_allows_single_interval(self) -> None:
+        start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
+        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+
+        interval = [start_datetime, end_datetime]
+        temporal_extent = TemporalExtent(intervals=interval)  # type: ignore
+
+        self.assertEqual(temporal_extent.intervals, [interval])
+
+    @pytest.mark.block_network()
+    def test_temporal_extent_allows_single_interval_open_start(self) -> None:
+        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+
+        interval = [None, end_datetime]
+        temporal_extent = TemporalExtent(intervals=interval)
+
+        self.assertEqual(temporal_extent.intervals, [interval])
+
+    @pytest.mark.block_network()
+    def test_temporal_extent_non_list_intervals_fails(self) -> None:
+        with pytest.raises(TypeError):
+            # Pass in non-list intervals
+            _ = TemporalExtent(intervals=1)  # type: ignore
+
+    @pytest.mark.block_network()
     def test_spatial_allows_single_bbox(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
