@@ -89,7 +89,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '552'
+      - '1'
       Cache-Control:
       - max-age=600
       Connection:
@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 14:56:39 GMT
       ETag:
       - '"65147dc1-14e2"'
       Last-Modified:
@@ -115,15 +115,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - a8cb2e54455322c9baf5b233367921ebee66db92
+      - 8471a91e1a8e25245722dc5641a9ce2086adb0ee
       X-GitHub-Request-Id:
-      - DC8C:6FEB:26F7FB:34E32D:6514878E
+      - 6A66:7F17:595AA3:7905F0:653143A4
       X-Served-By:
-      - cache-lga21947-LGA
+      - cache-den8270-DEN
       X-Timer:
-      - S1695849701.145024,VS0,VE2
+      - S1697727399.038569,VS0,VE2
       expires:
-      - Wed, 27 Sep 2023 20:00:38 GMT
+      - Thu, 19 Oct 2023 15:06:38 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -179,7 +179,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '553'
+      - '1'
       Cache-Control:
       - max-age=600
       Connection:
@@ -189,7 +189,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 14:56:39 GMT
       ETag:
       - '"65147dc1-84e"'
       Last-Modified:
@@ -205,15 +205,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 016da0e486080579b9ef92509973a1f6b947cce4
+      - 7d242e653c2638de414e9d6ab3022162d3cc64fb
       X-GitHub-Request-Id:
-      - B38E:8027:25BC98:33E9C0:6514878E
+      - 782A:1E8A:5F20E6:7EAE59:653143A5
       X-Served-By:
-      - cache-lga21949-LGA
+      - cache-den8220-DEN
       X-Timer:
-      - S1695849701.264125,VS0,VE1
+      - S1697727399.095246,VS0,VE7
       expires:
-      - Wed, 27 Sep 2023 20:00:38 GMT
+      - Thu, 19 Oct 2023 15:06:38 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -250,7 +250,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '551'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
@@ -260,7 +260,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 14:56:39 GMT
       ETag:
       - '"65147dc1-3ab"'
       Last-Modified:
@@ -272,19 +272,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 186f58192826ec2103a4f3e37bfea838ca25fb39
+      - c722b31e6830820188eee58fb13805b7fc39b6c6
       X-GitHub-Request-Id:
-      - 201C:4972:1D6688:2BBE31:65149ABD
+      - B4FA:5514:5268B9:72241F:653143A6
       X-Served-By:
-      - cache-lga21954-LGA
+      - cache-den8268-DEN
       X-Timer:
-      - S1695849701.372241,VS0,VE1
+      - S1697727399.177268,VS0,VE60
       expires:
-      - Wed, 27 Sep 2023 21:22:29 GMT
+      - Thu, 19 Oct 2023 15:06:39 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -382,7 +382,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '596'
+      - '68'
       Cache-Control:
       - max-age=600
       Connection:
@@ -392,7 +392,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 14:56:39 GMT
       ETag:
       - '"65147dc1-147c"'
       Last-Modified:
@@ -408,15 +408,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - af3373a16d72e695993f7f7f6a8c3497b729acc4
+      - f837cf16467e194cf5f60d3baa009e3ae05271ab
       X-GitHub-Request-Id:
-      - AB30:4783:1F4627:2B8068:6514854D
+      - 1FC6:0EA2:5DBA6D:7D484D:65314360
       X-Served-By:
-      - cache-lga21979-LGA
+      - cache-den8242-DEN
       X-Timer:
-      - S1695849701.493849,VS0,VE2
+      - S1697727399.291583,VS0,VE2
       expires:
-      - Wed, 27 Sep 2023 19:51:02 GMT
+      - Thu, 19 Oct 2023 15:05:31 GMT
       x-proxy-cache:
       - MISS
     status:

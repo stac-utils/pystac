@@ -85,7 +85,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '515'
+      - '16'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,7 +95,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:17 GMT
+      - Thu, 19 Oct 2023 14:55:44 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 510b3ee5286704ececb448d3c14bc0a255b0ae20
+      - f0c5c97549e1cf4f88b5a744022d7f92ce276722
       X-GitHub-Request-Id:
-      - 784C:6B89:1EE369:2AD4C5:65148553
+      - 9AA0:73C0:557691:752384:6531435F
       X-Served-By:
-      - cache-lga21973-LGA
+      - cache-den8242-DEN
       X-Timer:
-      - S1695849617.104713,VS0,VE2
+      - S1697727344.432874,VS0,VE6
       expires:
-      - Wed, 27 Sep 2023 19:51:07 GMT
+      - Thu, 19 Oct 2023 15:05:27 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -205,7 +205,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '515'
+      - '16'
       Cache-Control:
       - max-age=600
       Connection:
@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:17 GMT
+      - Thu, 19 Oct 2023 14:55:44 GMT
       ETag:
       - '"63e6651b-1111"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 11180949189ec90ec0369a9f033d9e2f2d816855
+      - 2d311c2069ab2177b8042db0d310bcc98786e15d
       X-GitHub-Request-Id:
-      - 303E:20A2:70F70E:9F20FD:65149A8D
+      - 88B0:2098:596818:7919E2:6531435F
       X-Served-By:
-      - cache-lga21927-LGA
+      - cache-den8265-DEN
       X-Timer:
-      - S1695849617.215229,VS0,VE8
+      - S1697727344.486129,VS0,VE2
       expires:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 15:05:28 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -315,7 +315,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '515'
+      - '16'
       Cache-Control:
       - max-age=600
       Connection:
@@ -325,7 +325,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:17 GMT
+      - Thu, 19 Oct 2023 14:55:44 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -343,15 +343,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 12ec32d8fce3917cf6d63b5667576cfe2a2d4544
+      - 793f1e11a8d9f9685607b3fe42388a5a86fee4c2
       X-GitHub-Request-Id:
-      - AA28:096C:44DFB1:66DC9F:65143010
+      - F112:19FE:60E091:807CD8:6531435F
       X-Served-By:
-      - cache-lga21970-LGA
+      - cache-den8251-DEN
       X-Timer:
-      - S1695849617.330955,VS0,VE1
+      - S1697727345.529782,VS0,VE7
       expires:
-      - Wed, 27 Sep 2023 13:47:21 GMT
+      - Thu, 19 Oct 2023 15:05:28 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

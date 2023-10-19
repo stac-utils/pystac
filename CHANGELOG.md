@@ -2,8 +2,11 @@
 
 ## [Unreleased]
 
+## [v1.9.0] - 2023-10-23
+
 ### Added
 
+- Simpler extension interface ([#1243](https://github.com/stac-utils/pystac/pull/1243)])
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 - Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
 - `validate_all_dict` replaces the previous implementation of `validate_all` (i.e., `validate_all` was renamed to `validate_all_dict`, and `validate_all` was changed as described below) ([#1246](https://github.com/stac-utils/pystac/pull/1246))
@@ -809,7 +812,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.8.4..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.9.0..main>
+[v1.9.0]: <https://github.com/stac-utils/pystac/compare/v1.8.4..v1.9.0>
 [v1.8.4]: <https://github.com/stac-utils/pystac/compare/v1.8.3..v1.8.4>
 [v1.8.3]: <https://github.com/stac-utils/pystac/compare/v1.8.2..v1.8.3>
 [v1.8.2]: <https://github.com/stac-utils/pystac/compare/v1.8.1..v1.8.2>

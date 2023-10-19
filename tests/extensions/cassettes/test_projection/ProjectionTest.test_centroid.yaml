@@ -85,7 +85,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '534'
+      - '32'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,7 +95,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:36 GMT
+      - Thu, 19 Oct 2023 14:55:59 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 5eb0761a1bc2880f93dfcbfa47de5a6af18d7563
+      - 82cbd868d6f64f870ce31324605bb11e0796360f
       X-GitHub-Request-Id:
-      - 784C:6B89:1EE369:2AD4C5:65148553
+      - 9AA0:73C0:557691:752384:6531435F
       X-Served-By:
-      - cache-lga21933-LGA
+      - cache-den8237-DEN
       X-Timer:
-      - S1695849636.334791,VS0,VE7
+      - S1697727360.888092,VS0,VE1
       expires:
-      - Wed, 27 Sep 2023 19:51:07 GMT
+      - Thu, 19 Oct 2023 15:05:27 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -205,7 +205,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '535'
+      - '32'
       Cache-Control:
       - max-age=600
       Connection:
@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:36 GMT
+      - Thu, 19 Oct 2023 14:55:59 GMT
       ETag:
       - '"63e6651b-1111"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '2'
       X-Fastly-Request-ID:
-      - a708d7639f018965af918e499b27bfcb55545fbf
+      - 72ab1837f8053232b0dc679d5ed69679413dbc37
       X-GitHub-Request-Id:
-      - 303E:20A2:70F70E:9F20FD:65149A8D
+      - 88B0:2098:596818:7919E2:6531435F
       X-Served-By:
-      - cache-lga21979-LGA
+      - cache-den8275-DEN
       X-Timer:
-      - S1695849636.487564,VS0,VE1
+      - S1697727360.930831,VS0,VE0
       expires:
-      - Wed, 27 Sep 2023 21:21:41 GMT
+      - Thu, 19 Oct 2023 15:05:28 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -264,14 +264,12 @@ interactions:
     body:
       string: ''
     headers:
-      Age:
-      - '506'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
-      - HIT
+      - MISS
       CF-Ray:
-      - 80d6caa4cbc60fa3-EWR
+      - 8189dd7fed8851e2-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -285,7 +283,7 @@ interactions:
       Cross-Origin-Opener-Policy:
       - same-origin
       Date:
-      - Wed, 27 Sep 2023 21:20:36 GMT
+      - Thu, 19 Oct 2023 14:56:00 GMT
       Location:
       - https://proj.org/en/9.3/schemas/v0.5/projjson.schema.json
       Referrer-Policy:
@@ -295,7 +293,7 @@ interactions:
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       X-Backend:
-      - web-i-00190b17db4987e5f
+      - web-i-0a77f3b8df3493c5c
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -836,14 +834,12 @@ interactions:
       - HEAD, OPTIONS, GET
       Access-Control-Allow-Origin:
       - '*'
-      Age:
-      - '506'
       CDN-Cache-Control:
       - public
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 80d6caa59ba118c4-EWR
+      - 8189dd814a571f3e-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -851,7 +847,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 27 Sep 2023 21:20:36 GMT
+      - Thu, 19 Oct 2023 14:56:00 GMT
       ETag:
       - W/"567e3992b5fd3188af907a4cdc4781b3"
       Last-Modified:
@@ -865,7 +861,7 @@ interactions:
       Vary:
       - Accept-Encoding
       X-Backend:
-      - web-i-04a0936e538e90895
+      - web-i-0b5f907d73cca281c
       X-Content-Type-Options:
       - nosniff
       X-RTD-Domain:
@@ -885,11 +881,11 @@ interactions:
       alt-svc:
       - h3=":443"; ma=86400
       x-amz-id-2:
-      - UBlptQ6CoU1gOcZjt2RSY1lr3wEiR3bA6BF4Ck7ffEb2Gvy2wrxxhJ3mNAJRYDJ1sJ9j4auUgjI=
+      - R/3U58Zs90BX9f7ffLtLqWsACJ8c3919mpxc8fauM0TtxAVW9kC7UHIv0as2OaTXWK+dRdsOFSA=
       x-amz-meta-mtime:
       - '1693732240.238196845'
       x-amz-request-id:
-      - 7M5G3K3ZTHPYERHZ
+      - 0QDQ7458J3QD4T7F
       x-amz-server-side-encryption:
       - AES256
     status:
