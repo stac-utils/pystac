@@ -81,7 +81,7 @@ class SpatialExtent:
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
         if isinstance(bboxes[0], (float, int)):
-            self.bboxes = [cast(list[float | int], bboxes)]
+            self.bboxes = [cast(list[Union[float, int]], bboxes)]
         else:
             self.bboxes = cast(Bboxes, bboxes)
 
