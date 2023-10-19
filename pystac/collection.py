@@ -200,16 +200,18 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: TemporalIntervals,
+        intervals: TemporalIntervals | list[datetime | None],
         extra_fields: dict[str, Any] | None = None,
     ):
+        if not isinstance(intervals, list):
+            raise TypeError("intervals must be a list")
         # A common mistake is to pass in a single interval instead of a
         # list of intervals. Account for this by transforming the input
         # in that case.
-        if isinstance(intervals, list) and isinstance(intervals[0], datetime):
-            self.intervals = [intervals]
+        if isinstance(intervals[0], datetime) or intervals[0] is None:
+            self.intervals = [cast(list[Optional[datetime]], intervals)]
         else:
-            self.intervals = intervals
+            self.intervals = cast(TemporalIntervals, intervals)
 
         self.extra_fields = extra_fields or {}
 
