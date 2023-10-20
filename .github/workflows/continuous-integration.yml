@@ -177,6 +177,8 @@ jobs:
         with:
           python-version: "3.9"
           cache: "pip"
+      - name: Install pandoc
+        run: sudo apt-get install pandoc
       - name: Install pystac
         run: pip install .[docs]
       - name: Check docs
