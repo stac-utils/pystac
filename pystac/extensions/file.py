@@ -189,7 +189,7 @@ class FileExtension(
         The ``file:local_path`` field indicates a **relative** path that
         can be used by clients for different purposes to organize the
         files locally. For compatibility reasons the name-separator
-        character in paths **must** be `/` and the Windows separator `\\`
+        character in paths **must** be ``/`` and the Windows separator ``\\``
         is **not** allowed.
         """
         return self._get_property(LOCAL_PATH_PROP, str)
