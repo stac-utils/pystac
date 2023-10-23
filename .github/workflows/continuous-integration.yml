@@ -168,3 +168,18 @@ jobs:
         run: asv machine --yes
       - name: Check benchmarks
         run: asv run -a repeat=1 -a rounds=1 HEAD
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - name: Install pandoc
+        run: sudo apt-get install pandoc
+      - name: Install pystac
+        run: pip install .[docs]
+      - name: Check docs
+        run: make -C docs html SPHINXOPTS="-W --keep-going"
