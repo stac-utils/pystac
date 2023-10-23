@@ -6,7 +6,7 @@ import pytest
 
 import pystac
 import pystac.extensions.datacube as dc
-from pystac import Item
+from pystac import Asset, Item
 from pystac.errors import ExtensionTypeError
 from tests.conftest import get_data_file
 
@@ -273,7 +273,7 @@ def test_set_dimensions(ext_item: Item) -> None:
     assert ext_item.validate()
 
 
-@pytest.mark.parametrize("version", ["v1.0.0"])
+@pytest.mark.parametrize("version", ["v1.0.0", "v2.0.0", "v2.1.0"])
 def test_migrate(version: str, ext_item: Item) -> None:
     item_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_dict["stac_extensions"] = [
@@ -281,6 +281,39 @@ def test_migrate(version: str, ext_item: Item) -> None:
     ]
     item = Item.from_dict(item_dict, migrate=True)
     assert (
-        "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
+        "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
         in item.stac_extensions
     )
+
+
+def test_asset(item: Item) -> None:
+    asset = Asset(href="data.tif")
+    item.add_asset("data", asset)
+    assert not asset.ext.has("cube")
+    asset.ext.add("cube")
+    assert asset.ext.has("cube")
+
+
+def test_spatial_vector_object(item: Item) -> None:
+    item.ext.add("cube")
+    vector = dc.VectorSpatialDimension.from_dict(
+        {
+            "type": "geometries",
+            "axes": ["x", "y"],
+            "description": "A test vector spatial dimension",
+            "bbox": [-180, -90, 180, 90],
+            "values": ["POINT (-105.1019 40.1672)"],
+            "geometry_types": ["Point"],
+            "reference_system": 4326,
+        }
+    )
+    item.ext.cube.dimensions = {"vector": vector}
+    dimension = item.ext.cube.dimensions["vector"]
+    assert isinstance(dimension, dc.VectorSpatialDimension)
+    assert dimension.dim_type == "geometries"
+    assert dimension.axes == ["x", "y"]
+    assert dimension.description == "A test vector spatial dimension"
+    assert dimension.bbox == [-180, -90, 180, 90]
+    assert dimension.values == ["POINT (-105.1019 40.1672)"]
+    assert dimension.geometry_types == ["Point"]
+    assert dimension.reference_system == 4326
