@@ -31,6 +31,7 @@
 
 - `ExtensionManagementMixin.validate_has_extension` is replaced with `ExtensionManagementMixin.ensure_has_extension`. Calling `ExtensionManagementMixin.validate_has_extension` will raise a `DeprecationWarning` and call `ExtensionManagementMixin.ensure_has_extension` ([#1248](https://github.com/stac-utils/pystac/pull/1248))
 - `validate_all` for dicts; use `validate_all_dict` instead ([#1246](https://github.com/stac-utils/pystac/pull/1246))
+- `Label` extension ([#1270](https://github.com/stac-utils/pystac/pull/1270))
 
 ## [v1.8.4] - 2023-09-22
 

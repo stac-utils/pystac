@@ -681,11 +681,10 @@ Mapping over Items
 ------------------
 
 The :func:`Catalog.map_items <pystac.Catalog.map_items>` method is useful for
+into smaller chunks (e.g. tiling out large image items).
+item, you can return multiple items, in case you are generating new objects, or splitting items
 manipulating items in a STAC. This will create a full copy of the STAC, so will leave
 the original catalog unmodified. In the method that manipulates and returns the modified
-item, you can return multiple items, in case you are generating new objects (e.g.
-creating a :class:`~pystac.LabelItem` for image items in a stac), or splitting items
-into smaller chunks (e.g. tiling out large image items).
 
 .. code-block:: python
 
@@ -693,32 +692,14 @@ into smaller chunks (e.g. tiling out large image items).
        item.title = 'Some new title'
        return item
 
-   def create_label_item(item):
-       # Assumes the GeoJSON labels are in the
-       # same location as the image
-       img_href = item.assets['ortho'].href
-       label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
-       label_item = LabelItem(id='Labels',
-                         geometry=item.geometry,
-                         bbox=item.bbox,
-                         datetime=datetime.utcnow(),
-                         properties={},
-                         label_description='labels',
-                         label_type='vector',
-                         label_properties='label',
-                         label_classes=[
-                         LabelClasses(classes=['one', 'two'],
-                                      name='label')
-                         ],
-                         label_tasks=['classification'])
-       label_item.add_source(item, assets=['ortho'])
-       label_item.add_geojson_labels(label_href)
-
-       return [item, label_item]
+   def duplicate_item(item):
+       duplicated_item = item.clone()
+       duplicated_item.id += "-duplicated"
+       return [item, duplicated_item]
 
 
    c = catalog.map_items(modify_item_title)
-   c = c.map_items(create_label_item)
+   c = c.map_items(duplicate_item)
    new_catalog = c
 
 .. _copy stacs:
@@ -731,11 +712,7 @@ and mutations of STAC data. The :func:`STACObject.full_copy
 <pystac.STACObject.full_copy>` mechanism handles this in a way that ties the elements of
 the copies STAC together correctly. This includes situations where there might be cycles
 in the graph of connected objects of the STAC (which otherwise would be `a tree
-<https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_). For example, if a
-:class:`~pystac.LabelItem` lists a :attr:`~pystac.LabelItem.source` that is an item also
-contained in the root catalog; the full copy of the STAC will ensure that the
-:class:`~pystac.Item` instance representing the source imagery item is the same instance
-that is linked to by the :class:`~pystac.LabelItem`.
+<https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_).
 
 Resolving STAC objects
 ======================

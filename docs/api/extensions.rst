@@ -19,7 +19,6 @@ pystac.extensions
     file.FileExtension
     grid.GridExtension
     item_assets.ItemAssetsExtension
-    label.LabelExtension
     mgrs.MgrsExtension
     pointcloud.PointcloudExtension
     projection.ProjectionExtension

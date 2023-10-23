@@ -263,7 +263,7 @@ class RasterTest(unittest.TestCase):
 
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(
-            TestCases.get_path("data-files/label/spacenet-roads/roads_collection.json")
+            TestCases.get_path("data-files/raster/landsat-collection-example.json")
         )
         col.stac_extensions = []
         with pytest.raises(

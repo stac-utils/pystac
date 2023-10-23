@@ -24,7 +24,6 @@ from pystac import (
     Item,
     MediaType,
 )
-from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
 from pystac.utils import (
     is_absolute_href,
     make_absolute_href,
@@ -618,16 +617,6 @@ class TestCatalog:
         assert self_href is not None
         assert self_href.startswith(abspath)
 
-    def test_normalize_href_works_with_label_source_links(self) -> None:
-        catalog = TestCases.case_1()
-        catalog.normalize_hrefs("http://example.com")
-        item = next(catalog.get_items("area-1-1-labels", recursive=True))
-        source = next(iter(LabelExtension.ext(item).get_sources()))
-        assert source.get_self_href() == (
-            "http://example.com/country-1/area-1-1/area-1-1-imagery/"
-            "area-1-1-imagery.json"
-        )
-
     def test_normalize_hrefs_skip_unresolved(self) -> None:
         catalog = TestCases.case_1()
         catalog.normalize_hrefs("http://example.com", skip_unresolved=True)
@@ -928,36 +917,13 @@ class TestCatalog:
             item.properties["title"] = "Some title"
             return item
 
-        def create_label_item(item: pystac.Item) -> list[pystac.Item]:
-            # Assumes the GEOJSON labels are in the
-            # same location as the image
-            img_href = item.assets["ortho"].href
-            label_href = f"{os.path.splitext(img_href)[0]}.geojson"
-            label_item = Item(
-                id="Labels",
-                geometry=item.geometry,
-                bbox=item.bbox,
-                datetime=datetime.utcnow(),
-                properties={},
-            )
-            LabelExtension(label_item).add_to(label_item)
-            label_ext = LabelExtension.ext(label_item)
-            label_ext.apply(
-                label_description="labels",
-                label_type=LabelType.VECTOR,
-                label_properties=["label"],
-                label_classes=[
-                    LabelClasses.create(classes=["one", "two"], name="label")
-                ],
-                label_tasks=["classification"],
-            )
-            label_ext.add_source(item, assets=["ortho"])
-            label_ext.add_geojson_labels(label_href)
-
-            return [item, label_item]
+        def duplicate_item(item: pystac.Item) -> list[pystac.Item]:
+            duplicated_item = item.clone()
+            duplicated_item.id += "-duplicated"
+            return [item, duplicated_item]
 
         c = catalog.map_items(modify_item_title)
-        c = c.map_items(create_label_item)
+        c = c.map_items(duplicate_item)
         new_catalog = c
 
         items = new_catalog.get_items(recursive=True)
@@ -1506,19 +1472,6 @@ class FullCopyTest(unittest.TestCase):
                 datetime=datetime.utcnow(),
                 properties={},
             )
-            LabelExtension.add_to(label_item)
-            label_ext = LabelExtension.ext(label_item)
-            label_ext.apply(
-                label_description="labels",
-                label_type=LabelType.VECTOR,
-                label_properties=["label"],
-                label_classes=[
-                    LabelClasses.create(classes=["one", "two"], name="label")
-                ],
-                label_tasks=["classification"],
-            )
-            label_ext.add_source(image_item, assets=["ortho"])
-
             cat.add_items([image_item, label_item])
 
             cat.normalize_hrefs(os.path.join(tmp_dir, "catalog-full-copy-2-source"))

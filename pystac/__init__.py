@@ -43,6 +43,7 @@ __all__ = [
 ]
 
 import os
+import warnings
 from typing import Any, Optional
 
 from pystac.errors import (
@@ -91,7 +92,10 @@ import pystac.extensions.eo
 import pystac.extensions.file
 import pystac.extensions.grid
 import pystac.extensions.item_assets
-import pystac.extensions.label
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    import pystac.extensions.label
 import pystac.extensions.mgrs
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
