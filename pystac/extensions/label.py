@@ -12,6 +12,13 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
 
+warnings.warn(
+    "The PySTAC Label Extension is deprecated. The extension itself "
+    '(https://github.com/stac-extensions/label) is currently unmaintained, in "pilot" '
+    "maturity, and has significant issues.",
+    DeprecationWarning,
+)
+
 SCHEMA_URI = "https://stac-extensions.github.io/label/v1.0.1/schema.json"
 SCHEMA_URIS = [
     "https://stac-extensions.github.io/label/v1.0.0/schema.json",

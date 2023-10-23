@@ -14,13 +14,6 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.extensions.label import (
-    LabelClasses,
-    LabelCount,
-    LabelExtension,
-    LabelOverview,
-    LabelType,
-)
 
 TEST_LABEL_CATALOG = {
     "country-1": {
@@ -171,13 +164,6 @@ class TestCases:
             "ortho", Asset(href="some/geotiff.tiff", media_type=MediaType.GEOTIFF)
         )
 
-        overviews = [
-            LabelOverview.create(
-                "label",
-                counts=[LabelCount.create("one", 1), LabelCount.create("two", 2)],
-            )
-        ]
-
         label_item = Item(
             id="label-items",
             geometry=ARBITRARY_GEOM,
@@ -185,19 +171,6 @@ class TestCases:
             datetime=datetime.utcnow(),
             properties={},
         )
-
-        LabelExtension.add_to(label_item)
-        label_ext = LabelExtension.ext(label_item)
-        label_ext.apply(
-            label_description="ML Labels",
-            label_type=LabelType.VECTOR,
-            label_properties=["label"],
-            label_classes=[LabelClasses.create(classes=["one", "two"], name="label")],
-            label_tasks=["classification"],
-            label_methods=["manual"],
-            label_overviews=overviews,
-        )
-        label_ext.add_source(image_item, assets=["ortho"])
 
         root_cat.add_item(image_item)
         root_cat.add_item(label_item)
