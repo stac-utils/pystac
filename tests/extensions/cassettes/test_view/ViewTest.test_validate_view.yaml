@@ -65,7 +65,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '552'
+      - '42'
       Cache-Control:
       - max-age=600
       Connection:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:53 GMT
+      - Thu, 19 Oct 2023 14:56:09 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -91,17 +91,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - d37a3afc678ab52abde15d0f1cf183aa7c04c08d
+      - 9f9e744fdecf43d083928b82916633e4e999f72a
       X-GitHub-Request-Id:
-      - AA28:096C:44DFB1:66DC9F:65143010
+      - F112:19FE:60E091:807CD8:6531435F
       X-Served-By:
-      - cache-lga21960-LGA
+      - cache-den8226-DEN
       X-Timer:
-      - S1695849653.151413,VS0,VE1
+      - S1697727370.777075,VS0,VE2
       expires:
-      - Wed, 27 Sep 2023 13:47:21 GMT
+      - Thu, 19 Oct 2023 15:05:28 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -177,7 +177,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '522'
+      - '6'
       Cache-Control:
       - max-age=600
       Connection:
@@ -187,7 +187,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Wed, 27 Sep 2023 21:20:53 GMT
+      - Thu, 19 Oct 2023 14:56:09 GMT
       ETag:
       - '"60414dd7-e82"'
       Last-Modified:
@@ -205,15 +205,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 01cffdcd154a1be9bb85b44aa832578c17be3369
+      - 6140a21cb718e9c3073d04e817b4c853d118f1f9
       X-GitHub-Request-Id:
-      - 641A:3987:3006D4:3FE2D6:65149AAA
+      - 7CF0:356A:52EEED:6A0244:65314381
       X-Served-By:
-      - cache-lga21942-LGA
+      - cache-den8225-DEN
       X-Timer:
-      - S1695849653.260638,VS0,VE2
+      - S1697727370.823802,VS0,VE6
       expires:
-      - Wed, 27 Sep 2023 21:22:11 GMT
+      - Thu, 19 Oct 2023 15:06:04 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
