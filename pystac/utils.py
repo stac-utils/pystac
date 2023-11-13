@@ -6,7 +6,6 @@ import warnings
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
-    TYPE_CHECKING,
     Any,
     Callable,
     TypeVar,
@@ -20,8 +19,7 @@ import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
-if TYPE_CHECKING:
-    HREF = Union[str, os.PathLike[str]]
+HREF = Union[str, os.PathLike[str]]
 
 
 def make_posix_style(href: HREF) -> str:
