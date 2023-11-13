@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 import os
 import posixpath
 import warnings
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
-    TYPE_CHECKING,
     Any,
     Callable,
-    Optional,
     TypeVar,
     Union,
     cast,
@@ -19,12 +19,7 @@ import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
-if TYPE_CHECKING:
-    PathLike = os.PathLike[str]
-else:
-    PathLike = os.PathLike
-
-HREF = Union[str, os.PathLike]
+HREF = Union[str, os.PathLike[str]]
 
 
 def make_posix_style(href: HREF) -> str:
@@ -101,7 +96,7 @@ class JoinType(StringEnum):
     """
 
     @staticmethod
-    def from_parsed_uri(parsed_uri: URLParseResult) -> "JoinType":
+    def from_parsed_uri(parsed_uri: URLParseResult) -> JoinType:
         """DEPRECATED.
 
         .. deprecated:: 1.8.0
@@ -320,7 +315,7 @@ def _make_absolute_href_path(
 
 
 def make_absolute_href(
-    source_href: str, start_href: Optional[str] = None, start_is_dir: bool = False
+    source_href: str, start_href: str | None = None, start_is_dir: bool = False
 ) -> str:
     """Returns a new string that represents ``source_href`` as an absolute path. If
     ``source_href`` is already absolute it is returned unchanged. If ``source_href``
@@ -439,7 +434,7 @@ def geometry_to_bbox(geometry: dict[str, Any]) -> list[float]:
     lats: list[float] = []
     lons: list[float] = []
 
-    def extract_coords(coords: list[Union[list[float], list[list[Any]]]]) -> None:
+    def extract_coords(coords: list[list[float] | list[list[Any]]]) -> None:
         for x in coords:
             # This handles points
             if isinstance(x, float):
@@ -473,7 +468,7 @@ T = TypeVar("T")
 U = TypeVar("U")
 
 
-def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
+def map_opt(fn: Callable[[T], U], v: T | None) -> U | None:
     """Maps the value of an optional type to another value, returning
     ``None`` if the input option is ``None``.
 
@@ -508,7 +503,7 @@ def map_opt(fn: Callable[[T], U], v: Optional[T]) -> Optional[U]:
     return v if v is None else fn(v)
 
 
-def get_opt(option: Optional[T]) -> T:
+def get_opt(option: T | None) -> T:
     """Retrieves the value of the ``Optional`` type, raising a :exc:`ValueError` if
     the value is ``None``.
 
@@ -542,7 +537,7 @@ def get_opt(option: Optional[T]) -> T:
     return option
 
 
-def get_required(option: Optional[T], obj: Union[str, Any], prop: str) -> T:
+def get_required(option: T | None, obj: str | Any, prop: str) -> T:
     """Retrieves an ``Optional`` value that comes from a required property of some
     object. If the option is ``None``, throws an :exc:`pystac.RequiredPropertyMissing`
     with the given obj and property.
