@@ -1,10 +1,13 @@
-import os
-from typing import Any, AnyStr, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
 import pystac
 from pystac.stac_io import DefaultStacIO, StacIO
-from pystac.utils import HREF
+
+if TYPE_CHECKING:
+    from pystac.utils import HREF
 
 
 class MockStacIO(pystac.StacIO):
@@ -19,7 +22,7 @@ class MockStacIO(pystac.StacIO):
     mock: Mock
     wrapped_stac_io: StacIO
 
-    def __init__(self, wrapped_stac_io: Optional[StacIO] = None) -> None:
+    def __init__(self, wrapped_stac_io: StacIO | None = None) -> None:
         self.mock = Mock()
         if wrapped_stac_io is None:
             self.wrapped_stac_io = DefaultStacIO()
@@ -32,7 +35,7 @@ class MockStacIO(pystac.StacIO):
 
     def write_text(
         self,
-        dest: Union[str, "os.PathLike[AnyStr]"],
+        dest: HREF,
         txt: str,
         *args: Any,
         **kwargs: Any,
