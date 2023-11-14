@@ -15,11 +15,11 @@ class MediaType(StringEnum):
     JPEG = "image/jpeg"
     JPEG2000 = "image/jp2"
     JSON = "application/json"
-    PARQUET = "application/x-parquet"
+    PARQUET = "application/x-parquet"  # https://github.com/opengeospatial/geoparquet/issues/115#issuecomment-1181549523
     PNG = "image/png"
     TEXT = "text/plain"
     TIFF = "image/tiff"
     KML = "application/vnd.google-earth.kml+xml"
     XML = "application/xml"
     PDF = "application/pdf"
-    ZARR = "application/vnd+zarr"
+    ZARR = "application/vnd+zarr"  # https://github.com/openMetadataInitiative/openMINDS_core/blob/v4/instances/data/contentTypes/zarr.jsonld
