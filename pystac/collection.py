@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from collections.abc import Iterable
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -294,7 +294,7 @@ class TemporalExtent:
             TemporalExtent: The resulting TemporalExtent.
         """
         return TemporalExtent(
-            intervals=[[datetime.utcnow().replace(microsecond=0), None]]
+            intervals=[[datetime.now(timezone.utc).replace(microsecond=0), None]]
         )
 
 
