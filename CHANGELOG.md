@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+ - No longer use the `datetime.utcnow` method that has been deprecated in Python 3.12.
+
 ## [v1.9.0] - 2023-10-23
 
 ### Added
