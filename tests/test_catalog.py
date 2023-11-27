@@ -8,7 +8,7 @@ import unittest
 from collections import defaultdict
 from collections.abc import Iterator
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
@@ -140,7 +140,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "one"},
         )
         subcat.add_item(item)
@@ -154,7 +154,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "two"},
         )
         subcat.add_item(item)
@@ -168,7 +168,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "three"},
         )
         subcat.add_item(item)
@@ -710,7 +710,7 @@ class TestCatalog:
                     id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
@@ -748,7 +748,7 @@ class TestCatalog:
                 id="item1",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties=properties,
             )
         )
@@ -758,7 +758,7 @@ class TestCatalog:
                 id="item2",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties=properties,
             )
         )
@@ -787,7 +787,7 @@ class TestCatalog:
                     id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
@@ -812,7 +812,7 @@ class TestCatalog:
                     id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
@@ -896,7 +896,7 @@ class TestCatalog:
             id="item1",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
         item1.add_asset("ortho", Asset(href="/some/ortho.tif"))
@@ -907,7 +907,7 @@ class TestCatalog:
             id="item2",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
         item2.add_asset("ortho", Asset(href="/some/other/ortho.tif"))
@@ -1436,7 +1436,7 @@ class FullCopyTest(unittest.TestCase):
                 id="test_item",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
 
@@ -1456,7 +1456,7 @@ class FullCopyTest(unittest.TestCase):
                 id="Imagery",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
             for key in ["ortho", "dsm"]:
@@ -1469,7 +1469,7 @@ class FullCopyTest(unittest.TestCase):
                 id="Labels",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
             cat.add_items([image_item, label_item])
