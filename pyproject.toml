@@ -89,6 +89,19 @@ strict = true
 module = ["jinja2"]
 ignore_missing_imports = true
 
+[tool.coverage.run]
+branch = true
+source = ["pystac"]
+omit = ["pystac/extensions/label.py"]
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["if TYPE_CHECKING:"]
+
+[tool.doc8]
+ignore-path = ["docs/_build", "docs/tutorials"]
+max-line-length = 88
+
 [tool.ruff]
 line-length = 88
 select = ["E", "F", "I"]

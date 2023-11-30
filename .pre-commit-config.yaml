@@ -37,7 +37,6 @@ repos:
       - id: codespell
         name: codespell
         entry: codespell
-        args: [--ignore-words=.codespellignore]
         language: system
         stages: [commit]
         types_or: [jupyter, markdown, python, shell]
