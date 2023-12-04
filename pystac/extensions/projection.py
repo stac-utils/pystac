@@ -22,17 +22,20 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
 SCHEMA_URIS: list[str] = [
     "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
     SCHEMA_URI,
 ]
 PREFIX: str = "proj:"
 
 # Field names
+CODE_PROP: str = PREFIX + "code"
 EPSG_PROP: str = PREFIX + "epsg"
 WKT2_PROP: str = PREFIX + "wkt2"
 PROJJSON_PROP: str = PREFIX + "projjson"
@@ -66,7 +69,9 @@ class ProjectionExtension(
 
     def apply(
         self,
-        epsg: int | None,
+        *,
+        epsg: int | None = None,
+        code: str | None = None,
         wkt2: str | None = None,
         projjson: dict[str, Any] | None = None,
         geometry: dict[str, Any] | None = None,
@@ -78,7 +83,10 @@ class ProjectionExtension(
         """Applies Projection extension properties to the extended Item.
 
         Args:
-            epsg : REQUIRED. EPSG code of the datasource.
+            epsg : Code of the datasource. Example: 4326.  One of ``code`` and
+                ``epsg`` must be provided.
+            code : Code of the datasource. Example: "EPSG:4326". One of ``code`` and
+                ``epsg`` must be provided.
             wkt2 : WKT2 string representing the Coordinate Reference
                 System (CRS) that the ``geometry`` and ``bbox`` fields represent
             projjson : PROJJSON dict representing the
@@ -97,7 +105,15 @@ class ProjectionExtension(
             transform : The affine transformation coefficients for
                 the default grid
         """
-        self.epsg = epsg
+        if epsg is not None and code is not None:
+            raise KeyError(
+                "Only one of the options ``code`` and ``epsg`` should be specified."
+            )
+        elif epsg:
+            self.epsg = epsg
+        else:
+            self.code = code
+
         self.wkt2 = wkt2
         self.projjson = projjson
         self.geometry = geometry
@@ -118,11 +134,34 @@ class ProjectionExtension(
         It should also be set to ``None`` if a CRS exists, but for which there is no
         valid EPSG code.
         """
+        if self.code is not None and self.code.startswith("EPSG:"):
+            return int(self.code.replace("EPSG:", ""))
         return self._get_property(EPSG_PROP, int)
 
     @epsg.setter
     def epsg(self, v: int | None) -> None:
-        self._set_property(EPSG_PROP, v, pop_if_none=False)
+        self._set_property(EPSG_PROP, None)
+        if v is None:
+            self.code = None
+        else:
+            self.code = f"EPSG:{v}"
+
+    @property
+    def code(self) -> str | None:
+        """Get or set the code of the datasource.
+
+        Added in version 2.0.0 of this extension replacing "proj:epsg".
+
+        Projection codes are identified by a string. The `proj <https://proj.org/>`_
+        library defines projections using "authority:code", e.g., "EPSG:4326" or
+        "IAU_2015:30100". Different projection authorities may define different
+        string formats.
+        """
+        return self._get_property(CODE_PROP, str)
+
+    @code.setter
+    def code(self, v: int | None) -> None:
+        self._set_property(CODE_PROP, v, pop_if_none=False)
 
     @property
     def wkt2(self) -> str | None:
@@ -169,13 +208,13 @@ class ProjectionExtension(
         This string can be used to feed, e.g., ``rasterio.crs.CRS.from_string``.
         The string is determined by the following heuristic:
 
-        1. If an EPSG code is set, return "EPSG:{code}", else
+        1. If a code is set, return the code string, else
         2. If wkt2 is set, return the WKT string, else,
         3. If projjson is set, return the projjson as a string, else,
         4. Return None
         """
-        if self.epsg:
-            return f"EPSG:{self.epsg}"
+        if self.code:
+            return self.code
         elif self.wkt2:
             return self.wkt2
         elif self.projjson:
@@ -190,7 +229,7 @@ class ProjectionExtension(
         This dict should be formatted according the Polygon object format specified in
         `RFC 7946, sections 3.1.6 <https://tools.ietf.org/html/rfc7946>`_,
         except not necessarily in EPSG:4326 as required by RFC7946. Specified based on
-        the ``epsg``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
+        the ``code``, ``projjson`` or ``wkt2`` fields (not necessarily EPSG:4326).
         Ideally, this will be represented by a Polygon with five coordinates, as the
         item in the asset data CRS should be a square aligned to the original CRS grid.
         """
@@ -205,7 +244,7 @@ class ProjectionExtension(
         """Get or sets the bounding box of the assets represented by this item in the
         asset data CRS.
 
-        Specified as 4 or 6 coordinates based on the CRS defined in the ``epsg``,
+        Specified as 4 or 6 coordinates based on the CRS defined in the ``code``,
         ``projjson`` or ``wkt2`` properties. First two numbers are coordinates of the
         lower left corner, followed by coordinates of upper right corner, e.g.,
         ``[west, south, east, north]``, ``[xmin, ymin, xmax, ymax]``,
@@ -384,15 +423,31 @@ class SummariesProjectionExtension(SummariesExtension):
     """
 
     @property
-    def epsg(self) -> list[int] | None:
-        """Get or sets the summary of :attr:`ProjectionExtension.epsg` values
+    def code(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`ProjectionExtension.code` values
         for this Collection.
         """
-        return self.summaries.get_list(EPSG_PROP)
+        return self.summaries.get_list(CODE_PROP)
+
+    @code.setter
+    def code(self, v: list[str] | None) -> None:
+        self._set_summary(CODE_PROP, v)
+
+    @property
+    def epsg(self) -> list[int] | None:
+        """Get the summary of :attr:`ProjectionExtension.epsg` values
+        for this Collection.
+        """
+        if self.code is None:
+            return None
+        return [int(code.replace("EPSG:", "")) for code in self.code if "EPSG:" in code]
 
     @epsg.setter
     def epsg(self, v: list[int] | None) -> None:
-        self._set_summary(EPSG_PROP, v)
+        if v is None:
+            self.code = None
+        else:
+            self.code = [f"EPSG:{epsg}" for epsg in v]
 
 
 class ProjectionExtensionHooks(ExtensionHooks):
@@ -402,7 +457,27 @@ class ProjectionExtensionHooks(ExtensionHooks):
         "projection",
         *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
     }
+    pre_2 = {
+        "proj",
+        "projection",
+        "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    }
     stac_object_types = {pystac.STACObjectType.ITEM}
+
+    def migrate(
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        if not self.has_extension(obj):
+            return
+
+        # proj:epsg moved to proj:code
+        if "proj:epsg" in obj["properties"]:
+            epsg = obj["properties"]["proj:epsg"]
+            obj["properties"]["proj:code"] = f"EPSG:{epsg}"
+            del obj["properties"]["proj:epsg"]
+
+        super().migrate(obj, version, info)
 
 
 PROJECTION_EXTENSION_HOOKS: ExtensionHooks = ProjectionExtensionHooks()

@@ -361,9 +361,8 @@
             "summary": false
         },
 
-        "proj:epsg": {
-            "label": "EPSG Code",
-            "format": "EPSG",
+        "proj:code": {
+            "label": "Proj Code",
             "summary": "v"
         },
         "proj:wkt2": {
