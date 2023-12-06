@@ -303,6 +303,7 @@ for reading from AWS's S3 cloud object storage using `boto3
    import boto3
    from pystac import Link
    from pystac.stac_io import DefaultStacIO, StacIO
+   from typing import Union, Any
 
    class CustomStacIO(DefaultStacIO):
       def __init__(self):
@@ -345,6 +346,7 @@ to take advantage of connection pooling using a `requests.Session
    from urllib.parse import urlparse
    import requests
    from pystac.stac_io import DefaultStacIO, StacIO
+   from typing import Union, Any
 
    class ConnectionPoolingIO(DefaultStacIO):
       def __init__(self):
