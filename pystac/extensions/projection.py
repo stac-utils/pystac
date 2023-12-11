@@ -136,11 +136,10 @@ class ProjectionExtension(
         """
         if self.code is not None and self.code.startswith("EPSG:"):
             return int(self.code.replace("EPSG:", ""))
-        return self._get_property(EPSG_PROP, int)
+        return None
 
     @epsg.setter
     def epsg(self, v: int | None) -> None:
-        self._set_property(EPSG_PROP, None)
         if v is None:
             self.code = None
         else:

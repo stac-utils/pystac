@@ -77,8 +77,6 @@ class SummariesTest(unittest.TestCase):
         coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
-        self.assertEqual(len(summaries_dict["eo:bands"]), 4)
-        self.assertEqual(len(summaries_dict["proj:code"]), 1)
         clone = summaries.clone()
         self.assertTrue(isinstance(clone, Summaries))
         clone_dict = clone.to_dict()

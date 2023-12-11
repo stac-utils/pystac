@@ -554,6 +554,31 @@ class ProjectionSummariesTest(unittest.TestCase):
         self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
 
 
+@pytest.mark.vcr()
+def test_get_set_code(projection_landsat8_item: Item) -> None:
+    proj_item = projection_landsat8_item
+    assert proj_item.ext.proj.code == proj_item.properties["proj:code"]
+    assert proj_item.ext.proj.epsg == 32614
+
+    proj_item.ext.proj.code = "IAU_2015:30100"
+    assert proj_item.ext.proj.epsg is None
+    assert proj_item.properties["proj:code"] == "IAU_2015:30100"
+
+
+def test_migrate() -> None:
+    old = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+
+    path = TestCases.get_path("data-files/projection/example-with-version-1.1.json")
+    item = Item.from_file(path)
+
+    assert old not in item.stac_extensions
+    assert current in item.stac_extensions
+
+    assert item.ext.proj.epsg == 32614
+    assert item.ext.proj.code == "EPSG:32614"
+
+
 def test_older_extension_version(projection_landsat8_item: Item) -> None:
     old = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
     current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
