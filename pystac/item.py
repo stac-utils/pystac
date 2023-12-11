@@ -176,8 +176,9 @@ class Item(STACObject, Assets):
         """Ensure that pystac does not encode too much information when pickling"""
         d = self.__dict__.copy()
 
-        if all(link.get_href() for link in d["links"]):
-            d["links"] = [link.to_dict() for link in d["links"]]
+        d["links"] = [
+            link.to_dict() if link.get_href() else link for link in d["links"]
+        ]
 
         return d
 
@@ -185,8 +186,10 @@ class Item(STACObject, Assets):
         """Ensure that pystac knows how to decode the pickled object"""
         d = state.copy()
 
-        if all(isinstance(link, dict) for link in d["links"]):
-            d["links"] = [Link.from_dict(link).set_owner(self) for link in d["links"]]
+        d["links"] = [
+            Link.from_dict(link).set_owner(self) if isinstance(link, dict) else link
+            for link in d["links"]
+        ]
 
         self.__dict__ = d
 
