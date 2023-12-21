@@ -43,21 +43,20 @@ logger = logging.getLogger(__name__)
 
 def _add_user_agent_if_not_available(request: Request) -> Request:
     """
-    Some servers block the requests without User-agent headers. Therefore, in 
-    this method we add a 'User-agent' header to the request if it's not already 
-    present. 
+    Some servers block the requests without User-agent headers. Therefore, in
+    this method we add a 'User-agent' header to the request if it's not already
+    present.
     Args:
         request (Request): The original request.
 
     Returns:
-        Request: The new request with 'User-agent' header added if it was not 
+        Request: The new request with 'User-agent' header added if it was not
             present in the original request.
     """
     new_request = deepcopy(request)
     if not new_request.has_header("User-agent"):
         new_request.add_header("User-agent", f"Python-pystac/{__version__}")
     return new_request
-
 
 
 class StacIO(ABC):
