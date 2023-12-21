@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Changed
-
+- Adds user-agent header to the request headers if it doen't exist ([#1292](https://github.com/stac-utils/pystac/pull/1292))
 - Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
 
 ### Fixed
