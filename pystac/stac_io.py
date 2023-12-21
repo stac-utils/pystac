@@ -4,6 +4,7 @@ import json
 import logging
 import os
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Callable
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -16,6 +17,7 @@ from pystac.serialization import (
     migrate_to_latest,
 )
 from pystac.utils import HREF, safe_urlparse
+from pystac.version import __version__
 
 # Use orjson if available
 try:
@@ -37,6 +39,25 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
+
+
+def _add_user_agent_if_not_available(request: Request) -> Request:
+    """
+    Some servers block the requests without User-agent headers. Therefore, in 
+    this method we add a 'User-agent' header to the request if it's not already 
+    present. 
+    Args:
+        request (Request): The original request.
+
+    Returns:
+        Request: The new request with 'User-agent' header added if it was not 
+            present in the original request.
+    """
+    new_request = deepcopy(request)
+    if not new_request.has_header("User-agent"):
+        new_request.add_header("User-agent", f"Python-pystac/{__version__}")
+    return new_request
+
 
 
 class StacIO(ABC):
@@ -296,7 +317,9 @@ class DefaultStacIO(StacIO):
         if _is_url(href):
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
+
                 req = Request(href, headers=self.headers)
+                req = _add_user_agent_if_not_available(req)
                 with urlopen(req) as f:
                     href_contents = f.read().decode("utf-8")
             except HTTPError as e:

@@ -105,18 +105,27 @@ class StacIOTest(unittest.TestCase):
 
     @unittest.mock.patch("pystac.stac_io.urlopen")
     def test_headers_stac_io(self, urlopen_mock: unittest.mock.MagicMock) -> None:
-        stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
+        for headers in [
+            {"Authorization": "api-key fake-api-key-value"},
+            {"User-agent": "test_agent"},
+        ]:
+            stac_io = DefaultStacIO(headers=headers)
 
-        catalog = pystac.Catalog("an-id", "a description").to_dict()
-        # required until https://github.com/stac-utils/pystac/pull/896 is merged
-        catalog["links"] = []
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
-            catalog
-        ).encode("utf-8")
-        pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
+            catalog = pystac.Catalog("an-id", "a description").to_dict()
+            # required until https://github.com/stac-utils/pystac/pull/896 is merged
+            catalog["links"] = []
+            urlopen_mock.return_value.__enter__.return_value.read.return_value = (
+                json.dumps(catalog).encode("utf-8")
+            )
+            pystac.Catalog.from_file(
+                "https://example.com/catalog.json", stac_io=stac_io
+            )
 
-        request_obj = urlopen_mock.call_args[0][0]
-        self.assertEqual(request_obj.headers, stac_io.headers)
+            request_obj = urlopen_mock.call_args[0][0]
+            assert request_obj.has_header(
+                "User-agent"
+            ), "Request object misses user-agent"
+            assert request_obj.headers.items() >= stac_io.headers.items()
 
 
 @pytest.mark.vcr()
