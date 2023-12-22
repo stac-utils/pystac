@@ -128,6 +128,10 @@ class Catalog(STACObject):
             catalog's self link's HREF.
         catalog_type : Optional catalog type for this catalog. Must
             be one of the values in :class:`~pystac.CatalogType`.
+        strategy : The layout strategy to use for setting the
+            HREFs of the catalog child objections and items.
+            If not provided, it will default to the strategy of the root and fallback to
+            :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
     catalog_type: CatalogType
