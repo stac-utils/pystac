@@ -5,6 +5,7 @@
 ### Changed
 
 - Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
+- 
 
 ### Fixed
 
