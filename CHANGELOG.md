@@ -5,7 +5,7 @@
 ### Changed
 
 - Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
-- Add APILayoutStrategy
+- Add APILayoutStrategy ([#1294](https://github.com/stac-utils/pystac/pull/1294))
 
 ### Fixed
 
