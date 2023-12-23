@@ -559,3 +559,8 @@ def get_required(option: T | None, obj: str | Any, prop: str) -> T:
     if option is None:
         raise RequiredPropertyMissing(obj, prop)
     return option
+
+
+def is_file_path(href: str) -> bool:
+    parsed = urlparse(href)
+    return bool(os.path.splitext(parsed.path)[1])

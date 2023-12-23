@@ -265,7 +265,7 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href and set_parent:
-            child_href = strategy.get_href(child, os.path.dirname(self_href))
+            child_href = strategy.get_href(child, self_href)
             child.set_self_href(child_href)
 
         child_link = Link.child(child, title=title)
@@ -328,7 +328,7 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href and set_parent:
-            item_href = strategy.get_href(item, os.path.dirname(self_href))
+            item_href = strategy.get_href(item, self_href)
             item.set_self_href(item_href)
 
         item_link = Link.item(item, title=title)
@@ -739,7 +739,7 @@ class Catalog(STACObject):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         def process_item(
-            item: Item, _root_href: str, parent: Catalog | None
+            item: Item, _root_href: str, is_root: bool, parent: Catalog | None
         ) -> Callable[[], None] | None:
             if not skip_unresolved:
                 item.resolve_links()
@@ -749,7 +749,7 @@ class Catalog(STACObject):
             if parent is not None and item.get_parent() != parent:
                 return None
 
-            new_self_href = _strategy.get_href(item, _root_href)
+            new_self_href = _strategy.get_href(item, _root_href, is_root)
 
             def fn() -> None:
                 item.set_self_href(new_self_href)
@@ -773,7 +773,7 @@ class Catalog(STACObject):
                 return setter_funcs
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
-            new_root = os.path.dirname(new_self_href)
+            new_root = new_self_href
 
             for link in cat.get_links():
                 if skip_unresolved and not link.is_resolved():
@@ -781,7 +781,7 @@ class Catalog(STACObject):
                 elif link.rel == pystac.RelType.ITEM:
                     link.resolve_stac_object(root=self.get_root())
                     item_fn = process_item(
-                        cast(pystac.Item, link.target), new_root, cat
+                        cast(pystac.Item, link.target), new_root, is_root, cat
                     )
                     if item_fn is not None:
                         setter_funcs.append(item_fn)

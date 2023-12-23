@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import posixpath
 import warnings
 from abc import ABC, abstractmethod
@@ -8,6 +9,7 @@ from string import Formatter
 from typing import TYPE_CHECKING, Any, Callable
 
 import pystac
+from pystac.utils import is_file_path
 
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
@@ -258,6 +260,9 @@ class HrefLayoutStrategy(ABC):
     def get_href(
         self, stac_object: STACObject, parent_dir: str, is_root: bool = False
     ) -> str:
+        if is_file_path(parent_dir):
+            parent_dir = os.path.dirname(parent_dir)
+
         if isinstance(stac_object, pystac.Item):
             return self.get_item_href(stac_object, parent_dir)
         elif isinstance(stac_object, pystac.Collection):
@@ -529,3 +534,43 @@ class AsIsLayoutStrategy(HrefLayoutStrategy):
             )
         else:
             return href
+
+
+class APILayoutStrategy(HrefLayoutStrategy):
+    """Layout strategy that represents the STAC API endpoint layout described
+    in the :stac-api-spec:`STAC API Description
+    <https://github.com/radiantearth/stac-api-spec/blob/v1.0.0/overview.md#endpoints>`
+
+    The URL of the root catalog will be the base URL of the API.
+    Other catalogs with be listed underneath their parent catalog
+    at ``${id}``.
+    Collections will be found underneath the root or their parent
+    catalog at ``collections/${id}``.
+    Items will be found underneath their collections at
+    ``collections/${collection}/items/${id}``.
+    This class will raise an error if items are not associated
+    with a collection and do not have the collection property set.
+    """
+
+    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
+        if is_root:
+            cat_href = parent_dir
+        else:
+            cat_href = posixpath.join(parent_dir, f"{cat.id}")
+
+        return cat_href
+
+    def get_collection_href(
+        self, col: Collection, parent_dir: str, is_root: bool
+    ) -> str:
+        if is_root:
+            raise Exception("Collections cannot be root")
+
+        col_root = posixpath.join(parent_dir, "collections")
+
+        return posixpath.join(col_root, f"{col.id}")
+
+    def get_item_href(self, item: Item, parent_dir: str) -> str:
+        item_root = posixpath.join(parent_dir, "items")
+
+        return posixpath.join(item_root, f"{item.id}")

@@ -12,6 +12,7 @@ from pystac import utils
 from pystac.utils import (
     JoinType,
     is_absolute_href,
+    is_file_path,
     join_path_or_url,
     make_absolute_href,
     make_relative_href,
@@ -445,3 +446,32 @@ def test_join_path_or_url() -> None:
     with pytest.warns(DeprecationWarning):
         joined_url = join_path_or_url(JoinType.URL, *url_args)
     assert joined_url == "https://some/page/file.html"
+
+
+@pytest.mark.parametrize(
+    "href,expected",
+    [
+        ("path/to/file.txt", True),
+        ("path/to/nofile", False),
+        ("./path/to/file.txt", True),
+        ("./path/to/nofile", False),
+        ("./path/to/", False),
+        ("/path/to/file.txt", True),
+        ("/path/to/nofile", False),
+        ("/path", False),
+        ("/", False),
+        ("D:/path/to/file.txt", True),
+        ("D:/path/to/nofile", False),
+        ("D:\\path\\to\\file.txt", True),
+        ("D:\\path\\to\\file.txt", True),
+        ("D:\\path\\to\\nofile", False),
+        ("D:", False),
+        ("D:\\", False),
+        ("https://example.com/absolutepath/to/file.txt", True),
+        ("https://example.com/absolutepath/to/nofile", False),
+        ("https://example.com", False),
+        ("https://example.com/", False),
+    ],
+)
+def test_is_file_path(href: str, expected: bool) -> None:
+    assert is_file_path(href) == expected
