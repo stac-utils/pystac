@@ -465,7 +465,7 @@ class APILayoutStrategyTest(unittest.TestCase):
 
     def test_cannot_produce_layout_for_root_collection(self) -> None:
         collection = TestCases.case_8()
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             self.strategy.get_href(
                 collection, parent_dir="http://example.com", is_root=True
             )

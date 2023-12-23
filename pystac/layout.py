@@ -542,14 +542,12 @@ class APILayoutStrategy(HrefLayoutStrategy):
     <https://github.com/radiantearth/stac-api-spec/blob/v1.0.0/overview.md#endpoints>`
 
     The URL of the root catalog will be the base URL of the API.
-    Other catalogs with be listed underneath their parent catalog
-    at ``${id}``.
+    Other catalogs will be listed underneath their parent catalog
+    at ``./${id}``.
     Collections will be found underneath the root or their parent
-    catalog at ``collections/${id}``.
+    catalog at ``./collections/${id}``. Collection cannot be the root themselves.
     Items will be found underneath their collections at
-    ``collections/${collection}/items/${id}``.
-    This class will raise an error if items are not associated
-    with a collection and do not have the collection property set.
+    ``./collections/${collection}/items/${id}``.
     """
 
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
@@ -564,7 +562,7 @@ class APILayoutStrategy(HrefLayoutStrategy):
         self, col: Collection, parent_dir: str, is_root: bool
     ) -> str:
         if is_root:
-            raise Exception("Collections cannot be root")
+            raise ValueError("Collections cannot be root")
 
         col_root = posixpath.join(parent_dir, "collections")
 
