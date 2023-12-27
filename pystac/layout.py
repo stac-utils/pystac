@@ -538,8 +538,8 @@ class AsIsLayoutStrategy(HrefLayoutStrategy):
 
 class APILayoutStrategy(HrefLayoutStrategy):
     """Layout strategy that represents the STAC API endpoint layout described
-    in the :stac-api-spec:`STAC API Description
-    <https://github.com/radiantearth/stac-api-spec/blob/v1.0.0/overview.md#endpoints>`
+    in the `STAC API Specifications
+    <https://github.com/radiantearth/stac-api-spec/blob/v1.0.0/overview.md#endpoints>`_
 
     The URL of the root catalog will be the base URL of the API.
     Other catalogs will be listed underneath their parent catalog
