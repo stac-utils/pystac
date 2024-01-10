@@ -473,6 +473,10 @@ class Collection(Catalog, Assets):
         assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Collection.
+        strategy : The layout strategy to use for setting the
+            HREFs of the catalog child objections and items.
+            If not provided, it will default to strategy of the parent and fallback to
+            :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
     description: str
@@ -529,6 +533,7 @@ class Collection(Catalog, Assets):
         providers: list[Provider] | None = None,
         summaries: Summaries | None = None,
         assets: dict[str, Asset] | None = None,
+        strategy: HrefLayoutStrategy | None = None,
     ):
         super().__init__(
             id,
@@ -538,6 +543,7 @@ class Collection(Catalog, Assets):
             extra_fields,
             href,
             catalog_type or CatalogType.ABSOLUTE_PUBLISHED,
+            strategy,
         )
         self.extent = extent
         self.license = license
