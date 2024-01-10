@@ -533,7 +533,7 @@ class Collection(Catalog, Assets):
         providers: list[Provider] | None = None,
         summaries: Summaries | None = None,
         assets: dict[str, Asset] | None = None,
-        layout_strategy: HrefLayoutStrategy | None = None,
+        strategy: HrefLayoutStrategy | None = None,
     ):
         super().__init__(
             id,
@@ -543,7 +543,7 @@ class Collection(Catalog, Assets):
             extra_fields,
             href,
             catalog_type or CatalogType.ABSOLUTE_PUBLISHED,
-            layout_strategy,
+            strategy,
         )
         self.extent = extent
         self.license = license

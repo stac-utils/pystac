@@ -171,7 +171,7 @@ class Catalog(STACObject):
     a canonical format.
     """
 
-    _layout_strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
+    _fallback_strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
     """Fallback layout strategy"""
 
     def __init__(
@@ -183,7 +183,7 @@ class Catalog(STACObject):
         extra_fields: dict[str, Any] | None = None,
         href: str | None = None,
         catalog_type: CatalogType = CatalogType.ABSOLUTE_PUBLISHED,
-        layout_strategy: HrefLayoutStrategy | None = None,
+        strategy: HrefLayoutStrategy | None = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -204,7 +204,7 @@ class Catalog(STACObject):
 
         self.catalog_type: CatalogType = catalog_type
 
-        self.layout_strategy: HrefLayoutStrategy | None = layout_strategy
+        self.strategy: HrefLayoutStrategy | None = strategy
 
         self._resolved_objects.cache(self)
 
@@ -231,20 +231,18 @@ class Catalog(STACObject):
             CatalogType.SELF_CONTAINED,
         ]
 
-    def _get_layout_strategy(
-        self, strategy: HrefLayoutStrategy | None
-    ) -> HrefLayoutStrategy:
+    def _get_strategy(self, strategy: HrefLayoutStrategy | None) -> HrefLayoutStrategy:
         if strategy is not None:
             return strategy
-        elif self.layout_strategy is not None:
-            return self.layout_strategy
+        elif self.strategy is not None:
+            return self.strategy
         elif root := self.get_root():
-            if root.layout_strategy is not None:
-                return root.layout_strategy
+            if root.strategy is not None:
+                return root.strategy
             else:
-                return root._layout_strategy
+                return root._fallback_strategy
         else:
-            return self._layout_strategy
+            return self._fallback_strategy
 
     def add_child(
         self,
@@ -279,7 +277,7 @@ class Catalog(STACObject):
         if isinstance(child, pystac.Item):
             raise pystac.STACError("Cannot add item as child. Use add_item instead.")
 
-        strategy = self._get_layout_strategy(strategy)
+        strategy = self._get_strategy(strategy)
 
         child.set_root(self.get_root())
         if set_parent:
@@ -350,7 +348,7 @@ class Catalog(STACObject):
         if isinstance(item, pystac.Catalog):
             raise pystac.STACError("Cannot add catalog as item. Use add_child instead.")
 
-        strategy = self._get_layout_strategy(strategy)
+        strategy = self._get_strategy(strategy)
 
         item.set_root(self.get_root())
         if set_parent:
@@ -766,7 +764,7 @@ class Catalog(STACObject):
             for the canonical layout of a STAC.
         """
 
-        _strategy = self._get_layout_strategy(strategy)
+        _strategy = self._get_strategy(strategy)
 
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):

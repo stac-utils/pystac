@@ -1762,11 +1762,9 @@ def test_add_child_layout_strategy(
         id="test",
         description="test desc",
         href=f"{base_url}/catalog.json",
-        layout_strategy=root_strategy,
+        strategy=root_strategy,
     )
-    subcat = Catalog(
-        id="subcat", description="subcat desc", layout_strategy=sub_strategy
-    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
     subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
 
     catalog.add_child(subcat, strategy=provided_root_strategy)
@@ -1848,11 +1846,9 @@ def test_add_child_layout_strategy_normalize(
         id="test",
         description="test desc",
         href=f"{base_url}/catalog.json",
-        layout_strategy=root_strategy,
+        strategy=root_strategy,
     )
-    subcat = Catalog(
-        id="subcat", description="subcat desc", layout_strategy=sub_strategy
-    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
     subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
     catalog.add_child(subcat)
     subcat.add_child(subsubcat)
@@ -1914,7 +1910,7 @@ def test_add_item_layout_strategy(
         id="test",
         description="test desc",
         href=f"{base_url}/catalog.json",
-        layout_strategy=root_strategy,
+        strategy=root_strategy,
     )
     item = Item(
         id=item_id,
