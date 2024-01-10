@@ -142,7 +142,7 @@ objects and items added to the catalog tree will be set correctly using that str
 
    catalog = Catalog(...,
                      href="/some/location/catalog.json",
-                     layout_strategy=custom_strategy)
+                     strategy=custom_strategy)
    collection = Collection(...)
    item = Item(...)
    catalog.add_child(collection)
