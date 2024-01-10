@@ -562,5 +562,21 @@ def get_required(option: T | None, obj: str | Any, prop: str) -> T:
 
 
 def is_file_path(href: str) -> bool:
+    """Checks if an HREF resembles a file path.
+
+    This method checks if the given HREF resembles a file path.
+    It checks if the path ends with any kind of file extension
+    and if true, assumes it is a file.
+    Unlike `os.path.isfile()` it does NOT check the actual file.
+
+    Caution: There are cases for which this method may return wrong results!
+
+    Args:
+        href (str) : The HREF to consider.
+
+    Returns:
+        bool: ``True`` if the given HREF resembles a file path,
+            ``False`` if it does not.
+    """
     parsed = urlparse(href)
     return bool(os.path.splitext(parsed.path)[1])
