@@ -57,7 +57,7 @@ test = [
     "pytest-recording~=0.13.0",
     "pytest~=7.3",
     "requests-mock~=1.11",
-    "ruff==0.1.11",
+    "ruff==0.1.13",
     "types-html5lib~=1.1",
     "types-orjson~=3.6",
     "types-jsonschema~=4.18",
