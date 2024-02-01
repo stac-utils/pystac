@@ -2,6 +2,7 @@
 Script to download the examples from the stac-spec repository.
 This is used when upgrading to a new version of STAC.
 """
+
 import argparse
 import json
 import os

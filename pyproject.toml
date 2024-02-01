@@ -42,7 +42,7 @@ docs = [
 jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
 test = [
-    "black~=23.3",
+    "black~=24.0",
     "codespell~=2.2",
     "coverage~=7.2",
     "doc8~=1.1",
