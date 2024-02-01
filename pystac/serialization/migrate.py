@@ -91,21 +91,19 @@ def _get_object_migrations() -> (
     }
 
 
-def _get_removed_extension_migrations() -> (
-    dict[
-        str,
-        tuple[
-            list[STACObjectType] | None,
-            None
-            | (
-                Callable[
-                    [dict[str, Any], STACVersionID, STACJSONDescription],
-                    set[str] | None,
-                ]
-            ),
-        ],
-    ]
-):
+def _get_removed_extension_migrations() -> dict[
+    str,
+    tuple[
+        list[STACObjectType] | None,
+        None
+        | (
+            Callable[
+                [dict[str, Any], STACVersionID, STACJSONDescription],
+                set[str] | None,
+            ]
+        ),
+    ],
+]:
     """Handles removed extensions.
 
     This does not handle renamed extension or extensions that were absorbed

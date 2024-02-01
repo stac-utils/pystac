@@ -1,4 +1,5 @@
 """Implements the :stac-ext:`Versioning Indicators Extension <version>`."""
+
 from __future__ import annotations
 
 import warnings
