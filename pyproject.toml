@@ -55,7 +55,7 @@ test = [
     "pytest-cov~=4.0",
     "pytest-mock~=3.10",
     "pytest-recording~=0.13.0",
-    "pytest>=7.3,<9.0",
+    "pytest~=8.0",
     "requests-mock~=1.11",
     "ruff==0.1.15",
     "types-html5lib~=1.1",
