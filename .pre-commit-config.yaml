@@ -31,7 +31,7 @@ repos:
         entry: black
         language: python
         require_serial: true
-        types_or: [python, pyi, jupyter]
+        types_or: [pyi, jupyter]
         additional_dependencies: ["black[jupyter]"]
 
       - id: codespell
