@@ -7,6 +7,7 @@
 - Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
 - Add APILayoutStrategy ([#1294](https://github.com/stac-utils/pystac/pull/1294))
 - Allow setting a default layout strategy for Catalog ([#1295](https://github.com/stac-utils/pystac/pull/1295))
+- Updated documentation code examples that use AWS S3 for file storage.
 
 ### Fixed
 
