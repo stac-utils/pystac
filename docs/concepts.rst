@@ -333,6 +333,7 @@ for reading from AWS's S3 cloud object storage using `boto3
    class CustomStacIO(DefaultStacIO):
       def __init__(self):
          self.s3 = boto3.resource("s3")
+         super().__init__()
 
       def read_text(
          self, source: Union[str, Link], *args: Any, **kwargs: Any
