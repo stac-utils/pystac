@@ -1,4 +1,5 @@
 """Tests for pystac.extensions.grid."""
+
 # This is for the type checking on GridTest.test_clear_code
 # mypy: warn_unused_ignores=False
 

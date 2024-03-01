@@ -13,9 +13,11 @@ VERSION = STACVersion.DEFAULT_STAC_VERSION
 
 
 def _read_schema(file_name: str) -> dict[str, Any]:
-    with importlib.resources.files("pystac.validation.jsonschemas").joinpath(
-        file_name
-    ).open("r") as f:
+    with (
+        importlib.resources.files("pystac.validation.jsonschemas")
+        .joinpath(file_name)
+        .open("r") as f
+    ):
         return cast(dict[str, Any], json.load(f))
 
 

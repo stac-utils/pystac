@@ -172,6 +172,27 @@ class Item(STACObject, Assets):
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
 
+    def __getstate__(self) -> dict[str, Any]:
+        """Ensure that pystac does not encode too much information when pickling"""
+        d = self.__dict__.copy()
+
+        d["links"] = [
+            link.to_dict() if link.get_href() else link for link in d["links"]
+        ]
+
+        return d
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """Ensure that pystac knows how to decode the pickled object"""
+        d = state.copy()
+
+        d["links"] = [
+            Link.from_dict(link).set_owner(self) if isinstance(link, dict) else link
+            for link in d["links"]
+        ]
+
+        self.__dict__ = d
+
     def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
         :class:`~pystac.Link`.

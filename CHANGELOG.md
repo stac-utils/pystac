@@ -2,9 +2,16 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
+- Add APILayoutStrategy ([#1294](https://github.com/stac-utils/pystac/pull/1294))
+- Allow setting a default layout strategy for Catalog ([#1295](https://github.com/stac-utils/pystac/pull/1295))
+- Updated documentation code examples that use AWS S3 for file storage ([#1308](https://github.com/stac-utils/pystac/pull/1308)
+
 ### Fixed
 
- - No longer use the `datetime.utcnow` method that has been deprecated in Python 3.12 ([#1283](https://github.com/stac-utils/pystac/pull/1283))
+- No longer use the `datetime.utcnow` method that has been deprecated in Python 3.12 ([#1283](https://github.com/stac-utils/pystac/pull/1283))
 
 ## [v1.9.0] - 2023-10-23
 

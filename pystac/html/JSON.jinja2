@@ -3,15 +3,31 @@
 <style>
 .pystac-summary {
     cursor: pointer;
-    display:list-item;
+    display: list-item;
+    list-style: revert;
+    margin-bottom: 0 !important;
+
+    .pystac-l {
+        padding-left: 0.5em;
+        color: rgb(64, 128, 128);
+        font-style: italic;
+    }
 }
-.pystac-key {
+.pystac-row {
+    overflow-wrap: break-word;
+    padding-left: .825em;
+
+    .pystac-k {
+        display: inline-block;
+        margin: 0px 0.5em 0px 0px;
+    }
+    .pystac-v {
+        color: rgb(186, 33, 33);
+    }
+}
+.pystac-k {
     color: rgb(0, 128, 0);
     font-weight: 700;
-}
-.pystac-key-value {
-    display: inline-block;
-    margin: 0px 0.5em 0px 0px;
 }
 </style>
 <div class="jp-RenderedJSON jp-mod-trusted jp-OutputArea-output">

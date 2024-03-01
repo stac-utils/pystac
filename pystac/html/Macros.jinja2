@@ -1,23 +1,20 @@
 {% macro scalar(key, value) -%}
     {% if value is mapping %}
         <li><details>
-            <summary class="pystac-summary"><span class="pystac-key">{{ key }}</span></summary>
+            <summary class="pystac-summary"><span class="pystac-k">{{ key }}</span></summary>
             {{ dict(value) }}
         </details></li>
     {% else %}
-        <li style="overflow-wrap: break-word; padding-left: 2.125em; text-indent: -0.5em;">
-            <span class="pystac-key pystac-key-value">{{ key }}</span>
-            <span style="color: rgb(186, 33, 33);">{% if value is string %}"{{ value }}"{% else %}{{ value }}{% endif %}</span>
+        <li class="pystac-row">
+            <span class="pystac-k">{{ key }}</span>
+            <span class="pystac-v">{% if value is string %}"{{ value }}"{% else %}{{ value }}{% endif %}</span>
         </li>
     {% endif %}
 {%- endmacro %}
 
 {% macro list(key, value) -%}
     <li><details>
-        <summary class="pystac-summary">
-            <span class="pystac-key">{{ key }}</span>
-            <span style="padding-left: 0.5em; color: rgb(64, 128, 128); font-style: italic;">[] {{ value|length }} items</span>
-        </summary>
+        <summary class="pystac-summary"><span class="pystac-k">{{ key }}</span><span class="pystac-l">[] {{ value|length }} items</span></summary>
         {% for item in value %}
             {{ dict({loop.index - 1: item}) }}
         {% endfor %}

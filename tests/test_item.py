@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import pickle
 import tempfile
 import unittest
 from copy import deepcopy
@@ -644,3 +645,40 @@ def test_invalid_error_message(item: Item) -> None:
     with pytest.raises(STACValidationError) as error:
         item.validate()
     assert "can't have a collection" in str(error.value)
+
+
+def test_pickle_with_no_links(item: Item) -> None:
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for attr in ["id", "geometry", "bbox", "datetime", "links"]:
+        assert getattr(roundtripped, attr) == getattr(item, attr)
+
+
+def test_pickle_with_hrefless_links(item: Item) -> None:
+    root = pystac.Catalog("root", "root")
+    a = pystac.Catalog("a", "a")
+
+    item.add_link(pystac.Link("related", a))
+    item.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
+    item.set_root(root)
+
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for original, new in zip(item.links, roundtripped.links):
+        assert original.rel == new.rel
+        assert original.media_type == new.media_type
+        assert str(original.owner) == str(new.owner)
+        assert str(original.target) == str(new.target)
+
+
+def test_pickle_with_only_href_links(item: Item) -> None:
+    item.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
+
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for original, new in zip(item.links, roundtripped.links):
+        assert original.rel == new.rel
+        assert original.media_type == new.media_type
+        assert str(original.owner) == str(new.owner)
+        assert str(original.target) == str(new.target)

@@ -24,6 +24,11 @@ from pystac import (
     Item,
     MediaType,
 )
+from pystac.layout import (
+    BestPracticesLayoutStrategy,
+    HrefLayoutStrategy,
+    TemplateLayoutStrategy,
+)
 from pystac.utils import (
     is_absolute_href,
     make_absolute_href,
@@ -1684,3 +1689,257 @@ def test_set_parent_false_stores_in_proper_place_on_save(
 
     assert (tmp_path / "products" / "product_a").exists()
     assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
+
+
+BEST_PRACTICE_CATALOG_TEMPLATE = "{id}"
+BEST_PRACTICE_ITEM_TEMPLATE = "{id}"
+TEST_CATALOG_TEMPLATE = "cat/${id}/${description}"
+TEST_ITEM_TEMPLATE = "cat/items/${id}"
+STRATEGY = TemplateLayoutStrategy(
+    catalog_template=TEST_CATALOG_TEMPLATE, item_template=TEST_ITEM_TEMPLATE
+)
+
+
+@pytest.mark.parametrize(
+    "root_strategy,sub_strategy,provided_root_strategy,provided_sub_strategy,root_template,sub_template",
+    [
+        (
+            None,
+            None,
+            None,
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (STRATEGY, None, None, None, TEST_CATALOG_TEMPLATE, TEST_CATALOG_TEMPLATE),
+        (
+            STRATEGY,
+            BestPracticesLayoutStrategy(),
+            None,
+            None,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            BestPracticesLayoutStrategy(),
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            None,
+            BestPracticesLayoutStrategy(),
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+    ],
+)
+def test_add_child_layout_strategy(
+    root_strategy: HrefLayoutStrategy,
+    sub_strategy: HrefLayoutStrategy,
+    provided_root_strategy: HrefLayoutStrategy,
+    provided_sub_strategy: HrefLayoutStrategy,
+    root_template: str,
+    sub_template: str,
+) -> None:
+    """Test for layout strategy when adding a child.
+
+    If no layout strategy is specified, children HREF should
+    always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all children HREFs should
+    follow than strategy.
+    If root and child strategy are set, root and child children
+    may follow different strategies.
+    Strategy provided to `add_child` always overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
+    subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
+
+    catalog.add_child(subcat, strategy=provided_root_strategy)
+    subcat.add_child(subsubcat, strategy=provided_sub_strategy)
+
+    root_template = root_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    sub_template = sub_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{root_template}/catalog.json"
+    assert (
+        subsubcat.self_href == f"{base_url}/{root_template}/{sub_template}/catalog.json"
+    )
+
+
+@pytest.mark.parametrize(
+    "root_strategy,sub_strategy,provided_root_strategy,"
+    "root_template,sub_template,norm_template",
+    [
+        (
+            None,
+            None,
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            None,
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            BestPracticesLayoutStrategy(),
+            None,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            BestPracticesLayoutStrategy(),
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+    ],
+)
+def test_add_child_layout_strategy_normalize(
+    root_strategy: HrefLayoutStrategy,
+    sub_strategy: HrefLayoutStrategy,
+    provided_root_strategy: HrefLayoutStrategy,
+    root_template: str,
+    sub_template: str,
+    norm_template: str,
+) -> None:
+    """Test for layout strategy when adding a child and normalizing HREFs.
+
+    If no layout strategy is specified, children HREF
+    should always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all children HREFs
+    should follow than strategy.
+    If root and child strategy are set, root strategy
+    overrides child strategy.
+    Strategy provided to `normalize_href` always
+    overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
+    subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
+    catalog.add_child(subcat)
+    subcat.add_child(subsubcat)
+
+    _root_template = root_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    _sub_template = sub_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{_root_template}/catalog.json"
+    assert (
+        subsubcat.self_href
+        == f"{base_url}/{_root_template}/{_sub_template}/catalog.json"
+    )
+
+    catalog.normalize_hrefs(base_url, strategy=provided_root_strategy)
+
+    _root_template = norm_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    _sub_template = norm_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{_root_template}/catalog.json"
+    assert (
+        subsubcat.self_href
+        == f"{base_url}/{_root_template}/{_sub_template}/catalog.json"
+    )
+
+
+@pytest.mark.parametrize(
+    "root_strategy,provided_strategy,template",
+    [
+        (None, None, BEST_PRACTICE_ITEM_TEMPLATE),
+        (STRATEGY, None, TEST_ITEM_TEMPLATE),
+        (STRATEGY, BestPracticesLayoutStrategy(), BEST_PRACTICE_ITEM_TEMPLATE),
+    ],
+)
+def test_add_item_layout_strategy(
+    root_strategy: HrefLayoutStrategy,
+    provided_strategy: HrefLayoutStrategy,
+    template: str,
+) -> None:
+    """Test for layout strategy when adding an item.
+
+    If no layout strategy is specified, item HREF
+    should always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all item HREFs
+    should follow than strategy.
+    Strategy provided to `add_item` always overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    item_id = "item_id"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    item = Item(
+        id=item_id,
+        geometry={
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [180.0, -90.0],
+                    [180.0, 90.0],
+                    [-180.0, 90.0],
+                    [-180.0, -90.0],
+                    [180.0, -90.0],
+                ]
+            ],
+        },
+        bbox=[-180, -90, 180, 90],
+        datetime=datetime(2023, 1, 1),
+        properties={},
+        assets={
+            "data": Asset(
+                href="http://example.com/assets/data.tif",
+                roles=["data"],
+                title="DATA",
+            )
+        },
+    )
+
+    catalog.add_item(item, strategy=provided_strategy)
+
+    template = template.format(id=item.id).replace("$", "")
+
+    assert item.self_href == f"{base_url}/{template}/{item_id}.json"

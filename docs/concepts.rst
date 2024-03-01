@@ -82,7 +82,8 @@ Layouts
 ~~~~~~~
 
 PySTAC provides a few different strategies for laying out the HREFs of a STAC.
-To use them you can pass in a strategy to the normalize_hrefs call.
+To use them you can pass in a strategy when instantiating a catalog or when
+calling `normalize_hrefs`.
 
 Using templates
 '''''''''''''''
@@ -124,6 +125,30 @@ Catalogs, Collections or Items. Similar to the templating strategy, you can prov
 fallback strategy (which defaults to
 :class:`~pystac.layout.BestPracticesLayoutStrategy`) for any stac object type that you
 don't supply a function for.
+
+
+Set a default catalog layout strategy
+'''''''''''''''''''''''''''''''''''''
+
+Instead of fixing the HREFs of child objects retrospectively using `normalize_hrefs`,
+you can also define a default strategy for a catalog. When instantiating a catalog,
+pass in a custom strategy and base href. Consequently, the HREFs of all child
+objects and items added to the catalog tree will be set correctly using that strategy.
+
+
+.. code-block:: python
+
+   from pystac import Catalog, Collection, Item
+
+   catalog = Catalog(...,
+                     href="/some/location/catalog.json",
+                     strategy=custom_strategy)
+   collection = Collection(...)
+   item = Item(...)
+   catalog.add_child(collection)
+   collection.add_item(item)
+   catalog.save()
+
 
 .. _catalog types:
 
@@ -303,10 +328,12 @@ for reading from AWS's S3 cloud object storage using `boto3
    import boto3
    from pystac import Link
    from pystac.stac_io import DefaultStacIO, StacIO
+   from typing import Union, Any
 
    class CustomStacIO(DefaultStacIO):
       def __init__(self):
          self.s3 = boto3.resource("s3")
+         super().__init__()
 
       def read_text(
          self, source: Union[str, Link], *args: Any, **kwargs: Any
@@ -345,6 +372,7 @@ to take advantage of connection pooling using a `requests.Session
    from urllib.parse import urlparse
    import requests
    from pystac.stac_io import DefaultStacIO, StacIO
+   from typing import Union, Any
 
    class ConnectionPoolingIO(DefaultStacIO):
       def __init__(self):

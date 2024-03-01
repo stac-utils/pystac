@@ -128,6 +128,10 @@ class Catalog(STACObject):
             catalog's self link's HREF.
         catalog_type : Optional catalog type for this catalog. Must
             be one of the values in :class:`~pystac.CatalogType`.
+        strategy : The layout strategy to use for setting the
+            HREFs of the catalog child objections and items.
+            If not provided, it will default to the strategy of the root and fallback to
+            :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
     catalog_type: CatalogType
@@ -167,6 +171,9 @@ class Catalog(STACObject):
     a canonical format.
     """
 
+    _fallback_strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
+    """Fallback layout strategy"""
+
     def __init__(
         self,
         id: str,
@@ -176,6 +183,7 @@ class Catalog(STACObject):
         extra_fields: dict[str, Any] | None = None,
         href: str | None = None,
         catalog_type: CatalogType = CatalogType.ABSOLUTE_PUBLISHED,
+        strategy: HrefLayoutStrategy | None = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -195,6 +203,8 @@ class Catalog(STACObject):
             self.set_self_href(href)
 
         self.catalog_type: CatalogType = catalog_type
+
+        self.strategy: HrefLayoutStrategy | None = strategy
 
         self._resolved_objects.cache(self)
 
@@ -221,6 +231,19 @@ class Catalog(STACObject):
             CatalogType.SELF_CONTAINED,
         ]
 
+    def _get_strategy(self, strategy: HrefLayoutStrategy | None) -> HrefLayoutStrategy:
+        if strategy is not None:
+            return strategy
+        elif self.strategy is not None:
+            return self.strategy
+        elif root := self.get_root():
+            if root.strategy is not None:
+                return root.strategy
+            else:
+                return root._fallback_strategy
+        else:
+            return self._fallback_strategy
+
     def add_child(
         self,
         child: Catalog | Collection,
@@ -241,6 +264,7 @@ class Catalog(STACObject):
             title : Optional title to give to the :class:`~pystac.Link`
             strategy : The layout strategy to use for setting the
                 self href of the child. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
             set_parent : Whether to set the parent on the child as well.
                 Defaults to True.
@@ -253,8 +277,7 @@ class Catalog(STACObject):
         if isinstance(child, pystac.Item):
             raise pystac.STACError("Cannot add item as child. Use add_item instead.")
 
-        if strategy is None:
-            strategy = BestPracticesLayoutStrategy()
+        strategy = self._get_strategy(strategy)
 
         child.set_root(self.get_root())
         if set_parent:
@@ -265,25 +288,33 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href and set_parent:
-            child_href = strategy.get_href(child, os.path.dirname(self_href))
+            child_href = strategy.get_href(child, self_href)
             child.set_self_href(child_href)
 
         child_link = Link.child(child, title=title)
         self.add_link(child_link)
         return child_link
 
-    def add_children(self, children: Iterable[Catalog | Collection]) -> list[Link]:
+    def add_children(
+        self,
+        children: Iterable[Catalog | Collection],
+        strategy: HrefLayoutStrategy | None = None,
+    ) -> list[Link]:
         """Adds links to multiple :class:`~pystac.Catalog` or `~pystac.Collection`
         objects. This method will set each child's parent to this object, and their
         root to this Catalog's root.
 
         Args:
             children : The children to add.
+            strategy : The layout strategy to use for setting the
+                self href of the children. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
+                :class:`~pystac.layout.BestPracticesLayoutStrategy`.
 
         Returns:
             List[Link]: An array of links created for the children
         """
-        return [self.add_child(child) for child in children]
+        return [self.add_child(child, strategy=strategy) for child in children]
 
     def add_item(
         self,
@@ -304,6 +335,7 @@ class Catalog(STACObject):
             title : Optional title to give to the :class:`~pystac.Link`
             strategy : The layout strategy to use for setting the
                 self href of the item. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
             set_parent : Whether to set the parent on the item as well.
                 Defaults to True.
@@ -316,8 +348,7 @@ class Catalog(STACObject):
         if isinstance(item, pystac.Catalog):
             raise pystac.STACError("Cannot add catalog as item. Use add_child instead.")
 
-        if strategy is None:
-            strategy = BestPracticesLayoutStrategy()
+        strategy = self._get_strategy(strategy)
 
         item.set_root(self.get_root())
         if set_parent:
@@ -328,7 +359,7 @@ class Catalog(STACObject):
         # set self link
         self_href = self.get_self_href()
         if self_href and set_parent:
-            item_href = strategy.get_href(item, os.path.dirname(self_href))
+            item_href = strategy.get_href(item, self_href)
             item.set_self_href(item_href)
 
         item_link = Link.item(item, title=title)
@@ -349,6 +380,7 @@ class Catalog(STACObject):
             items : The items to add.
             strategy : The layout strategy to use for setting the
                 self href of the items. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`.
 
         Returns:
@@ -687,6 +719,7 @@ class Catalog(STACObject):
                 catalog_type if there is no root catalog.
             strategy : The layout strategy to use in setting the
                 HREFS for this catalog. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
             stac_io : Optional instance of :class:`~pystac.StacIO` to use. If not
                 provided, will use the instance set while reading in the catalog,
@@ -721,6 +754,7 @@ class Catalog(STACObject):
             root_href : The absolute HREF that all links will be normalized against.
             strategy : The layout strategy to use in setting the HREFS
                 for this catalog. If not provided, defaults to
+                the layout strategy of the parent or root and falls back to
                 :class:`~pystac.layout.BestPracticesLayoutStrategy`
             skip_unresolved : Skip unresolved links when normalizing the tree.
                 Defaults to False.
@@ -729,17 +763,15 @@ class Catalog(STACObject):
             :stac-spec:`STAC best practices document <best-practices.md#catalog-layout>`
             for the canonical layout of a STAC.
         """
-        if strategy is None:
-            _strategy: HrefLayoutStrategy = BestPracticesLayoutStrategy()
-        else:
-            _strategy = strategy
+
+        _strategy = self._get_strategy(strategy)
 
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
         def process_item(
-            item: Item, _root_href: str, parent: Catalog | None
+            item: Item, _root_href: str, is_root: bool, parent: Catalog | None
         ) -> Callable[[], None] | None:
             if not skip_unresolved:
                 item.resolve_links()
@@ -749,7 +781,7 @@ class Catalog(STACObject):
             if parent is not None and item.get_parent() != parent:
                 return None
 
-            new_self_href = _strategy.get_href(item, _root_href)
+            new_self_href = _strategy.get_href(item, _root_href, is_root)
 
             def fn() -> None:
                 item.set_self_href(new_self_href)
@@ -773,7 +805,7 @@ class Catalog(STACObject):
                 return setter_funcs
 
             new_self_href = _strategy.get_href(cat, _root_href, is_root)
-            new_root = os.path.dirname(new_self_href)
+            new_root = new_self_href
 
             for link in cat.get_links():
                 if skip_unresolved and not link.is_resolved():
@@ -781,7 +813,7 @@ class Catalog(STACObject):
                 elif link.rel == pystac.RelType.ITEM:
                     link.resolve_stac_object(root=self.get_root())
                     item_fn = process_item(
-                        cast(pystac.Item, link.target), new_root, cat
+                        cast(pystac.Item, link.target), new_root, is_root, cat
                     )
                     if item_fn is not None:
                         setter_funcs.append(item_fn)

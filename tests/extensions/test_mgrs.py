@@ -1,4 +1,5 @@
 """Tests for pystac.tests.extensions.mgrs"""
+
 import json
 
 import pytest
