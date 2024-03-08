@@ -503,7 +503,7 @@ class Catalog(STACObject):
         DEPRECATED.
 
         .. deprecated:: 1.8
-            Use :meth:`next(pystac.Catalog.get_items(id), None)` instead.
+            Use ``next(pystac.Catalog.get_items(id), None)`` instead.
 
         Returns an item with a given ID.
 
@@ -600,7 +600,7 @@ class Catalog(STACObject):
         DEPRECATED.
 
         .. deprecated:: 1.8
-            Use :meth:`pystac.Catalog.get_items(recursive=True)` instead.
+            Use ``pystac.Catalog.get_items(recursive=True)`` instead.
 
         Get all items from this catalog and all subcatalogs. Will traverse
         any subcatalogs recursively.
