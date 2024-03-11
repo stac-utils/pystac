@@ -25,7 +25,7 @@ dependencies = ["python-dateutil>=2.7.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-bench = ["asv~=0.6.0", "packaging~=23.1", "virtualenv~=20.22"]
+bench = ["asv~=0.6.0", "packaging~=24.0", "virtualenv~=20.22"]
 docs = [
     "Sphinx~=6.2",
     "boto3~=1.28",
