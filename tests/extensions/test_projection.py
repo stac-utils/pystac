@@ -92,7 +92,7 @@ class ProjectionTest(unittest.TestCase):
 
         ProjectionExtension.add_to(item)
         ProjectionExtension.ext(item).apply(
-            4326,
+            epsg=4326,
             wkt2=WKT2,
             projjson=PROJJSON,
             geometry=item.geometry,
@@ -121,14 +121,15 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:epsg", proj_item.properties)
+        self.assertNotIn("proj:epsg", proj_item.properties)
+        self.assertIn("proj:code", proj_item.properties)
         proj_epsg = ProjectionExtension.ext(proj_item).epsg
-        self.assertEqual(proj_epsg, proj_item.properties["proj:epsg"])
+        self.assertEqual(f"EPSG:{proj_epsg}", proj_item.properties["proj:code"])
 
         # Set
         assert proj_epsg is not None
         ProjectionExtension.ext(proj_item).epsg = proj_epsg + 100
-        self.assertEqual(proj_epsg + 100, proj_item.properties["proj:epsg"])
+        self.assertEqual(f"EPSG:{proj_epsg + 100}", proj_item.properties["proj:code"])
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
@@ -156,6 +157,7 @@ class ProjectionTest(unittest.TestCase):
 
         # No proj info on item
         self.assertNotIn("proj:epsg", proj_item.properties)
+        self.assertNotIn("proj:code", proj_item.properties)
 
         # Some proj info on assets
         asset_no_prop = proj_item.assets["metadata"]
@@ -250,6 +252,7 @@ class ProjectionTest(unittest.TestCase):
         for key in list(item.properties.keys()):
             if key.startswith("proj:"):
                 item.properties.pop(key)
+        self.assertIsNone(item.properties.get("proj:code"))
         self.assertIsNone(item.properties.get("proj:epsg"))
         self.assertIsNone(item.properties.get("proj:wkt2"))
         self.assertIsNone(item.properties.get("proj:projjson"))
@@ -265,6 +268,9 @@ class ProjectionTest(unittest.TestCase):
 
         projection.epsg = 4326
         self.assertEqual(projection.crs_string, "EPSG:4326")
+
+        projection.code = "IAU_2015:49900"
+        self.assertEqual(projection.crs_string, "IAU_2015:49900")
 
     @pytest.mark.vcr()
     def test_geometry(self) -> None:
@@ -530,8 +536,7 @@ class ProjectionSummariesTest(unittest.TestCase):
         proj_summaries.epsg = [4326]
 
         col_dict = col.to_dict()
-        self.assertEqual(len(col_dict["summaries"]["proj:epsg"]), 1)
-        self.assertEqual(col_dict["summaries"]["proj:epsg"][0], 4326)
+        self.assertEqual(col_dict["summaries"]["proj:code"], ["EPSG:4326"])
 
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.example_uri)
@@ -549,9 +554,34 @@ class ProjectionSummariesTest(unittest.TestCase):
         self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
 
 
+@pytest.mark.vcr()
+def test_get_set_code(projection_landsat8_item: Item) -> None:
+    proj_item = projection_landsat8_item
+    assert proj_item.ext.proj.code == proj_item.properties["proj:code"]
+    assert proj_item.ext.proj.epsg == 32614
+
+    proj_item.ext.proj.code = "IAU_2015:30100"
+    assert proj_item.ext.proj.epsg is None
+    assert proj_item.properties["proj:code"] == "IAU_2015:30100"
+
+
+def test_migrate() -> None:
+    old = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+
+    path = TestCases.get_path("data-files/projection/example-with-version-1.1.json")
+    item = Item.from_file(path)
+
+    assert old not in item.stac_extensions
+    assert current in item.stac_extensions
+
+    assert item.ext.proj.epsg == 32614
+    assert item.ext.proj.code == "EPSG:32614"
+
+
 def test_older_extension_version(projection_landsat8_item: Item) -> None:
     old = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
-    current = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
 
     stac_extensions = set(projection_landsat8_item.stac_extensions)
     stac_extensions.remove(current)
@@ -570,8 +600,8 @@ def test_older_extension_version(projection_landsat8_item: Item) -> None:
 
 
 def test_newer_extension_version(projection_landsat8_item: Item) -> None:
-    new = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
-    current = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    new = "https://stac-extensions.github.io/projection/v2.1.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
 
     stac_extensions = set(projection_landsat8_item.stac_extensions)
     stac_extensions.remove(current)

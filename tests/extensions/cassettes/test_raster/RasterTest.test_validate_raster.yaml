@@ -77,7 +77,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
+      - Mon, 04 Dec 2023 21:05:29 GMT
       ETag:
       - '"60414dd7-e82"'
       Last-Modified:
@@ -95,15 +95,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 82b30ae1865f2519394c169a8d8efb4f91150d92
+      - fc73e953c03ad74901e9cf09c15691f973f79598
       X-GitHub-Request-Id:
-      - 7CF0:356A:52EEED:6A0244:65314381
+      - D61A:39B1:17CA68:1EAFD0:656E3F18
       X-Served-By:
-      - cache-den8247-DEN
+      - cache-ewr18120-EWR
       X-Timer:
-      - S1697727364.083672,VS0,VE67
+      - S1701723929.105681,VS0,VE15
       expires:
-      - Thu, 19 Oct 2023 15:06:04 GMT
+      - Mon, 04 Dec 2023 21:15:29 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -177,7 +177,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '36'
+      - '193'
       Cache-Control:
       - max-age=600
       Connection:
@@ -187,7 +187,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
+      - Mon, 04 Dec 2023 21:05:29 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -205,135 +205,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 5c893a042be84443d87d604260d2e45aafe63f7e
+      - aa3be4006ac71404820107435b5208fe8d201b43
       X-GitHub-Request-Id:
-      - F112:19FE:60E091:807CD8:6531435F
+      - B7DA:2332:22138:2FC33:656DF08B
       X-Served-By:
-      - cache-den8229-DEN
+      - cache-ewr18176-EWR
       X-Timer:
-      - S1697727364.198603,VS0,VE1
+      - S1701723929.201734,VS0,VE2
       expires:
-      - Thu, 19 Oct 2023 15:05:28 GMT
-      permissions-policy:
-      - interest-cohort=()
-      x-proxy-cache:
-      - MISS
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
-      User-Agent:
-      - Python-urllib/3.11
-    method: GET
-    uri: https://stac-extensions.github.io/projection/v1.1.0/schema.json
-  response:
-    body:
-      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\",\n  \"title\":
-        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
-        for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
-        are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
-        \     \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
-        [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
-        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
-        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
-        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
-        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
-        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
-        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
-        \             }\n            }\n          }\n        }\n      ]\n    },\n
-        \   {\n      \"$comment\": \"This is the schema for STAC Collections.\",\n
-        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
-        [\n            \"type\"\n          ],\n          \"properties\": {\n            \"type\":
-        {\n              \"const\": \"Collection\"\n            },\n            \"assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
-        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
-        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
-        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n          \"title\":\"EPSG
-        code\",\n          \"type\":[\n            \"integer\",\n            \"null\"\n
-        \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
-        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
-        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
-        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
-        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.5/projjson.schema.json\"\n
-        \           },\n            {\n              \"type\": \"null\"\n            }\n
-        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
-        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
-        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
-        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
-        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
-        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
-        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
-        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
-        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
-        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
-        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
-        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
-        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
-        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
-        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
-        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
-        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
-        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
-        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
-        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
-        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '36'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '4369'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
-      ETag:
-      - '"63e6651b-1111"'
-      Last-Modified:
-      - Fri, 10 Feb 2023 15:39:07 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Fastly-Request-ID:
-      - 679930a079294df7b16061c6e3a899d9421e59f0
-      X-GitHub-Request-Id:
-      - 88B0:2098:596818:7919E2:6531435F
-      X-Served-By:
-      - cache-den8262-DEN
-      X-Timer:
-      - S1697727364.240139,VS0,VE1
-      expires:
-      - Thu, 19 Oct 2023 15:05:28 GMT
+      - Mon, 04 Dec 2023 15:40:19 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -427,7 +307,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '37'
+      - '193'
       Cache-Control:
       - max-age=600
       Connection:
@@ -437,7 +317,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
+      - Mon, 04 Dec 2023 21:05:29 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -453,17 +333,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '4'
+      - '2'
       X-Fastly-Request-ID:
-      - ef739b38aae2b0b7f346c4ee3078ec4510484b25
+      - 1351bd52577937ecd38d8b490337d710bf9d20ca
       X-GitHub-Request-Id:
-      - 9AA0:73C0:557691:752384:6531435F
+      - 9056:9330:14EA61:1BB210:656E3E57
       X-Served-By:
-      - cache-den8250-DEN
+      - cache-ewr18155-EWR
       X-Timer:
-      - S1697727364.282170,VS0,VE1
+      - S1701723929.287990,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:27 GMT
+      - Mon, 04 Dec 2023 21:12:15 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -574,7 +454,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
+      - Mon, 04 Dec 2023 21:05:29 GMT
       ETag:
       - '"63cb122e-1661"'
       Last-Modified:
@@ -592,15 +472,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 70dc9e1688def1e2987833fdb111344bc9ed397a
+      - 00d27b32fae2ea8810206270b9d11d107651decd
       X-GitHub-Request-Id:
-      - EADC:6DC8:597A73:706494:65314384
+      - AA1C:78A7:149C8A:1B75B7:656E3F19
       X-Served-By:
-      - cache-den8238-DEN
+      - cache-ewr18182-EWR
       X-Timer:
-      - S1697727364.325552,VS0,VE71
+      - S1701723929.370319,VS0,VE15
       expires:
-      - Thu, 19 Oct 2023 15:06:04 GMT
+      - Mon, 04 Dec 2023 21:15:29 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -713,7 +593,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '11'
+      - '79'
       Cache-Control:
       - max-age=600
       Connection:
@@ -723,7 +603,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:04 GMT
+      - Mon, 04 Dec 2023 21:05:29 GMT
       ETag:
       - '"60e44dd0-18ae"'
       Last-Modified:
@@ -741,15 +621,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 1532a205f94c28a12acb8656d6fb1e0e862ad332
+      - 1d0cf359372f733ab69442a8e5d05e18ba1e2814
       X-GitHub-Request-Id:
-      - D720:51B7:540579:6B18E4:65314372
+      - C20A:2521:117A61:184817:656E3ECA
       X-Served-By:
-      - cache-den8256-DEN
+      - cache-ewr18121-EWR
       X-Timer:
-      - S1697727364.444793,VS0,VE1
+      - S1701723929.455379,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:53 GMT
+      - Mon, 04 Dec 2023 21:14:10 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

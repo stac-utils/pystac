@@ -6,6 +6,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any
 
 import pystac
+from pystac.extensions.base import VERSION_REGEX
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 if TYPE_CHECKING:
@@ -42,6 +43,13 @@ class ExtensionHooks(ABC):
 
     def get_object_links(self, obj: STACObject) -> list[str | pystac.RelType] | None:
         return None
+
+    def has_extension(self, obj: dict[str, Any]) -> bool:
+        schema_startswith = VERSION_REGEX.split(self.schema_uri)[0] + "/"
+        return any(
+            uri.startswith(schema_startswith) or uri in self.prev_extension_ids
+            for uri in obj.get("stac_extensions", [])
+        )
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
