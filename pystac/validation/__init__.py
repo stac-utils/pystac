@@ -19,11 +19,15 @@ if TYPE_CHECKING:
 from pystac.validation.stac_validator import JsonSchemaSTACValidator, STACValidator
 
 
-def validate(stac_object: STACObject) -> list[Any]:
+def validate(
+    stac_object: STACObject,
+    validator: STACValidator | None = None,
+) -> list[Any]:
     """Validates a :class:`~pystac.STACObject`.
 
     Args:
         stac_object : The stac object to validate.
+        validator: The validator to employ.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -39,6 +43,7 @@ def validate(stac_object: STACObject) -> list[Any]:
         stac_version=pystac.get_stac_version(),
         extensions=stac_object.stac_extensions,
         href=stac_object.get_self_href(),
+        validator=validator,
     )
 
 
@@ -48,6 +53,7 @@ def validate_dict(
     stac_version: str | None = None,
     extensions: list[str] | None = None,
     href: str | None = None,
+    validator: STACValidator | None = None,
 ) -> list[Any]:
     """Validate a stac object serialized as JSON into a dict.
 
@@ -67,6 +73,7 @@ def validate_dict(
         extensions : Extension IDs for this stac object. If not supplied,
             PySTAC's identification logic to identify the extensions.
         href : Optional HREF of the STAC object being validated.
+        validator: The validator to employ.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -104,7 +111,8 @@ def validate_dict(
 
         extensions = [uri for uri in map(_get_uri, extensions) if uri is not None]
 
-    return RegisteredValidator.get_validator().validate(
+    validator = validator or RegisteredValidator.get_validator()
+    return validator.validate(
         stac_dict, stac_object_type, stac_version, extensions, href
     )
 
