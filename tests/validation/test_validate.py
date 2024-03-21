@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, cast
 
 import jsonschema
 import pytest
@@ -182,6 +182,55 @@ class TestValidate:
 
         # Should not raise.
         item.validate()
+
+    @pytest.mark.vcr()
+    def test_validate_custom_validator(self) -> None:
+        """This test verifies the use of a custom validator class passed as
+        input to :meth:`~pystac.stac_object.STACObject.validate` and every
+        underlying function. This validator is effective only for the call
+        for which it was provided, contrary to :class:`~pystac.validation.RegisteredValidator`
+        that persists it globally until reset.
+        """
+        custom_extension_uri = "https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json"
+        custom_extension_schema = {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": f"{custom_extension_uri}#",
+            "type": "object",
+            "properties": {
+                "properties": {
+                    "type": "object",
+                    "required": ["custom-extension:test"],
+                    "properties": {
+                        "custom-extension:test": {"type": "integer"}
+                    }
+                }
+            }
+        }
+        item = cast(pystac.Item, pystac.read_file(TestCases.get_path("data-files/item/sample-item.json")))
+        item.stac_extensions.append(custom_extension_uri)
+        item.properties["custom-extension:test"] = 123
+
+        with pytest.raises(pystac.validation.GetSchemaError):
+            item.validate()  # default validator does not know the extension
+
+        class CustomValidator(pystac.validation.JsonSchemaSTACValidator):
+            def _get_schema(self, schema_uri: str) -> dict[str, Any]:
+                if schema_uri == custom_extension_uri:
+                    return custom_extension_schema
+                return super()._get_schema(schema_uri)
+
+        # validate that the custom schema is found with the custom validator
+        custom_validator = CustomValidator()
+        item.validate(validator=custom_validator)
+
+        # make sure validation is effective
+        item.properties["custom-extension:test"] = "bad-value"
+        with pytest.raises(pystac.errors.STACValidationError):
+            item.validate(validator=custom_validator)
+
+        # verify that the custom validator is not persisted
+        with pytest.raises(pystac.validation.GetSchemaError):
+            item.validate()
 
 
 @pytest.mark.block_network
