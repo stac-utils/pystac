@@ -73,7 +73,10 @@ def validate_dict(
         extensions : Extension IDs for this stac object. If not supplied,
             PySTAC's identification logic to identify the extensions.
         href : Optional HREF of the STAC object being validated.
-        validator: The validator to employ.
+        validator : A custom validator to use for validation of the STAC dictionary.
+            If omitted, the default validator from
+            :class:`~pystac.validation.RegisteredValidator`
+            will be used instead.
 
     Returns:
         List[Object]: List of return values from the validation calls for the

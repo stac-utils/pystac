@@ -71,6 +71,11 @@ class STACObject(ABC):
         implementation. For JSON Schema validation (default validator), this
         will be a list of schema URIs that were used during validation.
 
+        Args:
+            validator : A custom validator to use for validation of the object.
+                If omitted, the default validator from
+                :class:`~pystac.validation.RegisteredValidator`
+                will be used instead.
         Raises:
             STACValidationError
         """
