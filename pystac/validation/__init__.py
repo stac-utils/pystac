@@ -27,7 +27,10 @@ def validate(
 
     Args:
         stac_object : The stac object to validate.
-        validator: The validator to employ.
+        validator : A custom validator to use for validation of the STAC object.
+            If omitted, the default validator from
+            :class:`~pystac.validation.RegisteredValidator`
+            will be used instead.
 
     Returns:
         List[Object]: List of return values from the validation calls for the
@@ -259,4 +262,8 @@ def set_validator(validator: STACValidator) -> None:
     RegisteredValidator.set_validator(validator)
 
 
-__all__ = ["GetSchemaError"]
+__all__ = [
+    "GetSchemaError",
+    "JsonSchemaSTACValidator",
+    "RegisteredValidator",
+]

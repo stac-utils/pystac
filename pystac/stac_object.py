@@ -63,7 +63,7 @@ class STACObject(ABC):
 
     def validate(
         self,
-        validator: "pystac.validation.stac_validator.STACValidator" = None,
+        validator: pystac.validation.stac_validator.STACValidator | None = None,
     ) -> list[Any]:
         """Validate this STACObject.
 
