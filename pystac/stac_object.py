@@ -61,19 +61,27 @@ class STACObject(ABC):
         self.links = []
         self.stac_extensions = stac_extensions
 
-    def validate(self) -> list[Any]:
+    def validate(
+        self,
+        validator: pystac.validation.stac_validator.STACValidator | None = None,
+    ) -> list[Any]:
         """Validate this STACObject.
 
         Returns a list of validation results, which depends on the validation
-        implementation. For JSON Schema validation, this will be a list
-        of schema URIs that were used during validation.
+        implementation. For JSON Schema validation (default validator), this
+        will be a list of schema URIs that were used during validation.
 
+        Args:
+            validator : A custom validator to use for validation of the object.
+                If omitted, the default validator from
+                :class:`~pystac.validation.RegisteredValidator`
+                will be used instead.
         Raises:
             STACValidationError
         """
         import pystac.validation
 
-        return pystac.validation.validate(self)
+        return pystac.validation.validate(self, validator=validator)
 
     def add_link(self, link: Link) -> None:
         """Add a link to this object's set of links.
