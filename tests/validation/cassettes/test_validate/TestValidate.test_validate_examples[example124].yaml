@@ -85,7 +85,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '89'
+      - '94'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,7 +95,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:57 GMT
+      - Thu, 28 Mar 2024 20:15:17 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '2'
       X-Fastly-Request-ID:
-      - a88dbe09d14a9d39367566f6d13fb177a24b5858
+      - ea45e7ddacf121a27fa973318921849303323612
       X-GitHub-Request-Id:
-      - 9AA0:73C0:557691:752384:6531435F
+      - 5B26:3FB5:EBCC97:12D0123:6605CF76
       X-Served-By:
-      - cache-den8257-DEN
+      - cache-ewr18180-EWR
       X-Timer:
-      - S1697727418.510552,VS0,VE1
+      - S1711656917.240001,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:27 GMT
+      - Thu, 28 Mar 2024 20:23:42 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -209,7 +209,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '1'
+      - '2'
       Cache-Control:
       - max-age=600
       Connection:
@@ -219,7 +219,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:57 GMT
+      - Thu, 28 Mar 2024 20:15:17 GMT
       ETag:
       - '"63e6651b-1226"'
       Last-Modified:
@@ -237,15 +237,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - a0dc634ffb573658b16848edb7dbb6bbe9a1c6b4
+      - e844ae7ed916a9264fa0f7463644020a53787b6c
       X-GitHub-Request-Id:
-      - 94E4:60CF:61C84E:8184C9:653143B6
+      - 616C:397D62:1AB8A52:1E8C8CA:6605CFD3
       X-Served-By:
-      - cache-den8238-DEN
+      - cache-ewr18166-EWR
       X-Timer:
-      - S1697727418.561494,VS0,VE1
+      - S1711656917.313448,VS0,VE2
       expires:
-      - Thu, 19 Oct 2023 15:06:56 GMT
+      - Thu, 28 Mar 2024 20:25:15 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -268,14 +268,14 @@ interactions:
     body:
       string: ''
     headers:
+      Access-Control-Allow-Origin:
+      - '*'
       Age:
-      - '12'
-      CDN-Cache-Control:
-      - public
+      - '18'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 8189dee81f3a1f51-DEN
+      - 86ba4a95c8ae18a1-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -286,36 +286,40 @@ interactions:
       - '0'
       Content-Type:
       - text/html; charset=utf-8
-      Cross-Origin-Opener-Policy:
-      - same-origin
       Date:
-      - Thu, 19 Oct 2023 14:56:57 GMT
+      - Thu, 28 Mar 2024 20:15:17 GMT
       Location:
-      - https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
-      Referrer-Policy:
-      - no-referrer-when-downgrade
+      - https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
       Server:
       - cloudflare
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
-      X-Backend:
-      - web-i-0b093df670b9bd06a
-      X-Content-Type-Options:
-      - nosniff
-      X-RTD-Domain:
-      - proj.org
-      X-RTD-Project:
-      - osgeo-proj
-      X-RTD-Project-Method:
-      - custom_domain
-      X-RTD-Redirect:
-      - user
-      X-RTD-Version-Method:
-      - path
-      X-Served:
-      - Proxito-404
+      access-control-expose-headers:
+      - Location
       alt-svc:
       - h3=":443"; ma=86400
+      cdn-cache-control:
+      - public
+      cross-origin-opener-policy:
+      - same-origin
+      referrer-policy:
+      - no-referrer-when-downgrade
+      x-backend:
+      - web-i-05c117ec516ff1d60
+      x-content-type-options:
+      - nosniff
+      x-rtd-domain:
+      - proj.org
+      x-rtd-project:
+      - osgeo-proj
+      x-rtd-project-method:
+      - custom_domain
+      x-rtd-redirect:
+      - user
+      x-rtd-version-method:
+      - path
+      x-served:
+      - Proxito-404
     status:
       code: 302
       message: Found
@@ -329,7 +333,7 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
+    uri: https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
   response:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.2/projjson.schema.json\",\n
@@ -770,18 +774,14 @@ interactions:
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
     headers:
-      Access-Control-Allow-Methods:
-      - HEAD, OPTIONS, GET
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '7155'
-      CDN-Cache-Control:
-      - public
+      - '17'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 8189dee8ce555344-DEN
+      - 86ba4a9678bbc339-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -789,47 +789,51 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 19 Oct 2023 14:56:57 GMT
+      - Thu, 28 Mar 2024 20:15:17 GMT
       ETag:
       - W/"229554e540c67351947cd45680c62eef"
       Last-Modified:
-      - Sun, 03 Sep 2023 09:10:52 GMT
-      Referrer-Policy:
-      - no-referrer-when-downgrade
+      - Tue, 07 Feb 2023 19:36:50 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
       - chunked
       Vary:
       - Accept-Encoding
-      X-Backend:
-      - web-i-00b752fe368698236
-      X-Content-Type-Options:
-      - nosniff
-      X-RTD-Domain:
-      - proj.org
-      X-RTD-Path:
-      - /proxito/html/osgeo-proj/9.3/schemas/v0.2/projjson.schema.json
-      X-RTD-Project:
-      - osgeo-proj
-      X-RTD-Project-Method:
-      - custom_domain
-      X-RTD-Version:
-      - '9.3'
-      X-RTD-Version-Method:
-      - path
-      X-Served:
-      - Nginx-Proxito-Sendfile
+      access-control-allow-methods:
+      - HEAD, OPTIONS, GET
       alt-svc:
       - h3=":443"; ma=86400
+      cdn-cache-control:
+      - public
+      referrer-policy:
+      - no-referrer-when-downgrade
       x-amz-id-2:
-      - jQ5B9iu6JateO9oT5uS01FJ/mxi4WC5QVPdKPqtJevFESNbv0FTcXllnaJ3JWpXy+431Tw4/PME=
-      x-amz-meta-mtime:
-      - '1693732240.238196845'
+      - 4cF+iaelIycTz63ZRs3qOoue6uBVN/YbrM1P094ScvL+hHDIICPqGt4HKW77KnWNrh6wHU4QjaM=
       x-amz-request-id:
-      - ZYZ3CHXE6GBYAXD6
+      - B2V799T0ED750CXZ
       x-amz-server-side-encryption:
       - AES256
+      x-backend:
+      - web-i-0da202e90bd9b7c41
+      x-content-type-options:
+      - nosniff
+      x-rtd-domain:
+      - proj.org
+      x-rtd-path:
+      - /proxito/html/osgeo-proj/latest/schemas/v0.2/projjson.schema.json
+      x-rtd-project:
+      - osgeo-proj
+      x-rtd-project-method:
+      - custom_domain
+      x-rtd-resolver-filename:
+      - /schemas/v0.2/projjson.schema.json
+      x-rtd-version:
+      - latest
+      x-rtd-version-method:
+      - path
+      x-served:
+      - Nginx-Proxito-Sendfile
     status:
       code: 200
       message: OK

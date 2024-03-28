@@ -99,11 +99,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:58 GMT
       ETag:
-      - '"65147dc1-147c"'
+      - '"65bd0237-147c"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -115,15 +115,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 7be39d3d855591837c7eeb512efc1c7086c6e24d
+      - 1339433aeb1f0f1d18d58844161eee81a57241d1
       X-GitHub-Request-Id:
-      - 1FC6:0EA2:5DBA6D:7D484D:65314360
+      - C0E6:7C51:E716C6:128403A:6605CF78
       X-Served-By:
-      - cache-den8252-DEN
+      - cache-ewr18179-EWR
       X-Timer:
-      - S1697727405.168050,VS0,VE1
+      - S1711656899.996624,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
+      - Thu, 28 Mar 2024 20:23:44 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -166,11 +166,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-21c"'
+      - '"65bd0237-21c"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -182,15 +182,17 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 8c935c13fbd37d5ff3128ad0bbb987ee8adffe07
+      - 72fa7fbca852eaf8fb6ad91b373b01460ef503e4
       X-GitHub-Request-Id:
-      - 43F4:73C0:55780F:752563:65314363
+      - 2FE8:5B37:E7053A:128374B:6605CF78
       X-Served-By:
-      - cache-den8255-DEN
+      - cache-ewr18179-EWR
       X-Timer:
-      - S1697727405.220926,VS0,VE1
+      - S1711656899.072403,VS0,VE2
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
+      - Thu, 28 Mar 2024 20:23:44 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -263,11 +265,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-a82"'
+      - '"65bd0237-a82"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -279,15 +281,17 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 57f0e9a604e855d5c2d11e828d7869a8616a6f56
+      - 95cf10d8ae3e6ffc7f6be19208e29570e27bfc68
       X-GitHub-Request-Id:
-      - 238A:37AE:599687:794417:65314362
+      - 43EA:2B4A:E9808A:12A86AB:6605CF79
       X-Served-By:
-      - cache-den8273-DEN
+      - cache-ewr18133-EWR
       X-Timer:
-      - S1697727405.263293,VS0,VE1
+      - S1711656899.151489,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
+      - Thu, 28 Mar 2024 20:23:45 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -332,11 +336,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-2a2"'
+      - '"65bd0237-2a2"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -346,17 +350,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '11'
+      - '1'
       X-Fastly-Request-ID:
-      - 755041446d1067186afb8afb108da676276d0fc3
+      - 1f65791fc48c7ba661a687b77dc876c24b8baea4
       X-GitHub-Request-Id:
-      - 096E:7521:5F184F:7EA543:65314362
+      - CD36:B989F:F0F201:1322A98:6605CF78
       X-Served-By:
-      - cache-den8245-DEN
+      - cache-ewr18120-EWR
       X-Timer:
-      - S1697727405.316233,VS0,VE1
+      - S1711656899.235746,VS0,VE2
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
+      - Thu, 28 Mar 2024 20:23:45 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -396,11 +402,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-135"'
+      - '"65bd0237-135"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -412,17 +418,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - a3532ec7a93759a091b54052d9f232f3b31c7f2e
+      - fd28be805f71acc67702a0701b2ab17549863166
       X-GitHub-Request-Id:
-      - 640A:2A80:56E967:767654:65314362
+      - AB90:1F69B9:D9E8F0:11B4701:6605CF78
       X-Served-By:
-      - cache-den8233-DEN
+      - cache-ewr18133-EWR
       X-Timer:
-      - S1697727405.357468,VS0,VE7
+      - S1711656899.304100,VS0,VE1
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
-      x-origin-cache:
-      - HIT
+      - Thu, 28 Mar 2024 20:23:45 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -472,11 +476,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-40e"'
+      - '"65bd0237-40e"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -488,17 +492,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - af1b7c7e38c561718f1e3b6c93dc6f1de8124f82
+      - cefa8be7991d2f7f625106b5f76e3c24d584bbf3
       X-GitHub-Request-Id:
-      - 8954:0EA2:5DBAA8:7D489F:65314363
+      - CD36:B989F:F0F259:1322AD5:6605CF79
       X-Served-By:
-      - cache-den8266-DEN
+      - cache-ewr18150-EWR
       X-Timer:
-      - S1697727405.411249,VS0,VE1
+      - S1711656899.372252,VS0,VE2
       expires:
-      - Thu, 19 Oct 2023 15:05:31 GMT
-      x-origin-cache:
-      - HIT
+      - Thu, 28 Mar 2024 20:23:45 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -550,7 +552,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '5'
+      - '7'
       Cache-Control:
       - max-age=600
       Connection:
@@ -560,11 +562,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-805"'
+      - '"65bd0237-805"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -576,15 +578,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 828f7299e9a4046721fb6e28f2fe723435da2a8a
+      - 163b63b3d7c0e6cde305af597f9b3075b0dd7e76
       X-GitHub-Request-Id:
-      - DB40:3485:5B74FD:7B1C10:653143A8
+      - 23F2:5B37:E736FB:1287063:6605CFBB
       X-Served-By:
-      - cache-den8248-DEN
+      - cache-ewr18142-EWR
       X-Timer:
-      - S1697727405.455143,VS0,VE1
+      - S1711656899.448710,VS0,VE9
       expires:
-      - Thu, 19 Oct 2023 15:06:40 GMT
+      - Thu, 28 Mar 2024 20:24:52 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -664,11 +666,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       ETag:
-      - '"65147dc1-dc7"'
+      - '"65bd0237-dc7"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -680,15 +682,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - ad46dbdccd83a27dc6112dd784db55dd5d092197
+      - 286159cdc6e598af9d5d6ab398c65b48924c1ad0
       X-GitHub-Request-Id:
-      - DB48:0B1F:5C716B:7C114C:653143AB
+      - B474:9FDF:DBCC1B:11CF058:6605CFC3
       X-Served-By:
-      - cache-den8258-DEN
+      - cache-ewr18160-EWR
       X-Timer:
-      - S1697727406.504741,VS0,VE61
+      - S1711656900.532400,VS0,VE20
       expires:
-      - Thu, 19 Oct 2023 15:06:45 GMT
+      - Thu, 28 Mar 2024 20:24:59 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -711,12 +713,12 @@ interactions:
     body:
       string: ''
     headers:
-      CDN-Cache-Control:
-      - public
+      Access-Control-Allow-Origin:
+      - '*'
       CF-Cache-Status:
-      - EXPIRED
+      - MISS
       CF-Ray:
-      - 8189de9d3f3a5381-DEN
+      - 86ba4a26bd2641fb-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -727,36 +729,40 @@ interactions:
       - '0'
       Content-Type:
       - text/html; charset=utf-8
-      Cross-Origin-Opener-Policy:
-      - same-origin
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:14:59 GMT
       Location:
-      - https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
-      Referrer-Policy:
-      - no-referrer-when-downgrade
+      - https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
       Server:
       - cloudflare
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
-      X-Backend:
-      - web-i-0b093df670b9bd06a
-      X-Content-Type-Options:
-      - nosniff
-      X-RTD-Domain:
-      - proj.org
-      X-RTD-Project:
-      - osgeo-proj
-      X-RTD-Project-Method:
-      - custom_domain
-      X-RTD-Redirect:
-      - user
-      X-RTD-Version-Method:
-      - path
-      X-Served:
-      - Proxito-404
+      access-control-expose-headers:
+      - Location
       alt-svc:
       - h3=":443"; ma=86400
+      cdn-cache-control:
+      - public
+      cross-origin-opener-policy:
+      - same-origin
+      referrer-policy:
+      - no-referrer-when-downgrade
+      x-backend:
+      - web-i-05c117ec516ff1d60
+      x-content-type-options:
+      - nosniff
+      x-rtd-domain:
+      - proj.org
+      x-rtd-project:
+      - osgeo-proj
+      x-rtd-project-method:
+      - custom_domain
+      x-rtd-redirect:
+      - user
+      x-rtd-version-method:
+      - path
+      x-served:
+      - Proxito-404
     status:
       code: 302
       message: Found
@@ -770,7 +776,7 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://proj.org/en/9.3/schemas/v0.2/projjson.schema.json
+    uri: https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
   response:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.2/projjson.schema.json\",\n
@@ -1211,18 +1217,12 @@ interactions:
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
     headers:
-      Access-Control-Allow-Methods:
-      - HEAD, OPTIONS, GET
       Access-Control-Allow-Origin:
       - '*'
-      Age:
-      - '7143'
-      CDN-Cache-Control:
-      - public
       CF-Cache-Status:
-      - HIT
+      - MISS
       CF-Ray:
-      - 8189de9f192c5209-DEN
+      - 86ba4a28bc8e0c80-EWR
       Cache-Control:
       - max-age=1200
       Connection:
@@ -1230,47 +1230,51 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 19 Oct 2023 14:56:45 GMT
+      - Thu, 28 Mar 2024 20:15:00 GMT
       ETag:
       - W/"229554e540c67351947cd45680c62eef"
       Last-Modified:
-      - Sun, 03 Sep 2023 09:10:52 GMT
-      Referrer-Policy:
-      - no-referrer-when-downgrade
+      - Tue, 07 Feb 2023 19:36:50 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
       - chunked
       Vary:
       - Accept-Encoding
-      X-Backend:
-      - web-i-00b752fe368698236
-      X-Content-Type-Options:
-      - nosniff
-      X-RTD-Domain:
-      - proj.org
-      X-RTD-Path:
-      - /proxito/html/osgeo-proj/9.3/schemas/v0.2/projjson.schema.json
-      X-RTD-Project:
-      - osgeo-proj
-      X-RTD-Project-Method:
-      - custom_domain
-      X-RTD-Version:
-      - '9.3'
-      X-RTD-Version-Method:
-      - path
-      X-Served:
-      - Nginx-Proxito-Sendfile
+      access-control-allow-methods:
+      - HEAD, OPTIONS, GET
       alt-svc:
       - h3=":443"; ma=86400
+      cdn-cache-control:
+      - public
+      referrer-policy:
+      - no-referrer-when-downgrade
       x-amz-id-2:
-      - jQ5B9iu6JateO9oT5uS01FJ/mxi4WC5QVPdKPqtJevFESNbv0FTcXllnaJ3JWpXy+431Tw4/PME=
-      x-amz-meta-mtime:
-      - '1693732240.238196845'
+      - 4cF+iaelIycTz63ZRs3qOoue6uBVN/YbrM1P094ScvL+hHDIICPqGt4HKW77KnWNrh6wHU4QjaM=
       x-amz-request-id:
-      - ZYZ3CHXE6GBYAXD6
+      - B2V799T0ED750CXZ
       x-amz-server-side-encryption:
       - AES256
+      x-backend:
+      - web-i-0da202e90bd9b7c41
+      x-content-type-options:
+      - nosniff
+      x-rtd-domain:
+      - proj.org
+      x-rtd-path:
+      - /proxito/html/osgeo-proj/latest/schemas/v0.2/projjson.schema.json
+      x-rtd-project:
+      - osgeo-proj
+      x-rtd-project-method:
+      - custom_domain
+      x-rtd-resolver-filename:
+      - /schemas/v0.2/projjson.schema.json
+      x-rtd-version:
+      - latest
+      x-rtd-version-method:
+      - path
+      x-served:
+      - Nginx-Proxito-Sendfile
     status:
       code: 200
       message: OK
@@ -1314,11 +1318,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:46 GMT
+      - Thu, 28 Mar 2024 20:15:00 GMT
       ETag:
-      - '"613924d8-2bf"'
+      - '"65f73090-2bf"'
       Last-Modified:
-      - Wed, 08 Sep 2021 21:02:16 GMT
+      - Sun, 17 Mar 2024 18:04:00 GMT
       Server:
       - GitHub.com
       Vary:
@@ -1330,15 +1334,17 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - b60e7551ac5e6aea9ef1d1c825a496bf674d7dab
+      - 060ef9f9b37017c8914774c928861524b2914553
       X-GitHub-Request-Id:
-      - B4FA:5514:526B35:722767:653143AB
+      - BA98:3D15:F3417D:1347565:6605CFC4
       X-Served-By:
-      - cache-den8243-DEN
+      - cache-ewr18160-EWR
       X-Timer:
-      - S1697727406.151760,VS0,VE62
+      - S1711656900.467702,VS0,VE16
       expires:
-      - Thu, 19 Oct 2023 15:06:46 GMT
+      - Thu, 28 Mar 2024 20:25:00 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
