@@ -2,13 +2,18 @@
 
 ## [Unreleased]
 
-### Changed
+## [v1.10.0] - 2024-03-28
 
-- Add `validator` input to `STACObject.validate` for inline reference of the validator to use
-  ([#1320](https://github.com/stac-utils/pystac/pull/1320))
-- Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
+### Added
+
+- Add `validator` input to `STACObject.validate` for inline reference of the validator to use ([#1320](https://github.com/stac-utils/pystac/pull/1320))
 - Add APILayoutStrategy ([#1294](https://github.com/stac-utils/pystac/pull/1294))
 - Allow setting a default layout strategy for Catalog ([#1295](https://github.com/stac-utils/pystac/pull/1295))
+
+### Changed
+
+- Update css for HTML display ([#1311](https://github.com/stac-utils/pystac/pull/1311))
+- Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
 - Updated documentation code examples that use AWS S3 for file storage ([#1308](https://github.com/stac-utils/pystac/pull/1308)
 
 ### Fixed
@@ -826,7 +831,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.9.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.10.0..main>
+[v1.10.0]: <https://github.com/stac-utils/pystac/compare/v1.9.0..v1.10.0>
 [v1.9.0]: <https://github.com/stac-utils/pystac/compare/v1.8.4..v1.9.0>
 [v1.8.4]: <https://github.com/stac-utils/pystac/compare/v1.8.3..v1.8.4>
 [v1.8.3]: <https://github.com/stac-utils/pystac/compare/v1.8.2..v1.8.3>
