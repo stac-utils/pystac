@@ -77,7 +77,7 @@ class GridExtension(
 
     @property
     def code(self) -> str | None:
-        """Get or sets the latitude band of the datasource."""
+        """Get or sets the grid code of the datasource."""
         return self._get_property(CODE_PROP, str)
 
     @code.setter
