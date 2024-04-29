@@ -531,6 +531,18 @@ class APILayoutStrategyTest(unittest.TestCase):
             == "http://example.com/collections/test_collection/items/test_item"
         )
 
-    def test_produces_layout_for_catalog_seach(self) -> None:
+    def test_produces_layout_for_search(self) -> None:
         href = self.strategy.get_search_href(parent_dir="http://example.com")
         self.assertEqual(href, "http://example.com/search")
+
+    def test_produces_layout_for_conformance(self) -> None:
+        href = self.strategy.get_conformance_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/condormance")
+
+    def test_produces_layout_for_service_description(self) -> None:
+        href = self.strategy.get_service_desc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api")
+
+    def test_produces_layout_for_service_doc(self) -> None:
+        href = self.strategy.get_service_doc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api.html")

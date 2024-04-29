@@ -656,3 +656,40 @@ class APILayoutStrategy(HrefLayoutStrategy):
         str: The generated search href.
         """
         return posixpath.join(parent_dir, "search")
+
+    def get_conformance_href(self, parent_dir: str) -> str:
+        """
+        Generate a conformance href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the conformance.
+
+        Returns:
+        str: The generated conformance href.
+        """
+        return posixpath.join(parent_dir, "conformance")
+
+    def get_service_desc_href(self, parent_dir: str) -> str:
+        """
+        Generate an API service description href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the API.
+
+        Returns:
+        str: The generated API href.
+        """
+        return posixpath.join(parent_dir, "api")
+
+    def get_service_doc_href(self, parent_dir: str) -> str:
+        """
+        Generate an API service documentation href based on
+        the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the API.
+
+        Returns:
+        str: The generated API href.
+        """
+        return posixpath.join(parent_dir, "api.html")

@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- Allow object ID as input for getting APILayoutStrategy hrefs and add `items`, `collections`, `search`, `conformance`, `service_desc` and `service_doc` href methods.
+
 
 ## [v1.10.0] - 2024-03-28
 
