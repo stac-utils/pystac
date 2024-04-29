@@ -70,6 +70,11 @@ extlinks = {
         "v{}/%s".format(STACVersion.DEFAULT_STAC_VERSION),
         "%s path",
     ),
+    "stac-api-spec": (
+        "https://github.com/radiantearth/stac-api-spec/tree/"
+        "v{}/%s".format(STACVersion.DEFAULT_STAC_VERSION),
+        "%s path",
+    ),
     "stac-ext": ("https://github.com/stac-extensions/%s", "%s extension"),
 }
 
