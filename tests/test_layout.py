@@ -530,3 +530,7 @@ class APILayoutStrategyTest(unittest.TestCase):
             item.self_href
             == "http://example.com/collections/test_collection/items/test_item"
         )
+
+    def test_produces_layout_for_catalog_seach(self) -> None:
+        href = self.strategy.get_search_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/search")
