@@ -566,7 +566,7 @@ class APILayoutStrategyTest(unittest.TestCase):
 
     def test_produces_layout_for_conformance(self) -> None:
         href = self.strategy.get_conformance_href(parent_dir="http://example.com")
-        self.assertEqual(href, "http://example.com/condormance")
+        self.assertEqual(href, "http://example.com/conformance")
 
     def test_produces_layout_for_service_description(self) -> None:
         href = self.strategy.get_service_desc_href(parent_dir="http://example.com")
