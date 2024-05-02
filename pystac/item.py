@@ -177,7 +177,12 @@ class Item(STACObject, Assets):
         d = self.__dict__.copy()
 
         d["links"] = [
-            link.to_dict() if link.get_href() else link for link in d["links"]
+            (
+                link.to_dict(transform_href=False)
+                if link.get_href(transform_href=False)
+                else link
+            )
+            for link in d["links"]
         ]
 
         return d

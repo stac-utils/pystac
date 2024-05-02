@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Don't transform hrefs in `Item.__getstate__` ([#1337](https://github.com/stac-utils/pystac/pull/1337))
+
 ## [v1.10.0] - 2024-03-28
 
 ### Added
