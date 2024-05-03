@@ -458,9 +458,23 @@ class APILayoutStrategyTest(unittest.TestCase):
         )
         self.assertEqual(href, "http://example.com")
 
+    def test_produces_layout_for_root_catalog_str(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_catalog_href(
+            cat.id, parent_dir="http://example.com", is_root=True
+        )
+        self.assertEqual(href, "http://example.com")
+
     def test_produces_layout_for_child_catalog(self) -> None:
         cat = pystac.Catalog(id="test", description="test desc")
         href = self.strategy.get_href(cat, parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/test")
+
+    def test_produces_layout_for_child_catalog_str(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_catalog_href(
+            cat.id, parent_dir="http://example.com", is_root=False
+        )
         self.assertEqual(href, "http://example.com/test")
 
     def test_cannot_produce_layout_for_root_collection(self) -> None:
@@ -475,11 +489,26 @@ class APILayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(collection, parent_dir="http://example.com")
         self.assertEqual(href, f"http://example.com/collections/{collection.id}")
 
+    def test_produces_layout_for_child_collection_str(self) -> None:
+        collection = TestCases.case_8()
+        href = self.strategy.get_collection_href(
+            collection.id, parent_dir="http://example.com", is_root=False
+        )
+        self.assertEqual(href, f"http://example.com/collections/{collection.id}")
+
     def test_produces_layout_for_item(self) -> None:
         collection = TestCases.case_8()
         col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
         item = next(collection.get_items(recursive=True))
         href = self.strategy.get_href(item, parent_dir=col_href)
+        expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
+        self.assertEqual(href, expected)
+
+    def test_produces_layout_for_item_str(self) -> None:
+        collection = TestCases.case_8()
+        col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        item = next(collection.get_items(recursive=True))
+        href = self.strategy.get_item_href(item.id, parent_dir=col_href)
         expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
         self.assertEqual(href, expected)
 
@@ -530,3 +559,19 @@ class APILayoutStrategyTest(unittest.TestCase):
             item.self_href
             == "http://example.com/collections/test_collection/items/test_item"
         )
+
+    def test_produces_layout_for_search(self) -> None:
+        href = self.strategy.get_search_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/search")
+
+    def test_produces_layout_for_conformance(self) -> None:
+        href = self.strategy.get_conformance_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/conformance")
+
+    def test_produces_layout_for_service_description(self) -> None:
+        href = self.strategy.get_service_desc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api")
+
+    def test_produces_layout_for_service_doc(self) -> None:
+        href = self.strategy.get_service_doc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api.html")

@@ -550,25 +550,146 @@ class APILayoutStrategy(HrefLayoutStrategy):
     ``./collections/${collection}/items/${id}``.
     """
 
-    def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:
+    def get_catalog_href(
+        self, cat: Catalog | str, parent_dir: str, is_root: bool
+    ) -> str:
+        """
+        Generate a catalog href based on the provided parameters.
+
+        Parameters:
+        cat (Catalog | str): The catalog object or its ID.
+        parent_dir (str): The parent directory for the catalog.
+        is_root (bool): A flag indicating whether the catalog is a root catalog.
+
+        Returns:
+        str: The generated catalog href.
+        """
+
+        if not isinstance(cat, str):
+            cat = cat.id
+
         if is_root:
             cat_href = parent_dir
         else:
-            cat_href = posixpath.join(parent_dir, f"{cat.id}")
+            cat_href = posixpath.join(parent_dir, cat)
 
         return cat_href
 
+    def get_collections_href(self, parent_dir: str) -> str:
+        """
+        Generate a collections href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the collections.
+
+        Returns:
+        str: The generated collections href.
+        """
+        return posixpath.join(parent_dir, "collections")
+
     def get_collection_href(
-        self, col: Collection, parent_dir: str, is_root: bool
+        self, col: Collection | str, parent_dir: str, is_root: bool
     ) -> str:
+        """
+        Generate a collection href based on the provided parameters.
+
+        Parameters:
+        col (Collection | str): The collection object or its ID.
+        parent_dir (str): The parent directory for the collection.
+        is_root (bool): A flag indicating whether the collection is a root collection.
+
+        Returns:
+        str: The generated collection href.
+
+        Raises:
+        ValueError: If the collection is set as root.
+        """
+
+        if not isinstance(col, str):
+            col = col.id
+
         if is_root:
             raise ValueError("Collections cannot be root")
 
-        col_root = posixpath.join(parent_dir, "collections")
+        col_root = self.get_collections_href(parent_dir)
 
-        return posixpath.join(col_root, f"{col.id}")
+        return posixpath.join(col_root, col)
 
-    def get_item_href(self, item: Item, parent_dir: str) -> str:
-        item_root = posixpath.join(parent_dir, "items")
+    def get_items_href(self, parent_dir: str) -> str:
+        """
+        Generate an items href based on the provided parent directory.
 
-        return posixpath.join(item_root, f"{item.id}")
+        Parameters:
+        parent_dir (str): The parent directory for the items.
+
+        Returns:
+        str: The generated items href.
+        """
+        return posixpath.join(parent_dir, "items")
+
+    def get_item_href(self, item: Item | str, parent_dir: str) -> str:
+        """
+        Generate an item href based on the provided parameters.
+
+        Parameters:
+        item (Item | str): The item object or its ID.
+        parent_dir (str): The parent directory for the item.
+
+        Returns:
+        str: The generated item href.
+        """
+        if not isinstance(item, str):
+            item = item.id
+
+        item_root = self.get_items_href(parent_dir)
+
+        return posixpath.join(item_root, item)
+
+    def get_search_href(self, parent_dir: str) -> str:
+        """
+        Generate a search href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the search.
+
+        Returns:
+        str: The generated search href.
+        """
+        return posixpath.join(parent_dir, "search")
+
+    def get_conformance_href(self, parent_dir: str) -> str:
+        """
+        Generate a conformance href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the conformance.
+
+        Returns:
+        str: The generated conformance href.
+        """
+        return posixpath.join(parent_dir, "conformance")
+
+    def get_service_desc_href(self, parent_dir: str) -> str:
+        """
+        Generate an API service description href based on the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the API.
+
+        Returns:
+        str: The generated API href.
+        """
+        return posixpath.join(parent_dir, "api")
+
+    def get_service_doc_href(self, parent_dir: str) -> str:
+        """
+        Generate an API service documentation href based on
+        the provided parent directory.
+
+        Parameters:
+        parent_dir (str): The parent directory for the API.
+
+        Returns:
+        str: The generated API href.
+        """
+        return posixpath.join(parent_dir, "api.html")
