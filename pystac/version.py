@@ -9,6 +9,9 @@ class STACVersion:
     DEFAULT_STAC_VERSION = "1.0.0"
     """Latest STAC version supported by PySTAC"""
 
+    DEFAULT_STAC_API_VERSION = "1.0.0"
+    """Latest STAC API version supported by PySTAC"""
+
     # Version that holds a user-set STAC version to use.
     _override_version: Optional[str] = None
 
