@@ -142,6 +142,9 @@ a template.
 * :class:`pystac.layout.BestPracticesLayoutStrategy`: Layout strategy that represents
   the catalog layout described in the :stac-spec:`STAC Best Practices documentation
   <best-practices.md>`.
+* :class:`pystac.layout.APILayoutStrategy`: Layout strategy that represents
+  the catalog layout described in
+  the :stac-api-spec:`STAC API documentation <overview.md#endpoints>`.
 * :class:`pystac.layout.TemplateLayoutStrategy`: Layout strategy that can take strings
   to be supplied to a :class:`~pystac.layout.LayoutTemplate` to derive paths.
 * :class:`pystac.layout.CustomLayoutStrategy`: Layout strategy that allows users to
