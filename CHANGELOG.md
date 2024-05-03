@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.10.1] - 2024-05-03
+
 ### Fixed
 
 - Don't transform hrefs in `Item.__getstate__` ([#1337](https://github.com/stac-utils/pystac/pull/1337))
@@ -18,7 +20,7 @@
 
 - Update css for HTML display ([#1311](https://github.com/stac-utils/pystac/pull/1311))
 - Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
-- Updated documentation code examples that use AWS S3 for file storage ([#1308](https://github.com/stac-utils/pystac/pull/1308)
+- Updated documentation code examples that use AWS S3 for file storage ([#1308](https://github.com/stac-utils/pystac/pull/1308))
 
 ### Fixed
 
@@ -28,7 +30,7 @@
 
 ### Added
 
-- Simpler extension interface ([#1243](https://github.com/stac-utils/pystac/pull/1243)])
+- Simpler extension interface ([#1243](https://github.com/stac-utils/pystac/pull/1243))
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 - Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
 - `validate_all_dict` replaces the previous implementation of `validate_all` (i.e., `validate_all` was renamed to `validate_all_dict`, and `validate_all` was changed as described below) ([#1246](https://github.com/stac-utils/pystac/pull/1246))
@@ -835,7 +837,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.10.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.10.1..main>
+[v1.10.1]: <https://github.com/stac-utils/pystac/compare/v1.10.0..v1.10.1>
 [v1.10.0]: <https://github.com/stac-utils/pystac/compare/v1.9.0..v1.10.0>
 [v1.9.0]: <https://github.com/stac-utils/pystac/compare/v1.8.4..v1.9.0>
 [v1.8.4]: <https://github.com/stac-utils/pystac/compare/v1.8.3..v1.8.4>
