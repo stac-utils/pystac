@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import os
 import pickle
@@ -682,3 +683,12 @@ def test_pickle_with_only_href_links(item: Item) -> None:
         assert original.media_type == new.media_type
         assert str(original.owner) == str(new.owner)
         assert str(original.target) == str(new.target)
+
+
+def test_copy_with_unresolveable_root(item: Item) -> None:
+    item.add_link(
+        pystac.Link(
+            "root", "s3://naip-visualization/this-is-a-non-existent-catalog.json"
+        )
+    )
+    copy.deepcopy(item)
