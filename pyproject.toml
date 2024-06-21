@@ -44,7 +44,7 @@ jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
 test = [
     "black~=24.0",
-    "codespell~=2.2.0",           # TODO relax to allow >v2.2 once https://github.com/codespell-project/codespell/issues/3430 is fixed
+    "codespell~=2.3.0",           # TODO relax to allow >v2.2 once https://github.com/codespell-project/codespell/issues/3430 is fixed
     "coverage~=7.2",
     "doc8~=1.1",
     "html5lib~=1.1",
