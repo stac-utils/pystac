@@ -68,7 +68,8 @@ class Classification:
         Args:
             value: The integer value corresponding to this class
             description: The description of this class
-            name: The optional human-readable short name for this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters.
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
@@ -103,7 +104,8 @@ class Classification:
 
         Args:
             value: The integer value corresponding to this class
-            name: The human-readable short name for this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters.
             description: The optional long-form description of this class
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
