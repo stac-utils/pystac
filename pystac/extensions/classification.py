@@ -32,8 +32,8 @@ T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition, RasterB
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
 )
-DEFAULT_VERSION: str = "1.1.0"
-SUPPORTED_VERSIONS: list[str] = ["1.1.0", "1.0.0"]
+DEFAULT_VERSION: str = "2.0.0"
+SUPPORTED_VERSIONS: list[str] = ["2.0.0", "1.1.0", "1.0.0"]
 
 # Field names
 PREFIX: str = "classification:"
@@ -58,32 +58,37 @@ class Classification:
     def apply(
         self,
         value: int,
-        description: str,
-        name: str | None = None,
+        name: str,
+        description: str | None = None,
         color_hint: str | None = None,
+        nodata: bool | None = None,
+        percentage: float | None = None,
+        count: int | None = None,
     ) -> None:
         """
         Set the properties for a new Classification.
 
         Args:
             value: The integer value corresponding to this class
-            description: The description of this class
             name: Short name of the class for machine readability. Must consist only
                 of letters, numbers, -, and _ characters.
+            description: The description of this class
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
+            nodata: If set to true classifies a value as a no-data value,
+                defaults to false
+            percentage: The percentage of data values that belong to this class
+                in comparison to all data values, in percent (0-100).
+            count: The number of data values that belong to this class.
         """
         self.value = value
         self.name = name
         self.description = description
         self.color_hint = color_hint
-
-        if color_hint is not None:
-            match = COLOR_HINT_PATTERN.match(color_hint)
-            assert (
-                color_hint is None or match is not None and match.group() == color_hint
-            ), "Must format color hints as '^([0-9A-F]{6})$'"
+        self.nodata = nodata
+        self.percentage = percentage
+        self.count = count
 
         if color_hint is not None:
             match = COLOR_HINT_PATTERN.match(color_hint)
@@ -95,9 +100,12 @@ class Classification:
     def create(
         cls,
         value: int,
-        description: str,
-        name: str | None = None,
+        name: str,
+        description: str | None = None,
         color_hint: str | None = None,
+        nodata: bool | None = None,
+        percentage: float | None = None,
+        count: int | None = None,
     ) -> Classification:
         """
         Create a new Classification.
@@ -110,6 +118,11 @@ class Classification:
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
+            nodata: If set to true classifies a value as a no-data value,
+                defaults to false
+            percentage: The percentage of data values that belong to this class
+                in comparison to all data values, in percent (0-100).
+            count: The number of data values that belong to this class.
         """
         c = cls({})
         c.apply(
@@ -117,6 +130,9 @@ class Classification:
             name=name,
             description=description,
             color_hint=color_hint,
+            nodata=nodata,
+            percentage=percentage,
+            count=count,
         )
         return c
 
@@ -140,11 +156,14 @@ class Classification:
         Returns:
             str
         """
-        return get_required(self.properties.get("description"), self, "description")
+        return self.properties.get("description")
 
     @description.setter
-    def description(self, v: str) -> None:
-        self.properties["description"] = v
+    def description(self, v: str | None) -> None:
+        if v is not None:
+            self.properties["description"] = v
+        else:
+            self.properties.pop("description", None)
 
     @property
     def name(self) -> str | None:
@@ -153,14 +172,11 @@ class Classification:
         Returns:
             Optional[str]
         """
-        return self.properties.get("name")
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
     def name(self, v: str | None) -> None:
-        if v is not None:
-            self.properties["name"] = v
-        else:
-            self.properties.pop("name", None)
+        self.properties["name"] = v
 
     @property
     def color_hint(self) -> str | None:
@@ -184,6 +200,54 @@ class Classification:
             self.properties["color_hint"] = v
         else:
             self.properties.pop("color_hint", None)
+
+    @property
+    def nodata(self) -> bool | None:
+        """Get or set the nodata value for this class.
+
+        Returns:
+            Optional[bool]
+        """
+        return self.properties.get("nodata")
+
+    @nodata.setter
+    def nodata(self, v: bool | None) -> None:
+        if v is not None:
+            self.properties["nodata"] = v
+        else:
+            self.properties.pop("nodata", None)
+
+    @property
+    def percentage(self) -> float | None:
+        """Get or set the percentage value for this class.
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("percentage")
+
+    @percentage.setter
+    def percentage(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["percentage"] = v
+        else:
+            self.properties.pop("percentage", None)
+
+    @property
+    def count(self) -> int | None:
+        """Get or set the count value for this class.
+
+        Returns:
+            Optional[int]
+        """
+        return self.properties.get("count")
+
+    @count.setter
+    def count(self, v: int | None) -> None:
+        if v is not None:
+            self.properties["count"] = v
+        else:
+            self.properties.pop("count", None)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns the dictionary encoding of this class
