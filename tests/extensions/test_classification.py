@@ -78,8 +78,8 @@ def test_bitfield_object() -> None:
         offset=0,
         length=1,
         classes=[
-            Classification.create(description="no", value=0),
-            Classification.create(description="yes", value=1),
+            Classification.create(name="no", value=0),
+            Classification.create(name="yes", value=1),
         ],
         roles=["data"],
         description="dummy description",
@@ -126,8 +126,8 @@ def test_apply_bitfields(plain_item: Item) -> None:
                 offset=0,
                 length=1,
                 classes=[
-                    Classification.create(description="no", value=0),
-                    Classification.create(description="yes", value=1),
+                    Classification.create(name="no", value=0),
+                    Classification.create(name="yes", value=1),
                 ],
             )
         ]
@@ -171,15 +171,15 @@ def test_create_classes(plain_item: Item) -> None:
                 offset=0,
                 length=1,
                 classes=[
-                    Classification.create(description="no", value=0),
-                    Classification.create(description="yes", value=1),
+                    Classification.create(name="no", value=0),
+                    Classification.create(name="yes", value=1),
                 ],
             )
         ]
     )
     ext.classes = [
-        Classification.create(description="no", value=0),
-        Classification.create(description="yes", value=1),
+        Classification.create(name="no", value=0),
+        Classification.create(name="yes", value=1),
     ]
     assert ext.bitfields is None
     ext.bitfields = [
@@ -187,8 +187,8 @@ def test_create_classes(plain_item: Item) -> None:
             offset=0,
             length=1,
             classes=[
-                Classification.create(description="no", value=0),
-                Classification.create(description="yes", value=1),
+                Classification.create(name="no", value=0),
+                Classification.create(name="yes", value=1),
             ],
         )
     ]
@@ -222,8 +222,8 @@ def test_create() -> None:
 
 def test_color_hint_formatting() -> None:
     with pytest.raises(Exception):
-        Classification.create(value=0, description="water", color_hint="#0000ff")
-    Classification.create(value=0, description="water", color_hint="0000FF")
+        Classification.create(value=0, name="water", color_hint="#0000ff")
+    Classification.create(value=0, name="water", color_hint="0000FF")
 
 
 def test_to_from_dict(item_dict: dict[str, Any]) -> None:
@@ -277,8 +277,8 @@ def test_add_item_classes(plain_item: Item) -> None:
     item_ext = ClassificationExtension.ext(plain_item, add_if_missing=True)
     item_ext.__repr__()
     assert item_ext.classes is None
-    item_ext.classes = [Classification.create(description="dummy", value=0)]
-    assert item_ext.properties[CLASSES_PROP] == [{"value": 0, "description": "dummy"}]
+    item_ext.classes = [Classification.create(name="dummy", value=0)]
+    assert item_ext.properties[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
 def test_add_asset_classes(plain_item: Item) -> None:
@@ -287,9 +287,9 @@ def test_add_asset_classes(plain_item: Item) -> None:
     assert CLASSES_PROP not in asset.extra_fields.keys()
     asset_ext = ClassificationExtension.ext(asset)
     asset_ext.__repr__()
-    asset_ext.classes = [Classification.create(value=0, description="dummy")]
+    asset_ext.classes = [Classification.create(value=0, name="dummy")]
     assert CLASSES_PROP in asset.extra_fields.keys()
-    assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "description": "dummy"}]
+    assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
 def test_item_asset_raster_classes(collection: Collection) -> None:
