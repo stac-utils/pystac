@@ -457,7 +457,7 @@ class Catalog(STACObject):
         any subcatalogs recursively."""
         yield from self.get_collections()
         for child in self.get_children():
-            yield from child.get_collections()
+            yield from child.get_all_collections()
 
     def get_child_links(self) -> list[Link]:
         """Return all child links of this catalog.
