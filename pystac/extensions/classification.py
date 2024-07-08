@@ -206,7 +206,7 @@ class Classification:
         """Get or set the nodata value for this class.
 
         Returns:
-            Optional[bool]
+            bool | None
         """
         return self.properties.get("nodata")
 
