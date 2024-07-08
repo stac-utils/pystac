@@ -58,8 +58,8 @@ class Classification:
     def apply(
         self,
         value: int,
-        name: str,
         description: str | None = None,
+        name: str | None = None,
         color_hint: str | None = None,
         nodata: bool | None = None,
         percentage: float | None = None,
@@ -70,9 +70,10 @@ class Classification:
 
         Args:
             value: The integer value corresponding to this class
-            name: Short name of the class for machine readability. Must consist only
-                of letters, numbers, -, and _ characters.
             description: The description of this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters. Required as of v2.0 of
+                this extension.
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
@@ -83,6 +84,12 @@ class Classification:
             count: The number of data values that belong to this class.
         """
         self.value = value
+        # TODO pystac v2.0: make `name` non-optional, move it before
+        # `description` in the arg list, and remove this check
+        if name is None:
+            raise Exception(
+                "As of v2.0.0 of the classification extension, 'name' is required"
+            )
         self.name = name
         self.description = description
         self.color_hint = color_hint
@@ -100,8 +107,8 @@ class Classification:
     def create(
         cls,
         value: int,
-        name: str,
         description: str | None = None,
+        name: str | None = None,
         color_hint: str | None = None,
         nodata: bool | None = None,
         percentage: float | None = None,
@@ -112,9 +119,10 @@ class Classification:
 
         Args:
             value: The integer value corresponding to this class
-            name: Short name of the class for machine readability. Must consist only
-                of letters, numbers, -, and _ characters.
             description: The optional long-form description of this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters. Required as of v2.0 of
+                this extension.
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
@@ -166,7 +174,7 @@ class Classification:
             self.properties.pop("description", None)
 
     @property
-    def name(self) -> str | None:
+    def name(self) -> str:
         """Get or set the name of the class
 
         Returns:
@@ -175,7 +183,7 @@ class Classification:
         return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
-    def name(self, v: str | None) -> None:
+    def name(self, v: str) -> None:
         self.properties["name"] = v
 
     @property
