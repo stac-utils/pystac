@@ -158,7 +158,7 @@ class Classification:
         self.properties["value"] = v
 
     @property
-    def description(self) -> str:
+    def description(self) -> str | None:
         """Get or set the description of the class
 
         Returns:
