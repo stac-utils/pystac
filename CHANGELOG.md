@@ -7,6 +7,10 @@
 - Allow object ID as input for getting APILayoutStrategy hrefs and add `items`, `collections`, `search`, `conformance`, `service_desc` and `service_doc` href methods. ([#1335](https://github.com/stac-utils/pystac/pull/1335))
 - Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification. ([#1356](https://github.com/stac-utils/pystac/pull/1356))
 
+### Fixed
+
+- Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
+
 ## [v1.10.1] - 2024-05-03
 
 ### Fixed
