@@ -77,8 +77,7 @@ class Classification:
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
-            nodata: If set to true classifies a value as a no-data value,
-                defaults to false
+            nodata: If set to true classifies a value as a no-data value.
             percentage: The percentage of data values that belong to this class
                 in comparison to all data values, in percent (0-100).
             count: The number of data values that belong to this class.
@@ -126,8 +125,7 @@ class Classification:
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
-            nodata: If set to true classifies a value as a no-data value,
-                defaults to false
+            nodata: If set to true classifies a value as a no-data value.
             percentage: The percentage of data values that belong to this class
                 in comparison to all data values, in percent (0-100).
             count: The number of data values that belong to this class.
