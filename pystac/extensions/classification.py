@@ -182,6 +182,11 @@ class Classification:
 
     @name.setter
     def name(self, v: str) -> None:
+        if v is None:
+            raise Exception(
+                "`name` was converted to a required attribute in classification"
+                " version v2.0, so cannot be set to None"
+            )
         self.properties["name"] = v
 
     @property
