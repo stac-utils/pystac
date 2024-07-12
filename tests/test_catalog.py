@@ -35,7 +35,13 @@ from pystac.utils import (
     make_posix_style,
     make_relative_href,
 )
-from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, MockStacIO, TestCases
+from tests.utils import (
+    ARBITRARY_BBOX,
+    ARBITRARY_EXTENT,
+    ARBITRARY_GEOM,
+    MockStacIO,
+    TestCases,
+)
 
 
 class CatalogTypeTest(unittest.TestCase):
@@ -1350,7 +1356,7 @@ class TestCatalog:
         catalog = TestCases.case_1()
         all_collections = list(catalog.get_all_collections())
 
-        assert len(all_collections) > 0
+        assert len(all_collections) == 4
         assert all(isinstance(c, pystac.Collection) for c in all_collections)
 
     def test_get_single_links_media_type(self) -> None:
@@ -1639,7 +1645,9 @@ def nested_catalog() -> pystac.Catalog:
     └── variables
         ├── catalog.json
         └── variable_a
-            ├── catalog.json
+            └── catalog.json
+                └── variable_a_1
+                    └── collection.json
     """
     root = pystac.Catalog("root", "root")
     variables = pystac.Catalog("variables", "variables")
@@ -1654,7 +1662,20 @@ def nested_catalog() -> pystac.Catalog:
     variables.add_child(variable_a)
     products.add_child(product_a)
 
+    variable_a_1 = pystac.Collection(
+        "variable_a_1", "variable_a_1", extent=ARBITRARY_EXTENT
+    )
+    variable_a.add_child(variable_a_1)
+
     return root
+
+
+def test_get_all_collections_deeply_nested(nested_catalog: pystac.Catalog) -> None:
+    catalog = nested_catalog
+    all_collections = list(catalog.get_all_collections())
+
+    assert len(all_collections) == 1
+    assert all(isinstance(c, pystac.Collection) for c in all_collections)
 
 
 def test_set_parent_false_stores_in_proper_place_on_normalize_and_save(

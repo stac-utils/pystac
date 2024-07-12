@@ -8,6 +8,10 @@
 - Updated classification extension to v2.0.0 ([#1359](https://github.com/stac-utils/pystac/pull/1359))
 - Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification ([#1356](https://github.com/stac-utils/pystac/pull/1356))
 
+### Fixed
+
+- Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
+
 ## [v1.10.1] - 2024-05-03
 
 ### Fixed
