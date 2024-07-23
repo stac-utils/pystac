@@ -78,7 +78,7 @@ class Dimension(ABC):
     def dim_type(self) -> DimensionType | str:
         """The type of the dimension. Must be ``"spatial"`` for
         :stac-ext:`Horizontal Spatial Dimension Objects
-        <datacube#horizontal-raster-spatial-dimension-object>` or
+        <datacube#horizontal-spatial-raster-dimension-object>` or
         :stac-ext:`Vertical Spatial Dimension Objects
         <datacube#vertical-spatial-dimension-object>`, ``geometries`` for
         :stac-ext:`Spatial Vector Dimension Objects
