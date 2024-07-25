@@ -318,49 +318,114 @@ argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
 sub-class the default :class:`pystac.StacIO` implementation throughout the library.
 
-For example, this code will allow
+For example, the following code examples will allow
 for reading from AWS's S3 cloud object storage using `boto3
-<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__:
+<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__
+or Azure Blob Storage using the `Azure SDK for Python
+<https://learn.microsoft.com/en-us/python/api/overview/azure/storage-blob-readme?view=azure-python>`__:
 
-.. code-block:: python
+.. tab-set::
+   .. tab-item:: AWS S3
 
-   from urllib.parse import urlparse
-   import boto3
-   from pystac import Link
-   from pystac.stac_io import DefaultStacIO, StacIO
-   from typing import Union, Any
+      .. code-block:: python
 
-   class CustomStacIO(DefaultStacIO):
-      def __init__(self):
-         self.s3 = boto3.resource("s3")
-         super().__init__()
+         from urllib.parse import urlparse
+         import boto3
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO, StacIO
+         from typing import Union, Any
 
-      def read_text(
-         self, source: Union[str, Link], *args: Any, **kwargs: Any
-      ) -> str:
-         parsed = urlparse(source)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
+         class CustomStacIO(DefaultStacIO):
+            def __init__(self):
+               self.s3 = boto3.resource("s3")
+               super().__init__()
 
-            obj = self.s3.Object(bucket, key)
-            return obj.get()["Body"].read().decode("utf-8")
-         else:
-            return super().read_text(source, *args, **kwargs)
+            def read_text(
+               self, source: Union[str, Link], *args: Any, **kwargs: Any
+            ) -> str:
+               parsed = urlparse(source)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
 
-      def write_text(
-         self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
-      ) -> None:
-         parsed = urlparse(dest)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
-            self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
-         else:
-            super().write_text(dest, txt, *args, **kwargs)
+                  obj = self.s3.Object(bucket, key)
+                  return obj.get()["Body"].read().decode("utf-8")
+               else:
+                  return super().read_text(source, *args, **kwargs)
 
-   StacIO.set_default(CustomStacIO)
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               parsed = urlparse(dest)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
+                  self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+               else:
+                  super().write_text(dest, txt, *args, **kwargs)
 
+         StacIO.set_default(CustomStacIO)
+
+   .. tab-item:: Azure Blob Storage
+
+      .. code-block:: python
+
+         import os
+         from pathlib import PurePosixPath
+         from typing import Any, Tuple, Union
+         from urllib.parse import urlparse
+
+         from azure.storage.blob import BlobClient, ContentSettings
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO, StacIO
+
+         class BlobStacIO(DefaultStacIO):
+            """A custom StacIO class for reading and writing STAC objects
+            from/to Azure Blob storage.
+            """
+
+            def _parse_blob_url(self, url: str) -> Tuple[str, str]:
+               path = PurePosixPath(urlparse(url).path)
+               container = path.parts[1]
+               blob = "/".join(path.parts[2:])
+               return container, blob
+
+            def _get_blob_client(self, container: str, blob: str) -> BlobClient:
+               return BlobClient.from_connection_string(
+                     os.environ["AZURE_STORAGE_CONNECTION_STRING"],
+                     container_name=container,
+                     blob_name=blob,
+               )
+
+            def read_text(self, source: Union[str, Link], *args: Any, **kwargs: Any) -> str:
+               if isinstance(source, Link):
+                     source = source.href
+               if source.startswith("https"):
+                     container, blob = self._parse_blob_url(source)
+                     blob_client = self._get_blob_client(container, blob)
+                     obj = blob_client.download_blob().readall().decode()
+                     return obj
+               else:
+                     return super().read_text(source, *args, **kwargs)
+
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               """Write STAC Objects to Blob storage. Note: overwrites by default."""
+               if isinstance(dest, Link):
+                     dest = dest.href
+               if dest.startswith("https"):
+                     container, blob = self._parse_blob_url(dest)
+                     blob_client = self._get_blob_client(container, blob)
+                     blob_client.upload_blob(
+                        txt,
+                        overwrite=True,
+                        content_settings=ContentSettings(content_type="application/json"),
+                     )
+               else:
+                     super().write_text(dest, txt, *args, **kwargs)
+
+         StacIO.set_default(BlobStacIO)
 
 If you only need to customize read operations you can inherit from
 :class:`~pystac.stac_io.DefaultStacIO` and only overwrite the read method. For example,
