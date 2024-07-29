@@ -371,38 +371,108 @@ or Azure Blob Storage using the `Azure SDK for Python
       .. code-block:: python
 
          import os
-         from pathlib import PurePosixPath
-         from typing import Any, Tuple, Union
+         import re
+         from typing import Any, Dict, Optional, Tuple, Union
          from urllib.parse import urlparse
 
+         from azure.core.credentials import (
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         )
          from azure.storage.blob import BlobClient, ContentSettings
          from pystac import Link
-         from pystac.stac_io import DefaultStacIO, StacIO
+         from pystac.stac_io import DefaultStacIO
+
+         BLOB_HTTPS_URI_PATTERN = r"https:\/\/(.+?)\.blob\.core\.windows\.net"
+
+         AzureCredentialType = Union[
+            str,
+            Dict[str, str],
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         ]
+
 
          class BlobStacIO(DefaultStacIO):
             """A custom StacIO class for reading and writing STAC objects
             from/to Azure Blob storage.
             """
 
-            def _parse_blob_url(self, url: str) -> Tuple[str, str]:
-               path = PurePosixPath(urlparse(url).path)
-               container = path.parts[1]
-               blob = "/".join(path.parts[2:])
+            conn_str: Optional[str] = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+            account_url: Optional[str] = None
+            credential: Optional[AzureCredentialType] = None
+            overwrite: bool = True
+
+            def _is_blob_uri(self, href: str) -> bool:
+               """Check if href matches Blob URI pattern."""
+               if re.search(
+                     re.compile(BLOB_HTTPS_URI_PATTERN), href
+               ) is not None or href.startswith("abfs://"):
+                     return True
+               else:
+                     return False
+
+            def _parse_blob_uri(self, uri: str) -> Tuple[str, str]:
+               """Parse the container and blob name from a Blob URI.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     The container and blob names.
+               """
+               if uri.startswith("abfs://"):
+                     path = uri.replace("abfs://", "/")
+               else:
+                     path = urlparse(uri).path
+
+               parts = path.split("/")
+               container = parts[1]
+               blob = "/".join(parts[2:])
                return container, blob
 
-            def _get_blob_client(self, container: str, blob: str) -> BlobClient:
-               return BlobClient.from_connection_string(
-                     os.environ["AZURE_STORAGE_CONNECTION_STRING"],
-                     container_name=container,
-                     blob_name=blob,
-               )
+            def _get_blob_client(self, uri: str) -> BlobClient:
+               """Instantiate a `BlobClient` given a container and blob.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     A `BlobClient` for interacting with `blob` in `container`.
+               """
+               container, blob = self._parse_blob_uri(uri)
+
+               if self.conn_str:
+                     return BlobClient.from_connection_string(
+                        self.conn_str,
+                        container_name=container,
+                        blob_name=blob,
+                     )
+               elif self.account_url:
+                     return BlobClient(
+                        account_url=self.account_url,
+                        container_name=container,
+                        blob_name=blob,
+                        credential=self.credential,
+                     )
+               else:
+                     raise ValueError(
+                        "Must set conn_str or account_url (and credential if required)"
+                     )
 
             def read_text(self, source: Union[str, Link], *args: Any, **kwargs: Any) -> str:
                if isinstance(source, Link):
                      source = source.href
-               if source.startswith("https"):
-                     container, blob = self._parse_blob_url(source)
-                     blob_client = self._get_blob_client(container, blob)
+               if self._is_blob_uri(source):
+                     blob_client = self._get_blob_client(source)
                      obj = blob_client.download_blob().readall().decode()
                      return obj
                else:
@@ -414,17 +484,28 @@ or Azure Blob Storage using the `Azure SDK for Python
                """Write STAC Objects to Blob storage. Note: overwrites by default."""
                if isinstance(dest, Link):
                      dest = dest.href
-               if dest.startswith("https"):
-                     container, blob = self._parse_blob_url(dest)
-                     blob_client = self._get_blob_client(container, blob)
+               if self._is_blob_uri(dest):
+                     blob_client = self._get_blob_client(dest)
                      blob_client.upload_blob(
                         txt,
-                        overwrite=True,
+                        overwrite=self.overwrite,
                         content_settings=ContentSettings(content_type="application/json"),
                      )
                else:
                      super().write_text(dest, txt, *args, **kwargs)
 
+
+         # set Blob storage connection string
+         BlobStacIO.conn_str = "my-storage-connection-string"
+
+         # OR set Blob account URL, credential
+         BlobStacIO.account_url = "https://myblobstorageaccount.blob.core.windows.net"
+         BlobStacIO.credential = AzureSasCredential("my-sas-token")
+
+         # modify overwrite behavior
+         BlobStacIO.overwrite = False
+
+         # set BlobStacIO as default StacIO
          StacIO.set_default(BlobStacIO)
 
 If you only need to customize read operations you can inherit from
