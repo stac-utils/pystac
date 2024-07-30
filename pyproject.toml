@@ -27,7 +27,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 bench = ["asv~=0.6.0", "packaging~=24.0", "virtualenv~=20.22"]
 docs = [
-    "Sphinx~=7.3",
+    "Sphinx~=8.0",
     "boto3~=1.28",
     "ipython~=8.12",
     "jinja2<4.0",
