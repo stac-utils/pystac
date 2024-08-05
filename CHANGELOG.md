@@ -13,6 +13,10 @@
 
 - Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
 
+### Removed
+
+- Python 3.9 ([#1384](https://github.com/stac-utils/pystac/pull/1384))
+
 ## [v1.10.1] - 2024-05-03
 
 ### Fixed
