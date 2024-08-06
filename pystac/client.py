@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import Any
+# mypy: ignore-errors
 
 _import_error_message = (
     "pystac-client is not installed.\n\n"
@@ -17,7 +15,7 @@ except ImportError as e:
         raise
 
 
-def __getattr__(value: str) -> Any:
+def __getattr__(value: str):
     try:
         import pystac_client
     except ImportError as e:
