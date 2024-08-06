@@ -5,6 +5,7 @@
 ### Added
 
 - Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386)) 
+- Add convenience method for accessing pystac_client ([#1365](https://github.com/stac-utils/pystac/pull/1365))
 
 ### Changed
 
