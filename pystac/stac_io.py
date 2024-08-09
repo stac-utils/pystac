@@ -375,7 +375,7 @@ class DuplicateKeyReportingMixin(StacIO):
 
     @staticmethod
     def _report_duplicate_object_names(
-        object_pairs: list[tuple[str, Any]]
+        object_pairs: list[tuple[str, Any]],
     ) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for key, value in object_pairs:
@@ -414,17 +414,16 @@ if HAS_URLLIB3:
 
         """
 
-        retry: Retry
-        """The :py:class:`urllib3.util.retry.Retry` to use with all reading network
-        requests."""
-
         def __init__(
             self,
             headers: dict[str, str] | None = None,
             retry: Retry | None = None,
         ):
             super().__init__(headers)
+
             self.retry = retry or Retry()
+            """The :py:class:`urllib3.util.retry.Retry` to use with all reading network
+            requests."""
 
         def read_text_from_href(self, href: str) -> str:
             """Reads file as a UTF-8 string, with retry support.
@@ -438,7 +437,9 @@ if HAS_URLLIB3:
                 http = PoolManager()
                 try:
                     response = http.request(
-                        "GET", href, retries=self.retry  # type: ignore
+                        "GET",
+                        href,
+                        retries=self.retry,  # type: ignore
                     )
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
