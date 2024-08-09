@@ -2,7 +2,6 @@
 
 import unittest
 from datetime import datetime, timedelta
-from typing import Optional
 
 import pytest
 
@@ -245,7 +244,7 @@ def make_collection() -> pystac.Collection:
     end = start + timedelta(5, 4, 3, 2, 1)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = pystac.SpatialExtent(bboxes)
-    intervals: list[list[Optional[datetime]]] = [[start, end]]
+    intervals: list[list[datetime | None]] = [[start, end]]
     temporal_extent = pystac.TemporalExtent(intervals)
     extent = pystac.Extent(spatial_extent, temporal_extent)
     collection = pystac.Collection(asset_id, "desc", extent)

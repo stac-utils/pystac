@@ -2,6 +2,7 @@
 """
 PySTAC is a library for working with SpatioTemporal Asset Catalogs (STACs)
 """
+
 __all__ = [
     "__version__",
     "TemplateError",
@@ -44,7 +45,7 @@ __all__ = [
 
 import os
 import warnings
-from typing import Any, Optional
+from typing import Any
 
 from pystac.errors import (
     TemplateError,
@@ -136,7 +137,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
 )
 
 
-def read_file(href: HREF, stac_io: Optional[StacIO] = None) -> STACObject:
+def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what
@@ -168,8 +169,8 @@ def read_file(href: HREF, stac_io: Optional[StacIO] = None) -> STACObject:
 def write_file(
     obj: STACObject,
     include_self_link: bool = True,
-    dest_href: Optional[HREF] = None,
-    stac_io: Optional[StacIO] = None,
+    dest_href: HREF | None = None,
+    stac_io: StacIO | None = None,
 ) -> None:
     """Writes a STACObject to a file.
 
@@ -202,9 +203,9 @@ def write_file(
 
 def read_dict(
     d: dict[str, Any],
-    href: Optional[str] = None,
-    root: Optional[Catalog] = None,
-    stac_io: Optional[StacIO] = None,
+    href: str | None = None,
+    root: Catalog | None = None,
+    stac_io: StacIO | None = None,
 ) -> STACObject:
     """Reads a :class:`~STACObject` or :class:`~ItemCollection` from a JSON-like dict
     representing a serialized STAC object.

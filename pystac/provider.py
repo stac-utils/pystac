@@ -1,5 +1,5 @@
 from html import escape
-from typing import Any, Optional
+from typing import Any
 
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import StringEnum
@@ -36,16 +36,16 @@ class Provider:
     name: str
     """The name of the organization or the individual."""
 
-    description: Optional[str]
+    description: str | None
     """Optional multi-line description to add further provider
     information such as processing details for processors and producers,
     hosting details for hosts or basic contact information."""
 
-    roles: Optional[list[ProviderRole]]
+    roles: list[ProviderRole] | None
     """Optional roles of the provider. Any of
     licensor, producer, processor or host."""
 
-    url: Optional[str]
+    url: str | None
     """Optional homepage on which the provider describes the dataset
     and publishes contact information."""
 
@@ -56,10 +56,10 @@ class Provider:
     def __init__(
         self,
         name: str,
-        description: Optional[str] = None,
-        roles: Optional[list[ProviderRole]] = None,
-        url: Optional[str] = None,
-        extra_fields: Optional[dict[str, Any]] = None,
+        description: str | None = None,
+        roles: list[ProviderRole] | None = None,
+        url: str | None = None,
+        extra_fields: dict[str, Any] | None = None,
     ):
         self.name = name
         self.description = description

@@ -2,7 +2,7 @@
 
 import unittest
 from datetime import datetime
-from typing import Any, Generic, Optional, TypeVar, Union, cast
+from typing import Any, Generic, TypeVar, Union, cast
 
 import pytest
 
@@ -33,18 +33,18 @@ class CustomExtension(
     PropertiesExtension,
     ExtensionManagementMixin[Union[pystac.Catalog, pystac.Collection, pystac.Item]],
 ):
-    def __init__(self, obj: Optional[pystac.STACObject]) -> None:
+    def __init__(self, obj: pystac.STACObject | None) -> None:
         self.obj = obj
 
-    def apply(self, test_prop: Optional[str]) -> None:
+    def apply(self, test_prop: str | None) -> None:
         self.test_prop = test_prop
 
     @property
-    def test_prop(self) -> Optional[str]:
+    def test_prop(self) -> str | None:
         return self._get_property(TEST_PROP, str)
 
     @test_prop.setter
-    def test_prop(self, v: Optional[str]) -> None:
+    def test_prop(self, v: str | None) -> None:
         self._set_property(TEST_PROP, v)
 
     @classmethod
