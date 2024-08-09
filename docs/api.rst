@@ -86,6 +86,18 @@ as to serialize and deserialize STAC object to and from JSON.
 * :class:`pystac.stac_io.DefaultStacIO`: The default :class:`pystac.StacIO`
   implementation used throughout the library.
 
+Client
+------
+
+A convenience method for accessing `pystac-client <https://github.com/stac-utils/pystac-client>`__
+
+**Example:**
+
+.. code-block:: python
+
+  from pystac.client import Client
+
+
 Extensions
 ----------
 

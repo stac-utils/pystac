@@ -2,15 +2,25 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386)) 
+- Add convenience method for accessing pystac_client ([#1365](https://github.com/stac-utils/pystac/pull/1365))
+
 ### Changed
 
 - Allow object ID as input for getting APILayoutStrategy hrefs and add `items`, `collections`, `search`, `conformance`, `service_desc` and `service_doc` href methods ([#1335](https://github.com/stac-utils/pystac/pull/1335))
 - Updated classification extension to v2.0.0 ([#1359](https://github.com/stac-utils/pystac/pull/1359))
 - Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification ([#1356](https://github.com/stac-utils/pystac/pull/1356))
+- Add example of custom `StacIO` for Azure Blob Storage to docs ([#1372](https://github.com/stac-utils/pystac/pull/1372))
 
 ### Fixed
 
 - Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
+
+### Removed
+
+- Python 3.9 ([#1384](https://github.com/stac-utils/pystac/pull/1384))
 
 ## [v1.10.1] - 2024-05-03
 
