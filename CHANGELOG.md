@@ -4,7 +4,7 @@
 
 ### Added
 
-- Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386)) 
+- Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386))
 - Add convenience method for accessing pystac_client ([#1365](https://github.com/stac-utils/pystac/pull/1365))
 
 ### Changed
@@ -20,7 +20,7 @@
 
 ### Removed
 
-- Python 3.9 ([#1384](https://github.com/stac-utils/pystac/pull/1384))
+- Python 3.9 ([#1384](https://github.com/stac-utils/pystac/pull/1384), [#1388](https://github.com/stac-utils/pystac/pull/1388))
 
 ## [v1.10.1] - 2024-05-03
 
