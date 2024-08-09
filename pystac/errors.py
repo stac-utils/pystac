@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any
 
 
 class TemplateError(Exception):
@@ -28,7 +28,7 @@ class STACTypeError(Exception):
         self,
         bad_dict: dict[str, Any],
         expected: type,
-        extra_message: Optional[str] = "",
+        extra_message: str | None = "",
     ):
         """
         Construct an exception with an appropriate error message from bad_dict and the
@@ -88,9 +88,7 @@ class RequiredPropertyMissing(Exception):
         prop: The property that is missing
     """
 
-    def __init__(
-        self, obj: Union[str, Any], prop: str, msg: Optional[str] = None
-    ) -> None:
+    def __init__(self, obj: str | Any, prop: str, msg: str | None = None) -> None:
         msg = msg or f"{repr(obj)} does not have required property {prop}"
         super().__init__(msg)
 
@@ -109,7 +107,7 @@ class STACValidationError(Exception):
             the ``jsonschema.ValidationError``.
     """
 
-    def __init__(self, message: str, source: Optional[Any] = None):
+    def __init__(self, message: str, source: Any | None = None):
         super().__init__(message)
         self.source = source
 

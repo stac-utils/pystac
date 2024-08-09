@@ -5,8 +5,9 @@ import posixpath
 import warnings
 from abc import ABC, abstractmethod
 from collections import OrderedDict
+from collections.abc import Callable
 from string import Formatter
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.utils import is_file_path

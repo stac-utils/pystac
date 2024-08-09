@@ -2,7 +2,6 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 import pytest
 
@@ -11,7 +10,7 @@ from tests.conftest import get_data_file
 from tests.utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM
 
 
-def check_link(link: Optional[pystac.Link]) -> None:
+def check_link(link: pystac.Link | None) -> None:
     assert link is not None
     href = link.get_target_str()
     assert href is not None

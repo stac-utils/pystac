@@ -3,11 +3,11 @@ from __future__ import annotations
 import os
 import posixpath
 import warnings
+from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
     Any,
-    Callable,
     TypeVar,
     Union,
     cast,

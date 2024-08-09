@@ -3,7 +3,6 @@ import os
 import time
 import unittest
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import pytest
 from dateutil import tz
@@ -291,7 +290,7 @@ class UtilsTest(unittest.TestCase):
                 self.assertEqual(expected, got)
 
     def test_str_to_datetime(self) -> None:
-        def _set_tzinfo(tz_str: Optional[str]) -> None:
+        def _set_tzinfo(tz_str: str | None) -> None:
             if tz_str is None:
                 if "TZ" in os.environ:
                     del os.environ["TZ"]

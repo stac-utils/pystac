@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import os
 import warnings
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from copy import deepcopy
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     TypeVar,
     Union,
     cast,

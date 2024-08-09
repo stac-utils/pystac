@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable, Optional
+from typing import Any
 
 import pystac
 from pystac.serialization import STACVersionRange
@@ -17,7 +18,7 @@ class SchemaUriMap(ABC):
     @abstractmethod
     def get_object_schema_uri(
         self, object_type: STACObjectType, stac_version: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get the schema URI for the given object type and stac version.
 
         Args:
@@ -74,7 +75,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
     }
 
     @classmethod
-    def _append_base_uri_if_needed(cls, uri: str, stac_version: str) -> Optional[str]:
+    def _append_base_uri_if_needed(cls, uri: str, stac_version: str) -> str | None:
         # Only append the base URI if it's not already an absolute URI
         if "://" not in uri:
             for version_range, f in cls.BASE_URIS:
@@ -89,7 +90,7 @@ class DefaultSchemaUriMap(SchemaUriMap):
 
     def get_object_schema_uri(
         self, object_type: STACObjectType, stac_version: str
-    ) -> Optional[str]:
+    ) -> str | None:
         is_latest = stac_version == pystac.get_stac_version()
 
         if object_type not in self.DEFAULT_SCHEMA_MAP:
@@ -310,7 +311,7 @@ class OldExtensionSchemaUriMap:
     @classmethod
     def _append_base_uri_if_needed(
         cls, uri: str, stac_version: STACVersionID
-    ) -> Optional[str]:
+    ) -> str | None:
         # Only append the base URI if it's not already an absolute URI
         if "://" not in uri:
             for version_range, f in cls.get_base_uris():
@@ -326,7 +327,7 @@ class OldExtensionSchemaUriMap:
     @classmethod
     def get_extension_schema_uri(
         cls, extension_id: str, object_type: STACObjectType, stac_version: STACVersionID
-    ) -> Optional[str]:
+    ) -> str | None:
         uri = None
 
         is_latest = stac_version == pystac.get_stac_version()

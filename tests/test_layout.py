@@ -1,7 +1,7 @@
 import posixpath
 import unittest
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable
 
 import pytest
 

@@ -2,7 +2,7 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 import pystac
 import pystac.utils
@@ -46,7 +46,7 @@ class STACValidator(ABC):
         stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
-        href: Optional[str] = None,
+        href: str | None = None,
     ) -> Any:
         """Validate a core stac object.
 
@@ -68,7 +68,7 @@ class STACValidator(ABC):
         stac_object_type: STACObjectType,
         stac_version: str,
         extension_id: str,
-        href: Optional[str] = None,
+        href: str | None = None,
     ) -> Any:
         """Validate an extension stac object.
 
@@ -90,7 +90,7 @@ class STACValidator(ABC):
         stac_object_type: STACObjectType,
         stac_version: str,
         extensions: list[str],
-        href: Optional[str] = None,
+        href: str | None = None,
     ) -> list[Any]:
         """Validate a STAC object JSON.
 
@@ -149,7 +149,7 @@ class JsonSchemaSTACValidator(STACValidator):
     schema_uri_map: SchemaUriMap
     schema_cache: dict[str, dict[str, Any]]
 
-    def __init__(self, schema_uri_map: Optional[SchemaUriMap] = None) -> None:
+    def __init__(self, schema_uri_map: SchemaUriMap | None = None) -> None:
         if not HAS_JSONSCHEMA:
             raise ImportError("Cannot instantiate, requires jsonschema package")
 
@@ -196,7 +196,7 @@ class JsonSchemaSTACValidator(STACValidator):
         stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         schema_uri: str,
-        href: Optional[str] = None,
+        href: str | None = None,
     ) -> None:
         try:
             schema = self._get_schema(schema_uri)
@@ -229,8 +229,8 @@ class JsonSchemaSTACValidator(STACValidator):
         stac_dict: dict[str, Any],
         stac_object_type: STACObjectType,
         stac_version: str,
-        href: Optional[str] = None,
-    ) -> Optional[str]:
+        href: str | None = None,
+    ) -> str | None:
         """Validate a core stac object.
 
         Return value can be None or specific to the implementation.
@@ -269,8 +269,8 @@ class JsonSchemaSTACValidator(STACValidator):
         stac_object_type: STACObjectType,
         stac_version: str,
         extension_id: str,
-        href: Optional[str] = None,
-    ) -> Optional[str]:
+        href: str | None = None,
+    ) -> str | None:
         """Validate an extension stac object.
 
         Return value can be None or specific to the implementation.

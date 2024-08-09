@@ -429,7 +429,7 @@ VERSION_EXTENSION_HOOKS: ExtensionHooks = VersionExtensionHooks()
 
 
 @contextmanager
-def ignore_deprecated() -> Generator[None, None, None]:
+def ignore_deprecated() -> Generator[None]:
     """Context manager for suppressing the :class:`pystac.DeprecatedWarning`
     when creating a deprecated :class:`~pystac.Item` or :class:`~pystac.Collection`
     from a dictionary."""

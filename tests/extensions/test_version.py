@@ -2,7 +2,6 @@
 
 from collections.abc import Generator
 from datetime import datetime
-from typing import Optional
 
 import pytest
 
@@ -73,7 +72,7 @@ def make_collection(year: int) -> Collection:
     end = datetime(year, 1, 3, 4, 5)
     bboxes = [[-180.0, -90.0, 180.0, 90.0]]
     spatial_extent = SpatialExtent(bboxes)
-    intervals: list[list[Optional[datetime]]] = [[start, end]]
+    intervals: list[list[datetime | None]] = [[start, end]]
     temporal_extent = TemporalExtent(intervals)
     extent = Extent(spatial_extent, temporal_extent)
 
