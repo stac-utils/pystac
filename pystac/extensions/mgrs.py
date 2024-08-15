@@ -2,7 +2,7 @@
 
 import re
 from re import Pattern
-from typing import Any, Literal, Optional, Union
+from typing import Any, Literal, Union
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -132,7 +132,7 @@ def validated_grid_square(v: str) -> str:
     return v
 
 
-def validated_utm_zone(v: Optional[int]) -> Optional[int]:
+def validated_utm_zone(v: int | None) -> int | None:
     if v is not None and not isinstance(v, int):
         raise ValueError("Invalid MGRS utm zone: must be None or int")
     if v is not None and v not in UTM_ZONES:
@@ -175,7 +175,7 @@ class MgrsExtension(
         self,
         latitude_band: str,
         grid_square: str,
-        utm_zone: Optional[int] = None,
+        utm_zone: int | None = None,
     ) -> None:
         """Applies MGRS extension properties to the extended Item.
 
@@ -189,7 +189,7 @@ class MgrsExtension(
         self.utm_zone = validated_utm_zone(utm_zone)
 
     @property
-    def latitude_band(self) -> Optional[str]:
+    def latitude_band(self) -> str | None:
         """Get or sets the latitude band of the datasource."""
         return self._get_property(LATITUDE_BAND_PROP, str)
 
@@ -200,7 +200,7 @@ class MgrsExtension(
         )
 
     @property
-    def grid_square(self) -> Optional[str]:
+    def grid_square(self) -> str | None:
         """Get or sets the latitude band of the datasource."""
         return self._get_property(GRID_SQUARE_PROP, str)
 
@@ -211,12 +211,12 @@ class MgrsExtension(
         )
 
     @property
-    def utm_zone(self) -> Optional[int]:
+    def utm_zone(self) -> int | None:
         """Get or sets the latitude band of the datasource."""
         return self._get_property(UTM_ZONE_PROP, int)
 
     @utm_zone.setter
-    def utm_zone(self, v: Optional[int]) -> None:
+    def utm_zone(self, v: int | None) -> None:
         self._set_property(UTM_ZONE_PROP, validated_utm_zone(v), pop_if_none=True)
 
     @classmethod
