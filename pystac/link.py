@@ -455,7 +455,7 @@ class Link(PathLike):
 
     @classmethod
     def collection(cls: type[L], c: Collection) -> L:
-        """Creates a link to an item's Collection."""
+        """Creates a link to a Collection."""
         return cls(pystac.RelType.COLLECTION, c, media_type=pystac.MediaType.JSON)
 
     @classmethod
