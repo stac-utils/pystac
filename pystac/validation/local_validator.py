@@ -86,9 +86,7 @@ class LocalValidator:
 
     def registry(self) -> Any:
         return Registry().with_resources(
-            [
-                (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
-            ]  # type: ignore
+            [(k, Resource.from_contents(v)) for k, v in self.schema_cache.items()]  # type: ignore
         )
 
     def _validate_from_local(
