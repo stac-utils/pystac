@@ -13,6 +13,7 @@
 - Updated classification extension to v2.0.0 ([#1359](https://github.com/stac-utils/pystac/pull/1359))
 - Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification ([#1356](https://github.com/stac-utils/pystac/pull/1356))
 - Add example of custom `StacIO` for Azure Blob Storage to docs ([#1372](https://github.com/stac-utils/pystac/pull/1372))
+- Noted that collection links can be used in non-item objects in STAC v1.1.0 ([#1393](https://github.com/stac-utils/pystac/pull/1393))
 
 ### Fixed
 
