@@ -692,3 +692,8 @@ def test_copy_with_unresolveable_root(item: Item) -> None:
         )
     )
     copy.deepcopy(item)
+
+
+def test_no_collection(item: Item) -> None:
+    # https://github.com/stac-utils/stac-api-validator/issues/527
+    assert item.collection is None
