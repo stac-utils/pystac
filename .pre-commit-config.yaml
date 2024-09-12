@@ -13,26 +13,18 @@ repos:
     hooks:
       - id: ruff
         name: ruff
-        entry: ruff
+        entry: ruff check --force-exclude --fix --exit-non-zero-on-fix
         language: system
-        stages: [commit]
-        types: [python]
-        args: [check, --fix, --exit-non-zero-on-fix]
-
-      - id: black
-        name: black
-        entry: black
-        language: system
-        stages: [commit]
-        types: [python]
-
-      - id: black-jupyter
-        name: black-jupyter
-        entry: black
-        language: python
+        types_or: [python, pyi, jupyter]
         require_serial: true
-        types_or: [pyi, jupyter]
-        additional_dependencies: ["black[jupyter]"]
+
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format --force-exclude --check
+        language: system
+        stages: [commit]
+        types_or: [python, pyi, jupyter]
+        require_serial: true
 
       - id: codespell
         name: codespell

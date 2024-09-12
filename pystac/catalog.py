@@ -1160,7 +1160,7 @@ class Catalog(STACObject):
         """
 
         def apply_asset_mapper(
-            tup: tuple[str, Asset]
+            tup: tuple[str, Asset],
         ) -> list[tuple[str, pystac.Asset]]:
             k, v = tup
             result = asset_mapper(k, v)
