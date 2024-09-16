@@ -158,7 +158,9 @@ class Item(STACObject, Assets):
             self.set_self_href(href)
 
         self.collection_id: str | None = None
-        if collection is not None:
+        if collection is None:
+            self.collection = None
+        else:
             if isinstance(collection, Collection):
                 self.set_collection(collection)
             else:
