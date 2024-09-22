@@ -14,6 +14,7 @@
 - Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification ([#1356](https://github.com/stac-utils/pystac/pull/1356))
 - Add example of custom `StacIO` for Azure Blob Storage to docs ([#1372](https://github.com/stac-utils/pystac/pull/1372))
 - Noted that collection links can be used in non-item objects in STAC v1.1.0 ([#1393](https://github.com/stac-utils/pystac/pull/1393))
+- Move test, docs, and bench requirements out of pyproject.toml ([#1407](https://github.com/stac-utils/pystac/pull/1407))
 
 ### Fixed
 
@@ -671,7 +672,7 @@
 
 - Fixed issue that can cause infinite recursion during full resolve ([#204](https://github.com/stac-utils/pystac/pull/193))
 - Fixed issue that required label_classes in label items ([#201](https://github.com/stac-utils/pystac/pull/201))
-- Fixed issue that caused geometries and bboxes produced by Shapely to fail PySTAC's validaton ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Fixed issue that caused geometries and bboxes produced by Shapely to fail PySTAC's validator ([#201](https://github.com/stac-utils/pystac/pull/201))
 - Allow for path prefixes like /vsitar/ ([#208](https://github.com/stac-utils/pystac/pull/208))
 - Fix Item set_self_href to ensure item asset locations do not break ([#226](https://github.com/stac-utils/pystac/pull/226))
 - Fixed an incorrect exception being thrown from Link.get_href() if there is no target_href ([#201](https://github.com/stac-utils/pystac/pull/201))
