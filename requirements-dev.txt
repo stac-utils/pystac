@@ -16,7 +16,7 @@ cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.3.2
     # via requests
-codespell==2.3.0
+codespell==2.2.6
     # via -r requirements-dev.in
 coverage==7.6.1
     # via

@@ -1,5 +1,5 @@
 asv
-codespell
+codespell<2.3
 coverage
 doc8
 html5lib
