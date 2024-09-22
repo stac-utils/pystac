@@ -24,45 +24,8 @@ dependencies = ["python-dateutil>=2.7.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-bench = ["asv~=0.6.0", "packaging~=24.0", "virtualenv~=20.22"]
-docs = [
-    "Sphinx~=8.0",
-    "boto3~=1.28",
-    "ipython~=8.12",
-    "jinja2<4.0",
-    "jupyter~=1.0",
-    "nbsphinx~=0.9.0",
-    "pydata-sphinx-theme~=0.13",
-    "rasterio~=1.3",
-    "shapely~=2.0",
-    "sphinx-autobuild==2024.9.19",
-    "sphinx-design~=0.6.0",
-    "sphinxcontrib-fulltoc~=1.2",
-]
 jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
-test = [
-    "codespell~=2.2.0",           # TODO relax to allow >v2.2 once https://github.com/codespell-project/codespell/issues/3430 is fixed
-    "coverage~=7.2",
-    "doc8~=1.1",
-    "html5lib~=1.1",
-    "jinja2<4.0",
-    "jsonschema~=4.18",
-    "mypy~=1.11",
-    "orjson~=3.8",
-    "pre-commit~=3.2",
-    "pytest-cov~=5.0",
-    "pytest-mock~=3.10",
-    "pytest-recording~=0.13.0",
-    "pytest~=8.0",
-    "requests-mock~=1.11",
-    "ruff==0.6.6",
-    "types-html5lib~=1.1",
-    "types-orjson~=3.6",
-    "types-jsonschema~=4.18",
-    "types-python-dateutil~=2.8",
-    "types-urllib3~=1.26",
-]
 urllib3 = ["urllib3>=1.26"]
 validation = ["jsonschema~=4.18"]
 
