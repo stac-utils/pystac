@@ -44,7 +44,7 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install .[validation,test]
+        run: pip install .[validation] -r requirements-dev.txt
 
       - name: Execute test suite
         run: ./scripts/test
