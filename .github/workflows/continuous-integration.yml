@@ -44,7 +44,7 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install .[validation,test]
+        run: pip install .[validation] -r requirements-dev.txt
 
       - name: Execute test suite
         run: ./scripts/test
@@ -65,7 +65,7 @@ jobs:
           cache: "pip"
 
       - name: Install with dependencies
-        run: pip install .[validation,test]
+        run: pip install .[validation] -r requirements-dev.txt
 
       - name: Run coverage with orjson
         run: pytest tests --cov
@@ -115,7 +115,7 @@ jobs:
           cache: "pip"
 
       - name: Install with test dependencies
-        run: pip install .[test]
+        run: pip install . -r requirements-dev.txt
 
       - name: Execute linters & type checkers
         run: pre-commit run --all-files
@@ -130,7 +130,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install
-        run: pip install .[validation,test]
+        run: pip install .[validation] -r requirements-dev.txt
 
       - name: Uninstall orjson
         run: pip uninstall -y orjson
@@ -149,7 +149,7 @@ jobs:
           cache: "pip"
 
       - name: Install all dependencies
-        run: pip install .[bench,docs,orjson,test,urllib3,validation]
+        run: pip install .[orjson,urllib3,validation,jinja2]
 
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
@@ -163,7 +163,7 @@ jobs:
           python-version: "3.10"
           cache: "pip"
       - name: Install pystac
-        run: pip install .[bench]
+        run: pip install . -r requirements-dev.txt
       - name: Set asv machine
         run: asv machine --yes
       - name: Check benchmarks
@@ -180,6 +180,6 @@ jobs:
       - name: Install pandoc
         run: sudo apt-get install pandoc
       - name: Install pystac
-        run: pip install .[docs]
+        run: pip install . -r docs/requirements.txt
       - name: Check docs
         run: make -C docs html SPHINXOPTS="-W --keep-going"

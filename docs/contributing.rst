@@ -14,14 +14,19 @@ pip as follows:
 
     git clone git@github.com:your_user_name/pystac.git
     cd pystac
-    pip install -e '.[test]'
+    pip install -e . -r requirements-dev.txt
 
 Testing
 ^^^^^^^
-tl;dr: Run ``./scripts/test`` to run all tests as they run on CI.
 
-PySTAC runs tests using `pytest <https://docs.pytest.org/en/latest/>`_. You can find unit tests in the ``tests/``
-directory.
+PySTAC runs tests using `pytest <https://docs.pytest.org/en/latest/>`_. You can
+find unit tests in the ``tests/`` directory.
+
+To run the tests:
+
+.. code-block:: bash
+
+    $ pytest
 
 To run the tests and generate the coverage report:
 
@@ -49,7 +54,7 @@ Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
 tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing, and
-``./scripts/test`` to run all checks and tests.
+``pytest`` to run all tests.
 
 PySTAC uses
 
@@ -94,7 +99,6 @@ and report any improvements or regressions.
 
 .. code-block:: bash
 
-    pip install -e '.[bench]'
     scripts/bench
 
 The benchmark suite takes a while to run, and will report any significant
