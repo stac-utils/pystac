@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 codespell==2.2.6
     # via -r requirements-dev.in
-coverage==7.6.1
+coverage[toml]==7.6.1
     # via
     #   -r requirements-dev.in
     #   pytest-cov
@@ -115,7 +115,7 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.6.7
+ruff==0.6.8
     # via -r requirements-dev.in
 six==1.16.0
     # via html5lib
