@@ -26,7 +26,7 @@ To run the tests:
 
 .. code-block:: bash
 
-    $ pystest
+    $ pytest
 
 To run the tests and generate the coverage report:
 
