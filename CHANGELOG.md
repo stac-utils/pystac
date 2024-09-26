@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.11.0] - 2024-09-26
+
 ### Added
 
 - Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386))
@@ -861,7 +863,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.10.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.11.0..main>
+[v1.11.0]: <https://github.com/stac-utils/pystac/compare/v1.10.1..v1.11.0>
 [v1.10.1]: <https://github.com/stac-utils/pystac/compare/v1.10.0..v1.10.1>
 [v1.10.0]: <https://github.com/stac-utils/pystac/compare/v1.9.0..v1.10.0>
 [v1.9.0]: <https://github.com/stac-utils/pystac/compare/v1.8.4..v1.9.0>
