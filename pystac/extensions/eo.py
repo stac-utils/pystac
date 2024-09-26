@@ -225,7 +225,7 @@ class Band:
             self.properties.pop("solar_illumination", None)
 
     def __repr__(self) -> str:
-        return f"<Band name={self.name}>"
+        return f"<Band name={self.properties.get('name')}>"
 
     def to_dict(self) -> dict[str, Any]:
         """Returns this band as a dictionary.

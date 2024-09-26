@@ -5,7 +5,7 @@ import pytest
 
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.errors import ExtensionNotImplemented
+from pystac.errors import ExtensionNotImplemented, RequiredPropertyMissing
 from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, Band, EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
@@ -504,3 +504,14 @@ def test_ext_syntax_add(item: pystac.Item) -> None:
     item.ext.add("eo")
     assert item.ext.has("eo") is True
     assert isinstance(item.ext.eo, EOExtension)
+
+
+def test_required_property_missing(ext_item: pystac.Item) -> None:
+    # https://github.com/stac-utils/pystac/issues/1402
+    d = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    del d["assets"]["B1"]["eo:bands"][0]["name"]
+    item = pystac.Item.from_dict(d)
+    bands = item.assets["B1"].ext.eo.bands
+    assert bands is not None
+    with pytest.raises(RequiredPropertyMissing):
+        bands[0].name

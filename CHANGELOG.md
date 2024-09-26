@@ -20,6 +20,7 @@
 
 - Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
 - Set `Item::collection` to `None` when there is no collection ([#1400](https://github.com/stac-utils/pystac/pull/1400))
+- Recursion error when `name` not set on `eo:bands` ([#1406](https://github.com/stac-utils/pystac/pull/1406))
 
 ### Removed
 
