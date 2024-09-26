@@ -115,7 +115,7 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.6.7
+ruff==0.6.8
     # via -r requirements-dev.in
 six==1.16.0
     # via html5lib
@@ -148,7 +148,7 @@ webencodings==0.5.1
     # via html5lib
 wrapt==1.16.0
     # via vcrpy
-yarl==1.11.1
+yarl==1.12.1
     # via vcrpy
 zipp==3.20.2
     # via importlib-metadata
