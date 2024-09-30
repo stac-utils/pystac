@@ -18,7 +18,7 @@ charset-normalizer==3.3.2
     # via requests
 codespell==2.2.6
     # via -r requirements-dev.in
-coverage==7.6.1
+coverage[toml]==7.6.1
     # via
     #   -r requirements-dev.in
     #   pytest-cov
@@ -139,7 +139,7 @@ urllib3==2.2.3
     # via requests
 vcrpy==6.0.1
     # via pytest-recording
-virtualenv==20.26.5
+virtualenv==20.26.6
     # via
     #   -r requirements-dev.in
     #   asv
