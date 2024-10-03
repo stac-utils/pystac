@@ -108,7 +108,15 @@ class CommonMetadata:
     # License
     @property
     def license(self) -> str | None:
-        """Get or set the current license."""
+        """Get or set the current license. License should be provided
+        as a `SPDX License identifier <https://spdx.org/licenses/>`_,
+        or `other`. If object includes data with multiple
+        different licenses, use `other` and add a link for
+        each.
+        
+        Note:
+            The license `various` and `proprietary` are deprecated.
+        """
         return self._get_field("license", str)
 
     @license.setter

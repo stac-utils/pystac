@@ -461,9 +461,10 @@ class Collection(Catalog, Assets):
             be one of the values in :class`~pystac.CatalogType`.
         license :  Collection's license(s) as a
             `SPDX License identifier <https://spdx.org/licenses/>`_,
-            `various`, or `proprietary`. If collection includes
-            data with multiple different licenses, use `various` and add a link for
-            each. Defaults to 'proprietary'.
+            or `other`. If collection includes data with multiple
+            different licenses, use `other` and add a link for
+            each. The license `various` and `proprietary` are deprecated.
+            Defaults to 'other'.
         keywords : Optional list of keywords describing the collection.
         providers : Optional list of providers of this Collection.
         summaries : An optional map of property summaries,
@@ -528,7 +529,7 @@ class Collection(Catalog, Assets):
         href: str | None = None,
         extra_fields: dict[str, Any] | None = None,
         catalog_type: CatalogType | None = None,
-        license: str = "proprietary",
+        license: str = "other",
         keywords: list[str] | None = None,
         providers: list[Provider] | None = None,
         summaries: Summaries | None = None,
