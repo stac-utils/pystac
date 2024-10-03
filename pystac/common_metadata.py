@@ -80,6 +80,8 @@ class CommonMetadata:
 
     @description.setter
     def description(self, v: str | None) -> None:
+        if v == "":
+            raise ValueError("description cannot be an empty string")
         self._set_field("description", v)
 
     # Date and Time Range
