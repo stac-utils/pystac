@@ -365,24 +365,24 @@ class Item(STACObject, Assets):
         d: dict[str, Any] = {
             "type": "Feature",
             "stac_version": pystac.get_stac_version(),
+            "stac_extensions": self.stac_extensions if self.stac_extensions else [],
             "id": self.id,
-            "properties": self.properties,
             "geometry": self.geometry,
+            "bbox": self.bbox if self.bbox is not None else [],
+            "properties": self.properties,
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
             "assets": assets,
         }
-
-        if self.bbox is not None:
-            d["bbox"] = self.bbox
-
-        if self.stac_extensions is not None:
-            d["stac_extensions"] = self.stac_extensions
 
         if self.collection_id:
             d["collection"] = self.collection_id
 
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
+
+        # This field is prohibited if there's no geometry
+        if not self.geometry:
+            d.pop("bbox")
 
         return d
 

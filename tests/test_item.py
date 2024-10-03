@@ -108,6 +108,30 @@ class ItemTest(unittest.TestCase):
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(None, actual_href)
 
+    def test_item_field_order(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+        item_dict = item.to_dict(include_self_link=False)
+        expected_order = [
+            "type",
+            "stac_version",
+            "stac_extensions",
+            "id",
+            "geometry",
+            "bbox",
+            "properties",
+            "links",
+            "assets",
+            "collection",
+        ]
+        actual_order = list(item_dict.keys())
+        self.assertEqual(
+            actual_order,
+            expected_order,
+            f"Order was {actual_order}, expected {expected_order}",
+        )
+
     def test_extra_fields(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path("data-files/item/sample-item.json")

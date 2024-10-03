@@ -20,7 +20,7 @@ repos:
 
       - id: ruff-format
         name: ruff-format
-        entry: ruff format --force-exclude --check
+        entry: ruff format --force-exclude
         language: system
         stages: [commit]
         types_or: [python, pyi, jupyter]
