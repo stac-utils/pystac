@@ -12,8 +12,6 @@ anyio==4.6.0
     #   jupyter-server
     #   starlette
     #   watchfiles
-appnope==0.1.4
-    # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -139,7 +137,7 @@ json5==0.9.25
     # via jupyterlab-server
 jsonpointer==3.0.0
     # via jsonschema
-jsonschema==4.23.0
+jsonschema[format-nongpl]==4.23.0
     # via
     #   jupyter-events
     #   jupyterlab-server
@@ -290,7 +288,7 @@ pyzmq==26.2.0
     #   jupyter-client
     #   jupyter-console
     #   jupyter-server
-rasterio==1.4.0
+rasterio==1.4.1
     # via -r docs/requirements-docs.in
 referencing==0.35.1
     # via
@@ -317,8 +315,6 @@ s3transfer==0.10.2
     # via boto3
 send2trash==1.8.3
     # via jupyter-server
-setuptools==75.1.0
-    # via jupyterlab
 shapely==2.0.6
     # via -r docs/requirements-docs.in
 six==1.16.0
