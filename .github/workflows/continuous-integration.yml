@@ -180,6 +180,6 @@ jobs:
       - name: Install pandoc
         run: sudo apt-get install pandoc
       - name: Install pystac
-        run: pip install . -r docs/requirements.txt
+        run: pip install . -r docs/requirements-docs.txt
       - name: Check docs
         run: make -C docs html SPHINXOPTS="-W --keep-going"
