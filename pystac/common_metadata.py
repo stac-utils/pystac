@@ -85,7 +85,11 @@ class CommonMetadata:
     # Date and Time Range
     @property
     def start_datetime(self) -> datetime | None:
-        """Get or set the object's start_datetime."""
+        """Get or set the object's start_datetime.
+        
+        Note:
+            ``start_datetime`` is an inclusive datetime.
+        """
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("start_datetime", str)
         )
@@ -96,7 +100,11 @@ class CommonMetadata:
 
     @property
     def end_datetime(self) -> datetime | None:
-        """Get or set the item's end_datetime."""
+        """Get or set the item's end_datetime.
+        
+        Note:
+            ``end_datetime`` is an inclusive datetime.
+        """
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("end_datetime", str)
         )
