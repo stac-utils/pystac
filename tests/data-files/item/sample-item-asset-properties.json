@@ -74,6 +74,7 @@
       "start_datetime": "2017-05-01T13:22:30.040Z",
       "end_datetime": "2017-05-02T13:22:30.040Z",
       "license": "CC-BY-4.0",
+      "keywords": ["keyword_a"],
       "providers": [
         {
           "name": "USGS",

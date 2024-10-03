@@ -213,3 +213,12 @@ class CommonMetadata:
     @updated.setter
     def updated(self, v: datetime | None) -> None:
         self._set_field("updated", utils.map_opt(utils.datetime_to_str, v))
+
+    @property
+    def keywords(self) -> list[str] | None:
+        """Get or set the keywords describing an object."""
+        return self._get_field("keywords", list[str])
+
+    @keywords.setter
+    def keywords(self, v: list[str] | None) -> None:
+        self._set_field("keywords", v)
