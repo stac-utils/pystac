@@ -51,10 +51,10 @@ class Item(STACObject, Assets):
         datetime : datetime associated with this item. If None,
             a start_datetime and end_datetime must be supplied.
         properties : A dictionary of additional metadata for the item.
-        start_datetime : Optional inclusive start datetime, part of common metadata. This value
-            will override any `start_datetime` key in properties.
-        end_datetime : Optional inclusive end datetime, part of common metadata. This value
-            will override any `end_datetime` key in properties.
+        start_datetime : Optional inclusive start datetime, part of common metadata.
+            This value will override any `start_datetime` key in properties.
+        end_datetime : Optional inclusive end datetime, part of common metadata.
+            This value will override any `end_datetime` key in properties.
         stac_extensions : Optional list of extensions the Item implements.
         href : Optional HREF for this item, which be set as the item's
             self link's HREF.

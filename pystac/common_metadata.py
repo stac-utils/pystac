@@ -88,7 +88,7 @@ class CommonMetadata:
     @property
     def start_datetime(self) -> datetime | None:
         """Get or set the object's start_datetime.
-        
+
         Note:
             ``start_datetime`` is an inclusive datetime.
         """
@@ -103,7 +103,7 @@ class CommonMetadata:
     @property
     def end_datetime(self) -> datetime | None:
         """Get or set the item's end_datetime.
-        
+
         Note:
             ``end_datetime`` is an inclusive datetime.
         """
@@ -123,7 +123,7 @@ class CommonMetadata:
         or `other`. If object includes data with multiple
         different licenses, use `other` and add a link for
         each.
-        
+
         Note:
             The license `various` and `proprietary` are deprecated.
         """
