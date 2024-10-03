@@ -374,12 +374,6 @@ class Item(STACObject, Assets):
             "assets": assets,
         }
 
-        if self.bbox is not None:
-            d["bbox"] = self.bbox
-
-        if self.stac_extensions is not None:
-            d["stac_extensions"] = self.stac_extensions
-
         if self.collection_id:
             d["collection"] = self.collection_id
 

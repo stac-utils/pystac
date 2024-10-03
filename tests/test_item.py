@@ -112,7 +112,7 @@ class ItemTest(unittest.TestCase):
         item = pystac.Item.from_file(
             TestCases.get_path("data-files/item/sample-item.json")
         )
-
+        item_dict = item.to_dict(include_self_link=False)
         expected_order = [
             "type",
             "stac_version",
@@ -125,21 +125,12 @@ class ItemTest(unittest.TestCase):
             "assets",
             "collection",
         ]
-
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            p = os.path.join(tmp_dir, "item.json")
-            item.save_object(include_self_link=False, dest_href=p)
-
-            with open(p) as f:
-                item_json = json.load(f)
-
-            # Assert the order matches the expected order
-            actual_order = list(item_json.keys())
-            self.assertEqual(
-                actual_order,
-                expected_order,
-                f"Order was {actual_order}, expected {expected_order}",
-            )
+        actual_order = list(item_dict.keys())
+        self.assertEqual(
+            actual_order,
+            expected_order,
+            f"Order was {actual_order}, expected {expected_order}",
+        )
 
     def test_extra_fields(self) -> None:
         item = pystac.Item.from_file(
