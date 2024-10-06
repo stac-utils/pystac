@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Write STAC v1.1.0 ([#1427](https://github.com/stac-utils/pystac/pull/1427))
+
 ## [v1.11.0] - 2024-09-26
 
 ### Added
