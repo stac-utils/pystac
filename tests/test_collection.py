@@ -123,7 +123,7 @@ class CollectionTest(unittest.TestCase):
         extent_dict = multi_ext_dict["extent"]
         self.assertIsInstance(ext, Extent)
         self.assertIsInstance(ext.spatial.bboxes[0], list)
-        self.assertEqual(len(ext.spatial.bboxes), 2)
+        self.assertEqual(len(ext.spatial.bboxes), 3)
         self.assertDictEqual(ext.to_dict(), extent_dict)
 
         cloned_ext = ext.clone()

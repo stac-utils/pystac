@@ -1,7 +1,7 @@
 {
   "type": "Collection",
   "id": "103001005D31F500",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "description": "103001005D31F500 ARD Tiles",
   "links": [
     {

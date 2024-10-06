@@ -42,7 +42,10 @@ def get_local_schema_cache() -> dict[str, dict[str, Any]]:
                 f"item-spec/json-schema/{name}.json"
             ): _read_schema(f"stac-spec/v{VERSION}/{name}.json")
             for name in (
+                "bands",
                 "basics",
+                "common",
+                "data-values",
                 "datetime",
                 "instrument",
                 "licensing",
