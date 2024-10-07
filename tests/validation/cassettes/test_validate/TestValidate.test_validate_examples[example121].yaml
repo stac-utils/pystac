@@ -5,9 +5,519 @@ interactions:
       Connection:
       - close
       Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json#\",\n
+        \ \"title\": \"STAC Item\",\n  \"type\": \"object\",\n  \"description\": \"This
+        object represents the metadata for an item in a SpatioTemporal Asset Catalog.\",\n
+        \ \"allOf\": [\n    {\n      \"$ref\": \"#/definitions/core\"\n    }\n  ],\n
+        \ \"definitions\": {\n    \"common_metadata\": {\n      \"allOf\": [\n        {\n
+        \         \"$ref\": \"basics.json\"\n        },\n        {\n          \"$ref\":
+        \"datetime.json\"\n        },\n        {\n          \"$ref\": \"instrument.json\"\n
+        \       },\n        {\n          \"$ref\": \"licensing.json\"\n        },\n
+        \       {\n          \"$ref\": \"provider.json\"\n        }\n      ]\n    },\n
+        \   \"core\": {\n      \"allOf\": [\n        {\n          \"$ref\": \"https://geojson.org/schema/Feature.json\"\n
+        \       },\n        {\n          \"oneOf\": [\n            {\n              \"type\":
+        \"object\",\n              \"required\": [\n                \"geometry\",\n
+        \               \"bbox\"\n              ],\n              \"properties\":
+        {\n                \"geometry\": {\n                  \"$ref\": \"https://geojson.org/schema/Geometry.json\"\n
+        \               },\n                \"bbox\": {\n                  \"type\":
+        \"array\",\n                  \"oneOf\": [\n                    {\n                      \"minItems\":
+        4,\n                      \"maxItems\": 4\n                    },\n                    {\n
+        \                     \"minItems\": 6,\n                      \"maxItems\":
+        6\n                    }\n                  ],\n                  \"items\":
+        {\n                    \"type\": \"number\"\n                  }\n                }\n
+        \             }\n            },\n            {\n              \"type\": \"object\",\n
+        \             \"required\": [\n                \"geometry\"\n              ],\n
+        \             \"properties\": {\n                \"geometry\": {\n                  \"type\":
+        \"null\"\n                },\n                \"bbox\": {\n                  \"not\":
+        {}\n                }\n              }\n            }\n          ]\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"stac_version\",\n
+        \           \"id\",\n            \"links\",\n            \"assets\",\n            \"properties\"\n
+        \         ],\n          \"properties\": {\n            \"stac_version\": {\n
+        \             \"title\": \"STAC version\",\n              \"type\": \"string\",\n
+        \             \"const\": \"1.0.0\"\n            },\n            \"stac_extensions\":
+        {\n              \"title\": \"STAC extensions\",\n              \"type\":
+        \"array\",\n              \"uniqueItems\": true,\n              \"items\":
+        {\n                \"title\": \"Reference to a JSON Schema\",\n                \"type\":
+        \"string\",\n                \"format\": \"iri\"\n              }\n            },\n
+        \           \"id\": {\n              \"title\": \"Provider ID\",\n              \"description\":
+        \"Provider item ID\",\n              \"type\": \"string\",\n              \"minLength\":
+        1\n            },\n            \"links\": {\n              \"title\": \"Item
+        links\",\n              \"description\": \"Links to item relations\",\n              \"type\":
+        \"array\",\n              \"items\": {\n                \"$ref\": \"#/definitions/link\"\n
+        \             }\n            },\n            \"assets\": {\n              \"$ref\":
+        \"#/definitions/assets\"\n            },\n            \"properties\": {\n
+        \             \"allOf\": [\n                {\n                  \"$ref\":
+        \"#/definitions/common_metadata\"\n                },\n                {\n
+        \                 \"anyOf\": [\n                    {\n                      \"required\":
+        [\n                        \"datetime\"\n                      ],\n                      \"properties\":
+        {\n                        \"datetime\": {\n                          \"not\":
+        {\n                            \"type\": \"null\"\n                          }\n
+        \                       }\n                      }\n                    },\n
+        \                   {\n                      \"required\": [\n                        \"datetime\",\n
+        \                       \"start_datetime\",\n                        \"end_datetime\"\n
+        \                     ]\n                    }\n                  ]\n                }\n
+        \             ]\n            }\n          },\n          \"if\": {\n            \"properties\":
+        {\n              \"links\": {\n                \"contains\": {\n                  \"required\":
+        [\n                    \"rel\"\n                  ],\n                  \"properties\":
+        {\n                    \"rel\": {\n                      \"const\": \"collection\"\n
+        \                   }\n                  }\n                }\n              }\n
+        \           }\n          },\n          \"then\": {\n            \"required\":
+        [\n              \"collection\"\n            ],\n            \"properties\":
+        {\n              \"collection\": {\n                \"title\": \"Collection
+        ID\",\n                \"description\": \"The ID of the STAC Collection this
+        Item references to.\",\n                \"type\": \"string\",\n                \"minLength\":
+        1\n              }\n            }\n          },\n          \"else\": {\n            \"properties\":
+        {\n              \"collection\": {\n                \"not\": {}\n              }\n
+        \           }\n          }\n        }\n      ]\n    },\n    \"link\": {\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n        \"href\"\n
+        \     ],\n      \"properties\": {\n        \"href\": {\n          \"title\":
+        \"Link reference\",\n          \"type\": \"string\",\n          \"format\":
+        \"iri-reference\",\n          \"minLength\": 1\n        },\n        \"rel\":
+        {\n          \"title\": \"Link relation type\",\n          \"type\": \"string\",\n
+        \         \"minLength\": 1\n        },\n        \"type\": {\n          \"title\":
+        \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
+        {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
+        \       }\n      }\n    },\n    \"assets\": {\n      \"title\": \"Asset links\",\n
+        \     \"description\": \"Links to assets\",\n      \"type\": \"object\",\n
+        \     \"additionalProperties\": {\n        \"$ref\": \"#/definitions/asset\"\n
+        \     }\n    },\n    \"asset\": {\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"href\"\n          ],\n
+        \         \"properties\": {\n            \"href\": {\n              \"title\":
+        \"Asset reference\",\n              \"type\": \"string\",\n              \"format\":
+        \"iri-reference\",\n              \"minLength\": 1\n            },\n            \"title\":
+        {\n              \"title\": \"Asset title\",\n              \"type\": \"string\"\n
+        \           },\n            \"description\": {\n              \"title\": \"Asset
+        description\",\n              \"type\": \"string\"\n            },\n            \"type\":
+        {\n              \"title\": \"Asset type\",\n              \"type\": \"string\"\n
+        \           },\n            \"roles\": {\n              \"title\": \"Asset
+        roles\",\n              \"type\": \"array\",\n              \"items\": {\n
+        \               \"type\": \"string\"\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/common_metadata\"\n
+        \       }\n      ]\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '6723'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-1a43"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 034aca544abf8849fa1de378259e70d966001cf1
+      X-GitHub-Request-Id:
+      - 6C58:3E300:36AFDA7:3D0FACE:6702CFAA
+      X-Served-By:
+      - cache-den8255-DEN
+      X-Timer:
+      - S1728237485.562010,VS0,VE2
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/basics.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/basics.json#\",\n
+        \ \"title\": \"Basic Descriptive Fields\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"title\": {\n      \"title\": \"Item Title\",\n      \"description\":
+        \"A human-readable title describing the Item.\",\n      \"type\": \"string\"\n
+        \   },\n    \"description\": {\n      \"title\": \"Item Description\",\n      \"description\":
+        \"Detailed multi-line description to fully explain the Item.\",\n      \"type\":
+        \"string\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '533'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-215"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 6f36bf5375691f9719a4b191a9a42ffd7b0b0125
+      X-GitHub-Request-Id:
+      - DFE4:D9115:3A59DAB:40B9CC6:6702CFAA
+      X-Served-By:
+      - cache-den8248-DEN
+      X-Timer:
+      - S1728237485.591586,VS0,VE1
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json#\",\n
+        \ \"title\": \"Date and Time Fields\",\n  \"type\": \"object\",\n  \"dependencies\":
+        {\n    \"start_datetime\": {\n      \"required\": [\n        \"end_datetime\"\n
+        \     ]\n    },\n    \"end_datetime\": {\n      \"required\": [\n        \"start_datetime\"\n
+        \     ]\n    }\n  },\n  \"properties\": {\n    \"datetime\": {\n      \"title\":
+        \"Date and Time\",\n      \"description\": \"The searchable date/time of the
+        assets, in UTC (Formatted in RFC 3339) \",\n      \"type\": [\"string\", \"null\"],\n
+        \     \"format\": \"date-time\",\n      \"pattern\": \"(\\\\+00:00|Z)$\"\n
+        \   },\n    \"start_datetime\": {\n      \"title\": \"Start Date and Time\",\n
+        \     \"description\": \"The searchable start date/time of the assets, in
+        UTC (Formatted in RFC 3339) \",\n      \"type\": \"string\",\n      \"format\":
+        \"date-time\",\n      \"pattern\": \"(\\\\+00:00|Z)$\"\n    }, \n    \"end_datetime\":
+        {\n      \"title\": \"End Date and Time\", \n      \"description\": \"The
+        searchable end date/time of the assets, in UTC (Formatted in RFC 3339) \",
+        \                 \n      \"type\": \"string\",\n      \"format\": \"date-time\",\n
+        \     \"pattern\": \"(\\\\+00:00|Z)$\"\n    },\n    \"created\": {\n      \"title\":
+        \"Creation Time\",\n      \"type\": \"string\",\n      \"format\": \"date-time\",\n
+        \     \"pattern\": \"(\\\\+00:00|Z)$\"\n    },\n    \"updated\": {\n      \"title\":
+        \"Last Update Time\",\n      \"type\": \"string\",\n      \"format\": \"date-time\",\n
+        \     \"pattern\": \"(\\\\+00:00|Z)$\"\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1472'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-5c0"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 36337e03bc7a2f69509796abf2480a21e0dbd674
+      X-GitHub-Request-Id:
+      - EA52:A919C:3B43014:41A30A2:6702CF9D
+      X-Served-By:
+      - cache-den8258-DEN
+      X-Timer:
+      - S1728237485.613624,VS0,VE2
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/instrument.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/instrument.json#\",\n
+        \ \"title\": \"Instrument Fields\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"platform\": {\n      \"title\": \"Platform\",\n      \"type\": \"string\"\n
+        \   },\n    \"instruments\": {\n      \"title\": \"Instruments\",\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n
+        \   \"constellation\": {\n      \"title\": \"Constellation\",\n      \"type\":
+        \"string\"\n    },\n    \"mission\": {\n      \"title\": \"Mission\",\n      \"type\":
+        \"string\"\n    },\n    \"gsd\": {\n      \"title\": \"Ground Sample Distance\",\n
+        \     \"type\": \"number\",\n      \"exclusiveMinimum\": 0\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '696'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-2b8"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 7455771d07f67f461c3eda8faeaf17c9eb742edb
+      X-GitHub-Request-Id:
+      - 9461:76956:3BAC588:420C605:6702CFAA
+      X-Served-By:
+      - cache-den8264-DEN
+      X-Timer:
+      - S1728237485.636421,VS0,VE2
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json#\",\n
+        \ \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\": \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n
+        \   }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-12e"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 70c6454c0187b04e8f7c42cc1851c7876598284d
+      X-GitHub-Request-Id:
+      - 3627:25A7B1:3C09466:4269466:6702CFA8
+      X-Served-By:
+      - cache-den8235-DEN
+      X-Timer:
+      - S1728237485.661097,VS0,VE2
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.12
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/provider.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/provider.json#\",\n
+        \ \"title\": \"Provider Fields\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"providers\": {\n      \"title\": \"Providers\",\n      \"type\":
+        \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"required\":
+        [\n          \"name\"\n        ],\n        \"properties\": {\n          \"name\":
+        {\n            \"title\": \"Organization name\",\n            \"type\": \"string\",\n
+        \           \"minLength\": 1\n          },\n          \"description\": {\n
+        \           \"title\": \"Organization description\",\n            \"type\":
+        \"string\"\n          },\n          \"roles\": {\n            \"title\": \"Organization
+        roles\",\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"string\",\n              \"enum\": [\n                \"producer\",\n                \"licensor\",\n
+        \               \"processor\",\n                \"host\"\n              ]\n
+        \           }\n          },\n          \"url\": {\n            \"title\":
+        \"Organization homepage\",\n            \"type\": \"string\",\n            \"format\":
+        \"iri\"\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '1'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '1135'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 06 Oct 2024 17:58:04 GMT
+      ETag:
+      - '"66e1651c-46f"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 2f2e5c4f5c2fd224882a34853ecba8b975c39318
+      X-GitHub-Request-Id:
+      - FB80:30438:3A4FEB1:40AFCA0:6702CFA8
+      X-Served-By:
+      - cache-den8260-DEN
+      X-Timer:
+      - S1728237485.684831,VS0,VE2
+      expires:
+      - Sun, 06 Oct 2024 18:08:03 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -85,7 +595,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '93'
+      - '3'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,11 +605,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:04 GMT
       ETag:
-      - '"63e664c8-13bc"'
+      - '"66df1c53-13bc"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:37:44 GMT
+      - Mon, 09 Sep 2024 16:03:31 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -113,15 +623,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 253354027e1742febddf9d2b5d72c2a74ecbb10c
+      - b1b3337632425de986ca26ce0427f50b1aae11bf
       X-GitHub-Request-Id:
-      - 5B26:3FB5:EBCC97:12D0123:6605CF76
+      - 535B:2E3A96:393FA42:3F9F3E0:6702CFA8
       X-Served-By:
-      - cache-ewr18170-EWR
+      - cache-den8277-DEN
       X-Timer:
-      - S1711656916.287664,VS0,VE1
+      - S1728237485.791201,VS0,VE2
       expires:
-      - Thu, 28 Mar 2024 20:23:42 GMT
+      - Sun, 06 Oct 2024 18:08:01 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -137,7 +647,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
   response:
@@ -197,7 +707,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '66'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
@@ -207,7 +717,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:04 GMT
       ETag:
       - '"60414dd7-e82"'
       Last-Modified:
@@ -221,19 +731,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '2'
+      - '0'
       X-Fastly-Request-ID:
-      - f873099fdf5603d98a2bf61fc9b382d14dcf51cc
+      - d92ace63c4cc3c5e178c31deeec17717b72a720d
       X-GitHub-Request-Id:
-      - D208:2B4087:EB5D9B:12CB1A9:6605CF92
+      - 63B5:30438:3A4FFCA:40AFDD1:6702CFAB
       X-Served-By:
-      - cache-ewr18182-EWR
+      - cache-den8262-DEN
       X-Timer:
-      - S1711656916.368701,VS0,VE1
+      - S1728237485.817015,VS0,VE74
       expires:
-      - Thu, 28 Mar 2024 20:24:10 GMT
+      - Sun, 06 Oct 2024 18:08:04 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -249,7 +759,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:
@@ -321,7 +831,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '1'
+      - '3'
       Cache-Control:
       - max-age=600
       Connection:
@@ -331,11 +841,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:04 GMT
       ETag:
-      - '"63e6651b-1226"'
+      - '"669e563b-1226"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:39:07 GMT
+      - Mon, 22 Jul 2024 12:53:15 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -349,15 +859,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 6826c77afb69cf2e72e01a07eb5bef3c49d68248
+      - 78cb94cd2225e8f68e5cf1ecd5a483924d86cee3
       X-GitHub-Request-Id:
-      - 616C:397D62:1AB8A52:1E8C8CA:6605CFD3
+      - 360F:31444D:38827C0:3EE24EF:6702CFA8
       X-Served-By:
-      - cache-ewr18133-EWR
+      - cache-den8272-DEN
       X-Timer:
-      - S1711656916.444228,VS0,VE1
+      - S1728237485.921712,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 20:25:15 GMT
+      - Sun, 06 Oct 2024 18:08:01 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -373,7 +883,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/mgrs/v1.0.0/schema.json
   response:
@@ -423,7 +933,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '72'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
@@ -433,7 +943,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:05 GMT
       ETag:
       - '"60c20ce1-b49"'
       Last-Modified:
@@ -447,19 +957,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - 0e335e1642b3c96d60a4119d6a24ea3b8e023693
+      - 46e777e2261eecb58b2232393a7040980d17ea23
       X-GitHub-Request-Id:
-      - FEF8:1218:F7DD2F:1391031:6605CF8B
+      - B6E2:88140:39AA20A:400A158:6702CFAC
       X-Served-By:
-      - cache-ewr18151-EWR
+      - cache-den8278-DEN
       X-Timer:
-      - S1711656917.528008,VS0,VE2
+      - S1728237485.951765,VS0,VE67
       expires:
-      - Thu, 28 Mar 2024 20:24:04 GMT
+      - Sun, 06 Oct 2024 18:08:04 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -475,7 +985,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/grid/v1.0.0/schema.json
   response:
@@ -519,7 +1029,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:05 GMT
       ETag:
       - '"638a24f0-6d5"'
       Last-Modified:
@@ -537,15 +1047,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - fd1b0d483b305a4bbbb1b79b5875c2a7d6452b74
+      - 36719af04f9395004e92012616b4880668c96cb8
       X-GitHub-Request-Id:
-      - 2000:34D6E6:1B672D7:1F38C4E:6605CFD4
+      - 4087:88140:39AA22F:400A182:6702CFAC
       X-Served-By:
-      - cache-ewr18123-EWR
+      - cache-den8254-DEN
       X-Timer:
-      - S1711656917.607656,VS0,VE18
+      - S1728237485.052122,VS0,VE61
       expires:
-      - Thu, 28 Mar 2024 20:25:16 GMT
+      - Sun, 06 Oct 2024 18:08:05 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -561,7 +1071,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -619,7 +1129,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '94'
+      - '2'
       Cache-Control:
       - max-age=600
       Connection:
@@ -629,7 +1139,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:15:16 GMT
+      - Sun, 06 Oct 2024 17:58:05 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -647,15 +1157,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 1286d8c45cf579096ccb7491e264cdc51853fd49
+      - 729ac73e53f2963d754cf47295c1702c7ca4aa7e
       X-GitHub-Request-Id:
-      - 2772:14C61:6E9024:8F3B81:6605BE0D
+      - E8DC:3E300:36AFD26:3D0FA42:6702CFA9
       X-Served-By:
-      - cache-ewr18181-EWR
+      - cache-den8268-DEN
       X-Timer:
-      - S1711656917.703966,VS0,VE1
+      - S1728237485.146457,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 19:09:25 GMT
+      - Sun, 06 Oct 2024 18:08:03 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

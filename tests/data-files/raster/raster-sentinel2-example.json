@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "id": "S2B_33SVB_20210221_0_L2A",
   "properties": {
     "datetime": "2021-02-21T10:00:17Z",

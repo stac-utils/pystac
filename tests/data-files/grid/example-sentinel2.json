@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "id": "S2A_MSIL1C_20210908T042701_R133_T46RER_20210908T070248",
   "properties": {
     "providers": [

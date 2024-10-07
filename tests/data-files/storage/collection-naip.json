@@ -1,7 +1,7 @@
 {
   "type": "Collection",
   "id": "collection-naip",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "description": "Example collection for Storage Extension",
   "links": [
     {
@@ -19,10 +19,27 @@
     "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
   ],
   "summaries": {
-    "storage:platform": ["AZURE", "GCP", "AWS"],
-    "storage:region": ["westus2", "us-central1", "us-west-2", "eastus"],
-    "storage:requester_pays": [true, false],
-    "storage:tier": ["archive", "COLDLINE", "Standard", "hot"]
+    "storage:platform": [
+      "AZURE",
+      "GCP",
+      "AWS"
+    ],
+    "storage:region": [
+      "westus2",
+      "us-central1",
+      "us-west-2",
+      "eastus"
+    ],
+    "storage:requester_pays": [
+      true,
+      false
+    ],
+    "storage:tier": [
+      "archive",
+      "COLDLINE",
+      "Standard",
+      "hot"
+    ]
   },
   "extent": {
     "spatial": {

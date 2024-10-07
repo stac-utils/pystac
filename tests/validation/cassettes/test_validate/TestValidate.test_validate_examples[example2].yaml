@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
   response:
@@ -89,11 +89,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 28 Mar 2024 20:14:18 GMT
+      - Sun, 06 Oct 2024 17:57:20 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Thu, 28 Mar 2024 20:19:18 GMT
+      - Sun, 06 Oct 2024 18:02:20 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -109,15 +109,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 4249eb49396c8fa85cdaf254a002fdf55ceab2ea
+      - d59fde1b301d34efd7de22b0fecd0d52badcbc98
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - C3EC:2007:3CB141:4A2468:6605CF9A
+      - A5C5:183A6B:5EAF1E:68DC8C:6702CF7F
       X-Served-By:
-      - cache-ewr18165-EWR
+      - cache-den8237-DEN
       X-Timer:
-      - S1711656859.715693,VS0,VE83
+      - S1728237440.110246,VS0,VE134
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -131,7 +131,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
   response:
@@ -192,11 +192,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 28 Mar 2024 20:14:18 GMT
+      - Sun, 06 Oct 2024 17:57:20 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Thu, 28 Mar 2024 20:19:18 GMT
+      - Sun, 06 Oct 2024 18:02:20 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -212,15 +212,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 529ebda514003d2349b04b5641008dcb7f56e626
+      - 3b0998139864e67b7ff27bb08683a8772395e451
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 248A:74CA:6B4141:7F522D:6605CF9A
+      - 3A2C:1CA6FD:622AF5:6C5DEA:6702CF7F
       X-Served-By:
-      - cache-ewr18157-EWR
+      - cache-den8255-DEN
       X-Timer:
-      - S1711656859.879666,VS0,VE1
+      - S1728237440.282284,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
