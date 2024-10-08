@@ -63,7 +63,7 @@ class TestIdentify:
                     "href": "https://tamn.snapplanet.io",
                 },
             ],
-            "stac_version": "1.0.0",
+            "stac_version": "1.1.0",
         }
 
         with pytest.raises(pystac.STACTypeError) as ctx:

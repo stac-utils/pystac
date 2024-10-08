@@ -1,6 +1,6 @@
 {
   "type": "Feature",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "id": "LC08_L2SP_047027_20201204_02_T1",
   "properties": {
     "platform": "landsat-8",

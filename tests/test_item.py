@@ -473,7 +473,7 @@ def test_custom_item_from_dict(item: Item) -> None:
 
 
 def test_item_from_dict_raises_useful_error() -> None:
-    item_dict = {"type": "Feature", "stac_version": "1.0.0", "id": "lalalalala"}
+    item_dict = {"type": "Feature", "stac_version": "1.1.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACError, match="Invalid Item: "):
         Item.from_dict(item_dict)
 
