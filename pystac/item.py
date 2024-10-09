@@ -67,6 +67,18 @@ class Item(STACObject, Assets):
             :attr:`~pystac.Asset.owner` attribute set to the created Item.
     """
 
+    __slots__: tuple[str, ...] = STACObject.__slots__ + (
+        "assets",
+        "bbox",
+        "collection",
+        "collection_id",
+        "datetime",
+        "extra_fields",
+        "geometry",
+        "links",
+        "properties",
+    )
+
     assets: dict[str, Asset]
     """Dictionary of :class:`~pystac.Asset` objects, each with a unique key."""
 
@@ -157,7 +169,8 @@ class Item(STACObject, Assets):
         if href is not None:
             self.set_self_href(href)
 
-        self.collection_id: str | None = None
+        self.collection_id = None
+        self.collection = None
         if collection is None:
             self.collection = None
         else:
@@ -175,30 +188,34 @@ class Item(STACObject, Assets):
         return f"<Item id={self.id}>"
 
     def __getstate__(self) -> dict[str, Any]:
-        """Ensure that pystac does not encode too much information when pickling"""
-        d = self.__dict__.copy()
+        """Ensure that pystac does not encode too much information when pickling."""
+        state = {slot: getattr(self, slot) for slot in self.__slots__}
 
-        d["links"] = [
+        state["links"] = [
             (
                 link.to_dict(transform_href=False)
                 if link.get_href(transform_href=False)
                 else link
             )
-            for link in d["links"]
+            for link in state["links"]
         ]
 
-        return d
+        return state
 
     def __setstate__(self, state: dict[str, Any]) -> None:
         """Ensure that pystac knows how to decode the pickled object"""
-        d = state.copy()
+        for slot in self.__slots__:
+            if slot == "links":
+                value = [
+                    Link.from_dict(link).set_owner(self)
+                    if isinstance(link, dict)
+                    else link
+                    for link in state["links"]
+                ]
+            else:
+                value = state.get(slot)  # type: ignore
 
-        d["links"] = [
-            Link.from_dict(link).set_owner(self) if isinstance(link, dict) else link
-            for link in d["links"]
-        ]
-
-        self.__dict__ = d
+            setattr(self, slot, value)
 
     def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``

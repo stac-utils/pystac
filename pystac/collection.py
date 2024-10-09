@@ -479,6 +479,15 @@ class Collection(Catalog, Assets):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
+    __slots__: tuple[str, ...] = Catalog.__slots__ + (
+        "extent",
+        "license",
+        "keywords",
+        "providers",
+        "summaries",
+        "assets",
+    )
+
     description: str
     """Detailed multi-line description to fully explain the collection."""
 

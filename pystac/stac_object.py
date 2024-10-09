@@ -41,6 +41,13 @@ class STACObject(ABC):
     functionality through the implementing classes.
     """
 
+    __slots__: tuple[str, ...] = (
+        "id",
+        "links",
+        "stac_extensions",
+        "_allow_parent_to_override_href",
+    )
+
     id: str
     """The ID of the STAC Object."""
 
@@ -53,12 +60,13 @@ class STACObject(ABC):
 
     STAC_OBJECT_TYPE: STACObjectType
 
-    _allow_parent_to_override_href: bool = True
+    _allow_parent_to_override_href: bool
     """Private attribute for whether parent objects should override on normalization"""
 
     def __init__(self, stac_extensions: list[str]) -> None:
         self.links = []
         self.stac_extensions = stac_extensions
+        self._allow_parent_to_override_href = True
 
     def validate(
         self,
