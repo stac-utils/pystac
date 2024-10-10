@@ -38,9 +38,9 @@ beautifulsoup4==4.12.3
     #   pydata-sphinx-theme
 bleach==6.1.0
     # via nbconvert
-boto3==1.35.36
+boto3==1.35.37
     # via -r docs/requirements-docs.in
-botocore==1.35.36
+botocore==1.35.37
     # via
     #   boto3
     #   s3transfer
