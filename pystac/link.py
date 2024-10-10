@@ -70,6 +70,16 @@ class Link(PathLike):
             object JSON.
     """
 
+    __slots__: tuple[str, ...] = (
+        "rel",
+        "media_type",
+        "extra_fields",
+        "owner",
+        "_target_href",
+        "_target_object",
+        "_title",
+    )
+
     rel: str | pystac.RelType
     """The relation of the link (e.g. 'child', 'item'). Registered rel Types are
     preferred. See :class:`~pystac.RelType` for common media types."""
