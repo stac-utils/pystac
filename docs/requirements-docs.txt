@@ -331,7 +331,7 @@ snowballstemmer==2.2.0
     # via sphinx
 soupsieve==2.6
     # via beautifulsoup4
-sphinx==8.0.2
+sphinx==8.1.0
     # via
     #   -r docs/requirements-docs.in
     #   nbsphinx
