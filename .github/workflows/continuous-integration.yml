@@ -42,16 +42,16 @@ jobs:
           enable-cache: true
       - name: Sync
         run: uv sync --all-extras
-      - name: Test
-        # Windows doesn't like uv run when pointed at a script 🤷‍♀️
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            .venv\Scripts\activate && scripts\\test
-          else
-            uv run scripts/test
-          fi
+      - name: Test on windows
+        if: runner.os == 'Windows'
         env:
-          TMPDIR: "${{ matrix.os == 'windows-latest' && 'D:\\a\\_temp' || '' }}"
+          TMPDIR: 'D:\\a\\_temp'
+        run: |
+          .venv\Scripts\activate
+          scripts\\test
+      - name: Test
+        if: runner.os != 'Windows'
+        run: uv run scripts/test
 
   coverage:
     name: coverage
