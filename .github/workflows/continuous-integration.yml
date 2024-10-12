@@ -144,9 +144,9 @@ jobs:
       - name: Sync
         run: uv sync
       - name: Set asv machine
-        run: asv machine --yes
+        run: uv run asv machine --yes
       - name: Check benchmarks
-        run: asv run -a repeat=1 -a rounds=1 HEAD
+        run: uv run asv run -a repeat=1 -a rounds=1 HEAD
 
   docs:
     runs-on: ubuntu-latest
