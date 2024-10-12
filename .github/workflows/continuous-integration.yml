@@ -64,7 +64,7 @@ jobs:
       - name: Run coverage with orjson
         run: uv run pytest tests --cov
       - name: Uninstall orjson
-        run: uv pip uninstall -y orjson
+        run: uv pip uninstall orjson
       - name: Run coverage without orjson, appending results
         run: uv run pytest tests --cov --cov-append
       - name: Prepare ./coverage.xml
@@ -118,7 +118,7 @@ jobs:
       - name: Sync
         run: uv sync
       - name: Uninstall orjson
-        run: uv pip uninstall -y orjson
+        run: uv pip uninstall orjson
       - name: Run tests
         run: uv run pytest tests
 
