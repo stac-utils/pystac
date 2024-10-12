@@ -103,7 +103,7 @@ jobs:
       - name: Sync
         run: uv sync
       - name: Execute linters & type checkers
-        run: uv pre-commit run --all-files
+        run: uv run pre-commit run --all-files
 
   without-orjson:
     runs-on: ubuntu-latest
