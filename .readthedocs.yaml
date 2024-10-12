@@ -8,17 +8,20 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.10"
+  commands:
+    # https://docs.readthedocs.io/en/stable/build-customization.html#install-dependencies-with-uv
+    # with adaptations to use workspaces+projects instead of `uv pip`
+    - asdf plugin add uv
+    - asdf install uv latest
+    - asdf global uv latest
+    - uv sync uv --all-extras --no-dev
+    - uv sync --package pystac-docs --inexact # we need inexact to keep the top-level sync packages 
+    - uv run sphinx-build -T -b html -d docs/_build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
 
 formats:
   # Temporarily disabling PDF downloads due to problem with nbsphinx in LateX builds
   # - pdf
   - htmlzip
-
-python:
-  install:
-    - requirements: docs/requirements-docs.txt
-    - method: pip
-      path: .
 
 sphinx:
   fail_on_warning: false
