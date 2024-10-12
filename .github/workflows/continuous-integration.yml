@@ -46,7 +46,7 @@ jobs:
         # Windows doesn't like uv run when pointed at a script 🤷‍♀️
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            source .venv\bin\activate && scripts\test
+            source .venv\\bin\\activate && scripts\\test
           else
             uv run scripts/test
           fi
