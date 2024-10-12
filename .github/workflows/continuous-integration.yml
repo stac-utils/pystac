@@ -43,7 +43,7 @@ jobs:
       - name: Sync
         run: uv sync --all-extras
       - name: test
-        run: source .venv/bin/activate && ./scripts/test
+        run: uv run scripts/test
         shell: bash
         env:
           TMPDIR: "${{ matrix.os == 'windows-latest' && 'D:\\a\\_temp' || '' }}"
