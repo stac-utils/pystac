@@ -86,7 +86,7 @@ jobs:
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
         # coverage drops.
-        run: coverage report
+        run: uv run coverage report
 
   lint:
     runs-on: ubuntu-latest
