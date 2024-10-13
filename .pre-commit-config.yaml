@@ -3,7 +3,7 @@
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.18.0
     hooks:
       - id: pyupgrade
         args:
@@ -22,7 +22,7 @@ repos:
         name: ruff-format
         entry: ruff format --force-exclude
         language: system
-        stages: [commit]
+        stages: [pre-commit]
         types_or: [python, pyi, jupyter]
         require_serial: true
 
@@ -30,7 +30,7 @@ repos:
         name: codespell
         entry: codespell
         language: system
-        stages: [commit]
+        stages: [pre-commit]
         types_or: [jupyter, markdown, python, shell]
 
       - id: doc8
@@ -45,6 +45,6 @@ repos:
         entry: mypy
         args: [--no-incremental]
         language: system
-        stages: [commit]
+        stages: [pre-commit]
         types: [python]
         require_serial: true

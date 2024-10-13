@@ -5,6 +5,7 @@
 ### Changed
 
 - Write STAC v1.1.0 ([#1427](https://github.com/stac-utils/pystac/pull/1427))
+- Use [uv](https://github.com/astral-sh/uv) for development dependencies and docs ([#1439](https://github.com/stac-utils/pystac/pull/1439))
 
 ## [v1.11.0] - 2024-09-26
 
