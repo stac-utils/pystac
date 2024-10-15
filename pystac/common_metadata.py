@@ -216,7 +216,7 @@ class CommonMetadata:
 
     @property
     def roles(self) -> list[str] | None:
-        """Get or set the semantic roles of an object."""
+        """Get or set the semantic roles of the entity."""
         return self._get_field("roles", list[str])
 
     @roles.setter
