@@ -240,7 +240,7 @@ class CommonMetadata:
     @keywords.setter
     def keywords(self, v: list[str] | None) -> None:
         self._set_field("keywords", v)
-    
+
     @property
     def roles(self) -> list[str] | None:
         """Get or set the semantic roles of the entity."""

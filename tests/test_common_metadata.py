@@ -548,7 +548,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
         analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
         thumbnail_cm = CommonMetadata(thumbnail)
-        
+
         item_value = cm.keywords
         a2_known_value = ["keyword_a"]
 
@@ -562,7 +562,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
 
         self.assertEqual(analytic_cm.keywords, set_value)
         self.assertEqual(analytic.to_dict()["keywords"], set_value)
-    
+
     def test_roles(self) -> None:
         item = self.item.clone()
         cm = item.common_metadata
