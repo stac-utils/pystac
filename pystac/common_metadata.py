@@ -216,7 +216,7 @@ class CommonMetadata:
 
     @property
     def keywords(self) -> list[str] | None:
-        """Get or set the keywords describing an object."""
+        """Get or set the keywords describing the STAC entity."""
         return self._get_field("keywords", list[str])
 
     @keywords.setter
