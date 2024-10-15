@@ -176,6 +176,8 @@ class CommonMetadataTest(unittest.TestCase):
         x.common_metadata.description = example_description
         self.assertEqual(x.common_metadata.description, example_description)
         self.assertEqual(x.properties["description"], example_description)
+        with self.assertRaises(ValueError):
+            x.common_metadata.description = ""
 
         # License
         license = "PDDL-1.0"
