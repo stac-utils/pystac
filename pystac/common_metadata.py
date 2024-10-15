@@ -213,3 +213,12 @@ class CommonMetadata:
     @updated.setter
     def updated(self, v: datetime | None) -> None:
         self._set_field("updated", utils.map_opt(utils.datetime_to_str, v))
+
+    @property
+    def roles(self) -> list[str] | None:
+        """Get or set the semantic roles of the entity."""
+        return self._get_field("roles", list[str])
+
+    @roles.setter
+    def roles(self, v: list[str] | None) -> None:
+        self._set_field("roles", v)
