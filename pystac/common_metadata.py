@@ -125,7 +125,7 @@ class CommonMetadata:
         each.
 
         Note:
-            The license `various` and `proprietary` are deprecated.
+            The licenses `various` and `proprietary` are deprecated.
         """
         return self._get_field("license", str)
 
