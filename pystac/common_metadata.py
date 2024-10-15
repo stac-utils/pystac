@@ -233,6 +233,15 @@ class CommonMetadata:
         self._set_field("updated", utils.map_opt(utils.datetime_to_str, v))
 
     @property
+    def keywords(self) -> list[str] | None:
+        """Get or set the keywords describing the STAC entity."""
+        return self._get_field("keywords", list[str])
+
+    @keywords.setter
+    def keywords(self, v: list[str] | None) -> None:
+        self._set_field("keywords", v)
+
+    @property
     def roles(self) -> list[str] | None:
         """Get or set the semantic roles of the entity."""
         return self._get_field("roles", list[str])

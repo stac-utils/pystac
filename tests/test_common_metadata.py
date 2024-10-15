@@ -541,6 +541,28 @@ class AssetCommonMetadataTest(unittest.TestCase):
             analytic.to_dict()["updated"], utils.datetime_to_str(set_value)
         )
 
+    def test_keywords(self) -> None:
+        item = self.item.clone()
+        cm = item.common_metadata
+        analytic = item.assets["analytic"]
+        analytic_cm = CommonMetadata(analytic)
+        thumbnail = item.assets["thumbnail"]
+        thumbnail_cm = CommonMetadata(thumbnail)
+
+        item_value = cm.keywords
+        a2_known_value = ["keyword_a"]
+
+        # Get
+        self.assertNotEqual(thumbnail_cm.keywords, item_value)
+        self.assertEqual(thumbnail_cm.keywords, a2_known_value)
+
+        # Set
+        set_value = ["keyword_b"]
+        analytic_cm.keywords = set_value
+
+        self.assertEqual(analytic_cm.keywords, set_value)
+        self.assertEqual(analytic.to_dict()["keywords"], set_value)
+
     def test_roles(self) -> None:
         item = self.item.clone()
         cm = item.common_metadata
