@@ -463,7 +463,7 @@ class Collection(Catalog, Assets):
             `SPDX License identifier <https://spdx.org/licenses/>`_,
             or `other`. If collection includes data with multiple
             different licenses, use `other` and add a link for
-            each. The license `various` and `proprietary` are deprecated.
+            each. The licenses `various` and `proprietary` are deprecated.
             Defaults to 'other'.
         keywords : Optional list of keywords describing the collection.
         providers : Optional list of providers of this Collection.
