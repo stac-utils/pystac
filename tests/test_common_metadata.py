@@ -176,6 +176,8 @@ class CommonMetadataTest(unittest.TestCase):
         x.common_metadata.description = example_description
         self.assertEqual(x.common_metadata.description, example_description)
         self.assertEqual(x.properties["description"], example_description)
+        with self.assertRaises(ValueError):
+            x.common_metadata.description = ""
 
         # License
         license = "PDDL-1.0"
@@ -546,7 +548,7 @@ class AssetCommonMetadataTest(unittest.TestCase):
         analytic_cm = CommonMetadata(analytic)
         thumbnail = item.assets["thumbnail"]
         thumbnail_cm = CommonMetadata(thumbnail)
-
+        
         item_value = cm.keywords
         a2_known_value = ["keyword_a"]
 
@@ -560,3 +562,25 @@ class AssetCommonMetadataTest(unittest.TestCase):
 
         self.assertEqual(analytic_cm.keywords, set_value)
         self.assertEqual(analytic.to_dict()["keywords"], set_value)
+    
+    def test_roles(self) -> None:
+        item = self.item.clone()
+        cm = item.common_metadata
+        analytic = item.assets["analytic"]
+        analytic_cm = CommonMetadata(analytic)
+        thumbnail = item.assets["thumbnail"]
+        thumbnail_cm = CommonMetadata(thumbnail)
+
+        item_value = cm.roles
+        a2_known_value = ["a_role"]
+
+        # Get
+        self.assertNotEqual(thumbnail_cm.roles, item_value)
+        self.assertEqual(thumbnail_cm.roles, a2_known_value)
+
+        # Set
+        set_value = ["another_role"]
+        analytic_cm.roles = set_value
+
+        self.assertEqual(analytic_cm.roles, set_value)
+        self.assertEqual(analytic.to_dict()["roles"], set_value)

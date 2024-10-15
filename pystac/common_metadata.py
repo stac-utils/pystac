@@ -80,12 +80,18 @@ class CommonMetadata:
 
     @description.setter
     def description(self, v: str | None) -> None:
+        if v == "":
+            raise ValueError("description cannot be an empty string")
         self._set_field("description", v)
 
     # Date and Time Range
     @property
     def start_datetime(self) -> datetime | None:
-        """Get or set the object's start_datetime."""
+        """Get or set the object's start_datetime.
+
+        Note:
+            ``start_datetime`` is an inclusive datetime.
+        """
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("start_datetime", str)
         )
@@ -96,7 +102,11 @@ class CommonMetadata:
 
     @property
     def end_datetime(self) -> datetime | None:
-        """Get or set the item's end_datetime."""
+        """Get or set the item's end_datetime.
+
+        Note:
+            ``end_datetime`` is an inclusive datetime.
+        """
         return utils.map_opt(
             utils.str_to_datetime, self._get_field("end_datetime", str)
         )
@@ -108,7 +118,15 @@ class CommonMetadata:
     # License
     @property
     def license(self) -> str | None:
-        """Get or set the current license."""
+        """Get or set the current license. License should be provided
+        as a `SPDX License identifier <https://spdx.org/licenses/>`_,
+        or `other`. If object includes data with multiple
+        different licenses, use `other` and add a link for
+        each.
+
+        Note:
+            The licenses `various` and `proprietary` are deprecated.
+        """
         return self._get_field("license", str)
 
     @license.setter
@@ -222,3 +240,12 @@ class CommonMetadata:
     @keywords.setter
     def keywords(self, v: list[str] | None) -> None:
         self._set_field("keywords", v)
+    
+    @property
+    def roles(self) -> list[str] | None:
+        """Get or set the semantic roles of the entity."""
+        return self._get_field("roles", list[str])
+
+    @roles.setter
+    def roles(self, v: list[str] | None) -> None:
+        self._set_field("roles", v)
