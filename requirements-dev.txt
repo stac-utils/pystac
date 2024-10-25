@@ -115,7 +115,7 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.6.9
+ruff==0.7.1
     # via -r requirements-dev.in
 six==1.16.0
     # via html5lib
