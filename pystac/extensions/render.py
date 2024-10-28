@@ -221,9 +221,12 @@ class RenderExtension(
 
     @property
     def renders(self) -> dict[str, Render]:
-        return get_required(
-            self._get_property(RENDERS_PROP, dict[str, Render]), self, RENDERS_PROP
+        renders: dict[str, dict[str, Any]] = get_required(
+            self._get_property(RENDERS_PROP, dict[str, dict[str, Any]]),
+            self,
+            RENDERS_PROP,
         )
+        return {k: Render(v) for k, v in renders.items()}
 
     @renders.setter
     def renders(self, v: dict[str, Render]) -> None:
@@ -246,7 +249,7 @@ class RenderExtension(
             return ItemRenderExtension(obj)
         else:
             raise pystac.ExtensionTypeError(
-                f"RenderExtension does not apply to type '{type(obj).__name__}"
+                f"RenderExtension does not apply to type '{type(obj).__name__}'"
             )
 
 
