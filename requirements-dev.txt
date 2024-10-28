@@ -56,7 +56,7 @@ markupsafe==2.1.5
     # via jinja2
 multidict==6.1.0
     # via yarl
-mypy==1.11.2
+mypy==1.13.0
     # via -r requirements-dev.in
 mypy-extensions==1.0.0
     # via mypy
