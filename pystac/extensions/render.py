@@ -203,7 +203,7 @@ class Render:
                 if value is not None
             ]
         )
-        return f"<Render {props}"
+        return f"<Render {props}>"
 
 
 class RenderExtension(
