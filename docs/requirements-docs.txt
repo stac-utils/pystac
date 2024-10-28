@@ -235,7 +235,6 @@ packaging==24.1
     #   jupyterlab
     #   jupyterlab-server
     #   nbconvert
-    #   pydata-sphinx-theme
     #   sphinx
 pandocfilters==1.5.1
     # via nbconvert
@@ -261,7 +260,7 @@ pure-eval==0.2.3
     # via stack-data
 pycparser==2.22
     # via cffi
-pydata-sphinx-theme==0.15.4
+pydata-sphinx-theme==0.16.0
     # via -r docs/requirements-docs.in
 pygments==2.18.0
     # via
