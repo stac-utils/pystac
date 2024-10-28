@@ -108,7 +108,7 @@ ipykernel==6.29.5
     #   jupyter
     #   jupyter-console
     #   jupyterlab
-ipython==8.28.0
+ipython==8.29.0
     # via
     #   -r docs/requirements-docs.in
     #   ipykernel
