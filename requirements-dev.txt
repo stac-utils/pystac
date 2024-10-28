@@ -62,7 +62,7 @@ mypy-extensions==1.0.0
     # via mypy
 nodeenv==1.9.1
     # via pre-commit
-orjson==3.10.7
+orjson==3.10.10
     # via -r requirements-dev.in
 packaging==24.1
     # via
