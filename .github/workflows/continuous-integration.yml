@@ -48,8 +48,8 @@ jobs:
         env:
           TMPDIR: 'D:\\a\\_temp'
         run: |
-          source .venv/bin/activate
-          scripts/test
+          source .venv\\bin\\activate
+          scripts\\test
       - name: Test
         if: runner.os != 'Windows'
         run: uv run scripts/test
