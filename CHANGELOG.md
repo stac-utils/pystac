@@ -14,6 +14,8 @@
 - Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386))
 - Add convenience method for accessing pystac_client ([#1365](https://github.com/stac-utils/pystac/pull/1365))
 - Fix field ordering when saving `Item`s ([#1423](https://github.com/stac-utils/pystac/pull/1423))
+- Add keywords to common metadata ([#1443](https://github.com/stac-utils/pystac/pull/1443))
+- Add roles to common metadata ([#1444](https://github.com/stac-utils/pystac/pull/1444/files))
 
 ### Changed
 
@@ -23,6 +25,7 @@
 - Add example of custom `StacIO` for Azure Blob Storage to docs ([#1372](https://github.com/stac-utils/pystac/pull/1372))
 - Noted that collection links can be used in non-item objects in STAC v1.1.0 ([#1393](https://github.com/stac-utils/pystac/pull/1393))
 - Move test, docs, and bench requirements out of pyproject.toml ([#1407](https://github.com/stac-utils/pystac/pull/1407))
+- Clarify inclusive datetime ranges, update default license, and ensure description is not empty ([#1445](https://github.com/stac-utils/pystac/pull/1445))
 
 ### Fixed
 
