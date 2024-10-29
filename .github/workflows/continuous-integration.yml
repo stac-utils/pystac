@@ -46,9 +46,7 @@ jobs:
         if: runner.os == 'Windows'
         env:
           TMPDIR: 'D:\\a\\_temp'
-        run: |
-          .venv\\Scripts\\activate
-          scripts\\test
+        run: scripts\\test
       - name: Test
         if: runner.os != 'Windows'
         run: uv run scripts/test
