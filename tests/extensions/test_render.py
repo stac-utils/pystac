@@ -91,7 +91,7 @@ def test_item_to_from_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
 
 
 def test_collection_to_from_dict(
-    ext_collection_uri: str, ext_collection: pystac.Item
+    ext_collection_uri: str, ext_collection: pystac.Collection
 ) -> None:
     with open(ext_collection_uri) as f:
         d = json.load(f)
