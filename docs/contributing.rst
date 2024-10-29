@@ -8,13 +8,14 @@ way is to coordinate with the core developers via an issue or pull request conve
 Development installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Fork PySTAC into your GitHub account. Then, clone the repo and install it locally with
-pip as follows:
+`uv <https://docs.astral.sh/uv/getting-started/installation/>` as follows:
 
 .. code-block:: bash
 
     git clone git@github.com:your_user_name/pystac.git
     cd pystac
-    pip install -e . -r requirements-dev.txt
+    uv sync
+    source .venv/bin/activate
 
 Testing
 ^^^^^^^
