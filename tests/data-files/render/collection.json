@@ -1,0 +1,66 @@
+{
+    "stac_version": "1.1.0",
+    "stac_extensions": [
+        "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/render/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/virtual-assets/v1.0.0/schema.json"
+    ],
+    "type": "Collection",
+    "id": "senitnel2-l2a",
+    "title": "Sentinel-2 L2A",
+    "description": "Sentinel-2 L2A data",
+    "license": "Apache-2.0",
+    "extent": {
+        "spatial": {
+            "bbox": [[172.9, 1.3, 173, 1.4]]
+        },
+        "temporal": {
+            "interval": [["2015-06-23T00:00:00Z", null]]
+        }
+    },
+    "assets": {},
+    "item_assets": {
+        "ndvi": {
+            "roles": ["virtual", "data", "index"],
+            "type": "image/vnd.stac.geotiff; cloud-optimized=true",
+            "vrt:hrefs": [
+                {
+                    "key": "red",
+                    "href": "#/assets/red"
+                },
+                {
+                    "key": "nir",
+                    "href": "#/assets/nir"
+                }
+            ],
+            "title": "Normalized Difference Vegetation Index",
+            "vrt:algorithm": "band_arithmetic",
+            "vrt:algorithm_opts": {
+                "expression": "(B05-B04)/(B05+B04)",
+                "rescale": [[-1, 1]]
+            }
+        }
+    },
+    "renders": {
+        "ndvi": {
+            "title": "Normalized Difference Vegetation Index",
+            "assets": ["ndvi"],
+            "resampling": "average",
+            "colormap_name": "ylgn"
+        }
+    },
+    "summaries": {
+        "datetime": {
+            "minimum": "2015-06-23T00:00:00Z",
+            "maximum": "2019-07-10T13:44:56Z"
+        }
+    },
+    "links": [
+        {
+            "href": "./collection.json",
+            "rel": "root",
+            "title": "Sentinel-2 L2A",
+            "type": "application/json"
+        }
+    ]
+}
