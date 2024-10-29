@@ -47,7 +47,7 @@ jobs:
         shell: bash
         env:
           TMPDIR: 'D:\\a\\_temp'
-        run: uv run pre-commit run --all-files && uv run pytest tests
+        run: uv run pytest tests
       - name: Test
         if: runner.os != 'Windows'
         run: uv run scripts/test
