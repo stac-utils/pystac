@@ -244,7 +244,8 @@ class RenderExtension(
     def ext(cls, obj: T, add_if_missing: bool = False) -> RenderExtension[T]:
         if isinstance(obj, pystac.Collection):
             cls.ensure_has_extension(obj, add_if_missing)
-        if isinstance(obj, pystac.Item):
+            return CollectionRenderExtension(obj)
+        elif isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return ItemRenderExtension(obj)
         else:
