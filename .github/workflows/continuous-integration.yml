@@ -44,9 +44,12 @@ jobs:
         run: uv sync --all-extras
       - name: Test on windows
         if: runner.os == 'Windows'
+        shell: bash
         env:
           TMPDIR: 'D:\\a\\_temp'
-        run: scripts\\test
+        run: |
+          source .venv/bin/activate
+          scripts/test
       - name: Test
         if: runner.os != 'Windows'
         run: uv run scripts/test
