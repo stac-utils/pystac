@@ -37,6 +37,16 @@ class Asset:
             object JSON.
     """
 
+    __slots__: tuple[str, ...] = (
+        "href",
+        "title",
+        "description",
+        "media_type",
+        "roles",
+        "owner",
+        "extra_fields",
+    )
+
     href: str
     """Link to the asset object. Relative and absolute links are both allowed."""
 

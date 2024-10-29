@@ -133,6 +133,16 @@ class Catalog(STACObject):
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
+    __slots__: tuple[str, ...] = STACObject.__slots__ + (
+        "catalog_type",
+        "description",
+        "extra_fields",
+        "title",
+        "_resolved_objects",
+        "_stac_io",
+        "strategy",
+    )
+
     catalog_type: CatalogType
     """The catalog type. Defaults to :attr:`CatalogType.ABSOLUTE_PUBLISHED`."""
 
@@ -159,7 +169,7 @@ class Catalog(STACObject):
 
     STAC_OBJECT_TYPE = pystac.STACObjectType.CATALOG
 
-    _stac_io: pystac.StacIO | None = None
+    _stac_io: pystac.StacIO | None
     """Optional instance of StacIO that will be used by default
     for any IO operations on objects contained by this catalog.
     Set while reading in a catalog. This is set when a catalog
@@ -206,6 +216,8 @@ class Catalog(STACObject):
         self.strategy: HrefLayoutStrategy | None = strategy
 
         self._resolved_objects.cache(self)
+
+        self._stac_io = None
 
     def __repr__(self) -> str:
         return f"<Catalog id={self.id}>"

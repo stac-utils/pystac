@@ -5,6 +5,7 @@
 ### Changed
 
 - Write STAC v1.1.0 ([#1427](https://github.com/stac-utils/pystac/pull/1427))
+- Use `__slots__` for objects we expect to exist in large numbers ([#1434](https://github.com/stac-utils/pystac/pull/1434))
 
 ## [v1.11.0] - 2024-09-26
 
