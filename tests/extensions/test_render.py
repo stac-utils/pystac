@@ -113,17 +113,6 @@ def test_add_to_collection(collection: pystac.Collection) -> None:
     assert RenderExtension.has_extension(collection)
 
 
-# TODO: re-enable, record cassette after schema is corrected
-# @pytest.mark.vcr
-# def test_item_validate(ext_item: pystac.Item) -> None:
-#     assert ext_item.validate()
-
-
-# @pytest.mark.vcr
-# def test_collection_validate(ext_collection: pystac.Collection) -> None:
-#     assert ext_collection.validate()
-
-
 def test_get_render_values(thumbnail_render: Render) -> None:
     assert thumbnail_render.title == "Thumbnail"
     assert thumbnail_render.assets == ["B04", "B03", "B02"]
