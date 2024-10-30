@@ -22,7 +22,7 @@ def ext_collection(ext_collection_uri: str) -> pystac.Collection:
 
 @pytest.fixture
 def ext_item_uri() -> str:
-    return get_data_file("render/render-landsat-example.json")
+    return get_data_file("render/item.json")
 
 
 @pytest.fixture
@@ -126,7 +126,7 @@ def test_add_to_collection(collection: pystac.Collection) -> None:
 
 def test_get_render_values(thumbnail_render: Render) -> None:
     assert thumbnail_render.title == "Thumbnail"
-    assert thumbnail_render.assets == ["B4", "B3", "B2"]
+    assert thumbnail_render.assets == ["B04", "B03", "B02"]
     assert thumbnail_render.rescale == [[0, 150]]
     assert thumbnail_render.colormap_name == "rainbow"
     assert thumbnail_render.resampling == "bilinear"
