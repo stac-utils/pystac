@@ -22,6 +22,8 @@ RENDERS_PROP = "renders"
 
 
 class Render:
+    """Parameters for creating a rendered view of assets."""
+
     properties: dict[str, Any]
 
     def __init__(self, properties: dict[str, Any]) -> None:
@@ -29,6 +31,10 @@ class Render:
 
     @property
     def assets(self) -> list[str]:
+        """
+        List of asset keys referencing the assets that are
+        used to make the rendering.
+        """
         return get_required(self.properties.get("assets"), self, "assets")
 
     @assets.setter
@@ -37,6 +43,7 @@ class Render:
 
     @property
     def title(self) -> str | None:
+        """Title of the rendering"""
         return self.properties.get("title")
 
     @title.setter
@@ -48,6 +55,10 @@ class Render:
 
     @property
     def rescale(self) -> list[list[float]] | None:
+        """A list of min/max value pairs to rescale each asset by, e.g.
+        `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+        assets will not be rescaled.
+        """
         return self.properties.get("rescale")
 
     @rescale.setter
@@ -59,6 +70,7 @@ class Render:
 
     @property
     def nodata(self) -> float | str | None:
+        """Nodata value."""
         return self.properties.get("nodata")
 
     @nodata.setter
@@ -70,6 +82,9 @@ class Render:
 
     @property
     def colormap_name(self) -> str | None:
+        """Name of color map to apply to the render.
+        See: https://matplotlib.org/stable/gallery/color/colormap_reference.html
+        """
         return self.properties.get("colormap_name")
 
     @colormap_name.setter
@@ -81,6 +96,9 @@ class Render:
 
     @property
     def colormap(self) -> dict[str, Any] | None:
+        """A dictionary containing a custom colormap definition.
+        See: https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps
+        """
         return self.properties.get("colormap")
 
     @colormap.setter
@@ -92,6 +110,12 @@ class Render:
 
     @property
     def color_formula(self) -> str | None:
+        """A string containing a color formula to apply
+        color corrections to images. Useful for reducing
+        artefacts like atmospheric haze, dark shadows, or
+        muted colors.
+        See: https://developmentseed.org/titiler/advanced/rendering/#color-formula
+        """
         return self.properties.get("color_formula")
 
     @color_formula.setter
@@ -103,6 +127,10 @@ class Render:
 
     @property
     def resampling(self) -> str | None:
+        """Resampling algorithm to apply to the referenced assets. See GDAL
+        resampling algorithm for some examples.
+        See: https://gdal.org/en/latest/programs/gdalwarp.html#cmdoption-gdalwarp-r
+        """
         return self.properties.get("resampling")
 
     @resampling.setter
@@ -114,6 +142,7 @@ class Render:
 
     @property
     def expression(self) -> str | None:
+        """Band arithmetic formula to apply to the referenced assets."""
         return self.properties.get("expression")
 
     @expression.setter
@@ -125,6 +154,7 @@ class Render:
 
     @property
     def minmax_zoom(self) -> list[int] | None:
+        """Zoom level range applicable for the visualization, e.g. `[2, 18]`."""
         return self.properties.get("minmax_zoom")
 
     @minmax_zoom.setter
@@ -147,6 +177,41 @@ class Render:
         expression: str | None = None,
         minmax_zoom: list[int] | None = None,
     ) -> None:
+        """Set the properties for a new Render.
+
+        Args:
+            assets:
+                List of asset keys referencing the assets that are
+                used to make the rendering.
+            title:
+                Title of the rendering.
+            rescale:
+                A list of min/max value pairs to rescale each asset by, e.g.
+                `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+                assets will not be rescaled.
+            nodata:
+                Nodata value.
+            colormap_name:
+                Name of color map to apply to the render.
+                https://matplotlib.org/stable/gallery/color/colormap_reference.html
+            colormap:
+                A dictionary containing a custom colormap definition.
+                https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps
+            color_formula:
+                A string containing a color formula to apply
+                color corrections to images. Useful for reducing
+                artefacts like atmospheric haze, dark shadows, or
+                muted colors.
+                https://developmentseed.org/titiler/advanced/rendering/#color-formula
+            resampling:
+                Resampling algorithm to apply to the referenced assets. See GDAL
+                resampling algorithm for some examples.
+                https://gdal.org/en/latest/programs/gdalwarp.html#cmdoption-gdalwarp-r
+            expression:
+                Band arithmetic formula to apply to the referenced assets.
+            minmax_zoom:
+                Zoom level range applicable for the visualization, e.g. `[2, 18]`.
+        """
         self.assets = assets
         self.title = title
         self.rescale = rescale
@@ -172,6 +237,41 @@ class Render:
         expression: str | None = None,
         minmax_zoom: list[int] | None = None,
     ) -> Render:
+        """Create a new Render.
+
+        Args:
+            assets:
+                List of asset keys referencing the assets that are
+                used to make the rendering.
+            title:
+                Title of the rendering.
+            rescale:
+                A list of min/max value pairs to rescale each asset by, e.g.
+                `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+                assets will not be rescaled.
+            nodata:
+                Nodata value.
+            colormap_name:
+                Name of color map to apply to the render.
+                https://matplotlib.org/stable/gallery/color/colormap_reference.html
+            colormap:
+                A dictionary containing a custom colormap definition.
+                https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps
+            color_formula:
+                A string containing a color formula to apply
+                color corrections to images. Useful for reducing
+                artefacts like atmospheric haze, dark shadows, or
+                muted colors.
+                https://developmentseed.org/titiler/advanced/rendering/#color-formula
+            resampling:
+                Resampling algorithm to apply to the referenced assets. See GDAL
+                resampling algorithm for some examples.
+                https://gdal.org/en/latest/programs/gdalwarp.html#cmdoption-gdalwarp-r
+            expression:
+                Band arithmetic formula to apply to the referenced assets.
+            minmax_zoom:
+                Zoom level range applicable for the visualization, e.g. `[2, 18]`.
+        """
         c = cls({})
         c.apply(
             assets=assets,
@@ -211,16 +311,68 @@ class RenderExtension(
     PropertiesExtension,
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
+    """An abstract class that can be used to extend the properties of a
+    :class:`~pystac.Collection` or :class:`~pystac.Item` with
+    properties from the :stac-ext:`Render Extension <render>`. This class is
+    generic over the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
+    :class:`~pystac.Collection`).
+
+    To create a concrete instance of :class:`RenderExtension`, use the
+    :meth:`RenderExtension.ext` method. For example:
+
+    .. code-block:: python
+
+        >>> item: pystac.Item = ...
+        >>> xr_ext = RenderExtension.ext(item)
+
+    """
+
     name: Literal["render"] = "render"
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> RenderExtension[T]:
+        """Extend the given STAC Object with properties from the
+        :stac-ext:`Render Extension <render>`.
+
+        This extension can be applied to instances of :class:`~pystac.Collection`
+        or :class:`~pystac.Item`.
+
+        Raises:
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
+        if isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return CollectionRenderExtension(obj)
+        elif isinstance(obj, pystac.Item):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return ItemRenderExtension(obj)
+        else:
+            raise pystac.ExtensionTypeError(
+                f"RenderExtension does not apply to type '{type(obj).__name__}'"
+            )
 
     def apply(
         self,
         renders: dict[str, Render],
     ) -> None:
+        """Applies the render extension fields to the extended
+        object.
+
+        Args:
+            renders: a dictionary mapping render names to
+            :class: `~pystac.extension.render.Render` objects.
+        """
         self.renders = renders
 
     @property
     def renders(self) -> dict[str, Render]:
+        """A dictionary where each key is the name of a render and each
+        value is a :class:`~Render` object.
+        """
         renders: dict[str, dict[str, Any]] = get_required(
             self._get_property(RENDERS_PROP, dict[str, dict[str, Any]]),
             self,
@@ -236,25 +388,16 @@ class RenderExtension(
             pop_if_none=False,
         )
 
-    @classmethod
-    def get_schema_uri(cls) -> str:
-        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-
-    @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> RenderExtension[T]:
-        if isinstance(obj, pystac.Collection):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return CollectionRenderExtension(obj)
-        elif isinstance(obj, pystac.Item):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return ItemRenderExtension(obj)
-        else:
-            raise pystac.ExtensionTypeError(
-                f"RenderExtension does not apply to type '{type(obj).__name__}'"
-            )
-
 
 class CollectionRenderExtension(RenderExtension[pystac.Collection]):
+    """A concrete implementation of :class:`RenderExtension` on a
+    :class:`~pystac.Collection` that extends the properties of the Collection to include
+    properties defined in the :stac-ext:`Render Extension <xarray>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`RenderExtension.ext` on an :class:`~pystac.Collection` to extend it.
+    """
+
     def __init__(self, collection: pystac.Collection):
         self.collection = collection
         self.properties = collection.extra_fields
@@ -264,6 +407,14 @@ class CollectionRenderExtension(RenderExtension[pystac.Collection]):
 
 
 class ItemRenderExtension(RenderExtension[pystac.Item]):
+    """A concrete implementation of :class:`RenderExtension` on a
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Render Extension <xarray>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`RenderExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
