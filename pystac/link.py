@@ -102,7 +102,7 @@ class Link(PathLike):
         self.rel = rel
         if isinstance(target, str):
             if rel == pystac.RelType.SELF:
-                self._target_href = make_absolute_href(target)
+                self._target_href = make_absolute_href(target, must_include_scheme=True)
             else:
                 self._target_href = make_posix_style(target)
             self._target_object = None
