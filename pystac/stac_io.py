@@ -303,6 +303,7 @@ class DefaultStacIO(StacIO):
             except HTTPError as e:
                 raise Exception(f"Could not read uri {href}") from e
         else:
+            href = safe_urlparse(href).path
             with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
         return href_contents
@@ -328,7 +329,7 @@ class DefaultStacIO(StacIO):
         """
         if _is_url(href):
             raise NotImplementedError("DefaultStacIO cannot write to urls")
-        href = os.fspath(href)
+        href = safe_urlparse(href).path
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -391,7 +392,7 @@ class DuplicateKeyReportingMixin(StacIO):
 
 def _is_url(href: str) -> bool:
     parsed = safe_urlparse(href)
-    return parsed.scheme != ""
+    return parsed.scheme != "" and parsed.scheme != "file"
 
 
 if HAS_URLLIB3:
