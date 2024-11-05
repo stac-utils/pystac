@@ -691,7 +691,7 @@ def test_delete_asset_relative_no_self_link_fails(
 
     assert asset.href in str(e.value)
     assert name in collection.assets
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))
 
 
 def test_permissive_temporal_extent_deserialization(collection: Collection) -> None:

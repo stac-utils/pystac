@@ -92,11 +92,11 @@ class ItemTest(unittest.TestCase):
         item.set_self_href(item_path)
         rel_asset = Asset("./data.geojson")
         rel_asset.set_owner(item)
-        expected_href = make_posix_style(
+        expected_filepath = make_posix_style(
             os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
         )
         actual_href = rel_asset.get_absolute_href()
-        self.assertEqual(expected_href, actual_href)
+        self.assertEqual(f"file://{expected_filepath}", actual_href)
 
     def test_asset_absolute_href_no_item_self(self) -> None:
         item_dict = self.get_example_item_dict()
@@ -612,7 +612,7 @@ def test_delete_asset_relative_no_self_link_fails(tmp_asset: pystac.Asset) -> No
 
     assert asset.href in str(e.value)
     assert name in item.assets
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))
 
 
 def test_resolve_collection_with_root(

@@ -125,7 +125,9 @@ class TestValidate:
             dst_dir = os.path.join(tmp_dir, "catalog")
             # Copy test case 7 to the temporary directory
             catalog_href = get_opt(TestCases.case_7().get_self_href())
-            shutil.copytree(os.path.dirname(catalog_href), dst_dir)
+            shutil.copytree(
+                os.path.dirname(catalog_href.replace("file://", "")), dst_dir
+            )
 
             new_cat_href = os.path.join(dst_dir, "catalog.json")
 
