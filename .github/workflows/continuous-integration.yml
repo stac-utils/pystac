@@ -76,7 +76,7 @@ jobs:
         # will trigger a failure for coverage drops in a later job
         run: uv run coverage xml --fail-under 0
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

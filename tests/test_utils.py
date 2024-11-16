@@ -10,6 +10,7 @@ from dateutil import tz
 from pystac import utils
 from pystac.utils import (
     JoinType,
+    StringEnum,
     is_absolute_href,
     is_file_path,
     join_path_or_url,
@@ -477,3 +478,10 @@ def test_join_path_or_url() -> None:
 )
 def test_is_file_path(href: str, expected: bool) -> None:
     assert is_file_path(href) == expected
+
+
+def test_stringenum_repr() -> None:
+    class SomeEnum(StringEnum):
+        THIS = "this"
+
+    assert repr(SomeEnum.THIS) == "'this'"
