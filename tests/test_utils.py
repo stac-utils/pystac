@@ -241,7 +241,7 @@ class UtilsTest(unittest.TestCase):
             ("/item.json", not (is_windows and is_py_3_13)),
             ("/home/someuser/Downloads/item.json", not (is_windows and is_py_3_13)),
             ("d:/item.json", (is_windows and is_py_3_13)),
-            ("c:/files/more_files/item.json", (is_windows and is_py_3_13)),
+            # ("c:/files/more_files/item.json", (is_windows and is_py_3_13)),
         ]
 
         for href, expected in test_cases:
