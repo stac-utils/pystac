@@ -218,7 +218,11 @@ class UtilsTest(unittest.TestCase):
             ("item.json", False),
             ("./item.json", False),
             ("../item.json", False),
-            ("/item.json", True),
+            
+            # https://docs.python.org/3/library/os.path.html#os.path.isabs
+            # Windows requires a drive name.
+            ("/item.json", os.name != "nt"),
+            ("d:/item.json", os.name == "nt"),
             ("http://stacspec.org/item.json", True),
         ]
 
