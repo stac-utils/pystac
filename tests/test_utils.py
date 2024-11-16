@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import time
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -215,14 +216,19 @@ class UtilsTest(unittest.TestCase):
 
     def test_is_absolute_href(self) -> None:
         # Test cases of (href, expected)
+
+        is_py_3_13_on_windows: bool = (
+            sys.version_info.major == 3
+            and sys.version_info.minor >= 13
+            and os.name == "nt"
+        )
+
         test_cases = [
             ("item.json", False),
             ("./item.json", False),
             ("../item.json", False),
-            # https://docs.python.org/3/library/os.path.html#os.path.isabs
-            # Windows requires a drive name.
-            ("/item.json", os.name != "nt"),
-            ("d:/item.json", os.name == "nt"),
+            ("/item.json", not is_py_3_13_on_windows),
+            ("d:/item.json", is_py_3_13_on_windows),
             ("http://stacspec.org/item.json", True),
         ]
 
