@@ -364,7 +364,7 @@ def is_absolute_href(href: str) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" or os.path.isabs(parsed.path)
+    return parsed.scheme != "" # or os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
