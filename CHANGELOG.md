@@ -6,6 +6,7 @@
 
 - Write STAC v1.1.0 ([#1427](https://github.com/stac-utils/pystac/pull/1427))
 - Use [uv](https://github.com/astral-sh/uv) for development dependencies and docs ([#1439](https://github.com/stac-utils/pystac/pull/1439))
+- Correctly detect absolute file path ref on windows ([#1475]https://github.com/stac-utils/pystac/pull/1475)
 
 ## [v1.11.0] - 2024-09-26
 
