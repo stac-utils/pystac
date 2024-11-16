@@ -235,13 +235,13 @@ class UtilsTest(unittest.TestCase):
         # Windows requires a drive name when python > 3.13 (https://docs.python.org/3/library/os.path.html#os.path.isabs)
         is_py_3_13: bool = sys.version_info.major == 3 and sys.version_info.minor >= 13
 
-        is_windows = os.name != "nt"
+        is_windows = os.name == "nt"
 
         test_cases = [
             ("/item.json", not (is_windows and is_py_3_13)),
             ("/home/someuser/Downloads/item.json", not (is_windows and is_py_3_13)),
-            # ("d:/item.json", (is_windows and is_py_3_13)),
-            # ("c:/files/more_files/item.json", (is_windows and is_py_3_13)),
+            ("d:/item.json", (is_windows and is_py_3_13)),
+            ("c:/files/more_files/item.json", (is_windows and is_py_3_13)),
         ]
 
         for href, expected in test_cases:
