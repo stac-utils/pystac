@@ -20,6 +20,7 @@ from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
+from pystac.item_assets import ItemAssetDefinition, _ItemAssets
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
@@ -553,6 +554,7 @@ class Collection(Catalog, Assets):
         self.keywords = keywords
         self.providers = providers
         self.summaries = summaries or Summaries.empty()
+        self._item_assets: _ItemAssets | None = None
 
         self.assets = {}
         if assets is not None:
@@ -730,6 +732,27 @@ class Collection(Catalog, Assets):
                 # See https://github.com/stac-utils/pystac-client/issues/485
                 return super().get_item(id, recursive=recursive)
             raise e
+
+    @property
+    def item_assets(self) -> dict[str, ItemAssetDefinition] | None:
+        if self._item_assets is None and "item_assets" in self.extra_fields:
+            self._item_assets = _ItemAssets(self)
+        return self._item_assets
+
+    @item_assets.setter
+    def item_assets(
+        self, item_assets: dict[str, ItemAssetDefinition | dict[str, Any]] | None
+    ) -> None:
+        # clear out the cached value
+        self._item_assets = None
+
+        if item_assets is None:
+            self.extra_fields.pop("item_assets")
+        else:
+            self.extra_fields["item_assets"] = {
+                k: v if isinstance(v, dict) else v.to_dict()
+                for k, v in item_assets.items()
+            }
 
     def update_extent_from_items(self) -> None:
         """

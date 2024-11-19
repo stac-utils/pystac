@@ -6,13 +6,12 @@ from abc import ABC
 from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar(
-    "T", pystac.Collection, pystac.Item, pystac.Asset, item_assets.AssetDefinition
+    "T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition
 )
 
 SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
@@ -619,7 +618,7 @@ class DatacubeExtension(
         elif isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], AssetDatacubeExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(DatacubeExtension[T], ItemAssetsDatacubeExtension(obj))
         else:
@@ -691,11 +690,11 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
         return f"<AssetDatacubeExtension Item id={self.asset_href}>"
 
 
-class ItemAssetsDatacubeExtension(DatacubeExtension[item_assets.AssetDefinition]):
+class ItemAssetsDatacubeExtension(DatacubeExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
