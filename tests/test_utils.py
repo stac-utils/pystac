@@ -252,7 +252,6 @@ class UtilsTest(unittest.TestCase):
     def test_is_absolute_href_windows(self) -> None:
         # Test cases of (href, expected)
 
-        # Further nuanced cases for Windows.
         test_cases = [
             ("item.json", False),
             (".\\item.json", False),
