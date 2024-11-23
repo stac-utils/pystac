@@ -832,12 +832,18 @@ class TestCatalog:
         assert len(result) == 6
 
         catalog.normalize_hrefs("/")
+
         for item in catalog.get_items(recursive=True):
             item_parent = item.get_parent()
             assert item_parent is not None
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
-            subcats = [el for el in path_to_parent.split("/") if el]
+            # subcats = [el for el in path_to_parent.split("/") if el]
+            subcats = list(
+                Path(path_to_parent).parts[1:]
+            )  # Skip drive letter if present (Windows)
+
+            ## D: creates failure for py3.13 on windows
             assert len(subcats) == 2, f" for item '{item.id}'"
 
     def test_map_items(self) -> None:
