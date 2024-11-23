@@ -1,4 +1,6 @@
+import os
 import posixpath
+import sys
 import unittest
 from collections.abc import Callable
 from datetime import datetime, timedelta
@@ -412,6 +414,15 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
 class AsIsLayoutStrategyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.strategy = AsIsLayoutStrategy()
+
+        path_includes_drive: bool = (
+            sys.version_info.major == 3
+            and sys.version_info.minor >= 13
+            and os.name == "nt"
+        )
+        self.expected_local_href = (
+            "/an/href" if not path_includes_drive else "D:/an/href"
+        )
 
     def test_catalog(self) -> None:
         cat = pystac.Catalog(id="test", description="test desc")

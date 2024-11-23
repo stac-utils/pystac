@@ -843,7 +843,6 @@ class TestCatalog:
                 Path(path_to_parent).parts[1:]
             )  # Skip drive letter if present (Windows)
 
-            ## D: creates failure for py3.13 on windows
             assert len(subcats) == 2, f" for item '{item.id}'"
 
     def test_map_items(self) -> None:
