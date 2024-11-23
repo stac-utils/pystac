@@ -432,7 +432,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             cat, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_collection(self) -> None:
         collection = TestCases.case_8()
@@ -445,7 +445,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             collection, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_item(self) -> None:
         collection = TestCases.case_8()
@@ -455,7 +455,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
             self.strategy.get_href(item, parent_dir="http://example.com")
         item.set_self_href("/an/href")
         href = self.strategy.get_href(item, parent_dir="http://example.com")
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
 
 class APILayoutStrategyTest(unittest.TestCase):
