@@ -838,7 +838,6 @@ class TestCatalog:
             assert item_parent is not None
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
-            # subcats = [el for el in path_to_parent.split("/") if el]
             subcats = list(
                 Path(path_to_parent).parts[1:]
             )  # Skip drive letter if present (Windows)
