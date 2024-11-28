@@ -80,7 +80,7 @@ class StringEnum(str, Enum):
     value."""
 
     def __repr__(self) -> str:
-        return str(self.value)
+        return repr(self.value)
 
     def __str__(self) -> str:
         return cast(str, self.value)
