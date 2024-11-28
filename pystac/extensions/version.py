@@ -20,6 +20,7 @@ from pystac import (
     Collection,
     ExtensionTypeError,
     Item,
+    ItemAssetDefinition,
     Link,
     MediaType,
     STACObject,
@@ -28,10 +29,9 @@ from pystac import (
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions.item_assets import AssetDefinition
 from pystac.utils import StringEnum, map_opt
 
-T = TypeVar("T", Collection, Item, Catalog, Asset, AssetDefinition)
+T = TypeVar("T", Collection, Item, Catalog, Asset, ItemAssetDefinition)
 U = TypeVar("U", Collection, Item, Catalog)
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.2.0/schema.json"
@@ -395,10 +395,10 @@ class AssetVersionExtension(BaseVersionExtension[Asset]):
         return f"<AssetVersionExtension Asset href={self.asset.href}>"
 
 
-class ItemAssetsViewExtension(BaseVersionExtension[AssetDefinition]):
+class ItemAssetsViewExtension(BaseVersionExtension[ItemAssetDefinition]):
     properties: dict[str, Any]
 
-    def __init__(self, item_asset: AssetDefinition):
+    def __init__(self, item_asset: ItemAssetDefinition):
         self.properties = item_asset.properties
 
 
