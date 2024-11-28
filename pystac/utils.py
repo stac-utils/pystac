@@ -288,34 +288,54 @@ def _make_absolute_href_path(
     parsed_source: URLParseResult,
     parsed_start: URLParseResult,
     start_is_dir: bool = False,
+    must_include_scheme: bool = False,
 ) -> str:
-    # If the source is already absolute, just return it
+    # If the source is already absolute and doesn't need a  scheme just return it
     if os.path.isabs(parsed_source.path):
-        return urlunparse(parsed_source)
+        if must_include_scheme:
+            abs_path = parsed_source.path
+        else:
+            return urlunparse(parsed_source)
+    else:
+        # If the start path is not a directory, get the parent directory
+        start_dir = (
+            parsed_start.path if start_is_dir else os.path.dirname(parsed_start.path)
+        )
 
-    # If the start path is not a directory, get the parent directory
-    start_dir = (
-        parsed_start.path if start_is_dir else os.path.dirname(parsed_start.path)
-    )
+        # Join the start directory to the relative path and find the absolute path
+        abs_path = make_posix_style(
+            os.path.abspath(os.path.join(start_dir, parsed_source.path))
+        )
 
-    # Join the start directory to the relative path and find the absolute path
-    abs_path = make_posix_style(
-        os.path.abspath(os.path.join(start_dir, parsed_source.path))
-    )
+        # Account for the normalization of abspath for
+        # things like /vsitar// prefixes by replacing the
+        # original start_dir text when abspath modifies the start_dir.
+        if not start_dir == make_posix_style(os.path.abspath(start_dir)):
+            abs_path = abs_path.replace(
+                make_posix_style(os.path.abspath(start_dir)), start_dir
+            )
 
-    # Account for the normalization of abspath for
-    # things like /vsitar// prefixes by replacing the
-    # original start_dir text when abspath modifies the start_dir.
-    if not start_dir == make_posix_style(os.path.abspath(start_dir)):
-        abs_path = abs_path.replace(
-            make_posix_style(os.path.abspath(start_dir)), start_dir
+    # add a scheme if there isn't one already
+    if must_include_scheme:
+        return urlunparse(
+            (
+                "file",
+                parsed_start.netloc,
+                abs_path,
+                parsed_source.params,
+                parsed_source.query,
+                parsed_source.fragment,
+            )
         )
 
     return abs_path
 
 
 def make_absolute_href(
-    source_href: str, start_href: str | None = None, start_is_dir: bool = False
+    source_href: str,
+    start_href: str | None = None,
+    start_is_dir: bool = False,
+    must_include_scheme: bool = False,
 ) -> str:
     """Returns a new string that represents ``source_href`` as an absolute path. If
     ``source_href`` is already absolute it is returned unchanged. If ``source_href``
@@ -332,6 +352,8 @@ def make_absolute_href(
         start_is_dir : If ``True``, ``start_href`` is treated as a directory.
             Otherwise, ``start_href`` is considered to be a path to a file. Defaults to
             ``False``.
+        must_include_scheme : If ``True``, every output will have a scheme. This means
+            that local filepaths will be prefixed with `file://`. Defaults to ``False``.
 
     Returns:
         str: The absolute HREF.
@@ -349,7 +371,9 @@ def make_absolute_href(
     if parsed_source.scheme != "" or parsed_start.scheme != "":
         return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
     else:
-        return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
+        return _make_absolute_href_path(
+            parsed_source, parsed_start, start_is_dir, must_include_scheme
+        )
 
 
 def is_absolute_href(href: str) -> bool:

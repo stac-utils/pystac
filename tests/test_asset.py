@@ -21,9 +21,9 @@ def test_alter_asset_absolute_path(
     assert asset.get_absolute_href() == new_href
     assert os.path.exists(new_href)
     if action == "move":
-        assert not os.path.exists(old_href)
+        assert not os.path.exists(old_href.replace("file://", ""))
     elif action == "copy":
-        assert os.path.exists(old_href)
+        assert os.path.exists(old_href.replace("file://", ""))
 
 
 @pytest.mark.parametrize("action", ["copy", "move"])
@@ -38,11 +38,11 @@ def test_alter_asset_relative_path(action: str, tmp_asset: pystac.Asset) -> None
     assert asset.href == new_href
     href = asset.get_absolute_href()
     assert href is not None
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))
     if action == "move":
-        assert not os.path.exists(old_href)
+        assert not os.path.exists(old_href.replace("file://", ""))
     elif action == "copy":
-        assert os.path.exists(old_href)
+        assert os.path.exists(old_href.replace("file://", ""))
 
 
 @pytest.mark.parametrize("action", ["copy", "move"])
@@ -82,18 +82,18 @@ def test_delete_asset(tmp_asset: pystac.Asset) -> None:
     asset = tmp_asset
     href = asset.get_absolute_href()
     assert href is not None
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))
 
     asset.delete()
 
-    assert not os.path.exists(href)
+    assert not os.path.exists(href.replace("file://", ""))
 
 
 def test_delete_asset_relative_no_owner_fails(tmp_asset: pystac.Asset) -> None:
     asset = tmp_asset
     href = asset.get_absolute_href()
     assert href is not None
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))
 
     asset.owner = None
 
@@ -101,4 +101,4 @@ def test_delete_asset_relative_no_owner_fails(tmp_asset: pystac.Asset) -> None:
         asset.delete()
 
     assert asset.href in str(e.value)
-    assert os.path.exists(href)
+    assert os.path.exists(href.replace("file://", ""))

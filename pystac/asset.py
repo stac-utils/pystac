@@ -8,7 +8,12 @@ from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
 from pystac.html.jinja_env import get_jinja_env
-from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
+from pystac.utils import (
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+    safe_urlparse,
+)
 
 if TYPE_CHECKING:
     from pystac.common_metadata import CommonMetadata
@@ -380,7 +385,7 @@ class Assets(Protocol):
 
 def _absolute_href(href: str, owner: Assets | None, action: str = "access") -> str:
     if utils.is_absolute_href(href):
-        return href
+        return safe_urlparse(href).path
     else:
         item_self = owner.get_self_href() if owner else None
         if item_self is None:
@@ -389,4 +394,4 @@ def _absolute_href(href: str, owner: Assets | None, action: str = "access") -> s
                 "and owner item is not set. Hint: try using "
                 ":func:`~pystac.Item.make_asset_hrefs_absolute`"
             )
-        return utils.make_absolute_href(href, item_self)
+        return safe_urlparse(utils.make_absolute_href(href, item_self)).path
