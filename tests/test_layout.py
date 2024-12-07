@@ -303,7 +303,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
         )
         cat = pystac.Catalog(id="test", description="test desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
-        expected = fallback.get_href(cat, parent_dir="htt4p://example.com")
+        expected = fallback.get_href(cat, parent_dir="http://example.com")
         self.assertEqual(href, expected)
 
     def test_produces_layout_for_collection(self) -> None:
