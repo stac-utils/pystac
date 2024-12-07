@@ -15,7 +15,12 @@ from pystac.layout import (
     LayoutTemplate,
     TemplateLayoutStrategy,
 )
-from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
+from tests.utils import (
+    ARBITRARY_BBOX,
+    ARBITRARY_GEOM,
+    TestCases,
+    path_includes_drive_letter,
+)
 
 
 class LayoutTemplateTest(unittest.TestCase):
@@ -412,6 +417,9 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
 class AsIsLayoutStrategyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.strategy = AsIsLayoutStrategy()
+        self.expected_local_href = (
+            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+        )
 
     def test_catalog(self) -> None:
         cat = pystac.Catalog(id="test", description="test desc")
@@ -421,7 +429,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             cat, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_collection(self) -> None:
         collection = TestCases.case_8()
@@ -434,7 +442,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             collection, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_item(self) -> None:
         collection = TestCases.case_8()
@@ -444,7 +452,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
             self.strategy.get_href(item, parent_dir="http://example.com")
         item.set_self_href("/an/href")
         href = self.strategy.get_href(item, parent_dir="http://example.com")
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
 
 class APILayoutStrategyTest(unittest.TestCase):

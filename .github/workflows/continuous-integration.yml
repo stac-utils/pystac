@@ -32,10 +32,6 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-        exclude:
-          # https://github.com/stac-utils/pystac/issues/1470
-          - os: windows-latest
-            python-version: "3.13"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
