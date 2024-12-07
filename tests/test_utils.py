@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import time
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -22,7 +21,7 @@ from pystac.utils import (
     safe_urlparse,
     str_to_datetime,
 )
-from tests.utils import TestCases
+from tests.utils import TestCases, path_includes_drive_letter
 
 
 class UtilsTest(unittest.TestCase):
@@ -230,16 +229,10 @@ class UtilsTest(unittest.TestCase):
     def test_is_absolute_href_os_aware(self) -> None:
         # Test cases of (href, expected)
 
-        # These tests ensure that is_absolute_href can respond correctly to the os
-        # in a forwards and backwards compatible way.
-        # Windows requires a drive name when python > 3.13 (https://docs.python.org/3/library/os.path.html#os.path.isabs)
-        is_py_3_13: bool = sys.version_info.major == 3 and sys.version_info.minor >= 13
-
         is_windows = os.name == "nt"
-
         test_cases = [
-            ("/item.json", not (is_windows and is_py_3_13)),
-            ("/home/someuser/Downloads/item.json", not (is_windows and is_py_3_13)),
+            ("/item.json", not path_includes_drive_letter()),
+            ("/home/someuser/Downloads/item.json", not path_includes_drive_letter()),
             ("d:/item.json", is_windows),
             ("c:/files/more_files/item.json", is_windows),
         ]

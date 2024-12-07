@@ -1,6 +1,4 @@
-import os
 import posixpath
-import sys
 import unittest
 from collections.abc import Callable
 from datetime import datetime, timedelta
@@ -17,7 +15,12 @@ from pystac.layout import (
     LayoutTemplate,
     TemplateLayoutStrategy,
 )
-from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
+from tests.utils import (
+    ARBITRARY_BBOX,
+    ARBITRARY_GEOM,
+    TestCases,
+    path_includes_drive_letter,
+)
 
 
 class LayoutTemplateTest(unittest.TestCase):
@@ -300,7 +303,7 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
         )
         cat = pystac.Catalog(id="test", description="test desc")
         href = strategy.get_href(cat, parent_dir="http://example.com")
-        expected = fallback.get_href(cat, parent_dir="http://example.com")
+        expected = fallback.get_href(cat, parent_dir="htt4p://example.com")
         self.assertEqual(href, expected)
 
     def test_produces_layout_for_collection(self) -> None:
@@ -414,14 +417,8 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
 class AsIsLayoutStrategyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.strategy = AsIsLayoutStrategy()
-
-        path_includes_drive: bool = (
-            sys.version_info.major == 3
-            and sys.version_info.minor >= 13
-            and os.name == "nt"
-        )
         self.expected_local_href = (
-            "/an/href" if not path_includes_drive else "D:/an/href"
+            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
         )
 
     def test_catalog(self) -> None:
