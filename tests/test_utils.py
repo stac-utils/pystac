@@ -230,9 +230,10 @@ class UtilsTest(unittest.TestCase):
         # Test cases of (href, expected)
 
         is_windows = os.name == "nt"
+        incl_drive_letter = path_includes_drive_letter()
         test_cases = [
-            ("/item.json", not path_includes_drive_letter()),
-            ("/home/someuser/Downloads/item.json", not path_includes_drive_letter()),
+            ("/item.json", not incl_drive_letter),
+            ("/home/someuser/Downloads/item.json", not incl_drive_letter),
             ("d:/item.json", is_windows),
             ("c:/files/more_files/item.json", is_windows),
         ]
