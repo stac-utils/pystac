@@ -4,6 +4,7 @@ __all__ = [
     "ARBITRARY_BBOX",
     "ARBITRARY_EXTENT",
     "MockStacIO",
+    "path_includes_drive_letter",
 ]
 from copy import deepcopy
 from datetime import datetime
@@ -12,6 +13,7 @@ from typing import Any
 from dateutil.parser import parse
 
 import pystac
+from tests.utils.os_utils import path_includes_drive_letter
 from tests.utils.stac_io_mock import MockStacIO
 from tests.utils.test_cases import (
     ARBITRARY_BBOX,
