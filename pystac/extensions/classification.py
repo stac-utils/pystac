@@ -525,8 +525,10 @@ class ClassificationExtension(
             or bitfields is None
             and classes is not None
         ), "Must set exactly one of `classes` or `bitfields`"
-        self.classes = classes
-        self.bitfields = bitfields
+        if classes:
+            self.classes = classes
+        if bitfields:
+            self.bitfields = bitfields
 
     @property
     def classes(self) -> list[Classification] | None:
