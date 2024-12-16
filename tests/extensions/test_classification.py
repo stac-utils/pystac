@@ -162,6 +162,23 @@ def test_apply_bitfields(plain_item: Item) -> None:
     )
 
 
+@pytest.mark.vcr()
+def test_apply_classes(plain_item: Item) -> None:
+    ClassificationExtension.add_to(plain_item)
+    ClassificationExtension.ext(plain_item).apply(
+        classes=[
+            Classification.create(name="no", value=0),
+            Classification.create(name="yes", value=1),
+        ]
+    )
+    plain_item.validate()
+    assert (
+        ClassificationExtension.ext(plain_item).classes is not None
+        and len(cast(list[Classification], ClassificationExtension.ext(plain_item).classes))
+        == 2
+    )
+
+
 def test_create_classes(plain_item: Item) -> None:
     ClassificationExtension.add_to(plain_item)
     ext = ClassificationExtension.ext(plain_item)
