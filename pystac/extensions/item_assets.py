@@ -7,9 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.item_assets import (
-    ItemAssetDefinition as AssetDefinition,
-)
+from pystac.item_assets import ItemAssetDefinition
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required
 
@@ -21,6 +19,12 @@ SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 ITEM_ASSETS_PROP = "item_assets"
 
 
+class AssetDefinition(ItemAssetDefinition):
+    def __init__(cls, *args: Any, **kwargs: Any) -> None:
+        # TODO: deprecation warning in here.
+        super().__init__(*args, **kwargs)
+
+
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
     name: Literal["item_assets"] = "item_assets"
     collection: pystac.Collection
@@ -29,16 +33,16 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         self.collection = collection
 
     @property
-    def item_assets(self) -> dict[str, AssetDefinition]:
+    def item_assets(self) -> dict[str, ItemAssetDefinition]:
         """Gets or sets a dictionary of assets that can be found in member Items. Maps
         the asset key to an :class:`AssetDefinition` instance."""
         result: dict[str, Any] = get_required(
             self.collection.extra_fields.get(ITEM_ASSETS_PROP), self, ITEM_ASSETS_PROP
         )
-        return {k: AssetDefinition(v, self.collection) for k, v in result.items()}
+        return {k: ItemAssetDefinition(v, self.collection) for k, v in result.items()}
 
     @item_assets.setter
-    def item_assets(self, v: dict[str, AssetDefinition]) -> None:
+    def item_assets(self, v: dict[str, ItemAssetDefinition]) -> None:
         self.collection.extra_fields[ITEM_ASSETS_PROP] = {
             k: asset_def.properties for k, asset_def in v.items()
         }
