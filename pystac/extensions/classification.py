@@ -16,7 +16,6 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -27,7 +26,7 @@ from pystac.extensions.raster import RasterBand
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition, RasterBand)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, RasterBand)
 
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
@@ -492,7 +491,7 @@ class ClassificationExtension(
     """An abstract class that can be used to extend the properties of
     :class:`~pystac.Item`, :class:`~pystac.Asset`,
     :class:`~pystac.extension.raster.RasterBand`, or
-    :class:`~pystac.extension.item_assets.AssetDefinition` with properties from the
+    :class:`~pystac.ItemAssetDefinition` with properties from the
     :stac-ext:`Classification Extension <classification>`.  This class is generic
     over the type of STAC object being extended.
 
@@ -600,7 +599,7 @@ class ClassificationExtension(
 
         This extension can be applied to instances of :class:`~pystac.Item`,
         :class:`~pystac.Asset`,
-        :class:`~pystac.extensions.item_assets.AssetDefinition`, or
+        :class:`~pystac.ItemAssetDefinition`, or
         :class:`~pystac.extension.raster.RasterBand`.
 
         Raises:
@@ -612,7 +611,7 @@ class ClassificationExtension(
         elif isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], AssetClassificationExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(
                 ClassificationExtension[T], ItemAssetsClassificationExtension(obj)
@@ -663,17 +662,19 @@ class AssetClassificationExtension(ClassificationExtension[pystac.Asset]):
 
 
 class ItemAssetsClassificationExtension(
-    ClassificationExtension[item_assets.AssetDefinition]
+    ClassificationExtension[pystac.ItemAssetDefinition]
 ):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
     def __repr__(self) -> str:
-        return f"<ItemAssetsClassificationExtension AssetDefinition={self.asset_defn}"
+        return (
+            f"<ItemAssetsClassificationExtension ItemAssetDefinition={self.asset_defn}"
+        )
 
 
 class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):
