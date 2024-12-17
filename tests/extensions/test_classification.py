@@ -174,7 +174,9 @@ def test_apply_classes(plain_item: Item) -> None:
     plain_item.validate()
     assert (
         ClassificationExtension.ext(plain_item).classes is not None
-        and len(cast(list[Classification], ClassificationExtension.ext(plain_item).classes))
+        and len(
+            cast(list[Classification], ClassificationExtension.ext(plain_item).classes)
+        )
         == 2
     )
 
