@@ -5,7 +5,6 @@ import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import (
-    TYPE_CHECKING,
     Any,
     Generic,
     TypeVar,
@@ -13,9 +12,6 @@ from typing import (
 )
 
 import pystac
-
-if TYPE_CHECKING:
-    from pystac.extensions.item_assets import AssetDefinition
 
 VERSION_REGEX = re.compile("/v[0-9].[0-9].*/")
 
@@ -158,7 +154,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def validate_owner_has_extension(
         cls,
-        asset: pystac.Asset | AssetDefinition,
+        asset: pystac.Asset | pystac.ItemAssetDefinition,
         add_if_missing: bool = False,
     ) -> None:
         """
@@ -190,7 +186,7 @@ class ExtensionManagementMixin(Generic[S], ABC):
     @classmethod
     def ensure_owner_has_extension(
         cls,
-        asset_or_link: pystac.Asset | AssetDefinition | pystac.Link,
+        asset_or_link: pystac.Asset | pystac.ItemAssetDefinition | pystac.Link,
         add_if_missing: bool = False,
     ) -> None:
         """Given an :class:`~pystac.Asset`, checks if the asset's owner has this

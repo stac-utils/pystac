@@ -14,7 +14,6 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -23,7 +22,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
-T = TypeVar("T", pystac.Asset, item_assets.AssetDefinition)
+T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
 SCHEMA_URIS = [
@@ -663,7 +662,7 @@ class RasterExtension(
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item`, :class:`~pystac.Asset`, or
-    :class:`~pystac.extension.item_assets.AssetDefinition` with properties from
+    :class:`~pystac.extension.pystac.ItemAssetDefinition` with properties from
     the :stac-ext:`Raster Extension <raster>`. This class is generic over
     the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Asset`).
@@ -736,7 +735,7 @@ class RasterExtension(
         if isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], AssetRasterExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], ItemAssetsRasterExtension(obj))
         else:
@@ -771,16 +770,16 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
         return f"<AssetRasterExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetsRasterExtension(RasterExtension[item_assets.AssetDefinition]):
-    asset_definition: item_assets.AssetDefinition
-    """A reference to the :class:`~pystac.extensions.item_assets.AssetDefinition`
+class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
+    asset_definition: pystac.ItemAssetDefinition
+    """A reference to the :class:`~pystac.extensions.pystac.ItemAssetDefinition`
     being extended."""
 
     properties: dict[str, Any]
-    """The :class:`~pystac.extensions.item_assets.AssetDefinition` fields, including
+    """The :class:`~pystac.extensions.pystac.ItemAssetDefinition` fields, including
     extension properties."""
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.properties = item_asset.properties
         self.asset_definition = item_asset
 
