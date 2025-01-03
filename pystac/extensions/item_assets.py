@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, Literal
 
 import pystac
+from pystac.errors import DeprecatedWarning
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.item_assets import ItemAssetDefinition
@@ -30,6 +32,13 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
     collection: pystac.Collection
 
     def __init__(self, collection: pystac.Collection) -> None:
+        warnings.warn(
+            (
+                "The ``item_assets`` extension is deprecated. "
+                "``item_assets`` are now top-level collection properties."
+            ),
+            DeprecatedWarning,
+        )
         self.collection = collection
 
     @property
