@@ -1,4 +1,8 @@
-"""Implements the ``Item Asset Definition <item-assets>``."""
+"""
+Implements the `Item Asset Definition Object
+<https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item-asset-definition-object>`__
+for use as values in the :attr:`~pystac.Collection.item_assets` dict.
+"""
 
 from __future__ import annotations
 
@@ -18,10 +22,9 @@ ASSET_ROLES_PROP = "roles"
 
 
 class ItemAssetDefinition:
-    """Object that contains details about the datafiles that will be included in member
-    Items for this Collection.
-
-    See the `Item Asset Definition Object <item-assets#asset-object>` for details.
+    """Implementation of the `Item Asset Definition Object
+    <https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item-asset-definition-object>`__
+    for use as values in the :attr:`~pystac.Collection.item_assets` dict.
     """
 
     properties: dict[str, Any]
@@ -58,10 +61,10 @@ class ItemAssetDefinition:
                 `CommonMark 0.29 <http://commonmark.org/>`__ syntax MAY be used
                 for rich text representation.
             media_type : `media type\
-                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/catalog-spec/catalog-spec.md#media-types>`__
+                <https://github.com/radiantearth/stac-spec/tree/v1.1.0/catalog-spec/catalog-spec.md#media-types>`__
                  of the asset.
             roles : `semantic roles
-                <https://github.com/radiantearth/stac-spec/tree/v1.0.0/item-spec/item-spec.md#asset-role-types>`__
+                <https://github.com/radiantearth/stac-spec/tree/v1.1.0/item-spec/item-spec.md#asset-role-types>`__
                 of the asset, similar to the use of rel in links.
             extra_fields : Additional fields on the asset definition, e.g. from
                 extensions.

@@ -45,6 +45,28 @@ class TestItemAssets(unittest.TestCase):
             ),
         )
 
+    def test_set_using_dict(self) -> None:
+        collection = self.collection.clone()
+
+        assert collection.item_assets
+        self.assertEqual(len(collection.item_assets), 13)
+
+        collection.item_assets["Bx"] = {
+            "type": "image/tiff; application=geotiff",
+            "eo:bands": [
+                {
+                    "name": "B1",
+                    "common_name": "coastal",
+                    "center_wavelength": 0.44,
+                    "full_width_half_max": 0.02,
+                }
+            ],
+            "title": "Coastal Band (B1)",
+            "description": "Coastal Band Top Of the Atmosphere",
+        }  # type:ignore
+
+        self.assertEqual(collection.item_assets["B1"], collection.item_assets["Bx"])
+
 
 class TestAssetDefinition(unittest.TestCase):
     def setUp(self) -> None:
@@ -130,14 +152,14 @@ def test_item_assets_extension_is_deprecated() -> None:
 
     assert ItemAssetsExtension.get_schema_uri() not in collection.stac_extensions
 
-    with pytest.warns(DeprecatedWarning, match="top-level collection properties"):
+    with pytest.warns(DeprecatedWarning, match="top-level property of"):
         item_asset = ItemAssetsExtension.ext(
             collection, add_if_missing=True
         ).item_assets["cloud-mask-raster"]
 
     assert item_asset.ext.has("eo")
 
-    with pytest.warns(DeprecatedWarning, match="top-level collection properties"):
+    with pytest.warns(DeprecatedWarning, match="top-level property of"):
         assert collection.ext.item_assets["cloud-mask-raster"].ext.has("eo")
 
     assert ItemAssetsExtension.get_schema_uri() in collection.stac_extensions

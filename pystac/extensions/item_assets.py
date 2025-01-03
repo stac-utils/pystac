@@ -28,6 +28,13 @@ class AssetDefinition(ItemAssetDefinition):
 
 
 class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
+    """
+    DEPRECATED
+
+    .. deprecated:: 1.12.0
+        Use :attr:`~pystac.Collection.item_assets` instead.
+    """
+
     name: Literal["item_assets"] = "item_assets"
     collection: pystac.Collection
 
@@ -35,7 +42,7 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
         warnings.warn(
             (
                 "The ``item_assets`` extension is deprecated. "
-                "``item_assets`` are now top-level collection properties."
+                "``item_assets`` is now a top-level property of ``Collection``."
             ),
             DeprecatedWarning,
         )

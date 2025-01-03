@@ -735,6 +735,41 @@ class Collection(Catalog, Assets):
 
     @property
     def item_assets(self) -> dict[str, ItemAssetDefinition] | None:
+        """Accessor for `item_assets
+        <https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item_assets>`__
+        on this collection.
+
+        Example::
+
+        .. code-block:: python
+
+           >>> print(collection.item_assets)
+           {'thumbnail': <pystac.item_assets.ItemAssetDefinition at 0x72aea0420750>,
+            'metadata': <pystac.item_assets.ItemAssetDefinition at 0x72aea017dc90>,
+            'B5': <pystac.item_assets.ItemAssetDefinition at 0x72aea017efd0>,
+            'B6': <pystac.item_assets.ItemAssetDefinition at 0x72aea016d5d0>,
+            'B7': <pystac.item_assets.ItemAssetDefinition at 0x72aea016e050>,
+            'B8': <pystac.item_assets.ItemAssetDefinition at 0x72aea016da90>}
+           >>> collection.item_assets["thumbnail"].title
+           'Thumbnail'
+
+        Set attributes on :class:`~pystac.ItemAssetDefinition` objects
+
+        .. code-block:: python
+
+           >>> collection.item_assets["thumbnail"].title = "New Title"
+
+        Add to the ``item_assets`` dict:
+
+        .. code-block:: python
+
+            >>> collection.item_assets["B4"] = {
+                'type': 'image/tiff; application=geotiff; profile=cloud-optimized',
+                'eo:bands': [{'name': 'B4', 'common_name': 'red'}]
+            }
+            >>> collection.item_assets["B4"].owner == collection
+            True
+        """
         if self._item_assets is None and "item_assets" in self.extra_fields:
             self._item_assets = _ItemAssets(self)
         return self._item_assets
