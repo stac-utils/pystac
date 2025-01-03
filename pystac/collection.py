@@ -734,7 +734,7 @@ class Collection(Catalog, Assets):
             raise e
 
     @property
-    def item_assets(self) -> dict[str, ItemAssetDefinition] | None:
+    def item_assets(self) -> dict[str, ItemAssetDefinition]:
         """Accessor for `item_assets
         <https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item_assets>`__
         on this collection.
@@ -763,14 +763,14 @@ class Collection(Catalog, Assets):
 
         .. code-block:: python
 
-            >>> collection.item_assets["B4"] = {
-                'type': 'image/tiff; application=geotiff; profile=cloud-optimized',
-                'eo:bands': [{'name': 'B4', 'common_name': 'red'}]
-            }
-            >>> collection.item_assets["B4"].owner == collection
-            True
+           >>> collection.item_assets["B4"] = {
+               'type': 'image/tiff; application=geotiff; profile=cloud-optimized',
+               'eo:bands': [{'name': 'B4', 'common_name': 'red'}]
+           }
+           >>> collection.item_assets["B4"].owner == collection
+           True
         """
-        if self._item_assets is None and "item_assets" in self.extra_fields:
+        if self._item_assets is None:
             self._item_assets = _ItemAssets(self)
         return self._item_assets
 

@@ -22,8 +22,21 @@ ITEM_ASSETS_PROP = "item_assets"
 
 
 class AssetDefinition(ItemAssetDefinition):
+    """
+    DEPRECATED
+
+    .. deprecated:: 1.12.0
+        Use :class:`~pystac.ItemAssetDefinition` instead.
+    """
+
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
-        # TODO: deprecation warning in here.
+        warnings.warn(
+            (
+                "``AssetDefinition`` is deprecated. "
+                "Please use ``pystac.ItemAssetDefinition`` instead."
+            ),
+            DeprecationWarning,
+        )
         super().__init__(*args, **kwargs)
 
 
