@@ -127,6 +127,9 @@ def test_extra_fields(collection: Collection) -> None:
 
 def test_item_assets_extension_is_deprecated() -> None:
     collection = Collection.from_file(CLASSIFICATION_COLLECTION_RASTER_URI)
+
+    assert ItemAssetsExtension.get_schema_uri() not in collection.stac_extensions
+
     with pytest.warns(DeprecatedWarning, match="top-level collection properties"):
         item_asset = ItemAssetsExtension.ext(
             collection, add_if_missing=True

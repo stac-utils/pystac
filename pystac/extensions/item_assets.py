@@ -98,5 +98,11 @@ class ItemAssetsExtensionHooks(ExtensionHooks):
 
         super().migrate(obj, version, info)
 
+        # As of STAC spec version 1.1.0 item-assets are part of core
+        if obj["stac_version"] >= "1.1.0" and self.schema_uri in obj.get(
+            "stac_extensions", []
+        ):
+            obj["stac_extensions"].remove(self.schema_uri)
+
 
 ITEM_ASSETS_EXTENSION_HOOKS: ExtensionHooks = ItemAssetsExtensionHooks()
