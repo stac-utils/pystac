@@ -15,6 +15,7 @@ pystac
       Summaries
       Item
       Asset
+      ItemAssetDefinition
       CommonMetadata
       ItemCollection
       Link
@@ -115,6 +116,14 @@ Asset
 .. autoclass:: pystac.Asset
    :members:
    :undoc-members:
+
+ItemAssetDefinition
+-------------------
+
+.. autoclass:: pystac.ItemAssetDefinition
+   :members:
+   :undoc-members:
+
 
 CommonMetadata
 --------------

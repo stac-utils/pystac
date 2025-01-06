@@ -33,6 +33,7 @@ __all__ = [
     "RangeSummary",
     "Item",
     "Asset",
+    "ItemAssetDefinition",
     "ItemCollection",
     "Provider",
     "ProviderRole",
@@ -81,6 +82,7 @@ from pystac.common_metadata import CommonMetadata
 from pystac.summaries import RangeSummary, Summaries
 from pystac.asset import Asset
 from pystac.item import Item
+from pystac.item_assets import ItemAssetDefinition
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
 from pystac.utils import HREF

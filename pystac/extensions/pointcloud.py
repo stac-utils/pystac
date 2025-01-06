@@ -13,7 +13,6 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -23,7 +22,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json"
 PREFIX: str = "pc:"
@@ -468,7 +467,7 @@ class PointcloudExtension(
                 )
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], AssetPointcloudExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(PointcloudExtension[T], ItemAssetsPointcloudExtension(obj))
         else:
@@ -534,11 +533,11 @@ class AssetPointcloudExtension(PointcloudExtension[pystac.Asset]):
         return f"<AssetPointcloudExtension Asset {self.repr_id}>"
 
 
-class ItemAssetsPointcloudExtension(PointcloudExtension[item_assets.AssetDefinition]):
+class ItemAssetsPointcloudExtension(PointcloudExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
