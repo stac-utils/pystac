@@ -18,7 +18,6 @@ from pystac.extensions.classification import (
     Classification,
     ClassificationExtension,
 )
-from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.raster import RasterBand, RasterExtension
 from tests.utils import TestCases
 
@@ -51,7 +50,7 @@ def plain_item() -> Item:
 
 
 @pytest.fixture
-def collection() -> Collection:
+def classification_collection() -> Collection:
     return Collection.from_file(CLASSIFICATION_COLLECTION_RASTER_URI)
 
 
@@ -108,12 +107,12 @@ def test_ext_raises_if_item_does_not_conform(plain_item: Item) -> None:
         ClassificationExtension.ext(plain_item)
 
 
-def test_ext_raises_on_collection(collection: pystac.Collection) -> None:
+def test_ext_raises_on_collection(classification_collection: Collection) -> None:
     with pytest.raises(
         pystac.errors.ExtensionTypeError,
         match="ClassificationExtension does not apply to type 'Collection'",
     ) as e:
-        ClassificationExtension.ext(collection)  # type:ignore
+        ClassificationExtension.ext(classification_collection)  # type:ignore
     assert "Hint" in str(e.value)
 
 
@@ -311,24 +310,27 @@ def test_add_asset_classes(plain_item: Item) -> None:
     assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
-def test_item_asset_raster_classes(collection: Collection) -> None:
-    item_asset = ItemAssetsExtension.ext(collection, add_if_missing=True).item_assets[
-        "cloud-mask-raster"
-    ]
+def test_item_asset_raster_classes(classification_collection: Collection) -> None:
+    assert classification_collection.item_assets
+    item_asset = classification_collection.item_assets["cloud-mask-raster"]
     raster_bands = cast(list[RasterBand], RasterExtension.ext(item_asset).bands)
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None
 
 
-def test_item_assets_extension(collection: Collection) -> None:
-    item_asset = ItemAssetsExtension.ext(collection, add_if_missing=True).item_assets[
-        "cloud-mask-raster"
-    ]
+def test_item_assets_extension(classification_collection: Collection) -> None:
+    assert classification_collection.item_assets
+    item_asset = classification_collection.item_assets["cloud-mask-raster"]
     ext = ClassificationExtension.ext(item_asset)
     ext.__repr__()
-    assert ClassificationExtension.get_schema_uri() in collection.stac_extensions
-    assert collection.ext.item_assets["cloud-mask-raster"].ext.has("classification")
+    assert (
+        ClassificationExtension.get_schema_uri()
+        in classification_collection.stac_extensions
+    )
+    assert classification_collection.item_assets["cloud-mask-raster"].ext.has(
+        "classification"
+    )
 
 
 def test_older_extension_version(landsat_item: Item) -> None:

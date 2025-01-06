@@ -5,7 +5,6 @@ import pytest
 
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.raster import (
     DataType,
     Histogram,
@@ -282,11 +281,13 @@ class RasterTest(unittest.TestCase):
     def test_collection_item_asset(self) -> None:
         coll = pystac.Collection.from_file(self.LANDSAT_COLLECTION_EXAMPLE_URI)
 
-        qa = ItemAssetsExtension.ext(coll).item_assets["qa"]
-        ang = ItemAssetsExtension.ext(coll).item_assets["ang"]
+        assert coll.item_assets
 
-        assert RasterExtension.ext(qa).bands is not None
-        assert RasterExtension.ext(ang).bands is None
+        qa = coll.item_assets["qa"]
+        ang = coll.item_assets["ang"]
+
+        assert qa.ext.raster.bands is not None
+        assert ang.ext.raster.bands is None
 
 
 @pytest.fixture
