@@ -75,8 +75,11 @@ class TestMigrate:
             )
         )
 
-        assert ItemAssetsExtension.has_extension(collection)
+        assert ItemAssetsExtension.get_schema_uri() not in collection.stac_extensions
+        assert not ItemAssetsExtension.has_extension(collection)
         assert "item_assets" in collection.extra_fields
+        assert collection.item_assets
+        assert collection.item_assets["thumbnail"].title == "Thumbnail"
 
     def test_migrates_pre_1_0_0_rc1_stats_summary(self) -> None:
         collection = pystac.Collection.from_file(
