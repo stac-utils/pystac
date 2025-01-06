@@ -246,7 +246,7 @@ def make_relative_href(
     ):
         return source_href
 
-    if parsed_start.scheme == "":
+    if parsed_start.scheme in ["", "file"]:
         return _make_relative_href_path(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_relative_href_url(parsed_source, parsed_start, start_is_dir)
@@ -311,6 +311,9 @@ def _make_absolute_href_path(
             make_posix_style(os.path.abspath(start_dir)), start_dir
         )
 
+    if parsed_source.scheme or parsed_start.scheme:
+        abs_path = f"file://{abs_path}"
+
     return abs_path
 
 
@@ -346,7 +349,10 @@ def make_absolute_href(
     parsed_start = safe_urlparse(start_href)
     parsed_source = safe_urlparse(source_href)
 
-    if parsed_source.scheme != "" or parsed_start.scheme != "":
+    if parsed_source.scheme not in ["", "file"] or parsed_start.scheme not in [
+        "",
+        "file",
+    ]:
         return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
@@ -364,7 +370,7 @@ def is_absolute_href(href: str) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" or os.path.isabs(parsed.path)
+    return parsed.scheme not in ["", "file"] or os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:

@@ -33,6 +33,11 @@ class UtilsTest(unittest.TestCase):
             ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
             ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
             ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
+            (
+                "file:///a/b/c/d/catalog.json",
+                "file:///a/b/c/catalog.json",
+                "./d/catalog.json",
+            ),
         ]
 
         for source_href, start_href, expected in test_cases:
@@ -161,6 +166,13 @@ class UtilsTest(unittest.TestCase):
                 "https://stacspec.org/a/b/item.json",
             ),
             ("http://localhost:8000", None, "http://localhost:8000"),
+            ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
+            (
+                "./z/item.json",
+                "file:///a/b/c/catalog.json",
+                "file:///a/b/c/z/item.json",
+            ),
+            ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
         ]
 
         for source_href, start_href, expected in test_cases:
@@ -219,6 +231,8 @@ class UtilsTest(unittest.TestCase):
             ("item.json", False),
             ("./item.json", False),
             ("../item.json", False),
+            ("/home/someuser/item.json", True),
+            ("file:///home/someuser/item.json", True),
             ("http://stacspec.org/item.json", True),
         ]
 
