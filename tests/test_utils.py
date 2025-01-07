@@ -178,8 +178,8 @@ class UtilsTest(unittest.TestCase):
         for source_href, start_href, expected in test_cases:
             actual = make_absolute_href(source_href, start_href)
             if expected.startswith("file://"):
-                _, actual = os.path.splitdrive(actual.replace("file:///", ""))
-                actual = f"file:///{actual}"
+                _, actual = os.path.splitdrive(actual.replace("file://", ""))
+                actual = f"file://{actual}"
             else:
                 _, actual = os.path.splitdrive(actual)
             self.assertEqual(actual, expected)

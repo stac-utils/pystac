@@ -213,7 +213,10 @@ def _make_relative_href_path(
     # posixpath doesn't play well with windows drive letters, so we have to use
     # the os-specific path library for the relpath function. This means we can
     # only handle windows paths on windows machines.
+    print("start_dir: ", start_dir)
+    print("source_path:", source_path)
     relpath = make_posix_style(os.path.relpath(source_path, start_dir))
+    print("relpath:", relpath)
 
     # Ensure we retain a trailing slash from the original source path
     if parsed_source.path.endswith("/"):
