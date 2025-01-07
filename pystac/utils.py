@@ -71,6 +71,15 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
+    if parsed.scheme == "file" and parsed.netloc:
+        return URLParseResult(
+            scheme=parsed.scheme,
+            netloc="",
+            path=f"{parsed.netloc}{parsed.path}",
+            params=parsed.params,
+            query=parsed.query,
+            fragment=parsed.fragment,
+        )
     else:
         return parsed
 
