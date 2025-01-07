@@ -51,6 +51,7 @@ def safe_urlparse(href: str) -> URLParseResult:
         urllib.parse.ParseResult : The named tuple representing the parsed HREF.
     """
     parsed = urlparse(href)
+    print(parsed.scheme, parsed.netloc, parsed.path)
     if parsed.scheme != "" and (
         href.lower().startswith(f"{parsed.scheme}:\\")
         or (
