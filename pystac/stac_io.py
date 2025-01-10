@@ -304,8 +304,6 @@ class DefaultStacIO(StacIO):
                 raise Exception(f"Could not read uri {href}") from e
         else:
             href = safe_urlparse(href).path
-            if href.startswith("/D:/"):
-                href = href[1:]
             with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
         return href_contents

@@ -60,7 +60,7 @@ def safe_urlparse(href: str) -> URLParseResult:
             and not href.lower().startswith(f"{parsed.scheme}://")
         )
     ):
-        return URLParseResult(
+        output = URLParseResult(
             scheme="",
             netloc="",
             path="{}:{}".format(
@@ -73,8 +73,10 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
+        print("non-file scheme gives:", output.path)
+        return output
     if parsed.scheme == "file" and parsed.netloc:
-        return URLParseResult(
+        output = URLParseResult(
             scheme=parsed.scheme,
             netloc="",
             path=f"{parsed.netloc}{parsed.path}",
@@ -82,6 +84,8 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
+        print("file scheme gives:", output.path)
+        return output
     else:
         return parsed
 
@@ -215,10 +219,7 @@ def _make_relative_href_path(
     # posixpath doesn't play well with windows drive letters, so we have to use
     # the os-specific path library for the relpath function. This means we can
     # only handle windows paths on windows machines.
-    print("start_dir: ", start_dir)
-    print("source_path:", source_path)
     relpath = make_posix_style(os.path.relpath(source_path, start_dir))
-    print("relpath:", relpath)
 
     # Ensure we retain a trailing slash from the original source path
     if parsed_source.path.endswith("/"):
