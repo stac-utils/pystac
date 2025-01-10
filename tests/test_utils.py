@@ -250,7 +250,7 @@ class UtilsTest(unittest.TestCase):
         test_cases = [
             ("/item.json", not incl_drive_letter),
             ("/home/someuser/Downloads/item.json", not incl_drive_letter),
-            ("file:///home/someuser/Downloads/item.json", True),
+            ("file:///home/someuser/Downloads/item.json", not incl_drive_letter),
             ("d:/item.json", is_windows),
             ("c:/files/more_files/item.json", is_windows),
         ]
