@@ -33,6 +33,11 @@ class UtilsTest(unittest.TestCase):
             ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
             ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
             ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
+            (
+                "file:///a/b/c/d/catalog.json",
+                "file:///a/b/c/catalog.json",
+                "./d/catalog.json",
+            ),
         ]
 
         for source_href, start_href, expected in test_cases:
@@ -161,11 +166,22 @@ class UtilsTest(unittest.TestCase):
                 "https://stacspec.org/a/b/item.json",
             ),
             ("http://localhost:8000", None, "http://localhost:8000"),
+            ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
+            (
+                "./z/item.json",
+                "file:///a/b/c/catalog.json",
+                "file:///a/b/c/z/item.json",
+            ),
+            ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
         ]
 
         for source_href, start_href, expected in test_cases:
             actual = make_absolute_href(source_href, start_href)
-            _, actual = os.path.splitdrive(actual)
+            if expected.startswith("file://"):
+                _, actual = os.path.splitdrive(actual.replace("file://", ""))
+                actual = f"file://{actual}"
+            else:
+                _, actual = os.path.splitdrive(actual)
             self.assertEqual(actual, expected)
 
     def test_make_absolute_href_on_vsitar(self) -> None:
@@ -234,6 +250,7 @@ class UtilsTest(unittest.TestCase):
         test_cases = [
             ("/item.json", not incl_drive_letter),
             ("/home/someuser/Downloads/item.json", not incl_drive_letter),
+            ("file:///home/someuser/Downloads/item.json", not incl_drive_letter),
             ("d:/item.json", is_windows),
             ("c:/files/more_files/item.json", is_windows),
         ]
