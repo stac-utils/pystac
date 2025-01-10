@@ -77,8 +77,10 @@ def safe_urlparse(href: str) -> URLParseResult:
     if parsed.scheme == "file" and os.name == "nt":
         if parsed.netloc:
             path = f"{parsed.netloc}{parsed.path}"
-        elif parsed.path.startswith("/"):
+        elif parsed.path.startswith("/") and ":" in parsed.path:
             path = parsed.path[1:]
+        else:
+            path = parsed.path
 
         return URLParseResult(
             scheme=parsed.scheme,
