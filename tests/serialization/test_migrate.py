@@ -112,3 +112,19 @@ def test_migrate_works_even_if_stac_extensions_is_null(
     collection_dict["stac_extensions"] = None
 
     pystac.Collection.from_dict(collection_dict, migrate=True)
+
+
+def test_migrate_updates_license_from_various() -> None:
+    path = TestCases.get_path("data-files/examples/1.0.0/collectionless-item.json")
+
+    item = pystac.Item.from_file(path)
+    assert item.properties["license"] == "other"
+
+
+def test_migrate_updates_license_from_proprietary() -> None:
+    path = TestCases.get_path(
+        "data-files/examples/1.0.0/collection-only/collection.json"
+    )
+
+    collection = pystac.Collection.from_file(path)
+    assert collection.license == "other"
