@@ -24,6 +24,15 @@ class StacIOTest(unittest.TestCase):
             pystac.write_file(collection, dest_href=dest_href)
             self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
 
+    def test_read_write_collection_with_file_protocol(self) -> None:
+        collection = pystac.read_file(
+            "file://" + TestCases.get_path("data-files/collections/multi-extent.json")
+        )
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            dest_href = os.path.join(tmp_dir, "collection.json")
+            pystac.write_file(collection, dest_href="file://" + dest_href)
+            self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
+
     def test_read_item(self) -> None:
         item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
         with tempfile.TemporaryDirectory() as tmp_dir:
