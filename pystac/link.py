@@ -191,6 +191,7 @@ class Link(PathLike):
                     owner_href = self.owner.get_self_href()
                     if owner_href is not None:
                         href = make_relative_href(href, owner_href)
+
         return href
 
     @property

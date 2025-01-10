@@ -71,12 +71,13 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
-    if parsed.scheme == "file":
-        # Windows drives sometimes get parsed as the netloc and sometimes
-        # as part of the parsed.path.
+
+    # Windows drives sometimes get parsed as the netloc and sometimes
+    # as part of the parsed.path.
+    if parsed.scheme == "file" and os.name == "nt":
         if parsed.netloc:
             path = f"{parsed.netloc}{parsed.path}"
-        elif parsed.path.startswith("/") and os.name == "nt":
+        elif parsed.path.startswith("/"):
             path = parsed.path[1:]
 
         return URLParseResult(
