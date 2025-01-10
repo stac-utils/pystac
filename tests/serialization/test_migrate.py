@@ -67,7 +67,7 @@ class TestMigrate:
         assert view_ext.sun_elevation, 58.8
         assert view_ext.off_nadir, 1
 
-    def test_migrates_renamed_extension(self) -> None:
+    def test_migrates_removes_extension(self) -> None:
         collection = pystac.Collection.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/extensions/asset/"
@@ -78,7 +78,8 @@ class TestMigrate:
         assert ItemAssetsExtension.get_schema_uri() not in collection.stac_extensions
         assert not ItemAssetsExtension.has_extension(collection)
         assert "item_assets" in collection.extra_fields
-        assert collection.item_assets
+
+        assert collection.stac_extensions == []
         assert collection.item_assets["thumbnail"].title == "Thumbnail"
 
     def test_migrates_pre_1_0_0_rc1_stats_summary(self) -> None:
