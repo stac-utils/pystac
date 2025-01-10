@@ -172,7 +172,6 @@ class Link(PathLike):
             href = self._target_object.get_self_href()
         else:
             href = self._target_href
-        print("starting href:", href)
 
         if (
             transform_href
@@ -192,7 +191,6 @@ class Link(PathLike):
                     owner_href = self.owner.get_self_href()
                     if owner_href is not None:
                         href = make_relative_href(href, owner_href)
-        print("new href:", href)
         return href
 
     @property

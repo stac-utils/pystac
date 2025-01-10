@@ -50,9 +50,7 @@ def safe_urlparse(href: str) -> URLParseResult:
     Returns:
         urllib.parse.ParseResult : The named tuple representing the parsed HREF.
     """
-    print("href:", href)
     parsed = urlparse(href)
-    print(parsed.scheme, parsed.netloc, parsed.path)
     if parsed.scheme != "" and (
         href.lower().startswith(f"{parsed.scheme}:\\")
         or (
@@ -60,7 +58,7 @@ def safe_urlparse(href: str) -> URLParseResult:
             and not href.lower().startswith(f"{parsed.scheme}://")
         )
     ):
-        output = URLParseResult(
+        return URLParseResult(
             scheme="",
             netloc="",
             path="{}:{}".format(
@@ -73,19 +71,22 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
-        print("non-file scheme gives:", output.path)
-        return output
-    if parsed.scheme == "file" and parsed.netloc:
-        output = URLParseResult(
+    if parsed.scheme == "file":
+        # Windows drives sometimes get parsed as the netloc and sometimes
+        # as part of the parsed.path.
+        if parsed.netloc:
+            path = f"{parsed.netloc}{parsed.path}"
+        elif parsed.path.startswith("/") and os.name == "nt":
+            path = parsed.path[1:]
+
+        return URLParseResult(
             scheme=parsed.scheme,
             netloc="",
-            path=f"{parsed.netloc}{parsed.path}",
+            path=path,
             params=parsed.params,
             query=parsed.query,
             fragment=parsed.fragment,
         )
-        print("file scheme gives:", output.path)
-        return output
     else:
         return parsed
 
