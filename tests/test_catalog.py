@@ -1120,7 +1120,7 @@ class TestCatalog:
                     spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
                     temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
                 ),
-                license="proprietary",
+                license="other",
             )
 
             item = pystac.Item(
