@@ -672,9 +672,9 @@ class EOExtensionHooks(ExtensionHooks):
                 ):
                     obj["properties"][proj_epsg] = obj["properties"].pop(eo_epsg)
                 else:
-                    obj["properties"][
-                        proj_code
-                    ] = f"EPSG:{obj['properties'].pop(eo_epsg)}"
+                    obj["properties"][proj_code] = (
+                        f"EPSG:{obj['properties'].pop(eo_epsg)}"
+                    )
                     if not projection.ProjectionExtensionHooks().has_extension(obj):
                         obj["stac_extensions"].append(
                             projection.ProjectionExtension.get_schema_uri()
