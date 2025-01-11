@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -99,11 +99,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:38 GMT
+      - Sun, 06 Oct 2024 17:57:39 GMT
       ETag:
-      - '"65147dc1-14e2"'
+      - '"66e1651c-14e2"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Wed, 11 Sep 2024 09:38:36 GMT
       Server:
       - GitHub.com
       Vary:
@@ -115,15 +115,17 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 617516ebe2ba44aa64c58bd1f1418b47b461e312
+      - 4f2d256701c0fb28a6ed94f17e32c650e2ccd84e
       X-GitHub-Request-Id:
-      - 6A66:7F17:595AA3:7905F0:653143A4
+      - 317F:1D6D8E:38B0767:3F1014B:6702CF93
       X-Served-By:
-      - cache-den8269-DEN
+      - cache-den8272-DEN
       X-Timer:
-      - S1697727398.197528,VS0,VE59
+      - S1728237460.767473,VS0,VE61
       expires:
-      - Thu, 19 Oct 2023 15:06:38 GMT
+      - Sun, 06 Oct 2024 18:07:39 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -137,7 +139,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -189,11 +191,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 19 Oct 2023 14:56:38 GMT
+      - Sun, 06 Oct 2024 17:57:39 GMT
       ETag:
-      - '"65147dc1-84e"'
+      - '"66e1651c-84e"'
       Last-Modified:
-      - Wed, 27 Sep 2023 19:08:49 GMT
+      - Wed, 11 Sep 2024 09:38:36 GMT
       Server:
       - GitHub.com
       Vary:
@@ -205,15 +207,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 8b6e27dc8f3e3c15c3cd00437987f0352f2af351
+      - 0aaee0aab10ac68a3e802e8c709832ace80a29fe
       X-GitHub-Request-Id:
-      - 782A:1E8A:5F20E6:7EAE59:653143A5
+      - EAEE:31444D:3881203:3EE0C9C:6702CF93
       X-Served-By:
-      - cache-den8240-DEN
+      - cache-den8250-DEN
       X-Timer:
-      - S1697727398.320129,VS0,VE11
+      - S1728237460.865505,VS0,VE6
       expires:
-      - Thu, 19 Oct 2023 15:06:38 GMT
+      - Sun, 06 Oct 2024 18:07:39 GMT
       x-proxy-cache:
       - MISS
     status:

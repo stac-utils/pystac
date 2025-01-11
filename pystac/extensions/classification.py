@@ -16,7 +16,6 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -27,13 +26,13 @@ from pystac.extensions.raster import RasterBand
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition, RasterBand)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, RasterBand)
 
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
 )
-DEFAULT_VERSION: str = "1.1.0"
-SUPPORTED_VERSIONS: list[str] = ["1.1.0", "1.0.0"]
+DEFAULT_VERSION: str = "2.0.0"
+SUPPORTED_VERSIONS: list[str] = ["2.0.0", "1.1.0", "1.0.0"]
 
 # Field names
 PREFIX: str = "classification:"
@@ -58,9 +57,12 @@ class Classification:
     def apply(
         self,
         value: int,
-        description: str,
+        description: str | None = None,
         name: str | None = None,
         color_hint: str | None = None,
+        nodata: bool | None = None,
+        percentage: float | None = None,
+        count: int | None = None,
     ) -> None:
         """
         Set the properties for a new Classification.
@@ -68,21 +70,30 @@ class Classification:
         Args:
             value: The integer value corresponding to this class
             description: The description of this class
-            name: The optional human-readable short name for this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters. Required as of v2.0 of
+                this extension.
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
+            nodata: If set to true classifies a value as a no-data value.
+            percentage: The percentage of data values that belong to this class
+                in comparison to all data values, in percent (0-100).
+            count: The number of data values that belong to this class.
         """
         self.value = value
+        # TODO pystac v2.0: make `name` non-optional, move it before
+        # `description` in the arg list, and remove this check
+        if name is None:
+            raise Exception(
+                "As of v2.0.0 of the classification extension, 'name' is required"
+            )
         self.name = name
         self.description = description
         self.color_hint = color_hint
-
-        if color_hint is not None:
-            match = COLOR_HINT_PATTERN.match(color_hint)
-            assert (
-                color_hint is None or match is not None and match.group() == color_hint
-            ), "Must format color hints as '^([0-9A-F]{6})$'"
+        self.nodata = nodata
+        self.percentage = percentage
+        self.count = count
 
         if color_hint is not None:
             match = COLOR_HINT_PATTERN.match(color_hint)
@@ -94,20 +105,29 @@ class Classification:
     def create(
         cls,
         value: int,
-        description: str,
+        description: str | None = None,
         name: str | None = None,
         color_hint: str | None = None,
+        nodata: bool | None = None,
+        percentage: float | None = None,
+        count: int | None = None,
     ) -> Classification:
         """
         Create a new Classification.
 
         Args:
             value: The integer value corresponding to this class
-            name: The human-readable short name for this class
             description: The optional long-form description of this class
+            name: Short name of the class for machine readability. Must consist only
+                of letters, numbers, -, and _ characters. Required as of v2.0 of
+                this extension.
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
+            nodata: If set to true classifies a value as a no-data value.
+            percentage: The percentage of data values that belong to this class
+                in comparison to all data values, in percent (0-100).
+            count: The number of data values that belong to this class.
         """
         c = cls({})
         c.apply(
@@ -115,6 +135,9 @@ class Classification:
             name=name,
             description=description,
             color_hint=color_hint,
+            nodata=nodata,
+            percentage=percentage,
+            count=count,
         )
         return c
 
@@ -132,33 +155,38 @@ class Classification:
         self.properties["value"] = v
 
     @property
-    def description(self) -> str:
+    def description(self) -> str | None:
         """Get or set the description of the class
 
         Returns:
             str
         """
-        return get_required(self.properties.get("description"), self, "description")
+        return self.properties.get("description")
 
     @description.setter
-    def description(self, v: str) -> None:
-        self.properties["description"] = v
+    def description(self, v: str | None) -> None:
+        if v is not None:
+            self.properties["description"] = v
+        else:
+            self.properties.pop("description", None)
 
     @property
-    def name(self) -> str | None:
+    def name(self) -> str:
         """Get or set the name of the class
 
         Returns:
             Optional[str]
         """
-        return self.properties.get("name")
+        return get_required(self.properties.get("name"), self, "name")
 
     @name.setter
-    def name(self, v: str | None) -> None:
-        if v is not None:
-            self.properties["name"] = v
-        else:
-            self.properties.pop("name", None)
+    def name(self, v: str) -> None:
+        if v is None:
+            raise Exception(
+                "`name` was converted to a required attribute in classification"
+                " version v2.0, so cannot be set to None"
+            )
+        self.properties["name"] = v
 
     @property
     def color_hint(self) -> str | None:
@@ -182,6 +210,54 @@ class Classification:
             self.properties["color_hint"] = v
         else:
             self.properties.pop("color_hint", None)
+
+    @property
+    def nodata(self) -> bool | None:
+        """Get or set the nodata value for this class.
+
+        Returns:
+            bool | None
+        """
+        return self.properties.get("nodata")
+
+    @nodata.setter
+    def nodata(self, v: bool | None) -> None:
+        if v is not None:
+            self.properties["nodata"] = v
+        else:
+            self.properties.pop("nodata", None)
+
+    @property
+    def percentage(self) -> float | None:
+        """Get or set the percentage value for this class.
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("percentage")
+
+    @percentage.setter
+    def percentage(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["percentage"] = v
+        else:
+            self.properties.pop("percentage", None)
+
+    @property
+    def count(self) -> int | None:
+        """Get or set the count value for this class.
+
+        Returns:
+            Optional[int]
+        """
+        return self.properties.get("count")
+
+    @count.setter
+    def count(self, v: int | None) -> None:
+        if v is not None:
+            self.properties["count"] = v
+        else:
+            self.properties.pop("count", None)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns the dictionary encoding of this class
@@ -415,7 +491,7 @@ class ClassificationExtension(
     """An abstract class that can be used to extend the properties of
     :class:`~pystac.Item`, :class:`~pystac.Asset`,
     :class:`~pystac.extension.raster.RasterBand`, or
-    :class:`~pystac.extension.item_assets.AssetDefinition` with properties from the
+    :class:`~pystac.ItemAssetDefinition` with properties from the
     :stac-ext:`Classification Extension <classification>`.  This class is generic
     over the type of STAC object being extended.
 
@@ -448,8 +524,10 @@ class ClassificationExtension(
             or bitfields is None
             and classes is not None
         ), "Must set exactly one of `classes` or `bitfields`"
-        self.classes = classes
-        self.bitfields = bitfields
+        if classes:
+            self.classes = classes
+        if bitfields:
+            self.bitfields = bitfields
 
     @property
     def classes(self) -> list[Classification] | None:
@@ -523,7 +601,7 @@ class ClassificationExtension(
 
         This extension can be applied to instances of :class:`~pystac.Item`,
         :class:`~pystac.Asset`,
-        :class:`~pystac.extensions.item_assets.AssetDefinition`, or
+        :class:`~pystac.ItemAssetDefinition`, or
         :class:`~pystac.extension.raster.RasterBand`.
 
         Raises:
@@ -535,7 +613,7 @@ class ClassificationExtension(
         elif isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ClassificationExtension[T], AssetClassificationExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(
                 ClassificationExtension[T], ItemAssetsClassificationExtension(obj)
@@ -586,17 +664,19 @@ class AssetClassificationExtension(ClassificationExtension[pystac.Asset]):
 
 
 class ItemAssetsClassificationExtension(
-    ClassificationExtension[item_assets.AssetDefinition]
+    ClassificationExtension[pystac.ItemAssetDefinition]
 ):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
     def __repr__(self) -> str:
-        return f"<ItemAssetsClassificationExtension AssetDefinition={self.asset_defn}"
+        return (
+            f"<ItemAssetsClassificationExtension ItemAssetDefinition={self.asset_defn}"
+        )
 
 
 class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):

@@ -2,18 +2,81 @@
 
 ## [Unreleased]
 
+
+### Added
+
+- Top-level `item_assets` dict on `Collection`s ([#1476](https://github.com/stac-utils/pystac/pull/1476))
+
+### Changed
+
+- Write STAC v1.1.0 ([#1427](https://github.com/stac-utils/pystac/pull/1427))
+- Use [uv](https://github.com/astral-sh/uv) for development dependencies and docs ([#1439](https://github.com/stac-utils/pystac/pull/1439))
+- Correctly detect absolute file path ref on windows, reflecting change in python 3.13 ([#1475](https://github.com/stac-utils/pystac/pull/14750)) (only effects python 3.13)
+- Deprecated `ItemAssetExtension` ([#1476](https://github.com/stac-utils/pystac/pull/1476))
+
+## [v1.11.0] - 2024-09-26
+
+### Added
+
+- Add netCDF to pystac.media_type ([#1386](https://github.com/stac-utils/pystac/pull/1386))
+- Add convenience method for accessing pystac_client ([#1365](https://github.com/stac-utils/pystac/pull/1365))
+- Fix field ordering when saving `Item`s ([#1423](https://github.com/stac-utils/pystac/pull/1423))
+- Add keywords to common metadata ([#1443](https://github.com/stac-utils/pystac/pull/1443))
+- Add roles to common metadata ([#1444](https://github.com/stac-utils/pystac/pull/1444/files))
+
+### Changed
+
+- Allow object ID as input for getting APILayoutStrategy hrefs and add `items`, `collections`, `search`, `conformance`, `service_desc` and `service_doc` href methods ([#1335](https://github.com/stac-utils/pystac/pull/1335))
+- Updated classification extension to v2.0.0 ([#1359](https://github.com/stac-utils/pystac/pull/1359))
+- Update docstring of `name` argument to `Classification.apply` and `Classification.create` to agree with extension specification ([#1356](https://github.com/stac-utils/pystac/pull/1356))
+- Add example of custom `StacIO` for Azure Blob Storage to docs ([#1372](https://github.com/stac-utils/pystac/pull/1372))
+- Noted that collection links can be used in non-item objects in STAC v1.1.0 ([#1393](https://github.com/stac-utils/pystac/pull/1393))
+- Move test, docs, and bench requirements out of pyproject.toml ([#1407](https://github.com/stac-utils/pystac/pull/1407))
+- Clarify inclusive datetime ranges, update default license, and ensure description is not empty ([#1445](https://github.com/stac-utils/pystac/pull/1445))
+
 ### Fixed
 
- - No longer use the `datetime.utcnow` method that has been deprecated in Python 3.12 ([#1283](https://github.com/stac-utils/pystac/pull/1283))
+- Make `get_all_collections` properly recursive ([#1361](https://github.com/stac-utils/pystac/pull/1361))
+- Set `Item::collection` to `None` when there is no collection ([#1400](https://github.com/stac-utils/pystac/pull/1400))
+- Recursion error when `name` not set on `eo:bands` ([#1406](https://github.com/stac-utils/pystac/pull/1406))
+
+### Removed
+
+- Python 3.9 ([#1384](https://github.com/stac-utils/pystac/pull/1384), [#1388](https://github.com/stac-utils/pystac/pull/1388))
+
+## [v1.10.1] - 2024-05-03
+
+### Fixed
+
+- Don't transform hrefs in `Item.__getstate__` ([#1337](https://github.com/stac-utils/pystac/pull/1337))
+
+## [v1.10.0] - 2024-03-28
+
+### Added
+
+- Add `validator` input to `STACObject.validate` for inline reference of the validator to use ([#1320](https://github.com/stac-utils/pystac/pull/1320))
+- Add APILayoutStrategy ([#1294](https://github.com/stac-utils/pystac/pull/1294))
+- Allow setting a default layout strategy for Catalog ([#1295](https://github.com/stac-utils/pystac/pull/1295))
+
+### Changed
+
+- Update css for HTML display ([#1311](https://github.com/stac-utils/pystac/pull/1311))
+- Made item pickles smaller by changing how nested links are stored([#1285](https://github.com/stac-utils/pystac/pull/1285))
+- Updated documentation code examples that use AWS S3 for file storage ([#1308](https://github.com/stac-utils/pystac/pull/1308))
+
+### Fixed
+
+- No longer use the `datetime.utcnow` method that has been deprecated in Python 3.12 ([#1283](https://github.com/stac-utils/pystac/pull/1283))
 
 ## [v1.9.0] - 2023-10-23
 
 ### Added
 
-- Simpler extension interface ([#1243](https://github.com/stac-utils/pystac/pull/1243)])
+- Simpler extension interface ([#1243](https://github.com/stac-utils/pystac/pull/1243))
 - More permissive schema_uri matching to allow future versions of extension schemas ([#1231](https://github.com/stac-utils/pystac/pull/1231))
 - Better error messages from jsonschema validation ([#1233](https://github.com/stac-utils/pystac/pull/1233))
 - `validate_all_dict` replaces the previous implementation of `validate_all` (i.e., `validate_all` was renamed to `validate_all_dict`, and `validate_all` was changed as described below) ([#1246](https://github.com/stac-utils/pystac/pull/1246))
+- Python 3.12 ([#1260](https://github.com/stac-utils/pystac/pull/1260))
 
 ### Changed
 
@@ -628,7 +691,7 @@
 
 - Fixed issue that can cause infinite recursion during full resolve ([#204](https://github.com/stac-utils/pystac/pull/193))
 - Fixed issue that required label_classes in label items ([#201](https://github.com/stac-utils/pystac/pull/201))
-- Fixed issue that caused geometries and bboxes produced by Shapely to fail PySTAC's validaton ([#201](https://github.com/stac-utils/pystac/pull/201))
+- Fixed issue that caused geometries and bboxes produced by Shapely to fail PySTAC's validator ([#201](https://github.com/stac-utils/pystac/pull/201))
 - Allow for path prefixes like /vsitar/ ([#208](https://github.com/stac-utils/pystac/pull/208))
 - Fix Item set_self_href to ensure item asset locations do not break ([#226](https://github.com/stac-utils/pystac/pull/226))
 - Fixed an incorrect exception being thrown from Link.get_href() if there is no target_href ([#201](https://github.com/stac-utils/pystac/pull/201))
@@ -816,7 +879,10 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.9.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.11.0..main>
+[v1.11.0]: <https://github.com/stac-utils/pystac/compare/v1.10.1..v1.11.0>
+[v1.10.1]: <https://github.com/stac-utils/pystac/compare/v1.10.0..v1.10.1>
+[v1.10.0]: <https://github.com/stac-utils/pystac/compare/v1.9.0..v1.10.0>
 [v1.9.0]: <https://github.com/stac-utils/pystac/compare/v1.8.4..v1.9.0>
 [v1.8.4]: <https://github.com/stac-utils/pystac/compare/v1.8.3..v1.8.4>
 [v1.8.3]: <https://github.com/stac-utils/pystac/compare/v1.8.2..v1.8.3>

@@ -1,18 +1,26 @@
 import posixpath
 import unittest
+from collections.abc import Callable
 from datetime import datetime, timedelta
-from typing import Callable
+
+import pytest
 
 import pystac
 from pystac.collection import Collection
 from pystac.layout import (
+    APILayoutStrategy,
     AsIsLayoutStrategy,
     BestPracticesLayoutStrategy,
     CustomLayoutStrategy,
     LayoutTemplate,
     TemplateLayoutStrategy,
 )
-from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
+from tests.utils import (
+    ARBITRARY_BBOX,
+    ARBITRARY_GEOM,
+    TestCases,
+    path_includes_drive_letter,
+)
 
 
 class LayoutTemplateTest(unittest.TestCase):
@@ -409,6 +417,9 @@ class BestPracticesLayoutStrategyTest(unittest.TestCase):
 class AsIsLayoutStrategyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.strategy = AsIsLayoutStrategy()
+        self.expected_local_href = (
+            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+        )
 
     def test_catalog(self) -> None:
         cat = pystac.Catalog(id="test", description="test desc")
@@ -418,7 +429,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             cat, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_collection(self) -> None:
         collection = TestCases.case_8()
@@ -431,7 +442,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             collection, parent_dir="https://example.com", is_root=True
         )
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
 
     def test_item(self) -> None:
         collection = TestCases.case_8()
@@ -441,4 +452,134 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
             self.strategy.get_href(item, parent_dir="http://example.com")
         item.set_self_href("/an/href")
         href = self.strategy.get_href(item, parent_dir="http://example.com")
-        self.assertEqual(href, "/an/href")
+        self.assertEqual(href, self.expected_local_href)
+
+
+class APILayoutStrategyTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.strategy = APILayoutStrategy()
+
+    def test_produces_layout_for_root_catalog(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_href(
+            cat, parent_dir="http://example.com", is_root=True
+        )
+        self.assertEqual(href, "http://example.com")
+
+    def test_produces_layout_for_root_catalog_str(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_catalog_href(
+            cat.id, parent_dir="http://example.com", is_root=True
+        )
+        self.assertEqual(href, "http://example.com")
+
+    def test_produces_layout_for_child_catalog(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_href(cat, parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/test")
+
+    def test_produces_layout_for_child_catalog_str(self) -> None:
+        cat = pystac.Catalog(id="test", description="test desc")
+        href = self.strategy.get_catalog_href(
+            cat.id, parent_dir="http://example.com", is_root=False
+        )
+        self.assertEqual(href, "http://example.com/test")
+
+    def test_cannot_produce_layout_for_root_collection(self) -> None:
+        collection = TestCases.case_8()
+        with pytest.raises(ValueError):
+            self.strategy.get_href(
+                collection, parent_dir="http://example.com", is_root=True
+            )
+
+    def test_produces_layout_for_child_collection(self) -> None:
+        collection = TestCases.case_8()
+        href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        self.assertEqual(href, f"http://example.com/collections/{collection.id}")
+
+    def test_produces_layout_for_child_collection_str(self) -> None:
+        collection = TestCases.case_8()
+        href = self.strategy.get_collection_href(
+            collection.id, parent_dir="http://example.com", is_root=False
+        )
+        self.assertEqual(href, f"http://example.com/collections/{collection.id}")
+
+    def test_produces_layout_for_item(self) -> None:
+        collection = TestCases.case_8()
+        col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        item = next(collection.get_items(recursive=True))
+        href = self.strategy.get_href(item, parent_dir=col_href)
+        expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
+        self.assertEqual(href, expected)
+
+    def test_produces_layout_for_item_str(self) -> None:
+        collection = TestCases.case_8()
+        col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        item = next(collection.get_items(recursive=True))
+        href = self.strategy.get_item_href(item.id, parent_dir=col_href)
+        expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
+        self.assertEqual(href, expected)
+
+    def test_produces_normalized_layout(self) -> None:
+        cat = pystac.Catalog(id="test_catalog", description="Test Catalog")
+        col = pystac.Collection(
+            id="test_collection",
+            description="Test Collection",
+            extent=pystac.Extent(
+                spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+                temporal=pystac.TemporalExtent(
+                    [[datetime(2023, 1, 1), datetime(2023, 12, 31)]]
+                ),
+            ),
+        )
+        item = pystac.Item(
+            id="test_item",
+            geometry={
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [180.0, -90.0],
+                        [180.0, 90.0],
+                        [-180.0, 90.0],
+                        [-180.0, -90.0],
+                        [180.0, -90.0],
+                    ]
+                ],
+            },
+            bbox=[-180, -90, 180, 90],
+            datetime=datetime(2023, 1, 1),
+            properties={},
+            assets={
+                "data": pystac.Asset(
+                    href="http://example.com/assets/data.tif",
+                    roles=["data"],
+                    title="DATA",
+                )
+            },
+        )
+        cat.add_child(col)
+        col.add_item(item)
+        cat.normalize_hrefs("http://example.com", strategy=self.strategy)
+
+        assert cat.self_href == "http://example.com"
+        assert col.self_href == "http://example.com/collections/test_collection"
+        assert (
+            item.self_href
+            == "http://example.com/collections/test_collection/items/test_item"
+        )
+
+    def test_produces_layout_for_search(self) -> None:
+        href = self.strategy.get_search_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/search")
+
+    def test_produces_layout_for_conformance(self) -> None:
+        href = self.strategy.get_conformance_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/conformance")
+
+    def test_produces_layout_for_service_description(self) -> None:
+        href = self.strategy.get_service_desc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api")
+
+    def test_produces_layout_for_service_doc(self) -> None:
+        href = self.strategy.get_service_doc_href(parent_dir="http://example.com")
+        self.assertEqual(href, "http://example.com/api.html")

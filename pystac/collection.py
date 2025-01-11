@@ -20,6 +20,7 @@ from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
+from pystac.item_assets import ItemAssetDefinition, _ItemAssets
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
 from pystac.provider import Provider
@@ -461,9 +462,10 @@ class Collection(Catalog, Assets):
             be one of the values in :class`~pystac.CatalogType`.
         license :  Collection's license(s) as a
             `SPDX License identifier <https://spdx.org/licenses/>`_,
-            `various`, or `proprietary`. If collection includes
-            data with multiple different licenses, use `various` and add a link for
-            each. Defaults to 'proprietary'.
+            or `other`. If collection includes data with multiple
+            different licenses, use `other` and add a link for
+            each. The licenses `various` and `proprietary` are deprecated.
+            Defaults to 'other'.
         keywords : Optional list of keywords describing the collection.
         providers : Optional list of providers of this Collection.
         summaries : An optional map of property summaries,
@@ -473,6 +475,10 @@ class Collection(Catalog, Assets):
         assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Collection.
+        strategy : The layout strategy to use for setting the
+            HREFs of the catalog child objections and items.
+            If not provided, it will default to strategy of the parent and fallback to
+            :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
 
     description: str
@@ -524,11 +530,12 @@ class Collection(Catalog, Assets):
         href: str | None = None,
         extra_fields: dict[str, Any] | None = None,
         catalog_type: CatalogType | None = None,
-        license: str = "proprietary",
+        license: str = "other",
         keywords: list[str] | None = None,
         providers: list[Provider] | None = None,
         summaries: Summaries | None = None,
         assets: dict[str, Asset] | None = None,
+        strategy: HrefLayoutStrategy | None = None,
     ):
         super().__init__(
             id,
@@ -538,6 +545,7 @@ class Collection(Catalog, Assets):
             extra_fields,
             href,
             catalog_type or CatalogType.ABSOLUTE_PUBLISHED,
+            strategy,
         )
         self.extent = extent
         self.license = license
@@ -546,6 +554,7 @@ class Collection(Catalog, Assets):
         self.keywords = keywords
         self.providers = providers
         self.summaries = summaries or Summaries.empty()
+        self._item_assets: _ItemAssets | None = None
 
         self.assets = {}
         if assets is not None:
@@ -723,6 +732,62 @@ class Collection(Catalog, Assets):
                 # See https://github.com/stac-utils/pystac-client/issues/485
                 return super().get_item(id, recursive=recursive)
             raise e
+
+    @property
+    def item_assets(self) -> dict[str, ItemAssetDefinition]:
+        """Accessor for `item_assets
+        <https://github.com/radiantearth/stac-spec/blob/v1.1.0/collection-spec/collection-spec.md#item_assets>`__
+        on this collection.
+
+        Example::
+
+        .. code-block:: python
+
+           >>> print(collection.item_assets)
+           {'thumbnail': <pystac.item_assets.ItemAssetDefinition at 0x72aea0420750>,
+            'metadata': <pystac.item_assets.ItemAssetDefinition at 0x72aea017dc90>,
+            'B5': <pystac.item_assets.ItemAssetDefinition at 0x72aea017efd0>,
+            'B6': <pystac.item_assets.ItemAssetDefinition at 0x72aea016d5d0>,
+            'B7': <pystac.item_assets.ItemAssetDefinition at 0x72aea016e050>,
+            'B8': <pystac.item_assets.ItemAssetDefinition at 0x72aea016da90>}
+           >>> collection.item_assets["thumbnail"].title
+           'Thumbnail'
+
+        Set attributes on :class:`~pystac.ItemAssetDefinition` objects
+
+        .. code-block:: python
+
+           >>> collection.item_assets["thumbnail"].title = "New Title"
+
+        Add to the ``item_assets`` dict:
+
+        .. code-block:: python
+
+           >>> collection.item_assets["B4"] = {
+               'type': 'image/tiff; application=geotiff; profile=cloud-optimized',
+               'eo:bands': [{'name': 'B4', 'common_name': 'red'}]
+           }
+           >>> collection.item_assets["B4"].owner == collection
+           True
+        """
+        if self._item_assets is None:
+            self._item_assets = _ItemAssets(self)
+        return self._item_assets
+
+    @item_assets.setter
+    def item_assets(
+        self, item_assets: dict[str, ItemAssetDefinition | dict[str, Any]] | None
+    ) -> None:
+        # clear out the cached value
+        self._item_assets = None
+
+        if item_assets is None:
+            self.extra_fields.pop("item_assets")
+        else:
+            self.extra_fields["item_assets"] = {
+                k: v if isinstance(v, dict) else v.to_dict()
+                for k, v in item_assets.items()
+            }
 
     def update_extent_from_items(self) -> None:
         """

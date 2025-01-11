@@ -3,42 +3,34 @@
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.18.0
     hooks:
       - id: pyupgrade
         args:
-          - "--py39-plus"
+          - "--py310-plus"
 
   - repo: local
     hooks:
       - id: ruff
         name: ruff
-        entry: ruff
+        entry: ruff check --force-exclude --fix --exit-non-zero-on-fix
         language: system
-        stages: [commit]
-        types: [python]
-        args: [--fix, --exit-non-zero-on-fix]
-
-      - id: black
-        name: black
-        entry: black
-        language: system
-        stages: [commit]
-        types: [python]
-
-      - id: black-jupyter
-        name: black-jupyter
-        entry: black
-        language: python
-        require_serial: true
         types_or: [python, pyi, jupyter]
-        additional_dependencies: ["black[jupyter]"]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format --force-exclude
+        language: system
+        stages: [pre-commit]
+        types_or: [python, pyi, jupyter]
+        require_serial: true
 
       - id: codespell
         name: codespell
         entry: codespell
         language: system
-        stages: [commit]
+        stages: [pre-commit]
         types_or: [jupyter, markdown, python, shell]
 
       - id: doc8
@@ -53,6 +45,6 @@ repos:
         entry: mypy
         args: [--no-incremental]
         language: system
-        stages: [commit]
+        stages: [pre-commit]
         types: [python]
         require_serial: true

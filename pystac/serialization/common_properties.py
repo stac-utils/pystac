@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import pystac
 from pystac.cache import CollectionCache
@@ -9,8 +9,8 @@ from pystac.utils import make_absolute_href
 
 def merge_common_properties(
     item_dict: dict[str, Any],
-    collection_cache: Optional[CollectionCache] = None,
-    json_href: Optional[str] = None,
+    collection_cache: CollectionCache | None = None,
+    json_href: str | None = None,
 ) -> bool:
     """Merges Collection properties into an Item.
 
@@ -29,8 +29,8 @@ def merge_common_properties(
     """
     properties_merged = False
 
-    collection: Optional[Union[pystac.Collection, dict[str, Any]]] = None
-    collection_href: Optional[str] = None
+    collection: pystac.Collection | dict[str, Any] | None = None
+    collection_href: str | None = None
 
     stac_version = item_dict.get("stac_version")
 
@@ -79,7 +79,7 @@ def merge_common_properties(
                     collection = pystac.StacIO.default().read_json(collection_href)
 
     if collection is not None:
-        collection_props: Optional[dict[str, Any]] = None
+        collection_props: dict[str, Any] | None = None
         if isinstance(collection, pystac.Collection):
             collection_id = collection.id
             collection_props = collection.extra_fields.get("properties")
@@ -89,8 +89,9 @@ def merge_common_properties(
                 collection_props = collection["properties"]
         else:
             raise ValueError(
-                "{} is expected to be a Collection or "
-                "dict but is neither.".format(collection)
+                "{} is expected to be a Collection or " "dict but is neither.".format(
+                    collection
+                )
             )
 
         if collection_props is not None:

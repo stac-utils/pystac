@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import copy
 import json
 import os
+import pickle
 import tempfile
 import unittest
 from copy import deepcopy
@@ -105,6 +107,30 @@ class ItemTest(unittest.TestCase):
         rel_asset.set_owner(item)
         actual_href = rel_asset.get_absolute_href()
         self.assertEqual(None, actual_href)
+
+    def test_item_field_order(self) -> None:
+        item = pystac.Item.from_file(
+            TestCases.get_path("data-files/item/sample-item.json")
+        )
+        item_dict = item.to_dict(include_self_link=False)
+        expected_order = [
+            "type",
+            "stac_version",
+            "stac_extensions",
+            "id",
+            "geometry",
+            "bbox",
+            "properties",
+            "links",
+            "assets",
+            "collection",
+        ]
+        actual_order = list(item_dict.keys())
+        self.assertEqual(
+            actual_order,
+            expected_order,
+            f"Order was {actual_order}, expected {expected_order}",
+        )
 
     def test_extra_fields(self) -> None:
         item = pystac.Item.from_file(
@@ -447,7 +473,7 @@ def test_custom_item_from_dict(item: Item) -> None:
 
 
 def test_item_from_dict_raises_useful_error() -> None:
-    item_dict = {"type": "Feature", "stac_version": "1.0.0", "id": "lalalalala"}
+    item_dict = {"type": "Feature", "stac_version": "1.1.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACError, match="Invalid Item: "):
         Item.from_dict(item_dict)
 
@@ -644,3 +670,54 @@ def test_invalid_error_message(item: Item) -> None:
     with pytest.raises(STACValidationError) as error:
         item.validate()
     assert "can't have a collection" in str(error.value)
+
+
+def test_pickle_with_no_links(item: Item) -> None:
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for attr in ["id", "geometry", "bbox", "datetime", "links"]:
+        assert getattr(roundtripped, attr) == getattr(item, attr)
+
+
+def test_pickle_with_hrefless_links(item: Item) -> None:
+    root = pystac.Catalog("root", "root")
+    a = pystac.Catalog("a", "a")
+
+    item.add_link(pystac.Link("related", a))
+    item.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
+    item.set_root(root)
+
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for original, new in zip(item.links, roundtripped.links):
+        assert original.rel == new.rel
+        assert original.media_type == new.media_type
+        assert str(original.owner) == str(new.owner)
+        assert str(original.target) == str(new.target)
+
+
+def test_pickle_with_only_href_links(item: Item) -> None:
+    item.add_link(
+        pystac.Link("item", TestCases.get_path("data-files/item/sample-item.json"))
+    )
+
+    roundtripped = pickle.loads(pickle.dumps(item))
+    for original, new in zip(item.links, roundtripped.links):
+        assert original.rel == new.rel
+        assert original.media_type == new.media_type
+        assert str(original.owner) == str(new.owner)
+        assert str(original.target) == str(new.target)
+
+
+def test_copy_with_unresolveable_root(item: Item) -> None:
+    item.add_link(
+        pystac.Link(
+            "root", "s3://naip-visualization/this-is-a-non-existent-catalog.json"
+        )
+    )
+    copy.deepcopy(item)
+
+
+def test_no_collection(item: Item) -> None:
+    # https://github.com/stac-utils/stac-api-validator/issues/527
+    assert item.collection is None

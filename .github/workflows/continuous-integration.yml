@@ -22,134 +22,109 @@ jobs:
     name: test
     runs-on: ${{ matrix.os }}
     strategy:
-      # Allow other matrix jobs to complete if 1 fails
-      fail-fast: false
       matrix:
         python-version:
-          - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-
-      - name: Install dependencies
-        run: pip install .[validation,test]
-
-      - name: Execute test suite
-        run: ./scripts/test
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Sync
+        run: uv sync --all-extras
+      - name: Test on windows
+        if: runner.os == 'Windows'
         shell: bash
         env:
-          TMPDIR: "${{ matrix.os == 'windows-latest' && 'D:\\a\\_temp' || '' }}"
+          TMPDIR: 'D:\\a\\_temp'
+        run: uv run pytest tests
+      - name: Test
+        if: runner.os != 'Windows'
+        run: uv run scripts/test
 
   coverage:
     name: coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-          cache: "pip"
-
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - name: Install with dependencies
-        run: pip install .[validation,test]
-
+        run: uv sync --all-extras
       - name: Run coverage with orjson
-        run: pytest tests --cov
-
+        run: uv run pytest tests --cov
       - name: Uninstall orjson
-        run: pip uninstall -y orjson
-
+        run: uv pip uninstall orjson
       - name: Run coverage without orjson, appending results
-        run: pytest tests --cov --cov-append
-
+        run: uv run pytest tests --cov --cov-append
       - name: Prepare ./coverage.xml
         # Ignore the configured fail-under to ensure we upload the coverage report. We
         # will trigger a failure for coverage drops in a later job
-        run: coverage xml --fail-under 0
-
+        run: uv run coverage xml --fail-under 0
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
           fail_ci_if_error: false
-
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
         # coverage drops.
-        run: coverage report
+        run: uv run coverage report
 
   lint:
     runs-on: ubuntu-latest
     strategy:
-      # Allow other matrix jobs to complete if 1 fails
-      fail-fast: false
       matrix:
         python-version:
-          - "3.9"
           - "3.10"
           - "3.11"
-
+          - "3.12"
+          - "3.13"
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-
-      - name: Install with test dependencies
-        run: pip install .[test]
-
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Sync
+        run: uv sync
       - name: Execute linters & type checkers
-        run: pre-commit run --all-files
+        run: uv run pre-commit run --all-files
 
   without-orjson:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-
-      - name: Install
-        run: pip install .[validation,test]
-
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Sync
+        run: uv sync
       - name: Uninstall orjson
-        run: pip uninstall -y orjson
-
+        run: uv pip uninstall orjson
       - name: Run tests
-        run: pytest tests
-
-  check-all-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-          cache: "pip"
-
-      - name: Install all dependencies
-        run: pip install .[bench,docs,orjson,test,urllib3,validation]
+        run: uv run pytest tests
 
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
@@ -160,14 +135,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-          cache: "pip"
-      - name: Install pystac
-        run: pip install .[bench]
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Sync
+        run: uv sync
       - name: Set asv machine
-        run: asv machine --yes
+        run: uv run asv machine --yes
       - name: Check benchmarks
-        run: asv run -a repeat=1 -a rounds=1 HEAD
+        run: uv run asv run -a repeat=1 -a rounds=1 HEAD
 
   docs:
     runs-on: ubuntu-latest
@@ -175,11 +152,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-          cache: "pip"
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
       - name: Install pandoc
         run: sudo apt-get install pandoc
       - name: Install pystac
-        run: pip install .[docs]
+        run: uv sync --no-dev && uv sync --package pystac-docs --inexact
       - name: Check docs
-        run: make -C docs html SPHINXOPTS="-W --keep-going"
+        run: uv run make -C docs html SPHINXOPTS="-W --keep-going"

@@ -4,7 +4,8 @@ import json
 import logging
 import os
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
@@ -302,6 +303,7 @@ class DefaultStacIO(StacIO):
             except HTTPError as e:
                 raise Exception(f"Could not read uri {href}") from e
         else:
+            href = safe_urlparse(href).path
             with open(href, encoding="utf-8") as f:
                 href_contents = f.read()
         return href_contents
@@ -327,7 +329,7 @@ class DefaultStacIO(StacIO):
         """
         if _is_url(href):
             raise NotImplementedError("DefaultStacIO cannot write to urls")
-        href = os.fspath(href)
+        href = safe_urlparse(href).path
         dirname = os.path.dirname(href)
         if dirname != "" and not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -375,7 +377,7 @@ class DuplicateKeyReportingMixin(StacIO):
 
     @staticmethod
     def _report_duplicate_object_names(
-        object_pairs: list[tuple[str, Any]]
+        object_pairs: list[tuple[str, Any]],
     ) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for key, value in object_pairs:
@@ -390,7 +392,7 @@ class DuplicateKeyReportingMixin(StacIO):
 
 def _is_url(href: str) -> bool:
     parsed = safe_urlparse(href)
-    return parsed.scheme != ""
+    return parsed.scheme not in ["", "file"]
 
 
 if HAS_URLLIB3:
@@ -414,17 +416,16 @@ if HAS_URLLIB3:
 
         """
 
-        retry: Retry
-        """The :py:class:`urllib3.util.retry.Retry` to use with all reading network
-        requests."""
-
         def __init__(
             self,
             headers: dict[str, str] | None = None,
             retry: Retry | None = None,
         ):
             super().__init__(headers)
+
             self.retry = retry or Retry()
+            """The :py:class:`urllib3.util.retry.Retry` to use with all reading network
+            requests."""
 
         def read_text_from_href(self, href: str) -> str:
             """Reads file as a UTF-8 string, with retry support.
@@ -438,7 +439,9 @@ if HAS_URLLIB3:
                 http = PoolManager()
                 try:
                     response = http.request(
-                        "GET", href, retries=self.retry  # type: ignore
+                        "GET",
+                        href,
+                        retries=self.retry,  # type: ignore
                     )
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:

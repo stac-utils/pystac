@@ -6,8 +6,8 @@ Steps to reproduce the behavior:
 
 > Ex.
 >
-> 1. Install stactools
-> 2. Run `scripts/test`
+> 1. Install pystac w/ dev requirements: `pip install -e . -r requirements-dev.txt`
+> 2. Run `pytest`
 > 3. See error
 
 Include OS, Python version, and PySTAC version.
@@ -18,7 +18,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots and shell session dumps**
 If applicable, add session dumps and/or screenshots to help explain your problem.
 
-> ex. `scripts/lint >> lint_errors.txt`
+> ex. `pre-commit run ruff > ruff.txt`
 
 **Additional context**
 Add any other context about the problem here.

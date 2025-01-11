@@ -89,7 +89,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '39'
       Cache-Control:
       - max-age=600
       Connection:
@@ -99,11 +99,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:27 GMT
       ETag:
-      - '"654a6646-14e2"'
+      - '"65bd0237-14e2"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -115,15 +115,17 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 77f081faff18b80219d4d83d5d6057dd3cef5ac8
+      - 3ae2a56212cd0f873dd77a532a6871ecc94b1851
       X-GitHub-Request-Id:
-      - A478:9F17:18C6EF:1FACE0:656E3F2C
+      - C958:179C:EB7344:12C5390:6605CFB8
       X-Served-By:
-      - cache-ewr18180-EWR
+      - cache-ewr18123-EWR
       X-Timer:
-      - S1701723948.160046,VS0,VE26
+      - S1711656928.864013,VS0,VE1
       expires:
-      - Mon, 04 Dec 2023 21:15:48 GMT
+      - Thu, 28 Mar 2024 20:24:49 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -179,7 +181,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '39'
       Cache-Control:
       - max-age=600
       Connection:
@@ -189,11 +191,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:27 GMT
       ETag:
-      - '"654a6646-84e"'
+      - '"65bd0237-84e"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -205,17 +207,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 0d05197dafb5f2e73c897ceaed7a16dd7d804cad
+      - d6995b3c270e8f87558c61daa93178c7ddb21560
       X-GitHub-Request-Id:
-      - E30A:7FB8:166A4D:1D50EA:656E3F2C
+      - 885E:8892:E5E94C:126CBC7:6605CFB8
       X-Served-By:
-      - cache-ewr18150-EWR
+      - cache-ewr18160-EWR
       X-Timer:
-      - S1701723948.261661,VS0,VE18
+      - S1711656928.940428,VS0,VE1
       expires:
-      - Mon, 04 Dec 2023 21:15:48 GMT
-      x-origin-cache:
-      - HIT
+      - Thu, 28 Mar 2024 20:24:49 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -333,7 +333,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '10'
       Cache-Control:
       - max-age=600
       Connection:
@@ -343,11 +343,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-1b3a"'
+      - '"65bd0237-1b3a"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -359,15 +359,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - e55850a0ddaaa9d99fbdfd27c015dba1f71a11d8
+      - 71eaedea2b05b376fec3b2f3efd64e50216c038a
       X-GitHub-Request-Id:
-      - 5F7C:383A:105682:172D0F:656E3F29
+      - 5344:EFB2:19A019B:1D70D25:6605CFD5
       X-Served-By:
-      - cache-ewr18140-EWR
+      - cache-ewr18137-EWR
       X-Timer:
-      - S1701723948.368421,VS0,VE1
+      - S1711656928.016445,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:15:45 GMT
+      - Thu, 28 Mar 2024 20:25:18 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -400,7 +400,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '10'
       Cache-Control:
       - max-age=600
       Connection:
@@ -410,11 +410,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-21a"'
+      - '"65bd0237-21a"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -426,15 +426,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - ed3981535b971097eb6aa4167b4749a028e4b48f
+      - 66db645bac189f909bbd42aea0a0f6d67706894e
       X-GitHub-Request-Id:
-      - DB30:80C0:14EDB5:1BD65C:656E3F29
+      - 66A0:23BA3B:1BC78BF:1F9BD8C:6605CFD1
       X-Served-By:
-      - cache-ewr18177-EWR
+      - cache-ewr18172-EWR
       X-Timer:
-      - S1701723948.452748,VS0,VE3
+      - S1711656928.103805,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:15:45 GMT
+      - Thu, 28 Mar 2024 20:25:18 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -482,7 +482,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '10'
       Cache-Control:
       - max-age=600
       Connection:
@@ -492,11 +492,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-5c5"'
+      - '"65bd0237-5c5"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -508,15 +508,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - f5e994a41f7338f14a4e3551b5fc7a62ee50455a
+      - d6002d460d0512e8a3b6d7e597be85038c3fcfac
       X-GitHub-Request-Id:
-      - DE44:544C:18B219:1F8FF8:656E3F29
+      - BBE4:2EEE1A:1A5C275:1E2F199:6605CFD6
       X-Served-By:
-      - cache-ewr18152-EWR
+      - cache-ewr18161-EWR
       X-Timer:
-      - S1701723949.538590,VS0,VE1
+      - S1711656928.171735,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:15:45 GMT
+      - Thu, 28 Mar 2024 20:25:18 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -551,7 +551,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '9'
       Cache-Control:
       - max-age=600
       Connection:
@@ -561,11 +561,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-2bd"'
+      - '"65bd0237-2bd"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -577,17 +577,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 99ffb16978549cf9335095724814419b0a81a615
+      - 7fc095f2adb99d365e5e995c40c1fbfe1c4c9fe2
       X-GitHub-Request-Id:
-      - DEF4:6F9D:174032:1E2305:656E3F29
+      - 7FB6:26EB4F:19C05FB:1D93464:6605CFD6
       X-Served-By:
-      - cache-ewr18150-EWR
+      - cache-ewr18134-EWR
       X-Timer:
-      - S1701723949.619674,VS0,VE2
+      - S1711656928.240256,VS0,VE1
       expires:
-      - Mon, 04 Dec 2023 21:15:46 GMT
-      x-origin-cache:
-      - HIT
+      - Thu, 28 Mar 2024 20:25:18 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -617,7 +615,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '9'
       Cache-Control:
       - max-age=600
       Connection:
@@ -627,11 +625,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-133"'
+      - '"65bd0237-133"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -643,15 +641,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - e58f7a1b82d967ec05a8a5fe1150059c7bc383c2
+      - f23054bb69d85477776a815d62019e15b9ea009b
       X-GitHub-Request-Id:
-      - 38A0:9413:1D0627:23EE16:656E3F29
+      - 3954:9F5C8:194C687:1D1E226:6605CFD6
       X-Served-By:
-      - cache-ewr18135-EWR
+      - cache-ewr18136-EWR
       X-Timer:
-      - S1701723949.699324,VS0,VE1
+      - S1711656928.308025,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:15:46 GMT
+      - Thu, 28 Mar 2024 20:25:18 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -692,7 +690,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '9'
       Cache-Control:
       - max-age=600
       Connection:
@@ -702,11 +700,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
-      - '"654a6646-474"'
+      - '"65bd0237-474"'
       Last-Modified:
-      - Tue, 07 Nov 2023 16:31:02 GMT
+      - Fri, 02 Feb 2024 14:54:47 GMT
       Server:
       - GitHub.com
       Vary:
@@ -718,15 +716,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 31d2026a0eedfbd702fe668aef5c12cc5738ebaa
+      - 009c2bac7e9082556390c6d786231e1615b43985
       X-GitHub-Request-Id:
-      - C1F2:74B6:13851B:1A6001:656E3F29
+      - 3084:2B8D2:1AF23B5:1EC4E00:6605CFD7
       X-Served-By:
-      - cache-ewr18129-EWR
+      - cache-ewr18132-EWR
       X-Timer:
-      - S1701723949.782264,VS0,VE1
+      - S1711656928.383968,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:15:46 GMT
+      - Thu, 28 Mar 2024 20:25:19 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -820,7 +818,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '213'
+      - '106'
       Cache-Control:
       - max-age=600
       Connection:
@@ -830,7 +828,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
       - '"63e664c8-13bc"'
       Last-Modified:
@@ -848,15 +846,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 033457a5a53a46fa891082891e0d23c037616431
+      - f4618d54b20fd764860570df08ae63fd726141a4
       X-GitHub-Request-Id:
-      - 9056:9330:14EA61:1BB210:656E3E57
+      - 5B26:3FB5:EBCC97:12D0123:6605CF76
       X-Served-By:
-      - cache-ewr18121-EWR
+      - cache-ewr18124-EWR
       X-Timer:
-      - S1701723949.888887,VS0,VE1
+      - S1711656928.492983,VS0,VE2
       expires:
-      - Mon, 04 Dec 2023 21:12:15 GMT
+      - Thu, 28 Mar 2024 20:23:42 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -930,7 +928,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '213'
+      - '105'
       Cache-Control:
       - max-age=600
       Connection:
@@ -940,7 +938,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:48 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -958,15 +956,139 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 443aef9835a1e8c56eab77c5394d21188bef4692
+      - 80d3b281d9988956a89f266edc0f8878a7931da3
       X-GitHub-Request-Id:
-      - B7DA:2332:22138:2FC33:656DF08B
+      - 2772:14C61:6E9024:8F3B81:6605BE0D
       X-Served-By:
-      - cache-ewr18127-EWR
+      - cache-ewr18168-EWR
       X-Timer:
-      - S1701723949.967660,VS0,VE2
+      - S1711656929.568362,VS0,VE1
       expires:
-      - Mon, 04 Dec 2023 15:40:19 GMT
+      - Thu, 28 Mar 2024 19:09:25 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.11
+    method: GET
+    uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\",\n  \"title\":
+        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
+        for STAC Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the
+        schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Require fields here for item properties.\",\n                  \"required\":
+        [\n                    \"proj:epsg\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n
+        \         \"title\":\"EPSG code\",\n          \"type\":[\n            \"integer\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
+        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.2/projjson.schema.json\"\n
+        \           },\n            {\n              \"type\": \"null\"\n            }\n
+        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
+        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
+        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
+        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
+        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
+        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
+        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
+        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
+        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
+        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
+        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
+        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
+        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
+        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
+        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '13'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '4646'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 28 Mar 2024 20:15:28 GMT
+      ETag:
+      - '"63e6651b-1226"'
+      Last-Modified:
+      - Fri, 10 Feb 2023 15:39:07 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '2'
+      X-Fastly-Request-ID:
+      - ef6677ea948f17dcf4cea6331df340d64335a6c8
+      X-GitHub-Request-Id:
+      - 616C:397D62:1AB8A52:1E8C8CA:6605CFD3
+      X-Served-By:
+      - cache-ewr18166-EWR
+      X-Timer:
+      - S1711656929.647742,VS0,VE1
+      expires:
+      - Thu, 28 Mar 2024 20:25:15 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -1043,13 +1165,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 04 Dec 2023 21:05:49 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Mon, 04 Dec 2023 21:10:49 GMT
+      - Thu, 28 Mar 2024 20:20:28 GMT
       Source-Age:
-      - '4'
+      - '70'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -1059,19 +1181,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 76833a88f90f90c13430f3501eb47752c9e6ef8c
+      - 45d228a9dd4178f019e18c6b2400209f4bfb7e8d
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 39DE:24B5:EDD2E:118CE8:656E3F1C
+      - 248A:74CA:6B4141:7F522D:6605CF9A
       X-Served-By:
-      - cache-ewr18135-EWR
+      - cache-ewr18167-EWR
       X-Timer:
-      - S1701723949.085957,VS0,VE1
+      - S1711656929.779860,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1167,13 +1289,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 04 Dec 2023 21:05:49 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Mon, 04 Dec 2023 21:10:49 GMT
+      - Thu, 28 Mar 2024 20:20:28 GMT
       Source-Age:
-      - '4'
+      - '70'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -1187,15 +1309,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 7139124a1429fc6bb0e3433a58900fc23f9c5d55
+      - 5219ab0ad8af1f99356139c92b9f7235a443ed57
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 4A76:7803:E4DE2:10FFD5:656E3F29
+      - C3EC:2007:3CB141:4A2468:6605CF9A
       X-Served-By:
-      - cache-ewr18134-EWR
+      - cache-ewr18138-EWR
       X-Timer:
-      - S1701723949.165660,VS0,VE1
+      - S1711656929.868138,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -1312,7 +1434,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '107'
       Cache-Control:
       - max-age=600
       Connection:
@@ -1322,7 +1444,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 04 Dec 2023 21:05:49 GMT
+      - Thu, 28 Mar 2024 20:15:28 GMT
       ETag:
       - '"61eb1dc9-1abf"'
       Last-Modified:
@@ -1338,17 +1460,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - ee0a2031ac242c0bd060c43b484a3a67ea8d5d37
+      - 7dc97053790642792729c75db1bc740f4e68b232
       X-GitHub-Request-Id:
-      - E902:54DF:169EAF:1D79BD:656E3F2A
+      - 60BC:281DF0:F4B1B3:135E4D0:6605CF75
       X-Served-By:
-      - cache-ewr18130-EWR
+      - cache-ewr18176-EWR
       X-Timer:
-      - S1701723949.253171,VS0,VE2
+      - S1711656929.960117,VS0,VE0
       expires:
-      - Mon, 04 Dec 2023 21:15:46 GMT
+      - Thu, 28 Mar 2024 20:23:42 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -1401,13 +1523,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 04 Dec 2023 21:05:49 GMT
+      - Thu, 28 Mar 2024 20:15:29 GMT
       ETag:
       - '"cffbb0036f526b016f24477e0ad674e75b6fefb89708ca796686de9d2e2a67ed"'
       Expires:
-      - Mon, 04 Dec 2023 21:10:49 GMT
+      - Thu, 28 Mar 2024 20:20:29 GMT
       Source-Age:
-      - '3'
+      - '70'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -1421,15 +1543,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 38e50f6461a6070c1193f9e39fc8809ae0143f51
+      - 3d5e97ee6cb1fbebff69bfcb0f640c98f852636f
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - F686:9CFD:E7E71:11360D:656E3F2A
+      - 6ED0:16FA:44861F:52C78A:6605CF9B
       X-Served-By:
-      - cache-ewr18136-EWR
+      - cache-ewr18165-EWR
       X-Timer:
-      - S1701723950.773124,VS0,VE1
+      - S1711656930.530401,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

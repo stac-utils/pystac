@@ -1,4 +1,5 @@
 """Tests for pystac.tests.extensions.datacube"""
+
 import json
 from typing import Any
 

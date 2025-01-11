@@ -15,7 +15,7 @@ PySTAC is a library for working with the [SpatioTemporal Asset Catalog](https://
 ### Install from PyPi (recommended)
 
 ```shell
-pip install pystac
+python -m pip install pystac
 ```
 
 If you would like to enable the validation feature utilizing the
@@ -23,7 +23,7 @@ If you would like to enable the validation feature utilizing the
 `validation` requirements:
 
 ```shell
-pip install 'pystac[validation]'
+python -m pip install 'pystac[validation]'
 ```
 
 If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
@@ -31,7 +31,7 @@ standard `json` library for JSON serialization/deserialization, install with the
 optional `orjson` requirements:
 
 ```shell
-pip install 'pystac[orjson]'
+python -m pip install 'pystac[orjson]'
 ```
 
 If you would like to use a custom `RetryStacIO` class for automatically retrying
@@ -39,13 +39,14 @@ network requests when reading with PySTAC, you'll need
 [`urllib3`](https://urllib3.readthedocs.io/en/stable/):
 
 ```shell
-pip install 'pystac[urllib3]'
+python -m pip install 'pystac[urllib3]'
 ```
 
-If you are using jupyter notebooks and want to enable pretty display of pystac objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
+If you are using jupyter notebooks and want to enable pretty display of pystac
+objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
 
 ```shell
-pip install 'pystac[jinja2]'
+python -m pip install 'pystac[jinja2]'
 ```
 
 ### Install from source
@@ -53,7 +54,7 @@ pip install 'pystac[jinja2]'
 ```shell
 git clone https://github.com/stac-utils/pystac.git
 cd pystac
-pip install .
+python -m pip install .
 ```
 
 See the [installation page](https://pystac.readthedocs.io/en/latest/installation.html)

@@ -1,4 +1,5 @@
 """Tests for pystac.tests.extensions.xarray_assets"""
+
 import json
 
 import pytest

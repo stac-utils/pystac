@@ -14,7 +14,7 @@ from typing import (
 )
 
 import pystac
-from pystac.extensions import item_assets, projection, view
+from pystac.extensions import projection, view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -25,7 +25,7 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
-T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
 SCHEMA_URIS: list[str] = [
@@ -225,7 +225,7 @@ class Band:
             self.properties.pop("solar_illumination", None)
 
     def __repr__(self) -> str:
-        return f"<Band name={self.name}>"
+        return f"<Band name={self.properties.get('name')}>"
 
     def to_dict(self) -> dict[str, Any]:
         """Returns this band as a dictionary.
@@ -409,7 +409,7 @@ class EOExtension(
         elif isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], AssetEOExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemAssetsEOExtension(obj))
         else:
@@ -536,9 +536,9 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
         return f"<AssetEOExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
+class ItemAssetsEOExtension(EOExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
     def _get_bands(self) -> list[Band] | None:
         if BANDS_PROP not in self.properties:
@@ -550,7 +550,7 @@ class ItemAssetsEOExtension(EOExtension[item_assets.AssetDefinition]):
             )
         )
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 

@@ -82,7 +82,8 @@ Layouts
 ~~~~~~~
 
 PySTAC provides a few different strategies for laying out the HREFs of a STAC.
-To use them you can pass in a strategy to the normalize_hrefs call.
+To use them you can pass in a strategy when instantiating a catalog or when
+calling `normalize_hrefs`.
 
 Using templates
 '''''''''''''''
@@ -124,6 +125,30 @@ Catalogs, Collections or Items. Similar to the templating strategy, you can prov
 fallback strategy (which defaults to
 :class:`~pystac.layout.BestPracticesLayoutStrategy`) for any stac object type that you
 don't supply a function for.
+
+
+Set a default catalog layout strategy
+'''''''''''''''''''''''''''''''''''''
+
+Instead of fixing the HREFs of child objects retrospectively using `normalize_hrefs`,
+you can also define a default strategy for a catalog. When instantiating a catalog,
+pass in a custom strategy and base href. Consequently, the HREFs of all child
+objects and items added to the catalog tree will be set correctly using that strategy.
+
+
+.. code-block:: python
+
+   from pystac import Catalog, Collection, Item
+
+   catalog = Catalog(...,
+                     href="/some/location/catalog.json",
+                     strategy=custom_strategy)
+   collection = Collection(...)
+   item = Item(...)
+   catalog.add_child(collection)
+   collection.add_item(item)
+   catalog.save()
+
 
 .. _catalog types:
 
@@ -293,48 +318,195 @@ argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
 sub-class the default :class:`pystac.StacIO` implementation throughout the library.
 
-For example, this code will allow
+For example, the following code examples will allow
 for reading from AWS's S3 cloud object storage using `boto3
-<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__:
+<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__
+or Azure Blob Storage using the `Azure SDK for Python
+<https://learn.microsoft.com/en-us/python/api/overview/azure/storage-blob-readme?view=azure-python>`__:
 
-.. code-block:: python
+.. tab-set::
+   .. tab-item:: AWS S3
 
-   from urllib.parse import urlparse
-   import boto3
-   from pystac import Link
-   from pystac.stac_io import DefaultStacIO, StacIO
-   from typing import Union, Any
+      .. code-block:: python
 
-   class CustomStacIO(DefaultStacIO):
-      def __init__(self):
-         self.s3 = boto3.resource("s3")
+         from urllib.parse import urlparse
+         import boto3
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO, StacIO
+         from typing import Union, Any
 
-      def read_text(
-         self, source: Union[str, Link], *args: Any, **kwargs: Any
-      ) -> str:
-         parsed = urlparse(source)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
+         class CustomStacIO(DefaultStacIO):
+            def __init__(self):
+               self.s3 = boto3.resource("s3")
+               super().__init__()
 
-            obj = self.s3.Object(bucket, key)
-            return obj.get()["Body"].read().decode("utf-8")
-         else:
-            return super().read_text(source, *args, **kwargs)
+            def read_text(
+               self, source: Union[str, Link], *args: Any, **kwargs: Any
+            ) -> str:
+               parsed = urlparse(source)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
 
-      def write_text(
-         self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
-      ) -> None:
-         parsed = urlparse(dest)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
-            self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
-         else:
-            super().write_text(dest, txt, *args, **kwargs)
+                  obj = self.s3.Object(bucket, key)
+                  return obj.get()["Body"].read().decode("utf-8")
+               else:
+                  return super().read_text(source, *args, **kwargs)
 
-   StacIO.set_default(CustomStacIO)
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               parsed = urlparse(dest)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
+                  self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+               else:
+                  super().write_text(dest, txt, *args, **kwargs)
 
+         StacIO.set_default(CustomStacIO)
+
+   .. tab-item:: Azure Blob Storage
+
+      .. code-block:: python
+
+         import os
+         import re
+         from typing import Any, Dict, Optional, Tuple, Union
+         from urllib.parse import urlparse
+
+         from azure.core.credentials import (
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         )
+         from azure.storage.blob import BlobClient, ContentSettings
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO
+
+         BLOB_HTTPS_URI_PATTERN = r"https:\/\/(.+?)\.blob\.core\.windows\.net"
+
+         AzureCredentialType = Union[
+            str,
+            Dict[str, str],
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         ]
+
+
+         class BlobStacIO(DefaultStacIO):
+            """A custom StacIO class for reading and writing STAC objects
+            from/to Azure Blob storage.
+            """
+
+            conn_str: Optional[str] = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+            account_url: Optional[str] = None
+            credential: Optional[AzureCredentialType] = None
+            overwrite: bool = True
+
+            def _is_blob_uri(self, href: str) -> bool:
+               """Check if href matches Blob URI pattern."""
+               if re.search(
+                     re.compile(BLOB_HTTPS_URI_PATTERN), href
+               ) is not None or href.startswith("abfs://"):
+                     return True
+               else:
+                     return False
+
+            def _parse_blob_uri(self, uri: str) -> Tuple[str, str]:
+               """Parse the container and blob name from a Blob URI.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     The container and blob names.
+               """
+               if uri.startswith("abfs://"):
+                     path = uri.replace("abfs://", "/")
+               else:
+                     path = urlparse(uri).path
+
+               parts = path.split("/")
+               container = parts[1]
+               blob = "/".join(parts[2:])
+               return container, blob
+
+            def _get_blob_client(self, uri: str) -> BlobClient:
+               """Instantiate a `BlobClient` given a container and blob.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     A `BlobClient` for interacting with `blob` in `container`.
+               """
+               container, blob = self._parse_blob_uri(uri)
+
+               if self.conn_str:
+                     return BlobClient.from_connection_string(
+                        self.conn_str,
+                        container_name=container,
+                        blob_name=blob,
+                     )
+               elif self.account_url:
+                     return BlobClient(
+                        account_url=self.account_url,
+                        container_name=container,
+                        blob_name=blob,
+                        credential=self.credential,
+                     )
+               else:
+                     raise ValueError(
+                        "Must set conn_str or account_url (and credential if required)"
+                     )
+
+            def read_text(self, source: Union[str, Link], *args: Any, **kwargs: Any) -> str:
+               if isinstance(source, Link):
+                     source = source.href
+               if self._is_blob_uri(source):
+                     blob_client = self._get_blob_client(source)
+                     obj = blob_client.download_blob().readall().decode()
+                     return obj
+               else:
+                     return super().read_text(source, *args, **kwargs)
+
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               """Write STAC Objects to Blob storage. Note: overwrites by default."""
+               if isinstance(dest, Link):
+                     dest = dest.href
+               if self._is_blob_uri(dest):
+                     blob_client = self._get_blob_client(dest)
+                     blob_client.upload_blob(
+                        txt,
+                        overwrite=self.overwrite,
+                        content_settings=ContentSettings(content_type="application/json"),
+                     )
+               else:
+                     super().write_text(dest, txt, *args, **kwargs)
+
+
+         # set Blob storage connection string
+         BlobStacIO.conn_str = "my-storage-connection-string"
+
+         # OR set Blob account URL, credential
+         BlobStacIO.account_url = "https://myblobstorageaccount.blob.core.windows.net"
+         BlobStacIO.credential = AzureSasCredential("my-sas-token")
+
+         # modify overwrite behavior
+         BlobStacIO.overwrite = False
+
+         # set BlobStacIO as default StacIO
+         StacIO.set_default(BlobStacIO)
 
 If you only need to customize read operations you can inherit from
 :class:`~pystac.stac_io.DefaultStacIO` and only overwrite the read method. For example,

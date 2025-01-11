@@ -18,7 +18,6 @@ from pystac.extensions.classification import (
     Classification,
     ClassificationExtension,
 )
-from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.raster import RasterBand, RasterExtension
 from tests.utils import TestCases
 
@@ -51,7 +50,7 @@ def plain_item() -> Item:
 
 
 @pytest.fixture
-def collection() -> Collection:
+def classification_collection() -> Collection:
     return Collection.from_file(CLASSIFICATION_COLLECTION_RASTER_URI)
 
 
@@ -78,8 +77,8 @@ def test_bitfield_object() -> None:
         offset=0,
         length=1,
         classes=[
-            Classification.create(description="no", value=0),
-            Classification.create(description="yes", value=1),
+            Classification.create(name="no", value=0),
+            Classification.create(name="yes", value=1),
         ],
         roles=["data"],
         description="dummy description",
@@ -108,12 +107,12 @@ def test_ext_raises_if_item_does_not_conform(plain_item: Item) -> None:
         ClassificationExtension.ext(plain_item)
 
 
-def test_ext_raises_on_collection(collection: pystac.Collection) -> None:
+def test_ext_raises_on_collection(classification_collection: Collection) -> None:
     with pytest.raises(
         pystac.errors.ExtensionTypeError,
         match="ClassificationExtension does not apply to type 'Collection'",
     ) as e:
-        ClassificationExtension.ext(collection)  # type:ignore
+        ClassificationExtension.ext(classification_collection)  # type:ignore
     assert "Hint" in str(e.value)
 
 
@@ -126,8 +125,8 @@ def test_apply_bitfields(plain_item: Item) -> None:
                 offset=0,
                 length=1,
                 classes=[
-                    Classification.create(description="no", value=0),
-                    Classification.create(description="yes", value=1),
+                    Classification.create(name="no", value=0),
+                    Classification.create(name="yes", value=1),
                 ],
             )
         ]
@@ -162,6 +161,25 @@ def test_apply_bitfields(plain_item: Item) -> None:
     )
 
 
+@pytest.mark.vcr()
+def test_apply_classes(plain_item: Item) -> None:
+    ClassificationExtension.add_to(plain_item)
+    ClassificationExtension.ext(plain_item).apply(
+        classes=[
+            Classification.create(name="no", value=0),
+            Classification.create(name="yes", value=1),
+        ]
+    )
+    plain_item.validate()
+    assert (
+        ClassificationExtension.ext(plain_item).classes is not None
+        and len(
+            cast(list[Classification], ClassificationExtension.ext(plain_item).classes)
+        )
+        == 2
+    )
+
+
 def test_create_classes(plain_item: Item) -> None:
     ClassificationExtension.add_to(plain_item)
     ext = ClassificationExtension.ext(plain_item)
@@ -171,15 +189,15 @@ def test_create_classes(plain_item: Item) -> None:
                 offset=0,
                 length=1,
                 classes=[
-                    Classification.create(description="no", value=0),
-                    Classification.create(description="yes", value=1),
+                    Classification.create(name="no", value=0),
+                    Classification.create(name="yes", value=1),
                 ],
             )
         ]
     )
     ext.classes = [
-        Classification.create(description="no", value=0),
-        Classification.create(description="yes", value=1),
+        Classification.create(name="no", value=0),
+        Classification.create(name="yes", value=1),
     ]
     assert ext.bitfields is None
     ext.bitfields = [
@@ -187,8 +205,8 @@ def test_create_classes(plain_item: Item) -> None:
             offset=0,
             length=1,
             classes=[
-                Classification.create(description="no", value=0),
-                Classification.create(description="yes", value=1),
+                Classification.create(name="no", value=0),
+                Classification.create(name="yes", value=1),
             ],
         )
     ]
@@ -222,8 +240,8 @@ def test_create() -> None:
 
 def test_color_hint_formatting() -> None:
     with pytest.raises(Exception):
-        Classification.create(value=0, description="water", color_hint="#0000ff")
-    Classification.create(value=0, description="water", color_hint="0000FF")
+        Classification.create(value=0, name="water", color_hint="#0000ff")
+    Classification.create(value=0, name="water", color_hint="0000FF")
 
 
 def test_to_from_dict(item_dict: dict[str, Any]) -> None:
@@ -277,8 +295,8 @@ def test_add_item_classes(plain_item: Item) -> None:
     item_ext = ClassificationExtension.ext(plain_item, add_if_missing=True)
     item_ext.__repr__()
     assert item_ext.classes is None
-    item_ext.classes = [Classification.create(description="dummy", value=0)]
-    assert item_ext.properties[CLASSES_PROP] == [{"value": 0, "description": "dummy"}]
+    item_ext.classes = [Classification.create(name="dummy", value=0)]
+    assert item_ext.properties[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
 def test_add_asset_classes(plain_item: Item) -> None:
@@ -287,29 +305,32 @@ def test_add_asset_classes(plain_item: Item) -> None:
     assert CLASSES_PROP not in asset.extra_fields.keys()
     asset_ext = ClassificationExtension.ext(asset)
     asset_ext.__repr__()
-    asset_ext.classes = [Classification.create(value=0, description="dummy")]
+    asset_ext.classes = [Classification.create(value=0, name="dummy")]
     assert CLASSES_PROP in asset.extra_fields.keys()
-    assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "description": "dummy"}]
+    assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
-def test_item_asset_raster_classes(collection: Collection) -> None:
-    item_asset = ItemAssetsExtension.ext(collection, add_if_missing=True).item_assets[
-        "cloud-mask-raster"
-    ]
+def test_item_asset_raster_classes(classification_collection: Collection) -> None:
+    assert classification_collection.item_assets
+    item_asset = classification_collection.item_assets["cloud-mask-raster"]
     raster_bands = cast(list[RasterBand], RasterExtension.ext(item_asset).bands)
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None
 
 
-def test_item_assets_extension(collection: Collection) -> None:
-    item_asset = ItemAssetsExtension.ext(collection, add_if_missing=True).item_assets[
-        "cloud-mask-raster"
-    ]
+def test_item_assets_extension(classification_collection: Collection) -> None:
+    assert classification_collection.item_assets
+    item_asset = classification_collection.item_assets["cloud-mask-raster"]
     ext = ClassificationExtension.ext(item_asset)
     ext.__repr__()
-    assert ClassificationExtension.get_schema_uri() in collection.stac_extensions
-    assert collection.ext.item_assets["cloud-mask-raster"].ext.has("classification")
+    assert (
+        ClassificationExtension.get_schema_uri()
+        in classification_collection.stac_extensions
+    )
+    assert classification_collection.item_assets["cloud-mask-raster"].ext.has(
+        "classification"
+    )
 
 
 def test_older_extension_version(landsat_item: Item) -> None:

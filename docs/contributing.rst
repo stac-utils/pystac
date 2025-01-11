@@ -8,20 +8,26 @@ way is to coordinate with the core developers via an issue or pull request conve
 Development installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Fork PySTAC into your GitHub account. Then, clone the repo and install it locally with
-pip as follows:
+`uv <https://docs.astral.sh/uv/getting-started/installation/>` as follows:
 
 .. code-block:: bash
 
     git clone git@github.com:your_user_name/pystac.git
     cd pystac
-    pip install -e '.[test]'
+    uv sync
+    source .venv/bin/activate
 
 Testing
 ^^^^^^^
-tl;dr: Run ``./scripts/test`` to run all tests as they run on CI.
 
-PySTAC runs tests using `pytest <https://docs.pytest.org/en/latest/>`_. You can find unit tests in the ``tests/``
-directory.
+PySTAC runs tests using `pytest <https://docs.pytest.org/en/latest/>`_. You can
+find unit tests in the ``tests/`` directory.
+
+To run the tests:
+
+.. code-block:: bash
+
+    $ pytest
 
 To run the tests and generate the coverage report:
 
@@ -49,19 +55,18 @@ Code quality checks
 ^^^^^^^^^^^^^^^^^^^
 
 tl;dr: Run ``pre-commit install --overwrite`` to perform checks when committing, and
-``./scripts/test`` to run all checks and tests.
+``pytest`` to run all tests.
 
 PySTAC uses
 
 - `ruff <https://github.com/charliermarsh/ruff>`_ for Python code linting
-- `black <https://github.com/psf/black>`_ for Python code formatting
 - `codespell <https://github.com/codespell-project/codespell/>`_ to check code for common misspellings
 - `doc8 <https://github.com/pycqa/doc8>`__ for style checking on RST files in the docs
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
 
 Run all of these with ``pre-commit run --all-files`` or a single one using
 ``pre-commit run --all-files ID``, where ``ID`` is one of the command names above. For
-example, to format all the Python code, run ``pre-commit run --all-files black``.
+example, to lint all the Python code, run ``pre-commit run --all-files ruff``.
 
 You can also install a Git pre-commit hook which will run the relevant linters and
 formatters on any staged code when committing. This will be much faster than running on
@@ -95,7 +100,6 @@ and report any improvements or regressions.
 
 .. code-block:: bash
 
-    pip install -e '.[bench]'
     scripts/bench
 
 The benchmark suite takes a while to run, and will report any significant

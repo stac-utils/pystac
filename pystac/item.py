@@ -51,10 +51,10 @@ class Item(STACObject, Assets):
         datetime : datetime associated with this item. If None,
             a start_datetime and end_datetime must be supplied.
         properties : A dictionary of additional metadata for the item.
-        start_datetime : Optional start datetime, part of common metadata. This value
-            will override any `start_datetime` key in properties.
-        end_datetime : Optional end datetime, part of common metadata. This value
-            will override any `end_datetime` key in properties.
+        start_datetime : Optional inclusive start datetime, part of common metadata.
+            This value will override any `start_datetime` key in properties.
+        end_datetime : Optional inclusive end datetime, part of common metadata.
+            This value will override any `end_datetime` key in properties.
         stac_extensions : Optional list of extensions the Item implements.
         href : Optional HREF for this item, which be set as the item's
             self link's HREF.
@@ -158,7 +158,9 @@ class Item(STACObject, Assets):
             self.set_self_href(href)
 
         self.collection_id: str | None = None
-        if collection is not None:
+        if collection is None:
+            self.collection = None
+        else:
             if isinstance(collection, Collection):
                 self.set_collection(collection)
             else:
@@ -171,6 +173,32 @@ class Item(STACObject, Assets):
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
+
+    def __getstate__(self) -> dict[str, Any]:
+        """Ensure that pystac does not encode too much information when pickling"""
+        d = self.__dict__.copy()
+
+        d["links"] = [
+            (
+                link.to_dict(transform_href=False)
+                if link.get_href(transform_href=False)
+                else link
+            )
+            for link in d["links"]
+        ]
+
+        return d
+
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """Ensure that pystac knows how to decode the pickled object"""
+        d = state.copy()
+
+        d["links"] = [
+            Link.from_dict(link).set_owner(self) if isinstance(link, dict) else link
+            for link in d["links"]
+        ]
+
+        self.__dict__ = d
 
     def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``
@@ -337,24 +365,24 @@ class Item(STACObject, Assets):
         d: dict[str, Any] = {
             "type": "Feature",
             "stac_version": pystac.get_stac_version(),
+            "stac_extensions": self.stac_extensions if self.stac_extensions else [],
             "id": self.id,
-            "properties": self.properties,
             "geometry": self.geometry,
+            "bbox": self.bbox if self.bbox is not None else [],
+            "properties": self.properties,
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
             "assets": assets,
         }
-
-        if self.bbox is not None:
-            d["bbox"] = self.bbox
-
-        if self.stac_extensions is not None:
-            d["stac_extensions"] = self.stac_extensions
 
         if self.collection_id:
             d["collection"] = self.collection_id
 
         for key in self.extra_fields:
             d[key] = self.extra_fields[key]
+
+        # This field is prohibited if there's no geometry
+        if not self.geometry:
+            d.pop("bbox")
 
         return d
 

@@ -3,11 +3,11 @@ from __future__ import annotations
 import os
 import posixpath
 import warnings
+from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import Enum
 from typing import (
     Any,
-    Callable,
     TypeVar,
     Union,
     cast,
@@ -71,6 +71,25 @@ def safe_urlparse(href: str) -> URLParseResult:
             query=parsed.query,
             fragment=parsed.fragment,
         )
+
+    # Windows drives sometimes get parsed as the netloc and sometimes
+    # as part of the parsed.path.
+    if parsed.scheme == "file" and os.name == "nt":
+        if parsed.netloc:
+            path = f"{parsed.netloc}{parsed.path}"
+        elif parsed.path.startswith("/") and ":" in parsed.path:
+            path = parsed.path[1:]
+        else:
+            path = parsed.path
+
+        return URLParseResult(
+            scheme=parsed.scheme,
+            netloc="",
+            path=path,
+            params=parsed.params,
+            query=parsed.query,
+            fragment=parsed.fragment,
+        )
     else:
         return parsed
 
@@ -80,7 +99,7 @@ class StringEnum(str, Enum):
     value."""
 
     def __repr__(self) -> str:
-        return str(self.value)
+        return repr(self.value)
 
     def __str__(self) -> str:
         return cast(str, self.value)
@@ -246,7 +265,7 @@ def make_relative_href(
     ):
         return source_href
 
-    if parsed_start.scheme == "":
+    if parsed_start.scheme in ["", "file"]:
         return _make_relative_href_path(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_relative_href_url(parsed_source, parsed_start, start_is_dir)
@@ -311,6 +330,9 @@ def _make_absolute_href_path(
             make_posix_style(os.path.abspath(start_dir)), start_dir
         )
 
+    if parsed_source.scheme or parsed_start.scheme:
+        abs_path = f"file://{abs_path}"
+
     return abs_path
 
 
@@ -346,7 +368,10 @@ def make_absolute_href(
     parsed_start = safe_urlparse(start_href)
     parsed_source = safe_urlparse(source_href)
 
-    if parsed_source.scheme != "" or parsed_start.scheme != "":
+    if parsed_source.scheme not in ["", "file"] or parsed_start.scheme not in [
+        "",
+        "file",
+    ]:
         return _make_absolute_href_url(parsed_source, parsed_start, start_is_dir)
     else:
         return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
@@ -364,7 +389,7 @@ def is_absolute_href(href: str) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" or os.path.isabs(parsed.path)
+    return parsed.scheme not in ["", "file"] or os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
@@ -559,3 +584,24 @@ def get_required(option: T | None, obj: str | Any, prop: str) -> T:
     if option is None:
         raise RequiredPropertyMissing(obj, prop)
     return option
+
+
+def is_file_path(href: str) -> bool:
+    """Checks if an HREF resembles a file path.
+
+    This method checks if the given HREF resembles a file path.
+    It checks if the path ends with any kind of file extension
+    and if true, assumes it is a file.
+    Unlike `os.path.isfile()` it does NOT check the actual file.
+
+    Caution: There are cases for which this method may return wrong results!
+
+    Args:
+        href (str) : The HREF to consider.
+
+    Returns:
+        bool: ``True`` if the given HREF resembles a file path,
+            ``False`` if it does not.
+    """
+    parsed = urlparse(href)
+    return bool(os.path.splitext(parsed.path)[1])

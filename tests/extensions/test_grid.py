@@ -1,4 +1,5 @@
 """Tests for pystac.extensions.grid."""
+
 # This is for the type checking on GridTest.test_clear_code
 # mypy: warn_unused_ignores=False
 
@@ -67,7 +68,7 @@ class GridTest(unittest.TestCase):
     def test_from_dict(self) -> None:
         d: dict[str, Any] = {
             "type": "Feature",
-            "stac_version": "1.0.0",
+            "stac_version": "1.1.0",
             "id": "an/asset",
             "properties": {
                 "grid:code": code,

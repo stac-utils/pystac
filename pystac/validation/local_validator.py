@@ -13,9 +13,11 @@ VERSION = STACVersion.DEFAULT_STAC_VERSION
 
 
 def _read_schema(file_name: str) -> dict[str, Any]:
-    with importlib.resources.files("pystac.validation.jsonschemas").joinpath(
-        file_name
-    ).open("r") as f:
+    with (
+        importlib.resources.files("pystac.validation.jsonschemas")
+        .joinpath(file_name)
+        .open("r") as f
+    ):
         return cast(dict[str, Any], json.load(f))
 
 
@@ -40,7 +42,10 @@ def get_local_schema_cache() -> dict[str, dict[str, Any]]:
                 f"item-spec/json-schema/{name}.json"
             ): _read_schema(f"stac-spec/v{VERSION}/{name}.json")
             for name in (
+                "bands",
                 "basics",
+                "common",
+                "data-values",
                 "datetime",
                 "instrument",
                 "licensing",
@@ -89,9 +94,7 @@ class LocalValidator:
 
     def registry(self) -> Any:
         return Registry().with_resources(
-            [
-                (k, Resource.from_contents(v)) for k, v in self.schema_cache.items()
-            ]  # type: ignore
+            [(k, Resource.from_contents(v)) for k, v in self.schema_cache.items()]  # type: ignore
         )
 
     def _validate_from_local(
