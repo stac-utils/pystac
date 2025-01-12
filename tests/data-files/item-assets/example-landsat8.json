@@ -1,7 +1,6 @@
 {
     "stac_version": "1.1.0",
     "stac_extensions": [
-        "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json",
         "eo"
     ],
     "type": "Collection",

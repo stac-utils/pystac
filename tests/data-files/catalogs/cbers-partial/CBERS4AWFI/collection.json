@@ -16,8 +16,7 @@
     }
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
-    "https://schemas.stacspec.org/v1.0.0-beta.2/extensions/item-assets/json-schema/schema.json"
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
   ],
   "providers": [
     {

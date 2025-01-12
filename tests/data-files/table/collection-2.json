@@ -5,7 +5,6 @@
   "description": "desc",
   "links": [],
   "stac_extensions": [
-    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json",
     "https://stac-extensions.github.io/table/v1.2.0/schema.json"
   ],
   "extent": {
@@ -28,7 +27,7 @@
       ]
     }
   },
-  "license": "proprietary",
+  "license": "other",
   "item_assets": {},
   "table:columns": []
 }
