@@ -20,6 +20,7 @@ def _migrate_catalog(
     d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     d["type"] = pystac.STACObjectType.CATALOG
+    _migrate_license(d)
 
 
 def _migrate_collection_summaries(
@@ -38,25 +39,20 @@ def _migrate_collection(
     d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
     d["type"] = pystac.STACObjectType.COLLECTION
+    _migrate_license(d)
     _migrate_collection_summaries(d, version, info)
 
 
 def _migrate_item(
     d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
 ) -> None:
-    # No migrations necessary for supported STAC versions (>=0.8)
-    pass
+    _migrate_license(d["properties"])
 
 
-# Extensions
-def _migrate_item_assets(
-    d: dict[str, Any], version: STACVersionID, info: STACJSONDescription
-) -> set[str] | None:
-    if version < "1.0.0-beta.2":
-        if info.object_type == pystac.STACObjectType.COLLECTION:
-            if "assets" in d:
-                d["item_assets"] = d["assets"]
-                del d["assets"]
+def _migrate_license(d: dict[str, Any]) -> None:
+    if d.get("license") in ["various", "proprietary"]:
+        d["license"] = "other"
+
     return None
 
 
@@ -156,11 +152,6 @@ def _get_removed_extension_migrations() -> (
         "datetime-range": (None, _migrate_datetime_range),
         "commons": (None, None),
     }
-
-
-# TODO: Item Assets
-def _get_extension_renames() -> dict[str, str]:
-    return {"asset": "item-assets"}
 
 
 def migrate_to_latest(
