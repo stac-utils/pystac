@@ -392,7 +392,7 @@ class DuplicateKeyReportingMixin(StacIO):
 
 def _is_url(href: str) -> bool:
     parsed = safe_urlparse(href)
-    return parsed.scheme != "" and parsed.scheme != "file"
+    return parsed.scheme not in ["", "file"]
 
 
 if HAS_URLLIB3:

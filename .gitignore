@@ -8,6 +8,7 @@ stdout*
 /integration*
 .idea
 .vscode
+.actrc
 
 
 # Sphinx documentation
