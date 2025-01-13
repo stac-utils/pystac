@@ -554,6 +554,18 @@ class ProjectionSummariesTest(unittest.TestCase):
         self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
 
 
+def test_no_args_for_extension_class(item: Item) -> None:
+    item.ext.add("proj")
+    with pytest.raises(TypeError, match="takes 1 positional argument but 2 were given"):
+        item.ext.proj.apply(32614)  # type:ignore
+
+
+def test_set_both_code_and_epsg(item: Item) -> None:
+    item.ext.add("proj")
+    with pytest.raises(KeyError, match="Only one of the options"):
+        item.ext.proj.apply(epsg=32614, code="EPSG:32614")
+
+
 @pytest.mark.vcr()
 def test_get_set_code(projection_landsat8_item: Item) -> None:
     proj_item = projection_landsat8_item
