@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:14:00 GMT
+      - Mon, 13 Jan 2025 19:20:10 GMT
       ETag:
       - '"64527b1d-36ad"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - a0a361dd26d1268e67e1bfcbd9006473b6a40b46
+      - f154244f5fa5d02e7cb20de82fc3243b55f82d79
       X-GitHub-Request-Id:
-      - 215A:25AAED:EB045F:12C2635:6605CF87
+      - 9B0B:164558:3D73F0E:464B1C9:67856766
       X-Served-By:
-      - cache-ewr18127-EWR
+      - cache-bos4682-BOS
       X-Timer:
-      - S1711656840.371863,VS0,VE2
+      - S1736796010.130955,VS0,VE2
       expires:
-      - Thu, 28 Mar 2024 20:23:59 GMT
+      - Mon, 13 Jan 2025 19:30:09 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -271,7 +271,7 @@ interactions:
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 86ba48b4d8127274-EWR
+      - 9017bdf80fe3d687-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -283,11 +283,14 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:14:00 GMT
+      - Mon, 13 Jan 2025 19:20:10 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.4/projjson.schema.json
       Server:
       - cloudflare
+      Set-Cookie:
+      - _cfuvid=jfvpTIWi78.0nyGm.2MCHOLigPyQTFA1yWeMqzD3VAg-1736796010271-0.0.1.1-604800000;
+        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       access-control-expose-headers:
@@ -301,11 +304,13 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-backend:
-      - web-i-0591da9d5c680b106
+      - web-ext-theme-i-0424321e567628222
       x-content-type-options:
       - nosniff
       x-rtd-domain:
       - proj.org
+      x-rtd-force-addons:
+      - 'true'
       x-rtd-project:
       - osgeo-proj
       x-rtd-project-method:
@@ -334,14 +339,16 @@ interactions:
     body:
       string: "{\n  \"$id\": \"https://proj.org/schemas/v0.4/projjson.schema.json\",\n
         \ \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"description\":
-        \"Schema for PROJJSON (v0.4)\",\n  \"$comment\": \"This file exists both in
-        data/ and in schemas/vXXX/. Keep both in sync. And if changing the value of
-        $id, change PROJJSON_CURRENT_VERSION accordingly in io.cpp\",\n\n  \"oneOf\":
-        [\n    { \"$ref\": \"#/definitions/crs\" },\n    { \"$ref\": \"#/definitions/datum\"
-        },\n    { \"$ref\": \"#/definitions/datum_ensemble\" },\n    { \"$ref\": \"#/definitions/ellipsoid\"
-        },\n    { \"$ref\": \"#/definitions/prime_meridian\" },\n    { \"$ref\": \"#/definitions/single_operation\"
-        },\n    { \"$ref\": \"#/definitions/concatenated_operation\" }\n  ],\n\n  \"definitions\":
-        {\n\n    \"abridged_transformation\": {\n      \"type\": \"object\",\n      \"properties\":
+        \"Schema for PROJJSON (v0.4)\",\n  \"$comment\": \"This document is copyright
+        Even Rouault and PROJ contributors, 2019-2021, and subject to the MIT license.
+        This file exists both in data/ and in schemas/vXXX/. Keep both in sync. And
+        if changing the value of $id, change PROJJSON_CURRENT_VERSION accordingly
+        in io.cpp\",\n\n  \"oneOf\": [\n    { \"$ref\": \"#/definitions/crs\" },\n
+        \   { \"$ref\": \"#/definitions/datum\" },\n    { \"$ref\": \"#/definitions/datum_ensemble\"
+        },\n    { \"$ref\": \"#/definitions/ellipsoid\" },\n    { \"$ref\": \"#/definitions/prime_meridian\"
+        },\n    { \"$ref\": \"#/definitions/single_operation\" },\n    { \"$ref\":
+        \"#/definitions/concatenated_operation\" }\n  ],\n\n  \"definitions\": {\n\n
+        \   \"abridged_transformation\": {\n      \"type\": \"object\",\n      \"properties\":
         {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
         \"string\", \"enum\": [\"AbridgedTransformation\"] },\n        \"name\": {
         \"type\": \"string\" },\n        \"method\": { \"$ref\": \"#/definitions/method\"
@@ -782,7 +789,7 @@ interactions:
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 86ba48b59a388c47-EWR
+      - 9017bdf8eae1d64f-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -790,13 +797,16 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 28 Mar 2024 20:14:00 GMT
+      - Mon, 13 Jan 2025 19:20:10 GMT
       ETag:
-      - W/"165f7cf0ab48a343b939bc9bd70e6d5f"
+      - W/"c5bc7ca065287598bed5404a0ec79ce0"
       Last-Modified:
-      - Tue, 07 Feb 2023 19:36:50 GMT
+      - Thu, 25 Apr 2024 19:53:05 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - _cfuvid=.NqPA2XdeUQVe1S5jcGACIN8C1Mm08A6uj0xPBdTi_k-1736796010403-0.0.1.1-604800000;
+        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
       Vary:
@@ -810,17 +820,21 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-amz-id-2:
-      - n+yd8qONwz/p1a0Znu1L37TQBDdyzbIvjWrHI9fY5AXzVuiszfQduX5AHfudSykxzv2f68nxtYo=
+      - ldrLq+wrvaBh3HC0mDplIU2ZuPOsIn/mkePLPplSk2rt6PrOBrjvjMbbWpjWd6yrdq90wEYhud0=
+      x-amz-meta-mtime:
+      - '1714074779.458591481'
       x-amz-request-id:
-      - DQ8BFZ8R5JJTMHRZ
+      - X9WWEPAT0P3GCD9T
       x-amz-server-side-encryption:
       - AES256
       x-backend:
-      - web-i-01da7ec142ee71da9
+      - web-ext-theme-i-00f0fbc3c4a545e45
       x-content-type-options:
       - nosniff
       x-rtd-domain:
       - proj.org
+      x-rtd-force-addons:
+      - 'true'
       x-rtd-path:
       - /proxito/html/osgeo-proj/latest/schemas/v0.4/projjson.schema.json
       x-rtd-project:

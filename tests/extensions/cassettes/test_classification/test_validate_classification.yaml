@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
   response:
@@ -114,11 +114,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
-      - '"60e44dd0-18ae"'
+      - '"66df5c80-18ae"'
       Last-Modified:
-      - Tue, 06 Jul 2021 12:34:24 GMT
+      - Mon, 09 Sep 2024 20:37:20 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -128,19 +128,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 2ea418a39c3b4e7568fcbebdf6cfee253588a8b7
+      - 7e453f5401ff125aeb4aa8350b017ced43d272fa
       X-GitHub-Request-Id:
-      - C9F9:192CCB:34F0451:3E2A920:6683282D
+      - 18D3:3C98C4:45D3413:4EABD7C:67856768
       X-Served-By:
-      - cache-den8244-DEN
+      - cache-bos4671-BOS
       X-Timer:
-      - S1719872346.070418,VS0,VE71
+      - S1736796008.169038,VS0,VE22
       expires:
-      - Mon, 01 Jul 2024 22:15:34 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -156,7 +156,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -244,11 +244,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
-      - '"63e664c8-13bc"'
+      - '"66df1c53-13bc"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:37:44 GMT
+      - Mon, 09 Sep 2024 16:03:31 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -258,19 +258,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 0b0c2ec0235f8b6229ddcd82d66a0b878b89f6e3
+      - 478dcb9fbe4a85b88bca75000329e166af2bca6f
       X-GitHub-Request-Id:
-      - 2E63:167D:2B00C0B:32E0C8E:6683282D
+      - 47BA:13E969:4300816:4BD8815:67856768
       X-Served-By:
-      - cache-den8256-DEN
+      - cache-bos4654-BOS
       X-Timer:
-      - S1719872346.180489,VS0,VE60
+      - S1736796008.262862,VS0,VE46
       expires:
-      - Mon, 01 Jul 2024 22:15:34 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -286,7 +286,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -354,7 +354,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -368,19 +368,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 24d137e785eef4c1d9637b342c6cc052e9e3d0bd
+      - d9d4db9c854509d96b1dfde022334cd6be239e20
       X-GitHub-Request-Id:
-      - E770:16E8:CA8738:EBC6BE:6683282D
+      - CCE8:52C42:4379209:4C5153E:67856765
       X-Served-By:
-      - cache-den8234-DEN
+      - cache-bos4629-BOS
       X-Timer:
-      - S1719872346.267408,VS0,VE62
+      - S1736796008.380380,VS0,VE35
       expires:
-      - Mon, 01 Jul 2024 22:15:34 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -396,13 +396,13 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
-    uri: https://stac-extensions.github.io/projection/v1.1.0/schema.json
+    uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\",\n  \"title\":
+        \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\",\n  \"title\":
         \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
         for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
         are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
@@ -427,15 +427,15 @@ interactions:
         \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\"\n
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\"\n
         \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n          \"title\":\"EPSG
-        code\",\n          \"type\":[\n            \"integer\",\n            \"null\"\n
+        \"object\",\n      \"properties\": {\n        \"proj:code\":{\n          \"title\":\"Projection
+        code\",\n          \"type\":[\n            \"string\",\n            \"null\"\n
         \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
         Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
         \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
         {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
-        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.5/projjson.schema.json\"\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.7/projjson.schema.json\"\n
         \           },\n            {\n              \"type\": \"null\"\n            }\n
         \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
         \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
@@ -470,15 +470,15 @@ interactions:
       Connection:
       - close
       Content-Length:
-      - '4369'
+      - '4374'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
-      - '"63e6651b-1111"'
+      - '"669e563b-1116"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:39:07 GMT
+      - Mon, 22 Jul 2024 12:53:15 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -488,19 +488,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - c4a296b1ff8172dbd8751495d13fb19515966897
+      - 2831fcd74e3fbb769cb2101bfdea5153db9eeb61
       X-GitHub-Request-Id:
-      - 101E:2C4D72:32770B6:3BB119A:6683282E
+      - 9300:3C3B5B:43E99E0:4CC1B98:67856768
       X-Served-By:
-      - cache-den8253-DEN
+      - cache-bos4677-BOS
       X-Timer:
-      - S1719872346.366036,VS0,VE65
+      - S1736796009.503292,VS0,VE48
       expires:
-      - Mon, 01 Jul 2024 22:15:34 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -516,7 +516,7 @@ interactions:
       Host:
       - landsat.usgs.gov
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json
   response:
@@ -582,7 +582,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
       - '"f5d-5c78e5c04950e"'
       Last-Modified:
@@ -590,8 +590,8 @@ interactions:
       Server:
       - Apache
       Set-Cookie:
-      - fwb=429bb9b17ca48ed3eeddde075a2b8366;max-age=300;Path=/;Secure;HttpOnly
-      - cookiesession1=678A3E63ECA46BDACA4A1E617FA72C2A;Expires=Tue, 01 Jul 2025 22:19:06
+      - fwb=429bb9b17ca48ed3eeddde0768678567;max-age=300;Path=/;Secure;HttpOnly
+      - cookiesession1=678A3E6375B34C8AF116837E2CB5BAB7;Expires=Tue, 13 Jan 2026 19:20:08
         GMT;Path=/;HttpOnly
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains; preload
@@ -610,7 +610,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -706,7 +706,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:08 GMT
       ETag:
       - '"60febab7-15fa"'
       Last-Modified:
@@ -720,19 +720,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 209548a91e4dfb2e8066fd34c48367545137ab86
+      - 5183c86d0349aa5b4c55248ea1d4292c0ddd0e22
       X-GitHub-Request-Id:
-      - 2F82:161906:348FC3F:3DC9F1E:6683282D
+      - 6498:2542B:42E5DD7:4BBDD88:67856768
       X-Served-By:
-      - cache-den8221-DEN
+      - cache-bos4657-BOS
       X-Timer:
-      - S1719872347.618275,VS0,VE57
+      - S1736796009.902876,VS0,VE50
       expires:
-      - Mon, 01 Jul 2024 22:15:35 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -748,7 +748,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/classification/v2.0.0/schema.json
   response:
@@ -847,7 +847,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '1'
       Cache-Control:
       - max-age=600
       Connection:
@@ -857,7 +857,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 01 Jul 2024 22:19:06 GMT
+      - Mon, 13 Jan 2025 19:20:09 GMT
       ETag:
       - '"66487a48-199a"'
       Last-Modified:
@@ -871,19 +871,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 67b8727546644f385c7db6b26afaf5f8badae4a5
+      - 79f43c94531cdb44b7e22bb53ec77a70f6e5362d
       X-GitHub-Request-Id:
-      - 10BE:2C4D72:327703C:3BB1110:6683282D
+      - 5E64:22F2A5:46EEBBC:4FC710D:67856766
       X-Served-By:
-      - cache-den8224-DEN
+      - cache-bos4621-BOS
       X-Timer:
-      - S1719872347.701193,VS0,VE1
+      - S1736796009.018469,VS0,VE2
       expires:
-      - Mon, 01 Jul 2024 22:15:34 GMT
+      - Mon, 13 Jan 2025 19:30:07 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

@@ -85,7 +85,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '7'
+      - '29'
       Cache-Control:
       - max-age=600
       Connection:
@@ -95,11 +95,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:13:49 GMT
+      - Mon, 13 Jan 2025 19:20:37 GMT
       ETag:
-      - '"63e664c8-13bc"'
+      - '"66df1c53-13bc"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:37:44 GMT
+      - Mon, 09 Sep 2024 16:03:31 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - e255e43d0c7637c940a9ca5652d21129ca8f6937
+      - 987810fd3b25f51d2028f92c2665260e07e134ad
       X-GitHub-Request-Id:
-      - 5B26:3FB5:EBCC97:12D0123:6605CF76
+      - 47BA:13E969:4300816:4BD8815:67856768
       X-Served-By:
-      - cache-ewr18181-EWR
+      - cache-bos4669-BOS
       X-Timer:
-      - S1711656830.776365,VS0,VE1
+      - S1736796038.622768,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 20:23:42 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -139,11 +139,11 @@ interactions:
       User-Agent:
       - Python-urllib/3.11
     method: GET
-    uri: https://stac-extensions.github.io/projection/v1.1.0/schema.json
+    uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\",\n  \"title\":
+        \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\",\n  \"title\":
         \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
         for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
         are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
@@ -168,15 +168,15 @@ interactions:
         \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\"\n
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\"\n
         \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n          \"title\":\"EPSG
-        code\",\n          \"type\":[\n            \"integer\",\n            \"null\"\n
+        \"object\",\n      \"properties\": {\n        \"proj:code\":{\n          \"title\":\"Projection
+        code\",\n          \"type\":[\n            \"string\",\n            \"null\"\n
         \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
         Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
         \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
         {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
-        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.5/projjson.schema.json\"\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.7/projjson.schema.json\"\n
         \           },\n            {\n              \"type\": \"null\"\n            }\n
         \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
         \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
@@ -205,21 +205,21 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '7'
+      - '29'
       Cache-Control:
       - max-age=600
       Connection:
       - close
       Content-Length:
-      - '4369'
+      - '4374'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:13:49 GMT
+      - Mon, 13 Jan 2025 19:20:37 GMT
       ETag:
-      - '"63e6651b-1111"'
+      - '"669e563b-1116"'
       Last-Modified:
-      - Fri, 10 Feb 2023 15:39:07 GMT
+      - Mon, 22 Jul 2024 12:53:15 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - c18884d13c1c56b853e8d07ea550617694e570f6
+      - 27e269093e34595d0b2b877f8b451210e0fec4f7
       X-GitHub-Request-Id:
-      - 3C38:3106DE:EFEE58:131462C:6605CF76
+      - 9300:3C3B5B:43E99E0:4CC1B98:67856768
       X-Served-By:
-      - cache-ewr18153-EWR
+      - cache-bos4638-BOS
       X-Timer:
-      - S1711656830.864874,VS0,VE2
+      - S1736796038.694839,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 20:23:43 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -315,7 +315,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '7'
+      - '29'
       Cache-Control:
       - max-age=600
       Connection:
@@ -325,7 +325,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:13:49 GMT
+      - Mon, 13 Jan 2025 19:20:37 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -343,15 +343,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 14758f47065662b5b54e9d353c1355e9c4df3985
+      - 6545df13e625835c8535f9bc4b3eddb48e58b321
       X-GitHub-Request-Id:
-      - 2772:14C61:6E9024:8F3B81:6605BE0D
+      - CCE8:52C42:4379209:4C5153E:67856765
       X-Served-By:
-      - cache-ewr18129-EWR
+      - cache-bos4684-BOS
       X-Timer:
-      - S1711656830.939731,VS0,VE1
+      - S1736796038.756195,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 19:09:25 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
