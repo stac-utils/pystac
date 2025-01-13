@@ -52,11 +52,6 @@ def get_local_schema_cache() -> dict[str, dict[str, Any]]:
                 "provider",
             )
         },
-        # FIXME: This is temporary, until https://github.com/stac-extensions/projection/pull/12
-        # is merged and released
-        "https://stac-extensions.github.io/projection/v2.0.0/schema.json": _read_schema(
-            "projection.json"
-        ),
     }
 
 
