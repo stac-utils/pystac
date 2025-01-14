@@ -366,8 +366,9 @@ class EOMigrationTest(unittest.TestCase):
         item = Item.from_file(self.item_0_8_path)
 
         self.assertNotIn("eo:epsg", item.properties)
-        self.assertIn("proj:epsg", item.properties)
+        self.assertIn("proj:code", item.properties)
         self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        assert item.ext.proj.epsg == item_dict["properties"]["eo:epsg"]
 
 
 @pytest.fixture

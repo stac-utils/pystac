@@ -132,7 +132,7 @@
           "description": "Pixel opacity (0: fully transparent; 255: fully opaque)"
         }
       ],
-      "proj:epsg": 32618,
+      "proj:code": "EPSG:32618",
       "proj:bbox": [
         363546.0,
         2755638.0,
@@ -170,7 +170,7 @@
     "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json",
     "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
-    "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
   ],
   "collection": "psscene-vis-clip: PSScene"
 }

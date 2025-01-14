@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json
   response:
@@ -108,7 +108,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '4'
       Cache-Control:
       - max-age=600
       Connection:
@@ -118,7 +118,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:50 GMT
       ETag:
       - '"66e1651c-1a43"'
       Last-Modified:
@@ -134,15 +134,17 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 1d73dbb538f406c7cea59de67ec84d258affe9c3
+      - 926b1a2f759dee1f630f9627554e120c3df0cb3f
       X-GitHub-Request-Id:
-      - 6C58:3E300:36AFDA7:3D0FACE:6702CFAA
+      - 2DE9:F7148:415FD67:47ED00A:678567C9
       X-Served-By:
-      - cache-den8275-DEN
+      - cache-bos4644-BOS
       X-Timer:
-      - S1728237486.652468,VS0,VE1
+      - S1736796111.542389,VS0,VE3
       expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
+      - Mon, 13 Jan 2025 19:31:46 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -156,7 +158,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/basics.json
   response:
@@ -175,7 +177,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '4'
       Cache-Control:
       - max-age=600
       Connection:
@@ -185,7 +187,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:50 GMT
       ETag:
       - '"66e1651c-215"'
       Last-Modified:
@@ -201,15 +203,17 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - ed144fdebacf72a99d8fe1e895a38e3b3f90f5eb
+      - ae729fe9af5e5e242b0823e72a4eff1a588316b1
       X-GitHub-Request-Id:
-      - DFE4:D9115:3A59DAB:40B9CC6:6702CFAA
+      - 7695:324E65:41D8929:4865660:678567C9
       X-Served-By:
-      - cache-den8244-DEN
+      - cache-bos4640-BOS
       X-Timer:
-      - S1728237486.682008,VS0,VE1
+      - S1736796111.634277,VS0,VE2
       expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
+      - Mon, 13 Jan 2025 19:31:46 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -223,7 +227,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json
   response:
@@ -255,7 +259,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '4'
       Cache-Control:
       - max-age=600
       Connection:
@@ -265,7 +269,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:50 GMT
       ETag:
       - '"66e1651c-5c0"'
       Last-Modified:
@@ -281,17 +285,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - e488b66747f2734b4d3d70acf1d6341b662c9e58
+      - a0975d15bc545f5afbf9feee01108eb507313eb6
       X-GitHub-Request-Id:
-      - EA52:A919C:3B43014:41A30A2:6702CF9D
+      - D1D6:56590:415C151:47E8D04:678567C9
       X-Served-By:
-      - cache-den8230-DEN
+      - cache-bos4622-BOS
       X-Timer:
-      - S1728237486.710270,VS0,VE3
+      - S1736796111.714213,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:31:46 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -305,7 +307,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/instrument.json
   response:
@@ -326,7 +328,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '4'
       Cache-Control:
       - max-age=600
       Connection:
@@ -336,7 +338,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:50 GMT
       ETag:
       - '"66e1651c-2b8"'
       Last-Modified:
@@ -352,79 +354,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 6cb3bea4883f1fe51d9915176b94b624789563ef
+      - df22f9e299700b5659b70a94f35c7f729c746aa3
       X-GitHub-Request-Id:
-      - 9461:76956:3BAC588:420C605:6702CFAA
+      - 454F:C7022:4158429:47E57E3:678567C9
       X-Served-By:
-      - cache-den8249-DEN
+      - cache-bos4639-BOS
       X-Timer:
-      - S1728237486.745865,VS0,VE1
+      - S1736796111.803266,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
-      x-proxy-cache:
-      - MISS
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
-    method: GET
-    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json
-  response:
-    body:
-      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json#\",\n
-        \ \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n  \"properties\":
-        {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\": \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n
-        \   }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '2'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '302'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
-      ETag:
-      - '"66e1651c-12e"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - c0100f30de45cc072925f9696b05677193863f4c
-      X-GitHub-Request-Id:
-      - 3627:25A7B1:3C09466:4269466:6702CFA8
-      X-Served-By:
-      - cache-den8252-DEN
-      X-Timer:
-      - S1728237486.773936,VS0,VE1
-      expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
+      - Mon, 13 Jan 2025 19:31:46 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -440,7 +378,73 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json#\",\n
+        \ \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n  \"properties\":
+        {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\": \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n
+        \   }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '4'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '302'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 13 Jan 2025 19:21:50 GMT
+      ETag:
+      - '"66e1651c-12e"'
+      Last-Modified:
+      - Wed, 11 Sep 2024 09:38:36 GMT
+      Server:
+      - GitHub.com
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 1a0f851dfe9b4bd8af93607291ea20de9cdb5461
+      X-GitHub-Request-Id:
+      - 4D3A:3E72B0:42A28B4:492EAA8:678567C9
+      X-Served-By:
+      - cache-bos4627-BOS
+      X-Timer:
+      - S1736796111.886051,VS0,VE2
+      expires:
+      - Mon, 13 Jan 2025 19:31:46 GMT
+      x-origin-cache:
+      - HIT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - schemas.stacspec.org
+      User-Agent:
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/provider.json
   response:
@@ -467,7 +471,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '4'
       Cache-Control:
       - max-age=600
       Connection:
@@ -477,7 +481,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:50 GMT
       ETag:
       - '"66e1651c-46f"'
       Last-Modified:
@@ -493,15 +497,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - c369fcc88b7933c4e7fd1c0e55fb01e2b0576448
+      - 4a5f151fa87ce22c74880688aedc4aee6f03aba8
       X-GitHub-Request-Id:
-      - FB80:30438:3A4FEB1:40AFCA0:6702CFA8
+      - CAD9:2464FF:4365F92:49F347B:678567CA
       X-Served-By:
-      - cache-den8263-DEN
+      - cache-bos4678-BOS
       X-Timer:
-      - S1728237486.803942,VS0,VE1
+      - S1736796111.962549,VS0,VE2
       expires:
-      - Sun, 06 Oct 2024 18:08:03 GMT
+      - Mon, 13 Jan 2025 19:31:46 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -517,7 +521,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -595,7 +599,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '4'
+      - '103'
       Cache-Control:
       - max-age=600
       Connection:
@@ -605,7 +609,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:51 GMT
       ETag:
       - '"66df1c53-13bc"'
       Last-Modified:
@@ -623,15 +627,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 999644492285e713444bdbd2bfd2d4261b2e6489
+      - bb7c4f454ab72560ad967d105c02bf7c6589a24b
       X-GitHub-Request-Id:
-      - 535B:2E3A96:393FA42:3F9F3E0:6702CFA8
+      - 47BA:13E969:4300816:4BD8815:67856768
       X-Served-By:
-      - cache-den8259-DEN
+      - cache-bos4656-BOS
       X-Timer:
-      - S1728237486.845457,VS0,VE1
+      - S1736796111.028643,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:08:01 GMT
+      - Mon, 13 Jan 2025 19:30:08 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -647,7 +651,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:
@@ -719,7 +723,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '4'
+      - '6'
       Cache-Control:
       - max-age=600
       Connection:
@@ -729,7 +733,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:51 GMT
       ETag:
       - '"669e563b-1226"'
       Last-Modified:
@@ -747,17 +751,19 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 5e41914ce91cce27194f207c0a59f9ff0562a640
+      - c8cd85746104322ceece43025e90c726971a2593
       X-GitHub-Request-Id:
-      - 360F:31444D:38827C0:3EE24EF:6702CFA8
+      - 166C:264E2D:436BE91:49F958B:678567C9
       X-Served-By:
-      - cache-den8248-DEN
+      - cache-bos4680-BOS
       X-Timer:
-      - S1728237486.872127,VS0,VE1
+      - S1736796111.100435,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:08:01 GMT
+      - Mon, 13 Jan 2025 19:31:45 GMT
       permissions-policy:
       - interest-cohort=()
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:
@@ -771,7 +777,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://proj.org/schemas/v0.2/projjson.schema.json
   response:
@@ -781,11 +787,11 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '23'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 8ce7899efc1f533c-DEN
+      - 9017c06ef818d46e-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -797,18 +803,20 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:58:05 GMT
+      - Mon, 13 Jan 2025 19:21:51 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=1eJsPGe3hMPyyaEl5PeM7UG1fgWnZ7kG8yoXTBOnego-1728237485944-0.0.1.1-604800000;
+      - _cfuvid=uRBDA2JGwAtIC0RpJJPapOW458cIDIFZ5oatR3yeNXM-1736796111229-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
       access-control-expose-headers:
       - Location
+      alt-svc:
+      - h3=":443"; ma=86400
       cdn-cache-control:
       - public
       cross-origin-opener-policy:
@@ -816,11 +824,13 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-backend:
-      - web-i-00198cede0d27448d
+      - web-ext-theme-i-073e529e9c304daca
       x-content-type-options:
       - nosniff
       x-rtd-domain:
       - proj.org
+      x-rtd-force-addons:
+      - 'true'
       x-rtd-project:
       - osgeo-proj
       x-rtd-project-method:
@@ -842,7 +852,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
   response:
@@ -1290,11 +1300,11 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '16'
+      - '22'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 8ce7899f5eca518c-DEN
+      - 9017c06fcf3cc55b-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -1302,7 +1312,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Sun, 06 Oct 2024 17:58:06 GMT
+      - Mon, 13 Jan 2025 19:21:51 GMT
       ETag:
       - W/"54be42a997d748d338984583b3f2c900"
       Last-Modified:
@@ -1310,7 +1320,7 @@ interactions:
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=Lkr64CHKUZ0bIRdpygQjso17kQwJUxBavUxHoYQH2S8-1728237486011-0.0.1.1-604800000;
+      - _cfuvid=ZoC6KxUhaZscCCXvwelwjkwyzqDVa37h8CAzfcvpMAc-1736796111351-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
@@ -1318,24 +1328,28 @@ interactions:
       - Accept-Encoding
       access-control-allow-methods:
       - HEAD, OPTIONS, GET
+      alt-svc:
+      - h3=":443"; ma=86400
       cdn-cache-control:
       - public
       referrer-policy:
       - no-referrer-when-downgrade
       x-amz-id-2:
-      - f5aASN/bFyj2phyPzWWHQ68IHhNiPEXh6zTTeg9+RJ9QQzj6sVVR2aT8uGUxg5L0kRyrjZjApiE=
+      - hgVzmHhEtFyhPed7VKOPPhzOJHRu5ohayHWqkM/7CjcVbhLz1+BtgYFrGOUm8boSXFisXZDMzRA=
       x-amz-meta-mtime:
       - '1714074779.458591481'
       x-amz-request-id:
-      - R8NFNYA0GYKBVMPW
+      - 1MAW5VPVHHDJMTRE
       x-amz-server-side-encryption:
       - AES256
       x-backend:
-      - web-i-0437d377c305e1f87
+      - web-ext-theme-i-077f2b65129dd3006
       x-content-type-options:
       - nosniff
       x-rtd-domain:
       - proj.org
+      x-rtd-force-addons:
+      - 'true'
       x-rtd-path:
       - /proxito/html/osgeo-proj/latest/schemas/v0.2/projjson.schema.json
       x-rtd-project:

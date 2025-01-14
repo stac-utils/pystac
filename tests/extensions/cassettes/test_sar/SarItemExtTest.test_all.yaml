@@ -96,11 +96,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:14:11 GMT
+      - Mon, 13 Jan 2025 19:20:20 GMT
       ETag:
-      - '"60414cc0-13df"'
+      - '"676219a3-13df"'
       Last-Modified:
-      - Thu, 04 Mar 2021 21:10:24 GMT
+      - Wed, 18 Dec 2024 00:38:59 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -110,19 +110,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - e5d9298268c7bdd7067a72e4ea8783db8d88e446
+      - b8d4b3a2f552a15c87fdd3316c3b50e370796ea9
       X-GitHub-Request-Id:
-      - 7618:48C7:FA895C:13B7379:6605BE0D
+      - 5B40:2C71CC:435F8D9:4C37733:67856773
       X-Served-By:
-      - cache-ewr18138-EWR
+      - cache-bos4629-BOS
       X-Timer:
-      - S1711656851.227854,VS0,VE18
+      - S1736796020.301895,VS0,VE46
       expires:
-      - Thu, 28 Mar 2024 19:09:25 GMT
+      - Mon, 13 Jan 2025 19:30:20 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

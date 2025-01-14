@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:46 GMT
+      - Mon, 13 Jan 2025 19:21:24 GMT
       ETag:
       - '"66e1651c-14e2"'
       Last-Modified:
@@ -113,19 +113,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - ec823ef6eeec1f2416243e47d6fcb34a8882467a
+      - ae255fa593ed4670982c677484c4947f6596b385
       X-GitHub-Request-Id:
-      - 317F:1D6D8E:38B0767:3F1014B:6702CF93
+      - 96C3:3828BB:4264605:4B3CADC:678567AD
       X-Served-By:
-      - cache-den8236-DEN
+      - cache-bos4648-BOS
       X-Timer:
-      - S1728237467.589587,VS0,VE0
+      - S1736796084.014157,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -139,7 +137,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -191,7 +189,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:46 GMT
+      - Mon, 13 Jan 2025 19:21:24 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -205,17 +203,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 05482112e9d9f6a7396ea7e60926419bd42a5750
+      - 7e21b226972e75eda69f548ce32e8108f227b2c7
       X-GitHub-Request-Id:
-      - EAEE:31444D:3881203:3EE0C9C:6702CF93
+      - EF0B:150623:4960A01:5239E88:678567AD
       X-Served-By:
-      - cache-den8276-DEN
+      - cache-bos4627-BOS
       X-Timer:
-      - S1728237467.616077,VS0,VE1
+      - S1736796084.106552,VS0,VE2
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:

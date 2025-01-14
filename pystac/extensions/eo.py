@@ -656,19 +656,30 @@ class EOExtensionHooks(ExtensionHooks):
                         ]
                         del obj["properties"][f"eo:{field}"]
 
-            # eo:epsg became proj:epsg
+            # eo:epsg became proj:epsg in Projection Extension <2.0.0 and became
+            # proj:code in Projection Extension 2.0.0
             eo_epsg = PREFIX + "epsg"
             proj_epsg = projection.PREFIX + "epsg"
-            if eo_epsg in obj["properties"] and proj_epsg not in obj["properties"]:
-                obj["properties"][proj_epsg] = obj["properties"].pop(eo_epsg)
+            proj_code = projection.PREFIX + "code"
+            if (
+                eo_epsg in obj["properties"]
+                and proj_epsg not in obj["properties"]
+                and proj_code not in obj["properties"]
+            ):
                 obj["stac_extensions"] = obj.get("stac_extensions", [])
-                if (
-                    projection.ProjectionExtension.get_schema_uri()
-                    not in obj["stac_extensions"]
+                if set(obj["stac_extensions"]).intersection(
+                    projection.ProjectionExtensionHooks.pre_2
                 ):
-                    obj["stac_extensions"].append(
-                        projection.ProjectionExtension.get_schema_uri()
+                    obj["properties"][proj_epsg] = obj["properties"].pop(eo_epsg)
+                else:
+                    obj["properties"][proj_code] = (
+                        f"EPSG:{obj['properties'].pop(eo_epsg)}"
                     )
+                    if not projection.ProjectionExtensionHooks().has_extension(obj):
+                        obj["stac_extensions"].append(
+                            projection.ProjectionExtension.get_schema_uri()
+                        )
+
                 if not any(prop.startswith(PREFIX) for prop in obj["properties"]):
                     obj["stac_extensions"].remove(EOExtension.get_schema_uri())
 
