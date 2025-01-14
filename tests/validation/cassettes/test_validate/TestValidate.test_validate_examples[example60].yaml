@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/collection-spec/json-schema/collection.json
   response:
@@ -100,13 +100,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 06 Oct 2024 17:57:34 GMT
+      - Mon, 13 Jan 2025 19:21:11 GMT
       ETag:
       - '"efa6309742b904ab7b06bab4c30c3ea2e1ce78163892365a7f4ee461716396b3"'
       Expires:
-      - Sun, 06 Oct 2024 18:02:34 GMT
+      - Mon, 13 Jan 2025 19:26:11 GMT
       Source-Age:
-      - '10'
+      - '14'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -116,19 +116,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 41319cf2f1a2f67fba98cb966329cdf494f827b4
+      - c3d3bb07ebe59b3adf31fa3547177883dc54c557
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - F32C:1FF8D6:60FF37:6B3609:6702CF83
+      - CD8E:3A423C:2590819:29A11AF:67856798
       X-Served-By:
-      - cache-den8283-DEN
+      - cache-bos4649-BOS
       X-Timer:
-      - S1728237455.985268,VS0,VE0
+      - S1736796071.498441,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -142,7 +142,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/catalog-spec/json-schema/catalog.json
   response:
@@ -191,13 +191,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 06 Oct 2024 17:57:35 GMT
+      - Mon, 13 Jan 2025 19:21:11 GMT
       ETag:
       - '"c76fd44b22619705d40fb03a5b1d875e2e786f9ac7a85244758d15cc7cc947a9"'
       Expires:
-      - Sun, 06 Oct 2024 18:02:35 GMT
+      - Mon, 13 Jan 2025 19:26:11 GMT
       Source-Age:
-      - '10'
+      - '15'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -207,19 +207,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 8608ef3dc481ddf03f2dff68f5b4261e17cb01de
+      - 08d14d79269c30cee2306964d3630fe910268347
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 1BD9:3EDAE6:600238:6A37A3:6702CF84
+      - 96DE:3E316F:263D69A:2A4DF8F:67856791
       X-Served-By:
-      - cache-den8255-DEN
+      - cache-bos4653-BOS
       X-Timer:
-      - S1728237455.012614,VS0,VE1
+      - S1736796072.572269,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -233,7 +233,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/version/json-schema/schema.json
   response:
@@ -273,13 +273,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 06 Oct 2024 17:57:35 GMT
+      - Mon, 13 Jan 2025 19:21:11 GMT
       ETag:
       - '"3ad87031bb638da9b48582cbf730c047e1075960364c8fc992381ddf5467f296"'
       Expires:
-      - Sun, 06 Oct 2024 18:02:35 GMT
+      - Mon, 13 Jan 2025 19:26:11 GMT
       Source-Age:
-      - '4'
+      - '5'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -293,15 +293,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 33005abeeecb9e4a8113273981551f6077f245e8
+      - de06cceb9e4ce14cfef538fb4e187fd3e1fa0ab7
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - EA2E:1CA6FD:6232F5:6C6663:6702CF8A
+      - FE63:3EFD68:70C823:7D57A0:678567A1
       X-Served-By:
-      - cache-den8265-DEN
+      - cache-bos4685-BOS
       X-Timer:
-      - S1728237455.038552,VS0,VE1
+      - S1736796072.640616,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -315,7 +315,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json
   response:
@@ -408,13 +408,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Sun, 06 Oct 2024 17:57:35 GMT
+      - Mon, 13 Jan 2025 19:21:11 GMT
       ETag:
       - '"eb4ef35f5071c45c7b53e7fe6ef92a682455a0de207fcbe27507488c4bfcc9ca"'
       Expires:
-      - Sun, 06 Oct 2024 18:02:35 GMT
+      - Mon, 13 Jan 2025 19:26:11 GMT
       Source-Age:
-      - '9'
+      - '14'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -428,15 +428,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 8f1403a921f821357ed36216633f98ab91e7ba39
+      - 20cc79e290505ad1caa82e0dbcae4a131dfdc31e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0A3F:38FE6F:5BFDCC:662B7B:6702CF85
+      - 5F23:38BE00:25BAD67:29CB6F9:67856799
       X-Served-By:
-      - cache-den8281-DEN
+      - cache-bos4633-BOS
       X-Timer:
-      - S1728237455.066009,VS0,VE1
+      - S1736796072.712607,VS0,VE8
       X-XSS-Protection:
       - 1; mode=block
     status:

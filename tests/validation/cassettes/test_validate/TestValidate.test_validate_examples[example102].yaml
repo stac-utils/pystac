@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json
   response:
@@ -89,7 +89,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '16'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-147c"'
       Last-Modified:
@@ -115,15 +115,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 12ec01dfdca9876f2fa0f74fa400e35e1838ff38
+      - ae6e7ce8293c5da4cd73077095b486fcc2888c3b
       X-GitHub-Request-Id:
-      - 3735:687EA:3798775:3DF80EE:6702CF93
+      - 5807:1660B9:419011D:481CEFA:6785677E
       X-Served-By:
-      - cache-den8259-DEN
+      - cache-bos4678-BOS
       X-Timer:
-      - S1728237476.716360,VS0,VE1
+      - S1736796096.080449,VS0,VE2
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
+      - Mon, 13 Jan 2025 19:30:31 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -137,7 +137,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/basics.json
   response:
@@ -156,7 +156,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -166,7 +166,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-21c"'
       Last-Modified:
@@ -180,19 +180,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 88e40097c8f2e17d84e004b921383e3ccd83e982
+      - 9c06313b33155d314426859e913fd1407243cce4
       X-GitHub-Request-Id:
-      - 39FD:88140:39A823E:4007EA8:6702CF93
+      - 755A:1A5A62:41CF5C0:485C5E2:6785677F
       X-Served-By:
-      - cache-den8255-DEN
+      - cache-bos4676-BOS
       X-Timer:
-      - S1728237476.745337,VS0,VE0
+      - S1736796096.180593,VS0,VE2
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:30:32 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -206,7 +204,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/datetime.json
   response:
@@ -255,7 +253,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -265,7 +263,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-a82"'
       Last-Modified:
@@ -281,15 +279,15 @@ interactions:
       X-Cache-Hits:
       - '2'
       X-Fastly-Request-ID:
-      - 1fc9c464326eeb25c99b92ff75d7148ba2838742
+      - 73f9e66fd9126791a997cef3377dbd8adb040d2b
       X-GitHub-Request-Id:
-      - C3DF:3932BD:3BFA7C2:425A45C:6702CF93
+      - 521A:288381:40D8AEE:476567C:67856778
       X-Served-By:
-      - cache-den8267-DEN
+      - cache-bos4677-BOS
       X-Timer:
-      - S1728237476.771004,VS0,VE1
+      - S1736796096.262046,VS0,VE0
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
+      - Mon, 13 Jan 2025 19:30:32 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -305,7 +303,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/instrument.json
   response:
@@ -326,7 +324,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -336,7 +334,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-2a2"'
       Last-Modified:
@@ -352,15 +350,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 415c8886c7b77f599131fe1ce9249cf28d8b19d1
+      - e76024bcbe46e2f5544277272b212e909a79d55e
       X-GitHub-Request-Id:
-      - E409:2C5686:37942D5:3DF3B2A:6702CF93
+      - FBC0:389225:434F69D:49DC23D:67856780
       X-Served-By:
-      - cache-den8249-DEN
+      - cache-bos4629-BOS
       X-Timer:
-      - S1728237476.796860,VS0,VE1
+      - S1736796096.340679,VS0,VE3
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
+      - Mon, 13 Jan 2025 19:30:32 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -376,7 +374,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/licensing.json
   response:
@@ -392,7 +390,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -402,7 +400,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-135"'
       Last-Modified:
@@ -416,19 +414,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 8c11b9093c52411a1c4bb052742215038729f664
+      - 5a2e65ab93b312b057da2d904e41929fdd5941dd
       X-GitHub-Request-Id:
-      - C7A3:25A7B1:3C07C25:4267971:6702CF93
+      - 7BFC:2464FF:4361B47:49EE9E5:6785677E
       X-Served-By:
-      - cache-den8263-DEN
+      - cache-bos4655-BOS
       X-Timer:
-      - S1728237476.823770,VS0,VE0
+      - S1736796096.427514,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:30:32 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -442,7 +438,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/provider.json
   response:
@@ -468,7 +464,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '15'
+      - '64'
       Cache-Control:
       - max-age=600
       Connection:
@@ -478,7 +474,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-40e"'
       Last-Modified:
@@ -492,17 +488,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '3'
       X-Fastly-Request-ID:
-      - 920ad24790bff063f98f5c120aad1671da3d230a
+      - f294fa1d3ba7d570807acafdaf3b1b4846410cc8
       X-GitHub-Request-Id:
-      - 424E:23FCDC:39ED650:404D361:6702CF8A
+      - 55DF:288381:40D8B8B:476572A:67856780
       X-Served-By:
-      - cache-den8270-DEN
+      - cache-bos4686-BOS
       X-Timer:
-      - S1728237476.853669,VS0,VE1
+      - S1736796097.518454,VS0,VE0
       expires:
-      - Sun, 06 Oct 2024 18:07:40 GMT
+      - Mon, 13 Jan 2025 19:30:32 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -518,7 +514,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/version/json-schema/schema.json
   response:
@@ -553,7 +549,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '10'
+      - '15'
       Cache-Control:
       - max-age=600
       Connection:
@@ -563,7 +559,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-70b"'
       Last-Modified:
@@ -579,15 +575,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 783c9a888037cb778bb3957e816208318dfbd223
+      - cf76bf816543f9be749fa03ec2abe89af2752e97
       X-GitHub-Request-Id:
-      - D4E0:269EC6:3A87F01:40E7AF4:6702CF99
+      - EF08:2542B:42EACC0:4BC34D3:678567B1
       X-Served-By:
-      - cache-den8227-DEN
+      - cache-bos4654-BOS
       X-Timer:
-      - S1728237476.883915,VS0,VE1
+      - S1736796097.602542,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:45 GMT
+      - Mon, 13 Jan 2025 19:31:21 GMT
       x-origin-cache:
       - HIT
       x-proxy-cache:
@@ -603,7 +599,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -685,7 +681,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '16'
+      - '19'
       Cache-Control:
       - max-age=600
       Connection:
@@ -695,7 +691,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-14e2"'
       Last-Modified:
@@ -709,19 +705,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '18'
+      - '2'
       X-Fastly-Request-ID:
-      - b24cacc1270c94f4c313da6896c51a8ba9130365
+      - cb53f96ab29f52887945a1423b41559b2f84eb67
       X-GitHub-Request-Id:
-      - 317F:1D6D8E:38B0767:3F1014B:6702CF93
+      - 96C3:3828BB:4264605:4B3CADC:678567AD
       X-Served-By:
-      - cache-den8226-DEN
+      - cache-bos4633-BOS
       X-Timer:
-      - S1728237476.914599,VS0,VE1
+      - S1736796097.694160,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -735,7 +729,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -777,7 +771,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '16'
+      - '20'
       Cache-Control:
       - max-age=600
       Connection:
@@ -787,7 +781,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:55 GMT
+      - Mon, 13 Jan 2025 19:21:36 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -801,17 +795,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - 5a42b15b4ceaaab66f0f58c354758e511e6e7d5f
+      - c2b617894bbdbc390fd604375d952abd5cf2008f
       X-GitHub-Request-Id:
-      - EAEE:31444D:3881203:3EE0C9C:6702CF93
+      - EF0B:150623:4960A01:5239E88:678567AD
       X-Served-By:
-      - cache-den8279-DEN
+      - cache-bos4680-BOS
       X-Timer:
-      - S1728237476.945967,VS0,VE1
+      - S1736796097.778462,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:

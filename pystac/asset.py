@@ -267,7 +267,7 @@ class Asset:
 
         Example::
 
-            asset.ext.proj.epsg = 4326
+            asset.ext.proj.code = "EPSG:4326"
         """
         from pystac.extensions.ext import AssetExt
 

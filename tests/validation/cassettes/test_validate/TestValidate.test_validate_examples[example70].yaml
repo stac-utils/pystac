@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -59,7 +59,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:39 GMT
+      - Mon, 13 Jan 2025 19:21:17 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -75,15 +75,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - b1f406ab5948a8781206ce71cf109668871f37b2
+      - 80f5982d8e1579549b89044ae817f8f3df232fc5
       X-GitHub-Request-Id:
-      - EAEE:31444D:3881203:3EE0C9C:6702CF93
+      - EF0B:150623:4960A01:5239E88:678567AD
       X-Served-By:
-      - cache-den8221-DEN
+      - cache-bos4654-BOS
       X-Timer:
-      - S1728237460.604346,VS0,VE75
+      - S1736796077.076914,VS0,VE31
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:

@@ -524,7 +524,7 @@ class Item(STACObject, Assets):
 
         Example::
 
-            item.ext.proj.epsg = 4326
+            item.ext.proj.code = "EPSG:4326"
         """
         from pystac.extensions.ext import ItemExt
 

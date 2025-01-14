@@ -12,7 +12,7 @@ class SummariesTest(unittest.TestCase):
         summaries = Summarizer().summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
         self.assertEqual(len(summaries_dict["eo:bands"]), 4)
-        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:code"]), 1)
 
     def test_summary_limit(self) -> None:
         coll = TestCases.case_5()
@@ -20,7 +20,7 @@ class SummariesTest(unittest.TestCase):
         summaries.maxcount = 2
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
-        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:code"]), 1)
 
     def test_summary_custom_fields_file(self) -> None:
         coll = TestCases.case_5()
@@ -28,21 +28,21 @@ class SummariesTest(unittest.TestCase):
         summaries = Summarizer(path).summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
-        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:code"]), 1)
 
     def test_summary_custom_fields_dict(self) -> None:
         coll = TestCases.case_5()
         spec = {
             "eo:bands": SummaryStrategy.DONT_SUMMARIZE,
-            "proj:epsg": SummaryStrategy.ARRAY,
+            "proj:code": SummaryStrategy.ARRAY,
         }
         obj = Summarizer(spec)
         self.assertTrue("eo:bands" not in obj.summaryfields)
-        self.assertEqual(obj.summaryfields["proj:epsg"], SummaryStrategy.ARRAY)
+        self.assertEqual(obj.summaryfields["proj:code"], SummaryStrategy.ARRAY)
         summaries = obj.summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
         self.assertIsNone(summaries_dict.get("eo:bands"))
-        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
+        self.assertEqual(len(summaries_dict["proj:code"]), 1)
 
     def test_summary_wrong_custom_fields_file(self) -> None:
         coll = TestCases.case_5()
@@ -77,8 +77,6 @@ class SummariesTest(unittest.TestCase):
         coll = TestCases.case_5()
         summaries = Summarizer().summarize(coll.get_items(recursive=True))
         summaries_dict = summaries.to_dict()
-        self.assertEqual(len(summaries_dict["eo:bands"]), 4)
-        self.assertEqual(len(summaries_dict["proj:epsg"]), 1)
         clone = summaries.clone()
         self.assertTrue(isinstance(clone, Summaries))
         clone_dict = clone.to_dict()

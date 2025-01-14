@@ -7,7 +7,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:39 GMT
+      - Mon, 13 Jan 2025 19:21:17 GMT
       ETag:
       - '"66e1651c-14e2"'
       Last-Modified:
@@ -115,17 +115,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 4f2d256701c0fb28a6ed94f17e32c650e2ccd84e
+      - 672ac51e23d112e00950b42f5402615251a1249f
       X-GitHub-Request-Id:
-      - 317F:1D6D8E:38B0767:3F1014B:6702CF93
+      - 96C3:3828BB:4264605:4B3CADC:678567AD
       X-Served-By:
-      - cache-den8272-DEN
+      - cache-bos4679-BOS
       X-Timer:
-      - S1728237460.767473,VS0,VE61
+      - S1736796077.294376,VS0,VE41
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
-      x-origin-cache:
-      - HIT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -139,7 +137,7 @@ interactions:
       Host:
       - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - Python-urllib/3.11
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -191,7 +189,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Sun, 06 Oct 2024 17:57:39 GMT
+      - Mon, 13 Jan 2025 19:21:17 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -207,15 +205,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 0aaee0aab10ac68a3e802e8c709832ace80a29fe
+      - 67d0ea9fe5ef4eb2f014e2d7ead585d6d4fe44b9
       X-GitHub-Request-Id:
-      - EAEE:31444D:3881203:3EE0C9C:6702CF93
+      - EF0B:150623:4960A01:5239E88:678567AD
       X-Served-By:
-      - cache-den8250-DEN
+      - cache-bos4676-BOS
       X-Timer:
-      - S1728237460.865505,VS0,VE6
+      - S1736796077.420694,VS0,VE1
       expires:
-      - Sun, 06 Oct 2024 18:07:39 GMT
+      - Mon, 13 Jan 2025 19:31:17 GMT
       x-proxy-cache:
       - MISS
     status:
