@@ -79,7 +79,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '1'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
@@ -89,11 +89,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 28 Mar 2024 20:14:05 GMT
+      - Mon, 13 Jan 2025 19:20:14 GMT
       ETag:
-      - '"6046b7f8-114a"'
+      - '"671aae9d-114a"'
       Last-Modified:
-      - Mon, 08 Mar 2021 23:49:12 GMT
+      - Thu, 24 Oct 2024 20:31:25 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -107,15 +107,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - a4b6502a1a5e7adc7d162fcd3d10565d62130bcc
+      - 74b68f23c6f077404d4bcc9c09a31965e431d6b1
       X-GitHub-Request-Id:
-      - 5CD6:179C:EB5ABB:12C35FB:6605CF8D
+      - 39BC:29F0A3:4468BBA:4D4121C:6785676D
       X-Served-By:
-      - cache-ewr18138-EWR
+      - cache-bos4685-BOS
       X-Timer:
-      - S1711656846.663827,VS0,VE1
+      - S1736796014.380931,VS0,VE1
       expires:
-      - Thu, 28 Mar 2024 20:24:05 GMT
+      - Mon, 13 Jan 2025 19:30:13 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

@@ -1,13 +1,21 @@
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, TypeVar, cast
 
-from pystac import Asset, Catalog, Collection, Item, Link, STACError
+from pystac import (
+    Asset,
+    Catalog,
+    Collection,
+    Item,
+    ItemAssetDefinition,
+    Link,
+    STACError,
+)
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
-from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
+from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
@@ -23,8 +31,8 @@ from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
-T = TypeVar("T", Asset, AssetDefinition, Link)
-U = TypeVar("U", Asset, AssetDefinition)
+T = TypeVar("T", Asset, ItemAssetDefinition, Link)
+U = TypeVar("U", Asset, ItemAssetDefinition)
 
 EXTENSION_NAMES = Literal[
     "classification",
@@ -110,7 +118,7 @@ class CollectionExt(CatalogExt):
         return DatacubeExtension.ext(self.stac_object)
 
     @property
-    def item_assets(self) -> dict[str, AssetDefinition]:
+    def item_assets(self) -> dict[str, ItemAssetDefinition]:
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
     @property
@@ -311,8 +319,8 @@ class AssetExt(_AssetExt[Asset]):
 
 
 @dataclass
-class ItemAssetExt(_AssetExt[AssetDefinition]):
-    stac_object: AssetDefinition
+class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
+    stac_object: ItemAssetDefinition
 
 
 @dataclass

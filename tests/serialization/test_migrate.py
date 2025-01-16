@@ -67,7 +67,7 @@ class TestMigrate:
         assert view_ext.sun_elevation, 58.8
         assert view_ext.off_nadir, 1
 
-    def test_migrates_renamed_extension(self) -> None:
+    def test_migrates_removes_extension(self) -> None:
         collection = pystac.Collection.from_file(
             TestCases.get_path(
                 "data-files/examples/0.9.0/extensions/asset/"
@@ -75,8 +75,12 @@ class TestMigrate:
             )
         )
 
-        assert ItemAssetsExtension.has_extension(collection)
+        assert ItemAssetsExtension.get_schema_uri() not in collection.stac_extensions
+        assert not ItemAssetsExtension.has_extension(collection)
         assert "item_assets" in collection.extra_fields
+
+        assert collection.stac_extensions == []
+        assert collection.item_assets["thumbnail"].title == "Thumbnail"
 
     def test_migrates_pre_1_0_0_rc1_stats_summary(self) -> None:
         collection = pystac.Collection.from_file(
@@ -109,3 +113,19 @@ def test_migrate_works_even_if_stac_extensions_is_null(
     collection_dict["stac_extensions"] = None
 
     pystac.Collection.from_dict(collection_dict, migrate=True)
+
+
+def test_migrate_updates_license_from_various() -> None:
+    path = TestCases.get_path("data-files/examples/1.0.0/collectionless-item.json")
+
+    item = pystac.Item.from_file(path)
+    assert item.properties["license"] == "other"
+
+
+def test_migrate_updates_license_from_proprietary() -> None:
+    path = TestCases.get_path(
+        "data-files/examples/1.0.0/collection-only/collection.json"
+    )
+
+    collection = pystac.Collection.from_file(path)
+    assert collection.license == "other"
