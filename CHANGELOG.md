@@ -2,7 +2,6 @@
 
 ## [Unreleased]
 
-
 ### Added
 
 - Top-level `item_assets` dict on `Collection`s ([#1476](https://github.com/stac-utils/pystac/pull/1476))
@@ -13,6 +12,10 @@
 - Use [uv](https://github.com/astral-sh/uv) for development dependencies and docs ([#1439](https://github.com/stac-utils/pystac/pull/1439))
 - Correctly detect absolute file path ref on windows, reflecting change in python 3.13 ([#1475](https://github.com/stac-utils/pystac/pull/14750)) (only effects python 3.13)
 - Deprecated `ItemAssetExtension` ([#1476](https://github.com/stac-utils/pystac/pull/1476))
+
+### Fixed
+
+- Use `application/geo+json` for `item` links ([#1495](https://github.com/stac-utils/pystac/pull/1495))
 
 ## [v1.11.0] - 2024-09-26
 

@@ -346,3 +346,9 @@ def test_is_hierarchical(rel: str) -> None:
 )
 def test_is_not_hierarchical(rel: str) -> None:
     assert not Link(rel, "a-target").is_hierarchical()
+
+
+def test_item_link_type(item: Item) -> None:
+    # https://github.com/stac-utils/pystac/issues/1494
+    link = Link.item(item)
+    assert link.media_type == "application/geo+json"
