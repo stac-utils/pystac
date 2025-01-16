@@ -14,7 +14,7 @@ T = TypeVar("T", pystac.Collection, pystac.Item)
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/render/v{version}/schema.json"
 )
-DEFAULT_VERSION: str = "1.0.0"
+DEFAULT_VERSION: str = "2.0.0"
 
 SUPPORTED_VERSIONS = [DEFAULT_VERSION]
 

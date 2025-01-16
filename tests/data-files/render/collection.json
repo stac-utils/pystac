@@ -1,7 +1,7 @@
 {
     "stac_version": "1.1.0",
     "stac_extensions": [
-        "https://stac-extensions.github.io/render/v1.0.0/schema.json"
+        "https://stac-extensions.github.io/render/v2.0.0/schema.json"
     ],
     "type": "Collection",
     "id": "senitnel2-l2a",
@@ -16,6 +16,7 @@
             "interval": [["2015-06-23T00:00:00Z", null]]
         }
     },
+    "item_assets": {},
     "renders": {
         "ndvi": {
             "title": "Normalized Difference Vegetation Index",

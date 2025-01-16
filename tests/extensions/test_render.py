@@ -119,10 +119,10 @@ def test_get_render_values(thumbnail_render: Render) -> None:
     assert thumbnail_render.rescale == [[0, 150]]
     assert thumbnail_render.colormap_name == "rainbow"
     assert thumbnail_render.resampling == "bilinear"
-    # assert thumbnail_render.bidx == [1]
-    # assert thumbnail_render.width == 1024
-    # assert thumbnail_render.height == 1024
-    # assert thumbnail_render.bands == ["B4", "B3", "B2"]
+    assert thumbnail_render.properties.get("bidx") == [1]
+    assert thumbnail_render.properties.get("width") == 1024
+    assert thumbnail_render.properties.get("height") == 1024
+    assert thumbnail_render.properties.get("bands") == ["B4", "B3", "B2"]
 
 
 def test_apply_renders_to_item(item: pystac.Item, render: Render) -> None:
@@ -222,3 +222,13 @@ def test_render_repr() -> None:
         "color_formula=gamma rg 1.3, sigmoidal rgb 22 0.1, saturation 1.5 "
         "resampling=bilinear expression=(B08-B04)/(B08+B04) minmax_zoom=[2, 18]>"
     )
+
+
+@pytest.mark.vcr
+def test_item_validate(ext_item: pystac.Item) -> None:
+    assert ext_item.validate()
+
+
+@pytest.mark.vcr
+def test_collection_validate(ext_collection: pystac.Collection) -> None:
+    assert ext_collection.validate()
