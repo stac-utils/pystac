@@ -475,7 +475,7 @@ class Link(PathLike):
     def item(cls: type[L], item: Item, title: str | None = None) -> L:
         """Creates a link to an Item."""
         return cls(
-            pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.JSON
+            pystac.RelType.ITEM, item, title=title, media_type=pystac.MediaType.GEOJSON
         )
 
     @classmethod
