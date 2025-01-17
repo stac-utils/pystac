@@ -181,6 +181,10 @@ class ItemExt:
         return SatExtension.ext(self.stac_object)
 
     @property
+    def sci(self) -> ScientificExtension[Item]:
+        return ScientificExtension.ext(self.stac_object)
+
+    @property
     def storage(self) -> StorageExtension[Item]:
         return StorageExtension.ext(self.stac_object)
 
