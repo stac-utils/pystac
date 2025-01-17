@@ -12,10 +12,14 @@
 - Use [uv](https://github.com/astral-sh/uv) for development dependencies and docs ([#1439](https://github.com/stac-utils/pystac/pull/1439))
 - Correctly detect absolute file path ref on windows, reflecting change in python 3.13 ([#1475](https://github.com/stac-utils/pystac/pull/14750)) (only effects python 3.13)
 - Deprecated `ItemAssetExtension` ([#1476](https://github.com/stac-utils/pystac/pull/1476))
+- Update Projection Extension to version 2 - proj:epsg -> proj:code ([#1287](https://github.com/stac-utils/pystac/pull/1287))
+- Update migrate code to handle license changes in STAC spec 1.1.0 ([#1491](https://github.com/stac-utils/pystac/pull/1491))
+- Allow links to have `file://` prefix - but don't write them that way by default ([#1489](https://github.com/stac-utils/pystac/pull/1489))
 
 ### Fixed
 
 - Use `application/geo+json` for `item` links ([#1495](https://github.com/stac-utils/pystac/pull/1495))
+- Includes the scientific extension in Item's ext interface ([#1496](https://github.com/stac-utils/pystac/pull/1496))
 
 ## [v1.11.0] - 2024-09-26
 
