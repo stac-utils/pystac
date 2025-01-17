@@ -392,7 +392,7 @@ class RenderExtension(
 class CollectionRenderExtension(RenderExtension[pystac.Collection]):
     """A concrete implementation of :class:`RenderExtension` on a
     :class:`~pystac.Collection` that extends the properties of the Collection to include
-    properties defined in the :stac-ext:`Render Extension <xarray>`.
+    properties defined in the :stac-ext:`Render Extension <render>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`RenderExtension.ext` on an :class:`~pystac.Collection` to extend it.
@@ -409,7 +409,7 @@ class CollectionRenderExtension(RenderExtension[pystac.Collection]):
 class ItemRenderExtension(RenderExtension[pystac.Item]):
     """A concrete implementation of :class:`RenderExtension` on a
     :class:`~pystac.Item` that extends the properties of the Item to include
-    properties defined in the :stac-ext:`Render Extension <xarray>`.
+    properties defined in the :stac-ext:`Render Extension <render>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`RenderExtension.ext` on an :class:`~pystac.Item` to extend it.
