@@ -7,6 +7,7 @@ import pytest
 
 import pystac
 from pystac import ExtensionTypeError
+from pystac.errors import ExtensionNotImplemented
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
@@ -494,3 +495,26 @@ class SummariesScientificTest(unittest.TestCase):
         self.assertNotIn(
             ScientificExtension.get_schema_uri(), collection.stac_extensions
         )
+
+
+@pytest.fixture
+def ext_item() -> pystac.Item:
+    path = TestCases.get_path("data-files/scientific/item.json")
+    return pystac.Item.from_file(path)
+
+
+def test_ext_syntax(ext_item: pystac.Item) -> None:
+    assert ext_item.ext.sci.doi == "10.5061/dryad.s2v81.2/27.2"
+
+
+def test_ext_syntax_remove(ext_item: pystac.Item) -> None:
+    ext_item.ext.remove("sci")
+    assert ext_item.ext.has("sci") is False
+    with pytest.raises(ExtensionNotImplemented):
+        ext_item.ext.sci
+
+
+def test_ext_syntax_add(item: pystac.Item) -> None:
+    item.ext.add("sci")
+    assert item.ext.has("sci") is True
+    assert isinstance(item.ext.sci, ScientificExtension)
