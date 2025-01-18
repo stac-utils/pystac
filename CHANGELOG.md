@@ -5,6 +5,7 @@
 ### Added
 
 - Top-level `item_assets` dict on `Collection`s ([#1476](https://github.com/stac-utils/pystac/pull/1476))
+- Render Extension ([#1465](https://github.com/stac-utils/pystac/pull/1465))
 
 ### Changed
 

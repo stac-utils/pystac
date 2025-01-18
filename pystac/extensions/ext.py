@@ -20,6 +20,7 @@ from pystac.extensions.mgrs import MgrsExtension
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
+from pystac.extensions.render import Render, RenderExtension
 from pystac.extensions.sar import SarExtension
 from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
@@ -44,6 +45,7 @@ EXTENSION_NAMES = Literal[
     "pc",
     "proj",
     "raster",
+    "render",
     "sar",
     "sat",
     "sci",
@@ -66,6 +68,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     PointcloudExtension.name: PointcloudExtension,
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
+    RenderExtension.name: RenderExtension,
     SarExtension.name: SarExtension,
     SatExtension.name: SatExtension,
     ScientificExtension.name: ScientificExtension,
@@ -117,6 +120,10 @@ class CollectionExt(CatalogExt):
     @property
     def item_assets(self) -> dict[str, ItemAssetDefinition]:
         return ItemAssetsExtension.ext(self.stac_object).item_assets
+
+    @property
+    def render(self) -> dict[str, Render]:
+        return RenderExtension.ext(self.stac_object).renders
 
     @property
     def sci(self) -> ScientificExtension[Collection]:
@@ -171,6 +178,10 @@ class ItemExt:
     @property
     def proj(self) -> ProjectionExtension[Item]:
         return ProjectionExtension.ext(self.stac_object)
+
+    @property
+    def render(self) -> RenderExtension[Item]:
+        return RenderExtension.ext(self.stac_object)
 
     @property
     def sar(self) -> SarExtension[Item]:
