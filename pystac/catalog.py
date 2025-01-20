@@ -464,7 +464,10 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'child'``
         """
-        return self.get_links(pystac.RelType.CHILD)
+        return self.get_links(
+            rel=pystac.RelType.CHILD,
+            media_type=[None, pystac.MediaType.GEOJSON, pystac.MediaType.JSON],
+        )
 
     def clear_children(self) -> None:
         """Removes all children from this catalog.
@@ -624,7 +627,10 @@ class Catalog(STACObject):
         Return:
             List[Link]: List of links of this catalog with ``rel == 'item'``
         """
-        return self.get_links(pystac.RelType.ITEM)
+        return self.get_links(
+            rel=pystac.RelType.ITEM,
+            media_type=[None, pystac.MediaType.GEOJSON, pystac.MediaType.JSON],
+        )
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
