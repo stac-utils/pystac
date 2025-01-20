@@ -605,3 +605,8 @@ def is_file_path(href: str) -> bool:
     """
     parsed = urlparse(href)
     return bool(os.path.splitext(parsed.path)[1])
+
+
+def is_url(href: str) -> bool:
+    parsed = safe_urlparse(href)
+    return parsed.scheme not in ["", "file"]

@@ -16,7 +16,7 @@ from pystac.serialization import (
     merge_common_properties,
     migrate_to_latest,
 )
-from pystac.utils import HREF, safe_urlparse
+from pystac.utils import HREF, is_url, safe_urlparse
 
 # Use orjson if available
 try:
@@ -294,7 +294,7 @@ class DefaultStacIO(StacIO):
             href : The URI of the file to open.
         """
         href_contents: str
-        if _is_url(href):
+        if is_url(href):
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
                 req = Request(href, headers=self.headers)
@@ -327,7 +327,7 @@ class DefaultStacIO(StacIO):
             href : The path to which the file will be written.
             txt : The string content to write to the file.
         """
-        if _is_url(href):
+        if is_url(href):
             raise NotImplementedError("DefaultStacIO cannot write to urls")
         href = safe_urlparse(href).path
         dirname = os.path.dirname(href)
@@ -390,11 +390,6 @@ class DuplicateKeyReportingMixin(StacIO):
         return result
 
 
-def _is_url(href: str) -> bool:
-    parsed = safe_urlparse(href)
-    return parsed.scheme not in ["", "file"]
-
-
 if HAS_URLLIB3:
     from typing import cast
 
@@ -433,7 +428,7 @@ if HAS_URLLIB3:
             Args:
                 href : The URI of the file to open.
             """
-            if _is_url(href):
+            if is_url(href):
                 # TODO provide a pooled StacIO to enable more efficient network
                 # access (probably named `PooledStacIO`).
                 http = PoolManager()
