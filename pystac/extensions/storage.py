@@ -11,7 +11,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -24,6 +23,8 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum
 
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
+#: :class:`~pystac.ItemAssetDefinition`
 T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
@@ -49,7 +50,7 @@ class CloudPlatform(StringEnum):
 class StorageExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -79,7 +80,7 @@ class StorageExtension(
         :class:`~pystac.Asset`.
 
         Args:
-            platform (str, CloudProvider) : The cloud provider where data is stored.
+            platform (str, CloudPlatform) : The cloud provider where data is stored.
             region (str) : The region where the data is stored. Relevant to speed of
                 access and inter-region egress costs (as defined by PaaS provider).
             requester_pays (bool) : Is the data requester pays or is it data
@@ -230,9 +231,9 @@ class ItemAssetsStorageExtension(StorageExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesStorageExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Storage Extension <storage>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
     """
 
     @property

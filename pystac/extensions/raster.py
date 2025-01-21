@@ -9,7 +9,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -22,6 +21,8 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Asset` or
+#: :class:`~pystac.ItemAssetDefinition`
 T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
@@ -394,7 +395,7 @@ class RasterBand:
             sampling : One of area or point. Indicates whether a pixel value should be
                 assumed to represent a sampling over the region of the pixel or a point
                 sample at the center of the pixel.
-            data_type :The data type of the band.
+            data_type : The data type of the band.
                 One of the data types as described in the
                 :stac-ext:`Raster Data Types <raster/#data-types> docs`.
             bits_per_sample : The actual number of bits used for this band.
@@ -658,18 +659,18 @@ class RasterBand:
 class RasterExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item`, :class:`~pystac.Asset`, or
-    :class:`~pystac.extension.pystac.ItemAssetDefinition` with properties from
+    :class:`~pystac.Asset`, or
+    :class:`~pystac.ItemAssetDefinition` with properties from
     the :stac-ext:`Raster Extension <raster>`. This class is generic over
     the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Asset`).
 
     This class will generally not be used directly. Instead, use the concrete
     implementation associated with the STAC Object you want to extend (e.g.
-    :class:`~ItemRasterExtension` to extend an :class:`~pystac.Item`).  You may
+    :class:`~AssetRasterExtension` to extend an :class:`~pystac.Item`).  You may
     prefer to use the `ext` class method of this class to construct the correct
     instance type for you.
     """
@@ -684,7 +685,7 @@ class RasterExtension(
         :class:`pystac.Asset`.
 
         Args:
-            bands : a list of :class:`~pystac.RasterBand` objects that represent
+            bands : a list of :class:`RasterBand` objects that represent
                 the available raster bands.
         """
         self.bands = bands
@@ -772,11 +773,11 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
 
 class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
     asset_definition: pystac.ItemAssetDefinition
-    """A reference to the :class:`~pystac.extensions.pystac.ItemAssetDefinition`
+    """A reference to the :class:`~pystac.ItemAssetDefinition`
     being extended."""
 
     properties: dict[str, Any]
-    """The :class:`~pystac.extensions.pystac.ItemAssetDefinition` fields, including
+    """The :class:`~pystac.ItemAssetDefinition` fields, including
     extension properties."""
 
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
@@ -790,14 +791,14 @@ class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesRasterExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Raster Extension <raster>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Raster Extension <raster>`.
     """
 
     @property
     def bands(self) -> list[RasterBand] | None:
-        """Get or sets a list of :class:`~pystac.Band` objects that represent
+        """Get or sets a list of :class:`RasterBand` objects that represent
         the available bands.
         """
         return map_opt(

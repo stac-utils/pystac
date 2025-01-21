@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 from pystac import (
     Asset,
@@ -24,6 +24,7 @@ from pystac.serialization.identify import (
 )
 from pystac.utils import StringEnum, get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link`,
 T = TypeVar("T", Asset, Link)
 
 SCHEMA_URI = "https://stac-extensions.github.io/file/v2.1.0/schema.json"
@@ -106,7 +107,7 @@ class MappingObject:
 class FileExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[Catalog, Collection, Item]],
+    ExtensionManagementMixin[Catalog | Collection | Item],
 ):
     """A class that can be used to extend the properties of an :class:`~pystac.Asset`
     or :class:`~pystac.Link` with properties from the

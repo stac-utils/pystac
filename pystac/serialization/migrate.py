@@ -162,7 +162,7 @@ def migrate_to_latest(
     Args:
         json_dict : The dict of STAC JSON to identify.
         info : The info from
-            :func:`~pystac.serialization.identify.identify_stac_object` that describes
+            :func:`~pystac.serialization.identify_stac_object` that describes
             the STAC object contained in the JSON dict.
 
     Returns:

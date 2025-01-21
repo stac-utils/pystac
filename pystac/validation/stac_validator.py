@@ -133,11 +133,12 @@ class JsonSchemaSTACValidator(STACValidator):
     """Validate STAC based on JSON Schemas.
 
     This validator uses JSON schemas, read from URIs provided by a
-    :class:`~pystac.validation.SchemaUriMap`, to validate STAC core
+    :class:`~pystac.validation.schema_uri_map.SchemaUriMap`, to validate STAC core
     objects and extensions.
 
     Args:
-        schema_uri_map : The SchemaUriMap that defines where
+        schema_uri_map : The :class:`~pystac.validation.schema_uri_map.SchemaUriMap`
+            that defines where
             the validator will retrieve the JSON schemas for validation.
             Defaults to an instance of
             :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`
@@ -245,7 +246,7 @@ class JsonSchemaSTACValidator(STACValidator):
                no validation occurred.
 
         Raises:
-           STACValidationError if stac_dict is not valid. The exception is raised from
+           STACValidationError:  if stac_dict is not valid. The exception is raised from
                the "best" error, as determined by the jsonschema library. To access all
                jsonschema validation errors, use ``STACValidationError.source``.
 
@@ -286,7 +287,7 @@ class JsonSchemaSTACValidator(STACValidator):
                no validation occurred.
 
         Raises:
-           STACValidationError if stac_dict is not valid. The exception is raised from
+           STACValidationError: if stac_dict is not valid. The exception is raised from
                the "best" error, as determined by the jsonschema library. To access all
                jsonschema validation errors, use ``STACValidationError.source``.
 

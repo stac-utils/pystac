@@ -161,4 +161,4 @@ jobs:
       - name: Install pystac
         run: uv sync --no-dev && uv sync --package pystac-docs --inexact
       - name: Check docs
-        run: uv run make -C docs html SPHINXOPTS="-W --keep-going"
+        run: uv run make -C docs html SPHINXOPTS="-W --keep-going -n"

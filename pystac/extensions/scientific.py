@@ -8,7 +8,7 @@ https://doi.org/10.1000/182
 from __future__ import annotations
 
 import copy
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 from urllib import parse
 
 import pystac
@@ -20,6 +20,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, map_opt
 
+#: Generalized version of :class:`~pystac.Collection` or :class:`~pystac.Item`
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
@@ -100,7 +101,7 @@ def remove_link(links: list[pystac.Link], doi: str | None) -> None:
 class ScientificExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or a :class:`pystac.Collection` with properties from the
@@ -320,9 +321,9 @@ class ItemScientificExtension(ScientificExtension[pystac.Item]):
 
 
 class SummariesScientificExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Scientific Citation Extension <scientific>`.
     """
 
     @property

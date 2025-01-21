@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from pystac.common_metadata import CommonMetadata
     from pystac.extensions.ext import AssetExt
 
+#: Generalized version of :class:`Asset`
 A = TypeVar("A", bound="Asset")
 
 
@@ -254,7 +255,7 @@ class Asset:
 
     def delete(self) -> None:
         """Delete this asset's file. Does not delete the asset from the item
-        that owns it. See :func:`~pystac.Item.delete_asset` for that.
+        that owns it. See :meth:`~pystac.Item.delete_asset` for that.
 
         Does not modify the asset.
         """

@@ -25,6 +25,7 @@ from pystac.utils import (
     str_to_datetime,
 )
 
+#: Generalized version of :class:`Item`
 T = TypeVar("T", bound="Item")
 
 if TYPE_CHECKING:

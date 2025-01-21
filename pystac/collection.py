@@ -9,7 +9,6 @@ from typing import (
     Any,
     Optional,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -39,13 +38,12 @@ if TYPE_CHECKING:
     from pystac.extensions.ext import CollectionExt
     from pystac.item import Item
 
+#: Generalized version of :class:`Collection`
 C = TypeVar("C", bound="Collection")
 
-Bboxes = list[list[Union[float, int]]]
-TemporalIntervals = Union[list[list[datetime]], list[list[Optional[datetime]]]]
-TemporalIntervalsLike = Union[
-    TemporalIntervals, list[datetime], list[Optional[datetime]]
-]
+Bboxes = list[list[float | int]]
+TemporalIntervals = list[list[datetime]] | list[list[Optional[datetime]]]
+TemporalIntervalsLike = TemporalIntervals | list[datetime] | list[Optional[datetime]]
 
 
 class SpatialExtent:
@@ -82,7 +80,7 @@ class SpatialExtent:
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
         if isinstance(bboxes[0], (float, int)):
-            self.bboxes = [cast(list[Union[float, int]], bboxes)]
+            self.bboxes = [cast(list[float | int], bboxes)]
         else:
             self.bboxes = cast(Bboxes, bboxes)
 

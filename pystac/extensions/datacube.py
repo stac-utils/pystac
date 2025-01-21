@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Collection`, `:class:`~pystac.Item`,
+#: :class:`~pystac.Asset`, or :class:`~pystac.ItemAssetDefinition`
 T = TypeVar(
     "T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition
 )
@@ -523,7 +525,7 @@ class Variable:
 class DatacubeExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
@@ -671,7 +673,7 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
     in the :stac-ext:`Datacube Extension <datacube>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`EOExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    :meth:`DatacubeExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
     asset_href: str

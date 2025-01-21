@@ -235,7 +235,7 @@ in the catalog will produce a relative link, based on the self link of the paren
 object.
 
 You can make all the links of a catalog relative or absolute by setting the
-:func:`Catalog.catalog_type` field then resaving the entire catalog.
+:func:`~pystac.Catalog.catalog_type` field then resaving the entire catalog.
 
 .. _rel vs abs asset:
 
@@ -312,7 +312,7 @@ that you see all API calls.
 If you require more custom logic for I/O operations or would like to use a
 3rd-party library for I/O operations (e.g. ``requests``),
 you can create a sub-class of :class:`pystac.StacIO`
-(or :class:`pystac.DefaultStacIO`) and customize the methods as
+(or :class:`pystac.stac_io.DefaultStacIO`) and customize the methods as
 you see fit. You can then pass instances of this custom sub-class into the ``stac_io``
 argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
@@ -573,7 +573,7 @@ PySTAC package) or older versions (which are hosted at https://schemas.stacspec.
 This validation includes any extensions that the object extends (these are always
 accessed remotely based on their URIs).
 
-If there are validation errors, a :class:`~pystac.validation.STACValidationError`
+If there are validation errors, a :class:`~pystac.STACValidationError`
 is raised.
 
 You can also call :meth:`~pystac.Catalog.validate_all` on a Catalog or Collection to
@@ -587,7 +587,7 @@ Validating STAC JSON
 --------------------
 
 You can validate STAC JSON represented as a ``dict`` using the
-:meth:`pystac.validation.validate_dict` method:
+:func:`pystac.validation.validate_dict` method:
 
 .. code-block:: python
 
@@ -599,7 +599,7 @@ You can validate STAC JSON represented as a ``dict`` using the
    validate_dict(js)
 
 You can also recursively validate all of the catalogs, collections and items across STAC
-versions using the :meth:`pystac.validation.validate_all` method:
+versions using the :func:`pystac.validation.validate_all` method:
 
 .. code-block:: python
 
@@ -615,15 +615,16 @@ Using your own validator
 
 By default PySTAC uses the :class:`~pystac.validation.JsonSchemaSTACValidator`
 implementation for validation. Users can define their own implementations of
-:class:`~pystac.validation.STACValidator` and register it with pystac using
-:meth:`pystac.validation.set_validator`.
+:class:`~pystac.validation.stac_validator.STACValidator` and register it with pystac
+using :func:`pystac.validation.set_validator`.
 
 The :class:`~pystac.validation.JsonSchemaSTACValidator` takes a
-:class:`~pystac.validation.SchemaUriMap`, which by default uses the
-:class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users cn
-create their own implementation of :class:`~pystac.validation.SchemaUriMap` and register
+:class:`~pystac.validation.schema_uri_map.SchemaUriMap`, which by default uses the
+:class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users can
+create their own implementation of
+:class:`~pystac.validation.schema_uri_map.SchemaUriMap` and register
 a new instance of :class:`~pystac.validation.JsonSchemaSTACValidator` using that schema
-map with :meth:`pystac.validation.set_validator`.
+map with :func:`pystac.validation.set_validator`.
 
 Extensions
 ==========
@@ -673,7 +674,8 @@ Extension <eo>`, you can access the fields associated with that extension using
    the `Adding an Extension`_ section below for details on adding an extension to an
    object.
 
-If you don't want to raise an error you can use :meth:`~pystac.Item.ext.has`
+If you don't want to raise an error you can use
+:meth:`Item.ext.has <pystac.extensions.ext.ItemExt.has>`
 to first check if the extension is implemented on your pystac object:
 
 .. code-block:: python
@@ -726,11 +728,9 @@ Adding an Extension
 -------------------
 
 You can add an extension to a STAC object that does not already implement that extension
-using the :meth:`~pystac.Item.ext.add` method. Any concrete
-extension implementations that extend existing STAC objects should  have
-this method available. The :meth:`~pystac.Item.ext.add` method adds the correct schema
-URI to the :attr:`~pystac.Item.stac_extensions` list for the object being
-extended.
+using the :meth:`Item.ext.add <pystac.extensions.ext.ItemExt.add>` method.
+The :meth:`Item.ext.add <pystac.extensions.ext.ItemExt.add>` method adds the correct
+schema URI to the :attr:`~pystac.Item.stac_extensions` list for the STAC object.
 
 .. code-block:: python
 
@@ -927,7 +927,7 @@ in the catalog to have a unique identifier, which is unique across the entire ST
 
 When a link is being resolved from a STACObject that has it's root set, that root is
 passed into the :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` call.
-That root's :class:`~pystac.resolved_object_cache.ResolvedObjectCache` will be used to
+That root's :class:`~pystac.cache.ResolvedObjectCache` will be used to
 ensure that if the link is pointing to an object that has already been resolved, then
 that link will point to the same, single instance in the cache. This ensures working
 with STAC objects in memory doesn't create a situation where multiple copies of the same

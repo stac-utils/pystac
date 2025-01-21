@@ -189,9 +189,9 @@ class STACObject(ABC):
                 those matching media_type are returned
 
         Returns:
-            Optional[:class:`~pystac.Link`]: First link that matches ``rel``
-            and/or ``media_type``, or else the first link associated with
-            this object.
+            :class:`~pystac.Link` | None: First link that matches ``rel``
+                and/or ``media_type``, or else the first link associated with
+                this object.
         """
         if rel is None and media_type is None:
             return next(iter(self.links), None)
@@ -220,8 +220,8 @@ class STACObject(ABC):
 
         Returns:
             List[:class:`~pystac.Link`]: A list of links that match ``rel`` and/
-            or ``media_type`` if set, or else all links associated with this
-            object.
+                or ``media_type`` if set, or else all links associated with this
+                object.
         """
         if rel is None and media_type is None:
             return self.links
@@ -317,7 +317,7 @@ class STACObject(ABC):
 
         Returns:
             Catalog, Collection, or None:
-            The root object for this object, or ``None`` if no root link is set.
+                The root object for this object, or ``None`` if no root link is set.
         """
         root_link = self.get_root_link()
         if root_link:
@@ -400,7 +400,7 @@ class STACObject(ABC):
         typ: type[STACObject] | None = None,
         modify_links: Callable[[list[Link]], list[Link]] | None = None,
     ) -> Iterable[STACObject]:
-        """Gets the :class:`~pystac.STACObject` instances that are linked to
+        """Gets the :class:`STACObject` instances that are linked to
         by links with their ``rel`` property matching the passed in argument.
 
         Args:
@@ -413,9 +413,9 @@ class STACObject(ABC):
                 so that links matching a particular pattern are earlier in the iterator.
 
         Returns:
-            Iterable[STACObjects]: A possibly empty iterable of STACObjects that are
-            connected to this object through links with the given ``rel`` and are of
-            type ``typ`` (if given).
+            Iterable[STACObject]: A possibly empty iterable of STACObjects that are
+                connected to this object through links with the given ``rel`` and are of
+                type ``typ`` (if given).
         """
         links = self.links[:]
         if modify_links:
@@ -434,7 +434,7 @@ class STACObject(ABC):
         dest_href: str | None = None,
         stac_io: pystac.StacIO | None = None,
     ) -> None:
-        """Saves this STAC Object to it's 'self' HREF.
+        """Saves this :class:`STACObject` to it's 'self' HREF.
 
         Args:
             include_self_link : If this is true, include the 'self' link with
@@ -447,8 +447,7 @@ class STACObject(ABC):
 
 
         Raises:
-            :class:`~pystac.STACError`: If no self href is set, this error will be
-            raised.
+            STACError: If no self href is set, this error will be raised.
 
         Note:
             When to include a self link is described in the :stac-spec:`Use of Links
@@ -480,7 +479,7 @@ class STACObject(ABC):
         root: Catalog | None = None,
         parent: Catalog | None = None,
     ) -> STACObject:
-        """Create a full copy of this STAC object and any stac objects linked to by
+        """Create a full copy of this STAC object and any STAC objects linked to by
         this object.
 
         Args:
@@ -491,7 +490,7 @@ class STACObject(ABC):
 
         Returns:
             STACObject: A full copy of this object, as well as any objects this object
-            links to.
+                links to.
         """
         clone = self.clone()
 
@@ -594,7 +593,7 @@ class STACObject(ABC):
         Cloning an object will make a copy of all properties and links of the object;
         however, it will not make copies of the targets of links (i.e. it is not a
         deep copy). To copy a STACObject fully, with all linked elements also copied,
-        use :func:`STACObject.full_copy <pystac.STACObject.full_copy>`.
+        use :func:`~pystac.STACObject.full_copy`.
 
         Returns:
             STACObject: The clone of this object.
@@ -672,7 +671,7 @@ class STACObject(ABC):
     @abstractmethod
     def matches_object_type(cls, d: dict[str, Any]) -> bool:
         """Returns a boolean indicating whether the given dictionary represents a valid
-        instance of this :class:`~STACObject` sub-class.
+        instance of this :class:`~pystac.STACObject` sub-class.
 
         Args:
             d : A dictionary to identify

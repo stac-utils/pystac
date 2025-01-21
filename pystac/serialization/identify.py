@@ -150,7 +150,7 @@ class STACVersionRange:
 class STACJSONDescription:
     """Describes the STAC object information for a STAC object represented in JSON
 
-    Attributes:
+    Args:
         object_type : Describes the STAC object type. One of
             :class:`~pystac.STACObjectType`.
         version_range : The STAC version range that describes what
@@ -160,8 +160,14 @@ class STACJSONDescription:
     """
 
     object_type: STACObjectType
+    """Describes the STAC object type. One of :class:`~pystac.STACObjectType`."""
+
     version_range: STACVersionRange
+    """The STAC version range that describes what has been identified
+    as potential valid versions of the :class:`~pystac.STACObject`."""
+
     extensions: list[str]
+    """List of extension schema URIs for extensions this object implements"""
 
     def __init__(
         self,

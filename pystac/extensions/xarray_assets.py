@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any, Generic, Literal, TypeVar, Union
+from typing import Any, Generic, Literal, TypeVar
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 
+#: Generalized version of :class:`~pystac.Collection`,
+#: :class:`~pystac.Item`, or :class:`~pystac.Asset`
 T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/xarray-assets/v1.0.0/schema.json"
@@ -20,7 +22,7 @@ STORAGE_OPTIONS_PROP = PREFIX + "storage_options"
 class XarrayAssetsExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with

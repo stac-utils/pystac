@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable, Sequence
-from typing import Any, Literal, Union, cast
+from typing import Any, Literal, cast
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
@@ -440,7 +440,7 @@ class LabelOverview:
         return self.to_dict() == o
 
 
-class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]]):
+class LabelExtension(ExtensionManagementMixin[pystac.Item | pystac.Collection]):
     """A class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`Label Extension <label>`.
 
@@ -733,9 +733,9 @@ class LabelExtension(ExtensionManagementMixin[Union[pystac.Item, pystac.Collecti
 
 
 class SummariesLabelExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Label Extension <label>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Label Extension <label>`.
     """
 
     @property

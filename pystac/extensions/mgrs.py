@@ -2,7 +2,7 @@
 
 import re
 from re import Pattern
-from typing import Any, Literal, Union
+from typing import Any, Literal
 
 import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
@@ -142,14 +142,16 @@ def validated_utm_zone(v: int | None) -> int | None:
 
 class MgrsExtension(
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
-    """A concrete implementation of :class:`MgrsExtension` on an :class:`~pystac.Item`
+    """A concrete implementation of :class:`~pystac.extensions.mgrs.MgrsExtension`
+    on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`MGRS Extension <mgrs>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`MgrsExtension.ext` on an :class:`~pystac.Item` to extend it.
+    :meth:`~pystac.extensions.mgrs.MgrsExtension.ext` on an :class:`~pystac.Item`
+    to extend it.
 
     .. code-block:: python
 

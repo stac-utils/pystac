@@ -10,7 +10,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -31,8 +30,13 @@ from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, map_opt
 
-T = TypeVar("T", Collection, Item, Catalog, Asset, ItemAssetDefinition)
-U = TypeVar("U", Collection, Item, Catalog)
+#: Generalized version of :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
+#: :class:`~pystac.Item`, :class:`~pystac.Asset` or :class:`~pystac.ItemAssetDefinition`
+T = TypeVar("T", Catalog, Collection, Item, Asset, ItemAssetDefinition)
+
+#: Generalized version of :class:`~pystac.Catalog`, :class:`~pystac.Collection`, or
+#: :class:`~pystac.Item`
+U = TypeVar("U", Catalog, Collection, Item)
 
 SCHEMA_URI = "https://stac-extensions.github.io/version/v1.2.0/schema.json"
 
@@ -72,7 +76,7 @@ class VersionRelType(StringEnum):
 class BaseVersionExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[Collection, Item, Catalog]],
+    ExtensionManagementMixin[Catalog | Collection | Item],
 ):
     """A base extension that just gets and sets attributes, not links.
 
@@ -212,7 +216,7 @@ class VersionExtension(
             predecessor : Item representing the resource containing the predecessor
                 version in the version history.
             successor : Item representing the resource containing the successor version
-            in the version history.
+                in the version history.
         """
         self.apply_base(version, deprecated, experimental)
         if latest:

@@ -18,6 +18,17 @@ if TYPE_CHECKING:
 # Import after above class definition
 from pystac.validation.stac_validator import JsonSchemaSTACValidator, STACValidator
 
+__all__ = [
+    "GetSchemaError",
+    "JsonSchemaSTACValidator",
+    "RegisteredValidator",
+    "validate",
+    "validate_all",
+    "validate_dict",
+    "validate_all_dict",
+    "set_validator",
+]
+
 
 def validate(
     stac_object: STACObject,
@@ -33,7 +44,7 @@ def validate(
             will be used instead.
 
     Returns:
-        List[Object]: List of return values from the validation calls for the
+        List[Any]: List of return values from the validation calls for the
            core object and any extensions. Element type is specific to the
            STACValidator implementation.
 
@@ -61,8 +72,9 @@ def validate_dict(
     """Validate a stac object serialized as JSON into a dict.
 
     This method delegates to the call to
-    :meth:`pystac.validation.STACValidator.validate` for the STACValidator registered
-    via :meth:`~pystac.validation.set_validator` or
+    :meth:`~pystac.validation.stac_validator.STACValidator.validate` for the
+    :class:`~pystac.validation.stac_validator.STACValidator` registered
+    via :func:`~pystac.validation.set_validator` or
     :class:`~pystac.validation.JsonSchemaSTACValidator` by default.
 
     Args:
@@ -82,7 +94,7 @@ def validate_dict(
             will be used instead.
 
     Returns:
-        List[Object]: List of return values from the validation calls for the
+        List[Any]: List of return values from the validation calls for the
            core object and any extensions. Element type is specific to the
            STACValidator implementation.
 
@@ -142,10 +154,11 @@ def validate_all(
             the StacIO.default() instance is used.
 
     Raises:
-        STACValidationError: if the STAC object or any contained catalog, collection,
-            or item has a validation error
-        ValueError: if stac_object is a STACObject and href is not None, or if
-            stacl_object is a dict and href is None
+        STACValidationError or ValueError: STACValidationError is raised
+            if the STAC object or any contained catalog, collection,
+            or item has a validation error. ValueError is raised
+            if stac_object is a STACObject and href is not None, or if
+            stac_object is a dict and href is None.
     """
     if stac_io is None:
         stac_io = pystac.StacIO.default()
@@ -194,7 +207,7 @@ def validate_all_dict(
 
     Raises:
         STACValidationError: if the STAC object or any contained catalog, collection,
-        or item has a validation error
+            or item has a validation error
     """
     if stac_io is None:
         stac_io = pystac.StacIO.default()
@@ -260,10 +273,3 @@ def set_validator(validator: STACValidator) -> None:
             validation.
     """
     RegisteredValidator.set_validator(validator)
-
-
-__all__ = [
-    "GetSchemaError",
-    "JsonSchemaSTACValidator",
-    "RegisteredValidator",
-]

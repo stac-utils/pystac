@@ -14,7 +14,6 @@ from typing import (
     Generic,
     Protocol,
     TypeVar,
-    Union,
 )
 
 import pystac
@@ -64,7 +63,7 @@ class _Comparable_other(Protocol):
         return NotImplemented
 
 
-T = TypeVar("T", bound=Union[_Comparable_x, _Comparable_other])
+T = TypeVar("T", bound=_Comparable_x | _Comparable_other)
 
 
 class RangeSummary(Generic[T]):
