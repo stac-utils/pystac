@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, TypeVar, cast
 
@@ -31,7 +33,11 @@ from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
+#: Generalized version of :class:`~pystac.Asset`,
+#: :class:`~pystac.ItemAssetDefinition`, or :class:`~pystac.Link`
 T = TypeVar("T", Asset, ItemAssetDefinition, Link)
+#: Generalized version of :class:`~pystac.Asset` or
+#: :class:`~pystac.ItemAssetDefinition`
 U = TypeVar("U", Asset, ItemAssetDefinition)
 
 EXTENSION_NAMES = Literal[
@@ -93,15 +99,37 @@ def _get_class_by_name(name: str) -> Any:
 
 @dataclass
 class CatalogExt:
+    """Supporting the :attr:`~pystac.Catalog.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: Catalog
 
     def has(self, name: EXTENSION_NAMES) -> bool:
+        """Whether the given extension is enabled on this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+
+        Returns:
+            bool: ``True`` if extension is enabled, otherwise ``False``
+        """
         return cast(bool, _get_class_by_name(name).has_extension(self.stac_object))
 
     def add(self, name: EXTENSION_NAMES) -> None:
+        """Add the given extension to this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         _get_class_by_name(name).add_to(self.stac_object)
 
     def remove(self, name: EXTENSION_NAMES) -> None:
+        """Remove the given extension from this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         _get_class_by_name(name).remove_from(self.stac_object)
 
     @property
@@ -111,6 +139,10 @@ class CatalogExt:
 
 @dataclass
 class CollectionExt(CatalogExt):
+    """Supporting the :attr:`~pystac.Collection.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: Collection
 
     @property
@@ -140,15 +172,37 @@ class CollectionExt(CatalogExt):
 
 @dataclass
 class ItemExt:
+    """Supporting the :attr:`~pystac.Item.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: Item
 
     def has(self, name: EXTENSION_NAMES) -> bool:
+        """Whether the given extension is enabled on this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+
+        Returns:
+            bool: ``True`` if extension is enabled, otherwise ``False``
+        """
         return cast(bool, _get_class_by_name(name).has_extension(self.stac_object))
 
     def add(self, name: EXTENSION_NAMES) -> None:
+        """Add the given extension to this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         _get_class_by_name(name).add_to(self.stac_object)
 
     def remove(self, name: EXTENSION_NAMES) -> None:
+        """Remove the given extension from this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         _get_class_by_name(name).remove_from(self.stac_object)
 
     @property
@@ -224,10 +278,18 @@ class _AssetsExt(Generic[T]):
     stac_object: T
 
     def has(self, name: EXTENSION_NAMES) -> bool:
+        """Whether the given extension is enabled on the owner
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+
+        Returns:
+            bool: ``True`` if extension is enabled, otherwise ``False``
+        """
         if self.stac_object.owner is None:
             raise STACError(
-                f"Attempted to add extension='{name}' for an object with no owner. "
-                "Use `.set_owner` and then try to add the extension again."
+                f"Attempted to use `.ext.has('{name}') for an object with no owner. "
+                "Use `.set_owner` and then try to check the extension again."
             )
         else:
             return cast(
@@ -235,6 +297,11 @@ class _AssetsExt(Generic[T]):
             )
 
     def add(self, name: EXTENSION_NAMES) -> None:
+        """Add the given extension to the owner
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         if self.stac_object.owner is None:
             raise STACError(
                 f"Attempted to add extension='{name}' for an object with no owner. "
@@ -244,6 +311,11 @@ class _AssetsExt(Generic[T]):
             _get_class_by_name(name).add_to(self.stac_object.owner)
 
     def remove(self, name: EXTENSION_NAMES) -> None:
+        """Remove the given extension from the owner
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
         if self.stac_object.owner is None:
             raise STACError(
                 f"Attempted to remove extension='{name}' for an object with no owner. "
@@ -307,6 +379,10 @@ class _AssetExt(_AssetsExt[U]):
 
 @dataclass
 class AssetExt(_AssetExt[Asset]):
+    """Supporting the :attr:`~pystac.Asset.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: Asset
 
     @property
@@ -324,11 +400,19 @@ class AssetExt(_AssetExt[Asset]):
 
 @dataclass
 class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
+    """Supporting the :attr:`~pystac.ItemAssetDefinition.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: ItemAssetDefinition
 
 
 @dataclass
 class LinkExt(_AssetsExt[Link]):
+    """Supporting the :attr:`~pystac.Link.ext` accessor for interacting
+    with extension classes
+    """
+
     stac_object: Link
 
     @property

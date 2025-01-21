@@ -191,9 +191,7 @@ Serialization
 The ``pystac.serialization`` sub-package contains tools used internally by PySTAC to
 identify, serialize, and migrate STAC objects:
 
-* :mod:`pystac.serialization.identify`: Tools for identifying STAC objects
-* :mod:`pystac.serialization.migrate`: Tools for migrating STAC objects from a previous
-  STAC Spec version.
+* :mod:`pystac.serialization`: Tools for identifying and migrating STAC objects
 
 
 Validation
