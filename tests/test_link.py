@@ -10,6 +10,7 @@ import pytest
 
 import pystac
 from pystac import Collection, Item, Link
+from pystac.errors import STACError
 from pystac.link import HIERARCHICAL_LINKS
 from pystac.utils import make_posix_style
 from tests.utils.test_cases import ARBITRARY_EXTENT
@@ -97,6 +98,13 @@ class LinkTest(unittest.TestCase):
     def test_resolve_stac_object_no_root_and_target_is_item(self) -> None:
         link = pystac.Link("my rel", target=self.item)
         link.resolve_stac_object()
+
+    def test_resolve_stac_object_throws_informative_error(self) -> None:
+        link = pystac.Link("root", target="/a/b/foo.json")
+        with pytest.raises(
+            STACError, match="HREF: '/a/b/foo.json' does not resolve to a STAC object"
+        ):
+            link.resolve_stac_object()
 
     def test_resolved_self_href(self) -> None:
         catalog = pystac.Catalog(id="test", description="test desc")

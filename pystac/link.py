@@ -6,6 +6,7 @@ from html import escape
 from typing import TYPE_CHECKING, Any, TypeVar
 
 import pystac
+from pystac.errors import STACError
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import (
     HREF as HREF,
@@ -326,8 +327,12 @@ class Link(PathLike):
                                 stac_io = owner_root._stac_io
                     if stac_io is None:
                         stac_io = pystac.StacIO.default()
-
-                obj = stac_io.read_stac_object(target_href, root=root)
+                try:
+                    obj = stac_io.read_stac_object(target_href, root=root)
+                except Exception as e:
+                    raise STACError(
+                        f"HREF: '{target_href}' does not resolve to a STAC object"
+                    ) from e
                 obj.set_self_href(target_href)
                 if root is not None:
                     obj = root._resolved_objects.get_or_cache(obj)
