@@ -248,3 +248,11 @@ intersphinx_mapping = {
 # -- Substutition variables
 
 rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"
+
+nitpick_ignore = [
+    ("py:class", "Datetime"),
+    ("py:class", "L"),
+    ("py:class", "pystac.summaries.T"),
+    ("py:class", "HREF"),  # this one partially works
+    ("py:class", "jsonschema.validators.Draft7Validator"),
+]

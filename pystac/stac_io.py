@@ -311,7 +311,8 @@ class DefaultStacIO(StacIO):
     def write_text(self, dest: HREF, txt: str, *_: Any, **__: Any) -> None:
         """A concrete implementation of :meth:`StacIO.write_text
         <pystac.StacIO.write_text>`. Converts the ``dest`` argument to a string (if it
-        is not already) and delegates to :meth:`DefaultStacIO.write_text_from_href` for
+        is not already) and delegates to
+        W:meth:`~pystac.stac_io.DefaultStacIO.write_text_to_href` for
         opening and reading the file."""
         href = str(os.fspath(dest))
         return self.write_text_to_href(href, txt)
