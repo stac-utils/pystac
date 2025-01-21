@@ -10,7 +10,7 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required
 
 #: Generalized version of :class:`~pystac.Collection`, :class:`~pystac.Item`,
-# :class:`~pystac.Asset` or :class:`~pystac.ItemAssetDefinition`
+#: :class:`~pystac.Asset` or :class:`~pystac.ItemAssetDefinition`
 T = TypeVar(
     "T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition
 )
