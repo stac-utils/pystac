@@ -21,6 +21,7 @@
 
 - Use `application/geo+json` for `item` links ([#1495](https://github.com/stac-utils/pystac/pull/1495))
 - Includes the scientific extension in Item's ext interface ([#1496](https://github.com/stac-utils/pystac/pull/1496))
+- Fixes all broken documentation links and adds check to CI ([#1499](https://github.com/stac-utils/pystac/pull/1499))
 
 ## [v1.11.0] - 2024-09-26
 
