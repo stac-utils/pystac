@@ -608,6 +608,7 @@ def is_file_path(href: str) -> bool:
     return bool(os.path.splitext(parsed.path)[1])
 
 
-def is_url(href: str) -> bool:
+def _is_url(href: str) -> bool:
+    """Checks if an HREF is a url rather than a local path"""
     parsed = safe_urlparse(href)
     return parsed.scheme not in ["", "file"]

@@ -31,8 +31,8 @@ from pystac.stac_object import STACObject, STACObjectType
 from pystac.utils import (
     HREF,
     StringEnum,
+    _is_url,
     is_absolute_href,
-    is_url,
     make_absolute_href,
     make_relative_href,
 )
@@ -771,7 +771,7 @@ class Catalog(STACObject):
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
 
-        if isinstance(_strategy, APILayoutStrategy) and not is_url(root_href):
+        if isinstance(_strategy, APILayoutStrategy) and not _is_url(root_href):
             raise STACError("When using APILayoutStrategy the root_href must be a URL")
 
         def process_item(
