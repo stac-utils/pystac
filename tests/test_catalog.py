@@ -24,6 +24,7 @@ from pystac import (
     Item,
     MediaType,
 )
+from pystac.errors import STACError
 from pystac.layout import (
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
@@ -674,7 +675,7 @@ class TestCatalog:
             assert len(os.listdir(temporary_directory)) == 2
 
         with tempfile.TemporaryDirectory() as temporary_directory:
-            with pytest.raises(FileNotFoundError):
+            with pytest.raises(STACError, match="does not resolve to a STAC object"):
                 catalog.normalize_and_save(temporary_directory, skip_unresolved=False)
 
     def test_generate_subcatalogs_works_with_custom_properties(self) -> None:
