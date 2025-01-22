@@ -9,7 +9,6 @@ from typing import (
     TYPE_CHECKING,
     Any,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -44,6 +43,7 @@ if TYPE_CHECKING:
     from pystac.extensions.ext import CatalogExt
     from pystac.item import Item
 
+#: Generalized version of :class:`Catalog`
 C = TypeVar("C", bound="Catalog")
 
 
@@ -404,7 +404,7 @@ class Catalog(STACObject):
                 will improve performance. Defaults to True.
 
         Return:
-            Optional Catalog or Collection: The child with the given ID,
+            Catalog or Collection or None: The child with the given ID,
             or None if not found.
         """
         if not recursive:
@@ -420,7 +420,7 @@ class Catalog(STACObject):
                     )
 
                 children = map(
-                    lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
+                    lambda x: cast(pystac.Catalog | pystac.Collection, x),
                     self.get_stac_objects(
                         pystac.RelType.CHILD, modify_links=sort_function
                     ),
@@ -441,7 +441,7 @@ class Catalog(STACObject):
             is this catalog.
         """
         return map(
-            lambda x: cast(Union[pystac.Catalog, pystac.Collection], x),
+            lambda x: cast(pystac.Catalog | pystac.Collection, x),
             self.get_stac_objects(pystac.RelType.CHILD),
         )
 
@@ -825,7 +825,7 @@ class Catalog(STACObject):
                     link.resolve_stac_object(root=self.get_root())
                     setter_funcs.extend(
                         process_catalog(
-                            cast(Union[pystac.Catalog, pystac.Collection], link.target),
+                            cast(pystac.Catalog | pystac.Collection, link.target),
                             new_root,
                             is_root=False,
                             parent=cat,
@@ -872,7 +872,7 @@ class Catalog(STACObject):
                 template, no subcatalog is added.
 
         Returns:
-            [catalog]: List of new catalogs created
+            list[Catalog]: List of new catalogs created
         """
         result: list[Catalog] = []
         parent_ids = parent_ids or list()

@@ -16,11 +16,13 @@
 - Update Projection Extension to version 2 - proj:epsg -> proj:code ([#1287](https://github.com/stac-utils/pystac/pull/1287))
 - Update migrate code to handle license changes in STAC spec 1.1.0 ([#1491](https://github.com/stac-utils/pystac/pull/1491))
 - Allow links to have `file://` prefix - but don't write them that way by default ([#1489](https://github.com/stac-utils/pystac/pull/1489))
+- Raise `STACError` with message when a link is expected to resolve to a STAC object but doesn't ([#1500](https://github.com/stac-utils/pystac/pull/1500))
 
 ### Fixed
 
 - Use `application/geo+json` for `item` links ([#1495](https://github.com/stac-utils/pystac/pull/1495))
 - Includes the scientific extension in Item's ext interface ([#1496](https://github.com/stac-utils/pystac/pull/1496))
+- Fixes all broken documentation links and adds check to CI ([#1499](https://github.com/stac-utils/pystac/pull/1499))
 
 ## [v1.11.0] - 2024-09-26
 

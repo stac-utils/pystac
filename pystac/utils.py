@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import (
     Any,
+    TypeAlias,
     TypeVar,
-    Union,
     cast,
 )
 from urllib.parse import ParseResult as URLParseResult
@@ -19,7 +19,8 @@ import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
-HREF = Union[str, os.PathLike[str]]
+#: HREF string or path-like object.
+HREF: TypeAlias = str | os.PathLike[str]
 
 
 def make_posix_style(href: HREF) -> str:
@@ -27,7 +28,7 @@ def make_posix_style(href: HREF) -> str:
     slashes for converting Windows paths to Posix style.
 
     Args:
-        href (Union[str, os.PathLike]) : The href string or path-like object.
+        href (str | os.PathLike) : The href string or path-like object.
 
     Returns:
         str : The converted href in string form.
@@ -159,7 +160,7 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
     Args:
         join_type (JoinType) : One of ``JoinType.PATH`` or ``JoinType.URL``. If
             ``JoinType.PATH``, then :func:`os.path.join` is used for the join.
-            If ``JoinType.URL``, then :func:`posixpath.join` is used.
+            If ``JoinType.URL``, then ``posixpath.join`` is used.
         *args (str): Additional positional string arguments to be joined.
 
     Returns:
