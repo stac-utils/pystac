@@ -17,6 +17,7 @@
 - Update migrate code to handle license changes in STAC spec 1.1.0 ([#1491](https://github.com/stac-utils/pystac/pull/1491))
 - Allow links to have `file://` prefix - but don't write them that way by default ([#1489](https://github.com/stac-utils/pystac/pull/1489))
 - Raise `STACError` with message when a link is expected to resolve to a STAC object but doesn't ([#1500](https://github.com/stac-utils/pystac/pull/1500))
+- Raise an error on APILayoutStrategy when root_href is non-url ([#1498](https://github.com/stac-utils/pystac/pull/1498))
 
 ### Fixed
 

@@ -14,8 +14,9 @@ from typing import (
 
 import pystac
 from pystac.cache import ResolvedObjectCache
-from pystac.errors import STACTypeError
+from pystac.errors import STACError, STACTypeError
 from pystac.layout import (
+    APILayoutStrategy,
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
     LayoutTemplate,
@@ -30,6 +31,7 @@ from pystac.stac_object import STACObject, STACObjectType
 from pystac.utils import (
     HREF,
     StringEnum,
+    _is_url,
     is_absolute_href,
     make_absolute_href,
     make_relative_href,
@@ -768,6 +770,9 @@ class Catalog(STACObject):
         # Normalizing requires an absolute path
         if not is_absolute_href(root_href):
             root_href = make_absolute_href(root_href, os.getcwd(), start_is_dir=True)
+
+        if isinstance(_strategy, APILayoutStrategy) and not _is_url(root_href):
+            raise STACError("When using APILayoutStrategy the root_href must be a URL")
 
         def process_item(
             item: Item, _root_href: str, is_root: bool, parent: Catalog | None
