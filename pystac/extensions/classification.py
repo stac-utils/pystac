@@ -11,7 +11,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -26,6 +25,8 @@ from pystac.extensions.raster import RasterBand
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
+#: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.extensions.raster.RasterBand`
 T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, RasterBand)
 
 SCHEMA_URI_PATTERN: str = (
@@ -486,11 +487,11 @@ class Bitfield:
 class ClassificationExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of
     :class:`~pystac.Item`, :class:`~pystac.Asset`,
-    :class:`~pystac.extension.raster.RasterBand`, or
+    :class:`~pystac.extensions.raster.RasterBand`, or
     :class:`~pystac.ItemAssetDefinition` with properties from the
     :stac-ext:`Classification Extension <classification>`.  This class is generic
     over the type of STAC object being extended.
@@ -509,13 +510,13 @@ class ClassificationExtension(
         classes: list[Classification] | None = None,
         bitfields: list[Bitfield] | None = None,
     ) -> None:
-        """Applies the classifiation extension fields to the extended object.
+        """Applies the classification extension fields to the extended object.
 
         Note: one may set either the classes or bitfields objects, but not both.
 
         Args:
             classes: a list of
-                :class:`~pystac.extension.classification.Classification` objects
+                :class:`~pystac.extensions.classification.Classification` objects
                 describing the various classes in the classification
         """
         assert (
@@ -602,7 +603,7 @@ class ClassificationExtension(
         This extension can be applied to instances of :class:`~pystac.Item`,
         :class:`~pystac.Asset`,
         :class:`~pystac.ItemAssetDefinition`, or
-        :class:`~pystac.extension.raster.RasterBand`.
+        :class:`~pystac.extensions.raster.RasterBand`.
 
         Raises:
             pystac.ExtensionTypeError : If an invalid object type is passed

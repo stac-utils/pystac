@@ -206,7 +206,7 @@ class CommonMetadata:
             ``created`` has a different meaning depending on the type of STAC object.
             On an :class:`~pystac.Item`, it refers to the creation time of the
             metadata. On an :class:`~pystac.Asset`, it refers to the creation time of
-            the actual data linked to in :attr:`Asset.href <pystac.Asset.href`.
+            the actual data linked to in :attr:`~pystac.Asset.href`.
         """
         return utils.map_opt(utils.str_to_datetime, self._get_field("created", str))
 
@@ -224,7 +224,7 @@ class CommonMetadata:
             ``updated`` has a different meaning depending on the type of STAC object.
             On an :class:`~pystac.Item`, it refers to the update time of the
             metadata. On an :class:`~pystac.Asset`, it refers to the update time of
-            the actual data linked to in :attr:`Asset.href <pystac.Asset.href`.
+            the actual data linked to in :attr:`~pystac.Asset.href`.
         """
         return utils.map_opt(utils.str_to_datetime, self._get_field("updated", str))
 

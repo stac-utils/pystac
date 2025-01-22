@@ -5,8 +5,8 @@ from copy import deepcopy
 from html import escape
 from typing import (
     Any,
+    TypeAlias,
     TypeVar,
-    Union,
 )
 
 import pystac
@@ -15,8 +15,9 @@ from pystac.html.jinja_env import get_jinja_env
 from pystac.serialization.identify import identify_stac_object_type
 from pystac.utils import HREF, is_absolute_href, make_absolute_href, make_posix_style
 
-ItemLike = Union[pystac.Item, dict[str, Any]]
+ItemLike: TypeAlias = pystac.Item | dict[str, Any]
 
+#: Generalized version of :class:`ItemCollection`
 C = TypeVar("C", bound="ItemCollection")
 
 
@@ -24,42 +25,44 @@ class ItemCollection(Collection[pystac.Item]):
     """Implementation of a GeoJSON FeatureCollection whose features are all STAC
     Items.
 
-    All :class:`~pystac.Item` instances passed to the :class:`~ItemCollection` instance
+    All :class:`~pystac.Item` instances passed to the :class:`ItemCollection` instance
     during instantiation are cloned and have their ``"root"`` URL cleared. Instances of
     this class implement the abstract methods of :class:`typing.Collection` and can also
     be added together (see below for examples using these methods).
 
     Any additional top-level fields in the FeatureCollection are retained in
-    :attr:`~ItemCollection.extra_fields` by the :meth:`~ItemCollection.from_dict` and
-    :meth:`~ItemCollection.from_file` methods and will be present in the serialized file
-    from :meth:`~ItemCollection.save_object`.
+    :attr:`~pystac.ItemCollection.extra_fields` by the
+    :meth:`~pystac.ItemCollection.from_dict` and
+    :meth:`~pystac.ItemCollection.from_file`
+    methods and will be present in the serialized file
+    from :meth:`~pystac.ItemCollection.save_object`.
 
     Arguments:
 
         items : List of :class:`~pystac.Item` instances to include in the
-            :class:`~ItemCollection`.
+            :class:`ItemCollection`.
         extra_fields : Dictionary of additional top-level fields included in the
-            :class:`~ItemCollection`.
+            :class:`ItemCollection`.
         clone_items : Optional flag indicating whether :class:`~pystac.Item` instances
-            should be cloned before storing in the :class:`~ItemCollection`. Setting to
+            should be cloned before storing in the :class:`ItemCollection`. Setting to
             ``False`` will result in faster instantiation, but changes made to
-            :class:`~pystac.Item` instances in the :class:`~ItemCollection` will mutate
+            :class:`~pystac.Item` instances in the :class:`ItemCollection` will mutate
             the original ``Item``. Defaults to ``True``.
 
     Examples:
 
-        Loop over all items in the :class`~ItemCollection`
+        Loop over all items in the :class`ItemCollection`
 
         >>> item_collection: ItemCollection = ...
         >>> for item in item_collection:
         ...     ...
 
-        Get the number of :class:`~pytac.Item` instances in the
-        :class:`~ItemCollection`
+        Get the number of :class:`~pystac.Item` instances in the
+        :class:`ItemCollection`
 
         >>> length: int = len(item_collection)
 
-        Check if an :class:`~pystac.Item` is in the :class:`~ItemCollection`. Note
+        Check if an :class:`~pystac.Item` is in the :class:`ItemCollection`. Note
         that the ``clone_items`` argument must be ``False`` for this to return
         ``True``, since equality of PySTAC objects is currently evaluated using default
         object equality (i.e. ``item_1 is item_2``).
@@ -68,7 +71,7 @@ class ItemCollection(Collection[pystac.Item]):
         >>> item_collection = ItemCollection(items=[item], clone_items=False)
         >>> assert item in item_collection
 
-        Combine :class:`~ItemCollection` instances
+        Combine :class:`ItemCollection` instances
 
         >>> item_1: Item = ...
         >>> item_2: Item = ...
@@ -169,7 +172,7 @@ class ItemCollection(Collection[pystac.Item]):
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
         Arguments:
-            d : The dictionary from which the :class:`~ItemCollection` will be created
+            d : The dictionary from which the :class:`ItemCollection` will be created
             preserve_dict: If False, the dict parameter ``d`` may be modified
                 during this method call. Otherwise the dict is not mutated.
                 Defaults to True, which results results in a deepcopy of the

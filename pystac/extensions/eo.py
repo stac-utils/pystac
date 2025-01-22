@@ -9,7 +9,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -25,6 +24,8 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
+#: pr :class:`~pystac.ItemAssetDefinition`
 T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
@@ -289,7 +290,7 @@ class Band:
 class EOExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -556,9 +557,9 @@ class ItemAssetsEOExtension(EOExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesEOExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Electro-Optical Extension <eo>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
 
     @property

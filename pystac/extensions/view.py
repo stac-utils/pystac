@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -14,6 +14,8 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`
+#: or :class:`~pystac.ItemAssetDefinition`
 T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/view/v1.0.0/schema.json"
@@ -29,7 +31,7 @@ SUN_ELEVATION_PROP: str = PREFIX + "sun_elevation"
 class ViewExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` with properties from the :stac-ext:`View Geometry
@@ -242,9 +244,9 @@ class ItemAssetsViewExtension(ViewExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesViewExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`View Object Extension <view>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`View Object Extension <view>`.
     """
 
     @property

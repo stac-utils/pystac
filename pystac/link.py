@@ -6,6 +6,7 @@ from html import escape
 from typing import TYPE_CHECKING, Any, TypeVar
 
 import pystac
+from pystac.errors import STACError
 from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import (
     HREF as HREF,
@@ -29,6 +30,7 @@ if TYPE_CHECKING:
 else:
     PathLike = os.PathLike
 
+#: Generalized version of :class:`Link`
 L = TypeVar("L", bound="Link")
 
 #: Hierarchical links provide structure to STAC catalogs.
@@ -51,7 +53,7 @@ class Link(PathLike):
     not automatically load in the STACObject that is the target
     (if the link is pointing to a STACObject). When a user is crawling
     through a catalog or when additional metadata is required, PySTAC uses the
-    :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` method
+    :func:`~pystac.Link.resolve_stac_object` method
     to load in and deserialize STACObjects. This mechanism is used within
     the PySTAC codebase and normally does not need to be considered by the user -
     ideally the lazy deserialization of STACObjects is transparent to clients of PySTAC.
@@ -84,7 +86,7 @@ class Link(PathLike):
 
     owner: STACObject | None
     """The owner of this link. The link will use its owner's root catalog
-    :class:`~pystac.resolved_object_cache.ResolvedObjectCache` to resolve objects, and
+    :class:`~pystac.cache.ResolvedObjectCache` to resolve objects, and
     will create absolute HREFs from relative HREFs against the owner's self HREF."""
 
     _target_href: str | None
@@ -326,8 +328,12 @@ class Link(PathLike):
                                 stac_io = owner_root._stac_io
                     if stac_io is None:
                         stac_io = pystac.StacIO.default()
-
-                obj = stac_io.read_stac_object(target_href, root=root)
+                try:
+                    obj = stac_io.read_stac_object(target_href, root=root)
+                except Exception as e:
+                    raise STACError(
+                        f"HREF: '{target_href}' does not resolve to a STAC object"
+                    ) from e
                 obj.set_self_href(target_href)
                 if root is not None:
                     obj = root._resolved_objects.get_or_cache(obj)
@@ -362,7 +368,7 @@ class Link(PathLike):
 
         Hierarchical links are used to build relationships in STAC, e.g.
         "parent", "child", "item", etc. For a complete list of hierarchical
-        relation types, see :py:const:`HIERARCHICAL_LINKS`.
+        relation types, see :py:const:`~pystac.link.HIERARCHICAL_LINKS`.
 
         Returns:
             bool: True if the link's rel type is hierarchical.
@@ -417,7 +423,7 @@ class Link(PathLike):
 
     @classmethod
     def from_dict(cls: type[L], d: dict[str, Any]) -> L:
-        """Deserializes a Link from a dict.
+        """Deserializes a :class:`Link` from a dict.
 
         Args:
             d : The dict that represents the Link in JSON

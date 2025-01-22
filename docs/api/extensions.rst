@@ -13,8 +13,8 @@ pystac.extensions
 
 .. autosummary::
 
-    datacube.DatacubeExtension
     classification.ClassificationExtension
+    datacube.DatacubeExtension
     eo.EOExtension
     file.FileExtension
     grid.GridExtension
@@ -23,6 +23,7 @@ pystac.extensions
     pointcloud.PointcloudExtension
     projection.ProjectionExtension
     raster.RasterExtension
+    render.RenderExtension
     sar.SarExtension
     sat.SatExtension
     scientific.ScientificExtension

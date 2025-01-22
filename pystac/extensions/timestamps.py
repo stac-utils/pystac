@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -16,7 +16,9 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.Collection)
+#: Generalized version of :class:`~pystac.Collection`, :class:`~pystac.Item`,
+#: or :class:`~pystac.Asset`
+T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset)
 
 SCHEMA_URI = "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json"
 
@@ -28,7 +30,7 @@ UNPUBLISHED_PROP = "unpublished"
 class TimestampsExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -201,9 +203,9 @@ class AssetTimestampsExtension(TimestampsExtension[pystac.Asset]):
 
 
 class SummariesTimestampsExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`Timestamps Extension <timestamps>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Timestamps Extension <timestamps>`.
     """
 
     @property
