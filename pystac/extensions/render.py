@@ -9,6 +9,7 @@ from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Collection` or :class:`~pystac.Item`
 T = TypeVar("T", pystac.Collection, pystac.Item)
 
 SCHEMA_URI_PATTERN: str = (
@@ -56,7 +57,7 @@ class Render:
     @property
     def rescale(self) -> list[list[float]] | None:
         """A list of min/max value pairs to rescale each asset by, e.g.
-        `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+        ``[[0, 5000], [0, 7000], [0, 9000]]``. If not provided, the
         assets will not be rescaled.
         """
         return self.properties.get("rescale")
@@ -154,7 +155,7 @@ class Render:
 
     @property
     def minmax_zoom(self) -> list[int] | None:
-        """Zoom level range applicable for the visualization, e.g. `[2, 18]`."""
+        """Zoom level range applicable for the visualization, e.g. ``[2, 18]``."""
         return self.properties.get("minmax_zoom")
 
     @minmax_zoom.setter
@@ -180,37 +181,28 @@ class Render:
         """Set the properties for a new Render.
 
         Args:
-            assets:
-                List of asset keys referencing the assets that are
+            assets : List of asset keys referencing the assets that are
                 used to make the rendering.
-            title:
-                Title of the rendering.
-            rescale:
-                A list of min/max value pairs to rescale each asset by, e.g.
-                `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+            title : Title of the rendering.
+            rescale : A list of min/max value pairs to rescale each asset by, e.g.
+                ``[[0, 5000], [0, 7000], [0, 9000]]``. If not provided, the
                 assets will not be rescaled.
-            nodata:
-                Nodata value.
-            colormap_name:
-                Name of color map to apply to the render.
+            nodata : Nodata value.
+            colormap_name : Name of color map to apply to the render.
                 https://matplotlib.org/stable/gallery/color/colormap_reference.html
-            colormap:
-                A dictionary containing a custom colormap definition.
+            colormap : A dictionary containing a custom colormap definition.
                 https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps
-            color_formula:
-                A string containing a color formula to apply
+            color_formula : A string containing a color formula to apply
                 color corrections to images. Useful for reducing
-                artefacts like atmospheric haze, dark shadows, or
+                artifacts like atmospheric haze, dark shadows, or
                 muted colors.
                 https://developmentseed.org/titiler/advanced/rendering/#color-formula
-            resampling:
-                Resampling algorithm to apply to the referenced assets. See GDAL
-                resampling algorithm for some examples.
+            resampling : Resampling algorithm to apply to the referenced assets. See
+                GDAL resampling algorithm for some examples.
                 https://gdal.org/en/latest/programs/gdalwarp.html#cmdoption-gdalwarp-r
-            expression:
-                Band arithmetic formula to apply to the referenced assets.
-            minmax_zoom:
-                Zoom level range applicable for the visualization, e.g. `[2, 18]`.
+            expression : Band arithmetic formula to apply to the referenced assets.
+            minmax_zoom : Zoom level range applicable for the visualization,
+                e.g. ``[2, 18]``.
         """
         self.assets = assets
         self.title = title
@@ -240,37 +232,28 @@ class Render:
         """Create a new Render.
 
         Args:
-            assets:
-                List of asset keys referencing the assets that are
+            assets: List of asset keys referencing the assets that are
                 used to make the rendering.
-            title:
-                Title of the rendering.
-            rescale:
-                A list of min/max value pairs to rescale each asset by, e.g.
-                `[[0, 5000], [0, 7000], [0, 9000]]`. If not provided, the
+            title: Title of the rendering.
+            rescale: A list of min/max value pairs to rescale each asset by, e.g.
+                ``[[0, 5000], [0, 7000], [0, 9000]]``. If not provided, the
                 assets will not be rescaled.
-            nodata:
-                Nodata value.
-            colormap_name:
-                Name of color map to apply to the render.
+            nodata: Nodata value.
+            colormap_name: Name of color map to apply to the render.
                 https://matplotlib.org/stable/gallery/color/colormap_reference.html
-            colormap:
-                A dictionary containing a custom colormap definition.
+            colormap: A dictionary containing a custom colormap definition.
                 https://developmentseed.org/titiler/advanced/rendering/#custom-colormaps
-            color_formula:
-                A string containing a color formula to apply
+            color_formula: A string containing a color formula to apply
                 color corrections to images. Useful for reducing
-                artefacts like atmospheric haze, dark shadows, or
+                artifacts like atmospheric haze, dark shadows, or
                 muted colors.
                 https://developmentseed.org/titiler/advanced/rendering/#color-formula
-            resampling:
-                Resampling algorithm to apply to the referenced assets. See GDAL
-                resampling algorithm for some examples.
+            resampling: Resampling algorithm to apply to the referenced assets. See
+                GDAL resampling algorithm for some examples.
                 https://gdal.org/en/latest/programs/gdalwarp.html#cmdoption-gdalwarp-r
-            expression:
-                Band arithmetic formula to apply to the referenced assets.
-            minmax_zoom:
-                Zoom level range applicable for the visualization, e.g. `[2, 18]`.
+            expression: Band arithmetic formula to apply to the referenced assets.
+            minmax_zoom: Zoom level range applicable for the visualization,
+                e.g. ``[2, 18]``.
         """
         c = cls({})
         c.apply(
@@ -364,7 +347,7 @@ class RenderExtension(
 
         Args:
             renders: a dictionary mapping render names to
-            :class: `~pystac.extension.render.Render` objects.
+                :class: `~pystac.extensions.render.Render` objects.
         """
         self.renders = renders
 

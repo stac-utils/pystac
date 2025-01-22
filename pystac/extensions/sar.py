@@ -8,7 +8,6 @@ from typing import (
     Generic,
     Literal,
     TypeVar,
-    Union,
     cast,
 )
 
@@ -23,6 +22,8 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
+#: :class:`~pystac.ItemAssetDefinition`
 T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
@@ -72,7 +73,7 @@ class ObservationDirection(StringEnum):
 class SarExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Item, pystac.Collection]],
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
@@ -80,13 +81,13 @@ class SarExtension(
     STAC Object to be extended (e.g. :class:`~pystac.Item`,
     :class:`~pystac.Asset`).
 
-    To create a concrete instance of :class:`SARExtension`, use the
-    :meth:`SARExtension.ext` method. For example:
+    To create a concrete instance of :class:`SarExtension`, use the
+    :meth:`SarExtension.ext` method. For example:
 
     .. code-block:: python
 
        >>> item: pystac.Item = ...
-       >>> sar_ext = SARExtension.ext(item)
+       >>> sar_ext = SarExtension.ext(item)
     """
 
     name: Literal["sar"] = "sar"
@@ -347,12 +348,12 @@ class SarExtension(
 
 
 class ItemSarExtension(SarExtension[pystac.Item]):
-    """A concrete implementation of :class:`SARExtension` on an :class:`~pystac.Item`
+    """A concrete implementation of :class:`SarExtension` on an :class:`~pystac.Item`
     that extends the properties of the Item to include properties defined in the
     :stac-ext:`SAR Extension <sar>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`SARExtension.ext` on an :class:`~pystac.Item` to extend it.
+    :meth:`SarExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
     item: pystac.Item
@@ -370,12 +371,12 @@ class ItemSarExtension(SarExtension[pystac.Item]):
 
 
 class AssetSarExtension(SarExtension[pystac.Asset]):
-    """A concrete implementation of :class:`SARExtension` on an :class:`~pystac.Asset`
+    """A concrete implementation of :class:`SarExtension` on an :class:`~pystac.Asset`
     that extends the Asset fields to include properties defined in the
     :stac-ext:`SAR Extension <sar>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`SARExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    :meth:`SarExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
     asset_href: str
@@ -408,9 +409,9 @@ class ItemAssetsSarExtension(SarExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesSarExtension(SummariesExtension):
-    """A concrete implementation of :class:`~SummariesExtension` that extends
-    the ``summaries`` field of a :class:`~pystac.Collection` to include properties
-    defined in the :stac-ext:`SAR Extension <sar>`.
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`SAR Extension <sar>`.
     """
 
     @property

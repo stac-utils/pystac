@@ -12,6 +12,7 @@ from typing import (
 )
 
 import pystac
+from pystac.stac_object import S
 
 VERSION_REGEX = re.compile("/v[0-9].[0-9].*/")
 
@@ -50,7 +51,7 @@ class PropertiesExtension(ABC):
 
     This class should not be instantiated directly. Instead, create an
     extension-specific class that inherits from this class and instantiate that. See
-    :class:`~pystac.extensions.eo.PropertiesEOExtension` for an example.
+    :class:`~pystac.extensions.eo.EOExtension` for an example.
     """
 
     properties: dict[str, Any]
@@ -91,9 +92,6 @@ class PropertiesExtension(ABC):
             ]
         else:
             self.properties[prop_name] = v
-
-
-S = TypeVar("S", bound=pystac.STACObject)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
