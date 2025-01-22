@@ -99,6 +99,7 @@ class LinkTest(unittest.TestCase):
         link = pystac.Link("my rel", target=self.item)
         link.resolve_stac_object()
 
+    @pytest.mark.skipif(os.name == "nt", reason="Non-windows test")
     def test_resolve_stac_object_throws_informative_error(self) -> None:
         link = pystac.Link("root", target="/a/b/foo.json")
         with pytest.raises(
