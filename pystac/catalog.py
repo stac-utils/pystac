@@ -13,6 +13,7 @@ from typing import (
 )
 
 import pystac
+import pystac.media_type
 from pystac.cache import ResolvedObjectCache
 from pystac.errors import STACTypeError
 from pystac.layout import (
@@ -466,7 +467,7 @@ class Catalog(STACObject):
         """
         return self.get_links(
             rel=pystac.RelType.CHILD,
-            media_type=[None, pystac.MediaType.GEOJSON, pystac.MediaType.JSON],
+            media_type=pystac.media_type.STAC_JSON,
         )
 
     def clear_children(self) -> None:
@@ -628,8 +629,7 @@ class Catalog(STACObject):
             List[Link]: List of links of this catalog with ``rel == 'item'``
         """
         return self.get_links(
-            rel=pystac.RelType.ITEM,
-            media_type=[None, pystac.MediaType.GEOJSON, pystac.MediaType.JSON],
+            rel=pystac.RelType.ITEM, media_type=pystac.media_type.STAC_JSON
         )
 
     def to_dict(

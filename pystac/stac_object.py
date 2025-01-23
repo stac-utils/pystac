@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 S = TypeVar("S", bound="STACObject")
 
-STACObject_MediaType: TypeAlias = str | pystac.MediaType | None
+OptionalMediaType: TypeAlias = str | pystac.MediaType | None
 
 
 class STACObjectType(StringEnum):
@@ -174,7 +174,7 @@ class STACObject(ABC):
     def get_single_link(
         self,
         rel: str | pystac.RelType | None = None,
-        media_type: STACObject_MediaType | Iterable[STACObject_MediaType] = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
     ) -> Link | None:
         """Get a single :class:`~pystac.Link` instance associated with this
         object.
@@ -208,7 +208,7 @@ class STACObject(ABC):
     def get_links(
         self,
         rel: str | pystac.RelType | None = None,
-        media_type: STACObject_MediaType | Iterable[STACObject_MediaType] = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
     ) -> list[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
@@ -256,7 +256,7 @@ class STACObject(ABC):
         """
         return self.get_single_link(
             rel=pystac.RelType.ROOT,
-            media_type=[None, pystac.MediaType.GEOJSON, pystac.MediaType.JSON],
+            media_type=pystac.media_type.STAC_JSON,
         )
 
     @property
