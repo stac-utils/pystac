@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/datacube/v2.2.0/schema.json
   response:
@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:09 GMT
+      - Thu, 23 Jan 2025 15:04:09 GMT
       ETag:
       - '"64527b1d-36ad"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 84ba899b2a1b2c9625fc62b84723e9e061618ea3
+      - e63abc1c86c94955d636488b7aa3f510e1c39d1f
       X-GitHub-Request-Id:
-      - 9B0B:164558:3D73F0E:464B1C9:67856766
+      - 59D8:151BE8:FC5C21:11A256F:67925A69
       X-Served-By:
-      - cache-bos4628-BOS
+      - cache-den-kden1300075-DEN
       X-Timer:
-      - S1736796009.132493,VS0,VE38
+      - S1737644650.595779,VS0,VE124
       expires:
-      - Mon, 13 Jan 2025 19:30:09 GMT
+      - Thu, 23 Jan 2025 15:14:09 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -257,7 +257,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://proj.org/schemas/v0.4/projjson.schema.json
   response:
@@ -267,9 +267,9 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       CF-Cache-Status:
-      - EXPIRED
+      - MISS
       CF-Ray:
-      - 9017bdf4793507fd-IAD
+      - 9068acb56ecd7b2c-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -281,13 +281,13 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:09 GMT
+      - Thu, 23 Jan 2025 15:04:10 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.4/projjson.schema.json
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=6LAZgbjUWBQcCPGaDgg6XGr.Jp7mfCj64fMM.qdsITw-1736796009841-0.0.1.1-604800000;
+      - _cfuvid=DR2Oa9qglcKiyErWUuiUsAyi0MtqofYqZqF7V.mmWY4-1737644650906-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
@@ -302,7 +302,7 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-backend:
-      - web-ext-theme-i-0424321e567628222
+      - web-ext-theme-i-05bb94bcf2b69a433
       x-content-type-options:
       - nosniff
       x-rtd-domain:
@@ -330,7 +330,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.4/projjson.schema.json
   response:
@@ -783,9 +783,9 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       CF-Cache-Status:
-      - HIT
+      - REVALIDATED
       CF-Ray:
-      - 9017bdf64f18d65b-IAD
+      - 9068acbc5f0d69dd-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -793,7 +793,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       ETag:
       - W/"c5bc7ca065287598bed5404a0ec79ce0"
       Last-Modified:
@@ -801,7 +801,7 @@ interactions:
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=gAlhVhKUBHZX_qp5c1bgehFkyWRYtdCCtsUrwdCLYTs-1736796010026-0.0.1.1-604800000;
+      - _cfuvid=2YHlrrw7B0ZV1cSSnxjCMmrRDPscmKaijyvi0r04Tyo-1737644651092-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
@@ -816,15 +816,15 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-amz-id-2:
-      - ldrLq+wrvaBh3HC0mDplIU2ZuPOsIn/mkePLPplSk2rt6PrOBrjvjMbbWpjWd6yrdq90wEYhud0=
+      - 54pa6FmLfBT0ihLNZCYiwY3iqfikKZRIdmfJH3mk+SMMONyowAUdEJPQKvWVHem8K9YMG3bkLv4=
       x-amz-meta-mtime:
       - '1714074779.458591481'
       x-amz-request-id:
-      - X9WWEPAT0P3GCD9T
+      - 1DQFM5613TC6EA1N
       x-amz-server-side-encryption:
       - AES256
       x-backend:
-      - web-ext-theme-i-00f0fbc3c4a545e45
+      - web-ext-theme-i-08b969064f4b9cdc5
       x-content-type-options:
       - nosniff
       x-rtd-domain:

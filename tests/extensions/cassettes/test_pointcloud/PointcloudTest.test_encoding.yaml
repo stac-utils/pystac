@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json
   response:
@@ -89,7 +89,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:14 GMT
+      - Thu, 23 Jan 2025 15:04:13 GMT
       ETag:
       - '"671aae9d-114a"'
       Last-Modified:
@@ -107,15 +107,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 644d063b6465e056d94b86b26a22a8135777473b
+      - 89a3a356702d81c31e3b595a63be30dc2384767e
       X-GitHub-Request-Id:
-      - 39BC:29F0A3:4468BBA:4D4121C:6785676D
+      - 9BE9:20299C:F7A6F2:1156FBB:67925A6C
       X-Served-By:
-      - cache-bos4653-BOS
+      - cache-den-kden1300058-DEN
       X-Timer:
-      - S1736796014.046202,VS0,VE1
+      - S1737644653.107865,VS0,VE1
       expires:
-      - Mon, 13 Jan 2025 19:30:13 GMT
+      - Thu, 23 Jan 2025 15:14:12 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
