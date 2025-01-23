@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -69,7 +69,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:22:03 GMT
+      - Thu, 23 Jan 2025 15:05:02 GMT
       ETag:
       - '"64d39a40-24a3"'
       Server:
@@ -85,13 +85,13 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 620f43bfd13f7a2bfcd20a289e80226ceb7902e8
+      - b23137f65dca3efce34d84f19c6a2ec1ddac89db
       X-GitHub-Request-Id:
-      - B681:1660B9:419505F:48225F1:678567DB
+      - CFEA:26BEBB:12DC6C0:15685DF:67925A9D
       X-Served-By:
-      - cache-bos4682-BOS
+      - cache-den-kden1300070-DEN
       X-Timer:
-      - S1736796123.312706,VS0,VE31
+      - S1737644703.639919,VS0,VE57
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -107,7 +107,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -169,7 +169,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:22:03 GMT
+      - Thu, 23 Jan 2025 15:05:02 GMT
       ETag:
       - '"64d39a40-24a3"'
       Server:
@@ -185,13 +185,13 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - ae3748b7548a749ccd65559d09139026fdbab66b
+      - d92f06f6243de0361be0f4ec98db350a8280dfb4
       X-GitHub-Request-Id:
-      - B681:1660B9:419505F:48225F1:678567DB
+      - CFEA:26BEBB:12DC6C0:15685DF:67925A9D
       X-Served-By:
-      - cache-bos4626-BOS
+      - cache-den-kden1300053-DEN
       X-Timer:
-      - S1736796123.428570,VS0,VE1
+      - S1737644703.726936,VS0,VE1
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -112,11 +112,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 13 Jan 2025 19:20:49 GMT
+      - Thu, 23 Jan 2025 15:04:31 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Mon, 13 Jan 2025 19:25:49 GMT
+      - Thu, 23 Jan 2025 15:09:31 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
@@ -132,15 +132,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - a481491217a7810c19566098b347d7107b8450c5
+      - 3cf09de8b1c9d34eb2ca50b445235c9c884c35ff
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - AD16:35F504:25517AC:296210D:6785678F
+      - B1E1:1806BD:732C3:8041C:67925A7E
       X-Served-By:
-      - cache-bos4666-BOS
+      - cache-den-kden1300024-DEN
       X-Timer:
-      - S1736796049.384632,VS0,VE1
+      - S1737644671.495970,VS0,VE2
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -154,7 +154,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/checksum/json-schema/schema.json
   response:
@@ -198,11 +198,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 13 Jan 2025 19:20:49 GMT
+      - Thu, 23 Jan 2025 15:04:31 GMT
       ETag:
       - '"ceed674cee48a43076989957b8a4f96d8acba3f52df1d52a3745e28225923aac"'
       Expires:
-      - Mon, 13 Jan 2025 19:25:49 GMT
+      - Thu, 23 Jan 2025 15:09:31 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -218,15 +218,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3602e6812ce57b6d79ad9287acd85f6454bf280b
+      - 311bc20d45ff733a9e9547c1f36a60f0a0d4b482
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - FFEC:398F81:2754DC3:2B657F5:67856791
+      - A6F4:38A00F:20C2BB:24137A:67925A7F
       X-Served-By:
-      - cache-bos4622-BOS
+      - cache-den-kden1300036-DEN
       X-Timer:
-      - S1736796049.460057,VS0,VE149
+      - S1737644672.523838,VS0,VE343
       X-XSS-Protection:
       - 1; mode=block
     status:

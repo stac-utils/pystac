@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/xarray-assets/v1.0.0/schema.json
   response:
@@ -69,7 +69,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:26 GMT
+      - Thu, 23 Jan 2025 15:04:17 GMT
       ETag:
       - '"60dcd7ae-bb0"'
       Last-Modified:
@@ -87,15 +87,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - ae70de0b7f3c3cebb2d43f7513e0fe93edb4b631
+      - c898b637c18eea64650e7d7fa1351e8ed210ed09
       X-GitHub-Request-Id:
-      - 8DC2:3528DA:40A9F37:4736A49:6785677A
+      - D340:3FEBF1:1029C9A:12065EA:67925A71
       X-Served-By:
-      - cache-bos4652-BOS
+      - cache-den-kden1300025-DEN
       X-Timer:
-      - S1736796026.106440,VS0,VE41
+      - S1737644658.803239,VS0,VE83
       expires:
-      - Mon, 13 Jan 2025 19:30:26 GMT
+      - Thu, 23 Jan 2025 15:14:17 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

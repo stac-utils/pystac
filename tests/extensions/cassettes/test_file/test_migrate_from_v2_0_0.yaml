@@ -7,7 +7,7 @@ interactions:
       Host:
       - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/file/v2.0.0/examples/item.json
   response:
@@ -64,11 +64,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Mon, 13 Jan 2025 19:20:12 GMT
+      - Thu, 23 Jan 2025 15:04:12 GMT
       ETag:
       - '"2bad008be3e01a9750cc4e04bc605bca80229906ad21f17c6e7573fb367bb781"'
       Expires:
-      - Mon, 13 Jan 2025 19:25:12 GMT
+      - Thu, 23 Jan 2025 15:09:12 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -84,15 +84,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3f8b7c7956037cc175bc0ae0af2eb8b4119eb3e7
+      - c62f05a54a89280ba05f7ffe53edbf76726a88e1
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 16DA:17B50D:1D446B:201FE5:6785676C
+      - 8539:1F9FC4:232131:2672E8:67925A6B
       X-Served-By:
-      - cache-bos4675-BOS
+      - cache-den-kden1300038-DEN
       X-Timer:
-      - S1736796013.772564,VS0,VE146
+      - S1737644652.077310,VS0,VE161
       X-XSS-Protection:
       - 1; mode=block
     status:

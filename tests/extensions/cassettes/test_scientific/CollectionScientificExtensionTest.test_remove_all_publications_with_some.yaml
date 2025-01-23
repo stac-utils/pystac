@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -93,7 +93,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '14'
+      - '7'
       Cache-Control:
       - max-age=600
       Connection:
@@ -103,7 +103,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:22 GMT
+      - Thu, 23 Jan 2025 15:04:16 GMT
       ETag:
       - '"60febab7-15fa"'
       Last-Modified:
@@ -119,17 +119,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '15'
+      - '2'
       X-Fastly-Request-ID:
-      - 112608cc555c934869fe997cba94d753c0d13da2
+      - 3d7ee7605d272f4c2c5dd8d3570089f74f5b5c63
       X-GitHub-Request-Id:
-      - 6498:2542B:42E5DD7:4BBDD88:67856768
+      - C22C:2CA3FC:10F153B:1359BA1:6792475A
       X-Served-By:
-      - cache-bos4646-BOS
+      - cache-den-kden1300042-DEN
       X-Timer:
-      - S1736796023.830379,VS0,VE0
+      - S1737644657.533412,VS0,VE0
       expires:
-      - Mon, 13 Jan 2025 19:30:08 GMT
+      - Thu, 23 Jan 2025 13:52:54 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
