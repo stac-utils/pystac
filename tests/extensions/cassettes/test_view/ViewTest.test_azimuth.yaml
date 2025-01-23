@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -65,7 +65,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '17'
+      - '8'
       Cache-Control:
       - max-age=600
       Connection:
@@ -75,7 +75,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:25 GMT
+      - Thu, 23 Jan 2025 15:04:17 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -91,17 +91,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - 5764fb6865ab270f9a95d669ea51542c51956a7f
+      - 9b17b3bc406c34c5d135ab9ec7cc55a62774d85c
       X-GitHub-Request-Id:
-      - CCE8:52C42:4379209:4C5153E:67856765
+      - 4FF0:3D3696:110AB38:1372E73:6792474C
       X-Served-By:
-      - cache-bos4679-BOS
+      - cache-den-kden1300070-DEN
       X-Timer:
-      - S1736796025.218432,VS0,VE1
+      - S1737644658.507357,VS0,VE0
       expires:
-      - Mon, 13 Jan 2025 19:30:08 GMT
+      - Thu, 23 Jan 2025 13:52:36 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -117,7 +117,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
   response:
@@ -177,7 +177,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '6'
+      - '2'
       Cache-Control:
       - max-age=600
       Connection:
@@ -187,7 +187,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:25 GMT
+      - Thu, 23 Jan 2025 15:04:17 GMT
       ETag:
       - '"67627e9d-e82"'
       Last-Modified:
@@ -205,15 +205,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - f1ff48ea08349a9154c255da49b0883420d8f3f5
+      - 5e11446b3ff221d12e9e125fbf481bb6555d5f27
       X-GitHub-Request-Id:
-      - 5E64:22F2A5:46EF792:4FC7E42:67856773
+      - 3137:3D3696:110B8D9:1373E1E:6792475B
       X-Served-By:
-      - cache-bos4666-BOS
+      - cache-den-kden1300051-DEN
       X-Timer:
-      - S1736796025.288342,VS0,VE1
+      - S1737644658.525927,VS0,VE1
       expires:
-      - Mon, 13 Jan 2025 19:30:19 GMT
+      - Thu, 23 Jan 2025 13:52:53 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

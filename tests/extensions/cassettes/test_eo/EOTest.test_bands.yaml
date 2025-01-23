@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -95,7 +95,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       ETag:
       - '"66df1c53-13bc"'
       Last-Modified:
@@ -113,15 +113,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 38033e0ae6ba1f468fde8e96367e72367af8c83f
+      - f96212bac04f004d1e1e1cc41b3952f5ba020aff
       X-GitHub-Request-Id:
-      - 47BA:13E969:4300816:4BD8815:67856768
+      - D7BA:338B06:10BABDB:12975BC:67925A68
       X-Served-By:
-      - cache-bos4680-BOS
+      - cache-den-kden1300056-DEN
       X-Timer:
-      - S1736796011.806522,VS0,VE1
+      - S1737644651.386659,VS0,VE1
       expires:
-      - Mon, 13 Jan 2025 19:30:08 GMT
+      - Thu, 23 Jan 2025 15:14:09 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -137,7 +137,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -205,7 +205,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       ETag:
       - '"60635220-dff"'
       Last-Modified:
@@ -223,15 +223,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 1d14259c4203880d3f689b58bd1fbdb1ac14ba51
+      - 8778c38807d0a53ccd6b4fd0915cd4d743c3d8f5
       X-GitHub-Request-Id:
-      - CCE8:52C42:4379209:4C5153E:67856765
+      - 4FF0:3D3696:110AB38:1372E73:6792474C
       X-Served-By:
-      - cache-bos4639-BOS
+      - cache-den-kden1300022-DEN
       X-Timer:
-      - S1736796011.880465,VS0,VE1
+      - S1737644651.405308,VS0,VE1
       expires:
-      - Mon, 13 Jan 2025 19:30:08 GMT
+      - Thu, 23 Jan 2025 13:52:36 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:

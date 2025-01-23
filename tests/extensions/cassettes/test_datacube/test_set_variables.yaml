@@ -7,7 +7,7 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://stac-extensions.github.io/datacube/v2.2.0/schema.json
   response:
@@ -215,7 +215,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       ETag:
       - '"64527b1d-36ad"'
       Last-Modified:
@@ -233,15 +233,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - f154244f5fa5d02e7cb20de82fc3243b55f82d79
+      - d938ec9cebdfe62b486384c5c77d81706a9a671f
       X-GitHub-Request-Id:
-      - 9B0B:164558:3D73F0E:464B1C9:67856766
+      - 59D8:151BE8:FC5C21:11A256F:67925A69
       X-Served-By:
-      - cache-bos4682-BOS
+      - cache-den-kden1300076-DEN
       X-Timer:
-      - S1736796010.130955,VS0,VE2
+      - S1737644651.149433,VS0,VE1
       expires:
-      - Mon, 13 Jan 2025 19:30:09 GMT
+      - Thu, 23 Jan 2025 15:14:09 GMT
       permissions-policy:
       - interest-cohort=()
       x-proxy-cache:
@@ -257,7 +257,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://proj.org/schemas/v0.4/projjson.schema.json
   response:
@@ -271,7 +271,7 @@ interactions:
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 9017bdf80fe3d687-IAD
+      - 9068acbddadce750-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -283,13 +283,13 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.4/projjson.schema.json
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=jfvpTIWi78.0nyGm.2MCHOLigPyQTFA1yWeMqzD3VAg-1736796010271-0.0.1.1-604800000;
+      - _cfuvid=9Zi9QQUJgrG47r0C4_mphO51h2nBzwbgMbNFngfdPws-1737644651196-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Vary:
       - Accept-Language, Cookie, Accept-Encoding
@@ -304,7 +304,7 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-backend:
-      - web-ext-theme-i-0424321e567628222
+      - web-ext-theme-i-05bb94bcf2b69a433
       x-content-type-options:
       - nosniff
       x-rtd-domain:
@@ -332,7 +332,7 @@ interactions:
       Host:
       - proj.org
       User-Agent:
-      - Python-urllib/3.11
+      - Python-urllib/3.12
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.4/projjson.schema.json
   response:
@@ -789,7 +789,7 @@ interactions:
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 9017bdf8eae1d64f-IAD
+      - 9068acbe1d931f46-DEN
       Cache-Control:
       - max-age=1200
       Connection:
@@ -797,7 +797,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 13 Jan 2025 19:20:10 GMT
+      - Thu, 23 Jan 2025 15:04:11 GMT
       ETag:
       - W/"c5bc7ca065287598bed5404a0ec79ce0"
       Last-Modified:
@@ -805,7 +805,7 @@ interactions:
       Server:
       - cloudflare
       Set-Cookie:
-      - _cfuvid=.NqPA2XdeUQVe1S5jcGACIN8C1Mm08A6uj0xPBdTi_k-1736796010403-0.0.1.1-604800000;
+      - _cfuvid=jkvTiPCR0SVAL_bCM8okFHyCI94_NxefzWY.ng5VNuE-1737644651248-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
@@ -820,15 +820,15 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-amz-id-2:
-      - ldrLq+wrvaBh3HC0mDplIU2ZuPOsIn/mkePLPplSk2rt6PrOBrjvjMbbWpjWd6yrdq90wEYhud0=
+      - 54pa6FmLfBT0ihLNZCYiwY3iqfikKZRIdmfJH3mk+SMMONyowAUdEJPQKvWVHem8K9YMG3bkLv4=
       x-amz-meta-mtime:
       - '1714074779.458591481'
       x-amz-request-id:
-      - X9WWEPAT0P3GCD9T
+      - 1DQFM5613TC6EA1N
       x-amz-server-side-encryption:
       - AES256
       x-backend:
-      - web-ext-theme-i-00f0fbc3c4a545e45
+      - web-ext-theme-i-08b969064f4b9cdc5
       x-content-type-options:
       - nosniff
       x-rtd-domain:
