@@ -6,6 +6,7 @@
 
 - Top-level `item_assets` dict on `Collection`s ([#1476](https://github.com/stac-utils/pystac/pull/1476))
 - Render Extension ([#1465](https://github.com/stac-utils/pystac/pull/1465))
+- Filter by links by list of media_types
 
 ### Changed
 
@@ -16,6 +17,7 @@
 - Update Projection Extension to version 2 - proj:epsg -> proj:code ([#1287](https://github.com/stac-utils/pystac/pull/1287))
 - Update migrate code to handle license changes in STAC spec 1.1.0 ([#1491](https://github.com/stac-utils/pystac/pull/1491))
 - Allow links to have `file://` prefix - but don't write them that way by default ([#1489](https://github.com/stac-utils/pystac/pull/1489))
+- For `get_root_link`, `get_child_links`, `get_item_links`: Ensure json media types ([#1497](https://github.com/stac-utils/pystac/pull/1497))
 - Raise `STACError` with message when a link is expected to resolve to a STAC object but doesn't ([#1500](https://github.com/stac-utils/pystac/pull/1500))
 - Raise an error on APILayoutStrategy when root_href is non-url ([#1498](https://github.com/stac-utils/pystac/pull/1498))
 

@@ -1409,6 +1409,10 @@ class TestCatalog:
             len(catalog.get_links(rel="search", media_type="application/geo+json")) == 1
         )
         assert len(catalog.get_links(media_type="text/html")) == 1
+        assert (
+            len(catalog.get_links(media_type=["text/html", "application/geo+json"]))
+            == 2
+        )
         assert len(catalog.get_links(rel="search")) == 2
         assert len(catalog.get_links(rel="via")) == 0
         assert len(catalog.get_links()) == 6
@@ -1982,3 +1986,47 @@ def test_APILayoutStrategy_requires_root_to_be_url(
         match="When using APILayoutStrategy the root_href must be a URL",
     ):
         catalog.normalize_hrefs(root_href="issues-1486", strategy=APILayoutStrategy())
+
+
+def test_get_child_links_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.extend(
+        [
+            pystac.Link(
+                rel="child", target="./child-1.json", media_type="application/json"
+            ),
+            pystac.Link(
+                rel="child", target="./child-2.json", media_type="application/geo+json"
+            ),
+            pystac.Link(rel="child", target="./child-3.json"),
+            # this one won't get counted since it's the wrong media_type
+            pystac.Link(rel="child", target="./child.html", media_type="text/html"),
+        ]
+    )
+
+    assert len(catalog.get_child_links()) == 3
+
+
+def test_get_item_links_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.extend(
+        [
+            pystac.Link(
+                rel="item", target="./item-1.json", media_type="application/json"
+            ),
+            pystac.Link(
+                rel="item", target="./item-2.json", media_type="application/geo+json"
+            ),
+            pystac.Link(rel="item", target="./item-3.json"),
+            # this one won't get counted since it's the wrong media_type
+            pystac.Link(rel="item", target="./item.html", media_type="text/html"),
+        ]
+    )
+
+    assert len(catalog.get_item_links()) == 3
+
+
+def test_get_root_link_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.insert(
+        0, pystac.Link(rel="root", target="./self.json", media_type="text/html")
+    )
+    root_link = catalog.get_root_link()
+    assert root_link and root_link.target != "./self.json"
