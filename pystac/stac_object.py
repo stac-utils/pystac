@@ -3,12 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from html import escape
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
 
 import pystac
 from pystac import STACError
@@ -26,6 +21,8 @@ if TYPE_CHECKING:
     from pystac.catalog import Catalog
 
 S = TypeVar("S", bound="STACObject")
+
+OptionalMediaType: TypeAlias = str | pystac.MediaType | None
 
 
 class STACObjectType(StringEnum):
@@ -177,7 +174,7 @@ class STACObject(ABC):
     def get_single_link(
         self,
         rel: str | pystac.RelType | None = None,
-        media_type: str | pystac.MediaType | None = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
     ) -> Link | None:
         """Get a single :class:`~pystac.Link` instance associated with this
         object.
@@ -186,7 +183,8 @@ class STACObject(ABC):
             rel : If set, filter links such that only those
                 matching this relationship are returned.
             media_type: If set, filter the links such that only
-                those matching media_type are returned
+                those matching media_type are returned. media_type can
+                be a single value or a list of values.
 
         Returns:
             :class:`~pystac.Link` | None: First link that matches ``rel``
@@ -195,12 +193,14 @@ class STACObject(ABC):
         """
         if rel is None and media_type is None:
             return next(iter(self.links), None)
+        if media_type and isinstance(media_type, (str, pystac.MediaType)):
+            media_type = [media_type]
         return next(
             (
                 link
                 for link in self.links
                 if (rel is None or link.rel == rel)
-                and (media_type is None or link.media_type == media_type)
+                and (media_type is None or link.media_type in media_type)
             ),
             None,
         )
@@ -208,7 +208,7 @@ class STACObject(ABC):
     def get_links(
         self,
         rel: str | pystac.RelType | None = None,
-        media_type: str | pystac.MediaType | None = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
     ) -> list[Link]:
         """Gets the :class:`~pystac.Link` instances associated with this object.
 
@@ -216,7 +216,8 @@ class STACObject(ABC):
             rel : If set, filter links such that only those
                 matching this relationship are returned.
             media_type: If set, filter the links such that only
-                those matching media_type are returned
+                those matching media_type are returned. media_type can
+                be a single value or a list of values.
 
         Returns:
             List[:class:`~pystac.Link`]: A list of links that match ``rel`` and/
@@ -225,13 +226,14 @@ class STACObject(ABC):
         """
         if rel is None and media_type is None:
             return self.links
-        else:
-            return [
-                link
-                for link in self.links
-                if (rel is None or link.rel == rel)
-                and (media_type is None or link.media_type == media_type)
-            ]
+        if media_type and isinstance(media_type, (str, pystac.MediaType)):
+            media_type = [media_type]
+        return [
+            link
+            for link in self.links
+            if (rel is None or link.rel == rel)
+            and (media_type is None or link.media_type in media_type)
+        ]
 
     def clear_links(self, rel: str | pystac.RelType | None = None) -> None:
         """Clears all :class:`~pystac.Link` instances associated with this object.
@@ -252,7 +254,10 @@ class STACObject(ABC):
             :class:`~pystac.Link` or None: The root link for this object,
             or ``None`` if no root link is set.
         """
-        return self.get_single_link(pystac.RelType.ROOT)
+        return self.get_single_link(
+            rel=pystac.RelType.ROOT,
+            media_type=pystac.media_type.STAC_JSON,
+        )
 
     @property
     def self_href(self) -> str:
