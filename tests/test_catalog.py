@@ -26,6 +26,7 @@ from pystac import (
 )
 from pystac.errors import STACError
 from pystac.layout import (
+    APILayoutStrategy,
     BestPracticesLayoutStrategy,
     HrefLayoutStrategy,
     TemplateLayoutStrategy,
@@ -1973,6 +1974,18 @@ def test_add_item_layout_strategy(
     template = template.format(id=item.id).replace("$", "")
 
     assert item.self_href == f"{base_url}/{template}/{item_id}.json"
+
+
+def test_APILayoutStrategy_requires_root_to_be_url(
+    catalog: Catalog, collection: Collection, item: Item
+) -> None:
+    collection.add_item(item)
+    catalog.add_child(collection)
+    with pytest.raises(
+        pystac.errors.STACError,
+        match="When using APILayoutStrategy the root_href must be a URL",
+    ):
+        catalog.normalize_hrefs(root_href="issues-1486", strategy=APILayoutStrategy())
 
 
 def test_get_child_links_cares_about_media_type(catalog: pystac.Catalog) -> None:

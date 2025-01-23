@@ -16,7 +16,7 @@ from pystac.serialization import (
     merge_common_properties,
     migrate_to_latest,
 )
-from pystac.utils import HREF, safe_urlparse
+from pystac.utils import HREF, _is_url, safe_urlparse
 
 # Use orjson if available
 try:
@@ -389,11 +389,6 @@ class DuplicateKeyReportingMixin(StacIO):
             else:
                 result[key] = value
         return result
-
-
-def _is_url(href: str) -> bool:
-    parsed = safe_urlparse(href)
-    return parsed.scheme not in ["", "file"]
 
 
 if HAS_URLLIB3:
