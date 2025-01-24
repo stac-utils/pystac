@@ -647,3 +647,12 @@ def test_ext_syntax_remove(projection_landsat8_item: pystac.Item) -> None:
 def test_ext_syntax_add(item: pystac.Item) -> None:
     item.ext.add("proj")
     assert isinstance(item.ext.proj, ProjectionExtension)
+
+
+def test_v1_from_dict() -> None:
+    with open(
+        TestCases.get_path("data-files/projection/example-with-version-1.1.json")
+    ) as f:
+        data = json.load(f)
+    item = pystac.Item.from_dict(data, migrate=False)
+    assert item.ext.proj.epsg is not None

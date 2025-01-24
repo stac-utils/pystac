@@ -136,6 +136,10 @@ class ProjectionExtension(
         """
         if self.code is not None and self.code.startswith("EPSG:"):
             return int(self.code.replace("EPSG:", ""))
+        elif epsg := self._get_property(
+            EPSG_PROP, int
+        ):  # In case the dictionary was not migrated
+            return epsg
         return None
 
     @epsg.setter
