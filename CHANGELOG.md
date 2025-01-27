@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.12.1]
+
 ### Changed
 
 - `migrate=True` is now the default in `from_dict` ([#1509](https://github.com/stac-utils/pystac/pull/1509))
@@ -902,7 +904,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.12.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.12.1..main>
+[v1.12.1]: <https://github.com/stac-utils/pystac/compare/v1.12.0..v1.12.1>
 [v1.12.0]: <https://github.com/stac-utils/pystac/compare/v1.11.0..v1.12.0>
 [v1.11.0]: <https://github.com/stac-utils/pystac/compare/v1.10.1..v1.11.0>
 [v1.10.1]: <https://github.com/stac-utils/pystac/compare/v1.10.0..v1.10.1>
