@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- `migrate=True` is now the default in `from_dict` ([#1509](https://github.com/stac-utils/pystac/pull/1509))
+
 ### Fixed
 
 - Fall back to `epsg` when `code` is not present in the Projection extension ([#1505](https://github.com/stac-utils/pystac/pull/1505))
