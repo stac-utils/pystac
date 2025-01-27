@@ -656,3 +656,12 @@ def test_v1_from_dict() -> None:
         data = json.load(f)
     item = pystac.Item.from_dict(data, migrate=False)
     assert item.ext.proj.epsg is not None
+    assert item.ext.proj.crs_string is not None
+
+
+def test_v1_crs_string() -> None:
+    with open(TestCases.get_path("data-files/projection/another-1.1.json")) as f:
+        data = json.load(f)
+    item = pystac.Item.from_dict(data, migrate=False)
+    assert item.ext.proj.epsg is not None
+    assert item.ext.proj.crs_string == "EPSG:32617"
