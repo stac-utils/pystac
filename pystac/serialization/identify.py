@@ -82,8 +82,8 @@ class STACVersionID:
 class STACVersionRange:
     """Defines a range of STAC versions."""
 
-    min_version: STACVersionID
-    max_version: STACVersionID
+    _min_version: STACVersionID
+    _max_version: STACVersionID
 
     def __init__(
         self,
@@ -103,21 +103,45 @@ class STACVersionRange:
             else:
                 self.max_version = max_version
 
-    def set_min(self, v: STACVersionID) -> None:
+    @property
+    def min_version(self) -> STACVersionID:
+        return self._min_version
+
+    @min_version.setter
+    def min_version(self, v: str | STACVersionID) -> None:
+        if isinstance(v, str):
+            v = STACVersionID(v)
+        self._min_version = v
+
+    @property
+    def max_version(self) -> STACVersionID:
+        return self._max_version
+
+    @max_version.setter
+    def max_version(self, v: str | STACVersionID) -> None:
+        if isinstance(v, str):
+            v = STACVersionID(v)
+        self._max_version = v
+
+    def set_min(self, v: str | STACVersionID) -> None:
+        if isinstance(v, str):
+            v = STACVersionID(v)
         if self.min_version < v:
             if v < self.max_version:
                 self.min_version = v
             else:
                 self.min_version = self.max_version
 
-    def set_max(self, v: STACVersionID) -> None:
+    def set_max(self, v: str | STACVersionID) -> None:
+        if isinstance(v, str):
+            v = STACVersionID(v)
         if v < self.max_version:
             if self.min_version < v:
                 self.max_version = v
             else:
                 self.max_version = self.min_version
 
-    def set_to_single(self, v: STACVersionID) -> None:
+    def set_to_single(self, v: str | STACVersionID) -> None:
         self.set_min(v)
         self.set_max(v)
 
@@ -263,12 +287,12 @@ def identify_stac_object(json_dict: dict[str, Any]) -> STACJSONDescription:
     stac_extensions = json_dict.get("stac_extensions", None)
 
     if stac_version is None:
-        version_range.set_min(STACVersionID("0.8.0"))
+        version_range.set_min("0.8.0")
     else:
         version_range.set_to_single(stac_version)
 
     if stac_extensions is not None:
-        version_range.set_min(STACVersionID("0.8.0"))
+        version_range.set_min("0.8.0")
 
     if stac_extensions is None:
         stac_extensions = []
