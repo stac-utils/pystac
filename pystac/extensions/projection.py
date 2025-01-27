@@ -218,6 +218,8 @@ class ProjectionExtension(
         """
         if self.code:
             return self.code
+        elif self.epsg:
+            return f"EPSG:{self.epsg}"
         elif self.wkt2:
             return self.wkt2
         elif self.projjson:
