@@ -169,19 +169,19 @@ class StacIO(ABC):
 
         if info.object_type == pystac.STACObjectType.CATALOG:
             result = pystac.Catalog.from_dict(
-                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
             result._stac_io = self
             return result
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
             return pystac.Collection.from_dict(
-                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
 
         if info.object_type == pystac.STACObjectType.ITEM:
             return pystac.Item.from_dict(
-                d, href=href_str, root=root, migrate=False, preserve_dict=preserve_dict
+                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")

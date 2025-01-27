@@ -464,7 +464,7 @@ def test_custom_item_from_dict(item: Item) -> None:
             d: dict[str, Any],
             href: str | None = None,
             root: Catalog | None = None,
-            migrate: bool = False,
+            migrate: bool = True,
             preserve_dict: bool = True,
         ) -> CustomItem:
             return super().from_dict(d)
@@ -481,13 +481,13 @@ def test_item_from_dict_raises_useful_error() -> None:
 def test_item_from_dict_with_missing_stac_version_raises_useful_error() -> None:
     item_dict = {"type": "Feature", "id": "lalalalala"}
     with pytest.raises(pystac.STACTypeError, match="'stac_version' is missing"):
-        Item.from_dict(item_dict)
+        Item.from_dict(item_dict, migrate=False)
 
 
 def test_item_from_dict_with_missing_type_raises_useful_error() -> None:
     item_dict = {"stac_version": "0.8.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACTypeError, match="'type' is missing"):
-        Item.from_dict(item_dict)
+        Item.from_dict(item_dict, migrate=False)
 
 
 @pytest.mark.parametrize("add_canonical", (True, False))
@@ -721,3 +721,12 @@ def test_copy_with_unresolveable_root(item: Item) -> None:
 def test_no_collection(item: Item) -> None:
     # https://github.com/stac-utils/stac-api-validator/issues/527
     assert item.collection is None
+
+
+def test_migrate_by_default() -> None:
+    with open(
+        TestCases.get_path("data-files/projection/example-with-version-1.1.json")
+    ) as f:
+        data = json.load(f)
+    item = pystac.Item.from_dict(data)  # default used to be migrate=False
+    assert item.ext.proj.code == "EPSG:32614"

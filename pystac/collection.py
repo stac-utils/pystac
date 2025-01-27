@@ -632,7 +632,7 @@ class Collection(Catalog, Assets):
         d: dict[str, Any],
         href: str | None = None,
         root: Catalog | None = None,
-        migrate: bool = False,
+        migrate: bool = True,
         preserve_dict: bool = True,
     ) -> C:
         from pystac.extensions.version import CollectionVersionExtension

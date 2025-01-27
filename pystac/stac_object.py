@@ -647,7 +647,7 @@ class STACObject(ABC):
         d: dict[str, Any],
         href: str | None = None,
         root: Catalog | None = None,
-        migrate: bool = False,
+        migrate: bool = True,
         preserve_dict: bool = True,
     ) -> S:
         """Parses this STACObject from the passed in dictionary.
@@ -659,8 +659,9 @@ class STACObject(ABC):
             root : Optional root catalog for this object.
                 If provided, the root of the returned STACObject will be set
                 to this parameter.
-            migrate: Use True if this dict represents JSON from an older STAC object,
-                so that migrations are run against it.
+            migrate: By default, STAC objects and extensions are migrated to
+                their latest supported version. Set this to False to disable
+                this behavior.
             preserve_dict: If False, the dict parameter ``d`` may be modified
                 during this method call. Otherwise the dict is not mutated.
                 Defaults to True, which results results in a deepcopy of the
