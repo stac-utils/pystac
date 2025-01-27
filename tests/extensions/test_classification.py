@@ -260,7 +260,7 @@ def test_to_from_dict(item_dict: dict[str, Any]) -> None:
                         a_dict[k] = a_dict[k].replace(microsecond=0)
 
     d1 = deepcopy(item_dict)
-    d2 = Item.from_dict(item_dict).to_dict()
+    d2 = Item.from_dict(item_dict, migrate=False).to_dict()
     _parse_times(d1)
     _parse_times(d2)
     assert d1 == d2, f"Mismatch between dictionaries: \n{d1}\n{d2}"
@@ -343,7 +343,7 @@ def test_older_extension_version(landsat_item: Item) -> None:
     stac_extensions.add(old)
     item_as_dict = landsat_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_as_dict["stac_extensions"] = list(stac_extensions)
-    item = Item.from_dict(item_as_dict)
+    item = Item.from_dict(item_as_dict, migrate=False)
     assert ClassificationExtension.has_extension(item)
     assert old in item.stac_extensions
 

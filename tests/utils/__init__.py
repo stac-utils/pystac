@@ -42,7 +42,7 @@ def assert_to_from_dict(
                         a_dict[k] = a_dict[k].replace(microsecond=0)
 
     d1 = deepcopy(d)
-    d2 = stac_object_class.from_dict(d).to_dict()
+    d2 = stac_object_class.from_dict(d, migrate=False).to_dict()
     _parse_times(d1)
     _parse_times(d2)
     assert d1 == d2

@@ -160,7 +160,7 @@ def test_older_extension_version(ext_item: pystac.Item) -> None:
     stac_extensions.add(old)
     item_as_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_as_dict["stac_extensions"] = list(stac_extensions)
-    item = pystac.Item.from_dict(item_as_dict)
+    item = pystac.Item.from_dict(item_as_dict, migrate=False)
     assert GridExtension.has_extension(item)
     assert old in item.stac_extensions
 

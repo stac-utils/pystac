@@ -115,7 +115,7 @@ class TestCatalog:
 
         # assert that the parameter is not preserved with
         # non-default parameter
-        _ = Catalog.from_dict(param_dict, preserve_dict=False)
+        _ = Catalog.from_dict(param_dict, preserve_dict=False, migrate=False)
         assert param_dict != catalog_dict
 
     def test_from_file_bad_catalog(self) -> None:
@@ -1595,7 +1595,7 @@ def test_custom_catalog_from_dict(catalog: Catalog) -> None:
             d: dict[str, Any],
             href: str | None = None,
             root: Catalog | None = None,
-            migrate: bool = False,
+            migrate: bool = True,
             preserve_dict: bool = True,
         ) -> CustomCatalog:
             return super().from_dict(d)
