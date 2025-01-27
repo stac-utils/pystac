@@ -602,7 +602,7 @@ def test_older_extension_version(projection_landsat8_item: Item) -> None:
         include_self_link=False, transform_hrefs=False
     )
     item_as_dict["stac_extensions"] = list(stac_extensions)
-    item = Item.from_dict(item_as_dict)
+    item = Item.from_dict(item_as_dict, migrate=False)
     assert ProjectionExtension.has_extension(item)
     assert old in item.stac_extensions
 

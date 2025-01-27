@@ -306,7 +306,7 @@ class CollectionTest(unittest.TestCase):
 
         # assert that the parameter is not preserved with
         # non-default parameter
-        _ = Collection.from_dict(param_dict, preserve_dict=False)
+        _ = Collection.from_dict(param_dict, preserve_dict=False, migrate=False)
         self.assertNotEqual(param_dict, collection_dict)
 
     def test_from_dict_set_root(self) -> None:
@@ -594,7 +594,7 @@ def test_custom_collection_from_dict(collection: Collection) -> None:
             d: dict[str, Any],
             href: str | None = None,
             root: Catalog | None = None,
-            migrate: bool = False,
+            migrate: bool = True,
             preserve_dict: bool = True,
         ) -> CustomCollection:
             return super().from_dict(d)

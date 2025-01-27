@@ -1224,7 +1224,7 @@ class Catalog(STACObject):
         d: dict[str, Any],
         href: str | None = None,
         root: Catalog | None = None,
-        migrate: bool = False,
+        migrate: bool = True,
         preserve_dict: bool = True,
     ) -> C:
         if migrate:
