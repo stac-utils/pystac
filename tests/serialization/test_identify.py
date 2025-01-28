@@ -118,3 +118,17 @@ class VersionTest(unittest.TestCase):
 
         version_range = STACVersionRange(min_version="0.6.0-rc1", max_version="0.9.0")
         self.assertTrue(version_range.contains("0.9.0"))
+
+    def test_version_range_set_to_single(self) -> None:
+        version_range = STACVersionRange()
+        version_range.set_min("1.0.0-beta.1")
+        version_range.set_to_single("1.0.0")
+
+        self.assertTrue(version_range.contains("1.0.0"))
+
+    def test_version_range_set_min_and_max_directly(self) -> None:
+        version_range = STACVersionRange()
+        version_range.min_version = "1.0.0-beta.1"  # type:ignore
+        version_range.max_version = "1.1.0"  # type:ignore
+
+        self.assertTrue(version_range.contains("1.0.0"))

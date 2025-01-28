@@ -516,3 +516,18 @@ def test_required_property_missing(ext_item: pystac.Item) -> None:
     assert bands is not None
     with pytest.raises(RequiredPropertyMissing):
         bands[0].name
+
+
+def test_unnecessary_migrations_not_performed(ext_item: Item) -> None:
+    item_as_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_as_dict["stac_version"] = "1.0.0"
+    item_as_dict["properties"]["eo:bands"] = [{"name": "B1", "common_name": "coastal"}]
+
+    item = Item.from_dict(item_as_dict)
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+
+    assert item.properties == migrated_item.properties
+    assert len(item.assets) == len(migrated_item.assets)
+    for key, value in item.assets.items():
+        assert value.to_dict() == migrated_item.assets[key].to_dict()
