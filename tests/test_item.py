@@ -27,86 +27,93 @@ from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
 
 
+def get_example_item_dict() -> dict[str, Any]:
+    m = TestCases.get_path("data-files/item/sample-item.json")
+    with open(m) as f:
+        item_dict: dict[str, Any] = json.load(f)
+    return item_dict
+
+
+def test_to_from_dict() -> None:
+    item_dict = get_example_item_dict()
+    param_dict = deepcopy(item_dict)
+
+    assert_to_from_dict(Item, param_dict)
+    item = Item.from_dict(param_dict)
+    assert item.id == "CS3-20160503_132131_05"
+
+    # test asset creation additional field(s)
+    assert (
+        item.assets["analytic"].extra_fields["product"]
+        == "http://cool-sat.com/catalog/products/analytic.json"
+    )
+    assert len(item.assets["thumbnail"].extra_fields) == 0
+
+    # test that the parameter is preserved
+    assert param_dict == item_dict
+
+    # assert that the parameter is preserved regardless of preserve_dict
+    Item.from_dict(param_dict, preserve_dict=False)
+    assert param_dict == item_dict
+
+
+def test_from_dict_set_root() -> None:
+    item_dict = get_example_item_dict()
+    catalog = pystac.Catalog(id="test", description="test desc")
+    item = Item.from_dict(item_dict, root=catalog)
+    assert item.get_root() is catalog
+
+
+def test_set_self_href_does_not_break_asset_hrefs() -> None:
+    cat = TestCases.case_2()
+    for item in cat.get_items(recursive=True):
+        for asset in item.assets.values():
+            if is_absolute_href(asset.href):
+                asset.href = f"./{os.path.basename(asset.href)}"
+        item.set_self_href("http://example.com/item.json")
+        for asset in item.assets.values():
+            assert is_absolute_href(asset.href)
+
+
+def test_set_self_href_none_ignores_relative_asset_hrefs() -> None:
+    cat = TestCases.case_2()
+    for item in cat.get_items(recursive=True):
+        for asset in item.assets.values():
+            if is_absolute_href(asset.href):
+                asset.href = f"./{os.path.basename(asset.href)}"
+        item.set_self_href(None)
+        for asset in item.assets.values():
+            assert not is_absolute_href(asset.href)
+
+
+def test_asset_absolute_href() -> None:
+    item_path = TestCases.get_path("data-files/item/sample-item.json")
+    item_dict = get_example_item_dict()
+    item = Item.from_dict(item_dict)
+    item.set_self_href(item_path)
+    rel_asset = Asset("./data.geojson")
+    rel_asset.set_owner(item)
+    expected_href = make_posix_style(
+        os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
+    )
+    actual_href = rel_asset.get_absolute_href()
+    assert expected_href == actual_href
+
+
+def test_asset_absolute_href_no_item_self() -> None:
+    item_dict = get_example_item_dict()
+    item = Item.from_dict(item_dict)
+    assert item.get_self_href() is None
+
+    rel_asset = Asset("./data.geojson")
+    rel_asset.set_owner(item)
+    actual_href = rel_asset.get_absolute_href()
+    assert actual_href is None
+
+
 class ItemTest(unittest.TestCase):
     def get_example_item_dict(self) -> dict[str, Any]:
-        m = TestCases.get_path("data-files/item/sample-item.json")
-        with open(m) as f:
-            item_dict: dict[str, Any] = json.load(f)
-        return item_dict
-
-    def test_to_from_dict(self) -> None:
-        self.maxDiff = None
-
-        item_dict = self.get_example_item_dict()
-        param_dict = deepcopy(item_dict)
-
-        assert_to_from_dict(Item, param_dict)
-        item = Item.from_dict(param_dict)
-        self.assertEqual(item.id, "CS3-20160503_132131_05")
-
-        # test asset creation additional field(s)
-        self.assertEqual(
-            item.assets["analytic"].extra_fields["product"],
-            "http://cool-sat.com/catalog/products/analytic.json",
-        )
-        self.assertEqual(len(item.assets["thumbnail"].extra_fields), 0)
-
-        # test that the parameter is preserved
-        self.assertEqual(param_dict, item_dict)
-
-        # assert that the parameter is preserved regardless of
-        # preserve_dict
-        _ = Item.from_dict(param_dict, preserve_dict=False)
-        self.assertEqual(param_dict, item_dict)
-
-    def test_from_dict_set_root(self) -> None:
-        item_dict = self.get_example_item_dict()
-        catalog = pystac.Catalog(id="test", description="test desc")
-        item = Item.from_dict(item_dict, root=catalog)
-        self.assertIs(item.get_root(), catalog)
-
-    def test_set_self_href_does_not_break_asset_hrefs(self) -> None:
-        cat = TestCases.case_2()
-        for item in cat.get_items(recursive=True):
-            for asset in item.assets.values():
-                if is_absolute_href(asset.href):
-                    asset.href = f"./{os.path.basename(asset.href)}"
-            item.set_self_href("http://example.com/item.json")
-            for asset in item.assets.values():
-                self.assertTrue(is_absolute_href(asset.href))
-
-    def test_set_self_href_none_ignores_relative_asset_hrefs(self) -> None:
-        cat = TestCases.case_2()
-        for item in cat.get_items(recursive=True):
-            for asset in item.assets.values():
-                if is_absolute_href(asset.href):
-                    asset.href = f"./{os.path.basename(asset.href)}"
-            item.set_self_href(None)
-            for asset in item.assets.values():
-                self.assertFalse(is_absolute_href(asset.href))
-
-    def test_asset_absolute_href(self) -> None:
-        item_path = TestCases.get_path("data-files/item/sample-item.json")
-        item_dict = self.get_example_item_dict()
-        item = Item.from_dict(item_dict)
-        item.set_self_href(item_path)
-        rel_asset = Asset("./data.geojson")
-        rel_asset.set_owner(item)
-        expected_href = make_posix_style(
-            os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
-        )
-        actual_href = rel_asset.get_absolute_href()
-        self.assertEqual(expected_href, actual_href)
-
-    def test_asset_absolute_href_no_item_self(self) -> None:
-        item_dict = self.get_example_item_dict()
-        item = Item.from_dict(item_dict)
-        assert item.get_self_href() is None
-
-        rel_asset = Asset("./data.geojson")
-        rel_asset.set_owner(item)
-        actual_href = rel_asset.get_absolute_href()
-        self.assertEqual(None, actual_href)
+        return get_example_item_dict()
 
     def test_item_field_order(self) -> None:
         item = pystac.Item.from_file(
