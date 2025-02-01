@@ -116,7 +116,9 @@ class LinkTest(unittest.TestCase):
             link = catalog.get_single_link(pystac.RelType.SELF)
             assert link
             link.resolve_stac_object()
-            self.assertEqual(link.get_absolute_href(), make_posix_style(path))
+            self.assertEqual(
+                link.get_absolute_href(), f"file://{make_posix_style(path)}"
+            )
 
     def test_target_getter_setter(self) -> None:
         link = pystac.Link("my rel", target="./foo/bar.json")
@@ -149,7 +151,10 @@ class LinkTest(unittest.TestCase):
                 item = pystac.read_file("item.json")
                 href = item.get_self_href()
                 assert href
-                self.assertTrue(os.path.isabs(href), f"Not an absolute path: {href}")
+                self.assertTrue(
+                    os.path.isabs(href.replace("file://", "")),
+                    f"Not an absolute path: {href}",
+                )
             finally:
                 os.chdir(previous)
 
@@ -246,7 +251,10 @@ class StaticLinkTest(unittest.TestCase):
             d2 = pystac.Link.from_dict(d).to_dict()
             self.assertEqual(d, d2)
         d = {"rel": "self", "href": "t"}
-        d2 = {"rel": "self", "href": make_posix_style(os.path.join(os.getcwd(), "t"))}
+        d2 = {
+            "rel": "self",
+            "href": f"file://{make_posix_style(os.path.join(os.getcwd(), 't'))}",
+        }
         self.assertEqual(pystac.Link.from_dict(d).to_dict(), d2)
 
     def test_from_dict_failures(self) -> None:
@@ -342,7 +350,7 @@ def test_relative_self_link(tmp_path: Path) -> None:
     assert read_item
     asset_href = read_item.assets["data"].get_absolute_href()
     assert asset_href
-    assert Path(asset_href).exists()
+    assert Path(asset_href.replace("file://", "")).exists()
 
 
 @pytest.mark.parametrize("rel", HIERARCHICAL_LINKS)

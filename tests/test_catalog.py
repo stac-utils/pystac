@@ -543,7 +543,7 @@ class TestCatalog:
 
         assert len(hrefs) == stac_io.mock.write_text.call_count
         for call_args_list in stac_io.mock.write_text.call_args_list:
-            assert call_args_list[0][0] in hrefs
+            assert f"file://{call_args_list[0][0]}" in hrefs
 
     def test_subcatalogs_saved_to_correct_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

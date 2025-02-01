@@ -418,7 +418,9 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.strategy = AsIsLayoutStrategy()
         self.expected_local_href = (
-            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+            "file:///an/href"
+            if not path_includes_drive_letter()
+            else "file://D:/an/href"
         )
 
     def test_catalog(self) -> None:
@@ -429,6 +431,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             cat, parent_dir="https://example.com", is_root=True
         )
+
         self.assertEqual(href, self.expected_local_href)
 
     def test_collection(self) -> None:
@@ -442,6 +445,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
         href = self.strategy.get_href(
             collection, parent_dir="https://example.com", is_root=True
         )
+
         self.assertEqual(href, self.expected_local_href)
 
     def test_item(self) -> None:
@@ -452,6 +456,7 @@ class AsIsLayoutStrategyTest(unittest.TestCase):
             self.strategy.get_href(item, parent_dir="http://example.com")
         item.set_self_href("/an/href")
         href = self.strategy.get_href(item, parent_dir="http://example.com")
+
         self.assertEqual(href, self.expected_local_href)
 
 
