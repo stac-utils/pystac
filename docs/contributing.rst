@@ -100,7 +100,7 @@ and report any improvements or regressions.
 
 .. code-block:: bash
 
-    scripts/bench
+    asv continuous --split -e --interleave-rounds --factor 1.25 main HEAD
 
 The benchmark suite takes a while to run, and will report any significant
 changes to standard output. For example, here's a benchmark comparison between
