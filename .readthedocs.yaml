@@ -14,8 +14,7 @@ build:
     - asdf plugin add uv
     - asdf install uv latest
     - asdf global uv latest
-    - uv sync --all-extras --no-dev
-    - uv sync --package pystac-docs --inexact # we need inexact to keep the top-level sync packages 
+    - uv sync --group docs
     - uv run sphinx-build -T -b html -d docs/_build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
 
 formats:
