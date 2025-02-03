@@ -49,7 +49,7 @@ jobs:
         run: uv run pytest tests
       - name: Test
         if: runner.os != 'Windows'
-        run: uv run scripts/test
+        run: uv run pytest tests --block-network --record-mode=none
 
   coverage:
     name: coverage
