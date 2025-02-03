@@ -26,16 +26,8 @@ from pystac.validation import validate_dict
 from tests.utils import TestCases, assert_to_from_dict
 
 
-def get_example_item_dict() -> dict[str, Any]:
-    m = TestCases.get_path("data-files/item/sample-item.json")
-    with open(m) as f:
-        item_dict: dict[str, Any] = json.load(f)
-    return item_dict
-
-
-def test_to_from_dict() -> None:
-    item_dict = get_example_item_dict()
-    param_dict = deepcopy(item_dict)
+def test_to_from_dict(sample_item_dict: dict[str, Any]) -> None:
+    param_dict = deepcopy(sample_item_dict)
 
     assert_to_from_dict(Item, param_dict)
     item = Item.from_dict(param_dict)
@@ -49,17 +41,16 @@ def test_to_from_dict() -> None:
     assert len(item.assets["thumbnail"].extra_fields) == 0
 
     # test that the parameter is preserved
-    assert param_dict == item_dict
+    assert param_dict == sample_item_dict
 
     # assert that the parameter is preserved regardless of preserve_dict
     Item.from_dict(param_dict, preserve_dict=False)
-    assert param_dict == item_dict
+    assert param_dict == sample_item_dict
 
 
-def test_from_dict_set_root() -> None:
-    item_dict = get_example_item_dict()
+def test_from_dict_set_root(sample_item_dict: dict[str, Any]) -> None:
     catalog = pystac.Catalog(id="test", description="test desc")
-    item = Item.from_dict(item_dict, root=catalog)
+    item = Item.from_dict(sample_item_dict, root=catalog)
     assert item.get_root() is catalog
 
 
@@ -85,13 +76,11 @@ def test_set_self_href_none_ignores_relative_asset_hrefs() -> None:
             assert not is_absolute_href(asset.href)
 
 
-def test_asset_absolute_href() -> None:
+def test_asset_absolute_href(sample_item: Item) -> None:
     item_path = TestCases.get_path("data-files/item/sample-item.json")
-    item_dict = get_example_item_dict()
-    item = Item.from_dict(item_dict)
-    item.set_self_href(item_path)
+    sample_item.set_self_href(item_path)
     rel_asset = Asset("./data.geojson")
-    rel_asset.set_owner(item)
+    rel_asset.set_owner(sample_item)
     expected_href = make_posix_style(
         os.path.abspath(os.path.join(os.path.dirname(item_path), "./data.geojson"))
     )
@@ -99,9 +88,8 @@ def test_asset_absolute_href() -> None:
     assert expected_href == actual_href
 
 
-def test_asset_absolute_href_no_item_self() -> None:
-    item_dict = get_example_item_dict()
-    item = Item.from_dict(item_dict)
+def test_asset_absolute_href_no_item_self(sample_item_dict: dict[str, Any]) -> None:
+    item = Item.from_dict(sample_item_dict)
     assert item.get_self_href() is None
 
     rel_asset = Asset("./data.geojson")
@@ -160,10 +148,8 @@ def test_clearing_collection() -> None:
     assert item.get_collection() is collection
 
 
-def test_datetime_ISO8601_format() -> None:
-    item_dict = get_example_item_dict()
-    item = Item.from_dict(item_dict)
-    formatted_time = item.to_dict()["properties"]["datetime"]
+def test_datetime_ISO8601_format(sample_item: Item) -> None:
+    formatted_time = sample_item.to_dict()["properties"]["datetime"]
     assert "2016-05-03T13:22:30.040000Z" == formatted_time
 
 
