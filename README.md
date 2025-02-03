@@ -1,6 +1,6 @@
 # PySTAC
 
-[![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=main)](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml)
+[![Build Status](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/pystac)](https://anaconda.org/conda-forge/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
