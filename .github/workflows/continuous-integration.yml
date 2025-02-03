@@ -39,6 +39,7 @@ jobs:
       - name: Sync
         run: uv sync --all-extras
       - name: Lint
+        if: runner.os != 'Windows'
         run: uv run pre-commit run --all-files
       - name: Test on windows
         if: runner.os == 'Windows'
