@@ -33,7 +33,7 @@ To run the tests and generate the coverage report:
 
 .. code-block:: bash
 
-    $ pytest -v -s --block-network --cov pystac --cov-report term-missing
+    $ pytest -v -s --cov pystac --cov-report term-missing
 
 To view the coverage report, you can run
 `coverage report` (to view the report in the terminal) or `coverage html` (to generate
@@ -100,7 +100,7 @@ and report any improvements or regressions.
 
 .. code-block:: bash
 
-    scripts/bench
+    asv continuous --split -e --interleave-rounds --factor 1.25 main HEAD
 
 The benchmark suite takes a while to run, and will report any significant
 changes to standard output. For example, here's a benchmark comparison between
