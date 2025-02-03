@@ -105,6 +105,7 @@ lint.select = ["E", "F", "I"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
+addopts = "--block-network --record-mode=none"
 
 [tool.setuptools.packages.find]
 include = ["pystac*"]

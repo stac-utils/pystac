@@ -33,7 +33,7 @@ To run the tests and generate the coverage report:
 
 .. code-block:: bash
 
-    $ pytest -v -s --block-network --cov pystac --cov-report term-missing
+    $ pytest -v -s --cov pystac --cov-report term-missing
 
 To view the coverage report, you can run
 `coverage report` (to view the report in the terminal) or `coverage html` (to generate
