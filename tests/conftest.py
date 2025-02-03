@@ -1,9 +1,11 @@
 # TODO move all test case code to this file
 
+import json
 import shutil
 import uuid
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -59,6 +61,14 @@ def projection_landsat8_item() -> Item:
 
 def get_data_file(rel_path: str) -> str:
     return str(here / "data-files" / rel_path)
+
+
+@pytest.fixture
+def sample_item_dict() -> dict[str, Any]:
+    m = TestCases.get_path("data-files/item/sample-item.json")
+    with open(m) as f:
+        item_dict: dict[str, Any] = json.load(f)
+    return item_dict
 
 
 @pytest.fixture
