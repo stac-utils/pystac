@@ -3,6 +3,8 @@ import unittest
 from copy import deepcopy
 from os.path import relpath
 
+import pytest
+
 import pystac
 from pystac.item_collection import ItemCollection
 from tests.utils import TestCases
@@ -21,7 +23,6 @@ class TestItemCollection(unittest.TestCase):
     )
 
     def setUp(self) -> None:
-        self.maxDiff = None
         with open(self.ITEM_COLLECTION) as src:
             self.item_collection_dict = json.load(src)
         self.items = [
@@ -32,7 +33,7 @@ class TestItemCollection(unittest.TestCase):
     def test_item_collection_length(self) -> None:
         item_collection = pystac.ItemCollection(items=self.items)
 
-        self.assertEqual(len(item_collection), len(self.items))
+        assert len(item_collection) == len(self.items)
 
     def test_item_collection_iter(self) -> None:
         expected_ids = [item.id for item in self.items]
@@ -40,26 +41,26 @@ class TestItemCollection(unittest.TestCase):
 
         actual_ids = [item.id for item in item_collection]
 
-        self.assertListEqual(expected_ids, actual_ids)
+        assert expected_ids == actual_ids
 
     def test_item_collection_get_item_by_index(self) -> None:
         expected_id = self.items[0].id
         item_collection = pystac.ItemCollection(items=self.items)
 
-        self.assertEqual(item_collection[0].id, expected_id)
+        assert item_collection[0].id == expected_id
 
     def test_item_collection_contains(self) -> None:
         item = pystac.Item.from_file(self.SIMPLE_ITEM)
         item_collection = pystac.ItemCollection(items=[item], clone_items=False)
 
-        self.assertIn(item, item_collection)
+        assert item in item_collection
 
     def test_item_collection_extra_fields(self) -> None:
         item_collection = pystac.ItemCollection(
             items=self.items, extra_fields={"custom_field": "My value"}
         )
 
-        self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")
+        assert item_collection.extra_fields.get("custom_field") == "My value"
 
     def test_item_collection_to_dict(self) -> None:
         item_collection = pystac.ItemCollection(
@@ -68,8 +69,8 @@ class TestItemCollection(unittest.TestCase):
 
         d = item_collection.to_dict()
 
-        self.assertEqual(len(d["features"]), len(self.items))
-        self.assertEqual(d.get("custom_field"), "My value")
+        assert len(d["features"]) == len(self.items)
+        assert d.get("custom_field") == "My value"
 
     def test_item_collection_from_dict(self) -> None:
         features = [item.to_dict(transform_hrefs=False) for item in self.items]
@@ -80,8 +81,8 @@ class TestItemCollection(unittest.TestCase):
         }
         item_collection = pystac.ItemCollection.from_dict(d)
         expected = len(features)
-        self.assertEqual(expected, len(item_collection.items))
-        self.assertEqual(item_collection.extra_fields.get("custom_field"), "My value")
+        assert expected == len(item_collection.items)
+        assert item_collection.extra_fields.get("custom_field") == "My value"
 
     def test_clone_item_collection(self) -> None:
         item_collection_1 = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
@@ -91,14 +92,14 @@ class TestItemCollection(unittest.TestCase):
         item_ids_2 = [item.id for item in item_collection_2]
 
         # All items from the original collection should be in the clone...
-        self.assertListEqual(item_ids_1, item_ids_2)
+        assert item_ids_1 == item_ids_2
         # ... but they should not be the same objects
-        self.assertIsNot(item_collection_1[0], item_collection_2[0])
+        assert item_collection_1[0] is not item_collection_2[0]
 
     def test_raise_error_for_invalid_object(self) -> None:
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
 
-        with self.assertRaises(pystac.STACTypeError):
+        with pytest.raises(pystac.STACTypeError):
             _ = pystac.ItemCollection.from_dict(item_dict)
 
     def test_from_relative_path(self) -> None:
@@ -114,7 +115,7 @@ class TestItemCollection(unittest.TestCase):
         item_dict = self.stac_io.read_json(self.SIMPLE_ITEM)
         item_collection = pystac.ItemCollection(items=[item_dict], clone_items=True)
 
-        self.assertEqual(item_collection[0].id, item_dict.get("id"))
+        assert item_collection[0].id == item_dict.get("id")
 
     def test_add_item_collections(self) -> None:
         item_1 = pystac.Item.from_file(self.SIMPLE_ITEM)
@@ -126,12 +127,12 @@ class TestItemCollection(unittest.TestCase):
 
         combined = item_collection_1 + item_collection_2
 
-        self.assertEqual(len(combined), 4)
+        assert len(combined) == 4
 
     def test_add_other_raises_error(self) -> None:
         item_collection = pystac.ItemCollection.from_file(self.ITEM_COLLECTION)
 
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             _ = item_collection + 2
 
     def test_identify_0_8_itemcollection_type(self) -> None:
@@ -141,10 +142,8 @@ class TestItemCollection(unittest.TestCase):
         )
         itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
 
-        self.assertTrue(
-            pystac.ItemCollection.is_item_collection(itemcollection_dict),
-            msg="Did not correctly identify valid STAC 0.8 ItemCollection.",
-        )
+        assert pystac.ItemCollection.is_item_collection(itemcollection_dict), \
+            "Did not correctly identify valid STAC 0.8 ItemCollection."
 
     def test_identify_0_9_itemcollection(self) -> None:
         itemcollection_path = TestCases.get_path(
@@ -153,29 +152,27 @@ class TestItemCollection(unittest.TestCase):
         )
         itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
 
-        self.assertTrue(
-            pystac.ItemCollection.is_item_collection(itemcollection_dict),
-            msg="Did not correctly identify valid STAC 0.9 ItemCollection.",
-        )
+        assert pystac.ItemCollection.is_item_collection(itemcollection_dict), \
+            "Did not correctly identify valid STAC 0.9 ItemCollection."
 
     def test_from_dict_preserves_dict(self) -> None:
         param_dict = deepcopy(self.item_collection_dict)
 
         # test that the parameter is preserved
         _ = ItemCollection.from_dict(param_dict)
-        self.assertEqual(param_dict, self.item_collection_dict)
+        assert param_dict == self.item_collection_dict
 
         # assert that the parameter is preserved regardless of
         # preserve_dict
         _ = ItemCollection.from_dict(param_dict, preserve_dict=False)
-        self.assertEqual(param_dict, self.item_collection_dict)
+        assert param_dict == self.item_collection_dict
 
     def test_from_dict_sets_root(self) -> None:
         param_dict = deepcopy(self.item_collection_dict)
         catalog = pystac.Catalog(id="test", description="test desc")
         item_collection = ItemCollection.from_dict(param_dict, root=catalog)
         for item in item_collection.items:
-            self.assertEqual(item.get_root(), catalog)
+            assert item.get_root() == catalog
 
     def test_to_dict_does_not_read_root_link_of_items(self) -> None:
         with MockDefaultStacIO() as mock_stac_io:
@@ -183,4 +180,4 @@ class TestItemCollection(unittest.TestCase):
 
             item_collection.to_dict()
 
-            self.assertEqual(mock_stac_io.mock.read_text.call_count, 1)
+            assert mock_stac_io.mock.read_text.call_count == 1
