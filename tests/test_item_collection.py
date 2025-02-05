@@ -43,7 +43,7 @@ def test_item_collection_length(item_collection_dict, items) -> None:
 
     assert len(item_collection) == len(items)
 
-def test_item_collection_iter() -> None:
+def test_item_collection_iter(items) -> None:
     expected_ids = [item.id for item in items]
     item_collection = pystac.ItemCollection(items=items)
 
@@ -51,7 +51,7 @@ def test_item_collection_iter() -> None:
 
     assert expected_ids == actual_ids
 
-def test_item_collection_get_item_by_index() -> None:
+def test_item_collection_get_item_by_index(items) -> None:
     expected_id = items[0].id
     item_collection = pystac.ItemCollection(items=items)
 
@@ -63,14 +63,14 @@ def test_item_collection_contains() -> None:
 
     assert item in item_collection
 
-def test_item_collection_extra_fields() -> None:
+def test_item_collection_extra_fields(items) -> None:
     item_collection = pystac.ItemCollection(
         items=items, extra_fields={"custom_field": "My value"}
     )
 
     assert item_collection.extra_fields.get("custom_field") == "My value"
 
-def test_item_collection_to_dict() -> None:
+def test_item_collection_to_dict(items) -> None:
     item_collection = pystac.ItemCollection(
         items=items, extra_fields={"custom_field": "My value"}
     )
@@ -80,7 +80,7 @@ def test_item_collection_to_dict() -> None:
     assert len(d["features"]) == len(items)
     assert d.get("custom_field") == "My value"
 
-def test_item_collection_from_dict() -> None:
+def test_item_collection_from_dict(items) -> None:
     features = [item.to_dict(transform_hrefs=False) for item in items]
     d = {
         "type": "FeatureCollection",
@@ -104,7 +104,7 @@ def test_clone_item_collection() -> None:
     # ... but they should not be the same objects
     assert item_collection_1[0] is not item_collection_2[0]
 
-def test_raise_error_for_invalid_object() -> None:
+def test_raise_error_for_invalid_object(stac_io) -> None:
     item_dict = stac_io.read_json(SIMPLE_ITEM)
 
     with pytest.raises(pystac.STACTypeError):
@@ -119,7 +119,7 @@ def test_from_relative_path() -> None:
         )
     )
 
-def test_from_list_of_dicts() -> None:
+def test_from_list_of_dicts(stac_io) -> None:
     item_dict = stac_io.read_json(SIMPLE_ITEM)
     item_collection = pystac.ItemCollection(items=[item_dict], clone_items=True)
 
@@ -143,27 +143,27 @@ def test_add_other_raises_error() -> None:
     with pytest.raises(TypeError):
         _ = item_collection + 2
 
-def test_identify_0_8_itemcollection_type() -> None:
+def test_identify_0_8_itemcollection_type(stac_io) -> None:
     itemcollection_path = TestCases.get_path(
         "data-files/examples/0.8.1/item-spec/"
         "examples/itemcollection-sample-full.json"
     )
-    itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+    itemcollection_dict = stac_io.read_json(itemcollection_path)
 
     assert pystac.ItemCollection.is_item_collection(itemcollection_dict), \
         "Did not correctly identify valid STAC 0.8 ItemCollection."
 
-def test_identify_0_9_itemcollection() -> None:
+def test_identify_0_9_itemcollection(stac_io) -> None:
     itemcollection_path = TestCases.get_path(
         "data-files/examples/0.9.0/item-spec/"
         "examples/itemcollection-sample-full.json"
     )
-    itemcollection_dict = pystac.StacIO.default().read_json(itemcollection_path)
+    itemcollection_dict = stac_io.read_json(itemcollection_path)
 
     assert pystac.ItemCollection.is_item_collection(itemcollection_dict), \
         "Did not correctly identify valid STAC 0.9 ItemCollection."
 
-def test_from_dict_preserves_dict() -> None:
+def test_from_dict_preserves_dict(item_collection_dict) -> None:
     param_dict = deepcopy(item_collection_dict)
 
     # test that the parameter is preserved
@@ -175,7 +175,7 @@ def test_from_dict_preserves_dict() -> None:
     _ = ItemCollection.from_dict(param_dict, preserve_dict=False)
     assert param_dict == item_collection_dict
 
-def test_from_dict_sets_root() -> None:
+def test_from_dict_sets_root(item_collection_dict) -> None:
     param_dict = deepcopy(item_collection_dict)
     catalog = pystac.Catalog(id="test", description="test desc")
     item_collection = ItemCollection.from_dict(param_dict, root=catalog)
