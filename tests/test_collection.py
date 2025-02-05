@@ -44,12 +44,21 @@ def test_provider_to_from_dict() -> None:
 
     provider = Provider.from_dict(provider_dict)
 
-    assert provider_dict["name"] == provider.name
-    assert provider_dict["description"] == provider.description
-    assert provider_dict["roles"] == provider.roles
-    assert provider_dict["url"] == provider.url
-    assert expected_extra_fields == provider.extra_fields
-    assert provider_dict == provider.to_dict()
+    assert (
+        provider_dict["name"],
+        provider_dict["description"],
+        provider_dict["roles"],
+        provider_dict["url"],
+        expected_extra_fields,
+        provider_dict,
+    ) == (
+        provider.name,
+        provider.description,
+        provider.roles,
+        provider.url,
+        provider.extra_fields,
+        provider.to_dict(),
+    )
 
 
 class CollectionTest(unittest.TestCase):
