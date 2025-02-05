@@ -69,13 +69,13 @@ class CollectionTest(unittest.TestCase):
         bbox = extent.bboxes[0]
         assert len(bbox) == 4
         for x in bbox:
-            self.assertTrue(isinstance(x, float))
+            assert isinstance(x, float)
 
     def test_read_eo_items_are_heritable(self) -> None:
         cat = TestCases.case_5()
         item = next(cat.get_items(recursive=True))
 
-        self.assertTrue(EOExtension.has_extension(item))
+        assert EOExtension.has_extension(item)
 
     def test_save_uses_previous_catalog_type(self) -> None:
         collection = TestCases.case_8()
@@ -97,16 +97,15 @@ class CollectionTest(unittest.TestCase):
 
     def test_clone_cant_mutate_original(self) -> None:
         collection = TestCases.case_8()
-        assert collection.keywords is not None
-        self.assertListEqual(collection.keywords, ["disaster", "open"])
+        assert collection.keywords == ["disaster", "open"]
         clone = collection.clone()
         clone.extra_fields["test"] = "extra"
-        self.assertNotIn("test", collection.extra_fields)
+        assert "test" not in collection.extra_fields
         assert clone.keywords is not None
         clone.keywords.append("clone")
-        self.assertListEqual(clone.keywords, ["disaster", "open", "clone"])
-        self.assertListEqual(collection.keywords, ["disaster", "open"])
-        self.assertNotEqual(id(collection.summaries), id(clone.summaries))
+        assert clone.keywords == ["disaster", "open", "clone"]
+        assert collection.keywords == ["disaster", "open"]
+        assert id(collection.summaries) != id(clone.summaries)
 
     def test_multiple_extents(self) -> None:
         cat1 = TestCases.case_1()
@@ -115,26 +114,26 @@ class CollectionTest(unittest.TestCase):
         col1 = country.get_child("area-1-1")
         assert col1 is not None
         col1.validate()
-        self.assertIsInstance(col1, Collection)
+        assert isinstance(col1, Collection)
         validate_dict(col1.to_dict(), pystac.STACObjectType.COLLECTION)
 
         multi_ext_uri = TestCases.get_path("data-files/collections/multi-extent.json")
         with open(multi_ext_uri) as f:
             multi_ext_dict = json.load(f)
         validate_dict(multi_ext_dict, pystac.STACObjectType.COLLECTION)
-        self.assertIsInstance(Collection.from_dict(multi_ext_dict), Collection)
+        assert isinstance(Collection.from_dict(multi_ext_dict), Collection)
 
         multi_ext_col = Collection.from_file(multi_ext_uri)
         multi_ext_col.validate()
         ext = multi_ext_col.extent
         extent_dict = multi_ext_dict["extent"]
-        self.assertIsInstance(ext, Extent)
-        self.assertIsInstance(ext.spatial.bboxes[0], list)
+        assert isinstance(ext, Extent)
+        assert isinstance(ext.spatial.bboxes[0], list)
         assert len(ext.spatial.bboxes) == 3
-        self.assertDictEqual(ext.to_dict(), extent_dict)
+        assert ext.to_dict() == extent_dict
 
         cloned_ext = ext.clone()
-        self.assertDictEqual(cloned_ext.to_dict(), multi_ext_dict["extent"])
+        assert cloned_ext.to_dict() == multi_ext_dict["extent"]
 
     def test_extra_fields(self) -> None:
         catalog = TestCases.case_2()
@@ -148,11 +147,11 @@ class CollectionTest(unittest.TestCase):
             collection.save_object(include_self_link=False, dest_href=p)
             with open(p) as f:
                 col_json = json.load(f)
-            self.assertTrue("test" in col_json)
+            assert "test" in col_json
             assert col_json["test"] == "extra"
 
             read_col = pystac.Collection.from_file(p)
-            self.assertTrue("test" in read_col.extra_fields)
+            assert "test" in read_col.extra_fields
             assert read_col.extra_fields["test"] == "extra"
 
     def test_update_extents(self) -> None:
@@ -187,29 +186,19 @@ class CollectionTest(unittest.TestCase):
 
         collection.update_extent_from_items()
         assert [[-180, -90, 180, 90]] == collection.extent.spatial.bboxes
-        self.assertEqual(
-            len(base_extent.spatial.bboxes[0]), len(collection.extent.spatial.bboxes[0])
-        )
+        assert len(base_extent.spatial.bboxes[0]) == len(collection.extent.spatial.bboxes[0])
+        assert base_extent.temporal.intervals != collection.extent.temporal.intervals
 
-        self.assertNotEqual(
-            base_extent.temporal.intervals, collection.extent.temporal.intervals
-        )
         collection.remove_item("test-item-1")
         collection.update_extent_from_items()
-        self.assertNotEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        assert [[-180, -90, 180, 90]] != collection.extent.spatial.bboxes
         collection.add_item(item2)
 
         collection.update_extent_from_items()
 
-        self.assertEqual(
-            [
-                [
-                    item2.common_metadata.start_datetime,
+        assert ( [ [ item2.common_metadata.start_datetime,
                     base_extent.temporal.intervals[0][1],
-                ]
-            ],
-            collection.extent.temporal.intervals,
-        )
+                ] ] == collection.extent.temporal.intervals )
 
     def test_supplying_href_in_init_does_not_fail(self) -> None:
         test_href = "http://example.com/collection.json"
@@ -247,17 +236,17 @@ class CollectionTest(unittest.TestCase):
         )
 
         media_type_filter = collection.get_assets(media_type=pystac.MediaType.PNG)
-        self.assertCountEqual(media_type_filter.keys(), ["thumbnail"])
+        assert list(media_type_filter.keys()) == ["thumbnail"]
         role_filter = collection.get_assets(role="thumbnail")
-        self.assertCountEqual(role_filter.keys(), ["thumbnail"])
+        assert list(role_filter.keys()) == ["thumbnail"]
         multi_filter = collection.get_assets(
             media_type=pystac.MediaType.PNG, role="thumbnail"
         )
-        self.assertCountEqual(multi_filter.keys(), ["thumbnail"])
+        assert list(multi_filter.keys()) == ["thumbnail"]
 
         no_filter = collection.get_assets()
-        self.assertIsNot(no_filter, collection.assets)
-        self.assertCountEqual(no_filter.keys(), ["thumbnail"])
+        assert no_filter is not collection.assets
+        assert list(no_filter.keys()) == ["thumbnail"]
         no_filter["thumbnail"].description = "foo"
         assert collection.assets["thumbnail"].description != "foo"
 
@@ -314,7 +303,7 @@ class CollectionTest(unittest.TestCase):
         # assert that the parameter is not preserved with
         # non-default parameter
         _ = Collection.from_dict(param_dict, preserve_dict=False, migrate=False)
-        self.assertNotEqual(param_dict, collection_dict)
+        assert param_dict != collection_dict
 
     def test_from_dict_set_root(self) -> None:
         path = TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
@@ -322,7 +311,7 @@ class CollectionTest(unittest.TestCase):
             collection_dict = json.load(f)
         catalog = pystac.Catalog(id="test", description="test desc")
         collection = Collection.from_dict(collection_dict, root=catalog)
-        self.assertIs(collection.get_root(), catalog)
+        assert collection.get_root() is catalog
 
     def test_schema_summary(self) -> None:
         collection = pystac.Collection.from_file(
@@ -336,14 +325,14 @@ class CollectionTest(unittest.TestCase):
             "instruments",
         )
 
-        self.assertIsInstance(instruments_schema, dict)
+        assert isinstance(instruments_schema, dict)
 
     def test_from_invalid_dict_raises_exception(self) -> None:
         stac_io = pystac.StacIO.default()
         catalog_dict = stac_io.read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
-        with self.assertRaises(pystac.STACTypeError):
+        with pytest.raises(pystac.STACTypeError):
             _ = pystac.Collection.from_dict(catalog_dict)
 
     def test_clone_preserves_assets(self) -> None:
@@ -359,11 +348,11 @@ class CollectionTest(unittest.TestCase):
 
         for key in original_collection.assets:
             with self.subTest(f"Preserves {key} asset"):
-                self.assertIn(key, cloned_collection.assets)
+                assert key in cloned_collection.assets
             cloned_asset = cloned_collection.assets.get(key)
             if cloned_asset is not None:
-                with self.subTest(f"Sets owner for {key}"):
-                    self.assertIs(cloned_asset.owner, cloned_collection)
+                assert cloned_asset.owner in cloned_collection, \
+                    f"Failed to set owner for {key}"
 
     def test_to_dict_no_self_href(self) -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
@@ -520,13 +509,11 @@ class ExtentTest(unittest.TestCase):
 
         extent = Extent.from_dict(extent_dict)
 
-        self.assertDictEqual(expected_extent_extra_fields, extent.extra_fields)
-        self.assertDictEqual(expected_spatial_extra_fields, extent.spatial.extra_fields)
-        self.assertDictEqual(
-            expected_temporal_extra_fields, extent.temporal.extra_fields
-        )
+        assert expected_extent_extra_fields == extent.extra_fields
+        assert expected_spatial_extra_fields == extent.spatial.extra_fields
+        assert expected_temporal_extra_fields == extent.temporal.extra_fields
 
-        self.assertDictEqual(extent_dict, extent.to_dict())
+        assert extent_dict == extent.to_dict()
 
 
 class CollectionSubClassTest(unittest.TestCase):
@@ -549,18 +536,18 @@ class CollectionSubClassTest(unittest.TestCase):
         collection_dict = self.stac_io.read_json(self.MULTI_EXTENT)
         custom_collection = self.BasicCustomCollection.from_dict(collection_dict)
 
-        self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+        assert isinstance(custom_collection, self.BasicCustomCollection)
 
     def test_from_file_returns_subclass(self) -> None:
         custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
 
-        self.assertIsInstance(custom_collection, self.BasicCustomCollection)
+        assert isinstance(custom_collection, self.BasicCustomCollection)
 
     def test_clone(self) -> None:
         custom_collection = self.BasicCustomCollection.from_file(self.MULTI_EXTENT)
         cloned_collection = custom_collection.clone()
 
-        self.assertIsInstance(cloned_collection, self.BasicCustomCollection)
+        assert isinstance(cloned_collection, self.BasicCustomCollection)
 
     def test_collection_get_item_works(self) -> None:
         path = TestCases.get_path(
