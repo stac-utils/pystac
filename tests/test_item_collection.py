@@ -21,15 +21,24 @@ ITEM_COLLECTION = TestCases.get_path(
     "data-files/item-collection/sample-item-collection.json"
 )
 
-# def setUp(self) -> None:
-#     with open(self.ITEM_COLLECTION) as src:
-#         self.item_collection_dict = json.load(src)
-#     self.items = [
-#         pystac.Item.from_dict(f) for f in self.item_collection_dict["features"]
-#     ]
-#     self.stac_io = pystac.StacIO.default()
 
-def test_item_collection_length() -> None:
+@pytest.fixture
+def item_collection_dict():
+    with open(ITEM_COLLECTION) as src:
+        return json.load(src)
+
+
+@pytest.fixture
+def items(item_collection_dict):
+    return [pystac.Item.from_dict(f) for f in item_collection_dict["features"]]
+
+
+@pytest.fixture
+def stac_io():
+    return pystac.StacIO.default()
+
+
+def test_item_collection_length(item_collection_dict, items) -> None:
     item_collection = pystac.ItemCollection(items=items)
 
     assert len(item_collection) == len(items)
