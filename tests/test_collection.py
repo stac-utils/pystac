@@ -65,9 +65,9 @@ class CollectionTest(unittest.TestCase):
     def test_spatial_extent_from_coordinates(self) -> None:
         extent = SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"])
 
-        self.assertEqual(len(extent.bboxes), 1)
+        assert len(extent.bboxes) == 1
         bbox = extent.bboxes[0]
-        self.assertEqual(len(bbox), 4)
+        assert len(bbox) == 4
         for x in bbox:
             self.assertTrue(isinstance(x, float))
 
@@ -80,20 +80,20 @@ class CollectionTest(unittest.TestCase):
     def test_save_uses_previous_catalog_type(self) -> None:
         collection = TestCases.case_8()
         assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
-        self.assertEqual(collection.catalog_type, CatalogType.SELF_CONTAINED)
+        assert collection.catalog_type == CatalogType.SELF_CONTAINED
         with tempfile.TemporaryDirectory() as tmp_dir:
             collection.normalize_hrefs(tmp_dir)
             href = collection.self_href
             collection.save()
 
             collection2 = pystac.Collection.from_file(href)
-            self.assertEqual(collection2.catalog_type, CatalogType.SELF_CONTAINED)
+            assert collection2.catalog_type == CatalogType.SELF_CONTAINED
 
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.case_8()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED
         clone = catalog.clone()
-        self.assertEqual(clone.catalog_type, CatalogType.SELF_CONTAINED)
+        assert clone.catalog_type == CatalogType.SELF_CONTAINED
 
     def test_clone_cant_mutate_original(self) -> None:
         collection = TestCases.case_8()
@@ -130,7 +130,7 @@ class CollectionTest(unittest.TestCase):
         extent_dict = multi_ext_dict["extent"]
         self.assertIsInstance(ext, Extent)
         self.assertIsInstance(ext.spatial.bboxes[0], list)
-        self.assertEqual(len(ext.spatial.bboxes), 3)
+        assert len(ext.spatial.bboxes) == 3
         self.assertDictEqual(ext.to_dict(), extent_dict)
 
         cloned_ext = ext.clone()
@@ -149,11 +149,11 @@ class CollectionTest(unittest.TestCase):
             with open(p) as f:
                 col_json = json.load(f)
             self.assertTrue("test" in col_json)
-            self.assertEqual(col_json["test"], "extra")
+            assert col_json["test"] == "extra"
 
             read_col = pystac.Collection.from_file(p)
             self.assertTrue("test" in read_col.extra_fields)
-            self.assertEqual(read_col.extra_fields["test"], "extra")
+            assert read_col.extra_fields["test"] == "extra"
 
     def test_update_extents(self) -> None:
         catalog = TestCases.case_2()
@@ -186,7 +186,7 @@ class CollectionTest(unittest.TestCase):
         collection.add_item(item1)
 
         collection.update_extent_from_items()
-        self.assertEqual([[-180, -90, 180, 90]], collection.extent.spatial.bboxes)
+        assert [[-180, -90, 180, 90]] == collection.extent.spatial.bboxes
         self.assertEqual(
             len(base_extent.spatial.bboxes[0]), len(collection.extent.spatial.bboxes[0])
         )
@@ -221,7 +221,7 @@ class CollectionTest(unittest.TestCase):
             id="test", description="test desc", extent=collection_extent, href=test_href
         )
 
-        self.assertEqual(collection.get_self_href(), test_href)
+        assert collection.get_self_href() == test_href
 
     def test_collection_with_href_caches_by_href(self) -> None:
         collection = pystac.Collection.from_file(
@@ -231,7 +231,7 @@ class CollectionTest(unittest.TestCase):
 
         # Since all of our STAC objects have HREFs, everything should be
         # cached only by HREF
-        self.assertEqual(len(cache.id_keys_to_objects), 0)
+        assert len(cache.id_keys_to_objects) == 0
 
     @pytest.mark.block_network
     def test_assets(self) -> None:
@@ -262,7 +262,7 @@ class CollectionTest(unittest.TestCase):
         assert collection.assets["thumbnail"].description != "foo"
 
         no_assets = collection.get_assets(media_type=pystac.MediaType.HDF)
-        self.assertEqual(no_assets, {})
+        assert no_assets == {}
 
     def test_removing_optional_attributes(self) -> None:
         path = TestCases.get_path("data-files/collections/with-assets.json")
@@ -309,7 +309,7 @@ class CollectionTest(unittest.TestCase):
 
         # test that the parameter is preserved
         _ = Collection.from_dict(param_dict)
-        self.assertEqual(param_dict, collection_dict)
+        assert param_dict == collection_dict
 
         # assert that the parameter is not preserved with
         # non-default parameter
@@ -396,7 +396,7 @@ class ExtentTest(unittest.TestCase):
         interval = [start_datetime, end_datetime]
         temporal_extent = TemporalExtent(intervals=interval)  # type: ignore
 
-        self.assertEqual(temporal_extent.intervals, [interval])
+        assert temporal_extent.intervals == [interval]
 
     @pytest.mark.block_network()
     def test_temporal_extent_allows_single_interval_open_start(self) -> None:
@@ -405,7 +405,7 @@ class ExtentTest(unittest.TestCase):
         interval = [None, end_datetime]
         temporal_extent = TemporalExtent(intervals=interval)
 
-        self.assertEqual(temporal_extent.intervals, [interval])
+        assert temporal_extent.intervals == [interval]
 
     @pytest.mark.block_network()
     def test_temporal_extent_non_list_intervals_fails(self) -> None:
@@ -477,15 +477,13 @@ class ExtentTest(unittest.TestCase):
         )
 
         extent = Extent.from_items([item1, item2, item3])
+        assert len(extent.spatial.bboxes) == 1
+        assert extent.spatial.bboxes[0] == [-10, -20, 10, 1]
+        assert len(extent.temporal.intervals) == 1
 
-        self.assertEqual(len(extent.spatial.bboxes), 1)
-        self.assertEqual(extent.spatial.bboxes[0], [-10, -20, 10, 1])
-
-        self.assertEqual(len(extent.temporal.intervals), 1)
         interval = extent.temporal.intervals[0]
-
-        self.assertEqual(interval[0], datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
-        self.assertEqual(interval[1], datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+        assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+        assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
 
     def test_to_from_dict(self) -> None:
         spatial_dict = {
