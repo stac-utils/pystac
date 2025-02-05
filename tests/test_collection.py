@@ -364,7 +364,7 @@ def test_to_dict_no_self_href() -> None:
 
 
 class ExtentTest(unittest.TestCase):
-    def test_temporal_extent_init_typing(self) -> None:
+    def test_temporal_extent_init_typing() -> None:
         # This test exists purely to test the typing of the intervals argument to
         # TemporalExtent
         start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
@@ -373,7 +373,7 @@ class ExtentTest(unittest.TestCase):
         _ = TemporalExtent([[start_datetime, end_datetime]])
 
     @pytest.mark.block_network()
-    def test_temporal_extent_allows_single_interval(self) -> None:
+    def test_temporal_extent_allows_single_interval() -> None:
         start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
         end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
@@ -383,7 +383,7 @@ class ExtentTest(unittest.TestCase):
         assert temporal_extent.intervals == [interval]
 
     @pytest.mark.block_network()
-    def test_temporal_extent_allows_single_interval_open_start(self) -> None:
+    def test_temporal_extent_allows_single_interval_open_start() -> None:
         end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
         interval = [None, end_datetime]
@@ -392,13 +392,13 @@ class ExtentTest(unittest.TestCase):
         assert temporal_extent.intervals == [interval]
 
     @pytest.mark.block_network()
-    def test_temporal_extent_non_list_intervals_fails(self) -> None:
+    def test_temporal_extent_non_list_intervals_fails() -> None:
         with pytest.raises(TypeError):
             # Pass in non-list intervals
             _ = TemporalExtent(intervals=1)  # type: ignore
 
     @pytest.mark.block_network()
-    def test_spatial_allows_single_bbox(self) -> None:
+    def test_spatial_allows_single_bbox() -> None:
         temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
         # Pass in a single BBOX
@@ -416,12 +416,12 @@ class ExtentTest(unittest.TestCase):
         collection.validate()
 
     @pytest.mark.block_network()
-    def test_spatial_extent_non_list_bboxes_fails(self) -> None:
+    def test_spatial_extent_non_list_bboxes_fails() -> None:
         with pytest.raises(TypeError):
             # Pass in non-list bboxes
             _ = SpatialExtent(bboxes=1)  # type: ignore
 
-    def test_from_items(self) -> None:
+    def test_extent_from_items() -> None:
         item1 = Item(
             id="test-item-1",
             geometry=ARBITRARY_GEOM,
@@ -469,7 +469,7 @@ class ExtentTest(unittest.TestCase):
         assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
         assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
 
-    def test_to_from_dict(self) -> None:
+    def test_extent_to_from_dict() -> None:
         spatial_dict = {
             "bbox": [
                 [
