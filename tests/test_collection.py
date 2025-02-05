@@ -363,152 +363,151 @@ def test_to_dict_no_self_href() -> None:
     Collection.from_dict(d)
 
 
-class ExtentTest(unittest.TestCase):
-    def test_temporal_extent_init_typing() -> None:
-        # This test exists purely to test the typing of the intervals argument to
-        # TemporalExtent
-        start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
-        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+def test_temporal_extent_init_typing() -> None:
+    # This test exists purely to test the typing of the intervals argument to
+    # TemporalExtent
+    start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
+    end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
-        _ = TemporalExtent([[start_datetime, end_datetime]])
+    _ = TemporalExtent([[start_datetime, end_datetime]])
 
-    @pytest.mark.block_network()
-    def test_temporal_extent_allows_single_interval() -> None:
-        start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
-        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+@pytest.mark.block_network()
+def test_temporal_extent_allows_single_interval() -> None:
+    start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
+    end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
-        interval = [start_datetime, end_datetime]
-        temporal_extent = TemporalExtent(intervals=interval)  # type: ignore
+    interval = [start_datetime, end_datetime]
+    temporal_extent = TemporalExtent(intervals=interval)  # type: ignore
 
-        assert temporal_extent.intervals == [interval]
+    assert temporal_extent.intervals == [interval]
 
-    @pytest.mark.block_network()
-    def test_temporal_extent_allows_single_interval_open_start() -> None:
-        end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+@pytest.mark.block_network()
+def test_temporal_extent_allows_single_interval_open_start() -> None:
+    end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
-        interval = [None, end_datetime]
-        temporal_extent = TemporalExtent(intervals=interval)
+    interval = [None, end_datetime]
+    temporal_extent = TemporalExtent(intervals=interval)
 
-        assert temporal_extent.intervals == [interval]
+    assert temporal_extent.intervals == [interval]
 
-    @pytest.mark.block_network()
-    def test_temporal_extent_non_list_intervals_fails() -> None:
-        with pytest.raises(TypeError):
-            # Pass in non-list intervals
-            _ = TemporalExtent(intervals=1)  # type: ignore
+@pytest.mark.block_network()
+def test_temporal_extent_non_list_intervals_fails() -> None:
+    with pytest.raises(TypeError):
+        # Pass in non-list intervals
+        _ = TemporalExtent(intervals=1)  # type: ignore
 
-    @pytest.mark.block_network()
-    def test_spatial_allows_single_bbox() -> None:
-        temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
+@pytest.mark.block_network()
+def test_spatial_allows_single_bbox() -> None:
+    temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
 
-        # Pass in a single BBOX
-        spatial_extent = SpatialExtent(bboxes=ARBITRARY_BBOX)
+    # Pass in a single BBOX
+    spatial_extent = SpatialExtent(bboxes=ARBITRARY_BBOX)
 
-        collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
+    collection_extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
 
-        collection = Collection(
-            id="test", description="test desc", extent=collection_extent
-        )
+    collection = Collection(
+        id="test", description="test desc", extent=collection_extent
+    )
 
-        # HREF required by validation
-        collection.set_self_href("https://example.com/collection.json")
+    # HREF required by validation
+    collection.set_self_href("https://example.com/collection.json")
 
-        collection.validate()
+    collection.validate()
 
-    @pytest.mark.block_network()
-    def test_spatial_extent_non_list_bboxes_fails() -> None:
-        with pytest.raises(TypeError):
-            # Pass in non-list bboxes
-            _ = SpatialExtent(bboxes=1)  # type: ignore
+@pytest.mark.block_network()
+def test_spatial_extent_non_list_bboxes_fails() -> None:
+    with pytest.raises(TypeError):
+        # Pass in non-list bboxes
+        _ = SpatialExtent(bboxes=1)  # type: ignore
 
-    def test_extent_from_items() -> None:
-        item1 = Item(
-            id="test-item-1",
-            geometry=ARBITRARY_GEOM,
-            bbox=[-10, -20, 0, -10],
-            datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
-            properties={},
-        )
+def test_extent_from_items() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        properties={},
+    )
 
-        item2 = Item(
-            id="test-item-2",
-            geometry=ARBITRARY_GEOM,
-            bbox=[0, -9, 10, 1],
-            datetime=None,
-            properties={
-                "start_datetime": datetime_to_str(
-                    datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
-                ),
-                "end_datetime": datetime_to_str(
-                    datetime(2000, 7, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
-                ),
-            },
-        )
+    item2 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[0, -9, 10, 1],
+        datetime=None,
+        properties={
+            "start_datetime": datetime_to_str(
+                datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+            ),
+            "end_datetime": datetime_to_str(
+                datetime(2000, 7, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+            ),
+        },
+    )
 
-        item3 = Item(
-            id="test-item-2",
-            geometry=ARBITRARY_GEOM,
-            bbox=[-5, -20, 5, 0],
-            datetime=None,
-            properties={
-                "start_datetime": datetime_to_str(
-                    datetime(2000, 12, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
-                ),
-                "end_datetime": datetime_to_str(
-                    datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
-                ),
-            },
-        )
+    item3 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-5, -20, 5, 0],
+        datetime=None,
+        properties={
+            "start_datetime": datetime_to_str(
+                datetime(2000, 12, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+            ),
+            "end_datetime": datetime_to_str(
+                datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+            ),
+        },
+    )
 
-        extent = Extent.from_items([item1, item2, item3])
-        assert len(extent.spatial.bboxes) == 1
-        assert extent.spatial.bboxes[0] == [-10, -20, 10, 1]
-        assert len(extent.temporal.intervals) == 1
+    extent = Extent.from_items([item1, item2, item3])
+    assert len(extent.spatial.bboxes) == 1
+    assert extent.spatial.bboxes[0] == [-10, -20, 10, 1]
+    assert len(extent.temporal.intervals) == 1
 
-        interval = extent.temporal.intervals[0]
-        assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
-        assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+    interval = extent.temporal.intervals[0]
+    assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+    assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
 
-    def test_extent_to_from_dict() -> None:
-        spatial_dict = {
-            "bbox": [
-                [
-                    172.91173669923782,
-                    1.3438851951615003,
-                    172.95469614953714,
-                    1.3690476620161975,
-                ]
-            ],
-            "extension:field": "spatial value",
-        }
-        temporal_dict = {
-            "interval": [
-                ["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]
-            ],
-            "extension:field": "temporal value",
-        }
-        extent_dict = {
-            "spatial": spatial_dict,
-            "temporal": temporal_dict,
-            "extension:field": "extent value",
-        }
-        expected_extent_extra_fields = {
-            "extension:field": extent_dict["extension:field"],
-        }
-        expected_spatial_extra_fields = {
-            "extension:field": spatial_dict["extension:field"],
-        }
-        expected_temporal_extra_fields = {
-            "extension:field": temporal_dict["extension:field"],
-        }
+def test_extent_to_from_dict() -> None:
+    spatial_dict = {
+        "bbox": [
+            [
+                172.91173669923782,
+                1.3438851951615003,
+                172.95469614953714,
+                1.3690476620161975,
+            ]
+        ],
+        "extension:field": "spatial value",
+    }
+    temporal_dict = {
+        "interval": [
+            ["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]
+        ],
+        "extension:field": "temporal value",
+    }
+    extent_dict = {
+        "spatial": spatial_dict,
+        "temporal": temporal_dict,
+        "extension:field": "extent value",
+    }
+    expected_extent_extra_fields = {
+        "extension:field": extent_dict["extension:field"],
+    }
+    expected_spatial_extra_fields = {
+        "extension:field": spatial_dict["extension:field"],
+    }
+    expected_temporal_extra_fields = {
+        "extension:field": temporal_dict["extension:field"],
+    }
 
-        extent = Extent.from_dict(extent_dict)
+    extent = Extent.from_dict(extent_dict)
 
-        assert expected_extent_extra_fields == extent.extra_fields
-        assert expected_spatial_extra_fields == extent.spatial.extra_fields
-        assert expected_temporal_extra_fields == extent.temporal.extra_fields
+    assert expected_extent_extra_fields == extent.extra_fields
+    assert expected_spatial_extra_fields == extent.spatial.extra_fields
+    assert expected_temporal_extra_fields == extent.temporal.extra_fields
 
-        assert extent_dict == extent.to_dict()
+    assert extent_dict == extent.to_dict()
 
 
 class CollectionSubClassTest(unittest.TestCase):
