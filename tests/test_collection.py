@@ -69,11 +69,13 @@ def test_spatial_extent_from_coordinates() -> None:
     for x in bbox:
         assert isinstance(x, float)
 
+
 def test_read_eo_items_are_heritable() -> None:
     cat = TestCases.case_5()
     item = next(cat.get_items(recursive=True))
 
     assert EOExtension.has_extension(item)
+
 
 def test_save_uses_previous_catalog_type() -> None:
     collection = TestCases.case_8()
@@ -87,11 +89,13 @@ def test_save_uses_previous_catalog_type() -> None:
         collection2 = pystac.Collection.from_file(href)
         assert collection2.catalog_type == CatalogType.SELF_CONTAINED
 
+
 def test_clone_uses_previous_catalog_type() -> None:
     catalog = TestCases.case_8()
     assert catalog.catalog_type == CatalogType.SELF_CONTAINED
     clone = catalog.clone()
     assert clone.catalog_type == CatalogType.SELF_CONTAINED
+
 
 def test_clone_cant_mutate_original() -> None:
     collection = TestCases.case_8()
@@ -104,6 +108,7 @@ def test_clone_cant_mutate_original() -> None:
     assert clone.keywords == ["disaster", "open", "clone"]
     assert collection.keywords == ["disaster", "open"]
     assert id(collection.summaries) != id(clone.summaries)
+
 
 def test_multiple_extents() -> None:
     cat1 = TestCases.case_1()
@@ -133,6 +138,7 @@ def test_multiple_extents() -> None:
     cloned_ext = ext.clone()
     assert cloned_ext.to_dict() == multi_ext_dict["extent"]
 
+
 def test_extra_fields() -> None:
     catalog = TestCases.case_2()
     collection = catalog.get_child("1a8c1632-fa91-4a62-b33e-3a87c2ebdf16")
@@ -151,6 +157,7 @@ def test_extra_fields() -> None:
         read_col = pystac.Collection.from_file(p)
         assert "test" in read_col.extra_fields
         assert read_col.extra_fields["test"] == "extra"
+
 
 def test_update_extents() -> None:
     catalog = TestCases.case_2()
@@ -184,7 +191,9 @@ def test_update_extents() -> None:
 
     collection.update_extent_from_items()
     assert [[-180, -90, 180, 90]] == collection.extent.spatial.bboxes
-    assert len(base_extent.spatial.bboxes[0]) == len(collection.extent.spatial.bboxes[0])
+    assert len(base_extent.spatial.bboxes[0]) == len(
+        collection.extent.spatial.bboxes[0]
+    )
     assert base_extent.temporal.intervals != collection.extent.temporal.intervals
 
     collection.remove_item("test-item-1")
@@ -194,9 +203,13 @@ def test_update_extents() -> None:
 
     collection.update_extent_from_items()
 
-    assert ( [ [ item2.common_metadata.start_datetime,
-                base_extent.temporal.intervals[0][1],
-            ] ] == collection.extent.temporal.intervals )
+    assert [
+        [
+            item2.common_metadata.start_datetime,
+            base_extent.temporal.intervals[0][1],
+        ]
+    ] == collection.extent.temporal.intervals
+
 
 def test_supplying_href_in_init_does_not_fail() -> None:
     test_href = "http://example.com/collection.json"
@@ -210,6 +223,7 @@ def test_supplying_href_in_init_does_not_fail() -> None:
 
     assert collection.get_self_href() == test_href
 
+
 def test_collection_with_href_caches_by_href() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
@@ -220,6 +234,7 @@ def test_collection_with_href_caches_by_href() -> None:
     # cached only by HREF
     assert len(cache.id_keys_to_objects) == 0
 
+
 @pytest.mark.block_network
 def test_assets() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
@@ -227,6 +242,7 @@ def test_assets() -> None:
         data = json.load(f)
     collection = pystac.Collection.from_dict(data)
     collection.validate()
+
 
 def test_get_assets() -> None:
     collection = pystac.Collection.from_file(
@@ -250,6 +266,7 @@ def test_get_assets() -> None:
 
     no_assets = collection.get_assets(media_type=pystac.MediaType.HDF)
     assert no_assets == {}
+
 
 def test_removing_optional_attributes() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
@@ -288,6 +305,7 @@ def test_removing_optional_attributes() -> None:
     ):
         assert key not in collection_as_dict
 
+
 def test_from_dict_preserves_dict() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
     with open(path) as f:
@@ -303,6 +321,7 @@ def test_from_dict_preserves_dict() -> None:
     _ = Collection.from_dict(param_dict, preserve_dict=False, migrate=False)
     assert param_dict != collection_dict
 
+
 def test_from_dict_set_root() -> None:
     path = TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
     with open(path) as f:
@@ -310,6 +329,7 @@ def test_from_dict_set_root() -> None:
     catalog = pystac.Catalog(id="test", description="test desc")
     collection = Collection.from_dict(collection_dict, root=catalog)
     assert collection.get_root() is catalog
+
 
 def test_schema_summary() -> None:
     collection = pystac.Collection.from_file(
@@ -325,6 +345,7 @@ def test_schema_summary() -> None:
 
     assert isinstance(instruments_schema, dict)
 
+
 def test_from_invalid_dict_raises_exception() -> None:
     stac_io = pystac.StacIO.default()
     catalog_dict = stac_io.read_json(
@@ -332,6 +353,7 @@ def test_from_invalid_dict_raises_exception() -> None:
     )
     with pytest.raises(pystac.STACTypeError):
         _ = pystac.Collection.from_dict(catalog_dict)
+
 
 def test_clone_preserves_assets() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
@@ -348,16 +370,16 @@ def test_clone_preserves_assets() -> None:
         assert key in cloned_collection.assets, f"Failed to Preserve {key} asset"
         cloned_asset = cloned_collection.assets.get(key)
         if cloned_asset is not None:
-            assert cloned_asset.owner is cloned_collection, \
-                f"Failed to set owner for {key}"
+            assert (
+                cloned_asset.owner is cloned_collection
+            ), f"Failed to set owner for {key}"
+
 
 def test_to_dict_no_self_href() -> None:
     temporal_extent = TemporalExtent(intervals=[[TEST_DATETIME, None]])
     spatial_extent = SpatialExtent(bboxes=ARBITRARY_BBOX)
     extent = Extent(spatial=spatial_extent, temporal=temporal_extent)
-    collection = Collection(
-        id="an-id", description="A test Collection", extent=extent
-    )
+    collection = Collection(id="an-id", description="A test Collection", extent=extent)
     d = collection.to_dict(include_self_link=False)
     Collection.from_dict(d)
 
@@ -370,6 +392,7 @@ def test_temporal_extent_init_typing() -> None:
 
     _ = TemporalExtent([[start_datetime, end_datetime]])
 
+
 @pytest.mark.block_network()
 def test_temporal_extent_allows_single_interval() -> None:
     start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
@@ -380,6 +403,7 @@ def test_temporal_extent_allows_single_interval() -> None:
 
     assert temporal_extent.intervals == [interval]
 
+
 @pytest.mark.block_network()
 def test_temporal_extent_allows_single_interval_open_start() -> None:
     end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
@@ -389,11 +413,13 @@ def test_temporal_extent_allows_single_interval_open_start() -> None:
 
     assert temporal_extent.intervals == [interval]
 
+
 @pytest.mark.block_network()
 def test_temporal_extent_non_list_intervals_fails() -> None:
     with pytest.raises(TypeError):
         # Pass in non-list intervals
         _ = TemporalExtent(intervals=1)  # type: ignore
+
 
 @pytest.mark.block_network()
 def test_spatial_allows_single_bbox() -> None:
@@ -413,11 +439,13 @@ def test_spatial_allows_single_bbox() -> None:
 
     collection.validate()
 
+
 @pytest.mark.block_network()
 def test_spatial_extent_non_list_bboxes_fails() -> None:
     with pytest.raises(TypeError):
         # Pass in non-list bboxes
         _ = SpatialExtent(bboxes=1)  # type: ignore
+
 
 def test_extent_from_items() -> None:
     item1 = Item(
@@ -467,6 +495,7 @@ def test_extent_from_items() -> None:
     assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
     assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
 
+
 def test_extent_to_from_dict() -> None:
     spatial_dict = {
         "bbox": [
@@ -480,9 +509,7 @@ def test_extent_to_from_dict() -> None:
         "extension:field": "spatial value",
     }
     temporal_dict = {
-        "interval": [
-            ["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]
-        ],
+        "interval": [["2020-12-11T22:38:32.125000Z", "2020-12-14T18:02:31.437000Z"]],
         "extension:field": "temporal value",
     }
     extent_dict = {
