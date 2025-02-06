@@ -1,5 +1,3 @@
-import unittest
-
 import pytest
 
 from pystac import Collection
@@ -13,43 +11,18 @@ CLASSIFICATION_COLLECTION_RASTER_URI = TestCases.get_path(
 )
 
 
-class TestItemAssets(unittest.TestCase):
-    def setUp(self) -> None:
-        self.maxDiff = None
-        self.collection = Collection.from_file(
-            TestCases.get_path("data-files/item-assets/example-landsat8.json")
-        )
+@pytest.fixture
+def landsat8_collection() -> Collection:
+    return Collection.from_file(
+        TestCases.get_path("data-files/item-assets/example-landsat8.json")
+    )
 
-    def test_example(self) -> None:
-        collection = self.collection.clone()
 
-        self.assertEqual(len(collection.item_assets), 13)
+def test_example(landsat8_collection: Collection) -> None:
+    assert len(landsat8_collection.item_assets) == 13
 
-        self.assertEqual(
-            collection.item_assets["B1"],
-            ItemAssetDefinition(
-                {
-                    "type": "image/tiff; application=geotiff",
-                    "eo:bands": [
-                        {
-                            "name": "B1",
-                            "common_name": "coastal",
-                            "center_wavelength": 0.44,
-                            "full_width_half_max": 0.02,
-                        }
-                    ],
-                    "title": "Coastal Band (B1)",
-                    "description": "Coastal Band Top Of the Atmosphere",
-                }
-            ),
-        )
-
-    def test_set_using_dict(self) -> None:
-        collection = self.collection.clone()
-
-        self.assertEqual(len(collection.item_assets), 13)
-
-        collection.item_assets["Bx"] = {
+    assert landsat8_collection.item_assets["B1"] == ItemAssetDefinition(
+        {
             "type": "image/tiff; application=geotiff",
             "eo:bands": [
                 {
@@ -61,20 +34,35 @@ class TestItemAssets(unittest.TestCase):
             ],
             "title": "Coastal Band (B1)",
             "description": "Coastal Band Top Of the Atmosphere",
-        }  # type:ignore
+        }
+    )
 
-        self.assertEqual(collection.item_assets["B1"], collection.item_assets["Bx"])
+
+def test_set_using_dict(landsat8_collection: Collection) -> None:
+    assert len(landsat8_collection.item_assets) == 13
+
+    landsat8_collection.item_assets["Bx"] = {
+        "type": "image/tiff; application=geotiff",
+        "eo:bands": [
+            {
+                "name": "B1",
+                "common_name": "coastal",
+                "center_wavelength": 0.44,
+                "full_width_half_max": 0.02,
+            }
+        ],
+        "title": "Coastal Band (B1)",
+        "description": "Coastal Band Top Of the Atmosphere",
+    }  # type:ignore
+
+    assert (
+        landsat8_collection.item_assets["B1"] == landsat8_collection.item_assets["Bx"]
+    )
 
 
-class TestAssetDefinition(unittest.TestCase):
-    def setUp(self) -> None:
-        self.maxDiff = None
-        self.collection = Collection.from_file(
-            TestCases.get_path("data-files/item-assets/example-landsat8.json")
-        )
-
-    def test_eq(self) -> None:
-        assert self.collection.item_assets["B1"] != {"title": "Coastal Band (B1)"}
+class TestAssetDefinition:
+    def test_eq(self, landsat8_collection: Collection) -> None:
+        assert landsat8_collection.item_assets["B1"] != {"title": "Coastal Band (B1)"}
 
     def test_create(self) -> None:
         title = "Coastal Band (B1)"
@@ -84,10 +72,12 @@ class TestAssetDefinition(unittest.TestCase):
         asset_defn = ItemAssetDefinition.create(
             title=title, description=description, media_type=media_type, roles=roles
         )
-        self.assertEqual(asset_defn.title, title)
-        self.assertEqual(asset_defn.description, description)
-        self.assertEqual(asset_defn.media_type, media_type)
-        self.assertEqual(asset_defn.roles, roles)
+        assert (
+            asset_defn.title,
+            asset_defn.description,
+            asset_defn.media_type,
+            asset_defn.roles,
+        ) == (title, description, media_type, roles)
 
     def test_title(self) -> None:
         asset_defn = ItemAssetDefinition({})
@@ -95,8 +85,7 @@ class TestAssetDefinition(unittest.TestCase):
 
         asset_defn.title = title
 
-        self.assertEqual(asset_defn.title, title)
-        self.assertEqual(asset_defn.to_dict()["title"], title)
+        assert asset_defn.title == asset_defn.to_dict()["title"] == title
 
     def test_description(self) -> None:
         asset_defn = ItemAssetDefinition({})
@@ -104,8 +93,9 @@ class TestAssetDefinition(unittest.TestCase):
 
         asset_defn.description = description
 
-        self.assertEqual(asset_defn.description, description)
-        self.assertEqual(asset_defn.to_dict()["description"], description)
+        assert (
+            asset_defn.description == asset_defn.to_dict()["description"] == description
+        )
 
     def test_media_type(self) -> None:
         asset_defn = ItemAssetDefinition({})
@@ -113,8 +103,7 @@ class TestAssetDefinition(unittest.TestCase):
 
         asset_defn.media_type = media_type
 
-        self.assertEqual(asset_defn.media_type, media_type)
-        self.assertEqual(asset_defn.to_dict()["type"], media_type)
+        assert asset_defn.media_type == asset_defn.to_dict()["type"] == media_type
 
     def test_roles(self) -> None:
         asset_defn = ItemAssetDefinition({})
@@ -122,10 +111,9 @@ class TestAssetDefinition(unittest.TestCase):
 
         asset_defn.roles = roles
 
-        self.assertEqual(asset_defn.roles, roles)
-        self.assertEqual(asset_defn.to_dict()["roles"], roles)
+        assert asset_defn.roles == asset_defn.to_dict()["roles"] == roles
 
-    def test_set_owner(self) -> None:
+    def test_set_owner(self, landsat8_collection: Collection) -> None:
         asset_definition = ItemAssetDefinition(
             {
                 "type": "image/tiff; application=geotiff",
@@ -141,8 +129,8 @@ class TestAssetDefinition(unittest.TestCase):
                 "description": "Coastal Band Top Of the Atmosphere",
             }
         )
-        asset_definition.set_owner(self.collection)
-        assert asset_definition.owner == self.collection
+        asset_definition.set_owner(landsat8_collection)
+        assert asset_definition.owner == landsat8_collection
 
 
 def test_extra_fields(collection: Collection) -> None:
