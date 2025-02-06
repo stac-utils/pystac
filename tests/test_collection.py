@@ -510,7 +510,7 @@ def test_extent_to_from_dict() -> None:
     assert extent_dict == extent.to_dict()
 
 
-class CollectionSubClassTest(unittest.TestCase):
+class TestCollectionSubClass:
     """This tests cases related to creating classes inheriting from pystac.Catalog to
     ensure that inheritance, class methods, etc. function as expected."""
 
@@ -523,11 +523,9 @@ class CollectionSubClassTest(unittest.TestCase):
             # backwards compatibility of inherited classes
             return super().get_items()
 
-    def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
-
     def test_from_dict_returns_subclass(self) -> None:
-        collection_dict = self.stac_io.read_json(self.MULTI_EXTENT)
+        stac_io = pystac.StacIO.default()
+        collection_dict = stac_io.read_json(self.MULTI_EXTENT)
         custom_collection = self.BasicCustomCollection.from_dict(collection_dict)
 
         assert isinstance(custom_collection, self.BasicCustomCollection)
@@ -553,7 +551,7 @@ class CollectionSubClassTest(unittest.TestCase):
             collection.get_item("area-1-1-imagery")
 
 
-class CollectionPartialSubClassTest(unittest.TestCase):
+def test_collection_get_item_raises_type_error() -> None:
     class BasicCustomCollection(pystac.Collection):
         def get_items(  # type: ignore
             self, *, recursive: bool = False
@@ -561,14 +559,13 @@ class CollectionPartialSubClassTest(unittest.TestCase):
             # This get_items does not allow ids as args.
             return super().get_items(recursive=recursive)
 
-    def test_collection_get_item_raises_type_error(self) -> None:
-        path = TestCases.get_path(
-            "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
-        )
-        custom_collection = self.BasicCustomCollection.from_file(path)
-        collection = custom_collection.clone()
-        with pytest.raises(TypeError, match="takes 1 positional argument"):
-            collection.get_item("area-1-1-imagery")
+    path = TestCases.get_path(
+        "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
+    )
+    custom_collection = BasicCustomCollection.from_file(path)
+    collection = custom_collection.clone()
+    with pytest.raises(TypeError, match="takes 1 positional argument"):
+        collection.get_item("area-1-1-imagery")
 
 
 def test_custom_collection_from_dict(collection: Collection) -> None:
