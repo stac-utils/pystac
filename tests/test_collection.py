@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 import tempfile
-import unittest
 from collections.abc import Iterator
 from copy import deepcopy
 from datetime import datetime
