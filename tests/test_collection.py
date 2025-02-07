@@ -765,3 +765,58 @@ def test_from_items_without_collection_id() -> None:
 
     collection = Collection.from_items([item1], id="test-collection")
     assert collection.id == "test-collection"
+
+
+def test_from_items_with_collection_ids() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        collection="test-collection-1",
+        properties={},
+    )
+    item2 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-15, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 13, 0, 0, 0, tzinfo=tz.UTC),
+        collection="test-collection-2",
+        properties={},
+    )
+
+    with pytest.raises(ValueError, match="Collection id must be defined."):
+        Collection.from_items([item1, item2])
+
+    collection = Collection.from_items([item1, item2], id="test-collection")
+    assert collection.id == "test-collection"
+
+
+def test_from_items_with_different_values() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        properties={"title": "Test Item 1"},
+    )
+    item2 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-15, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 13, 0, 0, 0, tzinfo=tz.UTC),
+        properties={"title": "Test Item 2"},
+    )
+
+    collection = Collection.from_items([item1, item2], id="test_collection")
+    assert collection.title is None
+
+
+def test_from_items_with_providers(sample_item_collection: ItemCollection) -> None:
+    sample_item_collection.extra_fields["providers"] = [{"name": "pystac"}]
+
+    collection = Collection.from_items(sample_item_collection)
+    assert collection.providers and len(collection.providers) == 1
+
+    provider = collection.providers[0]
+    assert provider and provider.name == "pystac"

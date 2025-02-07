@@ -250,6 +250,7 @@ intersphinx_mapping = {
 rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"
 
 nitpick_ignore = [
+    ("py:class", "C"),
     ("py:class", "Datetime"),
     ("py:class", "L"),
     ("py:class", "pystac.summaries.T"),

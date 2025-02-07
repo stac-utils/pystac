@@ -718,14 +718,15 @@ class Collection(Catalog, Assets):
         id: str | None = None,
         strategy: HrefLayoutStrategy | None = None,
     ) -> C:
-        """Create a :class:`Collection` from items or an :class:`ItemCollection`.
+        """Create a :class:`Collection` from iterable of items or an
+        :class:`~pystac.ItemCollection`.
 
-        Will try to pull collection attributes from :attr:`ItemCollection.extra_fields`
-        and items when possible.
+        Will try to pull collection attributes from
+        :attr:`~pystac.ItemCollection.extra_fields` and items when possible.
 
         Args:
             items : Iterable of :class:`~pystac.Item` instances to include in the
-                :class:`ItemCollection`. This can be an :class:`pystac.ItemCollection`.
+                :class:`Collection`. This can be a :class:`~pystac.ItemCollection`.
             id : Identifier for the collection. If not set, must be available on the
                 items and they must all match.
             strategy : The layout strategy to use for setting the
