@@ -191,12 +191,19 @@ class ItemCollection(Collection[pystac.Item]):
         return cls(items=items, extra_fields=extra_fields)
 
     @classmethod
-    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
+    def from_file(
+        cls: type[C],
+        href: HREF,
+        stac_io: pystac.StacIO | None = None,
+        is_geoparquet: bool | None = None,
+    ) -> C:
         """Reads a :class:`ItemCollection` from a JSON file.
 
         Arguments:
             href : Path to the file.
             stac_io : A :class:`~pystac.StacIO` instance to use for file I/O
+            is_geoparquet : Whether to read the file as stac-geoparquet. If
+                none, will be inferred from the file extension.
         """
         if stac_io is None:
             stac_io = pystac.StacIO.default()
@@ -205,7 +212,24 @@ class ItemCollection(Collection[pystac.Item]):
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
-        d = stac_io.read_json(href)
+        if is_geoparquet or (is_geoparquet is None and href.endswith(".parquet")):
+            try:
+                import stacrs
+            except ImportError:
+                raise ImportError(
+                    "Could not import `stacrs`, which is required for "
+                    "reading stac-geoparquet files. Enable pystac's `geoparquet` "
+                    "feature to get stac-geoparquet support."
+                )
+
+            import asyncio
+
+            async def read() -> dict[str, Any]:
+                return await stacrs.read(href)
+
+            d = asyncio.run(read())
+        else:
+            d = stac_io.read_json(href)
 
         return cls.from_dict(d, preserve_dict=False)
 
@@ -213,6 +237,7 @@ class ItemCollection(Collection[pystac.Item]):
         self,
         dest_href: str,
         stac_io: pystac.StacIO | None = None,
+        is_geoparquet: bool | None = None,
     ) -> None:
         """Saves this instance to the ``dest_href`` location.
 
@@ -220,11 +245,30 @@ class ItemCollection(Collection[pystac.Item]):
             dest_href : Location to which the file will be saved.
             stac_io: Optional :class:`~pystac.StacIO` instance to use. If not provided,
                 will use the default instance.
+            is_geoparquet : Whether to write the file as stac-geoparquet. If
+                none, will be inferred from the file extension.
         """
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
-        stac_io.save_json(dest_href, self.to_dict())
+        if is_geoparquet or (is_geoparquet is None and dest_href.endswith(".parquet")):
+            try:
+                import stacrs
+            except ImportError:
+                raise ImportError(
+                    "Could not import `stacrs`, which is required for "
+                    "writing stac-geoparquet files. Enable pystac's `geoparquet` "
+                    "feature to get stac-geoparquet support."
+                )
+
+            import asyncio
+
+            async def write() -> None:
+                await stacrs.write(dest_href, self.to_dict())
+
+            asyncio.run(write())
+        else:
+            stac_io.save_json(dest_href, self.to_dict())
 
     @staticmethod
     def is_item_collection(d: dict[str, Any]) -> bool:

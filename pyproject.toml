@@ -25,6 +25,7 @@ dependencies = ["python-dateutil>=2.7.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
+geoparquet = ["stacrs>=0.5.1"]
 jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
 urllib3 = ["urllib3>=1.26"]

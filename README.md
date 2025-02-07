@@ -49,6 +49,12 @@ objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
 python -m pip install 'pystac[jinja2]'
 ```
 
+If you want to read and write item collections as **stac-geoparquet**:
+
+```shell
+python -m pip install 'pystac[geoparquet]'
+```
+
 ### Install from source
 
 ```shell
