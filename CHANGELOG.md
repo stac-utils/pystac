@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Optional `geoparquet` feature to read and write item collections ([#1521](https://github.com/stac-utils/pystac/pull/1521))
+
 ### Fixed
 
 - Make sure that `VersionRange` has `VersionID`s rather than strings ([#1512](https://github.com/stac-utils/pystac/pull/1512))
