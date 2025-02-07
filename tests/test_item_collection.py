@@ -1,6 +1,7 @@
 import json
 from copy import deepcopy
 from os.path import relpath
+from pathlib import Path
 from typing import Any, cast
 
 import pytest
@@ -206,3 +207,57 @@ def test_to_dict_does_not_read_root_link_of_items() -> None:
         item_collection.to_dict()
 
         assert mock_stac_io.mock.read_text.call_count == 1
+
+
+def test_read_geoparquet() -> None:
+    # This parquet file was created using stac-geoparquet v0.6.0 using the
+    # following snippet:
+    #
+    # import json
+    #
+    # import stac_geoparquet
+    #
+    # with open("tests/data-files/item-collection/sample-item-collection.json") as f:
+    #     data = json.load(f)
+    #
+    # arrow = stac_geoparquet.arrow.parse_stac_items_to_arrow(data["features"])
+    # stac_geoparquet.arrow.to_parquet(
+    #     arrow, "tests/data-files/item-collection/sample-item-collection.parquet"
+    # )
+
+    try:
+        import stacrs  # noqa
+
+        has_stacrs = True
+    except ImportError:
+        has_stacrs = False
+
+    path = TestCases.get_path(
+        "data-files/item-collection/sample-item-collection.parquet"
+    )
+
+    if has_stacrs:
+        item_collection = ItemCollection.from_file(path)
+        assert len(item_collection) == 10
+    else:
+        with pytest.raises(ImportError):
+            item_collection = ItemCollection.from_file(path, is_geoparquet=True)
+
+
+def test_write_geoparquet(tmp_path: Path, item_collection_dict: dict[str, Any]) -> None:
+    try:
+        import stacrs  # noqa
+
+        has_stacrs = True
+    except ImportError:
+        has_stacrs = False
+
+    item_collection = ItemCollection.from_dict(item_collection_dict)
+
+    if has_stacrs:
+        item_collection.save_object(str(tmp_path / "item-collection.parquet"))
+    else:
+        with pytest.raises(ImportError):
+            item_collection.save_object(
+                str(tmp_path / "item-collection.parquet"), is_geoparquet=True
+            )
