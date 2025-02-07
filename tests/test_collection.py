@@ -728,10 +728,8 @@ def test_from_items(fixture_name: str, request: pytest.FixtureRequest) -> None:
 
         start = collection.extent.temporal.intervals[0][0]
         end = collection.extent.temporal.intervals[0][1]
-        assert start and start <= datetime.fromisoformat(
-            item.properties["start_datetime"]
-        )
-        assert end and end >= datetime.fromisoformat(item.properties["end_datetime"])
+        assert start and start <= str_to_datetime(item.properties["start_datetime"])
+        assert end and end >= str_to_datetime(item.properties["end_datetime"])
 
     if isinstance(items, ItemCollection):
         expected = {(link["rel"], link["href"]) for link in items.extra_fields["links"]}
