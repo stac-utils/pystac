@@ -1,5 +1,4 @@
 import posixpath
-import unittest
 from collections.abc import Callable
 from datetime import datetime, timedelta
 
@@ -23,7 +22,7 @@ from tests.utils import (
 )
 
 
-class LayoutTemplateTest(unittest.TestCase):
+class TestLayoutTemplate:
     def test_templates_item_datetime(self) -> None:
         year = 2020
         month = 11
@@ -191,7 +190,7 @@ class LayoutTemplateTest(unittest.TestCase):
         assert path3 == "landsat-8-l1/CC-BY-3.0"
 
 
-class CustomLayoutStrategyTest(unittest.TestCase):
+class TestCustomLayoutStrategy:
     def get_custom_catalog_func(self) -> Callable[[pystac.Catalog, str, bool], str]:
         def fn(cat: pystac.Catalog, parent_dir: str, is_root: bool) -> str:
             return posixpath.join(parent_dir, f"cat/{is_root}/{cat.id}.json")
@@ -271,7 +270,7 @@ class CustomLayoutStrategyTest(unittest.TestCase):
         assert href == expected
 
 
-class TemplateLayoutStrategyTest(unittest.TestCase):
+class TestTemplateLayoutStrategy:
     TEST_CATALOG_TEMPLATE = "cat/${id}/${description}"
     TEST_COLLECTION_TEMPLATE = "col/${id}/${license}"
     TEST_ITEM_TEMPLATE = "item/${collection}/${id}.json"
@@ -375,149 +374,164 @@ class TemplateLayoutStrategyTest(unittest.TestCase):
         assert href == expected
 
 
-class BestPracticesLayoutStrategyTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.strategy = BestPracticesLayoutStrategy()
-
+class TestBestPracticesLayoutStrategy:
     def test_produces_layout_for_root_catalog(self) -> None:
+        strategy = BestPracticesLayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_href(
+        href = strategy.get_href(
             cat, parent_dir="http://example.com", is_root=True
         )
         assert href == "http://example.com/catalog.json"
 
     def test_produces_layout_for_child_catalog(self) -> None:
+        strategy = BestPracticesLayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_href(cat, parent_dir="http://example.com")
+        href = strategy.get_href(cat, parent_dir="http://example.com")
         assert href == "http://example.com/test/catalog.json"
 
     def test_produces_layout_for_root_collection(self) -> None:
+        strategy = BestPracticesLayoutStrategy()
         collection = TestCases.case_8()
-        href = self.strategy.get_href(
+        href = strategy.get_href(
             collection, parent_dir="http://example.com", is_root=True
         )
         assert href == "http://example.com/collection.json"
 
     def test_produces_layout_for_child_collection(self) -> None:
+        strategy = BestPracticesLayoutStrategy()
         collection = TestCases.case_8()
-        href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        href = strategy.get_href(collection, parent_dir="http://example.com")
         assert href == f"http://example.com/{collection.id}/collection.json"
 
     def test_produces_layout_for_item(self) -> None:
+        strategy = BestPracticesLayoutStrategy()
         collection = TestCases.case_8()
         item = next(collection.get_items(recursive=True))
-        href = self.strategy.get_href(item, parent_dir="http://example.com")
+        href = strategy.get_href(item, parent_dir="http://example.com")
         expected = f"http://example.com/{item.id}/{item.id}.json"
         assert href == expected
 
 
-class AsIsLayoutStrategyTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.strategy = AsIsLayoutStrategy()
-        self.expected_local_href = (
+class TestAsIsLayoutStrategy:
+    def test_catalog(self) -> None:
+        strategy = AsIsLayoutStrategy()
+        expected_local_href = (
             "/an/href" if not path_includes_drive_letter() else "D:/an/href"
         )
-
-    def test_catalog(self) -> None:
         cat = pystac.Catalog(id="test", description="test desc")
         with pytest.raises(ValueError):
-            self.strategy.get_href(cat, parent_dir="http://example.com", is_root=True)
+            strategy.get_href(cat, parent_dir="http://example.com", is_root=True)
         cat.set_self_href("/an/href")
-        href = self.strategy.get_href(
+        href = strategy.get_href(
             cat, parent_dir="https://example.com", is_root=True
         )
-        assert href == self.expected_local_href
+        assert href == expected_local_href
 
     def test_collection(self) -> None:
+        strategy = AsIsLayoutStrategy()
+        expected_local_href = (
+            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+        )
         collection = TestCases.case_8()
         collection.set_self_href(None)
         with pytest.raises(ValueError):
-            self.strategy.get_href(
+            strategy.get_href(
                 collection, parent_dir="http://example.com", is_root=True
             )
         collection.set_self_href("/an/href")
-        href = self.strategy.get_href(
+        href = strategy.get_href(
             collection, parent_dir="https://example.com", is_root=True
         )
-        assert href == self.expected_local_href
+        assert href == expected_local_href
 
     def test_item(self) -> None:
+        strategy = AsIsLayoutStrategy()
+        expected_local_href = (
+            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+        )
         collection = TestCases.case_8()
         item = next(collection.get_items(recursive=True))
         item.set_self_href(None)
         with pytest.raises(ValueError):
-            self.strategy.get_href(item, parent_dir="http://example.com")
+            strategy.get_href(item, parent_dir="http://example.com")
         item.set_self_href("/an/href")
-        href = self.strategy.get_href(item, parent_dir="http://example.com")
-        assert href == self.expected_local_href
+        href = strategy.get_href(item, parent_dir="http://example.com")
+        assert href == expected_local_href
 
 
-class APILayoutStrategyTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.strategy = APILayoutStrategy()
-
+class TestAPILayoutStrategy:
     def test_produces_layout_for_root_catalog(self) -> None:
+        strategy = APILayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_href(
+        href = strategy.get_href(
             cat, parent_dir="http://example.com", is_root=True
         )
         assert href == "http://example.com"
 
     def test_produces_layout_for_root_catalog_str(self) -> None:
+        strategy = APILayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_catalog_href(
+        href = strategy.get_catalog_href(
             cat.id, parent_dir="http://example.com", is_root=True
         )
         assert href == "http://example.com"
 
     def test_produces_layout_for_child_catalog(self) -> None:
+        strategy = APILayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_href(cat, parent_dir="http://example.com")
+        href = strategy.get_href(cat, parent_dir="http://example.com")
         assert href == "http://example.com/test"
 
     def test_produces_layout_for_child_catalog_str(self) -> None:
+        strategy = APILayoutStrategy()
         cat = pystac.Catalog(id="test", description="test desc")
-        href = self.strategy.get_catalog_href(
+        href = strategy.get_catalog_href(
             cat.id, parent_dir="http://example.com", is_root=False
         )
         assert href == "http://example.com/test"
 
     def test_cannot_produce_layout_for_root_collection(self) -> None:
+        strategy = APILayoutStrategy()
         collection = TestCases.case_8()
         with pytest.raises(ValueError):
-            self.strategy.get_href(
+            strategy.get_href(
                 collection, parent_dir="http://example.com", is_root=True
             )
 
     def test_produces_layout_for_child_collection(self) -> None:
+        strategy = APILayoutStrategy()
         collection = TestCases.case_8()
-        href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        href = strategy.get_href(collection, parent_dir="http://example.com")
         assert href == f"http://example.com/collections/{collection.id}"
 
     def test_produces_layout_for_child_collection_str(self) -> None:
+        strategy = APILayoutStrategy()
         collection = TestCases.case_8()
-        href = self.strategy.get_collection_href(
+        href = strategy.get_collection_href(
             collection.id, parent_dir="http://example.com", is_root=False
         )
         assert href == f"http://example.com/collections/{collection.id}"
 
     def test_produces_layout_for_item(self) -> None:
+        strategy = APILayoutStrategy()
         collection = TestCases.case_8()
-        col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        col_href = strategy.get_href(collection, parent_dir="http://example.com")
         item = next(collection.get_items(recursive=True))
-        href = self.strategy.get_href(item, parent_dir=col_href)
+        href = strategy.get_href(item, parent_dir=col_href)
         expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
         assert href == expected
 
     def test_produces_layout_for_item_str(self) -> None:
+        strategy = APILayoutStrategy()
         collection = TestCases.case_8()
-        col_href = self.strategy.get_href(collection, parent_dir="http://example.com")
+        col_href = strategy.get_href(collection, parent_dir="http://example.com")
         item = next(collection.get_items(recursive=True))
-        href = self.strategy.get_item_href(item.id, parent_dir=col_href)
+        href = strategy.get_item_href(item.id, parent_dir=col_href)
         expected = f"http://example.com/collections/{collection.id}/items/{item.id}"
         assert href == expected
 
     def test_produces_normalized_layout(self) -> None:
+        strategy = APILayoutStrategy()
         cat = pystac.Catalog(id="test_catalog", description="Test Catalog")
         col = pystac.Collection(
             id="test_collection",
@@ -556,7 +570,7 @@ class APILayoutStrategyTest(unittest.TestCase):
         )
         cat.add_child(col)
         col.add_item(item)
-        cat.normalize_hrefs("http://example.com", strategy=self.strategy)
+        cat.normalize_hrefs("http://example.com", strategy=strategy)
 
         assert cat.self_href == "http://example.com"
         assert col.self_href == "http://example.com/collections/test_collection"
@@ -566,17 +580,21 @@ class APILayoutStrategyTest(unittest.TestCase):
         )
 
     def test_produces_layout_for_search(self) -> None:
-        href = self.strategy.get_search_href(parent_dir="http://example.com")
+        strategy = APILayoutStrategy()
+        href = strategy.get_search_href(parent_dir="http://example.com")
         assert href == "http://example.com/search"
 
     def test_produces_layout_for_conformance(self) -> None:
-        href = self.strategy.get_conformance_href(parent_dir="http://example.com")
+        strategy = APILayoutStrategy()
+        href = strategy.get_conformance_href(parent_dir="http://example.com")
         assert href == "http://example.com/conformance"
 
     def test_produces_layout_for_service_description(self) -> None:
-        href = self.strategy.get_service_desc_href(parent_dir="http://example.com")
+        strategy = APILayoutStrategy()
+        href = strategy.get_service_desc_href(parent_dir="http://example.com")
         assert href == "http://example.com/api"
 
     def test_produces_layout_for_service_doc(self) -> None:
-        href = self.strategy.get_service_doc_href(parent_dir="http://example.com")
+        strategy = APILayoutStrategy()
+        href = strategy.get_service_doc_href(parent_dir="http://example.com")
         assert href == "http://example.com/api.html"
