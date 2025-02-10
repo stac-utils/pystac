@@ -19,6 +19,7 @@ from pystac import (
     Collection,
     Extent,
     Item,
+    ItemCollection,
     Provider,
     SpatialExtent,
     TemporalExtent,
@@ -711,3 +712,111 @@ def test_permissive_temporal_extent_deserialization(collection: Collection) -> N
     ]["interval"][0]
     with pytest.warns(UserWarning):
         Collection.from_dict(collection_dict)
+
+
+@pytest.mark.parametrize("fixture_name", ("sample_item_collection", "sample_items"))
+def test_from_items(fixture_name: str, request: pytest.FixtureRequest) -> None:
+    items = request.getfixturevalue(fixture_name)
+    collection = Collection.from_items(items)
+
+    for item in items:
+        assert collection.id == item.collection_id
+        assert collection.extent.spatial.bboxes[0][0] <= item.bbox[0]
+        assert collection.extent.spatial.bboxes[0][1] <= item.bbox[1]
+        assert collection.extent.spatial.bboxes[0][2] >= item.bbox[2]
+        assert collection.extent.spatial.bboxes[0][3] >= item.bbox[3]
+
+        start = collection.extent.temporal.intervals[0][0]
+        end = collection.extent.temporal.intervals[0][1]
+        assert start and start <= str_to_datetime(item.properties["start_datetime"])
+        assert end and end >= str_to_datetime(item.properties["end_datetime"])
+
+    if isinstance(items, ItemCollection):
+        expected = {(link["rel"], link["href"]) for link in items.extra_fields["links"]}
+        actual = {(link.rel, link.href) for link in collection.links}
+        assert expected.issubset(actual)
+
+
+def test_from_items_pulls_from_properties() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        collection="test-collection-1",
+        properties={"title": "Test Item", "description": "Extra words describing"},
+    )
+    collection = Collection.from_items([item1])
+    assert collection.id == item1.collection_id
+    assert collection.title == item1.properties["title"]
+    assert collection.description == item1.properties["description"]
+
+
+def test_from_items_without_collection_id() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        properties={},
+    )
+    with pytest.raises(ValueError, match="Collection id must be defined."):
+        Collection.from_items([item1])
+
+    collection = Collection.from_items([item1], id="test-collection")
+    assert collection.id == "test-collection"
+
+
+def test_from_items_with_collection_ids() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        collection="test-collection-1",
+        properties={},
+    )
+    item2 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-15, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 13, 0, 0, 0, tzinfo=tz.UTC),
+        collection="test-collection-2",
+        properties={},
+    )
+
+    with pytest.raises(ValueError, match="Collection id must be defined."):
+        Collection.from_items([item1, item2])
+
+    collection = Collection.from_items([item1, item2], id="test-collection")
+    assert collection.id == "test-collection"
+
+
+def test_from_items_with_different_values() -> None:
+    item1 = Item(
+        id="test-item-1",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-10, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 12, 0, 0, 0, tzinfo=tz.UTC),
+        properties={"title": "Test Item 1"},
+    )
+    item2 = Item(
+        id="test-item-2",
+        geometry=ARBITRARY_GEOM,
+        bbox=[-15, -20, 0, -10],
+        datetime=datetime(2000, 2, 1, 13, 0, 0, 0, tzinfo=tz.UTC),
+        properties={"title": "Test Item 2"},
+    )
+
+    collection = Collection.from_items([item1, item2], id="test_collection")
+    assert collection.title is None
+
+
+def test_from_items_with_providers(sample_item_collection: ItemCollection) -> None:
+    sample_item_collection.extra_fields["providers"] = [{"name": "pystac"}]
+
+    collection = Collection.from_items(sample_item_collection)
+    assert collection.providers and len(collection.providers) == 1
+
+    provider = collection.providers[0]
+    assert provider and provider.name == "pystac"

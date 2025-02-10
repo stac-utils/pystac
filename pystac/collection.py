@@ -474,7 +474,7 @@ class Collection(Catalog, Assets):
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Collection.
         strategy : The layout strategy to use for setting the
-            HREFs of the catalog child objections and items.
+            HREFs of the catalog child objects and items.
             If not provided, it will default to strategy of the parent and fallback to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
@@ -707,6 +707,77 @@ class Collection(Catalog, Assets):
             # Collection asset deprecation checks pending version extension support
         except ExtensionNotImplemented:
             pass
+
+        return collection
+
+    @classmethod
+    def from_items(
+        cls: type[Collection],
+        items: Iterable[Item] | pystac.ItemCollection,
+        *,
+        id: str | None = None,
+        strategy: HrefLayoutStrategy | None = None,
+    ) -> Collection:
+        """Create a :class:`Collection` from iterable of items or an
+        :class:`~pystac.ItemCollection`.
+
+        Will try to pull collection attributes from
+        :attr:`~pystac.ItemCollection.extra_fields` and items when possible.
+
+        Args:
+            items : Iterable of :class:`~pystac.Item` instances to include in the
+                :class:`Collection`. This can be a :class:`~pystac.ItemCollection`.
+            id : Identifier for the collection. If not set, must be available on the
+                items and they must all match.
+            strategy : The layout strategy to use for setting the
+                HREFs of the catalog child objects and items.
+                If not provided, it will default to strategy of the parent and fallback
+                to :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+        """
+
+        def extract(attr: str) -> Any:
+            """Extract attrs from items or item.properties as long as they all match"""
+            value = None
+            values = {getattr(item, attr, None) for item in items}
+            if len(values) == 1:
+                value = next(iter(values))
+                if value is None:
+                    values = {item.properties.get(attr, None) for item in items}
+                    if len(values) == 1:
+                        value = next(iter(values))
+            return value
+
+        if isinstance(items, pystac.ItemCollection):
+            extra_fields = deepcopy(items.extra_fields)
+            links = extra_fields.pop("links", {})
+            providers = extra_fields.pop("providers", None)
+            if providers is not None:
+                providers = [pystac.Provider.from_dict(p) for p in providers]
+        else:
+            extra_fields = {}
+            links = {}
+            providers = []
+
+        id = id or extract("collection_id")
+        if id is None:
+            raise ValueError(
+                "Collection id must be defined. Either by specifying collection_id "
+                "on every item, or as a keyword argument to this function."
+            )
+
+        collection = cls(
+            id=id,
+            description=extract("description"),
+            extent=Extent.from_items(items),
+            title=extract("title"),
+            providers=providers,
+            extra_fields=extra_fields,
+            strategy=strategy,
+        )
+        collection.add_items(items)
+
+        for link in links:
+            collection.add_link(Link.from_dict(link))
 
         return collection
 

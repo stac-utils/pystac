@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Collection.from_items` for creating a `pystac.Collection` from an `ItemCollection` ([#1522](https://github.com/stac-utils/pystac/pull/1522))
+
 ### Fixed
 
 - Make sure that `VersionRange` has `VersionID`s rather than strings ([#1512](https://github.com/stac-utils/pystac/pull/1512))

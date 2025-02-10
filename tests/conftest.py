@@ -9,7 +9,7 @@ from typing import Any
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item, Link
+from pystac import Asset, Catalog, Collection, Item, ItemCollection, Link
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 
@@ -74,6 +74,18 @@ def sample_item_dict() -> dict[str, Any]:
 @pytest.fixture
 def sample_item() -> Item:
     return Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
+
+
+@pytest.fixture
+def sample_item_collection() -> ItemCollection:
+    return ItemCollection.from_file(
+        TestCases.get_path("data-files/item-collection/sample-item-collection.json")
+    )
+
+
+@pytest.fixture
+def sample_items(sample_item_collection: ItemCollection) -> list[Item]:
+    return list(sample_item_collection)
 
 
 @pytest.fixture(scope="function")
