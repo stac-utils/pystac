@@ -474,7 +474,7 @@ class Collection(Catalog, Assets):
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Collection.
         strategy : The layout strategy to use for setting the
-            HREFs of the catalog child objections and items.
+            HREFs of the catalog child objects and items.
             If not provided, it will default to strategy of the parent and fallback to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
     """
@@ -730,7 +730,7 @@ class Collection(Catalog, Assets):
             id : Identifier for the collection. If not set, must be available on the
                 items and they must all match.
             strategy : The layout strategy to use for setting the
-                HREFs of the catalog child objections and items.
+                HREFs of the catalog child objects and items.
                 If not provided, it will default to strategy of the parent and fallback
                 to :class:`~pystac.layout.BestPracticesLayoutStrategy`.
         """
