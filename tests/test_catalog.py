@@ -4,7 +4,6 @@ import json
 import os
 import posixpath
 import tempfile
-import unittest
 from collections import defaultdict
 from collections.abc import Iterator
 from copy import deepcopy
@@ -1540,7 +1539,7 @@ class TestFullCopy:
             assert os.path.exists(href)
 
 
-class CatalogSubClassTest(unittest.TestCase):
+class TestCatalogSubClass:
     """This tests cases related to creating classes inheriting from pystac.Catalog to
     ensure that inheritance, class methods, etc. function as expected."""
 
@@ -1553,25 +1552,20 @@ class CatalogSubClassTest(unittest.TestCase):
             # backwards compatibility of inherited classes
             return super().get_items()
 
-    def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
-
     def test_from_dict_returns_subclass(self) -> None:
+        self.stac_io = pystac.StacIO.default()
         catalog_dict = self.stac_io.read_json(self.case_1)
         custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_from_file_returns_subclass(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_clone(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
         cloned_catalog = custom_catalog.clone()
-
-        self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+        assert isinstance(cloned_catalog, self.BasicCustomCatalog)
 
     def test_get_all_items_works(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
