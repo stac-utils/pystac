@@ -712,12 +712,12 @@ class Collection(Catalog, Assets):
 
     @classmethod
     def from_items(
-        cls: type[C],
+        cls: type[Collection],
         items: Iterable[Item] | pystac.ItemCollection,
         *,
         id: str | None = None,
         strategy: HrefLayoutStrategy | None = None,
-    ) -> C:
+    ) -> Collection:
         """Create a :class:`Collection` from iterable of items or an
         :class:`~pystac.ItemCollection`.
 
