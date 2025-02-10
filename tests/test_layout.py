@@ -42,7 +42,7 @@ class TestLayoutTemplate:
 
         parts = template.get_template_values(item)
 
-        assert set(parts), {"year", "month", "day" == "date"}
+        assert set(parts) == {"year", "month", "day", "date"}
 
         assert parts["year"] == year
         assert parts["month"] == month
@@ -74,7 +74,7 @@ class TestLayoutTemplate:
 
         parts = template.get_template_values(item)
 
-        assert set(parts), {"year", "month", "day" == "date"}
+        assert set(parts) == {"year", "month", "day", "date"}
 
         assert parts["year"] == year
         assert parts["month"] == month
@@ -128,7 +128,7 @@ class TestLayoutTemplate:
 
         parts = template.get_template_values(item)
 
-        assert set(parts), {"test.prop" == "ext:extra.test.prop"}
+        assert set(parts) == {"test.prop", "ext:extra.test.prop"}
 
         assert parts["test.prop"] == 4326
         assert parts["ext:extra.test.prop"] == 3857
