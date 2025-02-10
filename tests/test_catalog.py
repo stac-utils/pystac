@@ -46,7 +46,7 @@ from tests.utils import (
 )
 
 
-class CatalogTypeTest(unittest.TestCase):
+class TestCatalogType:
     def test_determine_type_for_absolute_published(self) -> None:
         cat = TestCases.case_1()
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -56,7 +56,7 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
+        assert catalog_type == CatalogType.ABSOLUTE_PUBLISHED
 
     def test_determine_type_for_relative_published(self) -> None:
         cat = TestCases.case_2()
@@ -67,14 +67,14 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
+        assert catalog_type == CatalogType.RELATIVE_PUBLISHED
 
     def test_determine_type_for_self_contained(self) -> None:
         cat_json = pystac.StacIO.default().read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
+        assert catalog_type == CatalogType.SELF_CONTAINED
 
     def test_determine_type_for_unknown(self) -> None:
         catalog = Catalog(id="test", description="test desc")
@@ -83,7 +83,7 @@ class CatalogTypeTest(unittest.TestCase):
         catalog.normalize_hrefs("http://example.com")
         d = catalog.to_dict(include_self_link=False)
 
-        self.assertIsNone(CatalogType.determine_type(d))
+        assert CatalogType.determine_type(d) is None
 
 
 class TestCatalog:
