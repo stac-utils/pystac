@@ -1423,7 +1423,7 @@ class TestCatalog:
         Catalog.from_dict(d)
 
 
-class FullCopyTest(unittest.TestCase):
+class TestFullCopy:
     def check_link(self, link: pystac.Link, tag: str) -> None:
         if link.is_resolved():
             target_href: str = cast(pystac.STACObject, link.target).self_href
@@ -1438,7 +1438,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_link(link, tag)
 
     def check_catalog(self, c: Catalog, tag: str) -> None:
-        self.assertEqual(len(c.get_links("root")), 1, msg=f"{c}")
+        assert len(c.get_links("root")) == 1, f"Failure for catalog: {c}"
 
         for link in c.links:
             self.check_link(link, tag)
