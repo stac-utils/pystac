@@ -9,4 +9,4 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv sync --all-extras
-    - uv run --all-extras mkdocs build -d $READTHEDOCS_OUTPUT
+    - uv run --all-extras mkdocs build -d $READTHEDOCS_OUTPUT/html
