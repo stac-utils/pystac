@@ -164,7 +164,7 @@ class TestCases:
             TestCases.case_4(),
             TestCases.case_5(),
             TestCases.case_7(),
-            TestCases.case_8(),
+            TestCases.case_8(),  # type: ignore
         ]
 
     @staticmethod

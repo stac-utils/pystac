@@ -78,7 +78,7 @@ class STACObject(ABC):
 
     @classmethod
     def from_dict(
-        cls: type[STACObject],
+        cls: type[Self],
         d: dict[str, Any],
         *,
         href: str | None = None,
@@ -87,7 +87,7 @@ class STACObject(ABC):
         preserve_dict: bool = True,  # TODO deprecation warning
         reader: Read | None = None,
         writer: Write | None = None,
-    ) -> STACObject:
+    ) -> Self:
         """Creates a STAC object from a dictionary.
 
         If you already know what type of STAC object your dictionary represents,
@@ -112,17 +112,24 @@ class STACObject(ABC):
             if type_value == CATALOG_TYPE:
                 from .catalog import Catalog
 
-                return Catalog(**d, href=href, reader=reader, writer=writer)
+                stac_object: STACObject = Catalog(
+                    **d, href=href, reader=reader, writer=writer
+                )
             elif type_value == COLLECTION_TYPE:
                 from .collection import Collection
 
-                return Collection(**d, href=href, reader=reader, writer=writer)
+                stac_object = Collection(**d, href=href, reader=reader, writer=writer)
             elif type_value == ITEM_TYPE:
                 from .item import Item
 
-                return Item(**d, href=href, reader=reader, writer=writer)
+                stac_object = Item(**d, href=href, reader=reader, writer=writer)
             else:
                 raise StacError(f"unknown type field: {type_value}")
+
+            if isinstance(stac_object, cls):
+                return stac_object
+            else:
+                raise PystacError(f"Expected {cls} but got a {type(stac_object)}")
         else:
             raise StacError("missing type field on dictionary")
 
@@ -139,6 +146,8 @@ class STACObject(ABC):
     ) -> None:
         """Creates a new STAC object."""
         from .extensions import Extensions
+
+        super().__init__()
 
         self.id: str = id
         """The object's id."""

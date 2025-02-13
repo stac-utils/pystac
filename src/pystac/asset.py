@@ -75,3 +75,12 @@ class Asset(ItemAsset):
         d = {"href": self.href}
         d.update(super().to_dict())
         return d
+
+
+class AssetsMixin:
+    """A mixin for things that have assets (Collections and Items)"""
+
+    assets: dict[str, Asset]
+
+    def add_asset(self, key: str, asset: Asset) -> None:
+        raise NotImplementedError

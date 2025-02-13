@@ -5,14 +5,14 @@ import datetime as dt
 import warnings
 from typing import Any, Sequence
 
-from .asset import Asset
+from .asset import Asset, AssetsMixin
 from .constants import ITEM_TYPE
 from .errors import StacWarning
 from .link import Link
 from .stac_object import STACObject
 
 
-class Item(STACObject):
+class Item(STACObject, AssetsMixin):
     """An Item is a GeoJSON Feature augmented with foreign members relevant to a
     STAC object.
 
