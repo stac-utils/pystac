@@ -32,9 +32,9 @@ jobs:
       - name: Test
         run: uv run pytest
       - name: Test w/ validation extra
-        run: uv run pytest --extra validation
+        run: uv run --extra validation pytest
       - name: Test w/ obstore extra
-        run: uv run pytest --extra obstore
+        run: uv run --extra obstore pytest
   build-docs:
     name: Build docs
     runs-on: ubuntu-latest
