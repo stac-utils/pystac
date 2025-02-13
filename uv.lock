@@ -763,6 +763,7 @@ name = "pystac"
 version = "2.0.0a0"
 source = { editable = "." }
 dependencies = [
+    { name = "python-dateutil" },
     { name = "typing-extensions" },
 ]
 
@@ -795,6 +796,7 @@ docs = [
 requires-dist = [
     { name = "jsonschema", marker = "extra == 'validate'", specifier = ">=4.23.0" },
     { name = "obstore", marker = "extra == 'obstore'", specifier = ">=0.4.0" },
+    { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "referencing", marker = "extra == 'validate'", specifier = ">=0.36.2" },
     { name = "typing-extensions", specifier = ">=4.12.2" },
 ]

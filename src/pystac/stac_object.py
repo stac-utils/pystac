@@ -21,6 +21,7 @@ from .errors import PystacError, StacError
 from .link import Link
 
 if TYPE_CHECKING:
+    from .catalog import Catalog
     from .io import Read, Write
 
 
@@ -81,6 +82,9 @@ class STACObject(ABC):
         d: dict[str, Any],
         *,
         href: str | None = None,
+        root: Catalog | None = None,  # TODO deprecation warning
+        migrate: bool = False,
+        preserve_dict: bool = True,  # TODO deprecation warning
         reader: Read | None = None,
         writer: Write | None = None,
     ) -> STACObject:

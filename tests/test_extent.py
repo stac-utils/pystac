@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from pystac import StacWarning, TemporalExtent
+from pystac import SpatialExtent, StacWarning, TemporalExtent
 
 
 def test_temporal_with_datetimes() -> None:
@@ -45,3 +45,14 @@ def test_temporal_with_bad_tail() -> None:
         )
     d = extent.to_dict()
     assert d == {"interval": [["2025-02-11T00:00:00Z", None]]}
+
+
+def test_temporal_from_now() -> None:
+    extent = TemporalExtent.from_now()
+    assert isinstance(extent.interval[0][0], str)
+    assert extent.interval[0][1] is None
+
+
+def test_spatial_from_coordinates() -> None:
+    with pytest.warns(FutureWarning):
+        SpatialExtent.from_coordinates([-180, -90, 180, 90])
