@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - v2
+  pull_request:
+    branches:
+      - v2
 
 jobs:
   test:
@@ -52,6 +55,7 @@ jobs:
           path: site/
   deploy-docs:
     name: Deploy docs
+    if: github.ref == 'refs/heads/v2'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

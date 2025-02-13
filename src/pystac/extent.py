@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import datetime
 import warnings
 from typing import Any, Sequence
@@ -7,6 +8,7 @@ from typing import Any, Sequence
 from typing_extensions import Self
 
 from .constants import DEFAULT_BBOX, DEFAULT_INTERVAL
+from .decorators import v2_deprecated
 from .errors import StacWarning
 from .types import PermissiveBbox, PermissiveInterval
 
@@ -54,7 +56,19 @@ class SpatialExtent:
         """Creates a new spatial extent from a dictionary."""
         return cls(**d)
 
-    def __init__(self, bbox: PermissiveBbox | None = None):
+    @classmethod
+    @v2_deprecated("Use the constructor instead")
+    def from_coordinates(
+        cls: type[Self],
+        coordinates: list[Any],
+        extra_fields: dict[str, Any] | None = None,
+    ) -> Self:
+        if extra_fields:
+            return cls(coordinates, **extra_fields)
+        else:
+            return cls(coordinates)
+
+    def __init__(self, bbox: PermissiveBbox | None = None, **kwargs: Any):
         """Creates a new spatial extent."""
         self.bbox: Sequence[Sequence[float | int]]
         if bbox is None or len(bbox) == 0:
@@ -63,10 +77,13 @@ class SpatialExtent:
             self.bbox = bbox  # type: ignore
         else:
             self.bbox = [bbox]  # type: ignore
+        self.extra_fields = kwargs
 
     def to_dict(self) -> dict[str, Any]:
         """Converts this spatial extent to a dictionary."""
-        return {"bbox": self.bbox}
+        d = copy.deepcopy(self.extra_fields)
+        d["bbox"] = self.bbox
+        return d
 
 
 class TemporalExtent:
@@ -76,6 +93,11 @@ class TemporalExtent:
     def from_dict(cls: type[Self], d: dict[str, Any]) -> Self:
         """Creates a new temporal extent from a dictionary."""
         return cls(**d)
+
+    @classmethod
+    def from_now(cls: type[Self]) -> Self:
+        """Creates a new temporal extent that starts now and has no end time."""
+        return cls([[datetime.datetime.now(tz=datetime.timezone.utc), None]])
 
     def __init__(
         self,
