@@ -22,6 +22,7 @@ from .link import Link
 
 if TYPE_CHECKING:
     from .catalog import Catalog
+    from .container import Container
     from .io import Read, Write
 
 
@@ -82,7 +83,7 @@ class STACObject(ABC):
         d: dict[str, Any],
         *,
         href: str | None = None,
-        root: Catalog | None = None,  # TODO deprecation warning
+        root: Catalog | None = None,
         migrate: bool = False,
         preserve_dict: bool = True,  # TODO deprecation warning
         reader: Read | None = None,
@@ -127,6 +128,15 @@ class STACObject(ABC):
                 raise StacError(f"unknown type field: {type_value}")
 
             if isinstance(stac_object, cls):
+                if root:
+                    warnings.warn(
+                        "The `root` argument is deprecated in PySTAC v2 and "
+                        "will be removed in a future version. Prefer to use "
+                        "`stac_object.set_link(Link.root(catalog))` "
+                        "after object creation.",
+                        FutureWarning,
+                    )
+                    stac_object.set_link(Link.root(root))
                 return stac_object
             else:
                 raise PystacError(f"Expected {cls} but got a {type(stac_object)}")
@@ -243,6 +253,19 @@ class STACObject(ABC):
             io.write_file(self, href=dest_href, writer=self.writer)
         else:
             raise PystacError("cannot save an object without an href")
+
+    def get_root(self) -> Container | None:
+        """Returns the container at this object's root link, if there is one."""
+        from .container import Container
+
+        if link := self.get_link(ROOT_REL):
+            stac_object = link.get_stac_object()
+            if isinstance(stac_object, Container):
+                return stac_object
+            else:
+                return None
+        else:
+            return None
 
     def get_link(self, rel: str) -> Link | None:
         return next((link for link in self._links if link.rel == rel), None)
