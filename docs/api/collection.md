@@ -1,0 +1,3 @@
+# Collection
+
+::: pystac.Collection

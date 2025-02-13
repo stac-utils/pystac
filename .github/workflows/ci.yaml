@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - v2
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+          - "3.13"
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Sync
+        run: uv sync
+      - name: Lint
+        run: scripts/lint
+      - name: Test
+        run: uv run pytest
+      - name: Test w/ validation extra
+        run: uv run pytest --extra validation
+      - name: Test w/ obstore extra
+        run: uv run pytest --extra obstore
+  build-docs:
+    name: Build docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Sync
+        run: uv sync
+      - name: Build
+        run: uv run mkdocs build
+      - name: Upload
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+  deploy-docs:
+    name: Deploy docs
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build-docs
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

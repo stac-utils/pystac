@@ -1,0 +1,3 @@
+# STACObject
+
+::: pystac.STACObject

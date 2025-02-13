@@ -1,7 +1,0 @@
-{
-  "type": "Catalog",
-  "id": "broken_cat",
-  "description": "test catalog w/o stac_version",
-  "links": [],
-  "stac_extensions": []
-}

@@ -1,2 +1,0 @@
-include pystac/py.typed pystac/html/*.jinja2 pystac/validation/jsonschemas/geojson/*.json pystac/validation/jsonschemas/stac-spec/v1.1.0/*.json pystac/static/*.json
-exclude tests/*
