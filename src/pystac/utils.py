@@ -253,7 +253,7 @@ def datetime_to_str(dt: datetime.datetime, timespec: str = "auto") -> str:
     return timestamp
 
 
-def str_to_datetime(s: str) -> datetime:
+def str_to_datetime(s: str) -> datetime.datetime:
     return dateutil.parser.isoparse(s)
 
 

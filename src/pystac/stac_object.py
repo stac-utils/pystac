@@ -330,7 +330,7 @@ class STACObject(ABC):
             self.set_link(Link.self(self))
 
     @deprecate.function("Prefer to get the href directly")
-    def get_self_href(self) -> str:
+    def get_self_href(self) -> str | None:
         return self.href
 
     @deprecate.function("Prefer to set href directly, and then use `render()`")

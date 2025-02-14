@@ -117,8 +117,14 @@ class Item(STACObject):
             self.remove_links(COLLECTION)
 
     def get_collection(self) -> Collection | None:
+        from .collection import Collection
+
         if link := self.get_link(COLLECTION):
-            return link.get_stac_object()
+            stac_object = link.get_stac_object()
+            if isinstance(stac_object, Collection):
+                return stac_object
+            else:
+                return None
         else:
             return None
 
@@ -154,7 +160,7 @@ class Item(STACObject):
         return d
 
 
-def _parse_datetime(value: str | dt.datetime | None) -> dt.datetime:
+def _parse_datetime(value: str | dt.datetime | None) -> dt.datetime | None:
     if value is None or isinstance(value, dt.datetime):
         return value
     else:
