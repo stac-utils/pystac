@@ -102,6 +102,9 @@ class Item(STACObject):
     def get_fields(self) -> dict[str, Any]:
         return self.properties
 
+    def add_asset(self, key: str, asset: Asset) -> None:
+        self.assets[key] = asset
+
     def _to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
             "type": self.get_type(),

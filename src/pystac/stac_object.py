@@ -88,7 +88,7 @@ class STACObject(ABC):
             raise PystacError(f"JSON is not a dict: {type(d)}")
 
         stac_object = cls.from_dict(d)
-        stac_object.href = href
+        stac_object.href = str(href)
         stac_object.reader = reader
         if isinstance(stac_object, cls):
             return stac_object
@@ -379,6 +379,7 @@ class STACObject(ABC):
 
         if use_relative_asset_hrefs and isinstance(self, Assets) and self.assets:
             for asset in self.assets.values():
+                assert self.href
                 asset.href = utils.make_relative_href(asset.href, self.href)
 
     def remove_links(self, rel: str) -> None:
