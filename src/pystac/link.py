@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
-from .constants import CHILD_REL, ITEM_REL, PARENT_REL, ROOT_REL, SELF_REL
+from .constants import CHILD, ITEM, PARENT, ROOT, SELF
 from .errors import PystacError
 
 if TYPE_CHECKING:
@@ -25,23 +25,23 @@ class Link:
 
     @classmethod
     def root(cls: type[Self], root: STACObject) -> Self:
-        return cls(href=root.href, rel=ROOT_REL, stac_object=root)
+        return cls(href=root.href, rel=ROOT, stac_object=root)
 
     @classmethod
     def parent(cls: type[Self], parent: STACObject) -> Self:
-        return cls(href=parent.href, rel=PARENT_REL, stac_object=parent)
+        return cls(href=parent.href, rel=PARENT, stac_object=parent)
 
     @classmethod
     def child(cls: type[Self], child: STACObject) -> Self:
-        return cls(href=child.href, rel=CHILD_REL, stac_object=child)
+        return cls(href=child.href, rel=CHILD, stac_object=child)
 
     @classmethod
     def item(cls: type[Self], item: Item) -> Self:
-        return cls(href=item.href, rel=ITEM_REL, stac_object=item)
+        return cls(href=item.href, rel=ITEM, stac_object=item)
 
     @classmethod
     def self(cls: type[Self], stac_object: STACObject) -> Self:
-        return cls(href=stac_object.href, rel=SELF_REL, stac_object=stac_object)
+        return cls(href=stac_object.href, rel=SELF, stac_object=stac_object)
 
     def __init__(
         self,
@@ -67,19 +67,19 @@ class Link:
         # TODO extra fields
 
     def is_root(self) -> bool:
-        return self.rel == ROOT_REL
+        return self.rel == ROOT
 
     def is_parent(self) -> bool:
-        return self.rel == PARENT_REL
+        return self.rel == PARENT
 
     def is_child(self) -> bool:
-        return self.rel == CHILD_REL
+        return self.rel == CHILD
 
     def is_item(self) -> bool:
-        return self.rel == ITEM_REL
+        return self.rel == ITEM
 
     def is_self(self) -> bool:
-        return self.rel == SELF_REL
+        return self.rel == SELF
 
     def get_stac_object(self) -> STACObject:
         if self._stac_object is None:

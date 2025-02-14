@@ -1,6 +1,4 @@
-import csv
 import datetime
-import os
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -8,7 +6,6 @@ from typing import Any
 import pytest
 from dateutil.parser import parse
 
-import pystac
 from pystac import (
     Asset,
     Catalog,
@@ -67,7 +64,7 @@ def assert_to_from_dict(
                         a_dict[k] = a_dict[k].replace(microsecond=0)
 
     d1 = deepcopy(d)
-    d2 = stac_object_class.from_dict(d, migrate=False).to_dict()
+    d2 = stac_object_class.from_dict(d).to_dict()
     _parse_times(d1)
     _parse_times(d2)
     assert d1 == d2
@@ -101,59 +98,12 @@ TEST_LABEL_CATALOG = {
 }
 
 
-class ExampleInfo:
-    def __init__(
-        self,
-        path: str,
-        object_type: pystac.STACObjectType,
-        stac_version: str,
-        extensions: list[str],
-        valid: bool,
-    ) -> None:
-        self.path = path
-        self.object_type = object_type
-        self.stac_version = stac_version
-        self.extensions = extensions
-        self.valid = valid
-
-
 class TestCases:
     bad_catalog_case = "data-files/catalogs/invalid-catalog/catalog.json"
 
     @staticmethod
     def get_path(rel_path: str) -> str:
         return str(Path(__file__).parent.joinpath(rel_path))
-
-    @staticmethod
-    def get_examples_info() -> list[ExampleInfo]:
-        examples: list[ExampleInfo] = []
-
-        info_path = TestCases.get_path("data-files/examples/example-info.csv")
-        with open(TestCases.get_path("data-files/examples/example-info.csv")) as f:
-            for row in csv.reader(f):
-                path = os.path.abspath(os.path.join(os.path.dirname(info_path), row[0]))
-                object_type = row[1]
-                stac_version = row[2]
-                extensions: list[str] = []
-                if row[3]:
-                    extensions = row[3].split("|")
-
-                valid = True
-                if len(row) > 4:
-                    # The 5th column will be "INVALID" if the example
-                    # shouldn't pass validation
-                    valid = row[4] != "INVALID"
-
-                examples.append(
-                    ExampleInfo(
-                        path=path,
-                        object_type=pystac.STACObjectType(object_type),
-                        stac_version=stac_version,
-                        extensions=extensions,
-                        valid=valid,
-                    )
-                )
-        return examples
 
     @staticmethod
     def all_test_catalogs() -> list[Catalog]:

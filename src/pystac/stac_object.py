@@ -8,14 +8,18 @@ from typing import TYPE_CHECKING, Any, Iterator
 
 from typing_extensions import Self
 
+from . import deprecate, utils
+from .asset import Assets
 from .constants import (
     CATALOG_TYPE,
+    CHILD,
     COLLECTION_TYPE,
     DEFAULT_STAC_VERSION,
+    ITEM,
     ITEM_TYPE,
-    PARENT_REL,
-    ROOT_REL,
-    SELF_REL,
+    PARENT,
+    ROOT,
+    SELF,
 )
 from .errors import PystacError, StacError
 from .link import Link
@@ -24,6 +28,7 @@ if TYPE_CHECKING:
     from .catalog import Catalog
     from .container import Container
     from .io import Read, Write
+    from .render import Render
 
 
 class STACObject(ABC):
@@ -43,10 +48,16 @@ class STACObject(ABC):
     def from_file(
         cls: type[Self],
         href: str | Path,
+        stac_io: Any = None,
+        *,
         reader: Read | None = None,
-        writer: Write | None = None,
     ) -> Self:
         """Reads a STAC object from a JSON file.
+
+        Args:
+            href: The file to read
+            reader: The reader to use for the read. This will be saved as the
+                `.reader` attribute of the read object.
 
         Raises:
             StacError: Raised if the object's type does not match the calling class.
@@ -56,6 +67,10 @@ class STACObject(ABC):
             >>> Item.from_file("catalog.json") # Will raise a `StacError`
         """
         from .io import DefaultReader
+
+        if stac_io:
+            deprecate.argument("stac_io")
+            # TODO build reader
 
         if reader is None:
             reader = DefaultReader()
@@ -68,10 +83,13 @@ class STACObject(ABC):
                 d = reader.read_json_from_url(href)
             else:
                 d = reader.read_json_from_path(Path(href))
+
         if not isinstance(d, dict):
             raise PystacError(f"JSON is not a dict: {type(d)}")
 
-        stac_object = cls.from_dict(d, href=str(href), reader=reader, writer=writer)
+        stac_object = cls.from_dict(d)
+        stac_object.href = href
+        stac_object.reader = reader
         if isinstance(stac_object, cls):
             return stac_object
         else:
@@ -81,13 +99,10 @@ class STACObject(ABC):
     def from_dict(
         cls: type[Self],
         d: dict[str, Any],
-        *,
         href: str | None = None,
         root: Catalog | None = None,
-        migrate: bool = False,
-        preserve_dict: bool = True,  # TODO deprecation warning
-        reader: Read | None = None,
-        writer: Write | None = None,
+        migrate: bool | None = None,
+        preserve_dict: bool | None = None,
     ) -> Self:
         """Creates a STAC object from a dictionary.
 
@@ -109,37 +124,43 @@ class STACObject(ABC):
             >>> # Use this when you know you have a catalog
             >>> catalog = Catalog(**d)
         """
+        if href is not None:
+            deprecate.argument("href")
+        if root is not None:
+            deprecate.argument("root")
+        if migrate is not None:
+            deprecate.argument("migrate")
+        else:
+            migrate = False
+        if preserve_dict is not None:
+            deprecate.argument("preserve_dict")
+        else:
+            preserve_dict = True
+
         if type_value := d.get("type"):
             if type_value == CATALOG_TYPE:
                 from .catalog import Catalog
 
                 stac_object: STACObject = Catalog(
-                    **d, href=href, reader=reader, writer=writer
+                    **d,
+                    href=href,
                 )
             elif type_value == COLLECTION_TYPE:
                 from .collection import Collection
 
-                stac_object = Collection(**d, href=href, reader=reader, writer=writer)
+                stac_object = Collection(**d, href=href)
             elif type_value == ITEM_TYPE:
                 from .item import Item
 
-                stac_object = Item(**d, href=href, reader=reader, writer=writer)
+                stac_object = Item(**d, href=href)
             else:
-                raise StacError(f"unknown type field: {type_value}")
-
+                raise StacError(f"invalid type field: {type_value}")
             if isinstance(stac_object, cls):
                 if root:
-                    warnings.warn(
-                        "The `root` argument is deprecated in PySTAC v2 and "
-                        "will be removed in a future version. Prefer to use "
-                        "`stac_object.set_link(Link.root(catalog))` "
-                        "after object creation.",
-                        FutureWarning,
-                    )
                     stac_object.set_link(Link.root(root))
                 return stac_object
             else:
-                raise PystacError(f"Expected {cls} but got a {type(stac_object)}")
+                raise PystacError(f"expected {cls} but got a {type(stac_object)}")
         else:
             raise StacError("missing type field on dictionary")
 
@@ -209,7 +230,7 @@ class STACObject(ABC):
         you don't want a self link, but you still want to track an object's
         location.
         """
-        if href is None and (self_link := self.get_link(SELF_REL)):
+        if href is None and (self_link := self.get_link(SELF)):
             self.href = self_link.href
         else:
             self.href = href
@@ -220,37 +241,37 @@ class STACObject(ABC):
         This method will resolve relative hrefs by using this STAC object's href
         or, if not set, its `self` link.
         """
-        from . import io
 
         base = self.href
-        if base is None and (link := self.get_link(SELF_REL)):
+        if base is None and (link := self.get_link(SELF)):
             base = link.href
 
-        href = io.make_absolute_href(href, base)
-        return STACObject.from_file(href, reader=self.reader, writer=self.writer)
+        href = utils.make_absolute_href(href, base)
+        stac_object = STACObject.from_file(href, reader=self.reader)
+        stac_object.writer = self.writer
+        return stac_object
 
     def save_object(
         self,
         include_self_link: bool | None = None,
         dest_href: str | Path | None = None,
         stac_io: Any = None,
+        *,
+        writer: Write | None = None,
     ) -> None:
         from . import io
 
         if include_self_link is not None:
-            warnings.warn(
-                "The include_self_link argument to `save_object` is deprecated as of "
-                "PySTAC v2.0 and will be removed in a future version. Prefer to add "
-                "or remove a self link directly before calling `save_object`.",
-                FutureWarning,
-            )
+            deprecate.argument("include_self_link")
             self.set_self_link()
         if stac_io:
-            warnings.warn("Discarding StacIO. TODO either use it or error")
+            deprecate.argument("stac_io")
         if not dest_href:
             dest_href = self.href
+        if not writer:
+            writer = self.writer
         if dest_href:
-            io.write_file(self, href=dest_href, writer=self.writer)
+            io.write_file(self, dest_href=dest_href, writer=self.writer)
         else:
             raise PystacError("cannot save an object without an href")
 
@@ -258,7 +279,7 @@ class STACObject(ABC):
         """Returns the container at this object's root link, if there is one."""
         from .container import Container
 
-        if link := self.get_link(ROOT_REL):
+        if link := self.get_root_link():
             stac_object = link.get_stac_object()
             if isinstance(stac_object, Container):
                 return stac_object
@@ -273,9 +294,18 @@ class STACObject(ABC):
     def get_fields(self) -> dict[str, Any]:
         return self.extra_fields
 
-    def iter_links(self, rel: str | None = None) -> Iterator[Link]:
+    def iter_links(self, *rels: str) -> Iterator[Link]:
+        """Iterate over links, optionally filtering by one or more relation types.
+
+        Examples:
+
+            >>> from pystac import CHILD, ITEM
+            >>> links = list(item.iter_links())
+            >>> child_links = list(item.iter_links(CHILD))
+            >>> sub_links = list(item.iter_links(CHILD, ITEM))
+        """
         for link in self._links:
-            if rel is None or rel == link.rel:
+            if not rels or link.rel in rels:
                 yield link
 
     def set_link(self, link: Link) -> None:
@@ -289,6 +319,68 @@ class STACObject(ABC):
         else:
             self.set_link(Link.self(self))
 
+    @deprecate.function("Prefer to set href directly, and then use `render()`")
+    def set_self_href(self, href: str | None = None) -> None:
+        self.href = href
+        if self.href:
+            self.render(include_self_link=True)
+        else:
+            self.remove_links(SELF)
+
+    def migrate(self) -> None:
+        # TODO do more
+        self.stac_version = DEFAULT_STAC_VERSION
+
+    def render(
+        self,
+        root: str | Path | None = None,
+        *,
+        renderer: Render | None = None,
+        include_self_link: bool = True,
+        use_relative_asset_hrefs: bool = False,
+    ) -> None:
+        from .container import Container
+
+        if renderer is None:
+            from .render import BestPracticesRenderer
+
+            renderer = BestPracticesRenderer()
+
+        if isinstance(self, Assets) and self.assets:
+            for asset in self.assets.values():
+                asset.href = utils.make_absolute_href(asset.href, self.href)
+
+        if root:
+            self.href = str(root) + "/" + renderer.get_file_name(self)
+        if include_self_link:
+            self.set_self_link()
+
+        if isinstance(self, Container):
+            if not self.href:
+                raise PystacError(
+                    "cannot render a container if the STAC object's href is None "
+                    "and no root is provided"
+                )
+            elif "/" in self.href:
+                base = self.href.rsplit("/", 1)[0]
+            else:
+                base = "."
+
+            root_link = self.get_root_link()
+            if root_link is None:
+                root_link = Link.root(self)
+            for link in self.iter_links(CHILD, ITEM):
+                leaf = link.get_stac_object()
+                leaf.set_link(root_link)
+                leaf.set_link(Link.parent(self))
+                leaf.href = renderer.get_href(leaf, base)
+                link.href = leaf.href
+                leaf.render()
+
+        if use_relative_asset_hrefs and isinstance(self, Assets) and self.assets:
+            for asset in self.assets.values():
+                asset.href = utils.make_relative_href(asset.href, self.href)
+
     def remove_links(self, rel: str) -> None:
         self._links = [link for link in self._links if link.rel != rel]
 
@@ -297,10 +389,10 @@ class STACObject(ABC):
         self._links.append(link)
 
     def get_root_link(self) -> Link | None:
-        return self.get_link(ROOT_REL)
+        return self.get_link(ROOT)
 
     def get_parent_link(self) -> Link | None:
-        return self.get_link(PARENT_REL)
+        return self.get_link(PARENT)
 
     def to_dict(
         self, include_self_link: bool | None = None, transform_hrefs: bool | None = None

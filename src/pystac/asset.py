@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
 from typing_extensions import Self
 
@@ -77,10 +77,8 @@ class Asset(ItemAsset):
         return d
 
 
-class AssetsMixin:
-    """A mixin for things that have assets (Collections and Items)"""
+@runtime_checkable
+class Assets(Protocol):
+    """A protocol for things that have assets (Collections and Items)"""
 
     assets: dict[str, Asset]
-
-    def add_asset(self, key: str, asset: Asset) -> None:
-        raise NotImplementedError

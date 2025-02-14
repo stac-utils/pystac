@@ -39,8 +39,9 @@ def test_warn_transform_hrefs() -> None:
         Item("an-id").to_dict(transform_hrefs=True)
 
 
-def test_from_dict_migrate() -> None:
+def test_migrate() -> None:
     d = Item("an-id").to_dict()
     d["stac_version"] = "1.0.0"
-    item = Item.from_dict(d, migrate=True)
+    item = Item.from_dict(d)
+    item.migrate()
     item.stac_version == "1.1.0"
