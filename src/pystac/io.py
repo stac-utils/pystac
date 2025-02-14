@@ -1,8 +1,8 @@
 """Input and output.
 
 In PySTAC v2.0, reading and writing STAC objects has been split into separate
-protocols, [Read][pystac.io.Read] and [Write][pystac.io.Write] classes. This
-should be a transparent operation for most users:
+protocols, [Read][pystac.io.Read] and [Write][pystac.io.Write]. This should be
+transparent for most users:
 
 ```python
 catalog = pystac.read_file("catalog.json")
@@ -25,31 +25,37 @@ import urllib.request
 from pathlib import Path
 from typing import Any, Protocol
 
+from . import deprecate
 from .errors import PystacError
 from .stac_object import STACObject
 
 
-def read_file(href: str | Path, reader: Read | None = None) -> STACObject:
+def read_file(
+    href: str | Path,
+    stac_io: Any = None,
+    *,
+    reader: Read | None = None,
+) -> STACObject:
     """Reads a file from a href.
-
-    Uses the default [Reader][pystac.DefaultReader].
 
     Args:
         href: The href to read
+        reader: The [Read][pystac.Read] to use for reading
 
     Returns:
         The STAC object
-
-    Examples:
-        >>> item = pystac.read_file("item.json")
     """
+    if stac_io:
+        deprecate.argument("stac_io")
     return STACObject.from_file(href, reader=reader)
 
 
 def write_file(
-    stac_object: STACObject,
+    obj: STACObject,
+    include_self_link: bool | None = None,
+    dest_href: str | Path | None = None,
+    stac_io: Any = None,
     *,
-    href: str | Path | None = None,
     writer: Write | None = None,
 ) -> None:
     """Writes a STAC object to a file, using its href.
@@ -57,39 +63,31 @@ def write_file(
     If the href is not set, this will throw and error.
 
     Args:
-        stac_object: The STAC object to write
+        obj: The STAC object to write
+        dest_href: The href to write the STAC object to
+        writer: The [Write][pystac.Write] to use for writing
     """
+    if include_self_link is not None:
+        deprecate.argument("include_self_link")
+    if stac_io:
+        deprecate.argument("stac_io")
+
     if writer is None:
         writer = DefaultWriter()
-    if href is None:
-        href = stac_object.href
-    if href is None:
-        raise PystacError(f"cannot write {stac_object} without an href")
-    data = stac_object.to_dict()
-    if isinstance(href, Path):
-        writer.write_json_to_path(data, href)
+
+    if dest_href is None:
+        dest_href = obj.href
+    if dest_href is None:
+        raise PystacError(f"cannot write {obj} without an href")
+    d = obj.to_dict()
+    if isinstance(dest_href, Path):
+        writer.write_json_to_path(d, dest_href)
     else:
-        url = urllib.parse.urlparse(href)
+        url = urllib.parse.urlparse(dest_href)
         if url.scheme:
-            writer.write_json_to_url(data, href)
+            writer.write_json_to_url(d, dest_href)
         else:
-            writer.write_json_to_path(data, Path(href))
-
-
-def make_absolute_href(href: str, base: str | None) -> str:
-    if urllib.parse.urlparse(href).scheme:
-        return href  # TODO file:// schemes
-
-    if base:
-        if urllib.parse.urlparse(base).scheme:
-            raise NotImplementedError("url joins not implemented yet, should be easy")
-        else:
-            if base.endswith("/"):  # TODO windoze
-                return str((Path(base) / href).resolve(strict=False))
-            else:
-                return str((Path(base).parent / href).resolve(strict=False))
-    else:
-        raise NotImplementedError
+            writer.write_json_to_path(d, Path(dest_href))
 
 
 class Read(Protocol):

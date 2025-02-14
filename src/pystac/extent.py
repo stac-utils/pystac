@@ -7,8 +7,8 @@ from typing import Any, Sequence
 
 from typing_extensions import Self
 
+from . import deprecate
 from .constants import DEFAULT_BBOX, DEFAULT_INTERVAL
-from .decorators import v2_deprecated
 from .errors import StacWarning
 from .types import PermissiveBbox, PermissiveInterval
 
@@ -57,7 +57,7 @@ class SpatialExtent:
         return cls(**d)
 
     @classmethod
-    @v2_deprecated("Use the constructor instead")
+    @deprecate.function("Use the constructor instead")
     def from_coordinates(
         cls: type[Self],
         coordinates: list[Any],

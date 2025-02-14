@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterator
 
-from . import io
-from .decorators import v2_deprecated
+from . import deprecate
+from .constants import CHILD, ITEM
 from .io import Write
 from .item import Item
 from .link import Link
@@ -50,9 +50,7 @@ class Container(STACObject):
         """
         children: list[Container] = []
         items: list[Item] = []
-        for link in filter(
-            lambda link: link.is_child() or link.is_item(), self.iter_links()
-        ):
+        for link in self.iter_links(CHILD, ITEM):
             stac_object = link.get_stac_object()
             if isinstance(stac_object, Container):
                 children.append(stac_object)
@@ -125,43 +123,33 @@ class Container(STACObject):
             if recursive and isinstance(stac_object, Container):
                 yield from stac_object.get_collections(recursive=recursive)
 
-    def render(
+    def save(
         self,
-        root: str | Path,
+        catalog_type: Any = None,
+        dest_href: str | Path | None = None,
+        stac_io: Any = None,
+        *,
+        writer: Write | None = None,
     ) -> None:
-        """Renders this container and all of its children and items.
-
-        See the [pystac.render][] documentation for more.
-
-        Args:
-            root: The directory at the root of the rendered filesystem tree.
-        """
-        # TODO allow renderer customization
-        from .render import DefaultRenderer
-
-        renderer = DefaultRenderer(str(root))
-        renderer.render(self)
-
-    def save(self, writer: Write | None = None) -> None:
-        """Saves this container and all of its children.
-
-        This will error if any objects don't have an `href` set. Use
-        [Container.render][pystac.Container.render] to set those `href` values.
-
-        Args:
-            writer: The writer that will be used for the save operation. If not
-                provided, this container's writer will be used.
-        """
+        if catalog_type:
+            deprecate.argument("catalog_type")
+        if dest_href:
+            deprecate.argument("dest_href")
+        if stac_io:
+            deprecate.argument("stac_io")
         if writer is None:
             writer = self.writer
-        io.write_file(self, writer=writer)
+
+        self.save_object(stac_io=stac_io, writer=writer)
         for stac_object in self.get_children_and_items():
             if isinstance(stac_object, Container):
-                stac_object.save(writer)
+                stac_object.save(
+                    writer=writer
+                )  # TODO do we need to pass through any of the deprecated arguments?
             else:
-                io.write_file(stac_object, writer=writer)
+                stac_object.save_object(writer=writer)
 
-    @v2_deprecated("Use render() and then save()")
+    @deprecate.function("Use render() and then save()")
     def normalize_and_save(
         self,
         root_href: str,

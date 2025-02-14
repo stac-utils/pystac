@@ -1,11 +1,11 @@
 from typing import Any
 
+from . import deprecate
 from .constants import DEFAULT_STAC_VERSION
-from .decorators import v2_deprecated
 from .stac_object import STACObject
 
 
-@v2_deprecated("Use DEFAULT_STAC_VERSION instead.")
+@deprecate.function("Use DEFAULT_STAC_VERSION instead.")
 def get_stac_version() -> str:
     """**DEPRECATED** Returns the default STAC version.
 
@@ -24,7 +24,7 @@ def get_stac_version() -> str:
     return DEFAULT_STAC_VERSION
 
 
-@v2_deprecated(
+@deprecate.function(
     "This function is a no-op. Use `Container.set_stac_version()` to modify the STAC "
     "version of an entire catalog."
 )
@@ -38,7 +38,7 @@ def set_stac_version(version: str) -> None:
     """
 
 
-@v2_deprecated("Use STACObject.from_dict instead")
+@deprecate.function("Use STACObject.from_dict instead")
 def read_dict(d: dict[str, Any]) -> STACObject:
     """**DEPRECATED** Reads a STAC object from a dictionary.
 

@@ -13,10 +13,10 @@ from .errors import (
 )
 from .extent import Extent, SpatialExtent, TemporalExtent
 from .functions import get_stac_version, read_dict, set_stac_version
-from .io import DefaultReader, DefaultWriter, read_file, write_file
+from .io import read_file, write_file
 from .item import Item
 from .link import Link
-from .render import DefaultRenderer, Renderer
+from .media_type import MediaType
 from .stac_object import STACObject
 
 
@@ -26,32 +26,31 @@ def __getattr__(name: str) -> Any:
         from .stac_io import StacIO
 
         return StacIO
+    else:
+        raise AttributeError(name)
 
 
 __all__ = [
     "Asset",
+    "ItemAsset",
     "Catalog",
     "Collection",
-    "Container",
     "DEFAULT_STAC_VERSION",
-    "DefaultReader",
-    "DefaultRenderer",
-    "DefaultWriter",
-    "Extent",
-    "Item",
-    "ItemAsset",
-    "Link",
+    "Container",
     "PystacError",
     "PystacWarning",
-    "Renderer",
-    "STACObject",
-    "SpatialExtent",
     "StacError",
     "StacWarning",
+    "Extent",
+    "SpatialExtent",
     "TemporalExtent",
     "get_stac_version",
     "read_dict",
-    "read_file",
     "set_stac_version",
+    "read_file",
     "write_file",
+    "Item",
+    "Link",
+    "MediaType",
+    "STACObject",
 ]

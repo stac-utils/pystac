@@ -3,7 +3,24 @@ from functools import wraps
 from typing import Any, Callable
 
 
-def v2_deprecated(message: str) -> Callable[..., Any]:
+def argument(name: str) -> None:
+    warnings.warn(
+        f"Argument {name} is deprecated in PySTAC v2.0 and will be removed in a future "
+        "version.",
+        FutureWarning,
+    )
+
+
+def module(name: str) -> None:
+    warnings.warn(
+        f"Module pystac.{name} is deprecated in PySTAC v2.0 "
+        "and will be removed in a future "
+        "version.",
+        FutureWarning,
+    )
+
+
+def function(message: str) -> Callable[..., Any]:
     def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
