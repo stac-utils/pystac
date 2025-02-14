@@ -213,17 +213,20 @@
     {
       "rel": "root",
       "href": "../../catalog.json",
-      "type": "application/json"
+      "type": "application/json",
+      "title": "Example Catalog"
     },
     {
       "rel": "parent",
       "href": "../collection.json",
-      "type": "application/json"
+      "type": "application/json",
+      "title": "Collection of Extension Items"
     },
     {
       "rel": "collection",
       "href": "../collection.json",
-      "type": "application/json"
+      "type": "application/json",
+      "title": "Collection of Extension Items"
     }
   ],
   "assets": {
@@ -275,7 +278,7 @@
     60.63437
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
     "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
   ],
   "collection": "landsat-8-l1"

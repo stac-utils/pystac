@@ -1,0 +1,3 @@
+# Extensions
+
+::: pystac.extensions

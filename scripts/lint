@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+set -e
+
+uv run --all-extras mypy
+uv run ruff check
+uv run ruff format --check

@@ -1,0 +1,3 @@
+# Projection
+
+::: pystac.extensions.ProjectionExtension
