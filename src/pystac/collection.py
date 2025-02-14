@@ -56,14 +56,6 @@ class Collection(Container):
         else:
             self.extent = Extent.from_dict(extent)
 
-        if assets is None:
-            self.assets = None
-        else:
-            self.assets = dict(
-                (key, asset if isinstance(asset, Asset) else Asset.from_dict(asset))
-                for key, asset in assets.items()
-            )
-
         if item_assets is None:
             self.item_assets = None
         else:
@@ -77,7 +69,14 @@ class Collection(Container):
                 for key, item_asset in item_assets.items()
             )
 
-        super().__init__(id, stac_version, stac_extensions, links, **kwargs)
+        super().__init__(
+            id=id,
+            stac_version=stac_version,
+            stac_extensions=stac_extensions,
+            links=links,
+            assets=assets,
+            **kwargs,
+        )
 
     def _to_dict(self) -> dict[str, Any]:
         """Converts this collection to a dictionary."""
@@ -100,7 +99,7 @@ class Collection(Container):
         if self.summaries is not None:
             d["summaries"] = self.summaries
         d["links"] = [link.to_dict() for link in self.iter_links()]
-        if self.assets is not None:
+        if self.assets:
             d["assets"] = dict(
                 (key, asset.to_dict()) for key, asset in self.assets.items()
             )

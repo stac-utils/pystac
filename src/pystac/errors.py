@@ -1,15 +1,15 @@
-class PystacError(Exception):
+class PySTACError(Exception):
     """A custom error class for this library."""
 
 
-class StacError(PystacError):
-    """A subclass of [PystacError][pystac.PystacError] for errors related to the
+class STACError(PySTACError):
+    """A subclass of [PySTACError][pystac.PySTACError] for errors related to the
     STAC specification itself."""
 
 
-class PystacWarning(Warning):
+class PySTACWarning(Warning):
     """A custom warning class for this library."""
 
 
-class StacWarning(PystacWarning):
+class STACWarning(PySTACWarning):
     """A warning about something incorrect per the STAC specification."""

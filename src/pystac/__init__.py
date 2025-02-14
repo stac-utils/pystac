@@ -6,10 +6,10 @@ from .collection import Collection
 from .constants import DEFAULT_STAC_VERSION
 from .container import Container
 from .errors import (
-    PystacError,
-    PystacWarning,
-    StacError,
-    StacWarning,
+    PySTACError,
+    PySTACWarning,
+    STACError,
+    STACWarning,
 )
 from .extent import Extent, SpatialExtent, TemporalExtent
 from .functions import get_stac_version, read_dict, set_stac_version
@@ -37,10 +37,10 @@ __all__ = [
     "Collection",
     "DEFAULT_STAC_VERSION",
     "Container",
-    "PystacError",
-    "PystacWarning",
-    "StacError",
-    "StacWarning",
+    "PySTACError",
+    "PySTACWarning",
+    "STACError",
+    "STACWarning",
     "Extent",
     "SpatialExtent",
     "TemporalExtent",

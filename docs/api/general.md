@@ -5,7 +5,7 @@
 ::: pystac.read_file
 ::: pystac.read_dict
 ::: pystac.write_file
-::: pystac.PystacError
-::: pystac.StacError
-::: pystac.PystacWarning
-::: pystac.StacWarning
+::: pystac.PySTACError
+::: pystac.STACError
+::: pystac.PySTACWarning
+::: pystac.STACWarning

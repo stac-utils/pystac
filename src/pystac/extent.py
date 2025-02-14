@@ -9,7 +9,7 @@ from typing_extensions import Self
 
 from . import deprecate
 from .constants import DEFAULT_BBOX, DEFAULT_INTERVAL
-from .errors import StacWarning
+from .errors import STACWarning
 from .types import PermissiveBbox, PermissiveInterval
 
 
@@ -115,7 +115,7 @@ class TemporalExtent:
                     warnings.warn(
                         "Invalid temporal interval (trailing single values), "
                         "discarding",
-                        StacWarning,
+                        STACWarning,
                     )
                 else:
                     self.interval.append(_create_interval(interval))  # type: ignore
@@ -133,7 +133,7 @@ def datetime_str(value: datetime.datetime | str | None) -> str | None:
         return value
     else:
         warnings.warn(
-            f"Invalid interval value ({type(value)}), converting to None", StacWarning
+            f"Invalid interval value ({type(value)}), converting to None", STACWarning
         )
         return None
 
@@ -142,15 +142,15 @@ def _create_interval(
     interval: list[str | datetime.datetime | None],
 ) -> list[str | None]:
     if len(interval) == 0:
-        warnings.warn("Invalid interval value (empty list)", StacWarning)
+        warnings.warn("Invalid interval value (empty list)", STACWarning)
         interval = [None, None]
     elif len(interval) == 1:
-        warnings.warn("Invalid interval value (single entry list)", StacWarning)
+        warnings.warn("Invalid interval value (single entry list)", STACWarning)
         interval.append(None)
     elif len(interval) > 2:
         warnings.warn(
             f"Invalid interval value ({len(interval)} values), truncating",
-            StacWarning,
+            STACWarning,
         )
         interval = interval[0:2]
     return [datetime_str(v) for v in interval]

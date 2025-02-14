@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
 
-from .constants import CHILD, ITEM, PARENT, ROOT, SELF
-from .errors import PystacError
+from .constants import CHILD, COLLECTION, ITEM, PARENT, ROOT, SELF
+from .errors import PySTACError
 
 if TYPE_CHECKING:
+    from .collection import Collection
     from .item import Item
     from .stac_object import STACObject
 
@@ -42,6 +43,10 @@ class Link:
     @classmethod
     def self(cls: type[Self], stac_object: STACObject) -> Self:
         return cls(href=stac_object.href, rel=SELF, stac_object=stac_object)
+
+    @classmethod
+    def collection(cls: type[Self], collection: Collection) -> Self:
+        return cls(href=collection.href, rel=COLLECTION, stac_object=collection)
 
     def __init__(
         self,
@@ -84,7 +89,7 @@ class Link:
     def get_stac_object(self) -> STACObject:
         if self._stac_object is None:
             if self.href is None:
-                raise PystacError("cannot get a STAC object for a link with no href")
+                raise PySTACError("cannot get a STAC object for a link with no href")
             elif self.owner:
                 self._stac_object = self.owner.read_file(self.href)
             else:

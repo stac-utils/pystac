@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from pystac import SpatialExtent, StacWarning, TemporalExtent
+from pystac import SpatialExtent, STACWarning, TemporalExtent
 
 
 def test_temporal_with_datetimes() -> None:
@@ -21,21 +21,21 @@ def test_temporal_with_mixed_list() -> None:
     # This is awkward, and the right thing to do is questionable
     # We've chosen "truncate", aka discard any invalid stuff after we've started
     # down a "correct-ish" path
-    with pytest.warns(StacWarning):
+    with pytest.warns(STACWarning):
         extent = TemporalExtent(["2025-02-11T00:00:00Z", [None, None]])
     d = extent.to_dict()
     assert d == {"interval": [["2025-02-11T00:00:00Z", None]]}
 
 
 def test_temporal_with_long_list() -> None:
-    with pytest.warns(StacWarning):
+    with pytest.warns(STACWarning):
         extent = TemporalExtent([["2025-02-11T00:00:00Z", None, None]])
     d = extent.to_dict()
     assert d == {"interval": [["2025-02-11T00:00:00Z", None]]}
 
 
 def test_temporal_with_bad_tail() -> None:
-    with pytest.warns(StacWarning):
+    with pytest.warns(STACWarning):
         extent = TemporalExtent(
             [
                 ["2025-02-11T00:00:00Z", None],

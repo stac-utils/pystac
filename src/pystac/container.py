@@ -84,6 +84,15 @@ class Container(STACObject):
         """Adds a child to this container."""
         self.add_link(Link.child(child))
 
+    def get_child(
+        self, id: str, recursive: bool = False, sort_links_by_id: bool = True
+    ) -> Container | None:
+        # TODO handle sort links by id
+        for child in self.get_children(recursive=recursive):
+            if child.id == id:
+                return child
+        return None
+
     def get_children(self, recursive: bool = False) -> Iterator[Container]:
         """Iterates over all children in this container.
 

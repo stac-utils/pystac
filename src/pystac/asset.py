@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Self
+
+from . import deprecate, utils
+
+if TYPE_CHECKING:
+    from .stac_object import STACObject
 
 
 class ItemAsset:
@@ -70,15 +75,23 @@ class Asset(ItemAsset):
             title=title, description=description, type=type, roles=roles, **kwargs
         )
 
+    @deprecate.function(
+        "assets aren't owned anymore, all this method does is make the asset's "
+        "relative href absolute using the 'owner's href"
+    )
+    def set_owner(self, owner: STACObject) -> None:
+        if owner.href:
+            self.href = utils.make_absolute_href(self.href, owner.href)
+
+    @deprecate.function("prefer to use `STACObject.render()` then `asset.href`")
+    def get_absolute_href(self) -> str | None:
+        if utils.is_absolute_href(self.href):
+            return self.href
+        else:
+            return None
+
     def to_dict(self) -> dict[str, Any]:
         """Converts this asset to a dictionary."""
         d = {"href": self.href}
         d.update(super().to_dict())
         return d
-
-
-@runtime_checkable
-class Assets(Protocol):
-    """A protocol for things that have assets (Collections and Items)"""
-
-    assets: dict[str, Asset]

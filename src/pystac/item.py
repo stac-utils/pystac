@@ -3,13 +3,17 @@ from __future__ import annotations
 import copy
 import datetime as dt
 import warnings
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
+from . import utils
 from .asset import Asset
-from .constants import ITEM_TYPE
-from .errors import StacWarning
+from .constants import COLLECTION, ITEM_TYPE
+from .errors import STACWarning
 from .link import Link
 from .stac_object import STACObject
+
+if TYPE_CHECKING:
+    from .collection import Collection
 
 
 class Item(STACObject):
@@ -57,53 +61,66 @@ class Item(STACObject):
         if self.geometry is None and bbox:
             warnings.warn(
                 "bbox cannot be set if geometry is None. Setting bbox to None",
-                StacWarning,
+                STACWarning,
             )
             self.bbox = None
         else:
             self.bbox = bbox
-        if properties is None:
-            properties = {}
 
-        # TODO test this out better
-        if isinstance(datetime, dt.datetime):
-            properties["datetime"] = datetime.isoformat()
-        elif isinstance(datetime, tuple):
-            properties["datetime"] = None
-            for key, value in (
-                ("start_datetime", datetime[0]),
-                ("end_datetime", datetime[1]),
+        self.properties = properties or {}
+
+        self.datetime: dt.datetime | None = None
+        self.start_datetime: dt.datetime | None = None
+        self.end_datetime: dt.datetime | None = None
+        if datetime is None:
+            if properties_datetime := self.properties.get("datetime", None):
+                self.datetime = utils.str_to_datetime(properties_datetime)
+            if properties_start_datetime := self.properties.get("start_datetime", None):
+                self.start_datetime = utils.str_to_datetime(properties_start_datetime)
+            if properties_end_datetime := self.properties.get("end_datetime", None):
+                self.end_datetime = utils.str_to_datetime(properties_end_datetime)
+            if (
+                self.datetime is None
+                and self.start_datetime is None
+                and self.end_datetime is None
             ):
-                if value is None or isinstance(value, str):
-                    properties[key] = value
-                else:
-                    properties[key] = value.isoformat
-        self.properties = properties
-        if not any(
-            key in self.properties
-            for key in ("datetime", "start_datetime", "end_datetime")
-        ):
-            self.properties["datetime"] = dt.datetime.now(
-                tz=dt.timezone.utc
-            ).isoformat()
+                self.datetime = dt.datetime.now(tz=dt.timezone.utc)
+        elif isinstance(datetime, dt.datetime):
+            self.datetime = datetime
+            self.start_datetime = None
+            self.end_datetime = None
+        elif isinstance(datetime, tuple):
+            self.datetime = None
+            self.start_datetime = _parse_datetime(datetime[0])
+            self.end_datetime = _parse_datetime(datetime[1])
 
-        if assets is None:
-            self.assets = dict()
-        else:
-            self.assets = dict(
-                (key, asset if isinstance(asset, Asset) else Asset.from_dict(asset))
-                for key, asset in assets.items()
-            )
+        self.collection_id = collection
 
-        self.collection = collection
-
-        super().__init__(id, stac_version, stac_extensions, links, **kwargs)
+        super().__init__(
+            id=id,
+            stac_version=stac_version,
+            stac_extensions=stac_extensions,
+            links=links,
+            assets=assets,
+            **kwargs,
+        )
 
     def get_fields(self) -> dict[str, Any]:
         return self.properties
 
-    def add_asset(self, key: str, asset: Asset) -> None:
-        self.assets[key] = asset
+    def set_collection(self, collection: Collection | None) -> None:
+        if collection:
+            self.collection_id = collection.id
+            self.set_link(Link.collection(collection))
+        else:
+            self.collection_id = None
+            self.remove_links(COLLECTION)
+
+    def get_collection(self) -> Collection | None:
+        if link := self.get_link(COLLECTION):
+            return link.get_stac_object()
+        else:
+            return None
 
     def _to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
@@ -117,9 +134,28 @@ class Item(STACObject):
         if self.bbox is not None:
             d["bbox"] = self.bbox
         d["properties"] = copy.deepcopy(self.properties)
+
+        if self.datetime is None:
+            d["properties"]["datetime"] = None
+        else:
+            d["properties"]["datetime"] = utils.datetime_to_str(self.datetime)
+        if self.start_datetime:
+            d["properties"]["start_datetime"] = utils.datetime_to_str(
+                self.start_datetime
+            )
+        if self.end_datetime:
+            d["properties"]["end_datetime"] = utils.datetime_to_str(self.end_datetime)
+
         d["links"] = [link.to_dict() for link in self.iter_links()]
         d["assets"] = dict((key, asset.to_dict()) for key, asset in self.assets.items())
-        if self.collection is not None:
-            d["collection"] = self.collection
+        if self.collection_id is not None:
+            d["collection"] = self.collection_id
         d.update(copy.deepcopy(self.extra_fields))
         return d
+
+
+def _parse_datetime(value: str | dt.datetime | None) -> dt.datetime:
+    if value is None or isinstance(value, dt.datetime):
+        return value
+    else:
+        return utils.str_to_datetime(value)

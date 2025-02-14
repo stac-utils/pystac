@@ -4,7 +4,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from ..errors import PystacWarning
+from ..errors import PySTACWarning
 from .protocols import Extendable
 
 
@@ -87,11 +87,11 @@ class Extension(ABC):
                     return parts[1][1:]
                 else:
                     warnings.warn(
-                        f"Invalid extension version: {parts[1]}", PystacWarning
+                        f"Invalid extension version: {parts[1]}", PySTACWarning
                     )
                     return None
             else:
-                warnings.warn(f"Invalid extension url: {url}", PystacWarning)
+                warnings.warn(f"Invalid extension url: {url}", PySTACWarning)
                 return None
         else:
             return None

@@ -11,7 +11,7 @@ from referencing import Registry
 
 from ..catalog import Catalog
 from ..collection import Collection
-from ..errors import PystacWarning
+from ..errors import PySTACWarning
 from ..item import Item
 from ..stac_object import STACObject
 from .base import Validator
@@ -51,7 +51,7 @@ class JsonschemaValidator(Validator):
                 self._schemas[path] = read_schema(path)
             except FileNotFoundError:
                 uri = f"https://schemas.stacspec.org/v{version}/{slug}-spec/json-schema/{slug}.json"
-                warnings.warn(f"Fetching core schema from {uri}", PystacWarning)
+                warnings.warn(f"Fetching core schema from {uri}", PySTACWarning)
                 self._schemas[path] = json.loads(get_text(uri))
         schema = self._schemas[path]
         return Draft7Validator(schema, registry=self._registry)

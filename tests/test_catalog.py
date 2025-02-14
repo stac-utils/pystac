@@ -9,8 +9,8 @@ from pystac import (
     Catalog,
     Item,
     Link,
-    PystacError,
-    StacError,
+    PySTACError,
+    STACError,
 )
 
 
@@ -65,7 +65,7 @@ def test_save_catalog(tmp_path: Path) -> None:
 def test_save_catalog_with_child(tmp_path: Path) -> None:
     catalog = Catalog("catalog", "a catalog")
     catalog.add_child(Catalog("child", "a child catalog"))
-    with pytest.raises(PystacError):
+    with pytest.raises(PySTACError):
         catalog.save()
 
     catalog.render(tmp_path)
@@ -117,7 +117,7 @@ def test_set_stac_version() -> None:
 def test_wrong_type_field() -> None:
     d = Catalog("an-id", "a description").to_dict()
     d["type"] = "CustomCatalog"
-    with pytest.raises(StacError):
+    with pytest.raises(STACError):
         Catalog.from_dict(d)
 
 

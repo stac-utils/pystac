@@ -1,12 +1,17 @@
-# TODO refactor
+# TODO refactor, and probably deprecate get_opt
 
+import datetime
 import os.path
 import posixpath
 import urllib.parse
 from enum import Enum
 from pathlib import Path
-from typing import cast
+from typing import TypeVar, cast
 from urllib.parse import ParseResult
+
+import dateutil.parser
+
+T = TypeVar("T")
 
 
 class StringEnum(str, Enum):
@@ -234,3 +239,25 @@ def _make_relative_href_url(
         rel_url = "./" + rel_url
 
     return rel_url
+
+
+def datetime_to_str(dt: datetime.datetime, timespec: str = "auto") -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+
+    timestamp = dt.isoformat(timespec=timespec)
+    zulu = "+00:00"
+    if timestamp.endswith(zulu):
+        timestamp = f"{timestamp[: -len(zulu)]}Z"
+
+    return timestamp
+
+
+def str_to_datetime(s: str) -> datetime:
+    return dateutil.parser.isoparse(s)
+
+
+def get_opt(option: T | None) -> T:
+    if option is None:
+        raise ValueError("Cannot get value from None")
+    return option

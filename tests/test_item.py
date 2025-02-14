@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 import pystac
-from pystac import Item, StacWarning
+from pystac import Item, STACWarning
 from pystac.constants import DEFAULT_BBOX
 
 
@@ -25,7 +25,7 @@ def test_read_file(examples_path: Path) -> None:
 
 
 def test_no_geometry_but_bbox() -> None:
-    with pytest.warns(StacWarning):
+    with pytest.warns(STACWarning):
         Item("an-id", bbox=DEFAULT_BBOX)
 
 

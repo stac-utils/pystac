@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from . import deprecate
-from .errors import PystacError
+from .errors import PySTACError
 from .stac_object import STACObject
 
 
@@ -78,7 +78,7 @@ def write_file(
     if dest_href is None:
         dest_href = obj.href
     if dest_href is None:
-        raise PystacError(f"cannot write {obj} without an href")
+        raise PySTACError(f"cannot write {obj} without an href")
     d = obj.to_dict()
     if isinstance(dest_href, Path):
         writer.write_json_to_path(d, dest_href)

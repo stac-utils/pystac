@@ -3,6 +3,8 @@ from typing import Any
 
 import pytest
 
+from pystac import Item
+
 from .utils import TestCases
 
 
@@ -12,3 +14,8 @@ def sample_item_dict() -> dict[str, Any]:
     with open(m) as f:
         item_dict: dict[str, Any] = json.load(f)
     return item_dict
+
+
+@pytest.fixture
+def sample_item() -> Item:
+    return Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))

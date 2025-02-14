@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Iterator
 from typing_extensions import Self
 
 from . import deprecate, utils
-from .asset import Assets
+from .asset import Asset
 from .constants import (
     CATALOG_TYPE,
     CHILD,
@@ -21,7 +21,7 @@ from .constants import (
     ROOT,
     SELF,
 )
-from .errors import PystacError, StacError
+from .errors import PySTACError, STACError
 from .link import Link
 
 if TYPE_CHECKING:
@@ -60,11 +60,11 @@ class STACObject(ABC):
                 `.reader` attribute of the read object.
 
         Raises:
-            StacError: Raised if the object's type does not match the calling class.
+            STACError: Raised if the object's type does not match the calling class.
 
         Examples:
             >>> catalog = Catalog.from_file("catalog.json")
-            >>> Item.from_file("catalog.json") # Will raise a `StacError`
+            >>> Item.from_file("catalog.json") # Will raise a `STACError`
         """
         from .io import DefaultReader
 
@@ -85,7 +85,7 @@ class STACObject(ABC):
                 d = reader.read_json_from_path(Path(href))
 
         if not isinstance(d, dict):
-            raise PystacError(f"JSON is not a dict: {type(d)}")
+            raise PySTACError(f"JSON is not a dict: {type(d)}")
 
         stac_object = cls.from_dict(d)
         stac_object.href = str(href)
@@ -93,7 +93,7 @@ class STACObject(ABC):
         if isinstance(stac_object, cls):
             return stac_object
         else:
-            raise StacError(f"expected {cls}, read {type(stac_object)} from {href}")
+            raise STACError(f"expected {cls}, read {type(stac_object)} from {href}")
 
     @classmethod
     def from_dict(
@@ -116,7 +116,7 @@ class STACObject(ABC):
             A STAC object
 
         Raises:
-            StacError: If the type field is not present or not a value we recognize.
+            STACError: If the type field is not present or not a value we recognize.
 
         Examples:
             >>> # Use this when you don't know what type of object it is
@@ -154,15 +154,15 @@ class STACObject(ABC):
 
                 stac_object = Item(**d, href=href)
             else:
-                raise StacError(f"invalid type field: {type_value}")
+                raise STACError(f"invalid type field: {type_value}")
             if isinstance(stac_object, cls):
                 if root:
                     stac_object.set_link(Link.root(root))
                 return stac_object
             else:
-                raise PystacError(f"expected {cls} but got a {type(stac_object)}")
+                raise PySTACError(f"expected {cls} but got a {type(stac_object)}")
         else:
-            raise StacError("missing type field on dictionary")
+            raise STACError("missing type field on dictionary")
 
     def __init__(
         self,
@@ -170,6 +170,7 @@ class STACObject(ABC):
         stac_version: str | None = None,
         stac_extensions: list[str] | None = None,
         links: list[Link | dict[str, Any]] | None = None,
+        assets: dict[str, Asset | dict[str, Any]] | None = None,
         href: str | None = None,
         reader: Read | None = None,
         writer: Write | None = None,
@@ -222,6 +223,15 @@ class STACObject(ABC):
                     link = Link.from_dict(link, owner=self)
                 self._links.append(link)
 
+        self.assets: dict[str, Asset] = {}
+        if assets is not None:
+            for key, value in assets.items():
+                if isinstance(value, Asset):
+                    asset = value
+                else:
+                    asset = Asset.from_dict(value)
+                self.assets[key] = asset
+
         self.href: str | None
         """This object's href
 
@@ -273,7 +283,7 @@ class STACObject(ABC):
         if dest_href:
             io.write_file(self, dest_href=dest_href, writer=self.writer)
         else:
-            raise PystacError("cannot save an object without an href")
+            raise PySTACError("cannot save an object without an href")
 
     def get_root(self) -> Container | None:
         """Returns the container at this object's root link, if there is one."""
@@ -315,9 +325,13 @@ class STACObject(ABC):
 
     def set_self_link(self) -> None:
         if self.href is None:
-            raise PystacError("cannot set a self link without an href")
+            raise PySTACError("cannot set a self link without an href")
         else:
             self.set_link(Link.self(self))
+
+    @deprecate.function("Prefer to get the href directly")
+    def get_self_href(self) -> str:
+        return self.href
 
     @deprecate.function("Prefer to set href directly, and then use `render()`")
     def set_self_href(self, href: str | None = None) -> None:
@@ -326,6 +340,10 @@ class STACObject(ABC):
             self.render(include_self_link=True)
         else:
             self.remove_links(SELF)
+
+    @deprecate.function("Prefer to set the asset directly")
+    def add_asset(self, key: str, asset: Asset) -> None:
+        self.assets[key] = asset
 
     def migrate(self) -> None:
         # TODO do more
@@ -346,7 +364,7 @@ class STACObject(ABC):
 
             renderer = BestPracticesRenderer()
 
-        if isinstance(self, Assets) and self.assets:
+        if self.assets:
             for asset in self.assets.values():
                 asset.href = utils.make_absolute_href(asset.href, self.href)
 
@@ -357,7 +375,7 @@ class STACObject(ABC):
 
         if isinstance(self, Container):
             if not self.href:
-                raise PystacError(
+                raise PySTACError(
                     "cannot render a container if the STAC object's href is None "
                     "and no root is provided"
                 )
@@ -377,7 +395,7 @@ class STACObject(ABC):
                 link.href = leaf.href
                 leaf.render()
 
-        if use_relative_asset_hrefs and isinstance(self, Assets) and self.assets:
+        if use_relative_asset_hrefs and self.assets:
             for asset in self.assets.values():
                 assert self.href
                 asset.href = utils.make_relative_href(asset.href, self.href)
