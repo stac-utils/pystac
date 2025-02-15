@@ -1,10 +1,9 @@
 import json
 import os
-import unittest
 from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -17,11 +16,13 @@ from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
 
+
 def test_path_like() -> None:
     rel = "some-rel"
     target = os.path.abspath("../elsewhere")
     link = pystac.Link(rel, target)
     assert os.fspath(link) == make_posix_style(target)
+
 
 def test_minimal(item: pystac.Item) -> None:
     rel = "my rel"
@@ -72,6 +73,7 @@ def test_relative() -> None:
     }
     assert expected_dict == link.to_dict()
 
+
 def test_link_does_not_fail_if_href_is_none(item: pystac.Item) -> None:
     """Test to ensure get_href does not fail when the href is None."""
     catalog = pystac.Catalog(id="test", description="test desc")
@@ -82,9 +84,11 @@ def test_link_does_not_fail_if_href_is_none(item: pystac.Item) -> None:
     assert link is not None
     assert link.get_href() is None
 
+
 def test_resolve_stac_object_no_root_and_target_is_item(item: pystac.Item) -> None:
     link = pystac.Link("my rel", target=item)
     link.resolve_stac_object()
+
 
 @pytest.mark.skipif(os.name == "nt", reason="Non-windows test")
 def test_resolve_stac_object_throws_informative_error() -> None:
@@ -93,6 +97,7 @@ def test_resolve_stac_object_throws_informative_error() -> None:
         STACError, match="HREF: '/a/b/foo.json' does not resolve to a STAC object"
     ):
         link.resolve_stac_object()
+
 
 def test_resolved_self_href() -> None:
     catalog = pystac.Catalog(id="test", description="test desc")
@@ -104,6 +109,7 @@ def test_resolved_self_href() -> None:
         assert link
         link.resolve_stac_object()
         assert link.get_absolute_href() == make_posix_style(path)
+
 
 def test_target_getter_setter(item: pystac.Item) -> None:
     link = pystac.Link("my rel", target="./foo/bar.json")
@@ -117,11 +123,13 @@ def test_target_getter_setter(item: pystac.Item) -> None:
     link.target = "./bar/foo.json"
     assert link.target == "./bar/foo.json"
 
+
 def test_get_target_str_no_href(item: pystac.Item) -> None:
     item.remove_links("self")
     link = pystac.Link("self", target=item)
     item.add_link(link)
     assert link.get_target_str() is None
+
 
 def test_relative_self_href(item: pystac.Item) -> None:
     with TemporaryDirectory() as temporary_directory:
@@ -133,12 +141,13 @@ def test_relative_self_href(item: pystac.Item) -> None:
         previous = os.getcwd()
         try:
             os.chdir(temporary_directory)
-            item = pystac.read_file("item.json")
+            item = cast(pystac.Item, pystac.read_file("item.json"))
             href = item.get_self_href()
             assert href
             assert os.path.isabs(href), f"Not an absolute path: {href}"
         finally:
             os.chdir(previous)
+
 
 def test_auto_title_when_resolved(item: pystac.Item) -> None:
     extent = pystac.Extent.from_items([item])
@@ -152,6 +161,7 @@ def test_auto_title_when_resolved(item: pystac.Item) -> None:
 
     assert collection.title == link.title
 
+
 def test_auto_title_not_found(item: pystac.Item) -> None:
     extent = pystac.Extent.from_items([item])
     collection = pystac.Collection(
@@ -162,6 +172,7 @@ def test_auto_title_not_found(item: pystac.Item) -> None:
     link = pystac.Link("my rel", target=collection)
 
     assert link.title is None
+
 
 def test_auto_title_is_serialized(item: pystac.Item) -> None:
     extent = pystac.Extent.from_items([item])
@@ -175,12 +186,12 @@ def test_auto_title_is_serialized(item: pystac.Item) -> None:
 
     assert link.to_dict().get("title") == collection.title
 
+
 def test_no_auto_title_if_not_resolved() -> None:
-    link = pystac.Link(
-        "my rel", target="https://www.some-domain.com/path/to/thing.txt"
-    )
+    link = pystac.Link("my rel", target="https://www.some-domain.com/path/to/thing.txt")
 
     assert link.title is None
+
 
 def test_title_as_init_argument(item: pystac.Item) -> None:
     link_title = "Link title"
@@ -196,6 +207,7 @@ def test_title_as_init_argument(item: pystac.Item) -> None:
     assert link.title == link_title
     assert link.to_dict().get("title") == link_title
 
+
 def test_serialize_link() -> None:
     href = "https://some-domain/path/to/item.json"
     title = "A Test Link"
@@ -206,6 +218,7 @@ def test_serialize_link() -> None:
     assert link_dict["type"] == "application/json"
     assert link_dict["title"] == title
     assert link_dict["href"] == href
+
 
 def test_static_from_dict_round_trip() -> None:
     test_cases: list[dict[str, Any]] = [
@@ -221,26 +234,31 @@ def test_static_from_dict_round_trip() -> None:
     d2 = {"rel": "self", "href": make_posix_style(os.path.join(os.getcwd(), "t"))}
     assert pystac.Link.from_dict(d).to_dict() == d2
 
+
 def test_static_from_dict_failures() -> None:
     dicts: list[dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
     for d in dicts:
         with pytest.raises(KeyError):
             pystac.Link.from_dict(d)
 
+
 def test_static_collection(collection: pystac.Collection) -> None:
     link = pystac.Link.collection(collection)
     expected = {"rel": "collection", "href": None, "type": "application/json"}
     assert expected == link.to_dict()
+
 
 def test_static_child(collection: pystac.Collection) -> None:
     link = pystac.Link.child(collection)
     expected = {"rel": "child", "href": None, "type": "application/json"}
     assert expected == link.to_dict()
 
+
 def test_static_canonical_item(item: pystac.Item) -> None:
     link = pystac.Link.canonical(item)
     expected = {"rel": "canonical", "href": None, "type": "application/json"}
     assert expected == link.to_dict()
+
 
 def test_static_canonical_collection(collection: pystac.Collection) -> None:
     link = pystac.Link.canonical(collection)
@@ -251,27 +269,33 @@ def test_static_canonical_collection(collection: pystac.Collection) -> None:
 class CustomLink(pystac.Link):
     pass
 
+
 def test_inheritance_from_dict() -> None:
     link = CustomLink.from_dict(
         {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2}
     )
     assert isinstance(link, CustomLink)
 
+
 def test_inheritance_collection(collection: Collection) -> None:
     link = CustomLink.collection(collection)
     assert isinstance(link, CustomLink)
+
 
 def test_inheritance_child(collection: Collection) -> None:
     link = CustomLink.child(collection)
     assert isinstance(link, CustomLink)
 
+
 def test_inheritance_canonical_item(item: Item) -> None:
     link = CustomLink.canonical(item)
     assert isinstance(link, CustomLink)
 
+
 def test_inheritance_canonical_collection(collection: Collection) -> None:
     link = CustomLink.canonical(collection)
     assert isinstance(link, CustomLink)
+
 
 def test_inheritance_clone() -> None:
     link = CustomLink.from_dict(
