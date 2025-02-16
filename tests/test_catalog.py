@@ -4,7 +4,6 @@ import json
 import os
 import posixpath
 import tempfile
-import unittest
 from collections import defaultdict
 from collections.abc import Iterator
 from copy import deepcopy
@@ -46,7 +45,7 @@ from tests.utils import (
 )
 
 
-class CatalogTypeTest(unittest.TestCase):
+class TestCatalogType:
     def test_determine_type_for_absolute_published(self) -> None:
         cat = TestCases.case_1()
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -56,7 +55,7 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
+        assert catalog_type == CatalogType.ABSOLUTE_PUBLISHED
 
     def test_determine_type_for_relative_published(self) -> None:
         cat = TestCases.case_2()
@@ -67,14 +66,14 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
+        assert catalog_type == CatalogType.RELATIVE_PUBLISHED
 
     def test_determine_type_for_self_contained(self) -> None:
         cat_json = pystac.StacIO.default().read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
+        assert catalog_type == CatalogType.SELF_CONTAINED
 
     def test_determine_type_for_unknown(self) -> None:
         catalog = Catalog(id="test", description="test desc")
@@ -83,7 +82,7 @@ class CatalogTypeTest(unittest.TestCase):
         catalog.normalize_hrefs("http://example.com")
         d = catalog.to_dict(include_self_link=False)
 
-        self.assertIsNone(CatalogType.determine_type(d))
+        assert CatalogType.determine_type(d) is None
 
 
 class TestCatalog:
@@ -1423,7 +1422,7 @@ class TestCatalog:
         Catalog.from_dict(d)
 
 
-class FullCopyTest(unittest.TestCase):
+class TestFullCopy:
     def check_link(self, link: pystac.Link, tag: str) -> None:
         if link.is_resolved():
             target_href: str = cast(pystac.STACObject, link.target).self_href
@@ -1438,7 +1437,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_link(link, tag)
 
     def check_catalog(self, c: Catalog, tag: str) -> None:
-        self.assertEqual(len(c.get_links("root")), 1, msg=f"{c}")
+        assert len(c.get_links("root")) == 1, f"Failure for catalog: {c}"
 
         for link in c.links:
             self.check_link(link, tag)
@@ -1540,7 +1539,7 @@ class FullCopyTest(unittest.TestCase):
             assert os.path.exists(href)
 
 
-class CatalogSubClassTest(unittest.TestCase):
+class TestCatalogSubClass:
     """This tests cases related to creating classes inheriting from pystac.Catalog to
     ensure that inheritance, class methods, etc. function as expected."""
 
@@ -1553,25 +1552,20 @@ class CatalogSubClassTest(unittest.TestCase):
             # backwards compatibility of inherited classes
             return super().get_items()
 
-    def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
-
     def test_from_dict_returns_subclass(self) -> None:
+        self.stac_io = pystac.StacIO.default()
         catalog_dict = self.stac_io.read_json(self.case_1)
         custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_from_file_returns_subclass(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_clone(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
         cloned_catalog = custom_catalog.clone()
-
-        self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+        assert isinstance(cloned_catalog, self.BasicCustomCatalog)
 
     def test_get_all_items_works(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
