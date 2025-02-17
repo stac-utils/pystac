@@ -1,7 +1,6 @@
 import json
 import os
 import time
-import unittest
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -39,333 +38,331 @@ def test_make_relative_href(
     assert actual == expected
 
 
-class UtilsTest(unittest.TestCase):
+def test_make_relative_href_url() -> None:
+    test_cases = [
+        (
+            "http://stacspec.org/a/b/c/d/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "./d/catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/b/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../../catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "http://cogeo.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/",
+        ),
+        (
+            "http://stacspec.org/a/b/.dotfile",
+            "http://stacspec.org/a/b/catalog.json",
+            "./.dotfile",
+        ),
+    ]
 
-    def test_make_relative_href_url(self) -> None:
-        test_cases = [
-            (
-                "http://stacspec.org/a/b/c/d/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "./d/catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/b/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "../catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "../../catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "http://cogeo.org/a/b/c/catalog.json",
-                "http://stacspec.org/a/catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "http://stacspec.org/a/catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "http://stacspec.org/a/",
-            ),
-            (
-                "http://stacspec.org/a/b/.dotfile",
-                "http://stacspec.org/a/b/catalog.json",
-                "./.dotfile",
-            ),
-        ]
+    for source_href, start_href, expected in test_cases:
+        actual = make_relative_href(source_href, start_href)
+        assert actual == expected
 
-        for source_href, start_href, expected in test_cases:
-            actual = make_relative_href(source_href, start_href)
-            assert actual == expected
+def test_make_relative_href_windows() -> None:
+    # Test cases of (source_href, start_href, expected)
+    test_cases = [
+        (
+            "C:\\a\\b\\c\\d\\catalog.json",
+            "C:\\a\\b\\c\\catalog.json",
+            "./d/catalog.json",
+        ),
+        (
+            "C:\\a\\b\\catalog.json",
+            "C:\\a\\b\\c\\catalog.json",
+            "../catalog.json",
+        ),
+        (
+            "C:\\a\\catalog.json",
+            "C:\\a\\b\\c\\catalog.json",
+            "../../catalog.json",
+        ),
+        ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", "./c/catalog.json"),
+        ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "../catalog.json"),
+        (
+            "http://stacspec.org/a/b/c/d/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "./d/catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/b/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../../catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "http://cogeo.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+        ),
+        (
+            "http://stacspec.org/a/catalog.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+        ),
+    ]
 
-    def test_make_relative_href_windows(self) -> None:
-        # Test cases of (source_href, start_href, expected)
-        test_cases = [
-            (
-                "C:\\a\\b\\c\\d\\catalog.json",
-                "C:\\a\\b\\c\\catalog.json",
-                "./d/catalog.json",
-            ),
-            (
-                "C:\\a\\b\\catalog.json",
-                "C:\\a\\b\\c\\catalog.json",
-                "../catalog.json",
-            ),
-            (
-                "C:\\a\\catalog.json",
-                "C:\\a\\b\\c\\catalog.json",
-                "../../catalog.json",
-            ),
-            ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", "./c/catalog.json"),
-            ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "../catalog.json"),
-            (
-                "http://stacspec.org/a/b/c/d/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "./d/catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/b/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "../catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "http://stacspec.org/a/b/c/catalog.json",
-                "../../catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "http://cogeo.org/a/b/c/catalog.json",
-                "http://stacspec.org/a/catalog.json",
-            ),
-            (
-                "http://stacspec.org/a/catalog.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "http://stacspec.org/a/catalog.json",
-            ),
-        ]
+    for source_href, start_href, expected in test_cases:
+        actual = make_relative_href(source_href, start_href)
+        assert actual == expected
 
-        for source_href, start_href, expected in test_cases:
-            actual = make_relative_href(source_href, start_href)
-            assert actual == expected
+def test_make_absolute_href() -> None:
+    # Test cases of (source_href, start_href, expected)
+    test_cases = [
+        ("item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
+        ("./item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
+        ("./z/item.json", "/a/b/c/catalog.json", "/a/b/c/z/item.json"),
+        ("../item.json", "/a/b/c/catalog.json", "/a/b/item.json"),
+        (
+            "item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/item.json",
+        ),
+        (
+            "./item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/item.json",
+        ),
+        (
+            "./z/item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/z/item.json",
+        ),
+        (
+            "../item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/item.json",
+        ),
+        ("http://localhost:8000", None, "http://localhost:8000"),
+        ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
+        (
+            "./z/item.json",
+            "file:///a/b/c/catalog.json",
+            "file:///a/b/c/z/item.json",
+        ),
+        ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
+    ]
 
-    def test_make_absolute_href(self) -> None:
-        # Test cases of (source_href, start_href, expected)
-        test_cases = [
-            ("item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
-            ("./item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
-            ("./z/item.json", "/a/b/c/catalog.json", "/a/b/c/z/item.json"),
-            ("../item.json", "/a/b/c/catalog.json", "/a/b/item.json"),
-            (
-                "item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/item.json",
-            ),
-            (
-                "./item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/item.json",
-            ),
-            (
-                "./z/item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/z/item.json",
-            ),
-            (
-                "../item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/item.json",
-            ),
-            ("http://localhost:8000", None, "http://localhost:8000"),
-            ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
-            (
-                "./z/item.json",
-                "file:///a/b/c/catalog.json",
-                "file:///a/b/c/z/item.json",
-            ),
-            ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
-        ]
+    for source_href, start_href, expected in test_cases:
+        actual = make_absolute_href(source_href, start_href)
+        if expected.startswith("file://"):
+            _, actual = os.path.splitdrive(actual.replace("file://", ""))
+            actual = f"file://{actual}"
+        else:
+            _, actual = os.path.splitdrive(actual)
+        assert actual == expected
 
-        for source_href, start_href, expected in test_cases:
-            actual = make_absolute_href(source_href, start_href)
-            if expected.startswith("file://"):
-                _, actual = os.path.splitdrive(actual.replace("file://", ""))
-                actual = f"file://{actual}"
-            else:
-                _, actual = os.path.splitdrive(actual)
-            assert actual == expected
+def test_make_absolute_href_on_vsitar() -> None:
+    rel_path = "some/item.json"
+    cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
+    expected = "/vsitar//tmp/catalog.tar/some/item.json"
 
-    def test_make_absolute_href_on_vsitar(self) -> None:
-        rel_path = "some/item.json"
-        cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
-        expected = "/vsitar//tmp/catalog.tar/some/item.json"
+    assert expected, make_absolute_href(rel_path == cat_path)
 
-        assert expected, make_absolute_href(rel_path == cat_path)
+@pytest.mark.skipif(os.name != "nt", reason="Windows only test")
+def test_make_absolute_href_windows() -> None:
+    # Test cases of (source_href, start_href, expected)
+    test_cases = [
+        ("item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+        (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+        (
+            ".\\z\\item.json",
+            "Z:\\a\\b\\c\\catalog.json",
+            "Z:/a/b/c/z/item.json",
+        ),
+        ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:/a/b/item.json"),
+        (
+            "item.json",
+            "HTTPS://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/item.json",
+        ),
+        (
+            "./item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/item.json",
+        ),
+        (
+            "./z/item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/c/z/item.json",
+        ),
+        (
+            "../item.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "https://stacspec.org/a/b/item.json",
+        ),
+    ]
 
-    @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
-    def test_make_absolute_href_windows(self) -> None:
-        # Test cases of (source_href, start_href, expected)
-        test_cases = [
-            ("item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
-            (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
-            (
-                ".\\z\\item.json",
-                "Z:\\a\\b\\c\\catalog.json",
-                "Z:/a/b/c/z/item.json",
-            ),
-            ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:/a/b/item.json"),
-            (
-                "item.json",
-                "HTTPS://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/item.json",
-            ),
-            (
-                "./item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/item.json",
-            ),
-            (
-                "./z/item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/c/z/item.json",
-            ),
-            (
-                "../item.json",
-                "https://stacspec.org/a/b/c/catalog.json",
-                "https://stacspec.org/a/b/item.json",
-            ),
-        ]
+    for source_href, start_href, expected in test_cases:
+        actual = make_absolute_href(source_href, start_href)
+        assert actual == expected
 
-        for source_href, start_href, expected in test_cases:
-            actual = make_absolute_href(source_href, start_href)
-            assert actual == expected
+def test_is_absolute_href() -> None:
+    # Test cases of (href, expected)
+    test_cases = [
+        ("item.json", False),
+        ("./item.json", False),
+        ("../item.json", False),
+        ("http://stacspec.org/item.json", True),
+    ]
 
-    def test_is_absolute_href(self) -> None:
-        # Test cases of (href, expected)
-        test_cases = [
-            ("item.json", False),
-            ("./item.json", False),
-            ("../item.json", False),
-            ("http://stacspec.org/item.json", True),
-        ]
+    for href, expected in test_cases:
+        actual = is_absolute_href(href)
+        assert actual == expected
 
-        for href, expected in test_cases:
-            actual = is_absolute_href(href)
-            assert actual == expected
+def test_is_absolute_href_os_aware() -> None:
+    # Test cases of (href, expected)
 
-    def test_is_absolute_href_os_aware(self) -> None:
-        # Test cases of (href, expected)
+    is_windows = os.name == "nt"
+    incl_drive_letter = path_includes_drive_letter()
+    test_cases = [
+        ("/item.json", not incl_drive_letter),
+        ("/home/someuser/Downloads/item.json", not incl_drive_letter),
+        ("file:///home/someuser/Downloads/item.json", not incl_drive_letter),
+        ("d:/item.json", is_windows),
+        ("c:/files/more_files/item.json", is_windows),
+    ]
 
-        is_windows = os.name == "nt"
-        incl_drive_letter = path_includes_drive_letter()
-        test_cases = [
-            ("/item.json", not incl_drive_letter),
-            ("/home/someuser/Downloads/item.json", not incl_drive_letter),
-            ("file:///home/someuser/Downloads/item.json", not incl_drive_letter),
-            ("d:/item.json", is_windows),
-            ("c:/files/more_files/item.json", is_windows),
-        ]
+    for href, expected in test_cases:
+        actual = is_absolute_href(href)
+        assert actual == expected
 
-        for href, expected in test_cases:
-            actual = is_absolute_href(href)
-            assert actual == expected
+@pytest.mark.skipif(os.name != "nt", reason="Windows only test")
+def test_is_absolute_href_windows() -> None:
+    # Test cases of (href, expected)
 
-    @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
-    def test_is_absolute_href_windows(self) -> None:
-        # Test cases of (href, expected)
+    test_cases = [
+        ("item.json", False),
+        (".\\item.json", False),
+        ("..\\item.json", False),
+        ("c:\\item.json", True),
+        ("http://stacspec.org/item.json", True),
+    ]
 
-        test_cases = [
-            ("item.json", False),
-            (".\\item.json", False),
-            ("..\\item.json", False),
-            ("c:\\item.json", True),
-            ("http://stacspec.org/item.json", True),
-        ]
+    for href, expected in test_cases:
+        actual = is_absolute_href(href)
+        assert actual == expected
 
-        for href, expected in test_cases:
-            actual = is_absolute_href(href)
-            assert actual == expected
+def test_datetime_to_str() -> None:
+    cases = (
+        (
+            "timezone naive, assume utc",
+            datetime(2000, 1, 1),
+            "2000-01-01T00:00:00Z",
+        ),
+        (
+            "timezone aware, utc",
+            datetime(2000, 1, 1, tzinfo=timezone.utc),
+            "2000-01-01T00:00:00Z",
+        ),
+        (
+            "timezone aware, utc -7",
+            datetime(2000, 1, 1, tzinfo=timezone(timedelta(hours=-7))),
+            "2000-01-01T00:00:00-07:00",
+        ),
+    )
 
-    def test_datetime_to_str(self) -> None:
-        cases = (
-            (
-                "timezone naive, assume utc",
-                datetime(2000, 1, 1),
-                "2000-01-01T00:00:00Z",
-            ),
-            (
-                "timezone aware, utc",
-                datetime(2000, 1, 1, tzinfo=timezone.utc),
-                "2000-01-01T00:00:00Z",
-            ),
-            (
-                "timezone aware, utc -7",
-                datetime(2000, 1, 1, tzinfo=timezone(timedelta(hours=-7))),
-                "2000-01-01T00:00:00-07:00",
-            ),
-        )
+    for title, dt, expected in cases:
+        #with self.subTest(title=title):
+        got = utils.datetime_to_str(dt)
+        assert expected == got
 
-        for title, dt, expected in cases:
-            with self.subTest(title=title):
-                got = utils.datetime_to_str(dt)
-                assert expected == got
+def test_datetime_to_str_with_microseconds_timespec() -> None:
+    cases = (
+        (
+            "timezone naive, assume utc",
+            datetime(2000, 1, 1, 0, 0, 0, 0),
+            "2000-01-01T00:00:00.000000Z",
+        ),
+        (
+            "timezone aware, utc",
+            datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc),
+            "2000-01-01T00:00:00.000000Z",
+        ),
+        (
+            "timezone aware, utc -7",
+            datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone(timedelta(hours=-7))),
+            "2000-01-01T00:00:00.000000-07:00",
+        ),
+    )
 
-    def test_datetime_to_str_with_microseconds_timespec(self) -> None:
-        cases = (
-            (
-                "timezone naive, assume utc",
-                datetime(2000, 1, 1, 0, 0, 0, 0),
-                "2000-01-01T00:00:00.000000Z",
-            ),
-            (
-                "timezone aware, utc",
-                datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc),
-                "2000-01-01T00:00:00.000000Z",
-            ),
-            (
-                "timezone aware, utc -7",
-                datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone(timedelta(hours=-7))),
-                "2000-01-01T00:00:00.000000-07:00",
-            ),
-        )
+    for title, dt, expected in cases:
+        # with self.subTest(title=title):
+        got = utils.datetime_to_str(dt, timespec="microseconds")
+        assert expected == got
 
-        for title, dt, expected in cases:
-            with self.subTest(title=title):
-                got = utils.datetime_to_str(dt, timespec="microseconds")
-                assert expected == got
+def test_str_to_datetime() -> None:
+    def _set_tzinfo(tz_str: str | None) -> None:
+        if tz_str is None:
+            if "TZ" in os.environ:
+                del os.environ["TZ"]
+        else:
+            os.environ["TZ"] = tz_str
+        # time.tzset() only available for Unix/Linux
+        if hasattr(time, "tzset"):
+            time.tzset()
 
-    def test_str_to_datetime(self) -> None:
-        def _set_tzinfo(tz_str: str | None) -> None:
-            if tz_str is None:
-                if "TZ" in os.environ:
-                    del os.environ["TZ"]
-            else:
-                os.environ["TZ"] = tz_str
-            # time.tzset() only available for Unix/Linux
-            if hasattr(time, "tzset"):
-                time.tzset()
+    utc_timestamp = "2015-06-27T10:25:31Z"
 
-        utc_timestamp = "2015-06-27T10:25:31Z"
+    prev_tz = os.environ.get("TZ")
 
-        prev_tz = os.environ.get("TZ")
+    # with self.subTest(tz=None):
+    _set_tzinfo(None)
+    utc_datetime = str_to_datetime(utc_timestamp)
+    assert utc_datetime.tzinfo is tz.tzutc()
+    assert utc_datetime.tzinfo is not tz.tzlocal()
 
-        with self.subTest(tz=None):
-            _set_tzinfo(None)
-            utc_datetime = str_to_datetime(utc_timestamp)
-            assert utc_datetime.tzinfo is tz.tzutc()
-            assert utc_datetime.tzinfo is not tz.tzlocal()
+    # with self.subTest(tz="UTC"):
+    _set_tzinfo("UTC")
+    utc_datetime = str_to_datetime(utc_timestamp)
+    assert utc_datetime.tzinfo is tz.tzutc()
+    assert utc_datetime.tzinfo is not tz.tzlocal()
 
-        with self.subTest(tz="UTC"):
-            _set_tzinfo("UTC")
-            utc_datetime = str_to_datetime(utc_timestamp)
-            assert utc_datetime.tzinfo is tz.tzutc()
-            assert utc_datetime.tzinfo is not tz.tzlocal()
+    # with self.subTest(tz="US/Central"):
+    _set_tzinfo("US/Central")
+    utc_datetime = str_to_datetime(utc_timestamp)
+    assert utc_datetime.tzinfo is tz.tzutc()
+    assert utc_datetime.tzinfo is not tz.tzlocal()
 
-        with self.subTest(tz="US/Central"):
-            _set_tzinfo("US/Central")
-            utc_datetime = str_to_datetime(utc_timestamp)
-            assert utc_datetime.tzinfo is tz.tzutc()
-            assert utc_datetime.tzinfo is not tz.tzlocal()
+    if prev_tz is not None:
+        _set_tzinfo(prev_tz)
 
-        if prev_tz is not None:
-            _set_tzinfo(prev_tz)
-
-    def test_geojson_bbox(self) -> None:
-        # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON
-        with open(
-            TestCases.get_path("data-files/geojson/sample.geojson")
-        ) as sample_geojson:
-            all_features = json.load(sample_geojson)
-            geom_dicts = [f["geometry"] for f in all_features["features"]]
-            for geom in geom_dicts:
-                got = utils.geometry_to_bbox(geom)
-                assert got != None
+def test_geojson_bbox() -> None:
+    # Use sample Geojson from https://en.wikipedia.org/wiki/GeoJSON
+    with open(
+        TestCases.get_path("data-files/geojson/sample.geojson")
+    ) as sample_geojson:
+        all_features = json.load(sample_geojson)
+        geom_dicts = [f["geometry"] for f in all_features["features"]]
+        for geom in geom_dicts:
+            got = utils.geometry_to_bbox(geom)
+            assert got != None
 
 
 @pytest.mark.parametrize(
