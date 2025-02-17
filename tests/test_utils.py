@@ -24,159 +24,121 @@ from tests.utils import TestCases, path_includes_drive_letter
 
 @pytest.mark.parametrize(
     "source_href, start_href, expected", (
+    # relative href
     ("/a/b/c/d/catalog.json", "/a/b/c/catalog.json", "./d/catalog.json"),
     ("/a/b/catalog.json", "/a/b/c/catalog.json", "../catalog.json"),
     ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
     ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
     ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
     ("file:///a/b/c/d/catalog.json", "file:///a/b/c/catalog.json", "./d/catalog.json"),
-))
+    # relative href url
+    (
+            "http://stacspec.org/a/b/c/d/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "./d/catalog.json",
+    ),
+    (
+            "http://stacspec.org/a/b/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../catalog.json",
+    ),
+    (
+            "http://stacspec.org/a/catalog.json",
+            "http://stacspec.org/a/b/c/catalog.json",
+            "../../catalog.json",
+    ),
+    (
+            "http://stacspec.org/a/catalog.json",
+            "http://cogeo.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+    ),
+    (
+            "http://stacspec.org/a/catalog.json",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/catalog.json",
+    ),
+    (
+            "http://stacspec.org/a/",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "http://stacspec.org/a/",
+    ),
+    (
+            "http://stacspec.org/a/b/.dotfile",
+            "http://stacspec.org/a/b/catalog.json",
+            "./.dotfile",
+    ),
+    # relative href under windows
+    (
+        "C:\\a\\b\\c\\d\\catalog.json",
+        "C:\\a\\b\\c\\catalog.json",
+        "./d/catalog.json",
+    ),
+    (
+        "C:\\a\\b\\catalog.json",
+        "C:\\a\\b\\c\\catalog.json",
+        "../catalog.json",
+    ),
+    (
+        "C:\\a\\catalog.json",
+        "C:\\a\\b\\c\\catalog.json",
+        "../../catalog.json",
+    ),
+    ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", "./c/catalog.json"),
+    ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "../catalog.json"),
+    )
+)
 def test_make_relative_href(
-    source_href: str, start_href: str, expected: str
+        source_href: str, start_href: str, expected: str
 ) -> None:
     actual = make_relative_href(source_href, start_href)
     assert actual == expected
 
 
-def test_make_relative_href_url() -> None:
-    test_cases = [
-        (
-            "http://stacspec.org/a/b/c/d/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "./d/catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/b/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "../catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "../../catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "http://cogeo.org/a/b/c/catalog.json",
-            "http://stacspec.org/a/catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "http://stacspec.org/a/catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "http://stacspec.org/a/",
-        ),
-        (
-            "http://stacspec.org/a/b/.dotfile",
-            "http://stacspec.org/a/b/catalog.json",
-            "./.dotfile",
-        ),
-    ]
-
-    for source_href, start_href, expected in test_cases:
-        actual = make_relative_href(source_href, start_href)
-        assert actual == expected
-
-def test_make_relative_href_windows() -> None:
-    # Test cases of (source_href, start_href, expected)
-    test_cases = [
-        (
-            "C:\\a\\b\\c\\d\\catalog.json",
-            "C:\\a\\b\\c\\catalog.json",
-            "./d/catalog.json",
-        ),
-        (
-            "C:\\a\\b\\catalog.json",
-            "C:\\a\\b\\c\\catalog.json",
-            "../catalog.json",
-        ),
-        (
-            "C:\\a\\catalog.json",
-            "C:\\a\\b\\c\\catalog.json",
-            "../../catalog.json",
-        ),
-        ("a\\b\\c\\catalog.json", "a\\b\\catalog.json", "./c/catalog.json"),
-        ("a\\b\\catalog.json", "a\\b\\c\\catalog.json", "../catalog.json"),
-        (
-            "http://stacspec.org/a/b/c/d/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "./d/catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/b/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "../catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "http://stacspec.org/a/b/c/catalog.json",
-            "../../catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "http://cogeo.org/a/b/c/catalog.json",
-            "http://stacspec.org/a/catalog.json",
-        ),
-        (
-            "http://stacspec.org/a/catalog.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "http://stacspec.org/a/catalog.json",
-        ),
-    ]
-
-    for source_href, start_href, expected in test_cases:
-        actual = make_relative_href(source_href, start_href)
-        assert actual == expected
-
-def test_make_absolute_href() -> None:
-    # Test cases of (source_href, start_href, expected)
-    test_cases = [
-        ("item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
-        ("./item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
-        ("./z/item.json", "/a/b/c/catalog.json", "/a/b/c/z/item.json"),
-        ("../item.json", "/a/b/c/catalog.json", "/a/b/item.json"),
-        (
-            "item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/item.json",
-        ),
-        (
-            "./item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/item.json",
-        ),
-        (
-            "./z/item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/z/item.json",
-        ),
-        (
-            "../item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/item.json",
-        ),
-        ("http://localhost:8000", None, "http://localhost:8000"),
-        ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
-        (
-            "./z/item.json",
-            "file:///a/b/c/catalog.json",
-            "file:///a/b/c/z/item.json",
-        ),
-        ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
-    ]
-
-    for source_href, start_href, expected in test_cases:
-        actual = make_absolute_href(source_href, start_href)
-        if expected.startswith("file://"):
-            _, actual = os.path.splitdrive(actual.replace("file://", ""))
-            actual = f"file://{actual}"
-        else:
-            _, actual = os.path.splitdrive(actual)
-        assert actual == expected
+@pytest.mark.parametrize(
+    "source_href, start_href, expected", (
+            ("item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
+            ("./item.json", "/a/b/c/catalog.json", "/a/b/c/item.json"),
+            ("./z/item.json", "/a/b/c/catalog.json", "/a/b/c/z/item.json"),
+            ("../item.json", "/a/b/c/catalog.json", "/a/b/item.json"),
+            (
+                    "item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                    "./item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                    "./z/item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/z/item.json",
+            ),
+            (
+                    "../item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/item.json",
+            ),
+            ("http://localhost:8000", None, "http://localhost:8000"),
+            ("item.json", "file:///a/b/c/catalog.json", "file:///a/b/c/item.json"),
+            (
+                    "./z/item.json",
+                    "file:///a/b/c/catalog.json",
+                    "file:///a/b/c/z/item.json",
+            ),
+            ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
+    ))
+def test_make_absolute_href(
+        source_href: str, start_href: str, expected: str
+) -> None:
+    actual = make_absolute_href(source_href, start_href)
+    if expected.startswith("file://"):
+        _, actual = os.path.splitdrive(actual.replace("file://", ""))
+        actual = f"file://{actual}"
+    else:
+        _, actual = os.path.splitdrive(actual)
+    assert actual == expected
 
 def test_make_absolute_href_on_vsitar() -> None:
     rel_path = "some/item.json"
@@ -186,42 +148,43 @@ def test_make_absolute_href_on_vsitar() -> None:
     assert expected, make_absolute_href(rel_path == cat_path)
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
-def test_make_absolute_href_windows() -> None:
-    # Test cases of (source_href, start_href, expected)
-    test_cases = [
-        ("item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
-        (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
-        (
-            ".\\z\\item.json",
-            "Z:\\a\\b\\c\\catalog.json",
-            "Z:/a/b/c/z/item.json",
-        ),
-        ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:/a/b/item.json"),
-        (
-            "item.json",
-            "HTTPS://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/item.json",
-        ),
-        (
-            "./item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/item.json",
-        ),
-        (
-            "./z/item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/c/z/item.json",
-        ),
-        (
-            "../item.json",
-            "https://stacspec.org/a/b/c/catalog.json",
-            "https://stacspec.org/a/b/item.json",
-        ),
-    ]
+@pytest.mark.parametrize(
+    "source_href, start_href, expected", (
+            ("item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+            (".\\item.json", "C:\\a\\b\\c\\catalog.json", "C:/a/b/c/item.json"),
+            (
+                    ".\\z\\item.json",
+                    "Z:\\a\\b\\c\\catalog.json",
+                    "Z:/a/b/c/z/item.json",
+            ),
+            ("..\\item.json", "a:\\a\\b\\c\\catalog.json", "a:/a/b/item.json"),
+            (
+                    "item.json",
+                    "HTTPS://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                    "./item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/item.json",
+            ),
+            (
+                    "./z/item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/c/z/item.json",
+            ),
+            (
+                    "../item.json",
+                    "https://stacspec.org/a/b/c/catalog.json",
+                    "https://stacspec.org/a/b/item.json",
+            ),
 
-    for source_href, start_href, expected in test_cases:
-        actual = make_absolute_href(source_href, start_href)
-        assert actual == expected
+    ))
+def test_make_absolute_href_windows(
+        source_href: str, start_href: str, expected: str
+) -> None:
+    actual = make_absolute_href(source_href, start_href)
+    assert actual == expected
 
 def test_is_absolute_href() -> None:
     # Test cases of (href, expected)
