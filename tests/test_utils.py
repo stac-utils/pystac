@@ -23,26 +23,23 @@ from pystac.utils import (
 )
 from tests.utils import TestCases, path_includes_drive_letter
 
+@pytest.mark.parametrize(
+    "source_href, start_href, expected", (
+    ("/a/b/c/d/catalog.json", "/a/b/c/catalog.json", "./d/catalog.json"),
+    ("/a/b/catalog.json", "/a/b/c/catalog.json", "../catalog.json"),
+    ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
+    ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
+    ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
+    ("file:///a/b/c/d/catalog.json", "file:///a/b/c/catalog.json", "./d/catalog.json"),
+))
+def test_make_relative_href(
+    source_href: str, start_href: str, expected: str
+) -> None:
+    actual = make_relative_href(source_href, start_href)
+    assert actual == expected
+
 
 class UtilsTest(unittest.TestCase):
-    def test_make_relative_href(self) -> None:
-        # Test cases of (source_href, start_href, expected)
-        test_cases = [
-            ("/a/b/c/d/catalog.json", "/a/b/c/catalog.json", "./d/catalog.json"),
-            ("/a/b/catalog.json", "/a/b/c/catalog.json", "../catalog.json"),
-            ("/a/catalog.json", "/a/b/c/catalog.json", "../../catalog.json"),
-            ("/a/b/c/d/", "/a/b/c/catalog.json", "./d/"),
-            ("/a/b/c/d/.dotfile", "/a/b/c/d/catalog.json", "./.dotfile"),
-            (
-                "file:///a/b/c/d/catalog.json",
-                "file:///a/b/c/catalog.json",
-                "./d/catalog.json",
-            ),
-        ]
-
-        for source_href, start_href, expected in test_cases:
-            actual = make_relative_href(source_href, start_href)
-            self.assertEqual(actual, expected)
 
     def test_make_relative_href_url(self) -> None:
         test_cases = [
