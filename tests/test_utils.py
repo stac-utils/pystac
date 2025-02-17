@@ -252,9 +252,8 @@ def test_datetime_to_str() -> None:
     )
 
     for title, dt, expected in cases:
-        #with self.subTest(title=title):
         got = utils.datetime_to_str(dt)
-        assert expected == got
+        assert expected == got, f"Failure: {title}"
 
 def test_datetime_to_str_with_microseconds_timespec() -> None:
     cases = (
@@ -276,9 +275,8 @@ def test_datetime_to_str_with_microseconds_timespec() -> None:
     )
 
     for title, dt, expected in cases:
-        # with self.subTest(title=title):
         got = utils.datetime_to_str(dt, timespec="microseconds")
-        assert expected == got
+        assert expected == got, f"Failure: {title}"
 
 def test_str_to_datetime() -> None:
     def _set_tzinfo(tz_str: str | None) -> None:
@@ -295,19 +293,16 @@ def test_str_to_datetime() -> None:
 
     prev_tz = os.environ.get("TZ")
 
-    # with self.subTest(tz=None):
     _set_tzinfo(None)
     utc_datetime = str_to_datetime(utc_timestamp)
     assert utc_datetime.tzinfo is tz.tzutc()
     assert utc_datetime.tzinfo is not tz.tzlocal()
 
-    # with self.subTest(tz="UTC"):
     _set_tzinfo("UTC")
     utc_datetime = str_to_datetime(utc_timestamp)
     assert utc_datetime.tzinfo is tz.tzutc()
     assert utc_datetime.tzinfo is not tz.tzlocal()
 
-    # with self.subTest(tz="US/Central"):
     _set_tzinfo("US/Central")
     utc_datetime = str_to_datetime(utc_timestamp)
     assert utc_datetime.tzinfo is tz.tzutc()
