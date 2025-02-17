@@ -12,8 +12,6 @@ from tests.utils import TestCases
 
 
 class StacIOTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.stac_io = StacIO.default()
 
     def test_read_write_collection(self) -> None:
         collection = pystac.read_file(
@@ -58,6 +56,7 @@ class StacIOTest(unittest.TestCase):
             )
 
     def test_read_item_dict(self) -> None:
+        self.stac_io = StacIO.default()
         item_dict = self.stac_io.read_json(
             TestCases.get_path("data-files/item/sample-item.json")
         )
@@ -65,6 +64,7 @@ class StacIOTest(unittest.TestCase):
         self.assertIsInstance(item, pystac.Item)
 
     def test_read_collection_dict(self) -> None:
+        self.stac_io = StacIO.default()
         collection_dict = self.stac_io.read_json(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
@@ -72,6 +72,7 @@ class StacIOTest(unittest.TestCase):
         self.assertIsInstance(collection, pystac.Collection)
 
     def test_read_catalog_dict(self) -> None:
+        self.stac_io = StacIO.default()
         catalog_dict = self.stac_io.read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
