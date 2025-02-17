@@ -82,7 +82,7 @@ class UtilsTest(unittest.TestCase):
 
         for source_href, start_href, expected in test_cases:
             actual = make_relative_href(source_href, start_href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_make_relative_href_windows(self) -> None:
         # Test cases of (source_href, start_href, expected)
@@ -133,7 +133,7 @@ class UtilsTest(unittest.TestCase):
 
         for source_href, start_href, expected in test_cases:
             actual = make_relative_href(source_href, start_href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_make_absolute_href(self) -> None:
         # Test cases of (source_href, start_href, expected)
@@ -179,14 +179,14 @@ class UtilsTest(unittest.TestCase):
                 actual = f"file://{actual}"
             else:
                 _, actual = os.path.splitdrive(actual)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_make_absolute_href_on_vsitar(self) -> None:
         rel_path = "some/item.json"
         cat_path = "/vsitar//tmp/catalog.tar/catalog.json"
         expected = "/vsitar//tmp/catalog.tar/some/item.json"
 
-        self.assertEqual(expected, make_absolute_href(rel_path, cat_path))
+        assert expected, make_absolute_href(rel_path == cat_path)
 
     @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
     def test_make_absolute_href_windows(self) -> None:
@@ -224,7 +224,7 @@ class UtilsTest(unittest.TestCase):
 
         for source_href, start_href, expected in test_cases:
             actual = make_absolute_href(source_href, start_href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_is_absolute_href(self) -> None:
         # Test cases of (href, expected)
@@ -237,7 +237,7 @@ class UtilsTest(unittest.TestCase):
 
         for href, expected in test_cases:
             actual = is_absolute_href(href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_is_absolute_href_os_aware(self) -> None:
         # Test cases of (href, expected)
@@ -254,7 +254,7 @@ class UtilsTest(unittest.TestCase):
 
         for href, expected in test_cases:
             actual = is_absolute_href(href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     @pytest.mark.skipif(os.name != "nt", reason="Windows only test")
     def test_is_absolute_href_windows(self) -> None:
@@ -270,7 +270,7 @@ class UtilsTest(unittest.TestCase):
 
         for href, expected in test_cases:
             actual = is_absolute_href(href)
-            self.assertEqual(actual, expected)
+            assert actual == expected
 
     def test_datetime_to_str(self) -> None:
         cases = (
@@ -294,7 +294,7 @@ class UtilsTest(unittest.TestCase):
         for title, dt, expected in cases:
             with self.subTest(title=title):
                 got = utils.datetime_to_str(dt)
-                self.assertEqual(expected, got)
+                assert expected == got
 
     def test_datetime_to_str_with_microseconds_timespec(self) -> None:
         cases = (
@@ -318,7 +318,7 @@ class UtilsTest(unittest.TestCase):
         for title, dt, expected in cases:
             with self.subTest(title=title):
                 got = utils.datetime_to_str(dt, timespec="microseconds")
-                self.assertEqual(expected, got)
+                assert expected == got
 
     def test_str_to_datetime(self) -> None:
         def _set_tzinfo(tz_str: str | None) -> None:
@@ -338,20 +338,20 @@ class UtilsTest(unittest.TestCase):
         with self.subTest(tz=None):
             _set_tzinfo(None)
             utc_datetime = str_to_datetime(utc_timestamp)
-            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+            assert utc_datetime.tzinfo is tz.tzutc()
+            assert utc_datetime.tzinfo is not tz.tzlocal()
 
         with self.subTest(tz="UTC"):
             _set_tzinfo("UTC")
             utc_datetime = str_to_datetime(utc_timestamp)
-            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+            assert utc_datetime.tzinfo is tz.tzutc()
+            assert utc_datetime.tzinfo is not tz.tzlocal()
 
         with self.subTest(tz="US/Central"):
             _set_tzinfo("US/Central")
             utc_datetime = str_to_datetime(utc_timestamp)
-            self.assertIs(utc_datetime.tzinfo, tz.tzutc())
-            self.assertIsNot(utc_datetime.tzinfo, tz.tzlocal())
+            assert utc_datetime.tzinfo is tz.tzutc()
+            assert utc_datetime.tzinfo is not tz.tzlocal()
 
         if prev_tz is not None:
             _set_tzinfo(prev_tz)
@@ -365,7 +365,7 @@ class UtilsTest(unittest.TestCase):
             geom_dicts = [f["geometry"] for f in all_features["features"]]
             for geom in geom_dicts:
                 got = utils.geometry_to_bbox(geom)
-                self.assertNotEqual(got, None)
+                assert got != None
 
 
 @pytest.mark.parametrize(
