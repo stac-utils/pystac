@@ -8,63 +8,68 @@ from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
 from tests.utils import TestCases
 
 
+@pytest.fixture
+def date_time_range_item() -> Item:
+    return Item.from_file(TestCases.get_path(
+        "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"))
+
+@pytest.fixture
+def sample_full_item() -> Item:
+    return Item.from_file(TestCases.get_path(
+        "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"))
+
+
+def test_datetimes(date_time_range_item: Item) -> None:
+    # save dict of original item to check that `common_metadata`
+    # method doesn't mutate self.item_1
+    before = date_time_range_item.clone().to_dict()
+    start_datetime_str = date_time_range_item.properties["start_datetime"]
+    assert isinstance(start_datetime_str, str)
+
+    cm = date_time_range_item.common_metadata
+    assert isinstance(cm, CommonMetadata)
+    assert isinstance(cm.start_datetime, datetime)
+    assert before == date_time_range_item.to_dict()
+    assert cm.providers is None
+
+def test_common_metadata_start_datetime(date_time_range_item: Item) -> None:
+    x = date_time_range_item.clone()
+    start_datetime_str = "2018-01-01T13:21:30Z"
+    start_datetime_dt = utils.str_to_datetime(start_datetime_str)
+    example_datetime_str = "2020-01-01T00:00:00Z"
+    example_datetime_dt = utils.str_to_datetime(example_datetime_str)
+
+    assert x.common_metadata.start_datetime == start_datetime_dt
+    assert x.properties["start_datetime"] == start_datetime_str
+
+    x.common_metadata.start_datetime = example_datetime_dt
+
+    assert x.common_metadata.start_datetime == example_datetime_dt
+    assert x.properties["start_datetime"] == example_datetime_str
+
+def test_common_metadata_end_datetime(date_time_range_item: Item) -> None:
+    x = date_time_range_item.clone()
+    end_datetime_str = "2018-01-01T13:31:30Z"
+    end_datetime_dt = utils.str_to_datetime(end_datetime_str)
+    example_datetime_str = "2020-01-01T00:00:00Z"
+    example_datetime_dt = utils.str_to_datetime(example_datetime_str)
+
+    assert x.common_metadata.end_datetime == end_datetime_dt
+    assert x.properties["end_datetime"] == end_datetime_str
+
+    x.common_metadata.end_datetime = example_datetime_dt
+
+    assert x.common_metadata.end_datetime == example_datetime_dt
+    assert x.properties["end_datetime"] == example_datetime_str
+
 class TestCommonMetadata(unittest.TestCase):
     def setUp(self) -> None:
-        # 3 tests
-        self.ITEM_1 = Item.from_file(
-            TestCases.get_path(
-                "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
-            ))
-
         # 4 tests
         self.ITEM_2 = Item.from_file(
             TestCases.get_path(
                 "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
             )
         )
-
-    def test_datetimes(self) -> None:
-        # save dict of original item to check that `common_metadata`
-        # method doesn't mutate self.item_1
-        before = self.ITEM_1.clone().to_dict()
-        start_datetime_str = self.ITEM_1.properties["start_datetime"]
-        assert isinstance(start_datetime_str, str)
-
-        cm = self.ITEM_1.common_metadata
-        assert isinstance(cm, CommonMetadata)
-        assert isinstance(cm.start_datetime, datetime)
-        assert before == self.ITEM_1.to_dict()
-        assert cm.providers is None
-
-    def test_common_metadata_start_datetime(self) -> None:
-        x = self.ITEM_1.clone()
-        start_datetime_str = "2018-01-01T13:21:30Z"
-        start_datetime_dt = utils.str_to_datetime(start_datetime_str)
-        example_datetime_str = "2020-01-01T00:00:00Z"
-        example_datetime_dt = utils.str_to_datetime(example_datetime_str)
-
-        assert x.common_metadata.start_datetime == start_datetime_dt
-        assert x.properties["start_datetime"] == start_datetime_str
-
-        x.common_metadata.start_datetime = example_datetime_dt
-
-        assert x.common_metadata.start_datetime == example_datetime_dt
-        assert x.properties["start_datetime"] == example_datetime_str
-
-    def test_common_metadata_end_datetime(self) -> None:
-        x = self.ITEM_1.clone()
-        end_datetime_str = "2018-01-01T13:31:30Z"
-        end_datetime_dt = utils.str_to_datetime(end_datetime_str)
-        example_datetime_str = "2020-01-01T00:00:00Z"
-        example_datetime_dt = utils.str_to_datetime(example_datetime_str)
-
-        assert x.common_metadata.end_datetime == end_datetime_dt
-        assert x.properties["end_datetime"] == end_datetime_str
-
-        x.common_metadata.end_datetime = example_datetime_dt
-
-        assert x.common_metadata.end_datetime == example_datetime_dt
-        assert x.properties["end_datetime"] == example_datetime_str
 
     def test_common_metadata_created(self) -> None:
         x = self.ITEM_2.clone()
