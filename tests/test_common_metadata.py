@@ -6,29 +6,21 @@ from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
 from tests.utils import TestCases
 
 
-class CommonMetadataTest(unittest.TestCase):
+class TestCommonMetadata(unittest.TestCase):
     def setUp(self) -> None:
-        self.URI_1 = TestCases.get_path(
-            "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
-        )
-        self.ITEM_1 = Item.from_file(self.URI_1)
+        # 3 tests
+        self.ITEM_1 = Item.from_file(
+            TestCases.get_path(
+                "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
+        ))
 
-        self.URI_2 = TestCases.get_path(
-            "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
+        # 4 tests
+        self.ITEM_2 = Item.from_file(
+            TestCases.get_path(
+                "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
+            )
         )
-        self.ITEM_2 = Item.from_file(self.URI_2)
 
-        self.EXAMPLE_CM_DICT: dict[str, Any] = {
-            "start_datetime": "2020-05-21T16:42:24.896Z",
-            "platform": "example platform",
-            "providers": [
-                {
-                    "name": "example provider",
-                    "roles": ["example roll"],
-                    "url": "https://example-provider.com/",
-                }
-            ],
-        }
 
     def test_datetimes(self) -> None:
         # save dict of original item to check that `common_metadata`
@@ -226,9 +218,9 @@ class CommonMetadataTest(unittest.TestCase):
         self.assertEqual(x.properties["gsd"], example_gsd)
 
 
-class AssetCommonMetadataTest(unittest.TestCase):
+class TestAssetCommonMetadata(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
+        # used in many tests
         self.item = Item.from_file(
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
