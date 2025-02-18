@@ -62,166 +62,158 @@ def test_common_metadata_end_datetime(date_time_range_item: Item) -> None:
     assert x.common_metadata.end_datetime == example_datetime_dt
     assert x.properties["end_datetime"] == example_datetime_str
 
-class TestCommonMetadata(unittest.TestCase):
-    def setUp(self) -> None:
-        # 4 tests
-        self.ITEM_2 = Item.from_file(
-            TestCases.get_path(
-                "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
-            )
-        )
 
-    def test_common_metadata_created(self) -> None:
-        x = self.ITEM_2.clone()
-        created_str = "2016-05-04T00:00:01Z"
-        created_dt = utils.str_to_datetime(created_str)
-        example_datetime_str = "2020-01-01T00:00:00Z"
-        example_datetime_dt = utils.str_to_datetime(example_datetime_str)
+def test_common_metadata_created(sample_full_item: Item) -> None:
+    x = sample_full_item.clone()
+    created_str = "2016-05-04T00:00:01Z"
+    created_dt = utils.str_to_datetime(created_str)
+    example_datetime_str = "2020-01-01T00:00:00Z"
+    example_datetime_dt = utils.str_to_datetime(example_datetime_str)
 
-        assert x.common_metadata.created == created_dt
-        assert x.properties["created"] == created_str
+    assert x.common_metadata.created == created_dt
+    assert x.properties["created"] == created_str
 
-        x.common_metadata.created = example_datetime_dt
+    x.common_metadata.created = example_datetime_dt
 
-        assert x.common_metadata.created == example_datetime_dt
-        assert x.properties["created"] == example_datetime_str
+    assert x.common_metadata.created == example_datetime_dt
+    assert x.properties["created"] == example_datetime_str
 
-    def test_common_metadata_updated(self) -> None:
-        x = self.ITEM_2.clone()
-        updated_str = "2017-01-01T00:30:55Z"
-        updated_dt = utils.str_to_datetime(updated_str)
-        example_datetime_str = "2020-01-01T00:00:00Z"
-        example_datetime_dt = utils.str_to_datetime(example_datetime_str)
+def test_common_metadata_updated(sample_full_item: Item) -> None:
+    x = sample_full_item.clone()
+    updated_str = "2017-01-01T00:30:55Z"
+    updated_dt = utils.str_to_datetime(updated_str)
+    example_datetime_str = "2020-01-01T00:00:00Z"
+    example_datetime_dt = utils.str_to_datetime(example_datetime_str)
 
-        assert x.common_metadata.updated == updated_dt
-        assert x.properties["updated"] == updated_str
+    assert x.common_metadata.updated == updated_dt
+    assert x.properties["updated"] == updated_str
 
-        x.common_metadata.updated = example_datetime_dt
+    x.common_metadata.updated = example_datetime_dt
 
-        assert x.common_metadata.updated == example_datetime_dt
-        assert x.properties["updated"] == example_datetime_str
+    assert x.common_metadata.updated == example_datetime_dt
+    assert x.properties["updated"] == example_datetime_str
 
-    def test_common_metadata_providers(self) -> None:
-        x = self.ITEM_2.clone()
+def test_common_metadata_providers(sample_full_item: Item) -> None:
+    x = sample_full_item.clone()
 
-        providers_dict_list: list[dict[str, Any]] = [
-            {
-                "name": "CoolSat",
-                "roles": ["producer", "licensor"],
-                "url": "https://cool-sat.com/",
-            }
-        ]
-        providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
+    providers_dict_list: list[dict[str, Any]] = [
+        {
+            "name": "CoolSat",
+            "roles": ["producer", "licensor"],
+            "url": "https://cool-sat.com/",
+        }
+    ]
+    providers_object_list = [Provider.from_dict(d) for d in providers_dict_list]
 
-        example_providers_dict_list: list[dict[str, Any]] = [
-            {
-                "name": "ExampleProvider_1",
-                "roles": ["example_role_1", "example_role_2"],
-                "url": "https://exampleprovider1.com/",
-            },
-            {
-                "name": "ExampleProvider_2",
-                "roles": ["example_role_1", "example_role_2"],
-                "url": "https://exampleprovider2.com/",
-            },
-        ]
-        example_providers_object_list = [
-            Provider.from_dict(d) for d in example_providers_dict_list
-        ]
+    example_providers_dict_list: list[dict[str, Any]] = [
+        {
+            "name": "ExampleProvider_1",
+            "roles": ["example_role_1", "example_role_2"],
+            "url": "https://exampleprovider1.com/",
+        },
+        {
+            "name": "ExampleProvider_2",
+            "roles": ["example_role_1", "example_role_2"],
+            "url": "https://exampleprovider2.com/",
+        },
+    ]
+    example_providers_object_list = [
+        Provider.from_dict(d) for d in example_providers_dict_list
+    ]
 
-        for i in range(len(utils.get_opt(x.common_metadata.providers))):
-            p1 = utils.get_opt(x.common_metadata.providers)[i]
-            p2 = providers_object_list[i]
-            assert isinstance(p1, Provider)
-            assert isinstance(p2, Provider)
-            assert p1.to_dict() == p2.to_dict()
+    for i in range(len(utils.get_opt(x.common_metadata.providers))):
+        p1 = utils.get_opt(x.common_metadata.providers)[i]
+        p2 = providers_object_list[i]
+        assert isinstance(p1, Provider)
+        assert isinstance(p2, Provider)
+        assert p1.to_dict() == p2.to_dict()
 
-            pd1 = x.properties["providers"][i]
-            pd2 = providers_dict_list[i]
-            assert isinstance(pd1, dict)
-            assert isinstance(pd2, dict)
-            assert pd1 == pd2
+        pd1 = x.properties["providers"][i]
+        pd2 = providers_dict_list[i]
+        assert isinstance(pd1, dict)
+        assert isinstance(pd2, dict)
+        assert pd1 == pd2
 
-        x.common_metadata.providers = example_providers_object_list
+    x.common_metadata.providers = example_providers_object_list
 
-        for i in range(len(x.common_metadata.providers)):
-            p1 = x.common_metadata.providers[i]
-            p2 = example_providers_object_list[i]
-            assert isinstance(p1, Provider)
-            assert isinstance(p2, Provider)
-            assert p1.to_dict() == p2.to_dict()
+    for i in range(len(x.common_metadata.providers)):
+        p1 = x.common_metadata.providers[i]
+        p2 = example_providers_object_list[i]
+        assert isinstance(p1, Provider)
+        assert isinstance(p2, Provider)
+        assert p1.to_dict() == p2.to_dict()
 
-            pd1 = x.properties["providers"][i]
-            pd2 = example_providers_dict_list[i]
-            assert isinstance(pd1, dict)
-            assert isinstance(pd2, dict)
-            assert pd1 == pd2
+        pd1 = x.properties["providers"][i]
+        pd2 = example_providers_dict_list[i]
+        assert isinstance(pd1, dict)
+        assert isinstance(pd2, dict)
+        assert pd1 == pd2
 
-    def test_common_metadata_basics(self) -> None:
-        x = self.ITEM_2.clone()
+def test_common_metadata_basics(sample_full_item: Item) -> None:
+    x = sample_full_item.clone()
 
-        # Title
-        title = "A CS3 item"
-        example_title = "example title"
-        assert x.common_metadata.title == title
-        x.common_metadata.title = example_title
-        assert x.common_metadata.title == example_title
-        assert x.properties["title"] == example_title
+    # Title
+    title = "A CS3 item"
+    example_title = "example title"
+    assert x.common_metadata.title == title
+    x.common_metadata.title = example_title
+    assert x.common_metadata.title == example_title
+    assert x.properties["title"] == example_title
 
-        # Description
-        example_description = "example description"
-        assert x.common_metadata.description is None
-        x.common_metadata.description = example_description
-        assert x.common_metadata.description == example_description
-        assert x.properties["description"] == example_description
-        with pytest.raises(ValueError):
-            x.common_metadata.description = ""
+    # Description
+    example_description = "example description"
+    assert x.common_metadata.description is None
+    x.common_metadata.description = example_description
+    assert x.common_metadata.description == example_description
+    assert x.properties["description"] == example_description
+    with pytest.raises(ValueError):
+        x.common_metadata.description = ""
 
-        # License
-        license = "PDDL-1.0"
-        example_license = "example license"
-        assert x.common_metadata.license == license
-        x.common_metadata.license = example_license
-        assert x.common_metadata.license == example_license
-        assert x.properties["license"] == example_license
+    # License
+    license = "PDDL-1.0"
+    example_license = "example license"
+    assert x.common_metadata.license == license
+    x.common_metadata.license = example_license
+    assert x.common_metadata.license == example_license
+    assert x.properties["license"] == example_license
 
-        # Platform
-        platform = "coolsat2"
-        example_platform = "example_platform"
-        assert x.common_metadata.platform == platform
-        x.common_metadata.platform = example_platform
-        assert x.common_metadata.platform == example_platform
-        assert x.properties["platform"] == example_platform
+    # Platform
+    platform = "coolsat2"
+    example_platform = "example_platform"
+    assert x.common_metadata.platform == platform
+    x.common_metadata.platform = example_platform
+    assert x.common_metadata.platform == example_platform
+    assert x.properties["platform"] == example_platform
 
-        # Instruments
-        instruments = ["cool_sensor_v1"]
-        example_instruments = ["example instrument 1", "example instrument 2"]
-        assert (x.common_metadata.instruments or []) == instruments
-        x.common_metadata.instruments = example_instruments
-        assert x.common_metadata.instruments == example_instruments
-        assert x.properties["instruments"] == example_instruments
+    # Instruments
+    instruments = ["cool_sensor_v1"]
+    example_instruments = ["example instrument 1", "example instrument 2"]
+    assert (x.common_metadata.instruments or []) == instruments
+    x.common_metadata.instruments = example_instruments
+    assert x.common_metadata.instruments == example_instruments
+    assert x.properties["instruments"] == example_instruments
 
-        # Constellation
-        example_constellation = "example constellation"
-        assert x.common_metadata.constellation is None
-        x.common_metadata.constellation = example_constellation
-        assert x.common_metadata.constellation == example_constellation
-        assert x.properties["constellation"] == example_constellation
+    # Constellation
+    example_constellation = "example constellation"
+    assert x.common_metadata.constellation is None
+    x.common_metadata.constellation = example_constellation
+    assert x.common_metadata.constellation == example_constellation
+    assert x.properties["constellation"] == example_constellation
 
-        # Mission
-        example_mission = "example mission"
-        assert x.common_metadata.mission is None
-        x.common_metadata.mission = example_mission
-        assert x.common_metadata.mission == example_mission
-        assert x.properties["mission"] == example_mission
+    # Mission
+    example_mission = "example mission"
+    assert x.common_metadata.mission is None
+    x.common_metadata.mission = example_mission
+    assert x.common_metadata.mission == example_mission
+    assert x.properties["mission"] == example_mission
 
-        # GSD
-        gsd = 0.512
-        example_gsd = 0.75
-        assert x.common_metadata.gsd == gsd
-        x.common_metadata.gsd = example_gsd
-        assert x.common_metadata.gsd == example_gsd
-        assert x.properties["gsd"] == example_gsd
+    # GSD
+    gsd = 0.512
+    example_gsd = 0.75
+    assert x.common_metadata.gsd == gsd
+    x.common_metadata.gsd = example_gsd
+    assert x.common_metadata.gsd == example_gsd
+    assert x.properties["gsd"] == example_gsd
 
 
 class TestAssetCommonMetadata(unittest.TestCase):
