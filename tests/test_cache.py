@@ -36,7 +36,6 @@ def test_ResolvedObjectCache_get_or_cache_returns_previously_cached_id() -> None
     assert cache_result_2 is cat
 
 
-# class ResolvedObjectCollectionCacheTest(unittest.TestCase):
 def test_ResolvedObjectCollectionCache_merge() -> None:
     cat1 = create_catalog(1, include_href=False)
     cat2 = create_catalog(2)
