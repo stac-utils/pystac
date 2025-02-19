@@ -216,15 +216,15 @@ def test_common_metadata_basics(sample_full_item: Item) -> None:
     assert x.properties["gsd"] == example_gsd
 
 
-class TestAssetCommonMetadata(unittest.TestCase):
-    def setUp(self) -> None:
-        # used in many tests
-        self.item = Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
+@pytest.fixture
+def name() -> Item:
+    return Item.from_file(
+        TestCases.get_path("data-files/item/sample-item-asset-properties.json"))
 
+
+class TestAssetCommonMetadata(unittest.TestCase):
     def test_title(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -246,7 +246,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["title"] == set_value
 
     def test_description(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -268,7 +268,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["description"] == set_value
 
     def test_start_datetime(self) -> None:
-        item = self.item.clone()
+        item = self.item
         item_cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -290,7 +290,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["start_datetime"] == utils.datetime_to_str(set_value)
 
     def test_end_datetime(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -312,7 +312,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["end_datetime"] == utils.datetime_to_str(set_value)
 
     def test_license(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -334,7 +334,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["license"] == set_value
 
     def test_providers(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -368,7 +368,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["providers"] == [p.to_dict() for p in set_value]
 
     def test_platform(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -390,7 +390,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["platform"] == set_value
 
     def test_instruments(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -412,7 +412,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["instruments"] == set_value
 
     def test_constellation(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -434,7 +434,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["constellation"] == set_value
 
     def test_mission(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -456,7 +456,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["mission"] == set_value
 
     def test_gsd(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -478,7 +478,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["gsd"] == set_value
 
     def test_created(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -500,7 +500,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["created"] == utils.datetime_to_str(set_value)
 
     def test_updated(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -522,7 +522,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["updated"] == utils.datetime_to_str(set_value)
 
     def test_keywords(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -544,7 +544,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic.to_dict()["keywords"] == set_value
 
     def test_roles(self) -> None:
-        item = self.item.clone()
+        item = self.item
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -564,3 +564,10 @@ class TestAssetCommonMetadata(unittest.TestCase):
 
         assert analytic_cm.roles == set_value
         assert analytic.to_dict()["roles"] == set_value
+
+    def setUp(self) -> None:
+        # used in many tests
+        self.item = Item.from_file(
+            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
+        )
+
