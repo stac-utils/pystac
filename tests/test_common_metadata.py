@@ -9,13 +9,20 @@ from tests.utils import TestCases
 
 @pytest.fixture
 def date_time_range_item() -> Item:
-    return Item.from_file(TestCases.get_path(
-        "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"))
+    return Item.from_file(
+        TestCases.get_path(
+            "data-files/examples/1.0.0-beta.2/item-spec/examples/datetimerange.json"
+        )
+    )
+
 
 @pytest.fixture
 def sample_full_item() -> Item:
-    return Item.from_file(TestCases.get_path(
-        "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"))
+    return Item.from_file(
+        TestCases.get_path(
+            "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
+        )
+    )
 
 
 def test_datetimes(date_time_range_item: Item) -> None:
@@ -31,6 +38,7 @@ def test_datetimes(date_time_range_item: Item) -> None:
     assert before == date_time_range_item.to_dict()
     assert cm.providers is None
 
+
 def test_common_metadata_start_datetime(date_time_range_item: Item) -> None:
     x = date_time_range_item.clone()
     start_datetime_str = "2018-01-01T13:21:30Z"
@@ -45,6 +53,7 @@ def test_common_metadata_start_datetime(date_time_range_item: Item) -> None:
 
     assert x.common_metadata.start_datetime == example_datetime_dt
     assert x.properties["start_datetime"] == example_datetime_str
+
 
 def test_common_metadata_end_datetime(date_time_range_item: Item) -> None:
     x = date_time_range_item.clone()
@@ -77,6 +86,7 @@ def test_common_metadata_created(sample_full_item: Item) -> None:
     assert x.common_metadata.created == example_datetime_dt
     assert x.properties["created"] == example_datetime_str
 
+
 def test_common_metadata_updated(sample_full_item: Item) -> None:
     x = sample_full_item.clone()
     updated_str = "2017-01-01T00:30:55Z"
@@ -91,6 +101,7 @@ def test_common_metadata_updated(sample_full_item: Item) -> None:
 
     assert x.common_metadata.updated == example_datetime_dt
     assert x.properties["updated"] == example_datetime_str
+
 
 def test_common_metadata_providers(sample_full_item: Item) -> None:
     x = sample_full_item.clone()
@@ -147,6 +158,7 @@ def test_common_metadata_providers(sample_full_item: Item) -> None:
         assert isinstance(pd1, dict)
         assert isinstance(pd2, dict)
         assert pd1 == pd2
+
 
 def test_common_metadata_basics(sample_full_item: Item) -> None:
     x = sample_full_item.clone()
@@ -219,7 +231,8 @@ class TestAssetCommonMetadata:
     @pytest.fixture
     def item(self) -> Item:
         return Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json"))
+            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
+        )
 
     def test_title(self, item: Item) -> None:
         cm = item.common_metadata
