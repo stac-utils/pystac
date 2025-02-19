@@ -1,4 +1,3 @@
-import unittest
 from datetime import datetime
 from typing import Any
 
@@ -243,9 +242,7 @@ class TestAssetCommonMetadata:
         assert analytic_cm.title == set_value
         assert analytic.to_dict()["title"] == set_value
 
-class TestOrigAssetCommonMetadata(unittest.TestCase):
-    def test_description(self) -> None:
-        item = self.item
+    def test_description(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -266,8 +263,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.description == set_value
         assert analytic.to_dict()["description"] == set_value
 
-    def test_start_datetime(self) -> None:
-        item = self.item
+    def test_start_datetime(self, item: Item) -> None:
         item_cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -288,8 +284,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.start_datetime == set_value
         assert analytic.to_dict()["start_datetime"] == utils.datetime_to_str(set_value)
 
-    def test_end_datetime(self) -> None:
-        item = self.item
+    def test_end_datetime(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -310,8 +305,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.end_datetime == set_value
         assert analytic.to_dict()["end_datetime"] == utils.datetime_to_str(set_value)
 
-    def test_license(self) -> None:
-        item = self.item
+    def test_license(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -332,8 +326,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.license == set_value
         assert analytic.to_dict()["license"] == set_value
 
-    def test_providers(self) -> None:
-        item = self.item
+    def test_providers(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -366,8 +359,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.providers == set_value
         assert analytic.to_dict()["providers"] == [p.to_dict() for p in set_value]
 
-    def test_platform(self) -> None:
-        item = self.item
+    def test_platform(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -388,8 +380,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.platform == set_value
         assert analytic.to_dict()["platform"] == set_value
 
-    def test_instruments(self) -> None:
-        item = self.item
+    def test_instruments(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -410,8 +401,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.instruments == set_value
         assert analytic.to_dict()["instruments"] == set_value
 
-    def test_constellation(self) -> None:
-        item = self.item
+    def test_constellation(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -432,8 +422,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.constellation == set_value
         assert analytic.to_dict()["constellation"] == set_value
 
-    def test_mission(self) -> None:
-        item = self.item
+    def test_mission(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -454,8 +443,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.mission == set_value
         assert analytic.to_dict()["mission"] == set_value
 
-    def test_gsd(self) -> None:
-        item = self.item
+    def test_gsd(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -476,8 +464,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.gsd == set_value
         assert analytic.to_dict()["gsd"] == set_value
 
-    def test_created(self) -> None:
-        item = self.item
+    def test_created(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -498,8 +485,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.created == set_value
         assert analytic.to_dict()["created"] == utils.datetime_to_str(set_value)
 
-    def test_updated(self) -> None:
-        item = self.item
+    def test_updated(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -520,8 +506,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.updated == set_value
         assert analytic.to_dict()["updated"] == utils.datetime_to_str(set_value)
 
-    def test_keywords(self) -> None:
-        item = self.item
+    def test_keywords(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -542,8 +527,7 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.keywords == set_value
         assert analytic.to_dict()["keywords"] == set_value
 
-    def test_roles(self) -> None:
-        item = self.item
+    def test_roles(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -563,10 +547,3 @@ class TestOrigAssetCommonMetadata(unittest.TestCase):
 
         assert analytic_cm.roles == set_value
         assert analytic.to_dict()["roles"] == set_value
-
-    def setUp(self) -> None:
-        # used in many tests
-        self.item = Item.from_file(
-            TestCases.get_path("data-files/item/sample-item-asset-properties.json")
-        )
-
