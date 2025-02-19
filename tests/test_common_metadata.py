@@ -216,15 +216,13 @@ def test_common_metadata_basics(sample_full_item: Item) -> None:
     assert x.properties["gsd"] == example_gsd
 
 
-@pytest.fixture
-def name() -> Item:
-    return Item.from_file(
-        TestCases.get_path("data-files/item/sample-item-asset-properties.json"))
+class TestAssetCommonMetadata:
+    @pytest.fixture
+    def item(self) -> Item:
+        return Item.from_file(
+            TestCases.get_path("data-files/item/sample-item-asset-properties.json"))
 
-
-class TestAssetCommonMetadata(unittest.TestCase):
-    def test_title(self) -> None:
-        item = self.item
+    def test_title(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
         analytic_cm = CommonMetadata(analytic)
@@ -245,6 +243,7 @@ class TestAssetCommonMetadata(unittest.TestCase):
         assert analytic_cm.title == set_value
         assert analytic.to_dict()["title"] == set_value
 
+class TestOrigAssetCommonMetadata(unittest.TestCase):
     def test_description(self) -> None:
         item = self.item
         cm = item.common_metadata
