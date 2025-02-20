@@ -510,7 +510,8 @@ class ProjectionTest(unittest.TestCase):
             ExtensionTypeError,
             match=r"^ProjectionExtension does not apply to type 'object'$",
         ):
-            ProjectionExtension.ext(object())
+            # intentionally calling this wrong so ---vvv
+            ProjectionExtension.ext(object())  # type: ignore
 
     def setUp(self) -> None:
         self.example_uri = TestCases.get_path(
