@@ -73,18 +73,29 @@ PROJJSON = json.loads(
 """
 )
 
+@pytest.fixture
+def example_uri() -> str:
+    return TestCases.get_path(
+        "data-files/projection/example-landsat8.json"
+    )
+
+
+def test_to_from_dict(example_uri: str) -> None:
+    with open(example_uri) as f:
+        d = json.load(f)
+    assert_to_from_dict(pystac.Item, d)
+
+@pytest.mark.vcr()
+def test_partial_apply(example_uri: str) -> None:
+    proj_item = pystac.Item.from_file(example_uri)
+
+    ProjectionExtension.ext(proj_item).apply(epsg=1111)
+
+    assert ProjectionExtension.ext(proj_item).epsg == 1111
+    proj_item.validate()
+
 
 class ProjectionTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.maxDiff = None
-        self.example_uri = TestCases.get_path(
-            "data-files/projection/example-landsat8.json"
-        )
-
-    def test_to_from_dict(self) -> None:
-        with open(self.example_uri) as f:
-            d = json.load(f)
-        assert_to_from_dict(pystac.Item, d)
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))
@@ -101,15 +112,6 @@ class ProjectionTest(unittest.TestCase):
             shape=[100, 100],
             transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0],
         )
-
-    @pytest.mark.vcr()
-    def test_partial_apply(self) -> None:
-        proj_item = pystac.Item.from_file(self.example_uri)
-
-        ProjectionExtension.ext(proj_item).apply(epsg=1111)
-
-        self.assertEqual(ProjectionExtension.ext(proj_item).epsg, 1111)
-        proj_item.validate()
 
     @pytest.mark.vcr()
     def test_validate_proj(self) -> None:
@@ -509,10 +511,14 @@ class ProjectionTest(unittest.TestCase):
             object(),
         )
 
-
-class ProjectionSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
+        self.example_uri = TestCases.get_path(
+            "data-files/projection/example-landsat8.json"
+        )
+
+
+class TestProjectionSummaries(unittest.TestCase):
+    def setUp(self) -> None:
         self.example_uri = TestCases.get_path(
             "data-files/projection/collection-with-summaries.json"
         )
