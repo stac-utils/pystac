@@ -95,23 +95,67 @@ def test_partial_apply(example_uri: str) -> None:
     proj_item.validate()
 
 
+def test_apply() -> None:
+    item = next(TestCases.case_2().get_items(recursive=True))
+    assert not ProjectionExtension.has_extension(item)
+
+    ProjectionExtension.add_to(item)
+    ProjectionExtension.ext(item).apply(
+        epsg=4326,
+        wkt2=WKT2,
+        projjson=PROJJSON,
+        geometry=item.geometry,
+        bbox=item.bbox,
+        centroid={"lat": 0.0, "lon": 1.0},
+        shape=[100, 100],
+        transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0],
+    )
+
+
+def test_optional_epsg() -> None:
+    example_uri = TestCases.get_path("data-files/projection/optional-epsg.json")
+    proj_item = pystac.Item.from_file(example_uri)
+
+    # No proj info on item
+    assert "proj:epsg" not in proj_item.properties
+    assert "proj:code" not in proj_item.properties
+
+    # Some proj info on assets
+    asset_no_prop = proj_item.assets["metadata"]
+    assert ProjectionExtension.ext(asset_no_prop).epsg is None
+
+    asset_prop = proj_item.assets["visual"]
+    assert ProjectionExtension.ext(asset_prop).epsg == 32618
+
+
+def test_crs_string(example_uri: str) -> None:
+    item = pystac.Item.from_file(example_uri)
+    ProjectionExtension.remove_from(item)
+    for key in list(item.properties.keys()):
+        if key.startswith("proj:"):
+            item.properties.pop(key)
+    assert item.properties.get("proj:code") is None
+    assert item.properties.get("proj:epsg") is None
+    assert item.properties.get("proj:wkt2") is None
+    assert item.properties.get("proj:projjson") is None
+
+    projection = ProjectionExtension.ext(item, add_if_missing=True)
+    assert projection.crs_string is None
+
+    projection.projjson = PROJJSON
+    assert projection.crs_string == json.dumps(PROJJSON)
+
+    projection.wkt2 = WKT2
+    assert projection.crs_string == WKT2
+
+    projection.epsg = 4326
+    assert projection.crs_string == "EPSG:4326"
+
+    projection.code = "IAU_2015:49900"
+    assert projection.crs_string == "IAU_2015:49900"
+
+
 class ProjectionTest(unittest.TestCase):
-    def test_apply(self) -> None:
-        item = next(TestCases.case_2().get_items(recursive=True))
-        assert not ProjectionExtension.has_extension(item)
-
-        ProjectionExtension.add_to(item)
-        ProjectionExtension.ext(item).apply(
-            epsg=4326,
-            wkt2=WKT2,
-            projjson=PROJJSON,
-            geometry=item.geometry,
-            bbox=item.bbox,
-            centroid={"lat": 0.0, "lon": 1.0},
-            shape=[100, 100],
-            transform=[30.0, 0.0, 224985.0, 0.0, -30.0, 6790215.0, 0.0, 0.0, 1.0],
-        )
-
     @pytest.mark.vcr()
     def test_validate_proj(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
@@ -151,21 +195,6 @@ class ProjectionTest(unittest.TestCase):
 
         # Validate
         proj_item.validate()
-
-    def test_optional_epsg(self) -> None:
-        example_uri = TestCases.get_path("data-files/projection/optional-epsg.json")
-        proj_item = pystac.Item.from_file(example_uri)
-
-        # No proj info on item
-        assert "proj:epsg" not in proj_item.properties
-        assert "proj:code" not in proj_item.properties
-
-        # Some proj info on assets
-        asset_no_prop = proj_item.assets["metadata"]
-        assert ProjectionExtension.ext(asset_no_prop).epsg is None
-
-        asset_prop = proj_item.assets["visual"]
-        assert ProjectionExtension.ext(asset_prop).epsg == 32618
 
     @pytest.mark.vcr()
     def test_wkt2(self) -> None:
@@ -244,32 +273,6 @@ class ProjectionTest(unittest.TestCase):
         with pytest.raises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
-
-    def test_crs_string(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        ProjectionExtension.remove_from(item)
-        for key in list(item.properties.keys()):
-            if key.startswith("proj:"):
-                item.properties.pop(key)
-        assert item.properties.get("proj:code") is None
-        assert item.properties.get("proj:epsg") is None
-        assert item.properties.get("proj:wkt2") is None
-        assert item.properties.get("proj:projjson") is None
-
-        projection = ProjectionExtension.ext(item, add_if_missing=True)
-        assert projection.crs_string is None
-
-        projection.projjson = PROJJSON
-        assert projection.crs_string == json.dumps(PROJJSON)
-
-        projection.wkt2 = WKT2
-        assert projection.crs_string == WKT2
-
-        projection.epsg = 4326
-        assert projection.crs_string == "EPSG:4326"
-
-        projection.code = "IAU_2015:49900"
-        assert projection.crs_string == "IAU_2015:49900"
 
     @pytest.mark.vcr()
     def test_geometry(self) -> None:
