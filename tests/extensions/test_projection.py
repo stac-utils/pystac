@@ -99,7 +99,7 @@ class ProjectionTest(unittest.TestCase):
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))
-        self.assertFalse(ProjectionExtension.has_extension(item))
+        assert not ProjectionExtension.has_extension(item)
 
         ProjectionExtension.add_to(item)
         ProjectionExtension.ext(item).apply(
@@ -123,32 +123,26 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertNotIn("proj:epsg", proj_item.properties)
-        self.assertIn("proj:code", proj_item.properties)
+        assert "proj:epsg" not in proj_item.properties
+        assert "proj:code" in proj_item.properties
         proj_epsg = ProjectionExtension.ext(proj_item).epsg
-        self.assertEqual(f"EPSG:{proj_epsg}", proj_item.properties["proj:code"])
+        assert f"EPSG:{proj_epsg}" == proj_item.properties["proj:code"]
 
         # Set
         assert proj_epsg is not None
         ProjectionExtension.ext(proj_item).epsg = proj_epsg + 100
-        self.assertEqual(f"EPSG:{proj_epsg + 100}", proj_item.properties["proj:code"])
+        assert f"EPSG:{proj_epsg + 100}" == proj_item.properties["proj:code"]
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).epsg,
-            ProjectionExtension.ext(proj_item).epsg,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_prop).epsg, 9999)
+        assert  ProjectionExtension.ext(asset_no_prop).epsg == ProjectionExtension.ext(proj_item).epsg 
+        assert ProjectionExtension.ext(asset_prop).epsg == 9999
 
         # Set to Asset
         ProjectionExtension.ext(asset_no_prop).epsg = 8888
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).epsg,
-            ProjectionExtension.ext(proj_item).epsg,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).epsg, 8888)
+        assert  ProjectionExtension.ext(asset_no_prop).epsg != ProjectionExtension.ext(proj_item).epsg
+        assert ProjectionExtension.ext(asset_no_prop).epsg == 8888
 
         # Validate
         proj_item.validate()
@@ -158,48 +152,40 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(example_uri)
 
         # No proj info on item
-        self.assertNotIn("proj:epsg", proj_item.properties)
-        self.assertNotIn("proj:code", proj_item.properties)
+        assert "proj:epsg" not in proj_item.properties
+        assert "proj:code" not in proj_item.properties
 
         # Some proj info on assets
         asset_no_prop = proj_item.assets["metadata"]
-        self.assertIsNone(ProjectionExtension.ext(asset_no_prop).epsg)
+        assert ProjectionExtension.ext(asset_no_prop).epsg is None
 
         asset_prop = proj_item.assets["visual"]
-        self.assertEqual(ProjectionExtension.ext(asset_prop).epsg, 32618)
+        assert ProjectionExtension.ext(asset_prop).epsg == 32618
 
     @pytest.mark.vcr()
     def test_wkt2(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:wkt2", proj_item.properties)
+        assert "proj:wkt2" in proj_item.properties
         proj_wkt2 = ProjectionExtension.ext(proj_item).wkt2
-        self.assertEqual(proj_wkt2, proj_item.properties["proj:wkt2"])
+        assert proj_wkt2 == proj_item.properties["proj:wkt2"]
 
         # Set
         ProjectionExtension.ext(proj_item).wkt2 = WKT2
-        self.assertEqual(WKT2, proj_item.properties["proj:wkt2"])
+        assert WKT2 == proj_item.properties["proj:wkt2"]
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).wkt2,
-            ProjectionExtension.ext(proj_item).wkt2,
-        )
-        self.assertTrue(
-            "TEST_TEXT" in get_opt(ProjectionExtension.ext(asset_prop).wkt2)
-        )
+        assert ProjectionExtension.ext(asset_no_prop).wkt2 == ProjectionExtension.ext(proj_item).wkt2
+        assert "TEST_TEXT" in get_opt(ProjectionExtension.ext(asset_prop).wkt2)
 
         # Set to Asset
         asset_value = "TEST TEXT 2"
         ProjectionExtension.ext(asset_no_prop).wkt2 = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).wkt2,
-            ProjectionExtension.ext(proj_item).wkt2,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).wkt2, asset_value)
+        assert ProjectionExtension.ext(asset_no_prop).wkt2 != ProjectionExtension.ext(proj_item).wkt2
+        assert ProjectionExtension.ext(asset_no_prop).wkt2 == asset_value
 
         # Validate
         proj_item.validate()
@@ -209,42 +195,36 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:projjson", proj_item.properties)
+        assert "proj:projjson" in proj_item.properties
         proj_projjson = ProjectionExtension.ext(proj_item).projjson
-        self.assertEqual(proj_projjson, proj_item.properties["proj:projjson"])
+        assert proj_projjson == proj_item.properties["proj:projjson"]
 
         # Set
         ProjectionExtension.ext(proj_item).projjson = PROJJSON
-        self.assertEqual(PROJJSON, proj_item.properties["proj:projjson"])
+        assert PROJJSON == proj_item.properties["proj:projjson"]
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).projjson,
-            ProjectionExtension.ext(proj_item).projjson,
-        )
+        assert  ProjectionExtension.ext(asset_no_prop).projjson == ProjectionExtension.ext(proj_item).projjson
         asset_prop_json = ProjectionExtension.ext(asset_prop).projjson
         assert asset_prop_json is not None
-        self.assertEqual(asset_prop_json["id"]["code"], 9999)
+        assert asset_prop_json["id"]["code"] == 9999
 
         # Set to Asset
         asset_value = deepcopy(PROJJSON)
         asset_value["id"]["code"] = 7777
         ProjectionExtension.ext(asset_no_prop).projjson = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).projjson,
-            ProjectionExtension.ext(proj_item).projjson,
-        )
+        assert  ProjectionExtension.ext(asset_no_prop).projjson != ProjectionExtension.ext(proj_item).projjson
         asset_no_prop_json = ProjectionExtension.ext(asset_no_prop).projjson
         assert asset_no_prop_json is not None
-        self.assertEqual(asset_no_prop_json["id"]["code"], 7777)
+        assert asset_no_prop_json["id"]["code"] == 7777
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad projjson fails validation
-        with self.assertRaises(pystac.STACValidationError):
+        with pytest.raises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
             proj_item.validate()
 
@@ -254,64 +234,58 @@ class ProjectionTest(unittest.TestCase):
         for key in list(item.properties.keys()):
             if key.startswith("proj:"):
                 item.properties.pop(key)
-        self.assertIsNone(item.properties.get("proj:code"))
-        self.assertIsNone(item.properties.get("proj:epsg"))
-        self.assertIsNone(item.properties.get("proj:wkt2"))
-        self.assertIsNone(item.properties.get("proj:projjson"))
+        assert item.properties.get("proj:code") is None
+        assert item.properties.get("proj:epsg") is None
+        assert item.properties.get("proj:wkt2") is None
+        assert item.properties.get("proj:projjson") is None
 
         projection = ProjectionExtension.ext(item, add_if_missing=True)
-        self.assertIsNone(projection.crs_string)
+        assert projection.crs_string is None
 
         projection.projjson = PROJJSON
-        self.assertEqual(projection.crs_string, json.dumps(PROJJSON))
+        assert projection.crs_string == json.dumps(PROJJSON)
 
         projection.wkt2 = WKT2
-        self.assertEqual(projection.crs_string, WKT2)
+        assert projection.crs_string == WKT2
 
         projection.epsg = 4326
-        self.assertEqual(projection.crs_string, "EPSG:4326")
+        assert projection.crs_string == "EPSG:4326"
 
         projection.code = "IAU_2015:49900"
-        self.assertEqual(projection.crs_string, "IAU_2015:49900")
+        assert projection.crs_string == "IAU_2015:49900"
 
     @pytest.mark.vcr()
     def test_geometry(self) -> None:
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:geometry", proj_item.properties)
+        assert "proj:geometry" in proj_item.properties
         proj_geometry = ProjectionExtension.ext(proj_item).geometry
-        self.assertEqual(proj_geometry, proj_item.properties["proj:geometry"])
+        assert proj_geometry == proj_item.properties["proj:geometry"]
 
         # Set
         ProjectionExtension.ext(proj_item).geometry = proj_item.geometry
-        self.assertEqual(proj_item.geometry, proj_item.properties["proj:geometry"])
+        assert proj_item.geometry == proj_item.properties["proj:geometry"]
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).geometry,
-            ProjectionExtension.ext(proj_item).geometry,
-        )
+        assert  ProjectionExtension.ext(asset_no_prop).geometry == ProjectionExtension.ext(proj_item).geometry
         asset_prop_geometry = ProjectionExtension.ext(asset_prop).geometry
         assert asset_prop_geometry is not None
-        self.assertEqual(asset_prop_geometry["coordinates"][0][0], [0.0, 0.0])
+        assert asset_prop_geometry["coordinates"][0][0], [0.0 == 0.0]
 
         # Set to Asset
         asset_value: dict[str, Any] = {"type": "Point", "coordinates": [1.0, 2.0]}
         ProjectionExtension.ext(asset_no_prop).geometry = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).geometry,
-            ProjectionExtension.ext(proj_item).geometry,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).geometry, asset_value)
+        assert  ProjectionExtension.ext(asset_no_prop).geometry != ProjectionExtension.ext(proj_item).geometry
+        assert ProjectionExtension.ext(asset_no_prop).geometry == asset_value
 
         # Validate
         proj_item.validate()
 
         # Ensure setting bad geometry fails validation
-        with self.assertRaises(pystac.STACValidationError):
+        with pytest.raises(pystac.STACValidationError):
             ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
             proj_item.validate()
 
@@ -320,31 +294,25 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:bbox", proj_item.properties)
+        assert "proj:bbox" in proj_item.properties
         proj_bbox = ProjectionExtension.ext(proj_item).bbox
-        self.assertEqual(proj_bbox, proj_item.properties["proj:bbox"])
+        assert proj_bbox == proj_item.properties["proj:bbox"]
 
         # Set
         ProjectionExtension.ext(proj_item).bbox = [1.0, 2.0, 3.0, 4.0]
-        self.assertEqual(proj_item.properties["proj:bbox"], [1.0, 2.0, 3.0, 4.0])
+        assert proj_item.properties["proj:bbox"] == [1.0, 2.0, 3.0, 4.0]
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).bbox,
-            ProjectionExtension.ext(proj_item).bbox,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_prop).bbox, [1.0, 2.0, 3.0, 4.0])
+        assert ProjectionExtension.ext(asset_no_prop).bbox == ProjectionExtension.ext(proj_item).bbox
+        assert ProjectionExtension.ext(asset_prop).bbox == [1.0, 2.0, 3.0, 4.0]
 
         # Set to Asset
         asset_value = [10.0, 20.0, 30.0, 40.0]
         ProjectionExtension.ext(asset_no_prop).bbox = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).bbox,
-            ProjectionExtension.ext(proj_item).bbox,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).bbox, asset_value)
+        assert  ProjectionExtension.ext(asset_no_prop).bbox != ProjectionExtension.ext(proj_item).bbox
+        assert ProjectionExtension.ext(asset_no_prop).bbox == asset_value
 
         # Validate
         proj_item.validate()
@@ -354,34 +322,26 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:centroid", proj_item.properties)
+        assert "proj:centroid" in proj_item.properties
         proj_centroid = ProjectionExtension.ext(proj_item).centroid
-        self.assertEqual(proj_centroid, proj_item.properties["proj:centroid"])
+        assert proj_centroid == proj_item.properties["proj:centroid"]
 
         # Set
         new_val = {"lat": 2.0, "lon": 3.0}
         ProjectionExtension.ext(proj_item).centroid = new_val
-        self.assertEqual(proj_item.properties["proj:centroid"], new_val)
+        assert proj_item.properties["proj:centroid"] == new_val
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).centroid,
-            ProjectionExtension.ext(proj_item).centroid,
-        )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).centroid, {"lat": 0.5, "lon": 0.3}
-        )
+        assert  ProjectionExtension.ext(asset_no_prop).centroid == ProjectionExtension.ext(proj_item).centroid
+        assert ProjectionExtension.ext(asset_prop).centroid == {"lat": 0.5, "lon": 0.3}
 
         # Set to Asset
         asset_value = {"lat": 1.5, "lon": 1.3}
         ProjectionExtension.ext(asset_no_prop).centroid = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).centroid,
-            ProjectionExtension.ext(proj_item).centroid,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).centroid, asset_value)
+        assert  ProjectionExtension.ext(asset_no_prop).centroid != ProjectionExtension.ext(proj_item).centroid
+        assert ProjectionExtension.ext(asset_no_prop).centroid == asset_value
 
         # Validate
         proj_item.validate()
@@ -396,32 +356,26 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:shape", proj_item.properties)
+        assert "proj:shape" in proj_item.properties
         proj_shape = ProjectionExtension.ext(proj_item).shape
-        self.assertEqual(proj_shape, proj_item.properties["proj:shape"])
+        assert proj_shape == proj_item.properties["proj:shape"]
 
         # Set
         new_val = [100, 200]
         ProjectionExtension.ext(proj_item).shape = new_val
-        self.assertEqual(proj_item.properties["proj:shape"], new_val)
+        assert proj_item.properties["proj:shape"] == new_val
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).shape,
-            ProjectionExtension.ext(proj_item).shape,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_prop).shape, [16781, 16621])
+        assert ProjectionExtension.ext(asset_no_prop).shape == ProjectionExtension.ext(proj_item).shape
+        assert ProjectionExtension.ext(asset_prop).shape == [16781, 16621]
 
         # Set to Asset
         asset_value = [1, 2]
         ProjectionExtension.ext(asset_no_prop).shape = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).shape,
-            ProjectionExtension.ext(proj_item).shape,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).shape, asset_value)
+        assert  ProjectionExtension.ext(asset_no_prop).shape != ProjectionExtension.ext(proj_item).shape
+        assert ProjectionExtension.ext(asset_no_prop).shape == asset_value
 
         # Validate
         proj_item.validate()
@@ -431,35 +385,26 @@ class ProjectionTest(unittest.TestCase):
         proj_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("proj:transform", proj_item.properties)
+        assert "proj:transform" in proj_item.properties
         proj_transform = ProjectionExtension.ext(proj_item).transform
-        self.assertEqual(proj_transform, proj_item.properties["proj:transform"])
+        assert proj_transform == proj_item.properties["proj:transform"]
 
         # Set
         new_val = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
         ProjectionExtension.ext(proj_item).transform = new_val
-        self.assertEqual(proj_item.properties["proj:transform"], new_val)
+        assert proj_item.properties["proj:transform"] == new_val
 
         # Get from Asset
         asset_no_prop = proj_item.assets["B1"]
         asset_prop = proj_item.assets["B8"]
-        self.assertEqual(
-            ProjectionExtension.ext(asset_no_prop).transform,
-            ProjectionExtension.ext(proj_item).transform,
-        )
-        self.assertEqual(
-            ProjectionExtension.ext(asset_prop).transform,
-            [15.0, 0.0, 224992.5, 0.0, -15.0, 6790207.5, 0.0, 0.0, 1.0],
-        )
+        assert  ProjectionExtension.ext(asset_no_prop).transform == ProjectionExtension.ext(proj_item).transform
+        assert ProjectionExtension.ext(asset_prop).transform == [15.0, 0.0, 224992.5, 0.0, -15.0, 6790207.5, 0.0, 0.0, 1.0]
 
         # Set to Asset
         asset_value = [2.0, 4.0, 6.0, 8.0, 10.0, 12.0]
         ProjectionExtension.ext(asset_no_prop).transform = asset_value
-        self.assertNotEqual(
-            ProjectionExtension.ext(asset_no_prop).transform,
-            ProjectionExtension.ext(proj_item).transform,
-        )
-        self.assertEqual(ProjectionExtension.ext(asset_no_prop).transform, asset_value)
+        assert  ProjectionExtension.ext(asset_no_prop).transform != ProjectionExtension.ext(proj_item).transform
+        assert ProjectionExtension.ext(asset_no_prop).transform == asset_value
 
         # Validate
         proj_item.validate()
@@ -469,13 +414,13 @@ class ProjectionTest(unittest.TestCase):
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with pytest.raises(pystac.ExtensionNotImplemented):
             _ = ProjectionExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["B8"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with pytest.raises(pystac.ExtensionNotImplemented):
             _ = ProjectionExtension.ext(asset)
 
         # Should succeed if Asset has no owner
@@ -485,31 +430,30 @@ class ProjectionTest(unittest.TestCase):
     def test_item_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
-        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() not in item.stac_extensions
 
         _ = ProjectionExtension.ext(item, add_if_missing=True)
 
-        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() in item.stac_extensions
 
     def test_asset_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
-        self.assertNotIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() not in item.stac_extensions
         asset = item.assets["B8"]
 
         _ = ProjectionExtension.ext(asset, add_if_missing=True)
 
-        self.assertIn(ProjectionExtension.get_schema_uri(), item.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() in item.stac_extensions
 
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:
-        self.assertRaisesRegex(
+        with pytest.raises(
             ExtensionTypeError,
-            r"^ProjectionExtension does not apply to type 'object'$",
-            ProjectionExtension.ext,
-            object(),
-        )
+            match=r"^ProjectionExtension does not apply to type 'object'$",
+        ):
+            ProjectionExtension.ext(object())
 
     def setUp(self) -> None:
         self.example_uri = TestCases.get_path(
@@ -531,7 +475,7 @@ class TestProjectionSummaries(unittest.TestCase):
 
         epsg_summaries = proj_summaries.epsg
         assert epsg_summaries is not None
-        self.assertListEqual(epsg_summaries, [32614])
+        assert epsg_summaries == [32614]
 
     def test_set_summaries(self) -> None:
         col = pystac.Collection.from_file(self.example_uri)
@@ -542,7 +486,7 @@ class TestProjectionSummaries(unittest.TestCase):
         proj_summaries.epsg = [4326]
 
         col_dict = col.to_dict()
-        self.assertEqual(col_dict["summaries"]["proj:code"], ["EPSG:4326"])
+        assert col_dict["summaries"]["proj:code"] == ["EPSG:4326"]
 
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(self.example_uri)
@@ -554,10 +498,10 @@ class TestProjectionSummaries(unittest.TestCase):
 
         ProjectionExtension.summaries(col, True)
 
-        self.assertIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() in col.stac_extensions
 
         ProjectionExtension.remove_from(col)
-        self.assertNotIn(ProjectionExtension.get_schema_uri(), col.stac_extensions)
+        assert ProjectionExtension.get_schema_uri() not in col.stac_extensions
 
 
 def test_no_args_for_extension_class(item: Item) -> None:
