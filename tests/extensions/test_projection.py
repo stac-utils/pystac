@@ -79,6 +79,12 @@ def example_uri() -> str:
     return TestCases.get_path("data-files/projection/example-landsat8.json")
 
 
+@pytest.fixture
+def example_summaries_uri() -> str:
+    return TestCases.get_path(
+            "data-files/projection/collection-with-summaries.json"
+        )
+
 def test_to_from_dict(example_uri: str) -> None:
     with open(example_uri) as f:
         d = json.load(f)
@@ -511,15 +517,8 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         # intentionally calling this wrong so ---vvv
         ProjectionExtension.ext(object())  # type: ignore
 
-
-#class TestProjectionSummaries(unittest.TestCase):
-#    def setUp(self) -> None:
-#        self.example_uri = TestCases.get_path(
-#            "data-files/projection/collection-with-summaries.json"
-#        )
-
-def test_get_summaries(self) -> None:
-    col = pystac.Collection.from_file(self.example_uri)
+def test_get_summaries(example_summaries_uri: str) -> None:
+    col = pystac.Collection.from_file(example_summaries_uri)
     proj_summaries = ProjectionExtension.summaries(col)
 
     # Get
@@ -528,8 +527,8 @@ def test_get_summaries(self) -> None:
     assert epsg_summaries is not None
     assert epsg_summaries == [32614]
 
-def test_set_summaries(self) -> None:
-    col = pystac.Collection.from_file(self.example_uri)
+def test_set_summaries(example_summaries_uri: str) -> None:
+    col = pystac.Collection.from_file(example_summaries_uri)
     proj_summaries = ProjectionExtension.summaries(col)
 
     # Set
@@ -539,8 +538,8 @@ def test_set_summaries(self) -> None:
     col_dict = col.to_dict()
     assert col_dict["summaries"]["proj:code"] == ["EPSG:4326"]
 
-def test_summaries_adds_uri(self) -> None:
-    col = pystac.Collection.from_file(self.example_uri)
+def test_summaries_adds_uri(example_summaries_uri: str) -> None:
+    col = pystac.Collection.from_file(example_summaries_uri)
     col.stac_extensions = []
     with pytest.raises(
         pystac.ExtensionNotImplemented, match="Extension 'proj' is not implemented"
