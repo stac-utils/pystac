@@ -34,7 +34,7 @@ def item() -> pystac.Item:
     return item
 
 def test_stac_extensions(self) -> None:
-    self.assertTrue(GridExtension.has_extension(self.item))
+    assert GridExtension.has_extension(self.item)
 
 def test_item_repr(self) -> None:
     grid_item_ext = GridExtension.ext(self.item)
@@ -45,7 +45,7 @@ def test_item_repr(self) -> None:
 @pytest.mark.vcr()
 def test_attributes(self) -> None:
     GridExtension.ext(self.item).apply(code)
-    self.assertEqual(code, GridExtension.ext(self.item).code)
+    assert code == GridExtension.ext(self.item).code
     self.item.validate()
 
 def test_invalid_code_value(self) -> None:
@@ -56,7 +56,7 @@ def test_invalid_code_value(self) -> None:
 def test_modify(self) -> None:
     GridExtension.ext(self.item).apply(code)
     GridExtension.ext(self.item).apply(code + "a")
-    self.assertEqual(code + "a", GridExtension.ext(self.item).code)
+    assert code + "a" == GridExtension.ext(self.item).code
     self.item.validate()
 
 def test_from_dict(self) -> None:
@@ -74,15 +74,15 @@ def test_from_dict(self) -> None:
         "stac_extensions": [GridExtension.get_schema_uri()],
     }
     item = pystac.Item.from_dict(d)
-    self.assertEqual(code, GridExtension.ext(item).code)
+    assert code == GridExtension.ext(item).code
 
 def test_to_from_dict(self) -> None:
     GridExtension.ext(self.item).apply(code)
     d = self.item.to_dict()
-    self.assertEqual(code, d["properties"][grid.CODE_PROP])
+    assert code == d["properties"][grid.CODE_PROP]
 
     item = pystac.Item.from_dict(d)
-    self.assertEqual(code, GridExtension.ext(item).code)
+    assert code == GridExtension.ext(item).code
 
 def test_clear_code(self) -> None:
     GridExtension.ext(self.item).apply(code)
@@ -122,11 +122,11 @@ def test_extension_not_implemented(self) -> None:
 def test_item_ext_add_to(self) -> None:
     item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
     item.stac_extensions.remove(GridExtension.get_schema_uri())
-    self.assertNotIn(GridExtension.get_schema_uri(), item.stac_extensions)
+    assert GridExtension.get_schema_uri() not in item.stac_extensions
 
     _ = GridExtension.ext(item, add_if_missing=True)
 
-    self.assertIn(GridExtension.get_schema_uri(), item.stac_extensions)
+    assert GridExtension.get_schema_uri() in item.stac_extensions
 
 def test_should_raise_exception_when_passing_invalid_extension_object(
     self,
