@@ -141,6 +141,7 @@ ItemCollection
 .. autoclass:: pystac.ItemCollection
    :members:
    :inherited-members:
+   :undoc-members:
 
 Link
 ----
