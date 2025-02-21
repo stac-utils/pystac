@@ -6,6 +6,8 @@
 
 - `Collection.from_items` for creating a `pystac.Collection` from an `ItemCollection` ([#1522](https://github.com/stac-utils/pystac/pull/1522))
 
+## [v1.12.2]
+
 ### Fixed
 
 - Make sure that `VersionRange` has `VersionID`s rather than strings ([#1512](https://github.com/stac-utils/pystac/pull/1512))
@@ -912,7 +914,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.12.1..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.12.2..main>
+[v1.12.2]: <https://github.com/stac-utils/pystac/compare/v1.12.1..v1.12.2>
 [v1.12.1]: <https://github.com/stac-utils/pystac/compare/v1.12.0..v1.12.1>
 [v1.12.0]: <https://github.com/stac-utils/pystac/compare/v1.11.0..v1.12.0>
 [v1.11.0]: <https://github.com/stac-utils/pystac/compare/v1.10.1..v1.11.0>
