@@ -3,7 +3,6 @@
 # This is for the type checking on GridTest.test_clear_code
 # mypy: warn_unused_ignores=False
 
-import unittest
 from datetime import datetime
 from typing import Any
 
@@ -33,12 +32,15 @@ def item() -> pystac.Item:
     GridExtension.add_to(item)
     return item
 
+
 def test_stac_extensions(item: pystac.Item) -> None:
     assert GridExtension.has_extension(item)
+
 
 def test_item_repr(item: pystac.Item) -> None:
     grid_item_ext = GridExtension.ext(item)
     assert f"<ItemGridExtension Item id={item.id}>" == grid_item_ext.__repr__()
+
 
 @pytest.mark.vcr()
 def test_attributes(item: pystac.Item) -> None:
@@ -46,9 +48,11 @@ def test_attributes(item: pystac.Item) -> None:
     assert code == GridExtension.ext(item).code
     item.validate()
 
+
 def test_invalid_code_value(item: pystac.Item) -> None:
     with pytest.raises(ValueError):
         GridExtension.ext(item).apply("not_a_valid_code")
+
 
 @pytest.mark.vcr()
 def test_modify(item: pystac.Item) -> None:
@@ -56,6 +60,7 @@ def test_modify(item: pystac.Item) -> None:
     GridExtension.ext(item).apply(code + "a")
     assert code + "a" == GridExtension.ext(item).code
     item.validate()
+
 
 def test_from_dict() -> None:
     d: dict[str, Any] = {
@@ -74,6 +79,7 @@ def test_from_dict() -> None:
     item = pystac.Item.from_dict(d)
     assert code == GridExtension.ext(item).code
 
+
 def test_to_from_dict(item: pystac.Item) -> None:
     GridExtension.ext(item).apply(code)
     d = item.to_dict()
@@ -81,6 +87,7 @@ def test_to_from_dict(item: pystac.Item) -> None:
 
     item = pystac.Item.from_dict(d)
     assert code == GridExtension.ext(item).code
+
 
 def test_clear_code(item: pystac.Item) -> None:
     GridExtension.ext(item).apply(code)
@@ -103,6 +110,7 @@ def test_clear_code(item: pystac.Item) -> None:
         # https://github.com/stac-utils/pystac/pull/878#discussion_r957355415
         GridExtension.ext(item).code = "EPSG:4326"
 
+
 def test_extension_not_implemented() -> None:
     # Should raise exception if Item does not include extension URI
     item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
@@ -117,6 +125,7 @@ def test_extension_not_implemented() -> None:
     with pytest.raises(pystac.ExtensionNotImplemented):
         _ = GridExtension.ext(item)
 
+
 def test_item_ext_add_to() -> None:
     item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
     item.stac_extensions.remove(GridExtension.get_schema_uri())
@@ -126,12 +135,13 @@ def test_item_ext_add_to() -> None:
 
     assert GridExtension.get_schema_uri() in item.stac_extensions
 
+
 def test_should_raise_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
-        ExtensionTypeError,
-        match=r"^GridExtension does not apply to type 'object'$"):
+        ExtensionTypeError, match=r"^GridExtension does not apply to type 'object'$"
+    ):
         # intentionally calling it wrong so tell mypy to ignore this line:
-        GridExtension.ext(object()) # type: ignore
+        GridExtension.ext(object())  # type: ignore
 
 
 @pytest.fixture

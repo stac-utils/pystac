@@ -7,6 +7,7 @@ from pystac import ExtensionTypeError, Item
 from pystac.extensions.table import Column, TableExtension
 from tests.utils import TestCases
 
+
 @pytest.fixture
 def example_uri() -> str:
     return TestCases.get_path("data-files/table/item.json")
@@ -16,6 +17,7 @@ def example_uri() -> str:
 def test_validate(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
     item.validate()
+
 
 def test_extension_not_implemented(example_uri: str) -> None:
     # Should raise exception if item does not include extension URI
@@ -35,6 +37,7 @@ def test_extension_not_implemented(example_uri: str) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = TableExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
     item.stac_extensions.remove(TableExtension.get_schema_uri())
@@ -42,6 +45,7 @@ def test_item_ext_add_to(example_uri: str) -> None:
     _ = TableExtension.ext(item, add_if_missing=True)
 
     assert TableExtension.get_schema_uri() in item.stac_extensions
+
 
 def test_asset_ext_add_to(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
@@ -53,10 +57,13 @@ def test_asset_ext_add_to(example_uri: str) -> None:
     _ = TableExtension.ext(asset, add_if_missing=True)
     assert TableExtension.get_schema_uri() in item.stac_extensions
 
+
 def test_should_raise_when_passing_invalid_extension_object() -> None:
-    with pytest.raises(ExtensionTypeError, match=r"^TableExtension does not apply to type 'object'$"):
+    with pytest.raises(
+        ExtensionTypeError, match=r"^TableExtension does not apply to type 'object'$"
+    ):
         # calling it wrong on purpose so ------v
-        TableExtension.ext(object()) # type: ignore
+        TableExtension.ext(object())  # type: ignore
 
 
 def test_item_with_table_extension_is_serilalizable_and_roundtrips(
