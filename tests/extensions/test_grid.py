@@ -33,33 +33,31 @@ def item() -> pystac.Item:
     GridExtension.add_to(item)
     return item
 
-def test_stac_extensions(self) -> None:
-    assert GridExtension.has_extension(self.item)
+def test_stac_extensions(item: pystac.Item) -> None:
+    assert GridExtension.has_extension(item)
 
-def test_item_repr(self) -> None:
-    grid_item_ext = GridExtension.ext(self.item)
-    self.assertEqual(
-        f"<ItemGridExtension Item id={self.item.id}>", grid_item_ext.__repr__()
-    )
+def test_item_repr(item: pystac.Item) -> None:
+    grid_item_ext = GridExtension.ext(item)
+    assert f"<ItemGridExtension Item id={item.id}>" == grid_item_ext.__repr__()
 
 @pytest.mark.vcr()
-def test_attributes(self) -> None:
-    GridExtension.ext(self.item).apply(code)
-    assert code == GridExtension.ext(self.item).code
-    self.item.validate()
+def test_attributes(item: pystac.Item) -> None:
+    GridExtension.ext(item).apply(code)
+    assert code == GridExtension.ext(item).code
+    item.validate()
 
-def test_invalid_code_value(self) -> None:
-    with self.assertRaises(ValueError):
-        GridExtension.ext(self.item).apply("not_a_valid_code")
+def test_invalid_code_value(item: pystac.Item) -> None:
+    with pytest.raises(ValueError):
+        GridExtension.ext(item).apply("not_a_valid_code")
 
 @pytest.mark.vcr()
-def test_modify(self) -> None:
-    GridExtension.ext(self.item).apply(code)
-    GridExtension.ext(self.item).apply(code + "a")
-    assert code + "a" == GridExtension.ext(self.item).code
-    self.item.validate()
+def test_modify(item: pystac.Item) -> None:
+    GridExtension.ext(item).apply(code)
+    GridExtension.ext(item).apply(code + "a")
+    assert code + "a" == GridExtension.ext(item).code
+    item.validate()
 
-def test_from_dict(self) -> None:
+def test_from_dict() -> None:
     d: dict[str, Any] = {
         "type": "Feature",
         "stac_version": "1.1.0",
@@ -76,50 +74,50 @@ def test_from_dict(self) -> None:
     item = pystac.Item.from_dict(d)
     assert code == GridExtension.ext(item).code
 
-def test_to_from_dict(self) -> None:
-    GridExtension.ext(self.item).apply(code)
-    d = self.item.to_dict()
+def test_to_from_dict(item: pystac.Item) -> None:
+    GridExtension.ext(item).apply(code)
+    d = item.to_dict()
     assert code == d["properties"][grid.CODE_PROP]
 
     item = pystac.Item.from_dict(d)
     assert code == GridExtension.ext(item).code
 
-def test_clear_code(self) -> None:
-    GridExtension.ext(self.item).apply(code)
+def test_clear_code(item: pystac.Item) -> None:
+    GridExtension.ext(item).apply(code)
 
-    with self.assertRaises(ValueError):
+    with pytest.raises(ValueError):
         # Ignore type errors because this test intentionally checks behavior
         # that does not conform to the type signature.
         # https://github.com/stac-utils/pystac/pull/878#discussion_r957352232
-        GridExtension.ext(self.item).code = None  # type: ignore
-    with self.assertRaises(ValueError):
+        GridExtension.ext(item).code = None  # type: ignore
+    with pytest.raises(ValueError):
         # First segment has to be all caps
         # https://github.com/stac-utils/pystac/pull/878#discussion_r957354927
-        GridExtension.ext(self.item).code = "this-is-not-a-grid-code"
-    with self.assertRaises(ValueError):
+        GridExtension.ext(item).code = "this-is-not-a-grid-code"
+    with pytest.raises(ValueError):
         # Folks might try to put an epsg code in
         # https://github.com/stac-utils/pystac/pull/878#discussion_r957355415
-        GridExtension.ext(self.item).code = "4326"
-    with self.assertRaises(ValueError):
+        GridExtension.ext(item).code = "4326"
+    with pytest.raises(ValueError):
         # Folks might try to put an epsg code in
         # https://github.com/stac-utils/pystac/pull/878#discussion_r957355415
-        GridExtension.ext(self.item).code = "EPSG:4326"
+        GridExtension.ext(item).code = "EPSG:4326"
 
-def test_extension_not_implemented(self) -> None:
+def test_extension_not_implemented() -> None:
     # Should raise exception if Item does not include extension URI
     item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
     item.stac_extensions.remove(GridExtension.get_schema_uri())
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = GridExtension.ext(item)
 
     # Should raise exception if owning Item does not include extension URI
     item.properties["grid:code"] = None
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = GridExtension.ext(item)
 
-def test_item_ext_add_to(self) -> None:
+def test_item_ext_add_to() -> None:
     item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
     item.stac_extensions.remove(GridExtension.get_schema_uri())
     assert GridExtension.get_schema_uri() not in item.stac_extensions
@@ -128,15 +126,12 @@ def test_item_ext_add_to(self) -> None:
 
     assert GridExtension.get_schema_uri() in item.stac_extensions
 
-def test_should_raise_exception_when_passing_invalid_extension_object(
-    self,
-) -> None:
-    self.assertRaisesRegex(
+def test_should_raise_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(
         ExtensionTypeError,
-        r"^GridExtension does not apply to type 'object'$",
-        GridExtension.ext,
-        object(),
-    )
+        match=r"^GridExtension does not apply to type 'object'$"):
+        # intentionally calling it wrong so tell mypy to ignore this line:
+        GridExtension.ext(object()) # type: ignore
 
 
 @pytest.fixture
