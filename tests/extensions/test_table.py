@@ -13,55 +13,50 @@ def example_uri() -> str:
 
 
 @pytest.mark.vcr()
-def test_validate(self) -> None:
-    item = pystac.Item.from_file(self.example_uri)
+def test_validate(example_uri: str) -> None:
+    item = pystac.Item.from_file(example_uri)
     item.validate()
 
-def test_extension_not_implemented(self) -> None:
+def test_extension_not_implemented(example_uri: str) -> None:
     # Should raise exception if item does not include extension URI
-    item = pystac.Item.from_file(self.example_uri)
+    item = pystac.Item.from_file(example_uri)
     item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = TableExtension.ext(item)
 
     # Should raise exception if owning item does not include extension URI
     asset = item.assets["data"]
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = TableExtension.ext(asset)
 
     # Should succeed if Asset has no owner
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = TableExtension.ext(ownerless_asset)
 
-def test_item_ext_add_to(self) -> None:
-    item = pystac.Item.from_file(self.example_uri)
+def test_item_ext_add_to(example_uri: str) -> None:
+    item = pystac.Item.from_file(example_uri)
     item.stac_extensions.remove(TableExtension.get_schema_uri())
 
     _ = TableExtension.ext(item, add_if_missing=True)
 
-    self.assertIn(TableExtension.get_schema_uri(), item.stac_extensions)
+    assert TableExtension.get_schema_uri() in item.stac_extensions
 
-def test_asset_ext_add_to(self) -> None:
-    item = pystac.Item.from_file(self.example_uri)
+def test_asset_ext_add_to(example_uri: str) -> None:
+    item = pystac.Item.from_file(example_uri)
     item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-    self.assertNotIn(TableExtension.get_schema_uri(), item.stac_extensions)
+    assert TableExtension.get_schema_uri() not in item.stac_extensions
     asset = item.assets["data"]
 
     _ = TableExtension.ext(asset, add_if_missing=True)
-    self.assertIn(TableExtension.get_schema_uri(), item.stac_extensions)
+    assert TableExtension.get_schema_uri() in item.stac_extensions
 
-def test_should_raise_exception_when_passing_invalid_extension_object(
-    self,
-) -> None:
-    self.assertRaisesRegex(
-        ExtensionTypeError,
-        r"^TableExtension does not apply to type 'object'$",
-        TableExtension.ext,
-        object(),
-    )
+def test_should_raise_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(ExtensionTypeError, match=r"^TableExtension does not apply to type 'object'$"):
+        # calling it wrong on purpose so ------v
+        TableExtension.ext(object()) # type: ignore
 
 
 def test_item_with_table_extension_is_serilalizable_and_roundtrips(
