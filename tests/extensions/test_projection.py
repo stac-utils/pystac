@@ -1,5 +1,4 @@
 import json
-import unittest
 from copy import deepcopy
 from typing import Any
 
@@ -81,9 +80,8 @@ def example_uri() -> str:
 
 @pytest.fixture
 def example_summaries_uri() -> str:
-    return TestCases.get_path(
-            "data-files/projection/collection-with-summaries.json"
-        )
+    return TestCases.get_path("data-files/projection/collection-with-summaries.json")
+
 
 def test_to_from_dict(example_uri: str) -> None:
     with open(example_uri) as f:
@@ -117,10 +115,12 @@ def test_partial_apply(example_uri: str) -> None:
     assert ProjectionExtension.ext(proj_item).epsg == 1111
     proj_item.validate()
 
+
 @pytest.mark.vcr()
 def test_validate_proj(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_epsg(example_uri: str) -> None:
@@ -156,6 +156,7 @@ def test_epsg(example_uri: str) -> None:
 
     # Validate
     proj_item.validate()
+
 
 def test_optional_epsg() -> None:
     example_uri = TestCases.get_path("data-files/projection/optional-epsg.json")
@@ -207,6 +208,7 @@ def test_wkt2(example_uri: str) -> None:
     # Validate
     proj_item.validate()
 
+
 @pytest.mark.vcr()
 def test_projjson(example_uri: str) -> None:
     proj_item = pystac.Item.from_file(example_uri)
@@ -251,6 +253,7 @@ def test_projjson(example_uri: str) -> None:
         ProjectionExtension.ext(proj_item).projjson = {"bad": "data"}
         proj_item.validate()
 
+
 def test_crs_string(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
     ProjectionExtension.remove_from(item)
@@ -276,6 +279,7 @@ def test_crs_string(example_uri: str) -> None:
 
     projection.code = "IAU_2015:49900"
     assert projection.crs_string == "IAU_2015:49900"
+
 
 @pytest.mark.vcr()
 def test_geometry(example_uri: str) -> None:
@@ -318,6 +322,7 @@ def test_geometry(example_uri: str) -> None:
         ProjectionExtension.ext(proj_item).geometry = {"bad": "data"}
         proj_item.validate()
 
+
 @pytest.mark.vcr()
 def test_bbox(example_uri: str) -> None:
     proj_item = pystac.Item.from_file(example_uri)
@@ -351,6 +356,7 @@ def test_bbox(example_uri: str) -> None:
 
     # Validate
     proj_item.validate()
+
 
 @pytest.mark.vcr()
 def test_centroid(example_uri: str) -> None:
@@ -392,6 +398,7 @@ def test_centroid(example_uri: str) -> None:
         ProjectionExtension.ext(proj_item).centroid = {"lat": 2.0, "lng": 3.0}
         proj_item.validate()
 
+
 @pytest.mark.vcr()
 def test_shape(example_uri: str) -> None:
     proj_item = pystac.Item.from_file(example_uri)
@@ -426,6 +433,7 @@ def test_shape(example_uri: str) -> None:
 
     # Validate
     proj_item.validate()
+
 
 @pytest.mark.vcr()
 def test_transform(example_uri: str) -> None:
@@ -472,6 +480,7 @@ def test_transform(example_uri: str) -> None:
     # Validate
     proj_item.validate()
 
+
 def test_extension_not_implemented(example_uri: str) -> None:
     # Should raise exception if Item does not include extension URI
     item = pystac.Item.from_file(example_uri)
@@ -490,6 +499,7 @@ def test_extension_not_implemented(example_uri: str) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = ProjectionExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
     item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
@@ -498,6 +508,7 @@ def test_item_ext_add_to(example_uri: str) -> None:
     _ = ProjectionExtension.ext(item, add_if_missing=True)
 
     assert ProjectionExtension.get_schema_uri() in item.stac_extensions
+
 
 def test_asset_ext_add_to(example_uri: str) -> None:
     item = pystac.Item.from_file(example_uri)
@@ -509,6 +520,7 @@ def test_asset_ext_add_to(example_uri: str) -> None:
 
     assert ProjectionExtension.get_schema_uri() in item.stac_extensions
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
@@ -516,6 +528,7 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     ):
         # intentionally calling this wrong so ---vvv
         ProjectionExtension.ext(object())  # type: ignore
+
 
 def test_get_summaries(example_summaries_uri: str) -> None:
     col = pystac.Collection.from_file(example_summaries_uri)
@@ -527,6 +540,7 @@ def test_get_summaries(example_summaries_uri: str) -> None:
     assert epsg_summaries is not None
     assert epsg_summaries == [32614]
 
+
 def test_set_summaries(example_summaries_uri: str) -> None:
     col = pystac.Collection.from_file(example_summaries_uri)
     proj_summaries = ProjectionExtension.summaries(col)
@@ -537,6 +551,7 @@ def test_set_summaries(example_summaries_uri: str) -> None:
 
     col_dict = col.to_dict()
     assert col_dict["summaries"]["proj:code"] == ["EPSG:4326"]
+
 
 def test_summaries_adds_uri(example_summaries_uri: str) -> None:
     col = pystac.Collection.from_file(example_summaries_uri)
