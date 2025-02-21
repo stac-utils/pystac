@@ -512,47 +512,47 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         ProjectionExtension.ext(object())  # type: ignore
 
 
-class TestProjectionSummaries(unittest.TestCase):
-    def setUp(self) -> None:
-        self.example_uri = TestCases.get_path(
-            "data-files/projection/collection-with-summaries.json"
-        )
+#class TestProjectionSummaries(unittest.TestCase):
+#    def setUp(self) -> None:
+#        self.example_uri = TestCases.get_path(
+#            "data-files/projection/collection-with-summaries.json"
+#        )
 
-    def test_get_summaries(self) -> None:
-        col = pystac.Collection.from_file(self.example_uri)
-        proj_summaries = ProjectionExtension.summaries(col)
+def test_get_summaries(self) -> None:
+    col = pystac.Collection.from_file(self.example_uri)
+    proj_summaries = ProjectionExtension.summaries(col)
 
-        # Get
+    # Get
 
-        epsg_summaries = proj_summaries.epsg
-        assert epsg_summaries is not None
-        assert epsg_summaries == [32614]
+    epsg_summaries = proj_summaries.epsg
+    assert epsg_summaries is not None
+    assert epsg_summaries == [32614]
 
-    def test_set_summaries(self) -> None:
-        col = pystac.Collection.from_file(self.example_uri)
-        proj_summaries = ProjectionExtension.summaries(col)
+def test_set_summaries(self) -> None:
+    col = pystac.Collection.from_file(self.example_uri)
+    proj_summaries = ProjectionExtension.summaries(col)
 
-        # Set
+    # Set
 
-        proj_summaries.epsg = [4326]
+    proj_summaries.epsg = [4326]
 
-        col_dict = col.to_dict()
-        assert col_dict["summaries"]["proj:code"] == ["EPSG:4326"]
+    col_dict = col.to_dict()
+    assert col_dict["summaries"]["proj:code"] == ["EPSG:4326"]
 
-    def test_summaries_adds_uri(self) -> None:
-        col = pystac.Collection.from_file(self.example_uri)
-        col.stac_extensions = []
-        with pytest.raises(
-            pystac.ExtensionNotImplemented, match="Extension 'proj' is not implemented"
-        ):
-            ProjectionExtension.summaries(col, add_if_missing=False)
+def test_summaries_adds_uri(self) -> None:
+    col = pystac.Collection.from_file(self.example_uri)
+    col.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented, match="Extension 'proj' is not implemented"
+    ):
+        ProjectionExtension.summaries(col, add_if_missing=False)
 
-        ProjectionExtension.summaries(col, True)
+    ProjectionExtension.summaries(col, True)
 
-        assert ProjectionExtension.get_schema_uri() in col.stac_extensions
+    assert ProjectionExtension.get_schema_uri() in col.stac_extensions
 
-        ProjectionExtension.remove_from(col)
-        assert ProjectionExtension.get_schema_uri() not in col.stac_extensions
+    ProjectionExtension.remove_from(col)
+    assert ProjectionExtension.get_schema_uri() not in col.stac_extensions
 
 
 def test_no_args_for_extension_class(item: Item) -> None:
