@@ -17,7 +17,12 @@ from tests.utils import TestCases
 
 code = "MGRS-4CFJ"
 
-SENTINEL_EXAMPLE_URI = TestCases.get_path("data-files/grid/example-sentinel2.json")
+
+@pytest.fixture
+def sentinel2_example_item() -> pystac.Item:
+    return pystac.Item.from_file(
+        TestCases.get_path("data-files/grid/example-sentinel2.json")
+    )
 
 
 @pytest.fixture
@@ -111,9 +116,9 @@ def test_clear_code(item: pystac.Item) -> None:
         GridExtension.ext(item).code = "EPSG:4326"
 
 
-def test_extension_not_implemented() -> None:
+def test_extension_not_implemented(sentinel2_example_item: pystac.Item) -> None:
     # Should raise exception if Item does not include extension URI
-    item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
+    item = sentinel2_example_item
     item.stac_extensions.remove(GridExtension.get_schema_uri())
 
     with pytest.raises(pystac.ExtensionNotImplemented):
@@ -126,8 +131,8 @@ def test_extension_not_implemented() -> None:
         _ = GridExtension.ext(item)
 
 
-def test_item_ext_add_to() -> None:
-    item = pystac.Item.from_file(SENTINEL_EXAMPLE_URI)
+def test_item_ext_add_to(sentinel2_example_item: pystac.Item) -> None:
+    item = sentinel2_example_item
     item.stac_extensions.remove(GridExtension.get_schema_uri())
     assert GridExtension.get_schema_uri() not in item.stac_extensions
 

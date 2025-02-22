@@ -9,26 +9,24 @@ from tests.utils import TestCases
 
 
 @pytest.fixture
-def example_uri() -> str:
-    return TestCases.get_path("data-files/table/item.json")
+def table_item() -> Item:
+    return pystac.Item.from_file(TestCases.get_path("data-files/table/item.json"))
 
 
 @pytest.mark.vcr()
-def test_validate(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.validate()
+def test_validate(table_item: Item) -> None:
+    table_item.validate()
 
 
-def test_extension_not_implemented(example_uri: str) -> None:
+def test_extension_not_implemented(table_item: Item) -> None:
     # Should raise exception if item does not include extension URI
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(TableExtension.get_schema_uri())
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
 
     with pytest.raises(pystac.ExtensionNotImplemented):
-        _ = TableExtension.ext(item)
+        _ = TableExtension.ext(table_item)
 
     # Should raise exception if owning item does not include extension URI
-    asset = item.assets["data"]
+    asset = table_item.assets["data"]
 
     with pytest.raises(pystac.ExtensionNotImplemented):
         _ = TableExtension.ext(asset)
@@ -38,24 +36,22 @@ def test_extension_not_implemented(example_uri: str) -> None:
     _ = TableExtension.ext(ownerless_asset)
 
 
-def test_item_ext_add_to(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(TableExtension.get_schema_uri())
+def test_item_ext_add_to(table_item: Item) -> None:
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-    _ = TableExtension.ext(item, add_if_missing=True)
+    _ = TableExtension.ext(table_item, add_if_missing=True)
 
-    assert TableExtension.get_schema_uri() in item.stac_extensions
+    assert TableExtension.get_schema_uri() in table_item.stac_extensions
 
 
-def test_asset_ext_add_to(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(TableExtension.get_schema_uri())
+def test_asset_ext_add_to(table_item: Item) -> None:
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-    assert TableExtension.get_schema_uri() not in item.stac_extensions
-    asset = item.assets["data"]
+    assert TableExtension.get_schema_uri() not in table_item.stac_extensions
+    asset = table_item.assets["data"]
 
     _ = TableExtension.ext(asset, add_if_missing=True)
-    assert TableExtension.get_schema_uri() in item.stac_extensions
+    assert TableExtension.get_schema_uri() in table_item.stac_extensions
 
 
 def test_should_raise_when_passing_invalid_extension_object() -> None:
@@ -68,17 +64,16 @@ def test_should_raise_when_passing_invalid_extension_object() -> None:
 
 def test_item_with_table_extension_is_serilalizable_and_roundtrips(
     tmp_path: Path,
+    table_item: Item,
 ) -> None:
-    example_uri = TestCases.get_path("data-files/table/item.json")
-    item = pystac.Item.from_file(example_uri)
     # add column metadata
-    tab_ext = TableExtension.ext(item, add_if_missing=True)
+    tab_ext = TableExtension.ext(table_item, add_if_missing=True)
     columns = [
         Column({"name": "col_1", "type": "str"}),
         Column({"name": "col_2", "type": "byte_array"}),
     ]
     tab_ext.columns = columns
-    item.save_object(dest_href=str(tmp_path / "item.json"))
+    table_item.save_object(dest_href=str(tmp_path / "item.json"))
     assert all(isinstance(c, Column) for c in tab_ext.columns)
     assert all(
         before.properties == after.properties
@@ -94,10 +89,9 @@ def test_item_with_table_extension_is_serilalizable_and_roundtrips(
         "https://stac-extensions.github.io/table/v1.1.0/schema.json",
     ),
 )
-def test_migrate(schema_uri: str, item: Item) -> None:
-    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+def test_migrate(schema_uri: str, table_item: Item) -> None:
+    item_dict = table_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_dict["stac_extensions"] = [schema_uri]
-    item = Item.from_dict(item_dict, migrate=True)
-    assert item.stac_extensions == [
+    assert Item.from_dict(item_dict, migrate=True).stac_extensions == [
         "https://stac-extensions.github.io/table/v1.2.0/schema.json"
     ]

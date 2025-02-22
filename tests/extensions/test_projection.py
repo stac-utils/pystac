@@ -79,6 +79,11 @@ def example_uri() -> str:
 
 
 @pytest.fixture
+def proj_item(example_uri: str) -> Item:
+    return pystac.Item.from_file(example_uri)
+
+
+@pytest.fixture
 def example_summaries_uri() -> str:
     return TestCases.get_path("data-files/projection/collection-with-summaries.json")
 
@@ -107,9 +112,7 @@ def test_apply() -> None:
 
 
 @pytest.mark.vcr()
-def test_partial_apply(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_partial_apply(proj_item: Item) -> None:
     ProjectionExtension.ext(proj_item).apply(epsg=1111)
 
     assert ProjectionExtension.ext(proj_item).epsg == 1111
@@ -117,15 +120,12 @@ def test_partial_apply(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_validate_proj(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.validate()
+def test_validate_proj(proj_item: Item) -> None:
+    proj_item.validate()
 
 
 @pytest.mark.vcr()
-def test_epsg(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_epsg(proj_item: Item) -> None:
     # Get
     assert "proj:epsg" not in proj_item.properties
     assert "proj:code" in proj_item.properties
@@ -175,9 +175,7 @@ def test_optional_epsg() -> None:
 
 
 @pytest.mark.vcr()
-def test_wkt2(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_wkt2(proj_item: Item) -> None:
     # Get
     assert "proj:wkt2" in proj_item.properties
     proj_wkt2 = ProjectionExtension.ext(proj_item).wkt2
@@ -210,9 +208,7 @@ def test_wkt2(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_projjson(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_projjson(proj_item: Item) -> None:
     # Get
     assert "proj:projjson" in proj_item.properties
     proj_projjson = ProjectionExtension.ext(proj_item).projjson
@@ -254,18 +250,17 @@ def test_projjson(example_uri: str) -> None:
         proj_item.validate()
 
 
-def test_crs_string(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    ProjectionExtension.remove_from(item)
-    for key in list(item.properties.keys()):
+def test_crs_string(proj_item: Item) -> None:
+    ProjectionExtension.remove_from(proj_item)
+    for key in list(proj_item.properties.keys()):
         if key.startswith("proj:"):
-            item.properties.pop(key)
-    assert item.properties.get("proj:code") is None
-    assert item.properties.get("proj:epsg") is None
-    assert item.properties.get("proj:wkt2") is None
-    assert item.properties.get("proj:projjson") is None
+            proj_item.properties.pop(key)
+    assert proj_item.properties.get("proj:code") is None
+    assert proj_item.properties.get("proj:epsg") is None
+    assert proj_item.properties.get("proj:wkt2") is None
+    assert proj_item.properties.get("proj:projjson") is None
 
-    projection = ProjectionExtension.ext(item, add_if_missing=True)
+    projection = ProjectionExtension.ext(proj_item, add_if_missing=True)
     assert projection.crs_string is None
 
     projection.projjson = PROJJSON
@@ -282,9 +277,7 @@ def test_crs_string(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_geometry(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_geometry(proj_item: Item) -> None:
     # Get
     assert "proj:geometry" in proj_item.properties
     proj_geometry = ProjectionExtension.ext(proj_item).geometry
@@ -324,9 +317,7 @@ def test_geometry(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_bbox(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_bbox(proj_item: Item) -> None:
     # Get
     assert "proj:bbox" in proj_item.properties
     proj_bbox = ProjectionExtension.ext(proj_item).bbox
@@ -359,9 +350,7 @@ def test_bbox(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_centroid(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_centroid(proj_item: Item) -> None:
     # Get
     assert "proj:centroid" in proj_item.properties
     proj_centroid = ProjectionExtension.ext(proj_item).centroid
@@ -400,9 +389,7 @@ def test_centroid(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_shape(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_shape(proj_item: Item) -> None:
     # Get
     assert "proj:shape" in proj_item.properties
     proj_shape = ProjectionExtension.ext(proj_item).shape
@@ -436,9 +423,7 @@ def test_shape(example_uri: str) -> None:
 
 
 @pytest.mark.vcr()
-def test_transform(example_uri: str) -> None:
-    proj_item = pystac.Item.from_file(example_uri)
-
+def test_transform(proj_item: Item) -> None:
     # Get
     assert "proj:transform" in proj_item.properties
     proj_transform = ProjectionExtension.ext(proj_item).transform
@@ -481,16 +466,15 @@ def test_transform(example_uri: str) -> None:
     proj_item.validate()
 
 
-def test_extension_not_implemented(example_uri: str) -> None:
+def test_extension_not_implemented(proj_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+    proj_item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
 
     with pytest.raises(pystac.ExtensionNotImplemented):
-        _ = ProjectionExtension.ext(item)
+        _ = ProjectionExtension.ext(proj_item)
 
     # Should raise exception if owning Item does not include extension URI
-    asset = item.assets["B8"]
+    asset = proj_item.assets["B8"]
 
     with pytest.raises(pystac.ExtensionNotImplemented):
         _ = ProjectionExtension.ext(asset)
@@ -500,25 +484,23 @@ def test_extension_not_implemented(example_uri: str) -> None:
     _ = ProjectionExtension.ext(ownerless_asset)
 
 
-def test_item_ext_add_to(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
-    assert ProjectionExtension.get_schema_uri() not in item.stac_extensions
+def test_item_ext_add_to(proj_item: Item) -> None:
+    proj_item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+    assert ProjectionExtension.get_schema_uri() not in proj_item.stac_extensions
 
-    _ = ProjectionExtension.ext(item, add_if_missing=True)
+    _ = ProjectionExtension.ext(proj_item, add_if_missing=True)
 
-    assert ProjectionExtension.get_schema_uri() in item.stac_extensions
+    assert ProjectionExtension.get_schema_uri() in proj_item.stac_extensions
 
 
-def test_asset_ext_add_to(example_uri: str) -> None:
-    item = pystac.Item.from_file(example_uri)
-    item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
-    assert ProjectionExtension.get_schema_uri() not in item.stac_extensions
-    asset = item.assets["B8"]
+def test_asset_ext_add_to(proj_item: Item) -> None:
+    proj_item.stac_extensions.remove(ProjectionExtension.get_schema_uri())
+    assert ProjectionExtension.get_schema_uri() not in proj_item.stac_extensions
+    asset = proj_item.assets["B8"]
 
     _ = ProjectionExtension.ext(asset, add_if_missing=True)
 
-    assert ProjectionExtension.get_schema_uri() in item.stac_extensions
+    assert ProjectionExtension.get_schema_uri() in proj_item.stac_extensions
 
 
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
