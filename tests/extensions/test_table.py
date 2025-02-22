@@ -1,4 +1,3 @@
-import unittest
 from pathlib import Path
 
 import pytest
@@ -9,75 +8,72 @@ from pystac.extensions.table import Column, TableExtension
 from tests.utils import TestCases
 
 
-class TableTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.example_uri = TestCases.get_path("data-files/table/item.json")
+@pytest.fixture
+def table_item() -> Item:
+    return pystac.Item.from_file(TestCases.get_path("data-files/table/item.json"))
 
-    @pytest.mark.vcr()
-    def test_validate(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.validate()
 
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if item does not include extension URI
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TableExtension.get_schema_uri())
+@pytest.mark.vcr()
+def test_validate(table_item: Item) -> None:
+    table_item.validate()
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
-            _ = TableExtension.ext(item)
 
-        # Should raise exception if owning item does not include extension URI
-        asset = item.assets["data"]
+def test_extension_not_implemented(table_item: Item) -> None:
+    # Should raise exception if item does not include extension URI
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
-            _ = TableExtension.ext(asset)
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = TableExtension.ext(table_item)
 
-        # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
-        _ = TableExtension.ext(ownerless_asset)
+    # Should raise exception if owning item does not include extension URI
+    asset = table_item.assets["data"]
 
-    def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TableExtension.get_schema_uri())
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = TableExtension.ext(asset)
 
-        _ = TableExtension.ext(item, add_if_missing=True)
+    # Should succeed if Asset has no owner
+    ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+    _ = TableExtension.ext(ownerless_asset)
 
-        self.assertIn(TableExtension.get_schema_uri(), item.stac_extensions)
 
-    def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TableExtension.get_schema_uri())
+def test_item_ext_add_to(table_item: Item) -> None:
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
 
-        self.assertNotIn(TableExtension.get_schema_uri(), item.stac_extensions)
-        asset = item.assets["data"]
+    _ = TableExtension.ext(table_item, add_if_missing=True)
 
-        _ = TableExtension.ext(asset, add_if_missing=True)
-        self.assertIn(TableExtension.get_schema_uri(), item.stac_extensions)
+    assert TableExtension.get_schema_uri() in table_item.stac_extensions
 
-    def test_should_raise_exception_when_passing_invalid_extension_object(
-        self,
-    ) -> None:
-        self.assertRaisesRegex(
-            ExtensionTypeError,
-            r"^TableExtension does not apply to type 'object'$",
-            TableExtension.ext,
-            object(),
-        )
+
+def test_asset_ext_add_to(table_item: Item) -> None:
+    table_item.stac_extensions.remove(TableExtension.get_schema_uri())
+
+    assert TableExtension.get_schema_uri() not in table_item.stac_extensions
+    asset = table_item.assets["data"]
+
+    _ = TableExtension.ext(asset, add_if_missing=True)
+    assert TableExtension.get_schema_uri() in table_item.stac_extensions
+
+
+def test_should_raise_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(
+        ExtensionTypeError, match=r"^TableExtension does not apply to type 'object'$"
+    ):
+        # calling it wrong on purpose so ------v
+        TableExtension.ext(object())  # type: ignore
 
 
 def test_item_with_table_extension_is_serilalizable_and_roundtrips(
     tmp_path: Path,
+    table_item: Item,
 ) -> None:
-    example_uri = TestCases.get_path("data-files/table/item.json")
-    item = pystac.Item.from_file(example_uri)
     # add column metadata
-    tab_ext = TableExtension.ext(item, add_if_missing=True)
+    tab_ext = TableExtension.ext(table_item, add_if_missing=True)
     columns = [
         Column({"name": "col_1", "type": "str"}),
         Column({"name": "col_2", "type": "byte_array"}),
     ]
     tab_ext.columns = columns
-    item.save_object(dest_href=str(tmp_path / "item.json"))
+    table_item.save_object(dest_href=str(tmp_path / "item.json"))
     assert all(isinstance(c, Column) for c in tab_ext.columns)
     assert all(
         before.properties == after.properties
@@ -93,10 +89,9 @@ def test_item_with_table_extension_is_serilalizable_and_roundtrips(
         "https://stac-extensions.github.io/table/v1.1.0/schema.json",
     ),
 )
-def test_migrate(schema_uri: str, item: Item) -> None:
-    item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+def test_migrate(schema_uri: str, table_item: Item) -> None:
+    item_dict = table_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_dict["stac_extensions"] = [schema_uri]
-    item = Item.from_dict(item_dict, migrate=True)
-    assert item.stac_extensions == [
+    assert Item.from_dict(item_dict, migrate=True).stac_extensions == [
         "https://stac-extensions.github.io/table/v1.2.0/schema.json"
     ]
