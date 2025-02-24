@@ -37,22 +37,24 @@ def test_band_description_unknown_band() -> None:
     assert desc is None
 
 
+LANDSAT_EXAMPLE_URI = TestCases.get_path("data-files/eo/eo-landsat-example.json")
+BANDS_IN_ITEM_URI = TestCases.get_path(
+    "data-files/eo/sample-bands-in-item-properties.json"
+)
+EO_COLLECTION_URI = TestCases.get_path("data-files/eo/eo-collection.json")
+S2_ITEM_URI = TestCases.get_path("data-files/eo/eo-sentinel2-item.json")
+PLAIN_ITEM = TestCases.get_path("data-files/item/sample-item.json")
+
+
 class EOTest(unittest.TestCase):
-    LANDSAT_EXAMPLE_URI = TestCases.get_path("data-files/eo/eo-landsat-example.json")
-    BANDS_IN_ITEM_URI = TestCases.get_path(
-        "data-files/eo/sample-bands-in-item-properties.json"
-    )
-    EO_COLLECTION_URI = TestCases.get_path("data-files/eo/eo-collection.json")
-    S2_ITEM_URI = TestCases.get_path("data-files/eo/eo-sentinel2-item.json")
-    PLAIN_ITEM = TestCases.get_path("data-files/item/sample-item.json")
 
     def test_to_from_dict(self) -> None:
-        with open(self.LANDSAT_EXAMPLE_URI) as f:
+        with open(LANDSAT_EXAMPLE_URI) as f:
             item_dict = json.load(f)
         assert_to_from_dict(Item, item_dict)
 
     def test_add_to(self) -> None:
-        item = Item.from_file(self.PLAIN_ITEM)
+        item = Item.from_file(PLAIN_ITEM)
         assert EOExtension.get_schema_uri() not in item.stac_extensions
 
         # Check that the URI gets added to stac_extensions
@@ -71,14 +73,14 @@ class EOTest(unittest.TestCase):
 
     @pytest.mark.vcr()
     def test_validate_eo(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
-        item2 = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
+        item2 = pystac.Item.from_file(BANDS_IN_ITEM_URI)
         item.validate()
         item2.validate()
 
     @pytest.mark.vcr()
     def test_bands(self) -> None:
-        item = pystac.Item.from_file(self.BANDS_IN_ITEM_URI)
+        item = pystac.Item.from_file(BANDS_IN_ITEM_URI)
 
         # Get
         assert "eo:bands" in item.properties
@@ -102,13 +104,13 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_asset_bands_s2(self) -> None:
-        item = pystac.Item.from_file(self.S2_ITEM_URI)
+        item = pystac.Item.from_file(S2_ITEM_URI)
         mtd_asset = item.get_assets()["mtd"]
         assert EOExtension.ext(mtd_asset).bands is None
 
     @pytest.mark.vcr()
     def test_asset_bands(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
         # Get
 
@@ -164,7 +166,7 @@ class EOTest(unittest.TestCase):
 
     @pytest.mark.vcr()
     def test_cloud_cover(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
         # Get
         assert "eo:cloud_cover" in item.properties
@@ -189,7 +191,7 @@ class EOTest(unittest.TestCase):
         item.validate()
 
     def test_summaries(self) -> None:
-        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col = pystac.Collection.from_file(EO_COLLECTION_URI)
         eo_summaries = EOExtension.summaries(col)
 
         # Get
@@ -220,7 +222,7 @@ class EOTest(unittest.TestCase):
         assert col_dict["summaries"]["eo:snow_cover"]["minimum"] == 4.0
 
     def test_summaries_adds_uri(self) -> None:
-        col = pystac.Collection.from_file(self.EO_COLLECTION_URI)
+        col = pystac.Collection.from_file(EO_COLLECTION_URI)
         col.stac_extensions = []
         with pytest.raises(
             pystac.ExtensionNotImplemented, match="Extension 'eo' is not implemented"
@@ -266,7 +268,7 @@ class EOTest(unittest.TestCase):
         assert eo_item.common_metadata.gsd == 30.0
 
     def test_item_apply(self) -> None:
-        item = pystac.Item.from_file(self.LANDSAT_EXAMPLE_URI)
+        item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
         eo_ext = EOExtension.ext(item)
         test_band = Band.create(name="test")
 
@@ -287,7 +289,7 @@ class EOTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = pystac.Item.from_file(PLAIN_ITEM)
 
         with pytest.raises(pystac.ExtensionNotImplemented):
             _ = EOExtension.ext(item)
@@ -303,7 +305,7 @@ class EOTest(unittest.TestCase):
         _ = EOExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = pystac.Item.from_file(PLAIN_ITEM)
         assert EOExtension.get_schema_uri() not in item.stac_extensions
 
         _ = EOExtension.ext(item, add_if_missing=True)
@@ -311,7 +313,7 @@ class EOTest(unittest.TestCase):
         assert EOExtension.get_schema_uri() in item.stac_extensions
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = pystac.Item.from_file(PLAIN_ITEM)
         assert EOExtension.get_schema_uri() not in item.stac_extensions
         asset = item.assets["thumbnail"]
 
@@ -320,7 +322,7 @@ class EOTest(unittest.TestCase):
         assert EOExtension.get_schema_uri() in item.stac_extensions
 
     def test_asset_ext_add_to_ownerless_asset(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM)
+        item = pystac.Item.from_file(PLAIN_ITEM)
         asset_dict = item.assets["thumbnail"].to_dict()
         asset = pystac.Asset.from_dict(asset_dict)
 
