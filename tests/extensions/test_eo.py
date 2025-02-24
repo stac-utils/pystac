@@ -14,29 +14,27 @@ from tests.conftest import get_data_file
 from tests.utils import TestCases, assert_to_from_dict
 
 
-class BandsTest(unittest.TestCase):
-    def test_create(self) -> None:
-        band = Band.create(
-            name="B01",
-            common_name="red",
-            description=Band.band_description("red"),
-            center_wavelength=0.65,
-            full_width_half_max=0.1,
-            solar_illumination=42.0,
-        )
+def test_band_create() -> None:
+    band = Band.create(
+        name="B01",
+        common_name="red",
+        description=Band.band_description("red"),
+        center_wavelength=0.65,
+        full_width_half_max=0.1,
+        solar_illumination=42.0,
+    )
 
-        assert band.name == "B01"
-        assert band.common_name == "red"
-        assert band.description, "Common name: red == Range: 0.6 to 0.7"
-        assert band.center_wavelength == 0.65
-        assert band.full_width_half_max == 0.1
-        assert band.solar_illumination == 42.0
-        assert band.__repr__() == "<Band name=B01>"
+    assert band.name == "B01"
+    assert band.common_name == "red"
+    assert band.description, "Common name: red == Range: 0.6 to 0.7"
+    assert band.center_wavelength == 0.65
+    assert band.full_width_half_max == 0.1
+    assert band.solar_illumination == 42.0
+    assert band.__repr__() == "<Band name=B01>"
 
-    def test_band_description_unknown_band(self) -> None:
-        desc = Band.band_description("rainbow")
-
-        assert desc is None
+def test_band_description_unknown_band() -> None:
+    desc = Band.band_description("rainbow")
+    assert desc is None
 
 
 class EOTest(unittest.TestCase):
@@ -338,24 +336,21 @@ class EOTest(unittest.TestCase):
             EOExtension.ext(object()) # type: ignore
 
 
-class EOMigrationTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.item_0_8_path = TestCases.get_path(
-            "data-files/examples/0.8.1/item-spec/examples/sentinel2-sample.json"
-        )
+def test_migration() -> None:
+    item_0_8_path = TestCases.get_path(
+        "data-files/examples/0.8.1/item-spec/examples/sentinel2-sample.json"
+    )
+    with open(item_0_8_path) as src:
+        item_dict = json.load(src)
 
-    def test_migration(self) -> None:
-        with open(self.item_0_8_path) as src:
-            item_dict = json.load(src)
+    assert "eo:epsg" in item_dict["properties"]
 
-        assert "eo:epsg" in item_dict["properties"]
+    item = Item.from_file(item_0_8_path)
 
-        item = Item.from_file(self.item_0_8_path)
-
-        assert "eo:epsg" not in item.properties
-        assert "proj:code" in item.properties
-        assert ProjectionExtension.get_schema_uri() in item.stac_extensions
-        assert item.ext.proj.epsg == item_dict["properties"]["eo:epsg"]
+    assert "eo:epsg" not in item.properties
+    assert "proj:code" in item.properties
+    assert ProjectionExtension.get_schema_uri() in item.stac_extensions
+    assert item.ext.proj.epsg == item_dict["properties"]["eo:epsg"]
 
 
 @pytest.fixture
