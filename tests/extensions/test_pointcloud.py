@@ -22,9 +22,18 @@ from tests.utils import TestCases, assert_to_from_dict
 # from copy import deepcopy
 
 
+@pytest.fixture
+def example_uri() -> str:
+    return TestCases.get_path("data-files/pointcloud/example-laz.json")
+
+
+@pytest.fixture
+def pc_item(example_uri) -> pystac.Item:
+    return pystac.Item.from_file(example_uri)
+
+
 class PointcloudTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
         self.example_uri_no_statistics = TestCases.get_path(
             "data-files/pointcloud/example-laz-no-statistics.json"
@@ -341,7 +350,6 @@ class PointcloudTest(unittest.TestCase):
 
 class PointcloudSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
         self.collection = pystac.Collection.from_file(
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
