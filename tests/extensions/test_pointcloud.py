@@ -32,59 +32,51 @@ def pc_item(example_uri) -> pystac.Item:
     return pystac.Item.from_file(example_uri)
 
 
-class PointcloudTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
-        self.example_uri_no_statistics = TestCases.get_path(
-            "data-files/pointcloud/example-laz-no-statistics.json"
-        )
+def test_to_from_dict(example_uri: str) -> None:
+    with open(example_uri) as f:
+        d = json.load(f)
+    assert_to_from_dict(pystac.Item, d)
 
-    def test_to_from_dict(self) -> None:
-        with open(self.example_uri) as f:
-            d = json.load(f)
-        assert_to_from_dict(pystac.Item, d)
+def test_apply() -> None:
+    item = next(TestCases.case_2().get_items(recursive=True))
 
-    def test_apply(self) -> None:
-        item = next(TestCases.case_2().get_items(recursive=True))
+    assert not PointcloudExtension.has_extension(item)
 
-        assert not PointcloudExtension.has_extension(item)
+    PointcloudExtension.add_to(item)
+    PointcloudExtension.ext(item).apply(
+        1000,
+        PhenomenologyType.LIDAR,
+        "laszip",
+        [Schema({"name": "X", "size": 8, "type": "floating"})],
+    )
+    assert PointcloudExtension.has_extension(item)
 
-        PointcloudExtension.add_to(item)
-        PointcloudExtension.ext(item).apply(
-            1000,
-            PhenomenologyType.LIDAR,
-            "laszip",
-            [Schema({"name": "X", "size": 8, "type": "floating"})],
-        )
-        assert PointcloudExtension.has_extension(item)
+@pytest.mark.vcr()
+def test_validate_pointcloud(pc_item: pystac.Item) -> None:
+    pc_item.validate()
 
-    @pytest.mark.vcr()
-    def test_validate_pointcloud(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.validate()
+@pytest.mark.vcr()
+def test_count(pc_item: pystac.Item) -> None:
+    # Get
+    assert "pc:count" in pc_item.properties
+    pc_count = PointcloudExtension.ext(pc_item).count
+    assert pc_count == pc_item.properties["pc:count"]
 
-    @pytest.mark.vcr()
-    def test_count(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+    # Set
+    PointcloudExtension.ext(pc_item).count = pc_count + 100
+    assert pc_count + 100 == pc_item.properties["pc:count"]
 
-        # Get
-        assert "pc:count" in pc_item.properties
-        pc_count = PointcloudExtension.ext(pc_item).count
-        assert pc_count == pc_item.properties["pc:count"]
+    # Validate
+    pc_item.validate()
 
-        # Set
-        PointcloudExtension.ext(pc_item).count = pc_count + 100
-        assert pc_count + 100 == pc_item.properties["pc:count"]
+    # Cannot test validation errors until the pointcloud schema.json syntax is fixed
+    # Ensure setting bad count fails validation
 
-        # Validate
+    with pytest.raises(pystac.STACValidationError):
+        PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
         pc_item.validate()
 
-        # Cannot test validation errors until the pointcloud schema.json syntax is fixed
-        # Ensure setting bad count fails validation
-
-        with pytest.raises(pystac.STACValidationError):
-            PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
-            pc_item.validate()
+class PointcloudTest(unittest.TestCase):
 
     @pytest.mark.vcr()
     def test_type(self) -> None:
@@ -346,6 +338,13 @@ class PointcloudTest(unittest.TestCase):
         _ = PointcloudExtension.ext(asset, add_if_missing=True)
 
         assert PointcloudExtension.get_schema_uri() in item.stac_extensions
+
+
+    def setUp(self) -> None:
+        self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
+        self.example_uri_no_statistics = TestCases.get_path(
+            "data-files/pointcloud/example-laz-no-statistics.json"
+        )
 
 
 class PointcloudSummariesTest(unittest.TestCase):
