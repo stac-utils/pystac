@@ -327,9 +327,7 @@ def test_asset_ext_add_to_ownerless_asset() -> None:
     with pytest.raises(pystac.STACError):
         _ = EOExtension.ext(asset, add_if_missing=True)
 
-def test_should_raise_exception_when_passing_invalid_extension_object(
-    self,
-) -> None:
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(ExtensionTypeError,
             match=r"^EOExtension does not apply to type 'object'$"):
         # calling it wrong purposely -------v
