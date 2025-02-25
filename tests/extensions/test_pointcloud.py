@@ -26,7 +26,7 @@ def example_uri() -> str:
 
 
 @pytest.fixture
-def pc_item(example_uri) -> pystac.Item:
+def pc_item(example_uri: str) -> pystac.Item:
     return pystac.Item.from_file(example_uri)
 
 
@@ -274,7 +274,7 @@ def test_pointcloud_statistics() -> None:
 
 
 def test_statistics_accessor_when_no_stats(pc_no_stats_item: pystac.Item) -> None:
-    assert PointcloudExtension.ext(pc_no_stats_item).statistics == None
+    assert PointcloudExtension.ext(pc_no_stats_item).statistics is None
 
 
 def test_asset_extension(pc_no_stats_item: pystac.Item) -> None:

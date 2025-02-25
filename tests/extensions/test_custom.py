@@ -1,5 +1,6 @@
 """Tests creating a custom extension"""
 
+from collections.abc import Generator
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
@@ -119,7 +120,7 @@ class CustomExtensionHooks(ExtensionHooks):
 
 
 @pytest.fixture
-def add_extension_hooks() -> None:
+def add_extension_hooks() -> Generator[None]:
     pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
     yield
     pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)

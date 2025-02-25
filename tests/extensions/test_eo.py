@@ -52,6 +52,13 @@ def test_to_from_dict() -> None:
     assert_to_from_dict(Item, item_dict)
 
 
+def test_from_file_to_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
+    with open(ext_item_uri) as f:
+        d = json.load(f)
+    actual = ext_item.to_dict(include_self_link=False)
+    assert actual == d
+
+
 def test_add_to() -> None:
     item = Item.from_file(PLAIN_ITEM)
     assert EOExtension.get_schema_uri() not in item.stac_extensions
@@ -283,7 +290,7 @@ def test_item_apply() -> None:
     test_band = Band.create(name="test")
 
     assert eo_ext.cloud_cover == 78
-    assert test_band not in eo_ext.bands or []
+    assert test_band not in (eo_ext.bands or [])
 
     eo_ext.apply(bands=[test_band], cloud_cover=15)
     assert eo_ext.bands is not None
@@ -378,13 +385,6 @@ def ext_item_uri() -> str:
 @pytest.fixture
 def ext_item(ext_item_uri: str) -> pystac.Item:
     return pystac.Item.from_file(ext_item_uri)
-
-
-def test_to_from_dict(ext_item_uri: str, ext_item: pystac.Item) -> None:
-    with open(ext_item_uri) as f:
-        d = json.load(f)
-    actual = ext_item.to_dict(include_self_link=False)
-    assert actual == d
 
 
 @pytest.mark.parametrize("field", ["cloud_cover", "snow_cover"])
