@@ -1,6 +1,6 @@
 """Tests creating a custom extension"""
 
-import unittest
+from collections.abc import Generator
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
@@ -119,81 +119,85 @@ class CustomExtensionHooks(ExtensionHooks):
         super().migrate(obj, version, info)
 
 
-class CustomExtensionTest(unittest.TestCase):
-    def setUp(self) -> None:
-        pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
+@pytest.fixture
+def add_extension_hooks() -> Generator[None]:
+    pystac.EXTENSION_HOOKS.add_extension_hooks(CustomExtensionHooks())
+    yield
+    pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
 
-    def tearDown(self) -> None:
-        pystac.EXTENSION_HOOKS.remove_extension_hooks(SCHEMA_URI)
 
-    def test_add_to_item_asset(self) -> None:
-        item = Item("an-id", None, None, datetime.now(), {})
-        item.add_asset("foo", Asset("http://pystac.test/asset.tif"))
-        custom = CustomExtension.ext(item.assets["foo"], add_if_missing=True)
-        assert CustomExtension.has_extension(item)
-        custom.apply("bar")
-        item_as_dict = item.to_dict()
-        assert item_as_dict["assets"]["foo"]["test:prop"] == "bar"
+def test_add_to_item_asset(add_extension_hooks: None) -> None:
+    item = Item("an-id", None, None, datetime.now(), {})
+    item.add_asset("foo", Asset("http://pystac.test/asset.tif"))
+    custom = CustomExtension.ext(item.assets["foo"], add_if_missing=True)
+    assert CustomExtension.has_extension(item)
+    custom.apply("bar")
+    item_as_dict = item.to_dict()
+    assert item_as_dict["assets"]["foo"]["test:prop"] == "bar"
 
-    def test_add_to_item(self) -> None:
-        item = Item("an-id", None, None, datetime.now(), {})
-        custom = CustomExtension.ext(item, add_if_missing=True)
-        assert CustomExtension.has_extension(item)
-        custom.test_prop = "foo"
-        item_as_dict = item.to_dict()
-        assert item_as_dict["properties"]["test:prop"] == "foo"
 
-    def test_add_to_catalog(self) -> None:
-        catalog = Catalog("an-id", "a description")
-        custom = CustomExtension.ext(catalog, add_if_missing=True)
-        assert CustomExtension.has_extension(catalog)
-        custom.test_prop = "foo"
-        catalog_as_dict = catalog.to_dict()
-        assert catalog_as_dict["test:prop"] == "foo"
+def test_add_to_item(add_extension_hooks: None) -> None:
+    item = Item("an-id", None, None, datetime.now(), {})
+    custom = CustomExtension.ext(item, add_if_missing=True)
+    assert CustomExtension.has_extension(item)
+    custom.test_prop = "foo"
+    item_as_dict = item.to_dict()
+    assert item_as_dict["properties"]["test:prop"] == "foo"
 
-    def test_add_to_collection(self) -> None:
-        collection = Collection(
-            "an-id",
-            "a description",
-            extent=Extent(
-                spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
-                temporal=TemporalExtent([[datetime.now(), None]]),
-            ),
-        )
-        custom = CustomExtension.ext(collection, add_if_missing=True)
-        assert CustomExtension.has_extension(collection)
-        custom.test_prop = "foo"
-        collection_as_dict = collection.to_dict()
-        assert collection_as_dict["test:prop"] == "foo"
 
-    def test_add_to_collection_asset(self) -> None:
-        collection = Collection(
-            "an-id",
-            "a description",
-            extent=Extent(
-                spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
-                temporal=TemporalExtent([[datetime.now(), None]]),
-            ),
-        )
-        collection.add_asset("foo", Asset("http://pystac.test/asset.tif"))
-        custom = CustomExtension.ext(collection.assets["foo"], add_if_missing=True)
-        assert CustomExtension.has_extension(collection)
-        custom.test_prop = "bar"
-        collection_as_dict = collection.to_dict()
-        assert collection_as_dict["assets"]["foo"]["test:prop"] == "bar"
+def test_add_to_catalog(add_extension_hooks: None) -> None:
+    catalog = Catalog("an-id", "a description")
+    custom = CustomExtension.ext(catalog, add_if_missing=True)
+    assert CustomExtension.has_extension(catalog)
+    custom.test_prop = "foo"
+    catalog_as_dict = catalog.to_dict()
+    assert catalog_as_dict["test:prop"] == "foo"
 
-    def test_ext_non_stac_object(self) -> None:
-        with pytest.raises(ExtensionTypeError):
-            CustomExtension.ext({})  # type: ignore
 
-    def test_migrates(self) -> None:
-        item = Item("an-id", None, None, datetime.now(), {})
-        item_as_dict = item.to_dict()
-        item_as_dict["stac_version"] = "1.0.0-rc.1"
-        item_as_dict["stac_extensions"] = [
-            "https://example.com/v1.0/custom-schema.json"
-        ]
-        item_as_dict["properties"]["test:old-prop-name"] = "foo"
-        item = Item.from_dict(item_as_dict, migrate=True)
-        custom = CustomExtension.ext(item)
-        assert custom.test_prop == "foo"
+def test_add_to_collection(add_extension_hooks: None) -> None:
+    collection = Collection(
+        "an-id",
+        "a description",
+        extent=Extent(
+            spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
+            temporal=TemporalExtent([[datetime.now(), None]]),
+        ),
+    )
+    custom = CustomExtension.ext(collection, add_if_missing=True)
+    assert CustomExtension.has_extension(collection)
+    custom.test_prop = "foo"
+    collection_as_dict = collection.to_dict()
+    assert collection_as_dict["test:prop"] == "foo"
+
+
+def test_add_to_collection_asset(add_extension_hooks: None) -> None:
+    collection = Collection(
+        "an-id",
+        "a description",
+        extent=Extent(
+            spatial=SpatialExtent([-180.0, -90.0, 180.0, 90.0]),
+            temporal=TemporalExtent([[datetime.now(), None]]),
+        ),
+    )
+    collection.add_asset("foo", Asset("http://pystac.test/asset.tif"))
+    custom = CustomExtension.ext(collection.assets["foo"], add_if_missing=True)
+    assert CustomExtension.has_extension(collection)
+    custom.test_prop = "bar"
+    collection_as_dict = collection.to_dict()
+    assert collection_as_dict["assets"]["foo"]["test:prop"] == "bar"
+
+
+def test_ext_non_stac_object(add_extension_hooks: None) -> None:
+    with pytest.raises(ExtensionTypeError):
+        CustomExtension.ext({})  # type: ignore
+
+
+def test_migrates(add_extension_hooks: None) -> None:
+    item = Item("an-id", None, None, datetime.now(), {})
+    item_as_dict = item.to_dict()
+    item_as_dict["stac_version"] = "1.0.0-rc.1"
+    item_as_dict["stac_extensions"] = ["https://example.com/v1.0/custom-schema.json"]
+    item_as_dict["properties"]["test:old-prop-name"] = "foo"
+    item = Item.from_dict(item_as_dict, migrate=True)
+    custom = CustomExtension.ext(item)
+    assert custom.test_prop == "foo"
