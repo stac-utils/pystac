@@ -41,6 +41,12 @@ def pc_no_stats_item() -> pystac.Item:
 def plain_item() -> pystac.Item:
     return pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
 
+@pytest.fixture
+def collection() -> pystac.Collection:
+    return pystac.Collection.from_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+
 def test_to_from_dict(example_uri: str) -> None:
     with open(example_uri) as f:
         d = json.load(f)
@@ -328,87 +334,76 @@ def test_asset_ext_add_to(plain_item: pystac.Item) -> None:
     assert PointcloudExtension.get_schema_uri() in plain_item.stac_extensions
 
 
-class PointcloudSummariesTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.collection = pystac.Collection.from_file(
-            TestCases.get_path("data-files/collections/multi-extent.json")
+def test_summaries_count(collection: pystac.Collection) -> None:
+    summaries_ext = PointcloudExtension.summaries(collection, True)
+    count_range = RangeSummary(1000, 10000)
+
+    summaries_ext.count = count_range
+
+    assert summaries_ext.count == count_range
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["pc:count"] == count_range.to_dict()
+
+def test_summaries_type(collection: pystac.Collection) -> None:
+    summaries_ext = PointcloudExtension.summaries(collection, True)
+    type_list = [PhenomenologyType.LIDAR, "something"]
+
+    summaries_ext.type = type_list
+
+    assert summaries_ext.type == type_list
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["pc:type"] == type_list
+
+
+def test_summaries_encoding(collection: pystac.Collection) -> None:
+    summaries_ext = PointcloudExtension.summaries(collection, True)
+    encoding_list = ["LASzip"]
+
+    summaries_ext.encoding = encoding_list
+
+    assert summaries_ext.encoding == encoding_list
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["pc:encoding"] == encoding_list
+
+def test_summaries_density(collection: pystac.Collection) -> None:
+    summaries_ext = PointcloudExtension.summaries(collection, True)
+    density_range = RangeSummary(500.0, 1000.0)
+
+    summaries_ext.density = density_range
+
+    assert summaries_ext.density == density_range
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["pc:density"] == density_range.to_dict()
+
+def test_summaries_statistics(collection: pystac.Collection) -> None:
+    summaries_ext = PointcloudExtension.summaries(collection, True)
+    statistics_list = [
+        Statistic(
+            {
+                "average": 637294.1783,
+                "count": 10653336,
+                "maximum": 639003.73,
+                "minimum": 635577.79,
+                "name": "X",
+                "position": 0,
+                "stddev": 967.9329805,
+                "variance": 936894.2548,
+            }
         )
+    ]
 
-    def test_count(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = PointcloudExtension.summaries(collection, True)
-        count_range = RangeSummary(1000, 10000)
+    summaries_ext.statistics = statistics_list
 
-        summaries_ext.count = count_range
+    assert summaries_ext.statistics == statistics_list
 
-        # TODO rest of assertions
-        assert summaries_ext.count == count_range
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["pc:count"] == count_range.to_dict()
-
-    def test_type(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = PointcloudExtension.summaries(collection, True)
-        type_list = [PhenomenologyType.LIDAR, "something"]
-
-        summaries_ext.type = type_list
-
-        assert summaries_ext.type == type_list
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["pc:type"] == type_list
-
-    def test_encoding(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = PointcloudExtension.summaries(collection, True)
-        encoding_list = ["LASzip"]
-
-        summaries_ext.encoding = encoding_list
-
-        assert summaries_ext.encoding == encoding_list
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["pc:encoding"] == encoding_list
-
-    def test_density(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = PointcloudExtension.summaries(collection, True)
-        density_range = RangeSummary(500.0, 1000.0)
-
-        summaries_ext.density = density_range
-
-        assert summaries_ext.density == density_range
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["pc:density"] == density_range.to_dict()
-
-    def test_statistics(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = PointcloudExtension.summaries(collection, True)
-        statistics_list = [
-            Statistic(
-                {
-                    "average": 637294.1783,
-                    "count": 10653336,
-                    "maximum": 639003.73,
-                    "minimum": 635577.79,
-                    "name": "X",
-                    "position": 0,
-                    "stddev": 967.9329805,
-                    "variance": 936894.2548,
-                }
-            )
-        ]
-
-        summaries_ext.statistics = statistics_list
-
-        assert summaries_ext.statistics == statistics_list
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["pc:statistics"] == [s.to_dict() for s in statistics_list]
+    assert summaries_dict["pc:statistics"] == [s.to_dict() for s in statistics_list]
