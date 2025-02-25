@@ -1,6 +1,5 @@
 """Tests creating a custom extension"""
 
-import unittest
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
@@ -135,6 +134,7 @@ def test_add_to_item_asset(add_extension_hooks: None) -> None:
     item_as_dict = item.to_dict()
     assert item_as_dict["assets"]["foo"]["test:prop"] == "bar"
 
+
 def test_add_to_item(add_extension_hooks: None) -> None:
     item = Item("an-id", None, None, datetime.now(), {})
     custom = CustomExtension.ext(item, add_if_missing=True)
@@ -143,6 +143,7 @@ def test_add_to_item(add_extension_hooks: None) -> None:
     item_as_dict = item.to_dict()
     assert item_as_dict["properties"]["test:prop"] == "foo"
 
+
 def test_add_to_catalog(add_extension_hooks: None) -> None:
     catalog = Catalog("an-id", "a description")
     custom = CustomExtension.ext(catalog, add_if_missing=True)
@@ -150,6 +151,7 @@ def test_add_to_catalog(add_extension_hooks: None) -> None:
     custom.test_prop = "foo"
     catalog_as_dict = catalog.to_dict()
     assert catalog_as_dict["test:prop"] == "foo"
+
 
 def test_add_to_collection(add_extension_hooks: None) -> None:
     collection = Collection(
@@ -165,6 +167,7 @@ def test_add_to_collection(add_extension_hooks: None) -> None:
     custom.test_prop = "foo"
     collection_as_dict = collection.to_dict()
     assert collection_as_dict["test:prop"] == "foo"
+
 
 def test_add_to_collection_asset(add_extension_hooks: None) -> None:
     collection = Collection(
@@ -182,17 +185,17 @@ def test_add_to_collection_asset(add_extension_hooks: None) -> None:
     collection_as_dict = collection.to_dict()
     assert collection_as_dict["assets"]["foo"]["test:prop"] == "bar"
 
+
 def test_ext_non_stac_object(add_extension_hooks: None) -> None:
     with pytest.raises(ExtensionTypeError):
         CustomExtension.ext({})  # type: ignore
+
 
 def test_migrates(add_extension_hooks: None) -> None:
     item = Item("an-id", None, None, datetime.now(), {})
     item_as_dict = item.to_dict()
     item_as_dict["stac_version"] = "1.0.0-rc.1"
-    item_as_dict["stac_extensions"] = [
-        "https://example.com/v1.0/custom-schema.json"
-    ]
+    item_as_dict["stac_extensions"] = ["https://example.com/v1.0/custom-schema.json"]
     item_as_dict["properties"]["test:old-prop-name"] = "foo"
     item = Item.from_dict(item_as_dict, migrate=True)
     custom = CustomExtension.ext(item)

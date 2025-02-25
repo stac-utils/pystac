@@ -1,5 +1,4 @@
 import json
-import unittest
 from typing import Any
 
 import pytest
@@ -18,7 +17,6 @@ from pystac.extensions.pointcloud import (
 from pystac.summaries import RangeSummary
 from tests.utils import TestCases, assert_to_from_dict
 
-
 # from copy import deepcopy
 
 
@@ -34,12 +32,15 @@ def pc_item(example_uri) -> pystac.Item:
 
 @pytest.fixture
 def pc_no_stats_item() -> pystac.Item:
-    return pystac.Item.from_file(TestCases.get_path(
-        "data-files/pointcloud/example-laz-no-statistics.json"))
+    return pystac.Item.from_file(
+        TestCases.get_path("data-files/pointcloud/example-laz-no-statistics.json")
+    )
+
 
 @pytest.fixture
 def plain_item() -> pystac.Item:
     return pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
+
 
 @pytest.fixture
 def collection() -> pystac.Collection:
@@ -47,10 +48,12 @@ def collection() -> pystac.Collection:
         TestCases.get_path("data-files/collections/multi-extent.json")
     )
 
+
 def test_to_from_dict(example_uri: str) -> None:
     with open(example_uri) as f:
         d = json.load(f)
     assert_to_from_dict(pystac.Item, d)
+
 
 def test_apply() -> None:
     item = next(TestCases.case_2().get_items(recursive=True))
@@ -66,9 +69,11 @@ def test_apply() -> None:
     )
     assert PointcloudExtension.has_extension(item)
 
+
 @pytest.mark.vcr()
 def test_validate_pointcloud(pc_item: pystac.Item) -> None:
     pc_item.validate()
+
 
 @pytest.mark.vcr()
 def test_count(pc_item: pystac.Item) -> None:
@@ -106,6 +111,7 @@ def test_type(pc_item: pystac.Item) -> None:
     # Validate
     pc_item.validate()
 
+
 @pytest.mark.vcr()
 def test_encoding(pc_item: pystac.Item) -> None:
     # Get
@@ -120,6 +126,7 @@ def test_encoding(pc_item: pystac.Item) -> None:
     # Validate
     pc_item.validate()
 
+
 @pytest.mark.vcr()
 def test_schemas(pc_item: pystac.Item) -> None:
     # Get
@@ -133,6 +140,7 @@ def test_schemas(pc_item: pystac.Item) -> None:
     assert [s.to_dict() for s in schema] == pc_item.properties["pc:schemas"]
     # Validate
     pc_item.validate()
+
 
 @pytest.mark.vcr()
 def test_statistics(pc_item: pystac.Item) -> None:
@@ -163,6 +171,7 @@ def test_statistics(pc_item: pystac.Item) -> None:
     # Validate
     pc_item.validate()
 
+
 @pytest.mark.vcr()
 def test_density(pc_item: pystac.Item) -> None:
     # Get
@@ -175,6 +184,7 @@ def test_density(pc_item: pystac.Item) -> None:
     assert density == pc_item.properties["pc:density"]
     # Validate
     pc_item.validate()
+
 
 def test_pointcloud_schema() -> None:
     props: dict[str, Any] = {
@@ -206,6 +216,7 @@ def test_pointcloud_schema() -> None:
     for required_prop in {"size", "name", "type"}:
         with pytest.raises(RequiredPropertyMissing):
             getattr(empty_schema, required_prop)
+
 
 def test_pointcloud_statistics() -> None:
     props: dict[str, Any] = {
@@ -261,8 +272,10 @@ def test_pointcloud_statistics() -> None:
     with pytest.raises(RequiredPropertyMissing):
         empty_stat.name
 
+
 def test_statistics_accessor_when_no_stats(pc_no_stats_item: pystac.Item) -> None:
     assert PointcloudExtension.ext(pc_no_stats_item).statistics == None
+
 
 def test_asset_extension(pc_no_stats_item: pystac.Item) -> None:
     asset = Asset(
@@ -281,6 +294,7 @@ def test_asset_extension(pc_no_stats_item: pystac.Item) -> None:
     assert ext.properties == asset.extra_fields
     assert ext.additional_read_properties == [pc_no_stats_item.properties]
 
+
 def test_ext(pc_no_stats_item: pystac.Item) -> None:
     PointcloudExtension.ext(pc_no_stats_item)
     asset = Asset(
@@ -298,10 +312,13 @@ def test_ext(pc_no_stats_item: pystac.Item) -> None:
     class RandomObject:
         pass
 
-    with pytest.raises(ExtensionTypeError,
-                       match=r"^PointcloudExtension does not apply to type 'RandomObject'$"):
+    with pytest.raises(
+        ExtensionTypeError,
+        match=r"^PointcloudExtension does not apply to type 'RandomObject'$",
+    ):
         # calling it wrong on purpose so -----------------v
         PointcloudExtension.ext(RandomObject())  # type: ignore
+
 
 def test_extension_not_implemented(plain_item: pystac.Item) -> None:
     # Should raise exception if Item does not include extension URI
@@ -318,12 +335,14 @@ def test_extension_not_implemented(plain_item: pystac.Item) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = PointcloudExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(plain_item: pystac.Item) -> None:
     assert PointcloudExtension.get_schema_uri() not in plain_item.stac_extensions
 
     _ = PointcloudExtension.ext(plain_item, add_if_missing=True)
 
     assert PointcloudExtension.get_schema_uri() in plain_item.stac_extensions
+
 
 def test_asset_ext_add_to(plain_item: pystac.Item) -> None:
     assert PointcloudExtension.get_schema_uri() not in plain_item.stac_extensions
@@ -345,6 +364,7 @@ def test_summaries_count(collection: pystac.Collection) -> None:
     summaries_dict = collection.to_dict()["summaries"]
 
     assert summaries_dict["pc:count"] == count_range.to_dict()
+
 
 def test_summaries_type(collection: pystac.Collection) -> None:
     summaries_ext = PointcloudExtension.summaries(collection, True)
@@ -371,6 +391,7 @@ def test_summaries_encoding(collection: pystac.Collection) -> None:
 
     assert summaries_dict["pc:encoding"] == encoding_list
 
+
 def test_summaries_density(collection: pystac.Collection) -> None:
     summaries_ext = PointcloudExtension.summaries(collection, True)
     density_range = RangeSummary(500.0, 1000.0)
@@ -382,6 +403,7 @@ def test_summaries_density(collection: pystac.Collection) -> None:
     summaries_dict = collection.to_dict()["summaries"]
 
     assert summaries_dict["pc:density"] == density_range.to_dict()
+
 
 def test_summaries_statistics(collection: pystac.Collection) -> None:
     summaries_ext = PointcloudExtension.summaries(collection, True)
