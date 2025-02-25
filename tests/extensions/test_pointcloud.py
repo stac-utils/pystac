@@ -76,275 +76,267 @@ def test_count(pc_item: pystac.Item) -> None:
         PointcloudExtension.ext(pc_item).count = "not_an_int"  # type:ignore
         pc_item.validate()
 
-class PointcloudTest(unittest.TestCase):
 
-    @pytest.mark.vcr()
-    def test_type(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_type(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "pc:type" in pc_item.properties
-        pc_type = PointcloudExtension.ext(pc_item).type
-        assert pc_type == pc_item.properties["pc:type"]
+    # Get
+    assert "pc:type" in pc_item.properties
+    pc_type = PointcloudExtension.ext(pc_item).type
+    assert pc_type == pc_item.properties["pc:type"]
 
-        # Set
-        PointcloudExtension.ext(pc_item).type = "sonar"
-        assert "sonar" == pc_item.properties["pc:type"]
+    # Set
+    PointcloudExtension.ext(pc_item).type = "sonar"
+    assert "sonar" == pc_item.properties["pc:type"]
 
-        # Validate
-        pc_item.validate()
+    # Validate
+    pc_item.validate()
 
-    @pytest.mark.vcr()
-    def test_encoding(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_encoding(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "pc:encoding" in pc_item.properties
-        pc_encoding = PointcloudExtension.ext(pc_item).encoding
-        assert pc_encoding == pc_item.properties["pc:encoding"]
+    # Get
+    assert "pc:encoding" in pc_item.properties
+    pc_encoding = PointcloudExtension.ext(pc_item).encoding
+    assert pc_encoding == pc_item.properties["pc:encoding"]
 
-        # Set
-        PointcloudExtension.ext(pc_item).encoding = "binary"
-        assert "binary" == pc_item.properties["pc:encoding"]
+    # Set
+    PointcloudExtension.ext(pc_item).encoding = "binary"
+    assert "binary" == pc_item.properties["pc:encoding"]
 
-        # Validate
-        pc_item.validate()
+    # Validate
+    pc_item.validate()
 
-    @pytest.mark.vcr()
-    def test_schemas(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_schemas(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "pc:schemas" in pc_item.properties
-        pc_schemas = [s.to_dict() for s in PointcloudExtension.ext(pc_item).schemas]
-        assert pc_schemas == pc_item.properties["pc:schemas"]
+    # Get
+    assert "pc:schemas" in pc_item.properties
+    pc_schemas = [s.to_dict() for s in PointcloudExtension.ext(pc_item).schemas]
+    assert pc_schemas == pc_item.properties["pc:schemas"]
 
-        # Set
-        schema = [Schema({"name": "X", "size": 8, "type": "floating"})]
-        PointcloudExtension.ext(pc_item).schemas = schema
-        assert [s.to_dict() for s in schema] == pc_item.properties["pc:schemas"]
-        # Validate
-        pc_item.validate()
+    # Set
+    schema = [Schema({"name": "X", "size": 8, "type": "floating"})]
+    PointcloudExtension.ext(pc_item).schemas = schema
+    assert [s.to_dict() for s in schema] == pc_item.properties["pc:schemas"]
+    # Validate
+    pc_item.validate()
 
-    @pytest.mark.vcr()
-    def test_statistics(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_statistics(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "pc:statistics" in pc_item.properties
-        statistics = PointcloudExtension.ext(pc_item).statistics
-        assert statistics is not None
-        pc_statistics = [s.to_dict() for s in statistics]
-        assert pc_statistics == pc_item.properties["pc:statistics"]
+    # Get
+    assert "pc:statistics" in pc_item.properties
+    statistics = PointcloudExtension.ext(pc_item).statistics
+    assert statistics is not None
+    pc_statistics = [s.to_dict() for s in statistics]
+    assert pc_statistics == pc_item.properties["pc:statistics"]
 
-        # Set
-        stats = [
-            Statistic(
-                {
-                    "average": 1,
-                    "count": 1,
-                    "maximum": 1,
-                    "minimum": 1,
-                    "name": "Test",
-                    "position": 1,
-                    "stddev": 1,
-                    "variance": 1,
-                }
-            )
-        ]
-        PointcloudExtension.ext(pc_item).statistics = stats
-        assert [s.to_dict() for s in stats] == pc_item.properties["pc:statistics"]
-        # Validate
-        pc_item.validate()
-
-    @pytest.mark.vcr()
-    def test_density(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri)
-        # Get
-        assert "pc:density" in pc_item.properties
-        pc_density = PointcloudExtension.ext(pc_item).density
-        assert pc_density == pc_item.properties["pc:density"]
-        # Set
-        density = 100
-        PointcloudExtension.ext(pc_item).density = density
-        assert density == pc_item.properties["pc:density"]
-        # Validate
-        pc_item.validate()
-
-    def test_pointcloud_schema(self) -> None:
-        props: dict[str, Any] = {
-            "name": "test",
-            "size": 8,
-            "type": "floating",
-        }
-        schema = Schema(props)
-        assert props == schema.properties
-
-        # test all getters and setters
-        for k in props:
-            if isinstance(props[k], str):
-                val = props[k] + str(1)
-            else:
-                val = props[k] + 1
-            setattr(schema, k, val)
-            assert getattr(schema, k) == val
-
-        schema = Schema.create("intensity", 16, SchemaType.UNSIGNED)
-        assert schema.name == "intensity"
-        assert schema.size == 16
-        assert schema.type == "unsigned"
-
-        with pytest.raises(STACError):
-            schema.size = 0.5  # type: ignore
-
-        empty_schema = Schema({})
-        for required_prop in {"size", "name", "type"}:
-            with self.subTest(attr=required_prop):
-                with pytest.raises(RequiredPropertyMissing):
-                    getattr(empty_schema, required_prop)
-
-    def test_pointcloud_statistics(self) -> None:
-        props: dict[str, Any] = {
-            "average": 1,
-            "count": 1,
-            "maximum": 1,
-            "minimum": 1,
-            "name": "Test",
-            "position": 1,
-            "stddev": 1,
-            "variance": 1,
-        }
-        stat = Statistic(props)
-        assert props == stat.properties
-
-        # test all getters and setters
-        for k in props:
-            if isinstance(props[k], str):
-                val = props[k] + str(1)
-            else:
-                val = props[k] + 1
-            setattr(stat, k, val)
-            assert getattr(stat, k) == val
-
-        stat = Statistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
-        assert stat.name == "foo"
-        assert stat.position == 1
-        assert stat.average == 2
-        assert stat.count == 3
-        assert stat.maximum == 4
-        assert stat.minimum == 5
-        assert stat.stddev == 6
-        assert stat.variance == 7
-
-        stat.name = None  # type: ignore
-        assert "name" not in stat.properties
-        stat.position = None
-        assert "position" not in stat.properties
-        stat.average = None
-        assert "average" not in stat.properties
-        stat.count = None
-        assert "count" not in stat.properties
-        stat.maximum = None
-        assert "maximum" not in stat.properties
-        stat.minimum = None
-        assert "minimum" not in stat.properties
-        stat.stddev = None
-        assert "stddev" not in stat.properties
-        stat.variance = None
-        assert "variance" not in stat.properties
-
-        empty_stat = Statistic({})
-        with pytest.raises(RequiredPropertyMissing):
-            empty_stat.name
-
-    def test_statistics_accessor_when_no_stats(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
-        assert PointcloudExtension.ext(pc_item).statistics == None
-
-    def test_asset_extension(self) -> None:
-        asset = Asset(
-            "https://github.com/PDAL/PDAL/blob"
-            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
-            "/autzen_trim.laz",
-            "laz file",
-            "The laz data",
-            "application/octet-stream",
-            ["data"],
-            {"foo": "bar"},
+    # Set
+    stats = [
+        Statistic(
+            {
+                "average": 1,
+                "count": 1,
+                "maximum": 1,
+                "minimum": 1,
+                "name": "Test",
+                "position": 1,
+                "stddev": 1,
+                "variance": 1,
+            }
         )
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
-        pc_item.add_asset("data", asset)
-        ext = AssetPointcloudExtension(asset)
-        assert ext.asset_href == asset.href
-        assert ext.properties == asset.extra_fields
-        assert ext.additional_read_properties == [pc_item.properties]
+    ]
+    PointcloudExtension.ext(pc_item).statistics = stats
+    assert [s.to_dict() for s in stats] == pc_item.properties["pc:statistics"]
+    # Validate
+    pc_item.validate()
 
-    def test_ext(self) -> None:
-        pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
-        PointcloudExtension.ext(pc_item)
-        asset = Asset(
-            "https://github.com/PDAL/PDAL/blob"
-            "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
-            "/autzen_trim.laz",
-            "laz file",
-            "The laz data",
-            "application/octet-stream",
-            ["data"],
-            {"foo": "bar"},
-        )
-        PointcloudExtension.ext(asset)
+@pytest.mark.vcr()
+def test_density(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri)
+    # Get
+    assert "pc:density" in pc_item.properties
+    pc_density = PointcloudExtension.ext(pc_item).density
+    assert pc_density == pc_item.properties["pc:density"]
+    # Set
+    density = 100
+    PointcloudExtension.ext(pc_item).density = density
+    assert density == pc_item.properties["pc:density"]
+    # Validate
+    pc_item.validate()
 
-        class RandomObject:
-            pass
+def test_pointcloud_schema(self) -> None:
+    props: dict[str, Any] = {
+        "name": "test",
+        "size": 8,
+        "type": "floating",
+    }
+    schema = Schema(props)
+    assert props == schema.properties
 
-        with pytest.raises(ExtensionTypeError,
-                           match=r"^PointcloudExtension does not apply to type 'RandomObject'$"):
-            # calling it wrong on purpose so -----------------v
-            PointcloudExtension.ext(RandomObject())  # type: ignore
+    # test all getters and setters
+    for k in props:
+        if isinstance(props[k], str):
+            val = props[k] + str(1)
+        else:
+            val = props[k] + 1
+        setattr(schema, k, val)
+        assert getattr(schema, k) == val
 
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Item does not include extension URI
-        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
+    schema = Schema.create("intensity", 16, SchemaType.UNSIGNED)
+    assert schema.name == "intensity"
+    assert schema.size == 16
+    assert schema.type == "unsigned"
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = PointcloudExtension.ext(item)
+    with pytest.raises(STACError):
+        schema.size = 0.5  # type: ignore
 
-        # Should raise exception if owning Item does not include extension URI
-        asset = item.assets["thumbnail"]
+    empty_schema = Schema({})
+    for required_prop in {"size", "name", "type"}:
+        with self.subTest(attr=required_prop):
+            with pytest.raises(RequiredPropertyMissing):
+                getattr(empty_schema, required_prop)
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = PointcloudExtension.ext(asset)
+def test_pointcloud_statistics(self) -> None:
+    props: dict[str, Any] = {
+        "average": 1,
+        "count": 1,
+        "maximum": 1,
+        "minimum": 1,
+        "name": "Test",
+        "position": 1,
+        "stddev": 1,
+        "variance": 1,
+    }
+    stat = Statistic(props)
+    assert props == stat.properties
 
-        # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
-        _ = PointcloudExtension.ext(ownerless_asset)
+    # test all getters and setters
+    for k in props:
+        if isinstance(props[k], str):
+            val = props[k] + str(1)
+        else:
+            val = props[k] + 1
+        setattr(stat, k, val)
+        assert getattr(stat, k) == val
 
-    def test_item_ext_add_to(self) -> None:
-        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
-        assert PointcloudExtension.get_schema_uri() not in item.stac_extensions
+    stat = Statistic.create("foo", 1, 2, 3, 4, 5, 6, 7)
+    assert stat.name == "foo"
+    assert stat.position == 1
+    assert stat.average == 2
+    assert stat.count == 3
+    assert stat.maximum == 4
+    assert stat.minimum == 5
+    assert stat.stddev == 6
+    assert stat.variance == 7
 
-        _ = PointcloudExtension.ext(item, add_if_missing=True)
+    stat.name = None  # type: ignore
+    assert "name" not in stat.properties
+    stat.position = None
+    assert "position" not in stat.properties
+    stat.average = None
+    assert "average" not in stat.properties
+    stat.count = None
+    assert "count" not in stat.properties
+    stat.maximum = None
+    assert "maximum" not in stat.properties
+    stat.minimum = None
+    assert "minimum" not in stat.properties
+    stat.stddev = None
+    assert "stddev" not in stat.properties
+    stat.variance = None
+    assert "variance" not in stat.properties
 
-        assert PointcloudExtension.get_schema_uri() in item.stac_extensions
+    empty_stat = Statistic({})
+    with pytest.raises(RequiredPropertyMissing):
+        empty_stat.name
 
-    def test_asset_ext_add_to(self) -> None:
-        plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
-        item = pystac.Item.from_file(plain_item_uri)
-        assert PointcloudExtension.get_schema_uri() not in item.stac_extensions
-        asset = item.assets["thumbnail"]
+def test_statistics_accessor_when_no_stats(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+    assert PointcloudExtension.ext(pc_item).statistics == None
 
-        _ = PointcloudExtension.ext(asset, add_if_missing=True)
+def test_asset_extension(self) -> None:
+    asset = Asset(
+        "https://github.com/PDAL/PDAL/blob"
+        "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+        "/autzen_trim.laz",
+        "laz file",
+        "The laz data",
+        "application/octet-stream",
+        ["data"],
+        {"foo": "bar"},
+    )
+    pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+    pc_item.add_asset("data", asset)
+    ext = AssetPointcloudExtension(asset)
+    assert ext.asset_href == asset.href
+    assert ext.properties == asset.extra_fields
+    assert ext.additional_read_properties == [pc_item.properties]
 
-        assert PointcloudExtension.get_schema_uri() in item.stac_extensions
+def test_ext(self) -> None:
+    pc_item = pystac.Item.from_file(self.example_uri_no_statistics)
+    PointcloudExtension.ext(pc_item)
+    asset = Asset(
+        "https://github.com/PDAL/PDAL/blob"
+        "/a6c986f68458e92414a66c664408bee4737bbb08/test/data/laz"
+        "/autzen_trim.laz",
+        "laz file",
+        "The laz data",
+        "application/octet-stream",
+        ["data"],
+        {"foo": "bar"},
+    )
+    PointcloudExtension.ext(asset)
 
+    class RandomObject:
+        pass
 
-    def setUp(self) -> None:
-        self.example_uri = TestCases.get_path("data-files/pointcloud/example-laz.json")
-        self.example_uri_no_statistics = TestCases.get_path(
-            "data-files/pointcloud/example-laz-no-statistics.json"
-        )
+    with pytest.raises(ExtensionTypeError,
+                       match=r"^PointcloudExtension does not apply to type 'RandomObject'$"):
+        # calling it wrong on purpose so -----------------v
+        PointcloudExtension.ext(RandomObject())  # type: ignore
+
+def test_extension_not_implemented(self) -> None:
+    # Should raise exception if Item does not include extension URI
+    plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+    item = pystac.Item.from_file(plain_item_uri)
+
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = PointcloudExtension.ext(item)
+
+    # Should raise exception if owning Item does not include extension URI
+    asset = item.assets["thumbnail"]
+
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = PointcloudExtension.ext(asset)
+
+    # Should succeed if Asset has no owner
+    ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+    _ = PointcloudExtension.ext(ownerless_asset)
+
+def test_item_ext_add_to(self) -> None:
+    plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+    item = pystac.Item.from_file(plain_item_uri)
+    assert PointcloudExtension.get_schema_uri() not in item.stac_extensions
+
+    _ = PointcloudExtension.ext(item, add_if_missing=True)
+
+    assert PointcloudExtension.get_schema_uri() in item.stac_extensions
+
+def test_asset_ext_add_to(self) -> None:
+    plain_item_uri = TestCases.get_path("data-files/item/sample-item.json")
+    item = pystac.Item.from_file(plain_item_uri)
+    assert PointcloudExtension.get_schema_uri() not in item.stac_extensions
+    asset = item.assets["thumbnail"]
+
+    _ = PointcloudExtension.ext(asset, add_if_missing=True)
+
+    assert PointcloudExtension.get_schema_uri() in item.stac_extensions
 
 
 class PointcloudSummariesTest(unittest.TestCase):
