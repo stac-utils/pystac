@@ -20,19 +20,19 @@ from tests.utils import TestCases, assert_to_from_dict
 
 
 class RasterTest(unittest.TestCase):
+    # TODO already a fixture for this, 'ext_item'
+    # 5 usages
     PLANET_EXAMPLE_URI = TestCases.get_path(
         "data-files/raster/raster-planet-example.json"
     )
+    # 2 usages
     SENTINEL2_EXAMPLE_URI = TestCases.get_path(
         "data-files/raster/raster-sentinel2-example.json"
     )
+    # 2 usages
     LANDSAT_COLLECTION_EXAMPLE_URI = TestCases.get_path(
         "data-files/raster/landsat-collection-example.json"
     )
-    GDALINFO_EXAMPLE_URI = TestCases.get_path("data-files/raster/gdalinfo.json")
-
-    def setUp(self) -> None:
-        self.maxDiff = None
 
     def test_to_from_dict(self) -> None:
         with open(self.PLANET_EXAMPLE_URI) as f:
@@ -122,7 +122,7 @@ class RasterTest(unittest.TestCase):
             ),
         ]
         # new_histograms = []
-        with open(self.GDALINFO_EXAMPLE_URI) as gdaljson_file:
+        with open(TestCases.get_path("data-files/raster/gdalinfo.json")) as gdaljson_file:
             gdaljson_data = json.load(gdaljson_file)
             new_histograms = list(
                 map(
@@ -262,7 +262,7 @@ class RasterTest(unittest.TestCase):
 
     def test_summaries_adds_uri(self) -> None:
         col = pystac.Collection.from_file(
-            TestCases.get_path("data-files/raster/landsat-collection-example.json")
+            self.LANDSAT_COLLECTION_EXAMPLE_URI
         )
         col.stac_extensions = []
         with pytest.raises(
