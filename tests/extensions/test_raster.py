@@ -1,5 +1,4 @@
 import json
-import unittest
 
 import pytest
 
@@ -18,7 +17,6 @@ from pystac.utils import get_opt
 from tests.conftest import get_data_file
 from tests.utils import TestCases, assert_to_from_dict
 
-
 PLANET_EXAMPLE_URI = get_data_file("raster/raster-planet-example.json")
 
 
@@ -36,16 +34,19 @@ LANDSAT_COLLECTION_EXAMPLE_URI = TestCases.get_path(
     "data-files/raster/landsat-collection-example.json"
 )
 
+
 def test_to_from_dict() -> None:
     with open(PLANET_EXAMPLE_URI) as f:
         item_dict = json.load(f)
     assert_to_from_dict(Item, item_dict)
+
 
 @pytest.mark.vcr()
 def test_validate_raster(ext_item: pystac.Item) -> None:
     item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
     ext_item.validate()
     item2.validate()
+
 
 @pytest.mark.vcr()
 def test_asset_bands(ext_item: pystac.Item) -> None:
@@ -90,7 +91,10 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
 
     # Set
     b2_asset = item2.assets["B02"]
-    assert get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum == 19264
+    assert (
+        get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum
+        == 19264
+    )
     b1_asset = item2.assets["B01"]
     RasterExtension.ext(b2_asset).bands = RasterExtension.ext(b1_asset).bands
 
@@ -107,9 +111,7 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         Statistics.create(
             minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
         ),
-        Statistics.create(
-            minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100
-        ),
+        Statistics.create(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100),
         Statistics.create(
             minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
         ),
@@ -148,9 +150,15 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     ext_item.add_asset("test", asset)
 
     assert len(ext_item.assets["test"].extra_fields["raster:bands"]) == 3
-    assert ext_item.assets["test"].extra_fields["raster:bands"][1]["statistics"]["minimum"] == -1
-    assert  ext_item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"] == 3848.354901960784
-    assert  ext_item.assets["test"].extra_fields["raster:bands"][2]["nodata"] == "-inf"
+    assert (
+        ext_item.assets["test"].extra_fields["raster:bands"][1]["statistics"]["minimum"]
+        == -1
+    )
+    assert (
+        ext_item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"]
+        == 3848.354901960784
+    )
+    assert ext_item.assets["test"].extra_fields["raster:bands"][2]["nodata"] == "-inf"
 
     for s in new_stats:
         s.minimum = None
@@ -173,13 +181,9 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         b.offset = None
         assert len(b.properties) == 0
 
-    new_stats[2].apply(
-        minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
-    )
+    new_stats[2].apply(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88)
     new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
-    new_stats[0].apply(
-        minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
-    )
+    new_stats[0].apply(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
     new_bands[2].apply(
         nodata=1,
         unit="test1",
@@ -199,8 +203,12 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         histogram=new_histograms[2],
     )
     RasterExtension.ext(ext_item.assets["test"]).apply(new_bands)
-    assert  ext_item.assets["test"].extra_fields["raster:bands"][0]["statistics"][ "minimum" ] == 1
-    assert  ext_item.assets["test"].extra_fields["raster:bands"][0]["nodata"] == "nan"
+    assert (
+        ext_item.assets["test"].extra_fields["raster:bands"][0]["statistics"]["minimum"]
+        == 1
+    )
+    assert ext_item.assets["test"].extra_fields["raster:bands"][0]["nodata"] == "nan"
+
 
 def test_extension_not_implemented(ext_item: pystac.Item) -> None:
     # Should raise exception if Item does not include extension URI
@@ -216,6 +224,7 @@ def test_extension_not_implemented(ext_item: pystac.Item) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = RasterExtension.ext(ownerless_asset)
 
+
 def test_ext_add_to(ext_item: pystac.Item) -> None:
     ext_item.stac_extensions.remove(RasterExtension.get_schema_uri())
     asset = ext_item.assets["data"]
@@ -224,17 +233,17 @@ def test_ext_add_to(ext_item: pystac.Item) -> None:
 
     assert RasterExtension.get_schema_uri() in ext_item.stac_extensions
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
-        ExtensionTypeError,
-        match=r"^RasterExtension does not apply to type 'object'$"):
-            # calling it wrong on purpose so --------v
-            RasterExtension.ext(object()) # types: ignore
+        ExtensionTypeError, match=r"^RasterExtension does not apply to type 'object'$"
+    ):
+        # calling it wrong on purpose so --------v
+        RasterExtension.ext(object())  # type: ignore
+
 
 def test_summaries_adds_uri() -> None:
-    col = pystac.Collection.from_file(
-        LANDSAT_COLLECTION_EXAMPLE_URI
-    )
+    col = pystac.Collection.from_file(LANDSAT_COLLECTION_EXAMPLE_URI)
     col.stac_extensions = []
     with pytest.raises(
         pystac.ExtensionNotImplemented,
@@ -248,6 +257,7 @@ def test_summaries_adds_uri() -> None:
 
     RasterExtension.remove_from(col)
     assert RasterExtension.get_schema_uri() not in col.stac_extensions
+
 
 def test_collection_item_asset() -> None:
     coll = pystac.Collection.from_file(LANDSAT_COLLECTION_EXAMPLE_URI)
