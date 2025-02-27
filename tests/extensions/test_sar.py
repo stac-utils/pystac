@@ -21,7 +21,7 @@ from tests.utils import TestCases
 
 
 @pytest.fixture
-def item():
+def item() -> pystac.Item:
     asset_id = "my/items/2011"
     start = datetime(2020, 11, 7)
     item = pystac.Item(
@@ -36,7 +36,7 @@ def sentinel_item() -> pystac.Item:
     return pystac.Item.from_file(TestCases.get_path("data-files/sar/sentinel-1.json"))
 
 
-def test_stac_extensions(item) -> None:
+def test_stac_extensions(item: pystac.Item) -> None:
     assert SarExtension.has_extension(item)
 
 
@@ -184,29 +184,20 @@ def test_item_ext_add_to(sentinel_item: pystac.Item) -> None:
 
     assert SarExtension.get_schema_uri() in sentinel_item.stac_extensions
 
-class SarItemExtTest(unittest.TestCase):
+def test_asset_ext_add_to(sentinel_item: pystac.Item) -> None:
+    sentinel_item.stac_extensions.remove(SarExtension.get_schema_uri())
+    assert SarExtension.get_schema_uri() not in sentinel_item.stac_extensions
+    asset = sentinel_item.assets["measurement"]
 
-    def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.sentinel_example_uri)
-        item.stac_extensions.remove(SarExtension.get_schema_uri())
-        assert SarExtension.get_schema_uri() not in item.stac_extensions
-        asset = item.assets["measurement"]
+    _ = SarExtension.ext(asset, add_if_missing=True)
 
-        _ = SarExtension.ext(asset, add_if_missing=True)
+    assert SarExtension.get_schema_uri() in sentinel_item.stac_extensions
 
-        assert SarExtension.get_schema_uri() in item.stac_extensions
-
-    def test_should_raise_exception_when_passing_invalid_extension_object(
-        self,
-    ) -> None:
-        with pytest.raises(
-            ExtensionTypeError, match=r"^SarExtension does not apply to type 'object'$",
-        ):
-            SarExtension.ext(object()) # type: ignore
-
-    def setUp(self) -> None:
-        # 3 usages
-        self.sentinel_example_uri = TestCases.get_path("data-files/sar/sentinel-1.json")
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(
+        ExtensionTypeError, match=r"^SarExtension does not apply to type 'object'$",
+    ):
+        SarExtension.ext(object()) # type: ignore
 
 
 class SarSummariesTest(unittest.TestCase):
