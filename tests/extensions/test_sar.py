@@ -205,175 +205,169 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         SarExtension.ext(object()) # type: ignore
 
 
-class SarSummariesTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.collection = pystac.Collection.from_file(
-            TestCases.get_path("data-files/collections/multi-extent.json")
-        )
+def test_summaries_instrument_mode(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    instrument_mode_list = ["WV"]
 
-    def test_summaries_instrument_mode(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        instrument_mode_list = ["WV"]
+    summaries_ext.instrument_mode = instrument_mode_list
 
-        summaries_ext.instrument_mode = instrument_mode_list
+    assert  summaries_ext.instrument_mode == instrument_mode_list 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        assert  summaries_ext.instrument_mode == instrument_mode_list 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:instrument_mode"] == instrument_mode_list 
 
-        assert  summaries_dict["sar:instrument_mode"] == instrument_mode_list 
+def test_summaries_frequency_band(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    frequency_band_list = [FrequencyBand.P, FrequencyBand.L]
 
-    def test_summaries_frequency_band(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        frequency_band_list = [FrequencyBand.P, FrequencyBand.L]
+    summaries_ext.frequency_band = frequency_band_list
 
-        summaries_ext.frequency_band = frequency_band_list
+    assert  summaries_ext.frequency_band == frequency_band_list 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        assert  summaries_ext.frequency_band == frequency_band_list 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:frequency_band"] == frequency_band_list 
 
-        assert  summaries_dict["sar:frequency_band"] == frequency_band_list 
+def test_summaries_polarizations(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    polarizations_list = [Polarization.HH]
 
-    def test_summaries_polarizations(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        polarizations_list = [Polarization.HH]
+    summaries_ext.polarizations = polarizations_list
 
-        summaries_ext.polarizations = polarizations_list
+    assert  summaries_ext.polarizations == polarizations_list 
 
-        assert  summaries_ext.polarizations == polarizations_list 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:polarizations"] == polarizations_list 
 
-        assert  summaries_dict["sar:polarizations"] == polarizations_list 
+def test_summaries_product_type(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    product_type_list = ["SSC"]
 
-    def test_summaries_product_type(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        product_type_list = ["SSC"]
+    summaries_ext.product_type = product_type_list
 
-        summaries_ext.product_type = product_type_list
+    assert  summaries_ext.product_type == product_type_list 
 
-        assert  summaries_ext.product_type == product_type_list 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:product_type"] == product_type_list 
 
-        assert  summaries_dict["sar:product_type"] == product_type_list 
+def test_summaries_center_frequency(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    center_frequency_range = RangeSummary(4.405, 6.405)
 
-    def test_summaries_center_frequency(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        center_frequency_range = RangeSummary(4.405, 6.405)
+    summaries_ext.center_frequency = center_frequency_range
 
-        summaries_ext.center_frequency = center_frequency_range
+    assert  summaries_ext.center_frequency == center_frequency_range 
 
-        assert  summaries_ext.center_frequency == center_frequency_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:center_frequency"] == center_frequency_range.to_dict() 
 
-        assert  summaries_dict["sar:center_frequency"] == center_frequency_range.to_dict() 
+def test_summaries_resolution_range(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    resolution_range_range = RangeSummary(800.0, 1200.0)
 
-    def test_summaries_resolution_range(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        resolution_range_range = RangeSummary(800.0, 1200.0)
+    summaries_ext.resolution_range = resolution_range_range
 
-        summaries_ext.resolution_range = resolution_range_range
+    assert  summaries_ext.resolution_range == resolution_range_range 
 
-        assert  summaries_ext.resolution_range == resolution_range_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:resolution_range"] == resolution_range_range.to_dict() 
 
-        assert  summaries_dict["sar:resolution_range"] == resolution_range_range.to_dict() 
+def test_summaries_resolution_azimuth(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    resolution_azimuth_range = RangeSummary(800.0, 1200.0)
 
-    def test_summaries_resolution_azimuth(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        resolution_azimuth_range = RangeSummary(800.0, 1200.0)
+    summaries_ext.resolution_azimuth = resolution_azimuth_range
 
-        summaries_ext.resolution_azimuth = resolution_azimuth_range
+    assert  summaries_ext.resolution_azimuth == resolution_azimuth_range 
 
-        assert  summaries_ext.resolution_azimuth == resolution_azimuth_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:resolution_azimuth"] == resolution_azimuth_range.to_dict() 
 
-        assert  summaries_dict["sar:resolution_azimuth"] == resolution_azimuth_range.to_dict() 
+def test_summaries_pixel_spacing_range(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    pixel_spacing_range_range = RangeSummary(400.0, 600.0)
 
-    def test_summaries_pixel_spacing_range(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        pixel_spacing_range_range = RangeSummary(400.0, 600.0)
+    summaries_ext.pixel_spacing_range = pixel_spacing_range_range
 
-        summaries_ext.pixel_spacing_range = pixel_spacing_range_range
+    assert  summaries_ext.pixel_spacing_range == pixel_spacing_range_range 
 
-        assert  summaries_ext.pixel_spacing_range == pixel_spacing_range_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:pixel_spacing_range"] == pixel_spacing_range_range.to_dict() 
 
-        assert  summaries_dict["sar:pixel_spacing_range"] == pixel_spacing_range_range.to_dict() 
+def test_summaries_pixel_spacing_azimuth(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    pixel_spacing_azimuth_range = RangeSummary(400.0, 600.0)
 
-    def test_summaries_pixel_spacing_azimuth(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        pixel_spacing_azimuth_range = RangeSummary(400.0, 600.0)
+    summaries_ext.pixel_spacing_azimuth = pixel_spacing_azimuth_range
 
-        summaries_ext.pixel_spacing_azimuth = pixel_spacing_azimuth_range
+    assert  summaries_ext.pixel_spacing_azimuth == pixel_spacing_azimuth_range 
 
-        assert  summaries_ext.pixel_spacing_azimuth == pixel_spacing_azimuth_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:pixel_spacing_azimuth"] == pixel_spacing_azimuth_range.to_dict() 
 
-        assert  summaries_dict["sar:pixel_spacing_azimuth"] == pixel_spacing_azimuth_range.to_dict() 
+def test_summaries_looks_range(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    looks_range_range = RangeSummary(400, 600)
 
-    def test_summaries_looks_range(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        looks_range_range = RangeSummary(400, 600)
+    summaries_ext.looks_range = looks_range_range
 
-        summaries_ext.looks_range = looks_range_range
+    assert  summaries_ext.looks_range == looks_range_range 
 
-        assert  summaries_ext.looks_range == looks_range_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:looks_range"] == looks_range_range.to_dict() 
 
-        assert  summaries_dict["sar:looks_range"] == looks_range_range.to_dict() 
+def test_summaries_looks_azimuth(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    looks_azimuth_range = RangeSummary(400, 600)
 
-    def test_summaries_looks_azimuth(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        looks_azimuth_range = RangeSummary(400, 600)
+    summaries_ext.looks_azimuth = looks_azimuth_range
 
-        summaries_ext.looks_azimuth = looks_azimuth_range
+    assert  summaries_ext.looks_azimuth == looks_azimuth_range 
 
-        assert  summaries_ext.looks_azimuth == looks_azimuth_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:looks_azimuth"] == looks_azimuth_range.to_dict() 
 
-        assert  summaries_dict["sar:looks_azimuth"] == looks_azimuth_range.to_dict() 
+def test_summaries_looks_equivalent_number(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    looks_equivalent_number_range = RangeSummary(400.0, 600.0)
 
-    def test_summaries_looks_equivalent_number(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        looks_equivalent_number_range = RangeSummary(400.0, 600.0)
+    summaries_ext.looks_equivalent_number = looks_equivalent_number_range
 
-        summaries_ext.looks_equivalent_number = looks_equivalent_number_range
+    assert  summaries_ext.looks_equivalent_number == looks_equivalent_number_range 
 
-        assert  summaries_ext.looks_equivalent_number == looks_equivalent_number_range 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert  summaries_dict["sar:looks_equivalent_number"] == looks_equivalent_number_range.to_dict() 
 
-        assert  summaries_dict["sar:looks_equivalent_number"] == looks_equivalent_number_range.to_dict() 
+def test_summaries_observation_direction(self) -> None:
+    collection = self.collection.clone()
+    summaries_ext = SarExtension.summaries(collection, True)
+    observation_direction_list = [ObservationDirection.LEFT]
 
-    def test_summaries_observation_direction(self) -> None:
-        collection = self.collection.clone()
-        summaries_ext = SarExtension.summaries(collection, True)
-        observation_direction_list = [ObservationDirection.LEFT]
+    summaries_ext.observation_direction = observation_direction_list
 
-        summaries_ext.observation_direction = observation_direction_list
+    assert  summaries_ext.observation_direction == observation_direction_list 
 
-        assert  summaries_ext.observation_direction == observation_direction_list 
+    summaries_dict = collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert  summaries_dict["sar:observation_direction"] == observation_direction_list 
+    assert  summaries_dict["sar:observation_direction"] == observation_direction_list 
