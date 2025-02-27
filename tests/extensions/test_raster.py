@@ -56,54 +56,48 @@ def test_asset_bands(self) -> None:
     data_asset = item.assets["data"]
     asset_bands = RasterExtension.ext(data_asset).bands
     assert asset_bands is not None
-    self.assertEqual(len(asset_bands), 4)
-    self.assertEqual(asset_bands[0].nodata, 0)
-    self.assertEqual(asset_bands[0].sampling, Sampling.AREA)
-    self.assertEqual(asset_bands[0].unit, "W⋅sr−1⋅m−2⋅nm−1")
-    self.assertEqual(asset_bands[0].data_type, DataType.UINT16)
-    self.assertEqual(asset_bands[0].scale, 0.01)
-    self.assertEqual(asset_bands[0].offset, 0)
-    self.assertEqual(asset_bands[0].spatial_resolution, 3)
+    assert len(asset_bands) == 4
+    assert asset_bands[0].nodata == 0
+    assert asset_bands[0].sampling == Sampling.AREA
+    assert asset_bands[0].unit == "W⋅sr−1⋅m−2⋅nm−1"
+    assert asset_bands[0].data_type == DataType.UINT16
+    assert asset_bands[0].scale == 0.01
+    assert asset_bands[0].offset == 0
+    assert asset_bands[0].spatial_resolution == 3
 
     band0_stats = asset_bands[0].statistics
     assert band0_stats is not None
-    self.assertEqual(band0_stats.minimum, 1962)
-    self.assertEqual(band0_stats.maximum, 32925)
-    self.assertEqual(band0_stats.mean, 8498.9400644319)
-    self.assertEqual(band0_stats.stddev, 5056.1292002722)
-    self.assertEqual(band0_stats.valid_percent, 61.09)
+    assert band0_stats.minimum == 1962
+    assert band0_stats.maximum == 32925
+    assert band0_stats.mean == 8498.9400644319
+    assert band0_stats.stddev == 5056.1292002722
+    assert band0_stats.valid_percent == 61.09
 
     band0_hist = asset_bands[0].histogram
     assert band0_hist is not None
-    self.assertEqual(band0_hist.count, 256)
-    self.assertEqual(band0_hist.min, 1901.288235294118)
-    self.assertEqual(band0_hist.max, 32985.71176470588)
-    self.assertEqual(len(band0_hist.buckets), band0_hist.count)
+    assert band0_hist.count == 256
+    assert band0_hist.min == 1901.288235294118
+    assert band0_hist.max == 32985.71176470588
+    assert len(band0_hist.buckets) == band0_hist.count
 
     index_asset = item.assets["metadata"]
     asset_bands = RasterExtension.ext(index_asset).bands
-    self.assertIs(None, asset_bands)
+    assert None is asset_bands
 
     b09_asset = item2.assets["B09"]
     b09_bands = RasterExtension.ext(b09_asset).bands
     assert b09_bands is not None
-    self.assertEqual(b09_bands[0].nodata, "nan")
+    assert b09_bands[0].nodata == "nan"
 
     # Set
     b2_asset = item2.assets["B02"]
-    self.assertEqual(
-        get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum,
-        19264,
-    )
+    assert get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum == 19264
     b1_asset = item2.assets["B01"]
     RasterExtension.ext(b2_asset).bands = RasterExtension.ext(b1_asset).bands
 
     new_b2_asset_bands = RasterExtension.ext(item2.assets["B02"]).bands
 
-    self.assertEqual(
-        get_opt(get_opt(new_b2_asset_bands)[0].statistics).maximum, 20567
-    )
-
+    assert get_opt(get_opt(new_b2_asset_bands)[0].statistics).maximum == 20567
     new_b2_asset_band0 = get_opt(new_b2_asset_bands)[0]
     new_b2_asset_band0.nodata = NoDataStrings.INF
 
@@ -154,20 +148,10 @@ def test_asset_bands(self) -> None:
     RasterExtension.ext(asset).bands = new_bands
     item.add_asset("test", asset)
 
-    self.assertEqual(len(item.assets["test"].extra_fields["raster:bands"]), 3)
-    self.assertEqual(
-        item.assets["test"].extra_fields["raster:bands"][1]["statistics"][
-            "minimum"
-        ],
-        -1,
-    )
-    self.assertEqual(
-        item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"],
-        3848.354901960784,
-    )
-    self.assertEqual(
-        item.assets["test"].extra_fields["raster:bands"][2]["nodata"], "-inf"
-    )
+    assert len(item.assets["test"].extra_fields["raster:bands"]) == 3
+    assert item.assets["test"].extra_fields["raster:bands"][1]["statistics"]["minimum"] == -1
+    assert  item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"] == 3848.354901960784
+    assert  item.assets["test"].extra_fields["raster:bands"][2]["nodata"] == "-inf"
 
     for s in new_stats:
         s.minimum = None
@@ -175,7 +159,7 @@ def test_asset_bands(self) -> None:
         s.mean = None
         s.stddev = None
         s.valid_percent = None
-        self.assertEqual(len(s.properties), 0)
+        assert len(s.properties) == 0
 
     for b in new_bands:
         b.bits_per_sample = None
@@ -188,7 +172,7 @@ def test_asset_bands(self) -> None:
         b.statistics = None
         b.unit = None
         b.offset = None
-        self.assertEqual(len(b.properties), 0)
+        assert len(b.properties) == 0
 
     new_stats[2].apply(
         minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
@@ -216,15 +200,8 @@ def test_asset_bands(self) -> None:
         histogram=new_histograms[2],
     )
     RasterExtension.ext(item.assets["test"]).apply(new_bands)
-    self.assertEqual(
-        item.assets["test"].extra_fields["raster:bands"][0]["statistics"][
-            "minimum"
-        ],
-        1,
-    )
-    self.assertEqual(
-        item.assets["test"].extra_fields["raster:bands"][0]["nodata"], "nan"
-    )
+    assert  item.assets["test"].extra_fields["raster:bands"][0]["statistics"][ "minimum" ] == 1
+    assert  item.assets["test"].extra_fields["raster:bands"][0]["nodata"] == "nan"
 
 def test_extension_not_implemented(self) -> None:
     # Should raise exception if Item does not include extension URI
@@ -234,7 +211,7 @@ def test_extension_not_implemented(self) -> None:
     # Should raise exception if owning Item does not include extension URI
     asset = item.assets["data"]
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = RasterExtension.ext(asset)
 
     # Should succeed if Asset has no owner
@@ -248,17 +225,15 @@ def test_ext_add_to(self) -> None:
 
     _ = RasterExtension.ext(asset, add_if_missing=True)
 
-    self.assertIn(RasterExtension.get_schema_uri(), item.stac_extensions)
+    assert RasterExtension.get_schema_uri() in item.stac_extensions
 
 def test_should_raise_exception_when_passing_invalid_extension_object(
     self,
 ) -> None:
-    self.assertRaisesRegex(
+    with pytest.raises(
         ExtensionTypeError,
-        r"^RasterExtension does not apply to type 'object'$",
-        RasterExtension.ext,
-        object(),
-    )
+        match=r"^RasterExtension does not apply to type 'object'$"):
+            RasterExtension.ext(object())
 
 def test_summaries_adds_uri(self) -> None:
     col = pystac.Collection.from_file(
@@ -273,10 +248,10 @@ def test_summaries_adds_uri(self) -> None:
 
     RasterExtension.summaries(col, True)
 
-    self.assertIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+    assert RasterExtension.get_schema_uri() in col.stac_extensions
 
     RasterExtension.remove_from(col)
-    self.assertNotIn(RasterExtension.get_schema_uri(), col.stac_extensions)
+    assert RasterExtension.get_schema_uri() not in col.stac_extensions
 
 def test_collection_item_asset(self) -> None:
     coll = pystac.Collection.from_file(self.LANDSAT_COLLECTION_EXAMPLE_URI)
