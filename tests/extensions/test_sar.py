@@ -30,105 +30,116 @@ def make_item() -> pystac.Item:
     SarExtension.add_to(item)
     return item
 
+@pytest.fixture
+def item():
+    return make_item()
+
+
+def test_stac_extensions(item) -> None:
+    assert SarExtension.has_extension(item)
+
+
+@pytest.mark.vcr()
+def test_required(item: pystac.Item) -> None:
+    mode: str = "Nonsense mode"
+    frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
+    polarizations: list[sar.Polarization] = [
+        sar.Polarization.HV,
+        sar.Polarization.VH,
+    ]
+    product_type: str = "Some product"
+
+    SarExtension.ext(item).apply(
+        mode, frequency_band, polarizations, product_type
+    )
+    assert mode == SarExtension.ext(item).instrument_mode
+    assert sar.INSTRUMENT_MODE_PROP in item.properties
+
+    assert frequency_band == SarExtension.ext(item).frequency_band
+    assert sar.FREQUENCY_BAND_PROP in item.properties
+
+    assert polarizations == SarExtension.ext(item).polarizations
+    assert sar.POLARIZATIONS_PROP in item.properties
+
+    assert product_type == SarExtension.ext(item).product_type
+    assert sar.PRODUCT_TYPE_PROP in item.properties
+
+    item.validate()
+
+
+@pytest.mark.vcr()
+def test_all(item: pystac.Item) -> None:
+    mode: str = "WV"
+    frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
+    polarizations: list[sar.Polarization] = [
+        sar.Polarization.VV,
+        sar.Polarization.HH,
+    ]
+    product_type: str = "Some product"
+    center_frequency: float = 1.2
+    resolution_range: float = 3.1
+    resolution_azimuth: float = 4.1
+    pixel_spacing_range: float = 5.1
+    pixel_spacing_azimuth: float = 6.1
+    looks_range: int = 7
+    looks_azimuth: int = 8
+    looks_equivalent_number: float = 9.1
+    observation_direction: sar.ObservationDirection = sar.ObservationDirection.LEFT
+
+    SarExtension.ext(item).apply(
+        mode,
+        frequency_band,
+        polarizations,
+        product_type,
+        center_frequency,
+        resolution_range,
+        resolution_azimuth,
+        pixel_spacing_range,
+        pixel_spacing_azimuth,
+        looks_range,
+        looks_azimuth,
+        looks_equivalent_number,
+        observation_direction,
+    )
+
+    assert center_frequency == SarExtension.ext(item).center_frequency
+    assert sar.CENTER_FREQUENCY_PROP in item.properties
+
+    assert resolution_range == SarExtension.ext(item).resolution_range
+    assert sar.RESOLUTION_RANGE_PROP in item.properties
+
+    assert resolution_azimuth == SarExtension.ext(item).resolution_azimuth
+    assert sar.RESOLUTION_AZIMUTH_PROP in item.properties
+
+    assert pixel_spacing_range == SarExtension.ext(item).pixel_spacing_range
+    assert sar.PIXEL_SPACING_RANGE_PROP in item.properties
+
+    assert pixel_spacing_azimuth == SarExtension.ext(item).pixel_spacing_azimuth
+    assert sar.PIXEL_SPACING_AZIMUTH_PROP in item.properties
+
+    assert looks_range == SarExtension.ext(item).looks_range
+    assert sar.LOOKS_RANGE_PROP in item.properties
+
+    assert looks_azimuth == SarExtension.ext(item).looks_azimuth
+    assert sar.LOOKS_AZIMUTH_PROP in item.properties
+
+    assert looks_equivalent_number == SarExtension.ext(item).looks_equivalent_number
+    assert sar.LOOKS_EQUIVALENT_NUMBER_PROP in item.properties
+
+    assert observation_direction == SarExtension.ext(item).observation_direction
+    assert sar.OBSERVATION_DIRECTION_PROP in item.properties
+
+    item.validate()
+
 
 class SarItemExtTest(unittest.TestCase):
     def setUp(self) -> None:
+        # MANY usages
         self.item = make_item()
+        # 3 usages
         self.sentinel_example_uri = TestCases.get_path("data-files/sar/sentinel-1.json")
 
-    def test_stac_extensions(self) -> None:
-        assert SarExtension.has_extension(self.item)
 
-    @pytest.mark.vcr()
-    def test_required(self) -> None:
-        mode: str = "Nonsense mode"
-        frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
-        polarizations: list[sar.Polarization] = [
-            sar.Polarization.HV,
-            sar.Polarization.VH,
-        ]
-        product_type: str = "Some product"
-
-        SarExtension.ext(self.item).apply(
-            mode, frequency_band, polarizations, product_type
-        )
-        assert mode == SarExtension.ext(self.item).instrument_mode
-        assert sar.INSTRUMENT_MODE_PROP in self.item.properties
-
-        assert frequency_band == SarExtension.ext(self.item).frequency_band
-        assert sar.FREQUENCY_BAND_PROP in self.item.properties
-
-        assert polarizations == SarExtension.ext(self.item).polarizations
-        assert sar.POLARIZATIONS_PROP in self.item.properties
-
-        assert product_type == SarExtension.ext(self.item).product_type
-        assert sar.PRODUCT_TYPE_PROP in self.item.properties
-
-        self.item.validate()
-
-    @pytest.mark.vcr()
-    def test_all(self) -> None:
-        mode: str = "WV"
-        frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
-        polarizations: list[sar.Polarization] = [
-            sar.Polarization.VV,
-            sar.Polarization.HH,
-        ]
-        product_type: str = "Some product"
-        center_frequency: float = 1.2
-        resolution_range: float = 3.1
-        resolution_azimuth: float = 4.1
-        pixel_spacing_range: float = 5.1
-        pixel_spacing_azimuth: float = 6.1
-        looks_range: int = 7
-        looks_azimuth: int = 8
-        looks_equivalent_number: float = 9.1
-        observation_direction: sar.ObservationDirection = sar.ObservationDirection.LEFT
-
-        SarExtension.ext(self.item).apply(
-            mode,
-            frequency_band,
-            polarizations,
-            product_type,
-            center_frequency,
-            resolution_range,
-            resolution_azimuth,
-            pixel_spacing_range,
-            pixel_spacing_azimuth,
-            looks_range,
-            looks_azimuth,
-            looks_equivalent_number,
-            observation_direction,
-        )
-
-        assert center_frequency == SarExtension.ext(self.item).center_frequency
-        assert sar.CENTER_FREQUENCY_PROP in self.item.properties
-
-        assert resolution_range == SarExtension.ext(self.item).resolution_range
-        assert sar.RESOLUTION_RANGE_PROP in self.item.properties
-
-        assert  resolution_azimuth == SarExtension.ext(self.item).resolution_azimuth 
-        assert sar.RESOLUTION_AZIMUTH_PROP in self.item.properties
-
-        assert  pixel_spacing_range == SarExtension.ext(self.item).pixel_spacing_range 
-        assert sar.PIXEL_SPACING_RANGE_PROP in self.item.properties
-
-        assert  pixel_spacing_azimuth == SarExtension.ext(self.item).pixel_spacing_azimuth 
-        assert sar.PIXEL_SPACING_AZIMUTH_PROP in self.item.properties
-
-        assert looks_range == SarExtension.ext(self.item).looks_range
-        assert sar.LOOKS_RANGE_PROP in self.item.properties
-
-        assert looks_azimuth == SarExtension.ext(self.item).looks_azimuth
-        assert sar.LOOKS_AZIMUTH_PROP in self.item.properties
-
-        assert  looks_equivalent_number == SarExtension.ext(self.item).looks_equivalent_number 
-        assert sar.LOOKS_EQUIVALENT_NUMBER_PROP in self.item.properties
-
-        assert  observation_direction == SarExtension.ext(self.item).observation_direction 
-        assert sar.OBSERVATION_DIRECTION_PROP in self.item.properties
-
-        self.item.validate()
 
     def test_polarization_must_be_list(self) -> None:
         mode: str = "Nonsense mode"
