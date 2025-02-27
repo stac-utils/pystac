@@ -35,6 +35,11 @@ def item() -> pystac.Item:
 def sentinel_item() -> pystac.Item:
     return pystac.Item.from_file(TestCases.get_path("data-files/sar/sentinel-1.json"))
 
+@pytest.fixture
+def collection() -> pystac.Collection:
+    return pystac.Collection.from_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
 
 def test_stac_extensions(item: pystac.Item) -> None:
     assert SarExtension.has_extension(item)
@@ -206,7 +211,7 @@ class SarSummariesTest(unittest.TestCase):
             TestCases.get_path("data-files/collections/multi-extent.json")
         )
 
-    def test_instrument_mode(self) -> None:
+    def test_summaries_instrument_mode(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         instrument_mode_list = ["WV"]
@@ -218,7 +223,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:instrument_mode"] == instrument_mode_list 
 
-    def test_frequency_band(self) -> None:
+    def test_summaries_frequency_band(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         frequency_band_list = [FrequencyBand.P, FrequencyBand.L]
@@ -230,7 +235,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:frequency_band"] == frequency_band_list 
 
-    def test_polarizations(self) -> None:
+    def test_summaries_polarizations(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         polarizations_list = [Polarization.HH]
@@ -243,7 +248,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:polarizations"] == polarizations_list 
 
-    def test_product_type(self) -> None:
+    def test_summaries_product_type(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         product_type_list = ["SSC"]
@@ -256,7 +261,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:product_type"] == product_type_list 
 
-    def test_center_frequency(self) -> None:
+    def test_summaries_center_frequency(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         center_frequency_range = RangeSummary(4.405, 6.405)
@@ -269,7 +274,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:center_frequency"] == center_frequency_range.to_dict() 
 
-    def test_resolution_range(self) -> None:
+    def test_summaries_resolution_range(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         resolution_range_range = RangeSummary(800.0, 1200.0)
@@ -282,7 +287,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:resolution_range"] == resolution_range_range.to_dict() 
 
-    def test_resolution_azimuth(self) -> None:
+    def test_summaries_resolution_azimuth(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         resolution_azimuth_range = RangeSummary(800.0, 1200.0)
@@ -295,7 +300,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:resolution_azimuth"] == resolution_azimuth_range.to_dict() 
 
-    def test_pixel_spacing_range(self) -> None:
+    def test_summaries_pixel_spacing_range(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         pixel_spacing_range_range = RangeSummary(400.0, 600.0)
@@ -308,7 +313,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:pixel_spacing_range"] == pixel_spacing_range_range.to_dict() 
 
-    def test_pixel_spacing_azimuth(self) -> None:
+    def test_summaries_pixel_spacing_azimuth(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         pixel_spacing_azimuth_range = RangeSummary(400.0, 600.0)
@@ -321,7 +326,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:pixel_spacing_azimuth"] == pixel_spacing_azimuth_range.to_dict() 
 
-    def test_looks_range(self) -> None:
+    def test_summaries_looks_range(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         looks_range_range = RangeSummary(400, 600)
@@ -334,7 +339,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:looks_range"] == looks_range_range.to_dict() 
 
-    def test_looks_azimuth(self) -> None:
+    def test_summaries_looks_azimuth(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         looks_azimuth_range = RangeSummary(400, 600)
@@ -347,7 +352,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:looks_azimuth"] == looks_azimuth_range.to_dict() 
 
-    def test_looks_equivalent_number(self) -> None:
+    def test_summaries_looks_equivalent_number(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         looks_equivalent_number_range = RangeSummary(400.0, 600.0)
@@ -360,7 +365,7 @@ class SarSummariesTest(unittest.TestCase):
 
         assert  summaries_dict["sar:looks_equivalent_number"] == looks_equivalent_number_range.to_dict() 
 
-    def test_observation_direction(self) -> None:
+    def test_summaries_observation_direction(self) -> None:
         collection = self.collection.clone()
         summaries_ext = SarExtension.summaries(collection, True)
         observation_direction_list = [ObservationDirection.LEFT]
