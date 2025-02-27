@@ -19,11 +19,14 @@ from tests.conftest import get_data_file
 from tests.utils import TestCases, assert_to_from_dict
 
 
-# TODO already a fixture for this, 'ext_item'
-# 5 usages
-PLANET_EXAMPLE_URI = TestCases.get_path(
-    "data-files/raster/raster-planet-example.json"
-)
+PLANET_EXAMPLE_URI = get_data_file("raster/raster-planet-example.json")
+
+
+@pytest.fixture
+def ext_item() -> pystac.Item:
+    return pystac.Item.from_file(PLANET_EXAMPLE_URI)
+
+
 # 2 usages
 SENTINEL2_EXAMPLE_URI = TestCases.get_path(
     "data-files/raster/raster-sentinel2-example.json"
@@ -33,17 +36,15 @@ LANDSAT_COLLECTION_EXAMPLE_URI = TestCases.get_path(
     "data-files/raster/landsat-collection-example.json"
 )
 
-def test_to_from_dict(self) -> None:
-    with open(self.PLANET_EXAMPLE_URI) as f:
+def test_to_from_dict() -> None:
+    with open(PLANET_EXAMPLE_URI) as f:
         item_dict = json.load(f)
     assert_to_from_dict(Item, item_dict)
 
 @pytest.mark.vcr()
-def test_validate_raster(self) -> None:
-    item = pystac.Item.from_file(self.PLANET_EXAMPLE_URI)
-    item2 = pystac.Item.from_file(self.SENTINEL2_EXAMPLE_URI)
-
-    item.validate()
+def test_validate_raster(ext_item: pystac.Item) -> None:
+    item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
+    ext_item.validate()
     item2.validate()
 
 @pytest.mark.vcr()
@@ -287,12 +288,6 @@ def test_collection_item_asset(self) -> None:
 
     assert qa.ext.raster.bands is not None
     assert ang.ext.raster.bands is None
-
-
-@pytest.fixture
-def ext_item() -> pystac.Item:
-    ext_item_uri = get_data_file("raster/raster-planet-example.json")
-    return pystac.Item.from_file(ext_item_uri)
 
 
 def test_older_extension_version(ext_item: pystac.Item) -> None:
