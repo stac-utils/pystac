@@ -13,7 +13,7 @@ from pystac import Asset, Catalog, Collection, Item, ItemCollection, Link
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 
-here = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parent
 
 
 @pytest.fixture
@@ -60,7 +60,7 @@ def projection_landsat8_item() -> Item:
 
 
 def get_data_file(rel_path: str) -> str:
-    return str(here / "data-files" / rel_path)
+    return str(HERE / "data-files" / rel_path)
 
 
 @pytest.fixture
