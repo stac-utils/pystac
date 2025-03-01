@@ -60,77 +60,77 @@ def test_no_args_fails(item: Item) -> None:
 @pytest.mark.vcr()
 def test_orbit_state(self) -> None:
     orbit_state = sat.OrbitState.ASCENDING
-    SatExtension.ext(self.item).apply(orbit_state)
-    assert orbit_state == SatExtension.ext(self.item).orbit_state
-    assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
-    assert SatExtension.ext(self.item).relative_orbit is None
-    self.item.validate()
+    SatExtension.ext(item).apply(orbit_state)
+    assert orbit_state == SatExtension.ext(item).orbit_state
+    assert sat.RELATIVE_ORBIT_PROP not in item.properties
+    assert SatExtension.ext(item).relative_orbit is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_relative_orbit(self) -> None:
+def test_relative_orbit(item: Item) -> None:
     relative_orbit = 1234
-    SatExtension.ext(self.item).apply(None, relative_orbit)
-    assert relative_orbit == SatExtension.ext(self.item).relative_orbit
-    assert sat.ORBIT_STATE_PROP not in self.item.properties
-    assert SatExtension.ext(self.item).orbit_state is None
-    self.item.validate()
+    SatExtension.ext(item).apply(None, relative_orbit)
+    assert relative_orbit == SatExtension.ext(item).relative_orbit
+    assert sat.ORBIT_STATE_PROP not in item.properties
+    assert SatExtension.ext(item).orbit_state is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_absolute_orbit(self) -> None:
+def test_absolute_orbit(item: Item) -> None:
     absolute_orbit = 1234
-    SatExtension.ext(self.item).apply(absolute_orbit=absolute_orbit)
-    assert absolute_orbit == SatExtension.ext(self.item).absolute_orbit
-    assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
-    assert SatExtension.ext(self.item).relative_orbit is None
-    self.item.validate()
+    SatExtension.ext(item).apply(absolute_orbit=absolute_orbit)
+    assert absolute_orbit == SatExtension.ext(item).absolute_orbit
+    assert sat.RELATIVE_ORBIT_PROP not in item.properties
+    assert SatExtension.ext(item).relative_orbit is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_anx_datetime(self) -> None:
+def test_anx_datetime(item: Item) -> None:
     anx_datetime = str_to_datetime("2020-01-01T00:00:00Z")
-    SatExtension.ext(self.item).apply(anx_datetime=anx_datetime)
-    assert anx_datetime == SatExtension.ext(self.item).anx_datetime
-    assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
-    assert SatExtension.ext(self.item).relative_orbit is None
-    self.item.validate()
+    SatExtension.ext(item).apply(anx_datetime=anx_datetime)
+    assert anx_datetime == SatExtension.ext(item).anx_datetime
+    assert sat.RELATIVE_ORBIT_PROP not in item.properties
+    assert SatExtension.ext(item).relative_orbit is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_platform_international_designator(self) -> None:
+def test_platform_international_designator(item: Item) -> None:
     platform_international_designator = "2018-080A"
-    SatExtension.ext(self.item).apply(
+    SatExtension.ext(item).apply(
         platform_international_designator=platform_international_designator
     )
-    assert platform_international_designator == SatExtension.ext(self.item).platform_international_designator
-    assert sat.ORBIT_STATE_PROP not in self.item.properties
-    assert SatExtension.ext(self.item).orbit_state is None
-    self.item.validate()
+    assert platform_international_designator == SatExtension.ext(item).platform_international_designator
+    assert sat.ORBIT_STATE_PROP not in item.properties
+    assert SatExtension.ext(item).orbit_state is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_relative_orbit_no_negative(self) -> None:
+def test_relative_orbit_no_negative(item: Item) -> None:
     negative_relative_orbit = -2
-    SatExtension.ext(self.item).apply(None, negative_relative_orbit)
+    SatExtension.ext(item).apply(None, negative_relative_orbit)
     with self.assertRaises(pystac.STACValidationError):
-        self.item.validate()
+        item.validate()
 
 @pytest.mark.vcr()
-def test_both(self) -> None:
+def test_both(item: Item) -> None:
     orbit_state = sat.OrbitState.DESCENDING
     relative_orbit = 4321
-    SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
-    assert orbit_state == SatExtension.ext(self.item).orbit_state
-    assert relative_orbit == SatExtension.ext(self.item).relative_orbit
-    self.item.validate()
+    SatExtension.ext(item).apply(orbit_state, relative_orbit)
+    assert orbit_state == SatExtension.ext(item).orbit_state
+    assert relative_orbit == SatExtension.ext(item).relative_orbit
+    item.validate()
 
 @pytest.mark.vcr()
-def test_modify(self) -> None:
-    SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
+def test_modify(item: Item) -> None:
+    SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 
     orbit_state = sat.OrbitState.GEOSTATIONARY
-    SatExtension.ext(self.item).orbit_state = orbit_state
+    SatExtension.ext(item).orbit_state = orbit_state
     relative_orbit = 1000
-    SatExtension.ext(self.item).relative_orbit = relative_orbit
-    assert orbit_state == SatExtension.ext(self.item).orbit_state
-    assert relative_orbit == SatExtension.ext(self.item).relative_orbit
-    self.item.validate()
+    SatExtension.ext(item).relative_orbit = relative_orbit
+    assert orbit_state == SatExtension.ext(item).orbit_state
+    assert relative_orbit == SatExtension.ext(item).relative_orbit
+    item.validate()
 
 def test_from_dict(self) -> None:
     orbit_state = sat.OrbitState.GEOSTATIONARY
@@ -153,11 +153,11 @@ def test_from_dict(self) -> None:
     assert orbit_state == SatExtension.ext(item).orbit_state
     assert relative_orbit == SatExtension.ext(item).relative_orbit
 
-def test_to_from_dict(self) -> None:
+def test_to_from_dict(item: Item) -> None:
     orbit_state = sat.OrbitState.GEOSTATIONARY
     relative_orbit = 1002
-    SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
-    d = self.item.to_dict()
+    SatExtension.ext(item).apply(orbit_state, relative_orbit)
+    d = item.to_dict()
     assert orbit_state.value == d["properties"][sat.ORBIT_STATE_PROP]
     assert relative_orbit == d["properties"][sat.RELATIVE_ORBIT_PROP]
 
@@ -166,20 +166,20 @@ def test_to_from_dict(self) -> None:
     assert relative_orbit == SatExtension.ext(item).relative_orbit
 
 @pytest.mark.vcr()
-def test_clear_orbit_state(self) -> None:
-    SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
+def test_clear_orbit_state(item: Item) -> None:
+    SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 
-    SatExtension.ext(self.item).orbit_state = None
-    assert SatExtension.ext(self.item).orbit_state is None
-    self.item.validate()
+    SatExtension.ext(item).orbit_state = None
+    assert SatExtension.ext(item).orbit_state is None
+    item.validate()
 
 @pytest.mark.vcr()
-def test_clear_relative_orbit(self) -> None:
-    SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
+def test_clear_relative_orbit(item: Item) -> None:
+    SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 
-    SatExtension.ext(self.item).relative_orbit = None
-    assert SatExtension.ext(self.item).relative_orbit is None
-    self.item.validate()
+    SatExtension.ext(item).relative_orbit = None
+    assert SatExtension.ext(item).relative_orbit is None
+    item.validate()
 
 def test_extension_not_implemented(self) -> None:
     # Should raise exception if Item does not include extension URI
@@ -218,9 +218,7 @@ def test_asset_ext_add_to(self) -> None:
 
     assert SatExtension.get_schema_uri() in item.stac_extensions
 
-def test_should_raise_exception_when_passing_invalid_extension_object(
-    self,
-) -> None:
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
         match=r"^SatExtension does not apply to type 'object'$"):
