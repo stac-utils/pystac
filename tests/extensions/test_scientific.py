@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
@@ -39,7 +39,8 @@ PUBLICATIONS = [
 ]
 
 
-def make_item() -> pystac.Item:
+@pytest.fixture
+def item() -> Item:
     asset_id = "USGS/GAP/CONUS/2011"
     start = datetime(2011, 1, 2)
     item = pystac.Item(
@@ -71,14 +72,14 @@ def test_publication_get_link_returns_none_if_no_doi() -> None:
     assert pub.get_link() is None
 
 
+def test_stac_extensions(item: Item) -> None:
+    assert ScientificExtension.has_extension(item)
+
+
 class ItemScientificExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
-        super().setUp()
         self.item = make_item()
         self.example_item_uri = TestCases.get_path("data-files/scientific/item.json")
-
-    def test_stac_extensions(self) -> None:
-        assert ScientificExtension.has_extension(self.item)
 
     @pytest.mark.vcr()
     def test_doi(self) -> None:
