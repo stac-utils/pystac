@@ -29,7 +29,6 @@ def make_item() -> pystac.Item:
 
 class SatTest(unittest.TestCase):
     def setUp(self) -> None:
-        super().setUp()
         self.item = make_item()
         self.sentinel_example_uri = TestCases.get_path("data-files/sat/sentinel-1.json")
 
@@ -38,18 +37,14 @@ class SatTest(unittest.TestCase):
 
     def test_item_repr(self) -> None:
         sat_item_ext = SatExtension.ext(self.item)
-        self.assertEqual(
-            f"<ItemSatExtension Item id={self.item.id}>", sat_item_ext.__repr__()
-        )
+        self.assertEqual(f"<ItemSatExtension Item id={self.item.id}>", sat_item_ext.__repr__())
 
     def test_asset_repr(self) -> None:
         item = pystac.Item.from_file(self.sentinel_example_uri)
         asset = item.assets["measurement_iw1_vh"]
         sat_asset_ext = SatExtension.ext(asset)
 
-        self.assertEqual(
-            f"<AssetSatExtension Asset href={asset.href}>", sat_asset_ext.__repr__()
-        )
+        self.assertEqual(f"<AssetSatExtension Asset href={asset.href}>", sat_asset_ext.__repr__())
 
     @pytest.mark.vcr()
     def test_no_args_fails(self) -> None:
@@ -99,10 +94,7 @@ class SatTest(unittest.TestCase):
         SatExtension.ext(self.item).apply(
             platform_international_designator=platform_international_designator
         )
-        self.assertEqual(
-            platform_international_designator,
-            SatExtension.ext(self.item).platform_international_designator,
-        )
+        self.assertEqual(platform_international_designator, SatExtension.ext(self.item).platform_international_designator)
         self.assertNotIn(sat.ORBIT_STATE_PROP, self.item.properties)
         self.assertIsNone(SatExtension.ext(self.item).orbit_state)
         self.item.validate()
@@ -224,17 +216,13 @@ class SatTest(unittest.TestCase):
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:
-        self.assertRaisesRegex(
+        with pytest.raises(
             ExtensionTypeError,
-            r"^SatExtension does not apply to type 'object'$",
-            SatExtension.ext,
-            object(),
-        )
+            match=r"^SatExtension does not apply to type 'object'$"):
+            SatExtension.ext(object())
 
 
 class SatSummariesTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.maxDiff = None
 
     @staticmethod
     def collection() -> pystac.Collection:
@@ -249,17 +237,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.platform_international_designator = ["2018-080A"]
 
-        self.assertEqual(
-            summaries_ext.platform_international_designator,
-            platform_international_designator_list,
-        )
+        self.assertEqual(summaries_ext.platform_international_designator, platform_international_designator_list)
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(
-            summaries_dict["sat:platform_international_designator"],
-            platform_international_designator_list,
-        )
+        self.assertEqual(summaries_dict["sat:platform_international_designator"], platform_international_designator_list)
 
     def test_orbit_state(self) -> None:
         collection = self.collection()
@@ -268,17 +250,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.orbit_state = orbit_state_list
 
-        self.assertEqual(
-            summaries_ext.orbit_state,
-            orbit_state_list,
-        )
+        self.assertEqual(summaries_ext.orbit_state, orbit_state_list)
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(
-            summaries_dict["sat:orbit_state"],
-            orbit_state_list,
-        )
+        self.assertEqual(summaries_dict["sat:orbit_state"], orbit_state_list)
 
     def test_absolute_orbit(self) -> None:
         collection = self.collection()
@@ -287,17 +263,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.absolute_orbit = absolute_orbit_range
 
-        self.assertEqual(
-            summaries_ext.absolute_orbit,
-            absolute_orbit_range,
-        )
+        self.assertEqual(summaries_ext.absolute_orbit, absolute_orbit_range)
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(
-            summaries_dict["sat:absolute_orbit"],
-            absolute_orbit_range.to_dict(),
-        )
+        self.assertEqual(summaries_dict["sat:absolute_orbit"], absolute_orbit_range.to_dict())
 
     def test_relative_orbit(self) -> None:
         collection = self.collection()
@@ -306,17 +276,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.relative_orbit = relative_orbit_range
 
-        self.assertEqual(
-            summaries_ext.relative_orbit,
-            relative_orbit_range,
-        )
+        self.assertEqual(summaries_ext.relative_orbit, relative_orbit_range)
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(
-            summaries_dict["sat:relative_orbit"],
-            relative_orbit_range.to_dict(),
-        )
+        self.assertEqual(summaries_dict["sat:relative_orbit"], relative_orbit_range.to_dict())
 
     def test_anx_datetime(self) -> None:
         collection = self.collection()
@@ -328,20 +292,14 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.anx_datetime = anx_datetime_range
 
-        self.assertEqual(
-            summaries_ext.anx_datetime,
-            anx_datetime_range,
-        )
+        self.assertEqual(summaries_ext.anx_datetime, anx_datetime_range)
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertDictEqual(
-            summaries_dict["sat:anx_datetime"],
-            {
+        assert summaries_dict["sat:anx_datetime"] == {
                 "minimum": datetime_to_str(anx_datetime_range.minimum),
                 "maximum": datetime_to_str(anx_datetime_range.maximum),
-            },
-        )
+            }
 
     def test_summaries_adds_uri(self) -> None:
         col = self.collection()
