@@ -33,18 +33,18 @@ class SatTest(unittest.TestCase):
         self.sentinel_example_uri = TestCases.get_path("data-files/sat/sentinel-1.json")
 
     def test_stac_extensions(self) -> None:
-        self.assertTrue(SatExtension.has_extension(self.item))
+        assert SatExtension.has_extension(self.item)
 
     def test_item_repr(self) -> None:
         sat_item_ext = SatExtension.ext(self.item)
-        self.assertEqual(f"<ItemSatExtension Item id={self.item.id}>", sat_item_ext.__repr__())
+        assert f"<ItemSatExtension Item id={self.item.id}>" == sat_item_ext.__repr__()
 
     def test_asset_repr(self) -> None:
         item = pystac.Item.from_file(self.sentinel_example_uri)
         asset = item.assets["measurement_iw1_vh"]
         sat_asset_ext = SatExtension.ext(asset)
 
-        self.assertEqual(f"<AssetSatExtension Asset href={asset.href}>", sat_asset_ext.__repr__())
+        assert f"<AssetSatExtension Asset href={asset.href}>" == sat_asset_ext.__repr__()
 
     @pytest.mark.vcr()
     def test_no_args_fails(self) -> None:
@@ -56,36 +56,36 @@ class SatTest(unittest.TestCase):
     def test_orbit_state(self) -> None:
         orbit_state = sat.OrbitState.ASCENDING
         SatExtension.ext(self.item).apply(orbit_state)
-        self.assertEqual(orbit_state, SatExtension.ext(self.item).orbit_state)
-        self.assertNotIn(sat.RELATIVE_ORBIT_PROP, self.item.properties)
-        self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
+        assert orbit_state == SatExtension.ext(self.item).orbit_state
+        assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
+        assert SatExtension.ext(self.item).relative_orbit is None
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_relative_orbit(self) -> None:
         relative_orbit = 1234
         SatExtension.ext(self.item).apply(None, relative_orbit)
-        self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
-        self.assertNotIn(sat.ORBIT_STATE_PROP, self.item.properties)
-        self.assertIsNone(SatExtension.ext(self.item).orbit_state)
+        assert relative_orbit == SatExtension.ext(self.item).relative_orbit
+        assert sat.ORBIT_STATE_PROP not in self.item.properties
+        assert SatExtension.ext(self.item).orbit_state is None
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_absolute_orbit(self) -> None:
         absolute_orbit = 1234
         SatExtension.ext(self.item).apply(absolute_orbit=absolute_orbit)
-        self.assertEqual(absolute_orbit, SatExtension.ext(self.item).absolute_orbit)
-        self.assertNotIn(sat.RELATIVE_ORBIT_PROP, self.item.properties)
-        self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
+        assert absolute_orbit == SatExtension.ext(self.item).absolute_orbit
+        assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
+        assert SatExtension.ext(self.item).relative_orbit is None
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_anx_datetime(self) -> None:
         anx_datetime = str_to_datetime("2020-01-01T00:00:00Z")
         SatExtension.ext(self.item).apply(anx_datetime=anx_datetime)
-        self.assertEqual(anx_datetime, SatExtension.ext(self.item).anx_datetime)
-        self.assertNotIn(sat.RELATIVE_ORBIT_PROP, self.item.properties)
-        self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
+        assert anx_datetime == SatExtension.ext(self.item).anx_datetime
+        assert sat.RELATIVE_ORBIT_PROP not in self.item.properties
+        assert SatExtension.ext(self.item).relative_orbit is None
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -94,9 +94,9 @@ class SatTest(unittest.TestCase):
         SatExtension.ext(self.item).apply(
             platform_international_designator=platform_international_designator
         )
-        self.assertEqual(platform_international_designator, SatExtension.ext(self.item).platform_international_designator)
-        self.assertNotIn(sat.ORBIT_STATE_PROP, self.item.properties)
-        self.assertIsNone(SatExtension.ext(self.item).orbit_state)
+        assert platform_international_designator == SatExtension.ext(self.item).platform_international_designator
+        assert sat.ORBIT_STATE_PROP not in self.item.properties
+        assert SatExtension.ext(self.item).orbit_state is None
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -111,8 +111,8 @@ class SatTest(unittest.TestCase):
         orbit_state = sat.OrbitState.DESCENDING
         relative_orbit = 4321
         SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
-        self.assertEqual(orbit_state, SatExtension.ext(self.item).orbit_state)
-        self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
+        assert orbit_state == SatExtension.ext(self.item).orbit_state
+        assert relative_orbit == SatExtension.ext(self.item).relative_orbit
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -123,8 +123,8 @@ class SatTest(unittest.TestCase):
         SatExtension.ext(self.item).orbit_state = orbit_state
         relative_orbit = 1000
         SatExtension.ext(self.item).relative_orbit = relative_orbit
-        self.assertEqual(orbit_state, SatExtension.ext(self.item).orbit_state)
-        self.assertEqual(relative_orbit, SatExtension.ext(self.item).relative_orbit)
+        assert orbit_state == SatExtension.ext(self.item).orbit_state
+        assert relative_orbit == SatExtension.ext(self.item).relative_orbit
         self.item.validate()
 
     def test_from_dict(self) -> None:
@@ -145,27 +145,27 @@ class SatTest(unittest.TestCase):
             "stac_extensions": [SatExtension.get_schema_uri()],
         }
         item = pystac.Item.from_dict(d)
-        self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
-        self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
+        assert orbit_state == SatExtension.ext(item).orbit_state
+        assert relative_orbit == SatExtension.ext(item).relative_orbit
 
     def test_to_from_dict(self) -> None:
         orbit_state = sat.OrbitState.GEOSTATIONARY
         relative_orbit = 1002
         SatExtension.ext(self.item).apply(orbit_state, relative_orbit)
         d = self.item.to_dict()
-        self.assertEqual(orbit_state.value, d["properties"][sat.ORBIT_STATE_PROP])
-        self.assertEqual(relative_orbit, d["properties"][sat.RELATIVE_ORBIT_PROP])
+        assert orbit_state.value == d["properties"][sat.ORBIT_STATE_PROP]
+        assert relative_orbit == d["properties"][sat.RELATIVE_ORBIT_PROP]
 
         item = pystac.Item.from_dict(d)
-        self.assertEqual(orbit_state, SatExtension.ext(item).orbit_state)
-        self.assertEqual(relative_orbit, SatExtension.ext(item).relative_orbit)
+        assert orbit_state == SatExtension.ext(item).orbit_state
+        assert relative_orbit == SatExtension.ext(item).relative_orbit
 
     @pytest.mark.vcr()
     def test_clear_orbit_state(self) -> None:
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
         SatExtension.ext(self.item).orbit_state = None
-        self.assertIsNone(SatExtension.ext(self.item).orbit_state)
+        assert SatExtension.ext(self.item).orbit_state is None
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -173,7 +173,7 @@ class SatTest(unittest.TestCase):
         SatExtension.ext(self.item).apply(sat.OrbitState.DESCENDING, 999)
 
         SatExtension.ext(self.item).relative_orbit = None
-        self.assertIsNone(SatExtension.ext(self.item).relative_orbit)
+        assert SatExtension.ext(self.item).relative_orbit is None
         self.item.validate()
 
     def test_extension_not_implemented(self) -> None:
@@ -197,21 +197,21 @@ class SatTest(unittest.TestCase):
     def test_item_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.sentinel_example_uri)
         item.stac_extensions.remove(SatExtension.get_schema_uri())
-        self.assertNotIn(SatExtension.get_schema_uri(), item.stac_extensions)
+        assert SatExtension.get_schema_uri() not in item.stac_extensions
 
         _ = SatExtension.ext(item, add_if_missing=True)
 
-        self.assertIn(SatExtension.get_schema_uri(), item.stac_extensions)
+        assert SatExtension.get_schema_uri() in item.stac_extensions
 
     def test_asset_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.sentinel_example_uri)
         item.stac_extensions.remove(SatExtension.get_schema_uri())
-        self.assertNotIn(SatExtension.get_schema_uri(), item.stac_extensions)
+        assert SatExtension.get_schema_uri() not in item.stac_extensions
         asset = item.assets["measurement_iw1_vh"]
 
         _ = SatExtension.ext(asset, add_if_missing=True)
 
-        self.assertIn(SatExtension.get_schema_uri(), item.stac_extensions)
+        assert SatExtension.get_schema_uri() in item.stac_extensions
 
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
@@ -237,11 +237,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.platform_international_designator = ["2018-080A"]
 
-        self.assertEqual(summaries_ext.platform_international_designator, platform_international_designator_list)
+        assert summaries_ext.platform_international_designator == platform_international_designator_list
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(summaries_dict["sat:platform_international_designator"], platform_international_designator_list)
+        assert summaries_dict["sat:platform_international_designator"] == platform_international_designator_list
 
     def test_orbit_state(self) -> None:
         collection = self.collection()
@@ -250,11 +250,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.orbit_state = orbit_state_list
 
-        self.assertEqual(summaries_ext.orbit_state, orbit_state_list)
+        assert summaries_ext.orbit_state == orbit_state_list
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(summaries_dict["sat:orbit_state"], orbit_state_list)
+        assert summaries_dict["sat:orbit_state"] == orbit_state_list
 
     def test_absolute_orbit(self) -> None:
         collection = self.collection()
@@ -263,11 +263,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.absolute_orbit = absolute_orbit_range
 
-        self.assertEqual(summaries_ext.absolute_orbit, absolute_orbit_range)
+        assert summaries_ext.absolute_orbit == absolute_orbit_range
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(summaries_dict["sat:absolute_orbit"], absolute_orbit_range.to_dict())
+        assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
 
     def test_relative_orbit(self) -> None:
         collection = self.collection()
@@ -276,11 +276,11 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.relative_orbit = relative_orbit_range
 
-        self.assertEqual(summaries_ext.relative_orbit, relative_orbit_range)
+        assert summaries_ext.relative_orbit == relative_orbit_range
 
         summaries_dict = collection.to_dict()["summaries"]
 
-        self.assertEqual(summaries_dict["sat:relative_orbit"], relative_orbit_range.to_dict())
+        assert summaries_dict["sat:relative_orbit"] == relative_orbit_range.to_dict()
 
     def test_anx_datetime(self) -> None:
         collection = self.collection()
@@ -292,7 +292,7 @@ class SatSummariesTest(unittest.TestCase):
 
         summaries_ext.anx_datetime = anx_datetime_range
 
-        self.assertEqual(summaries_ext.anx_datetime, anx_datetime_range)
+        assert summaries_ext.anx_datetime == anx_datetime_range
 
         summaries_dict = collection.to_dict()["summaries"]
 
@@ -312,7 +312,7 @@ class SatSummariesTest(unittest.TestCase):
 
         _ = SatExtension.summaries(col, True)
 
-        self.assertIn(SatExtension.get_schema_uri(), col.stac_extensions)
+        assert SatExtension.get_schema_uri() in col.stac_extensions
 
         SatExtension.remove_from(col)
-        self.assertNotIn(SatExtension.get_schema_uri(), col.stac_extensions)
+        assert SatExtension.get_schema_uri() not in col.stac_extensions
