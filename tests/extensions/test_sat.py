@@ -265,51 +265,50 @@ def test_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExten
 
     assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
 
-class SatSummariesTest(unittest.TestCase):
-    def test_relative_orbit(self) -> None:
-        collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection, True)
-        relative_orbit_range = RangeSummary(50, 100)
+def test_relative_orbit(self) -> None:
+    collection = self.collection()
+    summaries_ext = SatExtension.summaries(collection, True)
+    relative_orbit_range = RangeSummary(50, 100)
 
-        summaries_ext.relative_orbit = relative_orbit_range
+    summaries_ext.relative_orbit = relative_orbit_range
 
-        assert summaries_ext.relative_orbit == relative_orbit_range
+    assert summaries_ext.relative_orbit == relative_orbit_range
 
-        summaries_dict = collection.to_dict()["summaries"]
+    summaries_dict = collection.to_dict()["summaries"]
 
-        assert summaries_dict["sat:relative_orbit"] == relative_orbit_range.to_dict()
+    assert summaries_dict["sat:relative_orbit"] == relative_orbit_range.to_dict()
 
-    def test_anx_datetime(self) -> None:
-        collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection, True)
-        anx_datetime_range = RangeSummary(
-            str_to_datetime("2020-01-01T00:00:00.000Z"),
-            str_to_datetime("2020-01-02T00:00:00.000Z"),
-        )
+def test_anx_datetime(self) -> None:
+    collection = self.collection()
+    summaries_ext = SatExtension.summaries(collection, True)
+    anx_datetime_range = RangeSummary(
+        str_to_datetime("2020-01-01T00:00:00.000Z"),
+        str_to_datetime("2020-01-02T00:00:00.000Z"),
+    )
 
-        summaries_ext.anx_datetime = anx_datetime_range
+    summaries_ext.anx_datetime = anx_datetime_range
 
-        assert summaries_ext.anx_datetime == anx_datetime_range
+    assert summaries_ext.anx_datetime == anx_datetime_range
 
-        summaries_dict = collection.to_dict()["summaries"]
+    summaries_dict = collection.to_dict()["summaries"]
 
-        assert summaries_dict["sat:anx_datetime"] == {
-                "minimum": datetime_to_str(anx_datetime_range.minimum),
-                "maximum": datetime_to_str(anx_datetime_range.maximum),
-            }
+    assert summaries_dict["sat:anx_datetime"] == {
+            "minimum": datetime_to_str(anx_datetime_range.minimum),
+            "maximum": datetime_to_str(anx_datetime_range.maximum),
+        }
 
-    def test_summaries_adds_uri(self) -> None:
-        col = self.collection()
-        col.stac_extensions = []
-        with pytest.raises(
-            pystac.ExtensionNotImplemented,
-            match="Extension 'sat' is not implemented",
-        ):
-            SatExtension.summaries(col, add_if_missing=False)
+def test_summaries_adds_uri(self) -> None:
+    col = self.collection()
+    col.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented,
+        match="Extension 'sat' is not implemented",
+    ):
+        SatExtension.summaries(col, add_if_missing=False)
 
-        _ = SatExtension.summaries(col, True)
+    _ = SatExtension.summaries(col, True)
 
-        assert SatExtension.get_schema_uri() in col.stac_extensions
+    assert SatExtension.get_schema_uri() in col.stac_extensions
 
-        SatExtension.remove_from(col)
-        assert SatExtension.get_schema_uri() not in col.stac_extensions
+    SatExtension.remove_from(col)
+    assert SatExtension.get_schema_uri() not in col.stac_extensions
