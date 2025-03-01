@@ -231,8 +231,7 @@ def collection() -> pystac.Collection:
 def summaries_ext(collection) -> SummariesSatExtension:
     return SatExtension.summaries(collection, True)
 
-
-def test_platform_international_designation(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+def test_summaries_platform_international_designation(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
     platform_international_designator_list = ["2018-080A"]
 
     summaries_ext.platform_international_designator = ["2018-080A"]
@@ -243,7 +242,7 @@ def test_platform_international_designation(collection: Collection, summaries_ex
 
     assert summaries_dict["sat:platform_international_designator"] == platform_international_designator_list
 
-def test_orbit_state(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+def test_summaries_orbit_state(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
     orbit_state_list = [OrbitState.ASCENDING]
 
     summaries_ext.orbit_state = orbit_state_list
@@ -254,7 +253,7 @@ def test_orbit_state(collection: Collection, summaries_ext: SummariesSatExtensio
 
     assert summaries_dict["sat:orbit_state"] == orbit_state_list
 
-def test_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+def test_summaries_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
     absolute_orbit_range = RangeSummary(2000, 3000)
 
     summaries_ext.absolute_orbit = absolute_orbit_range
@@ -265,9 +264,7 @@ def test_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExten
 
     assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
 
-def test_relative_orbit(self) -> None:
-    collection = self.collection()
-    summaries_ext = SatExtension.summaries(collection, True)
+def test_summaries_relative_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
     relative_orbit_range = RangeSummary(50, 100)
 
     summaries_ext.relative_orbit = relative_orbit_range
@@ -278,9 +275,7 @@ def test_relative_orbit(self) -> None:
 
     assert summaries_dict["sat:relative_orbit"] == relative_orbit_range.to_dict()
 
-def test_anx_datetime(self) -> None:
-    collection = self.collection()
-    summaries_ext = SatExtension.summaries(collection, True)
+def test_summaries_anx_datetime(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
     anx_datetime_range = RangeSummary(
         str_to_datetime("2020-01-01T00:00:00.000Z"),
         str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -297,18 +292,17 @@ def test_anx_datetime(self) -> None:
             "maximum": datetime_to_str(anx_datetime_range.maximum),
         }
 
-def test_summaries_adds_uri(self) -> None:
-    col = self.collection()
-    col.stac_extensions = []
+def test_summaries_adds_uri(collection: Collection) -> None:
+    collection.stac_extensions = []
     with pytest.raises(
         pystac.ExtensionNotImplemented,
         match="Extension 'sat' is not implemented",
     ):
-        SatExtension.summaries(col, add_if_missing=False)
+        SatExtension.summaries(collection, add_if_missing=False)
 
-    _ = SatExtension.summaries(col, True)
+    _ = SatExtension.summaries(collection, True)
 
-    assert SatExtension.get_schema_uri() in col.stac_extensions
+    assert SatExtension.get_schema_uri() in collection.stac_extensions
 
-    SatExtension.remove_from(col)
-    assert SatExtension.get_schema_uri() not in col.stac_extensions
+    SatExtension.remove_from(collection)
+    assert SatExtension.get_schema_uri() not in collection.stac_extensions
