@@ -7,9 +7,9 @@ from typing import Any
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import ExtensionTypeError, Item, Collection
 from pystac.extensions import sat
-from pystac.extensions.sat import OrbitState, SatExtension
+from pystac.extensions.sat import OrbitState, SatExtension, SummariesSatExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, str_to_datetime
 from tests.utils import TestCases
@@ -221,54 +221,51 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         match=r"^SatExtension does not apply to type 'object'$"):
         SatExtension.ext(object())
 
+@pytest.fixture
+def collection() -> pystac.Collection:
+    return pystac.Collection.from_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+
+@pytest.fixture
+def summaries_ext(collection) -> SummariesSatExtension:
+    return SatExtension.summaries(collection, True)
+
+
+def test_platform_international_designation(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+    platform_international_designator_list = ["2018-080A"]
+
+    summaries_ext.platform_international_designator = ["2018-080A"]
+
+    assert summaries_ext.platform_international_designator == platform_international_designator_list
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["sat:platform_international_designator"] == platform_international_designator_list
+
+def test_orbit_state(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+    orbit_state_list = [OrbitState.ASCENDING]
+
+    summaries_ext.orbit_state = orbit_state_list
+
+    assert summaries_ext.orbit_state == orbit_state_list
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["sat:orbit_state"] == orbit_state_list
+
+def test_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+    absolute_orbit_range = RangeSummary(2000, 3000)
+
+    summaries_ext.absolute_orbit = absolute_orbit_range
+
+    assert summaries_ext.absolute_orbit == absolute_orbit_range
+
+    summaries_dict = collection.to_dict()["summaries"]
+
+    assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
 
 class SatSummariesTest(unittest.TestCase):
-
-    @staticmethod
-    def collection() -> pystac.Collection:
-        return pystac.Collection.from_file(
-            TestCases.get_path("data-files/collections/multi-extent.json")
-        )
-
-    def test_platform_international_designation(self) -> None:
-        collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection, True)
-        platform_international_designator_list = ["2018-080A"]
-
-        summaries_ext.platform_international_designator = ["2018-080A"]
-
-        assert summaries_ext.platform_international_designator == platform_international_designator_list
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["sat:platform_international_designator"] == platform_international_designator_list
-
-    def test_orbit_state(self) -> None:
-        collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection, True)
-        orbit_state_list = [OrbitState.ASCENDING]
-
-        summaries_ext.orbit_state = orbit_state_list
-
-        assert summaries_ext.orbit_state == orbit_state_list
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["sat:orbit_state"] == orbit_state_list
-
-    def test_absolute_orbit(self) -> None:
-        collection = self.collection()
-        summaries_ext = SatExtension.summaries(collection, True)
-        absolute_orbit_range = RangeSummary(2000, 3000)
-
-        summaries_ext.absolute_orbit = absolute_orbit_range
-
-        assert summaries_ext.absolute_orbit == absolute_orbit_range
-
-        summaries_dict = collection.to_dict()["summaries"]
-
-        assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
-
     def test_relative_orbit(self) -> None:
         collection = self.collection()
         summaries_ext = SatExtension.summaries(collection, True)
