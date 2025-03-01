@@ -58,7 +58,7 @@ def test_no_args_fails(item: Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_orbit_state(self) -> None:
+def test_orbit_state(item: Item) -> None:
     orbit_state = sat.OrbitState.ASCENDING
     SatExtension.ext(item).apply(orbit_state)
     assert orbit_state == SatExtension.ext(item).orbit_state
@@ -108,7 +108,7 @@ def test_platform_international_designator(item: Item) -> None:
 def test_relative_orbit_no_negative(item: Item) -> None:
     negative_relative_orbit = -2
     SatExtension.ext(item).apply(None, negative_relative_orbit)
-    with self.assertRaises(pystac.STACValidationError):
+    with pytest.raises(pystac.STACValidationError):
         item.validate()
 
 @pytest.mark.vcr()
@@ -132,7 +132,7 @@ def test_modify(item: Item) -> None:
     assert relative_orbit == SatExtension.ext(item).relative_orbit
     item.validate()
 
-def test_from_dict(self) -> None:
+def test_from_dict() -> None:
     orbit_state = sat.OrbitState.GEOSTATIONARY
     relative_orbit = 1001
     d: dict[str, Any] = {
@@ -185,13 +185,13 @@ def test_extension_not_implemented(sentinel_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
     sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = SatExtension.ext(sentinel_item)
 
     # Should raise exception if owning Item does not include extension URI
     asset = sentinel_item.assets["measurement_iw1_vh"]
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = SatExtension.ext(asset)
 
     # Should succeed if Asset has no owner
@@ -213,7 +213,7 @@ def test_asset_ext_add_to(sentinel_item: Item) -> None:
 
     _ = SatExtension.ext(asset, add_if_missing=True)
 
-    assert SatExtension.get_schema_uri() in item.stac_extensions
+    assert SatExtension.get_schema_uri() in sentinel_item.stac_extensions
 
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
