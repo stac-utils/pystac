@@ -1,13 +1,12 @@
 """Tests for pystac.extensions.sat."""
 
-import unittest
 from datetime import datetime
 from typing import Any
 
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item, Collection
+from pystac import Collection, ExtensionTypeError, Item
 from pystac.extensions import sat
 from pystac.extensions.sat import OrbitState, SatExtension, SummariesSatExtension
 from pystac.summaries import RangeSummary
@@ -66,6 +65,7 @@ def test_orbit_state(item: Item) -> None:
     assert SatExtension.ext(item).relative_orbit is None
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_relative_orbit(item: Item) -> None:
     relative_orbit = 1234
@@ -74,6 +74,7 @@ def test_relative_orbit(item: Item) -> None:
     assert sat.ORBIT_STATE_PROP not in item.properties
     assert SatExtension.ext(item).orbit_state is None
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_absolute_orbit(item: Item) -> None:
@@ -84,6 +85,7 @@ def test_absolute_orbit(item: Item) -> None:
     assert SatExtension.ext(item).relative_orbit is None
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_anx_datetime(item: Item) -> None:
     anx_datetime = str_to_datetime("2020-01-01T00:00:00Z")
@@ -93,16 +95,21 @@ def test_anx_datetime(item: Item) -> None:
     assert SatExtension.ext(item).relative_orbit is None
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_platform_international_designator(item: Item) -> None:
     platform_international_designator = "2018-080A"
     SatExtension.ext(item).apply(
         platform_international_designator=platform_international_designator
     )
-    assert platform_international_designator == SatExtension.ext(item).platform_international_designator
+    assert (
+        platform_international_designator
+        == SatExtension.ext(item).platform_international_designator
+    )
     assert sat.ORBIT_STATE_PROP not in item.properties
     assert SatExtension.ext(item).orbit_state is None
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_relative_orbit_no_negative(item: Item) -> None:
@@ -110,6 +117,7 @@ def test_relative_orbit_no_negative(item: Item) -> None:
     SatExtension.ext(item).apply(None, negative_relative_orbit)
     with pytest.raises(pystac.STACValidationError):
         item.validate()
+
 
 @pytest.mark.vcr()
 def test_both(item: Item) -> None:
@@ -119,6 +127,7 @@ def test_both(item: Item) -> None:
     assert orbit_state == SatExtension.ext(item).orbit_state
     assert relative_orbit == SatExtension.ext(item).relative_orbit
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_modify(item: Item) -> None:
@@ -131,6 +140,7 @@ def test_modify(item: Item) -> None:
     assert orbit_state == SatExtension.ext(item).orbit_state
     assert relative_orbit == SatExtension.ext(item).relative_orbit
     item.validate()
+
 
 def test_from_dict() -> None:
     orbit_state = sat.OrbitState.GEOSTATIONARY
@@ -153,6 +163,7 @@ def test_from_dict() -> None:
     assert orbit_state == SatExtension.ext(item).orbit_state
     assert relative_orbit == SatExtension.ext(item).relative_orbit
 
+
 def test_to_from_dict(item: Item) -> None:
     orbit_state = sat.OrbitState.GEOSTATIONARY
     relative_orbit = 1002
@@ -165,6 +176,7 @@ def test_to_from_dict(item: Item) -> None:
     assert orbit_state == SatExtension.ext(item).orbit_state
     assert relative_orbit == SatExtension.ext(item).relative_orbit
 
+
 @pytest.mark.vcr()
 def test_clear_orbit_state(item: Item) -> None:
     SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
@@ -173,6 +185,7 @@ def test_clear_orbit_state(item: Item) -> None:
     assert SatExtension.ext(item).orbit_state is None
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_clear_relative_orbit(item: Item) -> None:
     SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
@@ -180,6 +193,7 @@ def test_clear_relative_orbit(item: Item) -> None:
     SatExtension.ext(item).relative_orbit = None
     assert SatExtension.ext(item).relative_orbit is None
     item.validate()
+
 
 def test_extension_not_implemented(sentinel_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
@@ -198,6 +212,7 @@ def test_extension_not_implemented(sentinel_item: Item) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = SatExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(sentinel_item: Item) -> None:
     sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
     assert SatExtension.get_schema_uri() not in sentinel_item.stac_extensions
@@ -205,6 +220,7 @@ def test_item_ext_add_to(sentinel_item: Item) -> None:
     _ = SatExtension.ext(sentinel_item, add_if_missing=True)
 
     assert SatExtension.get_schema_uri() in sentinel_item.stac_extensions
+
 
 def test_asset_ext_add_to(sentinel_item: Item) -> None:
     sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
@@ -215,34 +231,50 @@ def test_asset_ext_add_to(sentinel_item: Item) -> None:
 
     assert SatExtension.get_schema_uri() in sentinel_item.stac_extensions
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
-        ExtensionTypeError,
-        match=r"^SatExtension does not apply to type 'object'$"):
-        SatExtension.ext(object())
+        ExtensionTypeError, match=r"^SatExtension does not apply to type 'object'$"
+    ):
+        # calling this wrong on purpose so ---v
+        SatExtension.ext(object())  # type: ignore
+
 
 @pytest.fixture
-def collection() -> pystac.Collection:
-    return pystac.Collection.from_file(
+def collection() -> Collection:
+    return Collection.from_file(
         TestCases.get_path("data-files/collections/multi-extent.json")
     )
 
+
 @pytest.fixture
-def summaries_ext(collection) -> SummariesSatExtension:
+def summaries_ext(collection: Collection) -> SummariesSatExtension:
     return SatExtension.summaries(collection, True)
 
-def test_summaries_platform_international_designation(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+
+def test_summaries_platform_international_designation(
+    collection: Collection, summaries_ext: SummariesSatExtension
+) -> None:
     platform_international_designator_list = ["2018-080A"]
 
     summaries_ext.platform_international_designator = ["2018-080A"]
 
-    assert summaries_ext.platform_international_designator == platform_international_designator_list
+    assert (
+        summaries_ext.platform_international_designator
+        == platform_international_designator_list
+    )
 
     summaries_dict = collection.to_dict()["summaries"]
 
-    assert summaries_dict["sat:platform_international_designator"] == platform_international_designator_list
+    assert (
+        summaries_dict["sat:platform_international_designator"]
+        == platform_international_designator_list
+    )
 
-def test_summaries_orbit_state(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+
+def test_summaries_orbit_state(
+    collection: Collection, summaries_ext: SummariesSatExtension
+) -> None:
     orbit_state_list = [OrbitState.ASCENDING]
 
     summaries_ext.orbit_state = orbit_state_list
@@ -253,7 +285,10 @@ def test_summaries_orbit_state(collection: Collection, summaries_ext: SummariesS
 
     assert summaries_dict["sat:orbit_state"] == orbit_state_list
 
-def test_summaries_absolute_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+
+def test_summaries_absolute_orbit(
+    collection: Collection, summaries_ext: SummariesSatExtension
+) -> None:
     absolute_orbit_range = RangeSummary(2000, 3000)
 
     summaries_ext.absolute_orbit = absolute_orbit_range
@@ -264,7 +299,10 @@ def test_summaries_absolute_orbit(collection: Collection, summaries_ext: Summari
 
     assert summaries_dict["sat:absolute_orbit"] == absolute_orbit_range.to_dict()
 
-def test_summaries_relative_orbit(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+
+def test_summaries_relative_orbit(
+    collection: Collection, summaries_ext: SummariesSatExtension
+) -> None:
     relative_orbit_range = RangeSummary(50, 100)
 
     summaries_ext.relative_orbit = relative_orbit_range
@@ -275,7 +313,10 @@ def test_summaries_relative_orbit(collection: Collection, summaries_ext: Summari
 
     assert summaries_dict["sat:relative_orbit"] == relative_orbit_range.to_dict()
 
-def test_summaries_anx_datetime(collection: Collection, summaries_ext: SummariesSatExtension) -> None:
+
+def test_summaries_anx_datetime(
+    collection: Collection, summaries_ext: SummariesSatExtension
+) -> None:
     anx_datetime_range = RangeSummary(
         str_to_datetime("2020-01-01T00:00:00.000Z"),
         str_to_datetime("2020-01-02T00:00:00.000Z"),
@@ -288,9 +329,10 @@ def test_summaries_anx_datetime(collection: Collection, summaries_ext: Summaries
     summaries_dict = collection.to_dict()["summaries"]
 
     assert summaries_dict["sat:anx_datetime"] == {
-            "minimum": datetime_to_str(anx_datetime_range.minimum),
-            "maximum": datetime_to_str(anx_datetime_range.maximum),
-        }
+        "minimum": datetime_to_str(anx_datetime_range.minimum),
+        "maximum": datetime_to_str(anx_datetime_range.maximum),
+    }
+
 
 def test_summaries_adds_uri(collection: Collection) -> None:
     collection.stac_extensions = []
