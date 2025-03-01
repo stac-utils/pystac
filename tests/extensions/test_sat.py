@@ -181,16 +181,15 @@ def test_clear_relative_orbit(item: Item) -> None:
     assert SatExtension.ext(item).relative_orbit is None
     item.validate()
 
-def test_extension_not_implemented(self) -> None:
+def test_extension_not_implemented(sentinel_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
-    item = pystac.Item.from_file(self.sentinel_example_uri)
-    item.stac_extensions.remove(SatExtension.get_schema_uri())
+    sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
 
     with self.assertRaises(pystac.ExtensionNotImplemented):
-        _ = SatExtension.ext(item)
+        _ = SatExtension.ext(sentinel_item)
 
     # Should raise exception if owning Item does not include extension URI
-    asset = item.assets["measurement_iw1_vh"]
+    asset = sentinel_item.assets["measurement_iw1_vh"]
 
     with self.assertRaises(pystac.ExtensionNotImplemented):
         _ = SatExtension.ext(asset)
@@ -199,20 +198,18 @@ def test_extension_not_implemented(self) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = SatExtension.ext(ownerless_asset)
 
-def test_item_ext_add_to(self) -> None:
-    item = pystac.Item.from_file(self.sentinel_example_uri)
-    item.stac_extensions.remove(SatExtension.get_schema_uri())
-    assert SatExtension.get_schema_uri() not in item.stac_extensions
+def test_item_ext_add_to(sentinel_item: Item) -> None:
+    sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
+    assert SatExtension.get_schema_uri() not in sentinel_item.stac_extensions
 
-    _ = SatExtension.ext(item, add_if_missing=True)
+    _ = SatExtension.ext(sentinel_item, add_if_missing=True)
 
-    assert SatExtension.get_schema_uri() in item.stac_extensions
+    assert SatExtension.get_schema_uri() in sentinel_item.stac_extensions
 
-def test_asset_ext_add_to(self) -> None:
-    item = pystac.Item.from_file(self.sentinel_example_uri)
-    item.stac_extensions.remove(SatExtension.get_schema_uri())
-    assert SatExtension.get_schema_uri() not in item.stac_extensions
-    asset = item.assets["measurement_iw1_vh"]
+def test_asset_ext_add_to(sentinel_item: Item) -> None:
+    sentinel_item.stac_extensions.remove(SatExtension.get_schema_uri())
+    assert SatExtension.get_schema_uri() not in sentinel_item.stac_extensions
+    asset = sentinel_item.assets["measurement_iw1_vh"]
 
     _ = SatExtension.ext(asset, add_if_missing=True)
 
