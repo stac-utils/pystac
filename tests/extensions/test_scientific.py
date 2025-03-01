@@ -51,26 +51,24 @@ def make_item() -> pystac.Item:
     return item
 
 
-class TestRemoveLinks(unittest.TestCase):
-    def test_remove_none_doi(self) -> None:
-        """Calling remove_link with doi = None should have no effect."""
-        link = Link(
-            rel=ScientificRelType.CITE_AS,
-            target="https://some-domain.com/some/paper.pdf",
-        )
-        links = [link]
+def test_remove_links_none_doi() -> None:
+    """Calling remove_link with doi = None should have no effect."""
+    link = Link(
+        rel=ScientificRelType.CITE_AS,
+        target="https://some-domain.com/some/paper.pdf",
+    )
+    links = [link]
 
-        remove_link(links, doi=None)
+    remove_link(links, doi=None)
 
-        self.assertEqual(len(links), 1)
-        self.assertIn(link, links)
+    assert len(links) == 1
+    assert link in links
 
 
-class TestPublication(unittest.TestCase):
-    def test_get_link_returns_none_if_no_doi(self) -> None:
-        pub = Publication(None, CITATION)
+def test_publication_get_link_returns_none_if_no_doi() -> None:
+    pub = Publication(None, CITATION)
 
-        self.assertIsNone(pub.get_link())
+    assert pub.get_link() is None
 
 
 class ItemScientificExtensionTest(unittest.TestCase):
@@ -80,46 +78,46 @@ class ItemScientificExtensionTest(unittest.TestCase):
         self.example_item_uri = TestCases.get_path("data-files/scientific/item.json")
 
     def test_stac_extensions(self) -> None:
-        self.assertTrue(ScientificExtension.has_extension(self.item))
+        assert ScientificExtension.has_extension(self.item)
 
     @pytest.mark.vcr()
     def test_doi(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
-        self.assertEqual(DOI, ScientificExtension.ext(self.item).doi)
-        self.assertIn(scientific.DOI_PROP, self.item.properties)
+        assert DOI == ScientificExtension.ext(self.item).doi
+        assert scientific.DOI_PROP in self.item.properties
         link = self.item.get_links(ScientificRelType.CITE_AS)[0]
-        self.assertEqual(DOI_URL, link.get_href())
+        assert DOI_URL == link.get_href()
         self.item.validate()
 
         # Check that setting the doi does not cause extra links.
 
         # Same doi.
         ScientificExtension.ext(self.item).doi = DOI
-        self.assertEqual(1, len(self.item.get_links(ScientificRelType.CITE_AS)))
+        assert 1 == len(self.item.get_links(ScientificRelType.CITE_AS))
         self.item.validate()
 
         # Different doi.
         ScientificExtension.ext(self.item).doi = PUB1_DOI
-        self.assertEqual(1, len(self.item.get_links(ScientificRelType.CITE_AS)))
+        assert 1 == len(self.item.get_links(ScientificRelType.CITE_AS))
         link = self.item.get_links(ScientificRelType.CITE_AS)[0]
-        self.assertEqual(PUB1_DOI_URL, link.get_href())
+        assert PUB1_DOI_URL == link.get_href()
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_citation(self) -> None:
         ScientificExtension.ext(self.item).apply(citation=CITATION)
-        self.assertEqual(CITATION, ScientificExtension.ext(self.item).citation)
-        self.assertIn(scientific.CITATION_PROP, self.item.properties)
-        self.assertFalse(self.item.get_links(ScientificRelType.CITE_AS))
+        assert CITATION == ScientificExtension.ext(self.item).citation
+        assert scientific.CITATION_PROP in self.item.properties
+        assert not self.item.get_links(ScientificRelType.CITE_AS)
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(publications=publications)
-        self.assertEqual([1], [int("1")])
-        self.assertEqual(publications, ScientificExtension.ext(self.item).publications)
-        self.assertIn(scientific.PUBLICATIONS_PROP, self.item.properties)
+        assert [1] == [int("1")]
+        assert publications == ScientificExtension.ext(self.item).publications
+        assert scientific.PUBLICATIONS_PROP in self.item.properties
 
         links = self.item.get_links(ScientificRelType.CITE_AS)
         doi_urls = [link.get_href() for link in links]
@@ -130,8 +128,8 @@ class ItemScientificExtensionTest(unittest.TestCase):
     @pytest.mark.vcr()
     def test_publications(self) -> None:
         ScientificExtension.ext(self.item).apply(publications=PUBLICATIONS)
-        self.assertEqual(PUBLICATIONS, ScientificExtension.ext(self.item).publications)
-        self.assertIn(scientific.PUBLICATIONS_PROP, self.item.properties)
+        assert PUBLICATIONS == ScientificExtension.ext(self.item).publications
+        assert scientific.PUBLICATIONS_PROP in self.item.properties
 
         links = self.item.get_links(ScientificRelType.CITE_AS)
         doi_urls = [link.get_href() for link in links]
@@ -144,10 +142,10 @@ class ItemScientificExtensionTest(unittest.TestCase):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
         ScientificExtension.ext(self.item).remove_publication(publications[0])
-        self.assertFalse(ScientificExtension.ext(self.item).publications)
+        assert not ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -155,10 +153,10 @@ class ItemScientificExtensionTest(unittest.TestCase):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.item).apply(DOI, publications=publications)
         ScientificExtension.ext(self.item).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.item).publications)
+        assert not ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -166,20 +164,18 @@ class ItemScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[0])
-        self.assertEqual(
-            [PUBLICATIONS[1]], ScientificExtension.ext(self.item).publications
-        )
+        assert  [PUBLICATIONS[1]] == ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(2, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
-        self.assertEqual(PUB2_DOI_URL, links[1].target)
+        assert 2 == len(links)
+        assert DOI_URL == links[0].target
+        assert PUB2_DOI_URL == links[1].target
         self.item.validate()
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[1])
-        self.assertFalse(ScientificExtension.ext(self.item).publications)
+        assert not ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     @pytest.mark.vcr()
@@ -187,38 +183,36 @@ class ItemScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[1])
-        self.assertEqual(
-            [PUBLICATIONS[0]], ScientificExtension.ext(self.item).publications
-        )
+        assert  [PUBLICATIONS[0]] == ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(2, len(links))
-        self.assertEqual(PUB1_DOI_URL, links[1].target)
+        assert 2 == len(links)
+        assert PUB1_DOI_URL == links[1].target
 
         self.item.validate()
         ScientificExtension.ext(self.item).remove_publication(PUBLICATIONS[0])
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.item).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.item).publications)
+        assert not ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     @pytest.mark.vcr()
     def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.item).apply(DOI)
         ScientificExtension.ext(self.item).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.item).publications)
+        assert not ScientificExtension.ext(self.item).publications
         links = self.item.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.item.validate()
 
     def test_extension_not_implemented(self) -> None:
@@ -232,11 +226,11 @@ class ItemScientificExtensionTest(unittest.TestCase):
     def test_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.example_item_uri)
         item.stac_extensions.remove(ScientificExtension.get_schema_uri())
-        self.assertNotIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+        assert ScientificExtension.get_schema_uri() not in item.stac_extensions
 
         _ = ScientificExtension.ext(item, add_if_missing=True)
 
-        self.assertIn(ScientificExtension.get_schema_uri(), item.stac_extensions)
+        assert ScientificExtension.get_schema_uri() in item.stac_extensions
 
 
 def make_collection() -> pystac.Collection:
@@ -264,47 +258,45 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         )
 
     def test_stac_extensions(self) -> None:
-        self.assertTrue(ScientificExtension.has_extension(self.collection))
+        assert ScientificExtension.has_extension(self.collection)
 
     @pytest.mark.vcr()
     def test_doi(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
-        self.assertEqual(DOI, ScientificExtension.ext(self.collection).doi)
-        self.assertIn(scientific.DOI_PROP, self.collection.extra_fields)
+        assert DOI == ScientificExtension.ext(self.collection).doi
+        assert scientific.DOI_PROP in self.collection.extra_fields
         link = self.collection.get_links(ScientificRelType.CITE_AS)[0]
-        self.assertEqual(DOI_URL, link.get_href())
+        assert DOI_URL == link.get_href()
         self.collection.validate()
 
         # Check that setting the doi does not cause extra links.
 
         # Same doi.
         ScientificExtension.ext(self.collection).doi = DOI
-        self.assertEqual(1, len(self.collection.get_links(ScientificRelType.CITE_AS)))
+        assert 1 == len(self.collection.get_links(ScientificRelType.CITE_AS))
         self.collection.validate()
 
         # Different doi.
         ScientificExtension.ext(self.collection).doi = PUB1_DOI
-        self.assertEqual(1, len(self.collection.get_links(ScientificRelType.CITE_AS)))
+        assert 1 == len(self.collection.get_links(ScientificRelType.CITE_AS))
         link = self.collection.get_links(ScientificRelType.CITE_AS)[0]
-        self.assertEqual(PUB1_DOI_URL, link.get_href())
+        assert PUB1_DOI_URL == link.get_href()
         self.collection.validate()
 
     @pytest.mark.vcr()
     def test_citation(self) -> None:
         ScientificExtension.ext(self.collection).apply(citation=CITATION)
-        self.assertEqual(CITATION, ScientificExtension.ext(self.collection).citation)
-        self.assertIn(scientific.CITATION_PROP, self.collection.extra_fields)
-        self.assertFalse(self.collection.get_links(ScientificRelType.CITE_AS))
+        assert CITATION == ScientificExtension.ext(self.collection).citation
+        assert scientific.CITATION_PROP in self.collection.extra_fields
+        assert not self.collection.get_links(ScientificRelType.CITE_AS)
         self.collection.validate()
 
     @pytest.mark.vcr()
     def test_publications_one(self) -> None:
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(publications=publications)
-        self.assertEqual(
-            publications, ScientificExtension.ext(self.collection).publications
-        )
-        self.assertIn(scientific.PUBLICATIONS_PROP, self.collection.extra_fields)
+        assert  publications == ScientificExtension.ext(self.collection).publications
+        assert scientific.PUBLICATIONS_PROP in self.collection.extra_fields
 
         links = self.collection.get_links(ScientificRelType.CITE_AS)
         doi_urls = [link.get_href() for link in links]
@@ -316,10 +308,8 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     @pytest.mark.vcr()
     def test_publications(self) -> None:
         ScientificExtension.ext(self.collection).apply(publications=PUBLICATIONS)
-        self.assertEqual(
-            PUBLICATIONS, ScientificExtension.ext(self.collection).publications
-        )
-        self.assertIn(scientific.PUBLICATIONS_PROP, self.collection.extra_fields)
+        assert  PUBLICATIONS == ScientificExtension.ext(self.collection).publications
+        assert scientific.PUBLICATIONS_PROP in self.collection.extra_fields
 
         links = self.collection.get_links(ScientificRelType.CITE_AS)
         doi_urls = [link.get_href() for link in links]
@@ -333,10 +323,10 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
         ScientificExtension.ext(self.collection).remove_publication(publications[0])
-        self.assertFalse(ScientificExtension.ext(self.collection).publications)
+        assert not ScientificExtension.ext(self.collection).publications
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     @pytest.mark.vcr()
@@ -344,10 +334,10 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         publications = PUBLICATIONS[:1]
         ScientificExtension.ext(self.collection).apply(DOI, publications=publications)
         ScientificExtension.ext(self.collection).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.collection).publications)
+        assert not ScientificExtension.ext(self.collection).publications
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     @pytest.mark.vcr()
@@ -355,20 +345,18 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[0])
-        self.assertEqual(
-            [PUBLICATIONS[1]], ScientificExtension.ext(self.collection).publications
-        )
+        assert  [PUBLICATIONS[1]] == ScientificExtension.ext(self.collection).publications 
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(2, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
-        self.assertEqual(PUB2_DOI_URL, links[1].target)
+        assert 2 == len(links)
+        assert DOI_URL == links[0].target
+        assert PUB2_DOI_URL == links[1].target
         self.collection.validate()
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[1])
-        self.assertFalse(ScientificExtension.ext(self.collection).publications)
+        assert not ScientificExtension.ext(self.collection).publications
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     @pytest.mark.vcr()
@@ -376,38 +364,36 @@ class CollectionScientificExtensionTest(unittest.TestCase):
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
 
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[1])
-        self.assertEqual(
-            [PUBLICATIONS[0]], ScientificExtension.ext(self.collection).publications
-        )
+        assert  [PUBLICATIONS[0]] == ScientificExtension.ext(self.collection).publications 
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(2, len(links))
-        self.assertEqual(PUB1_DOI_URL, links[1].target)
+        assert 2 == len(links)
+        assert PUB1_DOI_URL == links[1].target
 
         self.collection.validate()
         ScientificExtension.ext(self.collection).remove_publication(PUBLICATIONS[0])
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     @pytest.mark.vcr()
     def test_remove_all_publications_with_some(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI, publications=PUBLICATIONS)
         ScientificExtension.ext(self.collection).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.collection).publications)
+        assert not ScientificExtension.ext(self.collection).publications
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     @pytest.mark.vcr()
     def test_remove_all_publications_with_none(self) -> None:
         ScientificExtension.ext(self.collection).apply(DOI)
         ScientificExtension.ext(self.collection).remove_publication()
-        self.assertFalse(ScientificExtension.ext(self.collection).publications)
+        assert not ScientificExtension.ext(self.collection).publications
         links = self.collection.get_links(ScientificRelType.CITE_AS)
-        self.assertEqual(1, len(links))
-        self.assertEqual(DOI_URL, links[0].target)
+        assert 1 == len(links)
+        assert DOI_URL == links[0].target
         self.collection.validate()
 
     def test_extension_not_implemented(self) -> None:
@@ -421,23 +407,21 @@ class CollectionScientificExtensionTest(unittest.TestCase):
     def test_ext_add_to(self) -> None:
         collection = pystac.Collection.from_file(self.example_collection_uri)
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
-        self.assertNotIn(
-            ScientificExtension.get_schema_uri(), collection.stac_extensions
-        )
+        assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions 
 
         _ = ScientificExtension.ext(collection, add_if_missing=True)
 
-        self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
+        assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:
-        self.assertRaisesRegex(
+        with pytest.raises(
             ExtensionTypeError,
-            r"^ScientificExtension does not apply to type 'object'$",
-            ScientificExtension.ext,
-            object(),
-        )
+            match=r"^ScientificExtension does not apply to type 'object'$"
+        ):
+            # calling it wrong on purpose so -----------v
+            ScientificExtension.ext(object()) # type: ignore
 
 
 class SummariesScientificTest(unittest.TestCase):
@@ -453,20 +437,20 @@ class SummariesScientificTest(unittest.TestCase):
         citations = ScientificExtension.summaries(self.collection).citation
 
         assert citations is not None
-        self.assertListEqual([CITATION], citations)
+        assert [CITATION] == citations
 
     def test_set_citation_summaries(self) -> None:
         collection = self.collection.clone()
         sci_summaries = ScientificExtension.summaries(collection)
 
         sci_summaries.citation = None
-        self.assertIsNone(sci_summaries.citation)
+        assert sci_summaries.citation is None
 
     def test_get_doi_summaries(self) -> None:
         dois = ScientificExtension.summaries(self.collection).doi
 
         assert dois is not None
-        self.assertListEqual([PUB1_DOI, PUB2_DOI], dois)
+        assert [PUB1_DOI, PUB2_DOI] == dois
 
     def test_set_doi_summaries(self) -> None:
         collection = self.collection.clone()
@@ -476,7 +460,7 @@ class SummariesScientificTest(unittest.TestCase):
         new_dois = ScientificExtension.summaries(collection).doi
 
         assert new_dois is not None
-        self.assertListEqual([PUB2_DOI], new_dois)
+        assert [PUB2_DOI] == new_dois
 
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection.clone()
@@ -489,12 +473,10 @@ class SummariesScientificTest(unittest.TestCase):
 
         _ = ScientificExtension.summaries(collection, True)
 
-        self.assertIn(ScientificExtension.get_schema_uri(), collection.stac_extensions)
+        assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
         ScientificExtension.remove_from(collection)
-        self.assertNotIn(
-            ScientificExtension.get_schema_uri(), collection.stac_extensions
-        )
+        assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions 
 
 
 @pytest.fixture
