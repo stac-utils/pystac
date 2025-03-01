@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.extensions import sat
 from pystac.extensions.sat import OrbitState, SatExtension
 from pystac.summaries import RangeSummary
@@ -15,7 +15,8 @@ from pystac.utils import datetime_to_str, str_to_datetime
 from tests.utils import TestCases
 
 
-def make_item() -> pystac.Item:
+@pytest.fixture
+def item() -> Item:
     """Create basic test items that are only slightly different."""
     asset_id = "an/asset"
     start = datetime(2018, 1, 2)
@@ -27,30 +28,39 @@ def make_item() -> pystac.Item:
     return item
 
 
+@pytest.fixture
+def sentinel_item() -> Item:
+    sentinel_example_uri = TestCases.get_path("data-files/sat/sentinel-1.json")
+    return pystac.Item.from_file(sentinel_example_uri)
+
+
+def test_stac_extensions(item: Item) -> None:
+    assert SatExtension.has_extension(item)
+
+
+def test_item_repr(item: Item) -> None:
+    sat_item_ext = SatExtension.ext(item)
+    assert f"<ItemSatExtension Item id={item.id}>" == sat_item_ext.__repr__()
+
+
+def test_asset_repr(sentinel_item: Item) -> None:
+    asset = sentinel_item.assets["measurement_iw1_vh"]
+    sat_asset_ext = SatExtension.ext(asset)
+
+    assert f"<AssetSatExtension Asset href={asset.href}>" == sat_asset_ext.__repr__()
+
+
+@pytest.mark.vcr()
+def test_no_args_fails(item: Item) -> None:
+    SatExtension.ext(item).apply()
+    with pytest.raises(pystac.STACValidationError):
+        item.validate()
+
+
 class SatTest(unittest.TestCase):
     def setUp(self) -> None:
         self.item = make_item()
         self.sentinel_example_uri = TestCases.get_path("data-files/sat/sentinel-1.json")
-
-    def test_stac_extensions(self) -> None:
-        assert SatExtension.has_extension(self.item)
-
-    def test_item_repr(self) -> None:
-        sat_item_ext = SatExtension.ext(self.item)
-        assert f"<ItemSatExtension Item id={self.item.id}>" == sat_item_ext.__repr__()
-
-    def test_asset_repr(self) -> None:
-        item = pystac.Item.from_file(self.sentinel_example_uri)
-        asset = item.assets["measurement_iw1_vh"]
-        sat_asset_ext = SatExtension.ext(asset)
-
-        assert f"<AssetSatExtension Asset href={asset.href}>" == sat_asset_ext.__repr__()
-
-    @pytest.mark.vcr()
-    def test_no_args_fails(self) -> None:
-        SatExtension.ext(self.item).apply()
-        with self.assertRaises(pystac.STACValidationError):
-            self.item.validate()
 
     @pytest.mark.vcr()
     def test_orbit_state(self) -> None:
