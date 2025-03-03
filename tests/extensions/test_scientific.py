@@ -429,58 +429,49 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         ScientificExtension.ext(object()) # type: ignore
 
 
-class SummariesScientificTest(unittest.TestCase):
-    def setUp(self) -> None:
-        summaries = Summaries(
-            summaries={"sci:citation": [CITATION], "sci:doi": [PUB1_DOI, PUB2_DOI]}
-        )
-        self.collection = make_collection()
-        self.collection.summaries = summaries
+def test_get_citation_summaries(collection_with_summaries: Collection) -> None:
+    citations = ScientificExtension.summaries(collection_with_summaries).citation
 
-    def test_get_citation_summaries(self) -> None:
-        citations = ScientificExtension.summaries(self.collection).citation
+    assert citations is not None
+    assert [CITATION] == citations
 
-        assert citations is not None
-        assert [CITATION] == citations
+def test_set_citation_summaries(collection_with_summaries: Collection) -> None:
+    sci_summaries = ScientificExtension.summaries(collection_with_summaries)
 
-    def test_set_citation_summaries(self) -> None:
-        collection = self.collection.clone()
-        sci_summaries = ScientificExtension.summaries(collection)
+    sci_summaries.citation = None
+    assert sci_summaries.citation is None
 
-        sci_summaries.citation = None
-        assert sci_summaries.citation is None
+def test_get_doi_summaries(collection_with_summaries: Collection) -> None:
+    dois = ScientificExtension.summaries(collection_with_summaries).doi
 
-    def test_get_doi_summaries(self) -> None:
-        dois = ScientificExtension.summaries(self.collection).doi
+    assert dois is not None
+    assert [PUB1_DOI, PUB2_DOI] == dois
 
-        assert dois is not None
-        assert [PUB1_DOI, PUB2_DOI] == dois
+def test_set_doi_summaries(collection_with_summaries: Collection) -> None:
+    collection = collection_with_summaries
+    sci_summaries = ScientificExtension.summaries(collection)
 
-    def test_set_doi_summaries(self) -> None:
-        collection = self.collection.clone()
-        sci_summaries = ScientificExtension.summaries(collection)
+    sci_summaries.doi = [PUB2_DOI]
+    new_dois = ScientificExtension.summaries(collection).doi
 
-        sci_summaries.doi = [PUB2_DOI]
-        new_dois = ScientificExtension.summaries(collection).doi
+    assert new_dois is not None
+    assert [PUB2_DOI] == new_dois
 
-        assert new_dois is not None
-        assert [PUB2_DOI] == new_dois
+def test_summaries_adds_uri(collection_with_summaries: Collection) -> None:
+    collection = collection_with_summaries
+    collection.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented,
+        match="Extension 'sci' is not implemented",
+    ):
+        ScientificExtension.summaries(collection, add_if_missing=False)
 
-    def test_summaries_adds_uri(self) -> None:
-        collection = self.collection.clone()
-        collection.stac_extensions = []
-        with pytest.raises(
-            pystac.ExtensionNotImplemented,
-            match="Extension 'sci' is not implemented",
-        ):
-            ScientificExtension.summaries(collection, add_if_missing=False)
+    _ = ScientificExtension.summaries(collection, True)
 
-        _ = ScientificExtension.summaries(collection, True)
+    assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
-        assert ScientificExtension.get_schema_uri() in collection.stac_extensions
-
-        ScientificExtension.remove_from(collection)
-        assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions 
+    ScientificExtension.remove_from(collection)
+    assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions
 
 
 def test_ext_syntax(ext_item: pystac.Item) -> None:
