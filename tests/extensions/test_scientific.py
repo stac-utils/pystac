@@ -60,7 +60,27 @@ def ext_item() -> pystac.Item:
 
 @pytest.fixture
 def collection() -> Collection:
-    return make_collection()
+    asset_id = "my/thing"
+    start = datetime(2018, 8, 24)
+    end = start + timedelta(5, 4, 3, 2, 1)
+    bboxes = [[-180.0, -90.0, 180.0, 90.0]]
+    spatial_extent = pystac.SpatialExtent(bboxes)
+    intervals: list[list[datetime | None]] = [[start, end]]
+    temporal_extent = pystac.TemporalExtent(intervals)
+    extent = pystac.Extent(spatial_extent, temporal_extent)
+    collection = pystac.Collection(asset_id, "desc", extent)
+    collection.set_self_href(URL_TEMPLATE % 2019)
+
+    ScientificExtension.add_to(collection)
+    return collection
+
+
+@pytest.fixture
+def collection_with_summaries(collection) -> Collection:
+    collection.summaries = Summaries(
+        summaries={"sci:citation": [CITATION], "sci:doi": [PUB1_DOI, PUB2_DOI]}
+    )
+    return collection
 
 
 def test_remove_links_none_doi() -> None:
@@ -237,22 +257,6 @@ def test_ext_add_to(ext_item: Item) -> None:
     _ = ScientificExtension.ext(ext_item, add_if_missing=True)
 
     assert ScientificExtension.get_schema_uri() in ext_item.stac_extensions
-
-
-def make_collection() -> pystac.Collection:
-    asset_id = "my/thing"
-    start = datetime(2018, 8, 24)
-    end = start + timedelta(5, 4, 3, 2, 1)
-    bboxes = [[-180.0, -90.0, 180.0, 90.0]]
-    spatial_extent = pystac.SpatialExtent(bboxes)
-    intervals: list[list[datetime | None]] = [[start, end]]
-    temporal_extent = pystac.TemporalExtent(intervals)
-    extent = pystac.Extent(spatial_extent, temporal_extent)
-    collection = pystac.Collection(asset_id, "desc", extent)
-    collection.set_self_href(URL_TEMPLATE % 2019)
-
-    ScientificExtension.add_to(collection)
-    return collection
 
 
 def test_collection_stac_extensions(collection: Collection) -> None:
