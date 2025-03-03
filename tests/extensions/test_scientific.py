@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import ExtensionTypeError, Item, Collection
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
@@ -56,6 +56,11 @@ def item() -> Item:
 def ext_item() -> pystac.Item:
     path = TestCases.get_path("data-files/scientific/item.json")
     return pystac.Item.from_file(path)
+
+
+@pytest.fixture
+def collection() -> Collection:
+    return make_collection()
 
 
 def test_remove_links_none_doi() -> None:
@@ -250,12 +255,13 @@ def make_collection() -> pystac.Collection:
     return collection
 
 
+def test_collection_stac_extensions(collection: Collection) -> None:
+    assert ScientificExtension.has_extension(collection)
+
+
 class CollectionScientificExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
         self.collection = make_collection()
-
-    def test_stac_extensions(self) -> None:
-        assert ScientificExtension.has_extension(self.collection)
 
     @pytest.mark.vcr()
     def test_doi(self) -> None:
