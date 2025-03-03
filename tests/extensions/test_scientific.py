@@ -1,12 +1,11 @@
 """Tests for pystac.tests.extensions.scientific."""
 
-import unittest
 from datetime import datetime, timedelta
 
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item, Collection
+from pystac import Collection, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
@@ -76,7 +75,7 @@ def collection() -> Collection:
 
 
 @pytest.fixture
-def collection_with_summaries(collection) -> Collection:
+def collection_with_summaries(collection: Collection) -> Collection:
     collection.summaries = Summaries(
         summaries={"sci:citation": [CITATION], "sci:doi": [PUB1_DOI, PUB2_DOI]}
     )
@@ -139,6 +138,7 @@ def test_citation(item: Item) -> None:
     assert not item.get_links(ScientificRelType.CITE_AS)
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_publications_one(item: Item) -> None:
     publications = PUBLICATIONS[:1]
@@ -153,6 +153,7 @@ def test_publications_one(item: Item) -> None:
     assert expected == doi_urls
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_publications(item: Item) -> None:
     ScientificExtension.ext(item).apply(publications=PUBLICATIONS)
@@ -165,6 +166,7 @@ def test_publications(item: Item) -> None:
     assert expected == doi_urls
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_remove_publication_one(item: Item) -> None:
     publications = PUBLICATIONS[:1]
@@ -175,6 +177,7 @@ def test_remove_publication_one(item: Item) -> None:
     assert 1 == len(links)
     assert DOI_URL == links[0].target
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_remove_all_publications_one(item: Item) -> None:
@@ -187,12 +190,13 @@ def test_remove_all_publications_one(item: Item) -> None:
     assert DOI_URL == links[0].target
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_remove_publication_forward(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
 
     ScientificExtension.ext(item).remove_publication(PUBLICATIONS[0])
-    assert  [PUBLICATIONS[1]] == ScientificExtension.ext(item).publications
+    assert [PUBLICATIONS[1]] == ScientificExtension.ext(item).publications
     links = item.get_links(ScientificRelType.CITE_AS)
     assert 2 == len(links)
     assert DOI_URL == links[0].target
@@ -206,12 +210,13 @@ def test_remove_publication_forward(item: Item) -> None:
     assert DOI_URL == links[0].target
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_remove_publication_reverse(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
 
     ScientificExtension.ext(item).remove_publication(PUBLICATIONS[1])
-    assert  [PUBLICATIONS[0]] == ScientificExtension.ext(item).publications
+    assert [PUBLICATIONS[0]] == ScientificExtension.ext(item).publications
     links = item.get_links(ScientificRelType.CITE_AS)
     assert 2 == len(links)
     assert PUB1_DOI_URL == links[1].target
@@ -223,6 +228,7 @@ def test_remove_publication_reverse(item: Item) -> None:
     assert DOI_URL == links[0].target
     item.validate()
 
+
 @pytest.mark.vcr()
 def test_remove_all_publications_with_some(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
@@ -232,6 +238,7 @@ def test_remove_all_publications_with_some(item: Item) -> None:
     assert 1 == len(links)
     assert DOI_URL == links[0].target
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_remove_all_publications_with_none(item: Item) -> None:
@@ -243,12 +250,14 @@ def test_remove_all_publications_with_none(item: Item) -> None:
     assert DOI_URL == links[0].target
     item.validate()
 
+
 def test_extension_not_implemented(ext_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
     ext_item.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
     with pytest.raises(pystac.ExtensionNotImplemented):
         _ = ScientificExtension.ext(ext_item)
+
 
 def test_ext_add_to(ext_item: Item) -> None:
     ext_item.stac_extensions.remove(ScientificExtension.get_schema_uri())
@@ -286,6 +295,7 @@ def test_collection_doi(collection: Collection) -> None:
     assert PUB1_DOI_URL == link.get_href()
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_citation(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(citation=CITATION)
@@ -294,11 +304,12 @@ def test_collection_citation(collection: Collection) -> None:
     assert not collection.get_links(ScientificRelType.CITE_AS)
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_publications_one(collection: Collection) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(collection).apply(publications=publications)
-    assert  publications == ScientificExtension.ext(collection).publications
+    assert publications == ScientificExtension.ext(collection).publications
     assert scientific.PUBLICATIONS_PROP in collection.extra_fields
 
     links = collection.get_links(ScientificRelType.CITE_AS)
@@ -308,10 +319,11 @@ def test_collection_publications_one(collection: Collection) -> None:
 
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_publications(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(publications=PUBLICATIONS)
-    assert  PUBLICATIONS == ScientificExtension.ext(collection).publications
+    assert PUBLICATIONS == ScientificExtension.ext(collection).publications
     assert scientific.PUBLICATIONS_PROP in collection.extra_fields
 
     links = collection.get_links(ScientificRelType.CITE_AS)
@@ -320,6 +332,7 @@ def test_collection_publications(collection: Collection) -> None:
     assert expected == doi_urls
 
     collection.validate()
+
 
 @pytest.mark.vcr()
 def test_collection_remove_publication_one(collection: Collection) -> None:
@@ -332,6 +345,7 @@ def test_collection_remove_publication_one(collection: Collection) -> None:
     assert DOI_URL == links[0].target
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_remove_all_publications_one(collection: Collection) -> None:
     publications = PUBLICATIONS[:1]
@@ -343,12 +357,13 @@ def test_collection_remove_all_publications_one(collection: Collection) -> None:
     assert DOI_URL == links[0].target
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_remove_publication_forward(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
 
     ScientificExtension.ext(collection).remove_publication(PUBLICATIONS[0])
-    assert  [PUBLICATIONS[1]] == ScientificExtension.ext(collection).publications
+    assert [PUBLICATIONS[1]] == ScientificExtension.ext(collection).publications
     links = collection.get_links(ScientificRelType.CITE_AS)
     assert 2 == len(links)
     assert DOI_URL == links[0].target
@@ -362,12 +377,13 @@ def test_collection_remove_publication_forward(collection: Collection) -> None:
     assert DOI_URL == links[0].target
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_remove_publication_reverse(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
 
     ScientificExtension.ext(collection).remove_publication(PUBLICATIONS[1])
-    assert  [PUBLICATIONS[0]] == ScientificExtension.ext(collection).publications
+    assert [PUBLICATIONS[0]] == ScientificExtension.ext(collection).publications
     links = collection.get_links(ScientificRelType.CITE_AS)
     assert 2 == len(links)
     assert PUB1_DOI_URL == links[1].target
@@ -379,6 +395,7 @@ def test_collection_remove_publication_reverse(collection: Collection) -> None:
     assert DOI_URL == links[0].target
     collection.validate()
 
+
 @pytest.mark.vcr()
 def test_collection_remove_all_publications_with_some(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
@@ -388,6 +405,7 @@ def test_collection_remove_all_publications_with_some(collection: Collection) ->
     assert 1 == len(links)
     assert DOI_URL == links[0].target
     collection.validate()
+
 
 @pytest.mark.vcr()
 def test_collection_remove_all_publications_with_none(collection: Collection) -> None:
@@ -399,6 +417,7 @@ def test_collection_remove_all_publications_with_none(collection: Collection) ->
     assert DOI_URL == links[0].target
     collection.validate()
 
+
 def test_collection_extension_not_implemented(collection: Collection) -> None:
     # Should raise exception if Collection does not include extension URI
     collection = pystac.Collection.from_file(
@@ -409,24 +428,26 @@ def test_collection_extension_not_implemented(collection: Collection) -> None:
     with pytest.raises(pystac.ExtensionNotImplemented):
         _ = ScientificExtension.ext(collection)
 
+
 def test_collection_ext_add_to() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path("data-files/scientific/collection.json")
     )
     collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
-    assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions
+    assert ScientificExtension.get_schema_uri() not in collection.stac_extensions
 
     _ = ScientificExtension.ext(collection, add_if_missing=True)
 
     assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
-        match=r"^ScientificExtension does not apply to type 'object'$"
+        match=r"^ScientificExtension does not apply to type 'object'$",
     ):
         # calling it wrong on purpose so -----------v
-        ScientificExtension.ext(object()) # type: ignore
+        ScientificExtension.ext(object())  # type: ignore
 
 
 def test_get_citation_summaries(collection_with_summaries: Collection) -> None:
@@ -435,17 +456,20 @@ def test_get_citation_summaries(collection_with_summaries: Collection) -> None:
     assert citations is not None
     assert [CITATION] == citations
 
+
 def test_set_citation_summaries(collection_with_summaries: Collection) -> None:
     sci_summaries = ScientificExtension.summaries(collection_with_summaries)
 
     sci_summaries.citation = None
     assert sci_summaries.citation is None
 
+
 def test_get_doi_summaries(collection_with_summaries: Collection) -> None:
     dois = ScientificExtension.summaries(collection_with_summaries).doi
 
     assert dois is not None
     assert [PUB1_DOI, PUB2_DOI] == dois
+
 
 def test_set_doi_summaries(collection_with_summaries: Collection) -> None:
     collection = collection_with_summaries
@@ -456,6 +480,7 @@ def test_set_doi_summaries(collection_with_summaries: Collection) -> None:
 
     assert new_dois is not None
     assert [PUB2_DOI] == new_dois
+
 
 def test_summaries_adds_uri(collection_with_summaries: Collection) -> None:
     collection = collection_with_summaries
@@ -471,7 +496,7 @@ def test_summaries_adds_uri(collection_with_summaries: Collection) -> None:
     assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
     ScientificExtension.remove_from(collection)
-    assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions
+    assert ScientificExtension.get_schema_uri() not in collection.stac_extensions
 
 
 def test_ext_syntax(ext_item: pystac.Item) -> None:
