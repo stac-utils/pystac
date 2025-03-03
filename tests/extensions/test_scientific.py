@@ -300,7 +300,7 @@ def test_collection_publications_one(collection: Collection) -> None:
     links = collection.get_links(ScientificRelType.CITE_AS)
     doi_urls = [link.get_href() for link in links]
     expected = [PUB1_DOI_URL]
-    self.assertCountEqual(expected, doi_urls)
+    assert expected == doi_urls
 
     collection.validate()
 
@@ -313,7 +313,7 @@ def test_collection_publications(collection: Collection) -> None:
     links = collection.get_links(ScientificRelType.CITE_AS)
     doi_urls = [link.get_href() for link in links]
     expected = [PUB1_DOI_URL, PUB2_DOI_URL]
-    self.assertCountEqual(expected, doi_urls)
+    assert expected == doi_urls
 
     collection.validate()
 
@@ -402,7 +402,7 @@ def test_collection_extension_not_implemented(collection: Collection) -> None:
     )
     collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
-    with self.assertRaises(pystac.ExtensionNotImplemented):
+    with pytest.raises(pystac.ExtensionNotImplemented):
         _ = ScientificExtension.ext(collection)
 
 def test_collection_ext_add_to() -> None:
