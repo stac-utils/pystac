@@ -52,6 +52,12 @@ def item() -> Item:
     return item
 
 
+@pytest.fixture
+def ext_item() -> pystac.Item:
+    path = TestCases.get_path("data-files/scientific/item.json")
+    return pystac.Item.from_file(path)
+
+
 def test_remove_links_none_doi() -> None:
     """Calling remove_link with doi = None should have no effect."""
     link = Link(
@@ -212,22 +218,20 @@ def test_remove_all_publications_with_none(item: Item) -> None:
     assert DOI_URL == links[0].target
     item.validate()
 
-def test_extension_not_implemented() -> None:
+def test_extension_not_implemented(ext_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
-    item = pystac.Item.from_file(TestCases.get_path("data-files/scientific/item.json"))
-    item.stac_extensions.remove(ScientificExtension.get_schema_uri())
+    ext_item.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
     with pytest.raises(pystac.ExtensionNotImplemented):
-        _ = ScientificExtension.ext(item)
+        _ = ScientificExtension.ext(ext_item)
 
-def test_ext_add_to() -> None:
-    item = pystac.Item.from_file(TestCases.get_path("data-files/scientific/item.json"))
-    item.stac_extensions.remove(ScientificExtension.get_schema_uri())
-    assert ScientificExtension.get_schema_uri() not in item.stac_extensions
+def test_ext_add_to(ext_item: Item) -> None:
+    ext_item.stac_extensions.remove(ScientificExtension.get_schema_uri())
+    assert ScientificExtension.get_schema_uri() not in ext_item.stac_extensions
 
-    _ = ScientificExtension.ext(item, add_if_missing=True)
+    _ = ScientificExtension.ext(ext_item, add_if_missing=True)
 
-    assert ScientificExtension.get_schema_uri() in item.stac_extensions
+    assert ScientificExtension.get_schema_uri() in ext_item.stac_extensions
 
 
 def make_collection() -> pystac.Collection:
@@ -248,11 +252,7 @@ def make_collection() -> pystac.Collection:
 
 class CollectionScientificExtensionTest(unittest.TestCase):
     def setUp(self) -> None:
-        super().setUp()
         self.collection = make_collection()
-        self.example_collection_uri = TestCases.get_path(
-            "data-files/scientific/collection.json"
-        )
 
     def test_stac_extensions(self) -> None:
         assert ScientificExtension.has_extension(self.collection)
@@ -395,14 +395,18 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Collection does not include extension URI
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/scientific/collection.json")
+        )
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
 
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = ScientificExtension.ext(collection)
 
     def test_ext_add_to(self) -> None:
-        collection = pystac.Collection.from_file(self.example_collection_uri)
+        collection = pystac.Collection.from_file(
+            TestCases.get_path("data-files/scientific/collection.json")
+        )
         collection.stac_extensions.remove(ScientificExtension.get_schema_uri())
         assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions 
 
@@ -423,7 +427,6 @@ class CollectionScientificExtensionTest(unittest.TestCase):
 
 class SummariesScientificTest(unittest.TestCase):
     def setUp(self) -> None:
-        super().setUp()
         summaries = Summaries(
             summaries={"sci:citation": [CITATION], "sci:doi": [PUB1_DOI, PUB2_DOI]}
         )
@@ -474,12 +477,6 @@ class SummariesScientificTest(unittest.TestCase):
 
         ScientificExtension.remove_from(collection)
         assert  ScientificExtension.get_schema_uri() not in collection.stac_extensions 
-
-
-@pytest.fixture
-def ext_item() -> pystac.Item:
-    path = TestCases.get_path("data-files/scientific/item.json")
-    return pystac.Item.from_file(path)
 
 
 def test_ext_syntax(ext_item: pystac.Item) -> None:
