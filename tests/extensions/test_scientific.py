@@ -405,7 +405,7 @@ def test_collection_extension_not_implemented(self) -> None:
     with self.assertRaises(pystac.ExtensionNotImplemented):
         _ = ScientificExtension.ext(collection)
 
-def test_collection_ext_add_to(self) -> None:
+def test_collection_ext_add_to() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path("data-files/scientific/collection.json")
     )
@@ -416,9 +416,7 @@ def test_collection_ext_add_to(self) -> None:
 
     assert ScientificExtension.get_schema_uri() in collection.stac_extensions
 
-def test_should_raise_exception_when_passing_invalid_extension_object(
-    self,
-) -> None:
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
         match=r"^ScientificExtension does not apply to type 'object'$"
