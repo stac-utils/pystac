@@ -25,11 +25,11 @@ def ext_item() -> pystac.Item:
     return pystac.Item.from_file(PLANET_EXAMPLE_URI)
 
 
-# 2 usages
 SENTINEL2_EXAMPLE_URI = TestCases.get_path(
     "data-files/raster/raster-sentinel2-example.json"
 )
-# 2 usages
+
+
 LANDSAT_COLLECTION_EXAMPLE_URI = TestCases.get_path(
     "data-files/raster/landsat-collection-example.json"
 )
