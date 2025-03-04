@@ -26,30 +26,28 @@ class StorageExtensionTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
-        self.plain_item = Item.from_file(PLAIN_ITEM_URI)
         self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
+
+def test_add_to(sample_item: Item) -> None:
+    assert  StorageExtension.get_schema_uri() not in sample_item.stac_extensions
+    # Check that the URI gets added to stac_extensions
+    StorageExtension.add_to(sample_item)
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
+
+    # Check that the URI only gets added once, regardless of how many times add_to
+    # is called.
+    StorageExtension.add_to(sample_item)
+    StorageExtension.add_to(sample_item)
+
+    eo_uris = [
+        uri
+        for uri in sample_item.stac_extensions
+        if uri == StorageExtension.get_schema_uri()
+    ]
+    assert len(eo_uris) == 1
 
 
 class ItemStorageExtensionTest(StorageExtensionTest):
-    def test_add_to(self) -> None:
-        item = self.plain_item
-        assert  StorageExtension.get_schema_uri() not in self.plain_item.stac_extensions 
-        # Check that the URI gets added to stac_extensions
-        StorageExtension.add_to(item)
-        assert StorageExtension.get_schema_uri() in item.stac_extensions
-
-        # Check that the URI only gets added once, regardless of how many times add_to
-        # is called.
-        StorageExtension.add_to(item)
-        StorageExtension.add_to(item)
-
-        eo_uris = [
-            uri
-            for uri in item.stac_extensions
-            if uri == StorageExtension.get_schema_uri()
-        ]
-        assert len(eo_uris) == 1
-
     @pytest.mark.vcr()
     def test_validate_storage(self) -> None:
         self.naip_item.validate()
