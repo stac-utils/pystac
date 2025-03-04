@@ -121,75 +121,71 @@ def test_summaries_platform(naip_collection: Collection) -> None:
     assert col_dict["summaries"]["storage:platform"] == new_platform_summary
 
 
-class StorageExtensionSummariesTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
+def test_summaries_region(self) -> None:
+    col = self.naip_collection
+    col_dict = col.to_dict()
+    storage_summaries = StorageExtension.summaries(col)
 
-    def test_region(self) -> None:
-        col = self.naip_collection
-        col_dict = col.to_dict()
-        storage_summaries = StorageExtension.summaries(col)
+    # Get
+    assert  storage_summaries.region == col_dict["summaries"]["storage:region"]
+    # Set
+    new_region_summary = [random.choice(ascii_letters)]
+    assert storage_summaries.region != new_region_summary
+    storage_summaries.region = new_region_summary
+    assert storage_summaries.region == new_region_summary
 
-        # Get
-        assert  storage_summaries.region == col_dict["summaries"]["storage:region"] 
-        # Set
-        new_region_summary = [random.choice(ascii_letters)]
-        assert storage_summaries.region != new_region_summary
-        storage_summaries.region = new_region_summary
-        assert storage_summaries.region == new_region_summary
+    col_dict = col.to_dict()
+    assert col_dict["summaries"]["storage:region"] == new_region_summary
 
-        col_dict = col.to_dict()
-        assert col_dict["summaries"]["storage:region"] == new_region_summary
+def test_summaries_requester_pays(self) -> None:
+    col = self.naip_collection
+    col_dict = col.to_dict()
+    storage_summaries = StorageExtension.summaries(col)
 
-    def test_summaries_requester_pays(self) -> None:
-        col = self.naip_collection
-        col_dict = col.to_dict()
-        storage_summaries = StorageExtension.summaries(col)
+    # Get
+    assert  storage_summaries.requester_pays == col_dict["summaries"]["storage:requester_pays"]
 
-        # Get
-        assert  storage_summaries.requester_pays == col_dict["summaries"]["storage:requester_pays"] 
+    # Set
+    new_requester_pays_summary = [True]
+    assert  storage_summaries.requester_pays != new_requester_pays_summary
+    storage_summaries.requester_pays = new_requester_pays_summary
+    assert storage_summaries.requester_pays == new_requester_pays_summary
 
-        # Set
-        new_requester_pays_summary = [True]
-        assert  storage_summaries.requester_pays != new_requester_pays_summary 
-        storage_summaries.requester_pays = new_requester_pays_summary
-        assert storage_summaries.requester_pays == new_requester_pays_summary
+    col_dict = col.to_dict()
+    assert  col_dict["summaries"]["storage:requester_pays"] == new_requester_pays_summary
 
-        col_dict = col.to_dict()
-        assert  col_dict["summaries"]["storage:requester_pays"] == new_requester_pays_summary 
+def test_summaries_tier(self) -> None:
+    col = self.naip_collection
+    col_dict = col.to_dict()
+    storage_summaries = StorageExtension.summaries(col)
 
-    def test_summaries_tier(self) -> None:
-        col = self.naip_collection
-        col_dict = col.to_dict()
-        storage_summaries = StorageExtension.summaries(col)
+    # Get
+    assert storage_summaries.tier == col_dict["summaries"]["storage:tier"]
 
-        # Get
-        assert storage_summaries.tier == col_dict["summaries"]["storage:tier"]
+    # Set
+    new_tier_summary = [random.choice(ascii_letters)]
+    assert storage_summaries.tier != new_tier_summary
+    storage_summaries.tier = new_tier_summary
+    assert storage_summaries.tier == new_tier_summary
 
-        # Set
-        new_tier_summary = [random.choice(ascii_letters)]
-        assert storage_summaries.tier != new_tier_summary
-        storage_summaries.tier = new_tier_summary
-        assert storage_summaries.tier == new_tier_summary
+    col_dict = col.to_dict()
+    assert col_dict["summaries"]["storage:tier"] == new_tier_summary
 
-        col_dict = col.to_dict()
-        assert col_dict["summaries"]["storage:tier"] == new_tier_summary
+def test_summaries_adds_uri(self) -> None:
+    col = self.naip_collection
+    col.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented,
+        match="Extension 'storage' is not implemented",
+    ):
+        StorageExtension.summaries(col, add_if_missing=False)
 
-    def test_summaries_adds_uri(self) -> None:
-        col = self.naip_collection
-        col.stac_extensions = []
-        with pytest.raises(
-            pystac.ExtensionNotImplemented,
-            match="Extension 'storage' is not implemented",
-        ):
-            StorageExtension.summaries(col, add_if_missing=False)
+    _ = StorageExtension.summaries(col, add_if_missing=True)
 
-        _ = StorageExtension.summaries(col, add_if_missing=True)
+    assert StorageExtension.get_schema_uri() in col.stac_extensions
 
-        assert StorageExtension.get_schema_uri() in col.stac_extensions
-
-        StorageExtension.remove_from(col)
-        assert StorageExtension.get_schema_uri() not in col.stac_extensions
+    StorageExtension.remove_from(col)
+    assert StorageExtension.get_schema_uri() not in col.stac_extensions
 
 
 class AssetStorageExtensionTest(unittest.TestCase):
