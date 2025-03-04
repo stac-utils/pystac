@@ -12,18 +12,17 @@ from pystac.extensions.storage import CloudPlatform, StorageExtension
 from tests.utils import TestCases, assert_to_from_dict
 
 NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")
-PLAIN_ITEM_URI = TestCases.get_path("data-files/item/sample-item.json")
 NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.json")
+
+@pytest.fixture
+def naip_item() -> Item:
+    return Item.from_file(NAIP_EXAMPLE_URI)
 
 
 def test_to_from_dict() -> None:
     with open(NAIP_EXAMPLE_URI) as f:
         item_dict = json.load(f)
     assert_to_from_dict(Item, item_dict)
-
-@pytest.fixture
-def naip_item() -> Item:
-    return Item.from_file(NAIP_EXAMPLE_URI)
 
 
 class StorageExtensionTest(unittest.TestCase):
@@ -62,49 +61,42 @@ def test_extend_invalid_object() -> None:
         StorageExtension.ext(link)  # type: ignore
 
 
-class ItemStorageExtensionTest(StorageExtensionTest):
+def test_extension_not_implemented(sample_item: Item) -> None:
+    # Should raise exception if Item does not include extension URI
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = StorageExtension.ext(sample_item)
 
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(PLAIN_ITEM_URI)
+    # Should raise exception if owning Item does not include extension URI
+    asset = sample_item.assets["thumbnail"]
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = StorageExtension.ext(item)
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = StorageExtension.ext(asset)
 
-        # Should raise exception if owning Item does not include extension URI
-        asset = item.assets["thumbnail"]
+    # Should succeed if Asset has no owner
+    ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+    _ = StorageExtension.ext(ownerless_asset)
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = StorageExtension.ext(asset)
+def test_item_ext_add_to(sample_item: Item) -> None:
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
 
-        # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
-        _ = StorageExtension.ext(ownerless_asset)
+    _ = StorageExtension.ext(sample_item, add_if_missing=True)
 
-    def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(PLAIN_ITEM_URI)
-        assert StorageExtension.get_schema_uri() not in item.stac_extensions
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
-        _ = StorageExtension.ext(item, add_if_missing=True)
+def test_asset_ext_add_to(sample_item: Item) -> None:
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
+    asset = sample_item.assets["thumbnail"]
 
-        assert StorageExtension.get_schema_uri() in item.stac_extensions
+    _ = StorageExtension.ext(asset, add_if_missing=True)
 
-    def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(PLAIN_ITEM_URI)
-        assert StorageExtension.get_schema_uri() not in item.stac_extensions
-        asset = item.assets["thumbnail"]
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
+def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
+    asset_dict = sample_item.assets["thumbnail"].to_dict()
+    asset = pystac.Asset.from_dict(asset_dict)
+
+    with pytest.raises(pystac.STACError):
         _ = StorageExtension.ext(asset, add_if_missing=True)
-
-        assert StorageExtension.get_schema_uri() in item.stac_extensions
-
-    def test_asset_ext_add_to_ownerless_asset(self) -> None:
-        item = pystac.Item.from_file(PLAIN_ITEM_URI)
-        asset_dict = item.assets["thumbnail"].to_dict()
-        asset = pystac.Asset.from_dict(asset_dict)
-
-        with pytest.raises(pystac.STACError):
-            _ = StorageExtension.ext(asset, add_if_missing=True)
 
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
