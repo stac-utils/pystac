@@ -105,7 +105,7 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         # calling it wrong purposely so ---------v
         StorageExtension.ext(object()) # type: ignore
 
-def test_platform(naip_collection: Collection) -> None:
+def test_summaries_platform(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
     storage_summaries = StorageExtension.summaries(naip_collection)
 
@@ -141,7 +141,7 @@ class StorageExtensionSummariesTest(unittest.TestCase):
         col_dict = col.to_dict()
         assert col_dict["summaries"]["storage:region"] == new_region_summary
 
-    def test_requester_pays(self) -> None:
+    def test_summaries_requester_pays(self) -> None:
         col = self.naip_collection
         col_dict = col.to_dict()
         storage_summaries = StorageExtension.summaries(col)
@@ -158,7 +158,7 @@ class StorageExtensionSummariesTest(unittest.TestCase):
         col_dict = col.to_dict()
         assert  col_dict["summaries"]["storage:requester_pays"] == new_requester_pays_summary 
 
-    def test_tier(self) -> None:
+    def test_summaries_tier(self) -> None:
         col = self.naip_collection
         col_dict = col.to_dict()
         storage_summaries = StorageExtension.summaries(col)
