@@ -18,6 +18,11 @@ NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.jso
 def naip_item() -> Item:
     return Item.from_file(NAIP_EXAMPLE_URI)
 
+@pytest.fixture
+def naip_collection() -> Collection:
+    return Collection.from_file(NAIP_COLLECTION_URI)
+
+
 
 def test_to_from_dict() -> None:
     with open(NAIP_EXAMPLE_URI) as f:
@@ -100,26 +105,26 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         # calling it wrong purposely so ---------v
         StorageExtension.ext(object()) # type: ignore
 
+def test_platform(naip_collection: Collection) -> None:
+    col_dict = naip_collection.to_dict()
+    storage_summaries = StorageExtension.summaries(naip_collection)
+
+    # Get
+    assert storage_summaries.platform == col_dict["summaries"]["storage:platform"]
+    # Set
+    new_platform_summary = [random.choice([v for v in CloudPlatform])]
+    assert storage_summaries.platform != new_platform_summary
+    storage_summaries.platform = new_platform_summary
+    assert storage_summaries.platform == new_platform_summary
+
+    col_dict = naip_collection.to_dict()
+    assert col_dict["summaries"]["storage:platform"] == new_platform_summary
+
 
 class StorageExtensionSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
 
-    def test_platform(self) -> None:
-        col = self.naip_collection
-        col_dict = col.to_dict()
-        storage_summaries = StorageExtension.summaries(col)
-
-        # Get
-        assert  storage_summaries.platform == col_dict["summaries"]["storage:platform"] 
-        # Set
-        new_platform_summary = [random.choice([v for v in CloudPlatform])]
-        assert storage_summaries.platform != new_platform_summary
-        storage_summaries.platform = new_platform_summary
-        assert storage_summaries.platform == new_platform_summary
-
-        col_dict = col.to_dict()
-        assert  col_dict["summaries"]["storage:platform"] == new_platform_summary 
     def test_region(self) -> None:
         col = self.naip_collection
         col_dict = col.to_dict()
