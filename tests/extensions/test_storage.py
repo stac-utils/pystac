@@ -54,13 +54,15 @@ def test_add_to(sample_item: Item) -> None:
 def test_validate_storage(naip_item) -> None:
     naip_item.validate()
 
+
+def test_extend_invalid_object() -> None:
+    link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
+
+    with pytest.raises(pystac.ExtensionTypeError):
+        StorageExtension.ext(link)  # type: ignore
+
+
 class ItemStorageExtensionTest(StorageExtensionTest):
-
-    def test_extend_invalid_object(self) -> None:
-        link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
-
-        with pytest.raises(pystac.ExtensionTypeError):
-            StorageExtension.ext(link)  # type: ignore
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
