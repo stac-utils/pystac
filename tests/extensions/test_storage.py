@@ -184,10 +184,6 @@ def test_summaries_adds_uri(naip_collection: Collection) -> None:
     assert StorageExtension.get_schema_uri() not in naip_collection.stac_extensions
 
 
-# class AssetStorageExtensionTest(unittest.TestCase):
-#     def setUp(self) -> None:
-#         self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
-
 def test_item_apply(naip_item: Item) -> None:
     asset = random.choice(list(naip_item.assets.values()))
 
@@ -215,7 +211,7 @@ def test_item_apply(naip_item: Item) -> None:
     assert storage_ext.tier == new_tier
 
 @pytest.mark.vcr()
-def test_platform(naip_item: Item) -> None:
+def test_asset_platform(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
@@ -240,7 +236,7 @@ def test_platform(naip_item: Item) -> None:
     naip_item.validate()
 
 @pytest.mark.vcr()
-def test_region(naip_item: Item) -> None:
+def test_asset_region(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
@@ -269,7 +265,7 @@ def test_region(naip_item: Item) -> None:
     assert "storage:region" not in asset.extra_fields
 
 @pytest.mark.vcr()
-def test_requester_pays(naip_item: Item) -> None:
+def test_asset_requester_pays(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
@@ -296,7 +292,7 @@ def test_requester_pays(naip_item: Item) -> None:
     assert "storage:requester_pays" not in asset.extra_fields
 
 @pytest.mark.vcr()
-def test_tier(naip_item: Item) -> None:
+def test_asset_tier(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
