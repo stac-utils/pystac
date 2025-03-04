@@ -12,18 +12,31 @@ from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 from tests.utils import TestCases, assert_to_from_dict
 
 
+EXAMPLE_URI = TestCases.get_path("data-files/timestamps/example-landsat8.json")
+SAMPLE_DATETIME_STR = "2020-01-01T00:00:00Z"
+
+@pytest.fixture
+def item() -> Item:
+    return Item.from_file(EXAMPLE_URI)
+
+
+@pytest.fixture
+def sample_datetime() -> datetime:
+     return str_to_datetime(SAMPLE_DATETIME_STR)
+
+
+def test_to_from_dict() -> None:
+    with open(EXAMPLE_URI) as f:
+        item_dict = json.load(f)
+    assert_to_from_dict(pystac.Item, item_dict)
+
+
 class TimestampsTest(unittest.TestCase):
     def setUp(self) -> None:
         self.example_uri = TestCases.get_path(
             "data-files/timestamps/example-landsat8.json"
         )
-        with open(self.example_uri) as f:
-            self.item_dict = json.load(f)
-        self.sample_datetime_str = "2020-01-01T00:00:00Z"
-        self.sample_datetime = str_to_datetime(self.sample_datetime_str)
-
-    def test_to_from_dict(self) -> None:
-        assert_to_from_dict(pystac.Item, self.item_dict)
+        self.sample_datetime = str_to_datetime(SAMPLE_DATETIME_STR)
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))
@@ -78,7 +91,7 @@ class TimestampsTest(unittest.TestCase):
 
         # Set
         TimestampsExtension.ext(timestamps_item).expires = self.sample_datetime
-        assert  self.sample_datetime_str == timestamps_item.properties["expires"] 
+        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["expires"]
 
         # Get from Asset
         asset_no_prop = timestamps_item.assets["red"]
@@ -107,7 +120,7 @@ class TimestampsTest(unittest.TestCase):
 
         # Set
         TimestampsExtension.ext(timestamps_item).published = self.sample_datetime
-        assert  self.sample_datetime_str == timestamps_item.properties["published"] 
+        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["published"]
 
         # Get from Asset
         asset_no_prop = timestamps_item.assets["red"]
@@ -135,7 +148,7 @@ class TimestampsTest(unittest.TestCase):
 
         # Set
         TimestampsExtension.ext(timestamps_item).unpublished = self.sample_datetime
-        assert  self.sample_datetime_str == timestamps_item.properties["unpublished"] 
+        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["unpublished"]
 
         # Get from Asset
         asset_no_prop = timestamps_item.assets["red"]
