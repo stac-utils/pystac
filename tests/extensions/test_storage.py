@@ -25,12 +25,6 @@ def test_to_from_dict() -> None:
     assert_to_from_dict(Item, item_dict)
 
 
-class StorageExtensionTest(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
-        self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
-
 def test_add_to(sample_item: Item) -> None:
     assert  StorageExtension.get_schema_uri() not in sample_item.stac_extensions
     # Check that the URI gets added to stac_extensions
@@ -107,7 +101,10 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         StorageExtension.ext(object()) # type: ignore
 
 
-class StorageExtensionSummariesTest(StorageExtensionTest):
+class StorageExtensionSummariesTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
+
     def test_platform(self) -> None:
         col = self.naip_collection
         col_dict = col.to_dict()
@@ -190,7 +187,10 @@ class StorageExtensionSummariesTest(StorageExtensionTest):
         assert StorageExtension.get_schema_uri() not in col.stac_extensions
 
 
-class AssetStorageExtensionTest(StorageExtensionTest):
+class AssetStorageExtensionTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
+
     def test_item_apply(self) -> None:
         item = self.naip_item
         asset = random.choice(list(item.assets.values()))
