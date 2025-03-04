@@ -11,25 +11,26 @@ from pystac.collection import Collection
 from pystac.extensions.storage import CloudPlatform, StorageExtension
 from tests.utils import TestCases, assert_to_from_dict
 
+NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")
+PLAIN_ITEM_URI = TestCases.get_path("data-files/item/sample-item.json")
+NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.json")
+
+
+def test_to_from_dict() -> None:
+    with open(NAIP_EXAMPLE_URI) as f:
+        item_dict = json.load(f)
+    assert_to_from_dict(Item, item_dict)
+
 
 class StorageExtensionTest(unittest.TestCase):
-    NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")
-    PLAIN_ITEM_URI = TestCases.get_path("data-files/item/sample-item.json")
-    NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.json")
 
     def setUp(self) -> None:
-        self.maxDiff = None
-        self.naip_item = Item.from_file(self.NAIP_EXAMPLE_URI)
-        self.plain_item = Item.from_file(self.PLAIN_ITEM_URI)
-        self.naip_collection = Collection.from_file(self.NAIP_COLLECTION_URI)
+        self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
+        self.plain_item = Item.from_file(PLAIN_ITEM_URI)
+        self.naip_collection = Collection.from_file(NAIP_COLLECTION_URI)
 
 
 class ItemStorageExtensionTest(StorageExtensionTest):
-    def test_to_from_dict(self) -> None:
-        with open(self.NAIP_EXAMPLE_URI) as f:
-            item_dict = json.load(f)
-        assert_to_from_dict(Item, item_dict)
-
     def test_add_to(self) -> None:
         item = self.plain_item
         self.assertNotIn(
@@ -64,7 +65,7 @@ class ItemStorageExtensionTest(StorageExtensionTest):
 
     def test_extension_not_implemented(self) -> None:
         # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.PLAIN_ITEM_URI)
+        item = pystac.Item.from_file(PLAIN_ITEM_URI)
 
         with self.assertRaises(pystac.ExtensionNotImplemented):
             _ = StorageExtension.ext(item)
@@ -80,7 +81,7 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         _ = StorageExtension.ext(ownerless_asset)
 
     def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM_URI)
+        item = pystac.Item.from_file(PLAIN_ITEM_URI)
         self.assertNotIn(StorageExtension.get_schema_uri(), item.stac_extensions)
 
         _ = StorageExtension.ext(item, add_if_missing=True)
@@ -88,7 +89,7 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         self.assertIn(StorageExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM_URI)
+        item = pystac.Item.from_file(PLAIN_ITEM_URI)
         self.assertNotIn(StorageExtension.get_schema_uri(), item.stac_extensions)
         asset = item.assets["thumbnail"]
 
@@ -97,7 +98,7 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         self.assertIn(StorageExtension.get_schema_uri(), item.stac_extensions)
 
     def test_asset_ext_add_to_ownerless_asset(self) -> None:
-        item = pystac.Item.from_file(self.PLAIN_ITEM_URI)
+        item = pystac.Item.from_file(PLAIN_ITEM_URI)
         asset_dict = item.assets["thumbnail"].to_dict()
         asset = pystac.Asset.from_dict(asset_dict)
 
