@@ -31,197 +31,199 @@ def test_to_from_dict() -> None:
     assert_to_from_dict(pystac.Item, item_dict)
 
 
-class TimestampsTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.example_uri = TestCases.get_path(
-            "data-files/timestamps/example-landsat8.json"
-        )
-        self.sample_datetime = str_to_datetime(SAMPLE_DATETIME_STR)
+# class TimestampsTest(unittest.TestCase):
+#     def setUp(self) -> None:
+#         # TODO many usages; replace with `item` fixture
+#         self.example_uri = TestCases.get_path(
+#             "data-files/timestamps/example-landsat8.json"
+#         )
+#         # TODO 3 usages all in setting values
+#         self.sample_datetime = str_to_datetime(SAMPLE_DATETIME_STR)
 
-    def test_apply(self) -> None:
-        item = next(TestCases.case_2().get_items(recursive=True))
-        assert not TimestampsExtension.has_extension(item)
+def test_apply(self) -> None:
+    item = next(TestCases.case_2().get_items(recursive=True))
+    assert not TimestampsExtension.has_extension(item)
 
-        TimestampsExtension.add_to(item)
-        assert TimestampsExtension.has_extension(item)
-        TimestampsExtension.ext(item).apply(
-            published=str_to_datetime("2020-01-03T06:45:55Z"),
-            expires=str_to_datetime("2020-02-03T06:45:55Z"),
-            unpublished=str_to_datetime("2020-03-03T06:45:55Z"),
-        )
+    TimestampsExtension.add_to(item)
+    assert TimestampsExtension.has_extension(item)
+    TimestampsExtension.ext(item).apply(
+        published=str_to_datetime("2020-01-03T06:45:55Z"),
+        expires=str_to_datetime("2020-02-03T06:45:55Z"),
+        unpublished=str_to_datetime("2020-03-03T06:45:55Z"),
+    )
 
-        for d in [
-            TimestampsExtension.ext(item).published,
-            TimestampsExtension.ext(item).expires,
-            TimestampsExtension.ext(item).unpublished,
-        ]:
-            assert isinstance(d, datetime)
+    for d in [
+        TimestampsExtension.ext(item).published,
+        TimestampsExtension.ext(item).expires,
+        TimestampsExtension.ext(item).unpublished,
+    ]:
+        assert isinstance(d, datetime)
 
-        for p in ("published", "expires", "unpublished"):
-            assert isinstance(item.properties[p], str)
+    for p in ("published", "expires", "unpublished"):
+        assert isinstance(item.properties[p], str)
 
-        published_str = "2020-04-03T06:45:55Z"
-        TimestampsExtension.ext(item).apply(published=str_to_datetime(published_str))
-        assert isinstance(TimestampsExtension.ext(item).published, datetime)
-        assert item.properties["published"] == published_str
+    published_str = "2020-04-03T06:45:55Z"
+    TimestampsExtension.ext(item).apply(published=str_to_datetime(published_str))
+    assert isinstance(TimestampsExtension.ext(item).published, datetime)
+    assert item.properties["published"] == published_str
 
-        for d in [
-            TimestampsExtension.ext(item).expires,
-            TimestampsExtension.ext(item).unpublished,
-        ]:
-            assert d is None
+    for d in [
+        TimestampsExtension.ext(item).expires,
+        TimestampsExtension.ext(item).unpublished,
+    ]:
+        assert d is None
 
-        for p in ("expires", "unpublished"):
-            assert p not in item.properties
+    for p in ("expires", "unpublished"):
+        assert p not in item.properties
 
-    @pytest.mark.vcr()
-    def test_validate_timestamps(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.validate()
+@pytest.mark.vcr()
+def test_validate_timestamps(self) -> None:
+    item = pystac.Item.from_file(self.example_uri)
+    item.validate()
 
-    @pytest.mark.vcr()
-    def test_expires(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_expires(self) -> None:
+    timestamps_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "expires" in timestamps_item.properties
-        timestamps_expires = TimestampsExtension.ext(timestamps_item).expires
-        assert isinstance(timestamps_expires, datetime)
-        assert  datetime_to_str(get_opt(timestamps_expires)) == timestamps_item.properties["expires"] 
+    # Get
+    assert "expires" in timestamps_item.properties
+    timestamps_expires = TimestampsExtension.ext(timestamps_item).expires
+    assert isinstance(timestamps_expires, datetime)
+    assert  datetime_to_str(get_opt(timestamps_expires)) == timestamps_item.properties["expires"]
 
-        # Set
-        TimestampsExtension.ext(timestamps_item).expires = self.sample_datetime
-        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["expires"]
+    # Set
+    TimestampsExtension.ext(timestamps_item).expires = self.sample_datetime
+    assert  SAMPLE_DATETIME_STR == timestamps_item.properties["expires"]
 
-        # Get from Asset
-        asset_no_prop = timestamps_item.assets["red"]
-        asset_prop = timestamps_item.assets["blue"]
-        assert  TimestampsExtension.ext(asset_no_prop).expires == TimestampsExtension.ext(timestamps_item).expires 
-        assert  TimestampsExtension.ext(asset_prop).expires == str_to_datetime("2018-12-02T00:00:00Z") 
+    # Get from Asset
+    asset_no_prop = timestamps_item.assets["red"]
+    asset_prop = timestamps_item.assets["blue"]
+    assert  TimestampsExtension.ext(asset_no_prop).expires == TimestampsExtension.ext(timestamps_item).expires
+    assert  TimestampsExtension.ext(asset_prop).expires == str_to_datetime("2018-12-02T00:00:00Z")
 
-        # # Set to Asset
-        asset_value = str_to_datetime("2019-02-02T00:00:00Z")
-        TimestampsExtension.ext(asset_no_prop).expires = asset_value
-        assert  TimestampsExtension.ext(asset_no_prop).expires != TimestampsExtension.ext(timestamps_item).expires 
-        assert TimestampsExtension.ext(asset_no_prop).expires == asset_value
+    # # Set to Asset
+    asset_value = str_to_datetime("2019-02-02T00:00:00Z")
+    TimestampsExtension.ext(asset_no_prop).expires = asset_value
+    assert  TimestampsExtension.ext(asset_no_prop).expires != TimestampsExtension.ext(timestamps_item).expires
+    assert TimestampsExtension.ext(asset_no_prop).expires == asset_value
 
-        # Validate
-        timestamps_item.validate()
+    # Validate
+    timestamps_item.validate()
 
-    @pytest.mark.vcr()
-    def test_published(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_published(self) -> None:
+    timestamps_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "published" in timestamps_item.properties
-        timestamps_published = TimestampsExtension.ext(timestamps_item).published
-        assert isinstance(timestamps_published, datetime)
-        assert  datetime_to_str(get_opt(timestamps_published)) == timestamps_item.properties["published"] 
+    # Get
+    assert "published" in timestamps_item.properties
+    timestamps_published = TimestampsExtension.ext(timestamps_item).published
+    assert isinstance(timestamps_published, datetime)
+    assert  datetime_to_str(get_opt(timestamps_published)) == timestamps_item.properties["published"]
 
-        # Set
-        TimestampsExtension.ext(timestamps_item).published = self.sample_datetime
-        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["published"]
+    # Set
+    TimestampsExtension.ext(timestamps_item).published = self.sample_datetime
+    assert  SAMPLE_DATETIME_STR == timestamps_item.properties["published"]
 
-        # Get from Asset
-        asset_no_prop = timestamps_item.assets["red"]
-        asset_prop = timestamps_item.assets["blue"]
-        assert  TimestampsExtension.ext(asset_no_prop).published == TimestampsExtension.ext(timestamps_item).published 
-        assert  TimestampsExtension.ext(asset_prop).published == str_to_datetime("2018-11-02T00:00:00Z") 
+    # Get from Asset
+    asset_no_prop = timestamps_item.assets["red"]
+    asset_prop = timestamps_item.assets["blue"]
+    assert  TimestampsExtension.ext(asset_no_prop).published == TimestampsExtension.ext(timestamps_item).published
+    assert  TimestampsExtension.ext(asset_prop).published == str_to_datetime("2018-11-02T00:00:00Z")
 
-        # # Set to Asset
-        asset_value = str_to_datetime("2019-02-02T00:00:00Z")
-        TimestampsExtension.ext(asset_no_prop).published = asset_value
-        assert  TimestampsExtension.ext(asset_no_prop).published != TimestampsExtension.ext(timestamps_item).published 
-        assert TimestampsExtension.ext(asset_no_prop).published == asset_value
+    # # Set to Asset
+    asset_value = str_to_datetime("2019-02-02T00:00:00Z")
+    TimestampsExtension.ext(asset_no_prop).published = asset_value
+    assert  TimestampsExtension.ext(asset_no_prop).published != TimestampsExtension.ext(timestamps_item).published
+    assert TimestampsExtension.ext(asset_no_prop).published == asset_value
 
-        # Validate
-        timestamps_item.validate()
+    # Validate
+    timestamps_item.validate()
 
-    @pytest.mark.vcr()
-    def test_unpublished(self) -> None:
-        timestamps_item = pystac.Item.from_file(self.example_uri)
+@pytest.mark.vcr()
+def test_unpublished(self) -> None:
+    timestamps_item = pystac.Item.from_file(self.example_uri)
 
-        # Get
-        assert "unpublished" not in timestamps_item.properties
-        timestamps_unpublished = TimestampsExtension.ext(timestamps_item).unpublished
-        assert timestamps_unpublished is None
+    # Get
+    assert "unpublished" not in timestamps_item.properties
+    timestamps_unpublished = TimestampsExtension.ext(timestamps_item).unpublished
+    assert timestamps_unpublished is None
 
-        # Set
-        TimestampsExtension.ext(timestamps_item).unpublished = self.sample_datetime
-        assert  SAMPLE_DATETIME_STR == timestamps_item.properties["unpublished"]
+    # Set
+    TimestampsExtension.ext(timestamps_item).unpublished = self.sample_datetime
+    assert  SAMPLE_DATETIME_STR == timestamps_item.properties["unpublished"]
 
-        # Get from Asset
-        asset_no_prop = timestamps_item.assets["red"]
-        asset_prop = timestamps_item.assets["blue"]
-        assert  TimestampsExtension.ext(asset_no_prop).unpublished == TimestampsExtension.ext(timestamps_item).unpublished 
-        assert  TimestampsExtension.ext(asset_prop).unpublished == str_to_datetime("2019-01-02T00:00:00Z") 
+    # Get from Asset
+    asset_no_prop = timestamps_item.assets["red"]
+    asset_prop = timestamps_item.assets["blue"]
+    assert  TimestampsExtension.ext(asset_no_prop).unpublished == TimestampsExtension.ext(timestamps_item).unpublished
+    assert  TimestampsExtension.ext(asset_prop).unpublished == str_to_datetime("2019-01-02T00:00:00Z")
 
-        # Set to Asset
-        asset_value = str_to_datetime("2019-02-02T00:00:00Z")
-        TimestampsExtension.ext(asset_no_prop).unpublished = asset_value
-        assert  TimestampsExtension.ext(asset_no_prop).unpublished != TimestampsExtension.ext(timestamps_item).unpublished 
-        assert  TimestampsExtension.ext(asset_no_prop).unpublished == asset_value 
+    # Set to Asset
+    asset_value = str_to_datetime("2019-02-02T00:00:00Z")
+    TimestampsExtension.ext(asset_no_prop).unpublished = asset_value
+    assert  TimestampsExtension.ext(asset_no_prop).unpublished != TimestampsExtension.ext(timestamps_item).unpublished
+    assert  TimestampsExtension.ext(asset_no_prop).unpublished == asset_value
 
-        # Validate
-        timestamps_item.validate()
+    # Validate
+    timestamps_item.validate()
 
-    def test_extension_not_implemented(self) -> None:
-        # Should raise exception if Item does not include extension URI
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+def test_extension_not_implemented(self) -> None:
+    # Should raise exception if Item does not include extension URI
+    item = pystac.Item.from_file(self.example_uri)
+    item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = TimestampsExtension.ext(item)
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = TimestampsExtension.ext(item)
 
-        # Should raise exception if owning Item does not include extension URI
-        asset = item.assets["blue"]
+    # Should raise exception if owning Item does not include extension URI
+    asset = item.assets["blue"]
 
-        with pytest.raises(pystac.ExtensionNotImplemented):
-            _ = TimestampsExtension.ext(asset)
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        _ = TimestampsExtension.ext(asset)
 
-        # Should succeed if Asset has no owner
-        ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
-        _ = TimestampsExtension.ext(ownerless_asset)
+    # Should succeed if Asset has no owner
+    ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
+    _ = TimestampsExtension.ext(ownerless_asset)
 
-    def test_item_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
-        assert TimestampsExtension.get_schema_uri() not in item.stac_extensions
+def test_item_ext_add_to(self) -> None:
+    item = pystac.Item.from_file(self.example_uri)
+    item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+    assert TimestampsExtension.get_schema_uri() not in item.stac_extensions
 
-        _ = TimestampsExtension.ext(item, add_if_missing=True)
+    _ = TimestampsExtension.ext(item, add_if_missing=True)
 
-        assert TimestampsExtension.get_schema_uri() in item.stac_extensions
+    assert TimestampsExtension.get_schema_uri() in item.stac_extensions
 
-    def test_asset_ext_add_to(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
-        assert TimestampsExtension.get_schema_uri() not in item.stac_extensions
-        asset = item.assets["blue"]
+def test_asset_ext_add_to(self) -> None:
+    item = pystac.Item.from_file(self.example_uri)
+    item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
+    assert TimestampsExtension.get_schema_uri() not in item.stac_extensions
+    asset = item.assets["blue"]
 
-        _ = TimestampsExtension.ext(asset, add_if_missing=True)
+    _ = TimestampsExtension.ext(asset, add_if_missing=True)
 
-        assert TimestampsExtension.get_schema_uri() in item.stac_extensions
+    assert TimestampsExtension.get_schema_uri() in item.stac_extensions
 
-    def test_should_raise_exception_when_passing_invalid_extension_object(
-        self,
-    ) -> None:
-        with pytest.raises(
-            ExtensionTypeError,
-            match=r"^TimestampsExtension does not apply to type 'object'$",
-        ):
-            # calling it wrong on purpose --------------v
-            TimestampsExtension.ext(object()) # type: ignore
+def test_should_raise_exception_when_passing_invalid_extension_object(
+    self,
+) -> None:
+    with pytest.raises(
+        ExtensionTypeError,
+        match=r"^TimestampsExtension does not apply to type 'object'$",
+    ):
+        # calling it wrong on purpose --------------v
+        TimestampsExtension.ext(object()) # type: ignore
 
-    def test_item_repr(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
+def test_item_repr(self) -> None:
+    item = pystac.Item.from_file(self.example_uri)
 
-        assert  TimestampsExtension.ext(item).__repr__() == f"<ItemTimestampsExtension Item id={item.id}>" 
+    assert  TimestampsExtension.ext(item).__repr__() == f"<ItemTimestampsExtension Item id={item.id}>"
 
-    def test_asset_repr(self) -> None:
-        item = pystac.Item.from_file(self.example_uri)
-        asset = item.assets["blue"]
+def test_asset_repr(self) -> None:
+    item = pystac.Item.from_file(self.example_uri)
+    asset = item.assets["blue"]
 
-        assert  TimestampsExtension.ext(asset).__repr__() == f"<AssetTimestampsExtension Asset href={asset.href}>" 
+    assert  TimestampsExtension.ext(asset).__repr__() == f"<AssetTimestampsExtension Asset href={asset.href}>"
 
 
 class TimestampsSummariesTest(unittest.TestCase):
