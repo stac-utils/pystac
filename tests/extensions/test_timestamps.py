@@ -14,7 +14,6 @@ from tests.utils import TestCases, assert_to_from_dict
 
 class TimestampsTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
         self.example_uri = TestCases.get_path(
             "data-files/timestamps/example-landsat8.json"
         )
@@ -260,9 +259,6 @@ class TimestampsTest(unittest.TestCase):
 
 
 class TimestampsSummariesTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.maxDiff = None
-
     @staticmethod
     def collection() -> pystac.Collection:
         return pystac.Collection.from_file(
