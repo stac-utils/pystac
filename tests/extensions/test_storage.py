@@ -188,9 +188,8 @@ def test_summaries_adds_uri(naip_collection: Collection) -> None:
 #     def setUp(self) -> None:
 #         self.naip_item = Item.from_file(NAIP_EXAMPLE_URI)
 
-def test_item_apply(self) -> None:
-    item = self.naip_item
-    asset = random.choice(list(item.assets.values()))
+def test_item_apply(naip_item: Item) -> None:
+    asset = random.choice(list(naip_item.assets.values()))
 
     storage_ext = StorageExtension.ext(asset)
 
@@ -216,14 +215,12 @@ def test_item_apply(self) -> None:
     assert storage_ext.tier == new_tier
 
 @pytest.mark.vcr()
-def test_platform(self) -> None:
-    item = self.naip_item
-
+def test_platform(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
             _asset
-            for _asset in item.assets.values()
+            for _asset in naip_item.assets.values()
             if "storage:platform" in _asset.to_dict()
         ]
     )
@@ -240,17 +237,15 @@ def test_platform(self) -> None:
     storage_ext.platform = new_platform
     assert storage_ext.platform == new_platform
 
-    item.validate()
+    naip_item.validate()
 
 @pytest.mark.vcr()
-def test_region(self) -> None:
-    item = self.naip_item
-
+def test_region(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
             _asset
-            for _asset in item.assets.values()
+            for _asset in naip_item.assets.values()
             if "storage:region" in _asset.to_dict()
         ]
     )
@@ -267,21 +262,19 @@ def test_region(self) -> None:
     storage_ext.region = new_region
     assert storage_ext.region == new_region
 
-    item.validate()
+    naip_item.validate()
 
     # Set to None
     storage_ext.region = None
     assert "storage:region" not in asset.extra_fields
 
 @pytest.mark.vcr()
-def test_requester_pays(self) -> None:
-    item = self.naip_item
-
+def test_requester_pays(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
             _asset
-            for _asset in item.assets.values()
+            for _asset in naip_item.assets.values()
             if "storage:requester_pays" in _asset.to_dict()
         ]
     )
@@ -296,21 +289,19 @@ def test_requester_pays(self) -> None:
     storage_ext.requester_pays = new_requester_pays
     assert storage_ext.requester_pays == new_requester_pays
 
-    item.validate()
+    naip_item.validate()
 
     # Set to None
     storage_ext.requester_pays = None
     assert "storage:requester_pays" not in asset.extra_fields
 
 @pytest.mark.vcr()
-def test_tier(self) -> None:
-    item = self.naip_item
-
+def test_tier(naip_item: Item) -> None:
     # Grab a random asset with the platform property
     asset = random.choice(
         [
             _asset
-            for _asset in item.assets.values()
+            for _asset in naip_item.assets.values()
             if "storage:tier" in _asset.to_dict()
         ]
     )
@@ -325,7 +316,7 @@ def test_tier(self) -> None:
     storage_ext.tier = new_tier
     assert storage_ext.tier == new_tier
 
-    item.validate()
+    naip_item.validate()
 
     # Set to None
     storage_ext.tier = None
