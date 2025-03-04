@@ -102,15 +102,13 @@ class ItemStorageExtensionTest(StorageExtensionTest):
         with pytest.raises(pystac.STACError):
             _ = StorageExtension.ext(asset, add_if_missing=True)
 
-    def test_should_raise_exception_when_passing_invalid_extension_object(
-        self,
-    ) -> None:
-        with pytest.raises(
-            ExtensionTypeError,
-            match=r"^StorageExtension does not apply to type 'object'$"
-        ):
-            # calling it wrong purposely so ---------v
-            StorageExtension.ext(object()) # type: ignore
+def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
+    with pytest.raises(
+        ExtensionTypeError,
+        match=r"^StorageExtension does not apply to type 'object'$"
+    ):
+        # calling it wrong purposely so ---------v
+        StorageExtension.ext(object()) # type: ignore
 
 
 class StorageExtensionSummariesTest(StorageExtensionTest):
