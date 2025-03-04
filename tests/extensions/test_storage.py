@@ -21,6 +21,10 @@ def test_to_from_dict() -> None:
         item_dict = json.load(f)
     assert_to_from_dict(Item, item_dict)
 
+@pytest.fixture
+def naip_item() -> Item:
+    return Item.from_file(NAIP_EXAMPLE_URI)
+
 
 class StorageExtensionTest(unittest.TestCase):
 
@@ -46,11 +50,11 @@ def test_add_to(sample_item: Item) -> None:
     ]
     assert len(eo_uris) == 1
 
+@pytest.mark.vcr()
+def test_validate_storage(naip_item) -> None:
+    naip_item.validate()
 
 class ItemStorageExtensionTest(StorageExtensionTest):
-    @pytest.mark.vcr()
-    def test_validate_storage(self) -> None:
-        self.naip_item.validate()
 
     def test_extend_invalid_object(self) -> None:
         link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
