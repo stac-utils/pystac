@@ -4,22 +4,30 @@ import unittest
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError
+from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
 from pystac.extensions.view import ViewExtension
 from pystac.summaries import RangeSummary
 from tests.utils import TestCases, assert_to_from_dict
 
 
+EXAMPLE_URI = TestCases.get_path("data-files/view/example-landsat8.json")
+
+
+@pytest.fixture
+def item() -> Item:
+    return pystac.Item.from_file(EXAMPLE_URI)
+
+
+def test_to_from_dict() -> None:
+    with open(EXAMPLE_URI) as f:
+        d = json.load(f)
+    assert_to_from_dict(pystac.Item, d)
+
+
 class ViewTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
         self.example_uri = TestCases.get_path("data-files/view/example-landsat8.json")
-
-    def test_to_from_dict(self) -> None:
-        with open(self.example_uri) as f:
-            d = json.load(f)
-        assert_to_from_dict(pystac.Item, d)
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))
@@ -279,7 +287,6 @@ class ViewTest(unittest.TestCase):
 
 class ViewSummariesTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.maxDiff = None
         example_uri = TestCases.get_path(
             "data-files/view/collection-with-summaries.json"
         )
