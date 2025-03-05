@@ -229,80 +229,74 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         ViewExtension.ext(object())  # type: ignore
 
 
-def test_get_off_nadir_summaries(self) -> None:
-    off_nadirs = ViewExtension.summaries(self.collection, True).off_nadir
+def test_get_off_nadir_summaries(collection: Collection) -> None:
+    off_nadirs = ViewExtension.summaries(collection, True).off_nadir
 
     assert off_nadirs is not None
 
     assert {"minimum": 0.5, "maximum": 7.3} == off_nadirs.to_dict()
 
-def test_get_incidence_angle_summaries(self) -> None:
+def test_get_incidence_angle_summaries(collection: Collection) -> None:
     incidence_angles = ViewExtension.summaries(
-        self.collection, True
+        collection, True
     ).incidence_angle
 
     assert incidence_angles is not None
 
     assert {"minimum": 23, "maximum": 35} == incidence_angles.to_dict()
 
-def test_get_azimuth_summaries(self) -> None:
-    azimuths = ViewExtension.summaries(self.collection, True).azimuth
+def test_get_azimuth_summaries(collection: Collection) -> None:
+    azimuths = ViewExtension.summaries(collection, True).azimuth
 
     assert azimuths is not None
 
     assert {"minimum": 20, "maximum": 186} == azimuths.to_dict()
 
-def test_get_sun_azimuth_summaries(self) -> None:
-    sun_azimuths = ViewExtension.summaries(self.collection, True).sun_azimuth
+def test_get_sun_azimuth_summaries(collection: Collection) -> None:
+    sun_azimuths = ViewExtension.summaries(collection, True).sun_azimuth
 
     assert sun_azimuths is not None
 
     assert {"minimum": 48, "maximum": 78} == sun_azimuths.to_dict()
 
-def test_get_sun_elevation_summaries(self) -> None:
-    sun_elevations = ViewExtension.summaries(self.collection, True).sun_elevation
+def test_get_sun_elevation_summaries(collection: Collection) -> None:
+    sun_elevations = ViewExtension.summaries(collection, True).sun_elevation
 
     assert sun_elevations is not None
 
     assert {"minimum": 10, "maximum": 45} == sun_elevations.to_dict()
 
-def test_set_off_nadir_summaries(self) -> None:
-    collection = self.collection.clone()
+def test_set_off_nadir_summaries(collection: Collection) -> None:
     view_summaries = ViewExtension.summaries(collection, True)
 
     view_summaries.off_nadir = RangeSummary(0, 10)
     assert  {"minimum": 0, "maximum": 10} == view_summaries.off_nadir.to_dict()
 
-def test_set_incidence_angle_summaries(self) -> None:
-    collection = self.collection.clone()
+def test_set_incidence_angle_summaries(collection: Collection) -> None:
     view_summaries = ViewExtension.summaries(collection, True)
 
     view_summaries.incidence_angle = RangeSummary(5, 15)
     assert  {"minimum": 5, "maximum": 15} == view_summaries.incidence_angle.to_dict()
 
-def test_set_azimuth_summaries(self) -> None:
-    collection = self.collection.clone()
+def test_set_azimuth_summaries(collection: Collection) -> None:
     view_summaries = ViewExtension.summaries(collection, True)
 
     view_summaries.azimuth = None
     assert view_summaries.azimuth is None
 
-def test_set_sun_azimuth_summaries(self) -> None:
-    collection = self.collection.clone()
+def test_set_sun_azimuth_summaries(collection: Collection) -> None:
     view_summaries = ViewExtension.summaries(collection, True)
 
     view_summaries.sun_azimuth = RangeSummary(210, 275)
     assert  {"minimum": 210, "maximum": 275} == view_summaries.sun_azimuth.to_dict()
 
-def test_set_sun_elevation_summaries(self) -> None:
-    collection = self.collection.clone()
+def test_set_sun_elevation_summaries(collection: Collection) -> None:
     view_summaries = ViewExtension.summaries(collection, True)
 
     view_summaries.sun_elevation = RangeSummary(-10, 38)
     assert  {"minimum": -10, "maximum": 38} == view_summaries.sun_elevation.to_dict()
 
-def test_summaries_adds_uri(self) -> None:
-    collection = self.collection.clone()
+def test_summaries_adds_uri(collection: Collection) -> None:
     collection.stac_extensions = []
     with pytest.raises(
         pystac.ExtensionNotImplemented,
