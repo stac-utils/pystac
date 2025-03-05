@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import ExtensionTypeError, Item, Collection
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime
@@ -201,85 +201,74 @@ def test_asset_repr(item: Item) -> None:
     assert  TimestampsExtension.ext(asset).__repr__() == f"<AssetTimestampsExtension Asset href={asset.href}>"
 
 
-class TimestampsSummariesTest(unittest.TestCase):
-    @staticmethod
-    def collection() -> pystac.Collection:
-        return pystac.Collection.from_file(
-            TestCases.get_path("data-files/collections/multi-extent.json")
-        )
+def test_summaries_published(multi_extent_collection: Collection) -> None:
+    summaries_ext = TimestampsExtension.summaries(multi_extent_collection, True)
+    published_range = RangeSummary(
+        str_to_datetime("2020-01-01T00:00:00.000Z"),
+        str_to_datetime("2020-01-02T00:00:00.000Z"),
+    )
 
-    def test_published(self) -> None:
-        collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection, True)
-        published_range = RangeSummary(
-            str_to_datetime("2020-01-01T00:00:00.000Z"),
-            str_to_datetime("2020-01-02T00:00:00.000Z"),
-        )
+    summaries_ext.published = published_range
 
-        summaries_ext.published = published_range
+    assert  summaries_ext.published == published_range
 
-        assert  summaries_ext.published == published_range 
+    summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert summaries_dict["published"] == {
+            "minimum": datetime_to_str(published_range.minimum),
+            "maximum": datetime_to_str(published_range.maximum),
+        }
 
-        assert summaries_dict["published"] == {
-                "minimum": datetime_to_str(published_range.minimum),
-                "maximum": datetime_to_str(published_range.maximum),
-            }
+def test_summaries_expires(multi_extent_collection: Collection) -> None:
+    summaries_ext = TimestampsExtension.summaries(multi_extent_collection, True)
+    expires_range = RangeSummary(
+        str_to_datetime("2020-01-01T00:00:00.000Z"),
+        str_to_datetime("2020-01-02T00:00:00.000Z"),
+    )
 
-    def test_expires(self) -> None:
-        collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection, True)
-        expires_range = RangeSummary(
-            str_to_datetime("2020-01-01T00:00:00.000Z"),
-            str_to_datetime("2020-01-02T00:00:00.000Z"),
-        )
+    summaries_ext.expires = expires_range
 
-        summaries_ext.expires = expires_range
+    assert  summaries_ext.expires == expires_range
 
-        assert  summaries_ext.expires == expires_range 
+    summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert summaries_dict["expires"] == {
+            "minimum": datetime_to_str(expires_range.minimum),
+            "maximum": datetime_to_str(expires_range.maximum),
+        }
 
-        assert summaries_dict["expires"] == {
-                "minimum": datetime_to_str(expires_range.minimum),
-                "maximum": datetime_to_str(expires_range.maximum),
-            }
+def test_summaries_unpublished(multi_extent_collection: Collection) -> None:
+    summaries_ext = TimestampsExtension.summaries(multi_extent_collection, True)
+    unpublished_range = RangeSummary(
+        str_to_datetime("2020-01-01T00:00:00.000Z"),
+        str_to_datetime("2020-01-02T00:00:00.000Z"),
+    )
 
-    def test_unpublished(self) -> None:
-        collection = self.collection()
-        summaries_ext = TimestampsExtension.summaries(collection, True)
-        unpublished_range = RangeSummary(
-            str_to_datetime("2020-01-01T00:00:00.000Z"),
-            str_to_datetime("2020-01-02T00:00:00.000Z"),
-        )
+    summaries_ext.unpublished = unpublished_range
 
-        summaries_ext.unpublished = unpublished_range
+    assert  summaries_ext.unpublished == unpublished_range
 
-        assert  summaries_ext.unpublished == unpublished_range 
+    summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
-        summaries_dict = collection.to_dict()["summaries"]
+    assert summaries_dict["unpublished"] == {
+            "minimum": datetime_to_str(unpublished_range.minimum),
+            "maximum": datetime_to_str(unpublished_range.maximum),
+        }
 
-        assert summaries_dict["unpublished"] == {
-                "minimum": datetime_to_str(unpublished_range.minimum),
-                "maximum": datetime_to_str(unpublished_range.maximum),
-            }
+def test_summaries_adds_uri(multi_extent_collection: Collection) -> None:
+    multi_extent_collection.stac_extensions = []
+    with pytest.raises(
+        pystac.ExtensionNotImplemented,
+        match="Extension 'timestamps' is not implemented",
+    ):
+        TimestampsExtension.summaries(multi_extent_collection, add_if_missing=False)
 
-    def test_summaries_adds_uri(self) -> None:
-        collection = self.collection()
-        collection.stac_extensions = []
-        with pytest.raises(
-            pystac.ExtensionNotImplemented,
-            match="Extension 'timestamps' is not implemented",
-        ):
-            TimestampsExtension.summaries(collection, add_if_missing=False)
+    _ = TimestampsExtension.summaries(multi_extent_collection, True)
 
-        _ = TimestampsExtension.summaries(collection, True)
+    assert TimestampsExtension.get_schema_uri() in multi_extent_collection.stac_extensions
 
-        assert TimestampsExtension.get_schema_uri() in collection.stac_extensions
-
-        TimestampsExtension.remove_from(collection)
-        assert  TimestampsExtension.get_schema_uri() not in collection.stac_extensions 
+    TimestampsExtension.remove_from(multi_extent_collection)
+    assert  TimestampsExtension.get_schema_uri() not in multi_extent_collection.stac_extensions
 
 
 @pytest.mark.parametrize(
