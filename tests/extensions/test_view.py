@@ -31,7 +31,7 @@ class ViewTest(unittest.TestCase):
 
     def test_apply(self) -> None:
         item = next(TestCases.case_2().get_items(recursive=True))
-        self.assertFalse(ViewExtension.has_extension(item))
+        assert not ViewExtension.has_extension(item)
 
         ViewExtension.add_to(item)
         ViewExtension.ext(item).apply(
@@ -42,16 +42,16 @@ class ViewTest(unittest.TestCase):
             sun_elevation=5.0,
         )
 
-        self.assertEqual(ViewExtension.ext(item).off_nadir, 1.0)
-        self.assertEqual(ViewExtension.ext(item).incidence_angle, 2.0)
-        self.assertEqual(ViewExtension.ext(item).azimuth, 3.0)
-        self.assertEqual(ViewExtension.ext(item).sun_azimuth, 4.0)
-        self.assertEqual(ViewExtension.ext(item).sun_elevation, 5.0)
+        assert ViewExtension.ext(item).off_nadir == 1.0
+        assert ViewExtension.ext(item).incidence_angle == 2.0
+        assert ViewExtension.ext(item).azimuth == 3.0
+        assert ViewExtension.ext(item).sun_azimuth == 4.0
+        assert ViewExtension.ext(item).sun_elevation == 5.0
 
     @pytest.mark.vcr()
     def test_validate_view(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
-        self.assertTrue(ViewExtension.has_extension(item))
+        assert ViewExtension.has_extension(item)
         item.validate()
 
     @pytest.mark.vcr()
@@ -59,32 +59,26 @@ class ViewTest(unittest.TestCase):
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("view:off_nadir", view_item.properties)
+        assert "view:off_nadir" in view_item.properties
         view_off_nadir = ViewExtension.ext(view_item).off_nadir
         assert view_off_nadir is not None
-        self.assertEqual(view_off_nadir, view_item.properties["view:off_nadir"])
+        assert view_off_nadir == view_item.properties["view:off_nadir"]
 
         # Set
         ViewExtension.ext(view_item).off_nadir = view_off_nadir + 10
-        self.assertEqual(view_off_nadir + 10, view_item.properties["view:off_nadir"])
+        assert view_off_nadir + 10 == view_item.properties["view:off_nadir"]
 
         # Get from Asset
         asset_no_prop = view_item.assets["blue"]
         asset_prop = view_item.assets["red"]
-        self.assertEqual(
-            ViewExtension.ext(asset_no_prop).off_nadir,
-            ViewExtension.ext(view_item).off_nadir,
-        )
-        self.assertEqual(ViewExtension.ext(asset_prop).off_nadir, 3.0)
+        assert  ViewExtension.ext(asset_no_prop).off_nadir == ViewExtension.ext(view_item).off_nadir
+        assert ViewExtension.ext(asset_prop).off_nadir == 3.0
 
         # Set to Asset
         asset_value = 13.0
         ViewExtension.ext(asset_no_prop).off_nadir = asset_value
-        self.assertNotEqual(
-            ViewExtension.ext(asset_no_prop).off_nadir,
-            ViewExtension.ext(view_item).off_nadir,
-        )
-        self.assertEqual(ViewExtension.ext(asset_no_prop).off_nadir, asset_value)
+        assert  ViewExtension.ext(asset_no_prop).off_nadir != ViewExtension.ext(view_item).off_nadir
+        assert ViewExtension.ext(asset_no_prop).off_nadir == asset_value
 
         # Validate
         view_item.validate()
@@ -94,36 +88,24 @@ class ViewTest(unittest.TestCase):
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("view:incidence_angle", view_item.properties)
+        assert "view:incidence_angle" in view_item.properties
         view_incidence_angle = ViewExtension.ext(view_item).incidence_angle
         assert view_incidence_angle is not None
-        self.assertEqual(
-            view_incidence_angle, view_item.properties["view:incidence_angle"]
-        )
-
+        assert  view_incidence_angle == view_item.properties["view:incidence_angle"]
         # Set
         ViewExtension.ext(view_item).incidence_angle = view_incidence_angle + 10
-        self.assertEqual(
-            view_incidence_angle + 10, view_item.properties["view:incidence_angle"]
-        )
-
+        assert  view_incidence_angle + 10 == view_item.properties["view:incidence_angle"]
         # Get from Asset
         asset_no_prop = view_item.assets["blue"]
         asset_prop = view_item.assets["red"]
-        self.assertEqual(
-            ViewExtension.ext(asset_no_prop).incidence_angle,
-            ViewExtension.ext(view_item).incidence_angle,
-        )
-        self.assertEqual(ViewExtension.ext(asset_prop).incidence_angle, 4.0)
+        assert  ViewExtension.ext(asset_no_prop).incidence_angle == ViewExtension.ext(view_item).incidence_angle
+        assert ViewExtension.ext(asset_prop).incidence_angle == 4.0
 
         # Set to Asset
         asset_value = 14.0
         ViewExtension.ext(asset_no_prop).incidence_angle = asset_value
-        self.assertNotEqual(
-            ViewExtension.ext(asset_no_prop).incidence_angle,
-            ViewExtension.ext(view_item).incidence_angle,
-        )
-        self.assertEqual(ViewExtension.ext(asset_no_prop).incidence_angle, asset_value)
+        assert  ViewExtension.ext(asset_no_prop).incidence_angle != ViewExtension.ext(view_item).incidence_angle
+        assert ViewExtension.ext(asset_no_prop).incidence_angle == asset_value
 
         # Validate
         view_item.validate()
@@ -133,32 +115,26 @@ class ViewTest(unittest.TestCase):
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("view:azimuth", view_item.properties)
+        assert "view:azimuth" in view_item.properties
         view_azimuth = ViewExtension.ext(view_item).azimuth
         assert view_azimuth is not None
-        self.assertEqual(view_azimuth, view_item.properties["view:azimuth"])
+        assert view_azimuth == view_item.properties["view:azimuth"]
 
         # Set
         ViewExtension.ext(view_item).azimuth = view_azimuth + 100
-        self.assertEqual(view_azimuth + 100, view_item.properties["view:azimuth"])
+        assert view_azimuth + 100 == view_item.properties["view:azimuth"]
 
         # Get from Asset
         asset_no_prop = view_item.assets["blue"]
         asset_prop = view_item.assets["red"]
-        self.assertEqual(
-            ViewExtension.ext(asset_no_prop).azimuth,
-            ViewExtension.ext(view_item).azimuth,
-        )
-        self.assertEqual(ViewExtension.ext(asset_prop).azimuth, 5.0)
+        assert  ViewExtension.ext(asset_no_prop).azimuth == ViewExtension.ext(view_item).azimuth
+        assert ViewExtension.ext(asset_prop).azimuth == 5.0
 
         # Set to Asset
         asset_value = 15.0
         ViewExtension.ext(asset_no_prop).azimuth = asset_value
-        self.assertNotEqual(
-            ViewExtension.ext(asset_no_prop).azimuth,
-            ViewExtension.ext(view_item).azimuth,
-        )
-        self.assertEqual(ViewExtension.ext(asset_no_prop).azimuth, asset_value)
+        assert  ViewExtension.ext(asset_no_prop).azimuth != ViewExtension.ext(view_item).azimuth
+        assert ViewExtension.ext(asset_no_prop).azimuth == asset_value
 
         # Validate
         view_item.validate()
@@ -168,34 +144,25 @@ class ViewTest(unittest.TestCase):
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("view:sun_azimuth", view_item.properties)
+        assert "view:sun_azimuth" in view_item.properties
         view_sun_azimuth = ViewExtension.ext(view_item).sun_azimuth
         assert view_sun_azimuth is not None
-        self.assertEqual(view_sun_azimuth, view_item.properties["view:sun_azimuth"])
+        assert view_sun_azimuth == view_item.properties["view:sun_azimuth"]
 
         # Set
         ViewExtension.ext(view_item).sun_azimuth = view_sun_azimuth + 100
-        self.assertEqual(
-            view_sun_azimuth + 100, view_item.properties["view:sun_azimuth"]
-        )
-
+        assert  view_sun_azimuth + 100 == view_item.properties["view:sun_azimuth"]
         # Get from Asset
         asset_no_prop = view_item.assets["blue"]
         asset_prop = view_item.assets["red"]
-        self.assertEqual(
-            ViewExtension.ext(asset_no_prop).sun_azimuth,
-            ViewExtension.ext(view_item).sun_azimuth,
-        )
-        self.assertEqual(ViewExtension.ext(asset_prop).sun_azimuth, 1.0)
+        assert  ViewExtension.ext(asset_no_prop).sun_azimuth == ViewExtension.ext(view_item).sun_azimuth
+        assert ViewExtension.ext(asset_prop).sun_azimuth == 1.0
 
         # Set to Asset
         asset_value = 11.0
         ViewExtension.ext(asset_no_prop).sun_azimuth = asset_value
-        self.assertNotEqual(
-            ViewExtension.ext(asset_no_prop).sun_azimuth,
-            ViewExtension.ext(view_item).sun_azimuth,
-        )
-        self.assertEqual(ViewExtension.ext(asset_no_prop).sun_azimuth, asset_value)
+        assert  ViewExtension.ext(asset_no_prop).sun_azimuth != ViewExtension.ext(view_item).sun_azimuth
+        assert ViewExtension.ext(asset_no_prop).sun_azimuth == asset_value
 
         # Validate
         view_item.validate()
@@ -205,34 +172,25 @@ class ViewTest(unittest.TestCase):
         view_item = pystac.Item.from_file(self.example_uri)
 
         # Get
-        self.assertIn("view:sun_elevation", view_item.properties)
+        assert "view:sun_elevation" in view_item.properties
         view_sun_elevation = ViewExtension.ext(view_item).sun_elevation
         assert view_sun_elevation is not None
-        self.assertEqual(view_sun_elevation, view_item.properties["view:sun_elevation"])
+        assert view_sun_elevation == view_item.properties["view:sun_elevation"]
 
         # Set
         ViewExtension.ext(view_item).sun_elevation = view_sun_elevation + 10
-        self.assertEqual(
-            view_sun_elevation + 10, view_item.properties["view:sun_elevation"]
-        )
-
+        assert  view_sun_elevation + 10 == view_item.properties["view:sun_elevation"]
         # Get from Asset
         asset_no_prop = view_item.assets["blue"]
         asset_prop = view_item.assets["red"]
-        self.assertEqual(
-            ViewExtension.ext(asset_no_prop).sun_elevation,
-            ViewExtension.ext(view_item).sun_elevation,
-        )
-        self.assertEqual(ViewExtension.ext(asset_prop).sun_elevation, 2.0)
+        assert  ViewExtension.ext(asset_no_prop).sun_elevation == ViewExtension.ext(view_item).sun_elevation
+        assert ViewExtension.ext(asset_prop).sun_elevation == 2.0
 
         # Set to Asset
         asset_value = 12.0
         ViewExtension.ext(asset_no_prop).sun_elevation = asset_value
-        self.assertNotEqual(
-            ViewExtension.ext(asset_no_prop).sun_elevation,
-            ViewExtension.ext(view_item).sun_elevation,
-        )
-        self.assertEqual(ViewExtension.ext(asset_no_prop).sun_elevation, asset_value)
+        assert  ViewExtension.ext(asset_no_prop).sun_elevation != ViewExtension.ext(view_item).sun_elevation
+        assert ViewExtension.ext(asset_no_prop).sun_elevation == asset_value
 
         # Validate
         view_item.validate()
@@ -242,13 +200,13 @@ class ViewTest(unittest.TestCase):
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with pytest.raises(pystac.ExtensionNotImplemented):
             _ = ViewExtension.ext(item)
 
         # Should raise exception if owning Item does not include extension URI
         asset = item.assets["blue"]
 
-        with self.assertRaises(pystac.ExtensionNotImplemented):
+        with pytest.raises(pystac.ExtensionNotImplemented):
             _ = ViewExtension.ext(asset)
 
         # Should succeed if Asset has no owner
@@ -258,31 +216,31 @@ class ViewTest(unittest.TestCase):
     def test_item_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
-        self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+        assert ViewExtension.get_schema_uri() not in item.stac_extensions
 
         _ = ViewExtension.ext(item, add_if_missing=True)
 
-        self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+        assert ViewExtension.get_schema_uri() in item.stac_extensions
 
     def test_asset_ext_add_to(self) -> None:
         item = pystac.Item.from_file(self.example_uri)
         item.stac_extensions.remove(ViewExtension.get_schema_uri())
-        self.assertNotIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+        assert ViewExtension.get_schema_uri() not in item.stac_extensions
         asset = item.assets["blue"]
 
         _ = ViewExtension.ext(asset, add_if_missing=True)
 
-        self.assertIn(ViewExtension.get_schema_uri(), item.stac_extensions)
+        assert ViewExtension.get_schema_uri() in item.stac_extensions
 
     def test_should_raise_exception_when_passing_invalid_extension_object(
         self,
     ) -> None:
-        self.assertRaisesRegex(
+        with pytest.raises(
             ExtensionTypeError,
-            r"^ViewExtension does not apply to type 'object'$",
-            ViewExtension.ext,
-            object(),
-        )
+            match=r"^ViewExtension does not apply to type 'object'$"
+        ):
+            # calling it wrong on purpose so ------v
+            ViewExtension.ext(object())  # type: ignore
 
 
 class ViewSummariesTest(unittest.TestCase):
@@ -297,7 +255,7 @@ class ViewSummariesTest(unittest.TestCase):
 
         assert off_nadirs is not None
 
-        self.assertDictEqual({"minimum": 0.5, "maximum": 7.3}, off_nadirs.to_dict())
+        assert {"minimum": 0.5, "maximum": 7.3} == off_nadirs.to_dict()
 
     def test_get_incidence_angle_summaries(self) -> None:
         incidence_angles = ViewExtension.summaries(
@@ -306,71 +264,63 @@ class ViewSummariesTest(unittest.TestCase):
 
         assert incidence_angles is not None
 
-        self.assertDictEqual({"minimum": 23, "maximum": 35}, incidence_angles.to_dict())
+        assert {"minimum": 23, "maximum": 35} == incidence_angles.to_dict()
 
     def test_get_azimuth_summaries(self) -> None:
         azimuths = ViewExtension.summaries(self.collection, True).azimuth
 
         assert azimuths is not None
 
-        self.assertDictEqual({"minimum": 20, "maximum": 186}, azimuths.to_dict())
+        assert {"minimum": 20, "maximum": 186} == azimuths.to_dict()
 
     def test_get_sun_azimuth_summaries(self) -> None:
         sun_azimuths = ViewExtension.summaries(self.collection, True).sun_azimuth
 
         assert sun_azimuths is not None
 
-        self.assertDictEqual({"minimum": 48, "maximum": 78}, sun_azimuths.to_dict())
+        assert {"minimum": 48, "maximum": 78} == sun_azimuths.to_dict()
 
     def test_get_sun_elevation_summaries(self) -> None:
         sun_elevations = ViewExtension.summaries(self.collection, True).sun_elevation
 
         assert sun_elevations is not None
 
-        self.assertDictEqual({"minimum": 10, "maximum": 45}, sun_elevations.to_dict())
+        assert {"minimum": 10, "maximum": 45} == sun_elevations.to_dict()
 
     def test_set_off_nadir_summaries(self) -> None:
         collection = self.collection.clone()
         view_summaries = ViewExtension.summaries(collection, True)
 
         view_summaries.off_nadir = RangeSummary(0, 10)
-        self.assertDictEqual(
-            {"minimum": 0, "maximum": 10}, view_summaries.off_nadir.to_dict()
-        )
+        assert  {"minimum": 0, "maximum": 10} == view_summaries.off_nadir.to_dict()
 
     def test_set_incidence_angle_summaries(self) -> None:
         collection = self.collection.clone()
         view_summaries = ViewExtension.summaries(collection, True)
 
         view_summaries.incidence_angle = RangeSummary(5, 15)
-        self.assertDictEqual(
-            {"minimum": 5, "maximum": 15}, view_summaries.incidence_angle.to_dict()
-        )
+        assert  {"minimum": 5, "maximum": 15} == view_summaries.incidence_angle.to_dict()
 
     def test_set_azimuth_summaries(self) -> None:
         collection = self.collection.clone()
         view_summaries = ViewExtension.summaries(collection, True)
 
         view_summaries.azimuth = None
-        self.assertIsNone(view_summaries.azimuth)
+        assert view_summaries.azimuth is None
 
     def test_set_sun_azimuth_summaries(self) -> None:
         collection = self.collection.clone()
         view_summaries = ViewExtension.summaries(collection, True)
 
         view_summaries.sun_azimuth = RangeSummary(210, 275)
-        self.assertDictEqual(
-            {"minimum": 210, "maximum": 275}, view_summaries.sun_azimuth.to_dict()
-        )
+        assert  {"minimum": 210, "maximum": 275} == view_summaries.sun_azimuth.to_dict()
 
     def test_set_sun_elevation_summaries(self) -> None:
         collection = self.collection.clone()
         view_summaries = ViewExtension.summaries(collection, True)
 
         view_summaries.sun_elevation = RangeSummary(-10, 38)
-        self.assertDictEqual(
-            {"minimum": -10, "maximum": 38}, view_summaries.sun_elevation.to_dict()
-        )
+        assert  {"minimum": -10, "maximum": 38} == view_summaries.sun_elevation.to_dict()
 
     def test_summaries_adds_uri(self) -> None:
         collection = self.collection.clone()
@@ -383,7 +333,7 @@ class ViewSummariesTest(unittest.TestCase):
 
         _ = ViewExtension.summaries(collection, True)
 
-        self.assertIn(ViewExtension.get_schema_uri(), collection.stac_extensions)
+        assert ViewExtension.get_schema_uri() in collection.stac_extensions
 
         ViewExtension.remove_from(collection)
-        self.assertNotIn(ViewExtension.get_schema_uri(), collection.stac_extensions)
+        assert ViewExtension.get_schema_uri() not in collection.stac_extensions
