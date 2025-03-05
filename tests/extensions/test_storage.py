@@ -1,6 +1,5 @@
 import json
 import random
-import unittest
 from string import ascii_letters
 
 import pytest
@@ -14,14 +13,15 @@ from tests.utils import TestCases, assert_to_from_dict
 NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")
 NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.json")
 
+
 @pytest.fixture
 def naip_item() -> Item:
     return Item.from_file(NAIP_EXAMPLE_URI)
 
+
 @pytest.fixture
 def naip_collection() -> Collection:
     return Collection.from_file(NAIP_COLLECTION_URI)
-
 
 
 def test_to_from_dict() -> None:
@@ -31,7 +31,7 @@ def test_to_from_dict() -> None:
 
 
 def test_add_to(sample_item: Item) -> None:
-    assert  StorageExtension.get_schema_uri() not in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
     # Check that the URI gets added to stac_extensions
     StorageExtension.add_to(sample_item)
     assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
@@ -47,6 +47,7 @@ def test_add_to(sample_item: Item) -> None:
         if uri == StorageExtension.get_schema_uri()
     ]
     assert len(eo_uris) == 1
+
 
 @pytest.mark.vcr()
 def test_validate_storage(naip_item: Item) -> None:
@@ -75,12 +76,14 @@ def test_extension_not_implemented(sample_item: Item) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = StorageExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(sample_item: Item) -> None:
     assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
 
     _ = StorageExtension.ext(sample_item, add_if_missing=True)
 
     assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
+
 
 def test_asset_ext_add_to(sample_item: Item) -> None:
     assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
@@ -90,6 +93,7 @@ def test_asset_ext_add_to(sample_item: Item) -> None:
 
     assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
+
 def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
     asset_dict = sample_item.assets["thumbnail"].to_dict()
     asset = pystac.Asset.from_dict(asset_dict)
@@ -97,13 +101,14 @@ def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
     with pytest.raises(pystac.STACError):
         _ = StorageExtension.ext(asset, add_if_missing=True)
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
-        ExtensionTypeError,
-        match=r"^StorageExtension does not apply to type 'object'$"
+        ExtensionTypeError, match=r"^StorageExtension does not apply to type 'object'$"
     ):
         # calling it wrong purposely so ---------v
-        StorageExtension.ext(object()) # type: ignore
+        StorageExtension.ext(object())  # type: ignore
+
 
 def test_summaries_platform(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
@@ -126,7 +131,7 @@ def test_summaries_region(naip_collection: Collection) -> None:
     storage_summaries = StorageExtension.summaries(naip_collection)
 
     # Get
-    assert  storage_summaries.region == col_dict["summaries"]["storage:region"]
+    assert storage_summaries.region == col_dict["summaries"]["storage:region"]
     # Set
     new_region_summary = [random.choice(ascii_letters)]
     assert storage_summaries.region != new_region_summary
@@ -136,21 +141,26 @@ def test_summaries_region(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
     assert col_dict["summaries"]["storage:region"] == new_region_summary
 
+
 def test_summaries_requester_pays(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
     storage_summaries = StorageExtension.summaries(naip_collection)
 
     # Get
-    assert  storage_summaries.requester_pays == col_dict["summaries"]["storage:requester_pays"]
+    assert (
+        storage_summaries.requester_pays
+        == col_dict["summaries"]["storage:requester_pays"]
+    )
 
     # Set
     new_requester_pays_summary = [True]
-    assert  storage_summaries.requester_pays != new_requester_pays_summary
+    assert storage_summaries.requester_pays != new_requester_pays_summary
     storage_summaries.requester_pays = new_requester_pays_summary
     assert storage_summaries.requester_pays == new_requester_pays_summary
 
     col_dict = naip_collection.to_dict()
-    assert  col_dict["summaries"]["storage:requester_pays"] == new_requester_pays_summary
+    assert col_dict["summaries"]["storage:requester_pays"] == new_requester_pays_summary
+
 
 def test_summaries_tier(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
@@ -167,6 +177,7 @@ def test_summaries_tier(naip_collection: Collection) -> None:
 
     col_dict = naip_collection.to_dict()
     assert col_dict["summaries"]["storage:tier"] == new_tier_summary
+
 
 def test_summaries_adds_uri(naip_collection: Collection) -> None:
     naip_collection.stac_extensions = []
@@ -210,6 +221,7 @@ def test_item_apply(naip_item: Item) -> None:
     assert storage_ext.requester_pays == new_requestor_pays
     assert storage_ext.tier == new_tier
 
+
 @pytest.mark.vcr()
 def test_asset_platform(naip_item: Item) -> None:
     # Grab a random asset with the platform property
@@ -224,7 +236,7 @@ def test_asset_platform(naip_item: Item) -> None:
     storage_ext = StorageExtension.ext(asset)
 
     # Get
-    assert  storage_ext.platform == asset.extra_fields.get("storage:platform")
+    assert storage_ext.platform == asset.extra_fields.get("storage:platform")
 
     # Set
     new_platform = random.choice(
@@ -234,6 +246,7 @@ def test_asset_platform(naip_item: Item) -> None:
     assert storage_ext.platform == new_platform
 
     naip_item.validate()
+
 
 @pytest.mark.vcr()
 def test_asset_region(naip_item: Item) -> None:
@@ -264,6 +277,7 @@ def test_asset_region(naip_item: Item) -> None:
     storage_ext.region = None
     assert "storage:region" not in asset.extra_fields
 
+
 @pytest.mark.vcr()
 def test_asset_requester_pays(naip_item: Item) -> None:
     # Grab a random asset with the platform property
@@ -278,7 +292,9 @@ def test_asset_requester_pays(naip_item: Item) -> None:
     storage_ext = StorageExtension.ext(asset)
 
     # Get
-    assert  storage_ext.requester_pays == asset.extra_fields.get("storage:requester_pays")
+    assert storage_ext.requester_pays == asset.extra_fields.get(
+        "storage:requester_pays"
+    )
 
     # Set
     new_requester_pays = True if not storage_ext.requester_pays else False
@@ -290,6 +306,7 @@ def test_asset_requester_pays(naip_item: Item) -> None:
     # Set to None
     storage_ext.requester_pays = None
     assert "storage:requester_pays" not in asset.extra_fields
+
 
 @pytest.mark.vcr()
 def test_asset_tier(naip_item: Item) -> None:

@@ -1,19 +1,18 @@
 import json
-import unittest
 from datetime import datetime
 
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item, Collection
+from pystac import Collection, ExtensionTypeError, Item
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 from tests.utils import TestCases, assert_to_from_dict
 
-
 EXAMPLE_URI = TestCases.get_path("data-files/timestamps/example-landsat8.json")
 SAMPLE_DATETIME_STR = "2020-01-01T00:00:00Z"
+
 
 @pytest.fixture
 def item() -> Item:
@@ -22,7 +21,7 @@ def item() -> Item:
 
 @pytest.fixture
 def sample_datetime() -> datetime:
-     return str_to_datetime(SAMPLE_DATETIME_STR)
+    return str_to_datetime(SAMPLE_DATETIME_STR)
 
 
 def test_to_from_dict() -> None:
@@ -67,9 +66,11 @@ def test_apply() -> None:
     for p in ("expires", "unpublished"):
         assert p not in item.properties
 
+
 @pytest.mark.vcr()
 def test_validate_timestamps(item: Item) -> None:
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_expires(item: Item, sample_datetime: datetime) -> None:
@@ -77,26 +78,35 @@ def test_expires(item: Item, sample_datetime: datetime) -> None:
     assert "expires" in item.properties
     timestamps_expires = TimestampsExtension.ext(item).expires
     assert isinstance(timestamps_expires, datetime)
-    assert  datetime_to_str(get_opt(timestamps_expires)) == item.properties["expires"]
+    assert datetime_to_str(get_opt(timestamps_expires)) == item.properties["expires"]
 
     # Set
     TimestampsExtension.ext(item).expires = sample_datetime
-    assert  SAMPLE_DATETIME_STR == item.properties["expires"]
+    assert SAMPLE_DATETIME_STR == item.properties["expires"]
 
     # Get from Asset
     asset_no_prop = item.assets["red"]
     asset_prop = item.assets["blue"]
-    assert  TimestampsExtension.ext(asset_no_prop).expires == TimestampsExtension.ext(item).expires
-    assert  TimestampsExtension.ext(asset_prop).expires == str_to_datetime("2018-12-02T00:00:00Z")
+    assert (
+        TimestampsExtension.ext(asset_no_prop).expires
+        == TimestampsExtension.ext(item).expires
+    )
+    assert TimestampsExtension.ext(asset_prop).expires == str_to_datetime(
+        "2018-12-02T00:00:00Z"
+    )
 
     # # Set to Asset
     asset_value = str_to_datetime("2019-02-02T00:00:00Z")
     TimestampsExtension.ext(asset_no_prop).expires = asset_value
-    assert  TimestampsExtension.ext(asset_no_prop).expires != TimestampsExtension.ext(item).expires
+    assert (
+        TimestampsExtension.ext(asset_no_prop).expires
+        != TimestampsExtension.ext(item).expires
+    )
     assert TimestampsExtension.ext(asset_no_prop).expires == asset_value
 
     # Validate
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_published(item: Item, sample_datetime: datetime) -> None:
@@ -104,26 +114,37 @@ def test_published(item: Item, sample_datetime: datetime) -> None:
     assert "published" in item.properties
     timestamps_published = TimestampsExtension.ext(item).published
     assert isinstance(timestamps_published, datetime)
-    assert  datetime_to_str(get_opt(timestamps_published)) == item.properties["published"]
+    assert (
+        datetime_to_str(get_opt(timestamps_published)) == item.properties["published"]
+    )
 
     # Set
     TimestampsExtension.ext(item).published = sample_datetime
-    assert  SAMPLE_DATETIME_STR == item.properties["published"]
+    assert SAMPLE_DATETIME_STR == item.properties["published"]
 
     # Get from Asset
     asset_no_prop = item.assets["red"]
     asset_prop = item.assets["blue"]
-    assert  TimestampsExtension.ext(asset_no_prop).published == TimestampsExtension.ext(item).published
-    assert  TimestampsExtension.ext(asset_prop).published == str_to_datetime("2018-11-02T00:00:00Z")
+    assert (
+        TimestampsExtension.ext(asset_no_prop).published
+        == TimestampsExtension.ext(item).published
+    )
+    assert TimestampsExtension.ext(asset_prop).published == str_to_datetime(
+        "2018-11-02T00:00:00Z"
+    )
 
     # # Set to Asset
     asset_value = str_to_datetime("2019-02-02T00:00:00Z")
     TimestampsExtension.ext(asset_no_prop).published = asset_value
-    assert  TimestampsExtension.ext(asset_no_prop).published != TimestampsExtension.ext(item).published
+    assert (
+        TimestampsExtension.ext(asset_no_prop).published
+        != TimestampsExtension.ext(item).published
+    )
     assert TimestampsExtension.ext(asset_no_prop).published == asset_value
 
     # Validate
     item.validate()
+
 
 @pytest.mark.vcr()
 def test_unpublished(item: Item, sample_datetime: datetime) -> None:
@@ -134,22 +155,31 @@ def test_unpublished(item: Item, sample_datetime: datetime) -> None:
 
     # Set
     TimestampsExtension.ext(item).unpublished = sample_datetime
-    assert  SAMPLE_DATETIME_STR == item.properties["unpublished"]
+    assert SAMPLE_DATETIME_STR == item.properties["unpublished"]
 
     # Get from Asset
     asset_no_prop = item.assets["red"]
     asset_prop = item.assets["blue"]
-    assert  TimestampsExtension.ext(asset_no_prop).unpublished == TimestampsExtension.ext(item).unpublished
-    assert  TimestampsExtension.ext(asset_prop).unpublished == str_to_datetime("2019-01-02T00:00:00Z")
+    assert (
+        TimestampsExtension.ext(asset_no_prop).unpublished
+        == TimestampsExtension.ext(item).unpublished
+    )
+    assert TimestampsExtension.ext(asset_prop).unpublished == str_to_datetime(
+        "2019-01-02T00:00:00Z"
+    )
 
     # Set to Asset
     asset_value = str_to_datetime("2019-02-02T00:00:00Z")
     TimestampsExtension.ext(asset_no_prop).unpublished = asset_value
-    assert  TimestampsExtension.ext(asset_no_prop).unpublished != TimestampsExtension.ext(item).unpublished
-    assert  TimestampsExtension.ext(asset_no_prop).unpublished == asset_value
+    assert (
+        TimestampsExtension.ext(asset_no_prop).unpublished
+        != TimestampsExtension.ext(item).unpublished
+    )
+    assert TimestampsExtension.ext(asset_no_prop).unpublished == asset_value
 
     # Validate
     item.validate()
+
 
 def test_extension_not_implemented(item: Item) -> None:
     # Should raise exception if Item does not include extension URI
@@ -168,6 +198,7 @@ def test_extension_not_implemented(item: Item) -> None:
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
     _ = TimestampsExtension.ext(ownerless_asset)
 
+
 def test_item_ext_add_to(item: Item) -> None:
     item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
     assert TimestampsExtension.get_schema_uri() not in item.stac_extensions
@@ -175,6 +206,7 @@ def test_item_ext_add_to(item: Item) -> None:
     _ = TimestampsExtension.ext(item, add_if_missing=True)
 
     assert TimestampsExtension.get_schema_uri() in item.stac_extensions
+
 
 def test_asset_ext_add_to(item: Item) -> None:
     item.stac_extensions.remove(TimestampsExtension.get_schema_uri())
@@ -185,20 +217,29 @@ def test_asset_ext_add_to(item: Item) -> None:
 
     assert TimestampsExtension.get_schema_uri() in item.stac_extensions
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
         match=r"^TimestampsExtension does not apply to type 'object'$",
     ):
         # calling it wrong on purpose --------------v
-        TimestampsExtension.ext(object()) # type: ignore
+        TimestampsExtension.ext(object())  # type: ignore
+
 
 def test_item_repr(item: Item) -> None:
-    assert  TimestampsExtension.ext(item).__repr__() == f"<ItemTimestampsExtension Item id={item.id}>"
+    assert (
+        TimestampsExtension.ext(item).__repr__()
+        == f"<ItemTimestampsExtension Item id={item.id}>"
+    )
+
 
 def test_asset_repr(item: Item) -> None:
     asset = item.assets["blue"]
-    assert  TimestampsExtension.ext(asset).__repr__() == f"<AssetTimestampsExtension Asset href={asset.href}>"
+    assert (
+        TimestampsExtension.ext(asset).__repr__()
+        == f"<AssetTimestampsExtension Asset href={asset.href}>"
+    )
 
 
 def test_summaries_published(multi_extent_collection: Collection) -> None:
@@ -210,14 +251,15 @@ def test_summaries_published(multi_extent_collection: Collection) -> None:
 
     summaries_ext.published = published_range
 
-    assert  summaries_ext.published == published_range
+    assert summaries_ext.published == published_range
 
     summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
     assert summaries_dict["published"] == {
-            "minimum": datetime_to_str(published_range.minimum),
-            "maximum": datetime_to_str(published_range.maximum),
-        }
+        "minimum": datetime_to_str(published_range.minimum),
+        "maximum": datetime_to_str(published_range.maximum),
+    }
+
 
 def test_summaries_expires(multi_extent_collection: Collection) -> None:
     summaries_ext = TimestampsExtension.summaries(multi_extent_collection, True)
@@ -228,14 +270,15 @@ def test_summaries_expires(multi_extent_collection: Collection) -> None:
 
     summaries_ext.expires = expires_range
 
-    assert  summaries_ext.expires == expires_range
+    assert summaries_ext.expires == expires_range
 
     summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
     assert summaries_dict["expires"] == {
-            "minimum": datetime_to_str(expires_range.minimum),
-            "maximum": datetime_to_str(expires_range.maximum),
-        }
+        "minimum": datetime_to_str(expires_range.minimum),
+        "maximum": datetime_to_str(expires_range.maximum),
+    }
+
 
 def test_summaries_unpublished(multi_extent_collection: Collection) -> None:
     summaries_ext = TimestampsExtension.summaries(multi_extent_collection, True)
@@ -246,14 +289,15 @@ def test_summaries_unpublished(multi_extent_collection: Collection) -> None:
 
     summaries_ext.unpublished = unpublished_range
 
-    assert  summaries_ext.unpublished == unpublished_range
+    assert summaries_ext.unpublished == unpublished_range
 
     summaries_dict = multi_extent_collection.to_dict()["summaries"]
 
     assert summaries_dict["unpublished"] == {
-            "minimum": datetime_to_str(unpublished_range.minimum),
-            "maximum": datetime_to_str(unpublished_range.maximum),
-        }
+        "minimum": datetime_to_str(unpublished_range.minimum),
+        "maximum": datetime_to_str(unpublished_range.maximum),
+    }
+
 
 def test_summaries_adds_uri(multi_extent_collection: Collection) -> None:
     multi_extent_collection.stac_extensions = []
@@ -265,10 +309,15 @@ def test_summaries_adds_uri(multi_extent_collection: Collection) -> None:
 
     _ = TimestampsExtension.summaries(multi_extent_collection, True)
 
-    assert TimestampsExtension.get_schema_uri() in multi_extent_collection.stac_extensions
+    assert (
+        TimestampsExtension.get_schema_uri() in multi_extent_collection.stac_extensions
+    )
 
     TimestampsExtension.remove_from(multi_extent_collection)
-    assert  TimestampsExtension.get_schema_uri() not in multi_extent_collection.stac_extensions
+    assert (
+        TimestampsExtension.get_schema_uri()
+        not in multi_extent_collection.stac_extensions
+    )
 
 
 @pytest.mark.parametrize(
