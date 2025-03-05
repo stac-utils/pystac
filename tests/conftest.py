@@ -27,6 +27,14 @@ def collection() -> Catalog:
 
 
 @pytest.fixture
+def multi_extent_collection() -> Collection:
+    # TODO this code is repeated many times; refactor to use this fixture
+    return Collection.from_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+
+
+@pytest.fixture
 def item() -> Item:
     return Item("test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.now(), {})
 
