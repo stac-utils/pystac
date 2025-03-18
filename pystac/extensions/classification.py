@@ -60,6 +60,7 @@ class Classification:
         value: int,
         description: str | None = None,
         name: str | None = None,
+        title: str | None = None,
         color_hint: str | None = None,
         nodata: bool | None = None,
         percentage: float | None = None,
@@ -74,6 +75,7 @@ class Classification:
             name: Short name of the class for machine readability. Must consist only
                 of letters, numbers, -, and _ characters. Required as of v2.0 of
                 this extension.
+            title: Human-readable name for use in, e.g., a map legend
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
@@ -90,6 +92,7 @@ class Classification:
                 "As of v2.0.0 of the classification extension, 'name' is required"
             )
         self.name = name
+        self.title = title
         self.description = description
         self.color_hint = color_hint
         self.nodata = nodata
@@ -108,6 +111,7 @@ class Classification:
         value: int,
         description: str | None = None,
         name: str | None = None,
+        title: str | None = None,
         color_hint: str | None = None,
         nodata: bool | None = None,
         percentage: float | None = None,
@@ -122,6 +126,7 @@ class Classification:
             name: Short name of the class for machine readability. Must consist only
                 of letters, numbers, -, and _ characters. Required as of v2.0 of
                 this extension.
+            title: Human-readable name for use in, e.g., a map legend
             color_hint: An optional hexadecimal string-encoded representation of the
                 RGB color that is suggested to represent this class (six hexadecimal
                 characters, all capitalized)
@@ -134,6 +139,7 @@ class Classification:
         c.apply(
             value=value,
             name=name,
+            title=title,
             description=description,
             color_hint=color_hint,
             nodata=nodata,
@@ -188,6 +194,17 @@ class Classification:
                 " version v2.0, so cannot be set to None"
             )
         self.properties["name"] = v
+
+    @property
+    def title(self) -> str | None:
+        return self.properties.get("title")
+
+    @title.setter
+    def title(self, v: str) -> None:
+        if v is not None:
+            self.properties["title"] = v
+        else:
+            self.properties.pop("title", None)
 
     @property
     def color_hint(self) -> str | None:

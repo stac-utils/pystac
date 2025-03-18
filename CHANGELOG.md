@@ -6,6 +6,9 @@
 
 - `Collection.from_items` for creating a `pystac.Collection` from an `ItemCollection` ([#1522](https://github.com/stac-utils/pystac/pull/1522))
 
+### Fixed
+- fixed missing parameter "title" in pystac.extensions.classification.Classification ([#1539](https://github.com/stac-utils/pystac/pull/1539))
+
 ## [v1.12.2]
 
 ### Fixed

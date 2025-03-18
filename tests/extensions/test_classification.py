@@ -60,12 +60,23 @@ def test_stac_extensions(landsat_item: Item) -> None:
 
 def test_classification_object() -> None:
     c = Classification.create(
-        name="dummy", description="empty class", value=0, color_hint="FF00AB"
+        name="dummy",
+        description="empty class",
+        value=0,
+        title="dummy title",
+        color_hint="FF00AB",
+        nodata=True,
+        percentage=20.3,
+        count=2,
     )
     assert c.name == "dummy"
     assert c.description == "empty class"
     assert c.color_hint == "FF00AB"
     assert c.value == 0
+    assert c.title == "dummy title"
+    assert c.nodata is True
+    assert c.percentage == 20.3
+    assert c.count == 2
 
     assert Classification(c.to_dict()) == c
     with pytest.raises(NotImplementedError):
