@@ -1,0 +1,80 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
+  ],
+  "type": "Collection",
+  "id": "ml-model-examples",
+  "title": "Machine Learning Model examples",
+  "description": "Collection of items contained in the Machine Learning Model examples.",
+  "license": "Apache-2.0",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -7.882190080512502,
+          37.13739173208318,
+          27.911651652899923,
+          58.21798141355221
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "1900-01-01T00:00:00Z",
+          "9999-12-31T23:59:59Z"
+        ]
+      ]
+    }
+  },
+  "item_assets": {
+    "weights": {
+      "title": "model weights",
+      "roles": [
+        "mlm:model",
+        "mlm:weights"
+      ]
+    }
+  },
+  "summaries": {
+    "datetime": {
+      "minimum": "1900-01-01T00:00:00Z",
+      "maximum": "9999-12-31T23:59:59Z"
+    }
+  },
+  "links": [
+    {
+      "href": "collection.json",
+      "rel": "self"
+    },
+    {
+      "href": "item_basic.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_bands_expression.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_eo_bands.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_eo_and_raster_bands.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_eo_bands_summarized.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_raster_bands.json",
+      "rel": "item"
+    },
+    {
+      "href": "item_multi_io.json",
+      "rel": "item"
+    }
+  ]
+}
