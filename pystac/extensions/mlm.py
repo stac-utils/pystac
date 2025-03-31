@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
@@ -13,7 +14,10 @@ from pystac.extensions.classification import Classification
 from pystac.extensions.raster import DataType
 from pystac.utils import StringEnum, get_required
 
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
+T = TypeVar(
+    "T", pystac.Item, pystac.ItemAssetDefinition, pystac.Collection, pystac.Asset
+)
+AssetExtensionType = TypeVar("AssetExtensionType", bound="_AssetMLMExtension")
 
 # todo: support multiple version?
 SCHEMA_URI_PATTERN: str = "https://stac-extensions.github.io/mlm/v{version}/schema.json"
@@ -86,6 +90,10 @@ ACCELERATOR_COUNT_PROP: str = PREFIX + "accelerator_count"
 INPUT_PROP: str = PREFIX + "input"
 OUTPUT_PROP: str = PREFIX + "output"
 HYPERPARAMETERS_PROP: str = PREFIX + "hyperparameters"
+
+ARTIFACT_TYPE_ASSET_PROP = PREFIX + "artifact_type"
+COMPILE_MDTHOD_ASSET_PROP = PREFIX + "compile_method"
+ENTRYPOITN_ASSET_PROP = PREFIX + "entrypoint"
 
 
 class TaskType(StringEnum):
@@ -1109,6 +1117,8 @@ class MLMExtension(
         accelerator_summary: str | None = None,
         accelerator_count: int | None = None,
         hyperparameters: Hyperparameters | None = None,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         self.mlm_name = name
         self.architecture = architecture
@@ -1137,12 +1147,18 @@ class MLMExtension(
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(MLMExtension[T], ItemMLMExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], AssetMLMExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], CollectionMLMExtension(obj))
         elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], ItemAssetClassificationExtension(obj))
+            return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            raise pystac.STACError(
+                "This class cannot be used to extend STAC objects of type Assets. "
+                "To extend Asset objects, use either AssetNoPropsMLMExtension or "
+                "AssetMLMExtension"
+            )
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -1317,7 +1333,21 @@ class ItemMLMExtension(MLMExtension[pystac.Item]):
         return f"<ItemMLMExtension Item id={self.item.id}>"
 
 
-class AssetMLMExtension(MLMExtension[pystac.Asset]):
+class CollectionMLMExtension(MLMExtension[pystac.Collection]):
+    collection: pystac.Collection
+    properties: dict[str, Any]
+    links: list[pystac.Link]
+
+    def __init__(self, collection: pystac.Collection):
+        self.collection = collection
+        self.properties = collection.extra_fields
+        self.links = collection.links
+
+    def __repr__(self) -> str:
+        return f"<CollectionMLMExtension Item id={self.collection.id}>"
+
+
+class _AssetMLMExtension(ABC):
     asset: pystac.Asset
     asset_href: str
     properties: dict[str, Any]
@@ -1330,11 +1360,157 @@ class AssetMLMExtension(MLMExtension[pystac.Asset]):
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
+    @classmethod
+    def _ext(cls: type[AssetExtensionType], obj: pystac.Asset) -> AssetExtensionType:
+        if not isinstance(obj, pystac.Asset):
+            raise STACError(
+                "This class can only be used to extend Assets. "
+                "For Items and Collections use MLMExtension."
+            )
+        return cls(obj)
+
+    def to_dict(self) -> dict[str, Any]:
+        return self.properties  # todo: test this
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+
+    @property
+    def artifact_type(self) -> str | None:
+        prop_value = self.properties.get(ARTIFACT_TYPE_ASSET_PROP)
+        if isinstance(self.asset.roles, list) and "mlm:model" in self.asset.roles:
+            return get_required(prop_value, self, ARTIFACT_TYPE_ASSET_PROP)
+        else:
+            return prop_value
+
+    @artifact_type.setter
+    def artifact_type(self, v: str | None) -> None:
+        if isinstance(self.asset.roles, list) and "mlm:model" in self.asset.roles:
+            if v is None:
+                raise pystac.errors.RequiredPropertyMissing(
+                    self,
+                    ARTIFACT_TYPE_ASSET_PROP,
+                    f"{ARTIFACT_TYPE_ASSET_PROP} is a required property and must "
+                    f"not be None for asset with role mlm:model.",
+                )
+            self.properties[ARTIFACT_TYPE_ASSET_PROP] = v
+        else:
+            if v is not None:
+                self.properties[ARTIFACT_TYPE_ASSET_PROP] = v
+            else:
+                self.properties.pop(ARTIFACT_TYPE_ASSET_PROP, None)
+
+    @property
+    def compile_method(self) -> str | None:
+        return self.properties.get(COMPILE_MDTHOD_ASSET_PROP)
+
+    @compile_method.setter
+    def compile_method(self, v: str | None) -> None:
+        if v is not None:
+            self.properties[COMPILE_MDTHOD_ASSET_PROP] = v
+        else:
+            self.properties.pop(COMPILE_MDTHOD_ASSET_PROP, None)
+
+    @property
+    def entrypoint(self) -> str | None:
+        return self.properties.get(ENTRYPOITN_ASSET_PROP)
+
+    @entrypoint.setter
+    def entrypoint(self, v: str | None) -> None:
+        if v is not None:
+            self.properties[ENTRYPOITN_ASSET_PROP] = v
+        else:
+            self.properties.pop(ENTRYPOITN_ASSET_PROP, None)
+
     def __repr__(self) -> str:
         return f"<AssetMLMExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetClassificationExtension(MLMExtension[pystac.ItemAssetDefinition]):
+class AssetNoPropsMLMExtension(
+    _AssetMLMExtension,
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
+):
+    def apply(
+        self,
+        artifact_type: str | None = None,
+        compile_method: str | None = None,
+        entrypoint: str | None = None,
+    ) -> None:
+        self.artifact_type = artifact_type
+        self.compile_method = compile_method
+        self.entrypoint = entrypoint
+
+    @classmethod
+    def ext(
+        cls, obj: pystac.Asset, add_if_missing: bool = False
+    ) -> AssetNoPropsMLMExtension[pystac.Asset]:
+        cls.ensure_owner_has_extension(obj, add_if_missing)
+        return AssetNoPropsMLMExtension._ext(obj)
+
+
+class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
+    def __repr__(self) -> str:
+        return f"<AssetMLMExtension Asset href={self.asset_href}>"
+
+    @classmethod
+    def ext(
+        cls, obj: pystac.Asset, add_if_missing: bool = False
+    ) -> AssetPropsMLMExtension:
+        cls.ensure_owner_has_extension(obj, add_if_missing)
+        return AssetPropsMLMExtension._ext(obj)
+
+    def apply(
+        self,
+        name: str,
+        architecture: str,
+        tasks: list[TaskType],
+        input: list[ModelInput],
+        output: list[ModelOutput],
+        framework: str | None = None,
+        framework_version: str | None = None,
+        memory_size: int | None = None,
+        total_parameters: int | None = None,
+        pretrained: bool | None = None,
+        pretrained_source: str | None = None,
+        batch_size_suggestion: int | None = None,
+        accelerator: AcceleratorType | None = None,
+        accelerator_constrained: bool | None = None,
+        accelerator_summary: str | None = None,
+        accelerator_count: int | None = None,
+        hyperparameters: Hyperparameters | None = None,
+        artifact_type: str | None = None,
+        compile_method: str | None = None,
+        entrypoint: str | None = None,
+    ) -> None:
+        MLMExtension.apply(
+            self,
+            name=name,
+            architecture=architecture,
+            tasks=tasks,
+            input=input,
+            output=output,
+            framework=framework,
+            framework_version=framework_version,
+            memory_size=memory_size,
+            total_parameters=total_parameters,
+            pretrained=pretrained,
+            pretrained_source=pretrained_source,
+            batch_size_suggestion=batch_size_suggestion,
+            accelerator=accelerator,
+            accelerator_constrained=accelerator_constrained,
+            accelerator_summary=accelerator_summary,
+            accelerator_count=accelerator_count,
+            hyperparameters=hyperparameters,
+        )
+        self.artifact_type = artifact_type
+        self.compile_method = compile_method
+        self.entrypoint = entrypoint
+
+
+class ItemAssetMLMExtension(MLMExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
     asset_defn: pystac.ItemAssetDefinition
 

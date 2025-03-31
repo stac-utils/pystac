@@ -14,6 +14,8 @@ from pystac.extensions.mlm import (
     NAME_PROP,
     TASKS_PROP,
     AcceleratorType,
+    AssetNoPropsMLMExtension,
+    AssetPropsMLMExtension,
     Hyperparameters,
     InputStructure,
     ItemMLMExtension,
@@ -700,7 +702,7 @@ def test_add_to_asset(plain_item: Item) -> None:
     assert ARCHITECTURE_PROP not in asset.extra_fields.keys()
     assert TASKS_PROP not in asset.extra_fields.keys()
 
-    asset_ext = MLMExtension.ext(asset)
+    asset_ext = AssetPropsMLMExtension.ext(asset)
     asset_ext.mlm_name = "asdf"
     asset_ext.architecture = "ResNet"
     asset_ext.tasks = [TaskType.CLASSIFICATION]
@@ -714,9 +716,180 @@ def test_add_to_asset(plain_item: Item) -> None:
     assert asset.extra_fields[TASKS_PROP] == [TaskType.CLASSIFICATION]
 
 
+@pytest.mark.parametrize("is_model_asset", (True, False))
+def test_asset_props(plain_item: Item, is_model_asset: bool) -> None:
+    asset = plain_item.assets["analytic"]
+    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=True)
+
+    assert asset_ext.artifact_type is None
+    assert asset_ext.compile_method is None
+    assert asset_ext.entrypoint is None
+
+    # test special behavior if the asset has role "mlm:model"
+    if is_model_asset and isinstance(asset_ext.asset.roles, list):
+        asset_ext.asset.roles.append("mlm:model")
+        with pytest.raises(pystac.errors.RequiredPropertyMissing):
+            _ = asset_ext.artifact_type
+
+    asset_ext.artifact_type = "foo"
+    asset_ext.compile_method = "bar"
+    asset_ext.entrypoint = "baz"
+
+    assert asset_ext.artifact_type == "foo"
+    assert asset_ext.compile_method == "bar"
+    assert asset_ext.entrypoint == "baz"
+
+
+def test_add_to_generic_asset() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+        extra_fields={
+            "mlm:artifact_type": "foo",
+            "mlm:compile_method": "bar",
+            "mlm:entrypoint": "baz",
+        },
+    )
+    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=False)
+    assert asset_ext.artifact_type == "foo"
+    assert asset_ext.compile_method == "bar"
+    assert asset_ext.entrypoint == "baz"
+
+
+def test_apply_generic_asset() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+    )
+    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext.apply(artifact_type="foo", compile_method="bar", entrypoint="baz")
+    assert asset_ext.artifact_type == "foo"
+    assert asset_ext.compile_method == "bar"
+    assert asset_ext.entrypoint == "baz"
+
+
+def test_add_to_detailled_asset() -> None:
+    model_input = ModelInput.create(
+        name="model",
+        bands=["B02"],
+        input=InputStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+    model_output = ModelOutput.create(
+        name="output",
+        tasks=[TaskType.CLASSIFICATION],
+        result=ResultStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+        extra_fields={
+            "mlm:name": "asdf",
+            "mlm:architecture": "ResNet",
+            "mlm:tasks": [TaskType.CLASSIFICATION],
+            "mlm:input": [model_input.to_dict()],
+            "mlm:output": [model_output.to_dict()],
+            "mlm:artifact_type": "foo",
+            "mlm:compile_method": "bar",
+            "mlm:entrypoint": "baz",
+        },
+    )
+
+    asset_ext = AssetPropsMLMExtension.ext(asset, add_if_missing=False)
+
+    assert asset_ext.mlm_name == "asdf"
+    assert asset_ext.architecture == "ResNet"
+    assert asset_ext.tasks == [TaskType.CLASSIFICATION]
+    assert asset_ext.input == [model_input]
+    assert asset_ext.output == [model_output]
+    assert asset_ext.artifact_type == "foo"
+    assert asset_ext.compile_method == "bar"
+    assert asset_ext.entrypoint == "baz"
+
+
+def test_apply_detailled_asset() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+    )
+    asset_ext = AssetPropsMLMExtension.ext(asset, add_if_missing=False)
+
+    model_input = ModelInput.create(
+        name="model",
+        bands=["B02"],
+        input=InputStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+    model_output = ModelOutput.create(
+        name="output",
+        tasks=[TaskType.CLASSIFICATION],
+        result=ResultStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+
+    asset_ext.apply(
+        "asdf",
+        "ResNet",
+        [TaskType.CLASSIFICATION],
+        [model_input],
+        [model_output],
+        artifact_type="foo",
+        compile_method="bar",
+        entrypoint="baz",
+    )
+
+    assert asset_ext.mlm_name == "asdf"
+    assert asset_ext.architecture == "ResNet"
+    assert asset_ext.tasks == [TaskType.CLASSIFICATION]
+    assert asset_ext.input == [model_input]
+    assert asset_ext.output == [model_output]
+    assert asset_ext.artifact_type == "foo"
+    assert asset_ext.compile_method == "bar"
+    assert asset_ext.entrypoint == "baz"
+
+
 def test_item_asset_extension(mlm_collection: Collection) -> None:
     assert mlm_collection.item_assets
     item_asset = mlm_collection.item_assets["weights"]
     MLMExtension.ext(item_asset, add_if_missing=True)
     assert MLMExtension.get_schema_uri() in mlm_collection.stac_extensions
     assert mlm_collection.item_assets["weights"].ext.has("mlm")
+
+
+def test_collection_extension(mlm_collection: Collection) -> None:
+    coll_ext = MLMExtension.ext(mlm_collection, add_if_missing=True)
+    assert MLMExtension.get_schema_uri() in mlm_collection.stac_extensions
+    assert mlm_collection.ext.has("mlm")
+
+    coll_ext.mlm_name = "asdf"
+    assert coll_ext.mlm_name == "asdf"
+
+
+def test_raise_exception_on_mlm_extension_and_asset() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+    )
+    with pytest.raises(pystac.errors.STACError):
+        MLMExtension.ext(asset, add_if_missing=False)
