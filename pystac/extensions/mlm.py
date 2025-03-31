@@ -1308,13 +1308,11 @@ class MLMExtension(
 
     @property
     def hyperparameters(self) -> Hyperparameters | None:
-        # todo: test this properly
         prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
         return Hyperparameters(prop) if prop is not None else None
 
     @hyperparameters.setter
     def hyperparameters(self, v: Hyperparameters | None) -> None:
-        # todo test this
         self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
 
     def to_dict(self) -> dict[str, Any]:
