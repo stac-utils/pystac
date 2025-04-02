@@ -1827,6 +1827,18 @@ class AssetNoPropsMLMExtension(
     PropertiesExtension,
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
+    """A class that can be used to extend the properties of an
+    :class:`pystac.Asset` object with properties from the
+    :stac-ext:`Machine Learning Model Extension <mlm>`.
+
+    Use this class, if model metadata is provided by by the asset's parent object
+    (i.e. :class:`pystac.Item` or :class:`pystac.Item`. If Model metadata is provided
+    by the asset object itself, use :class:`AssetPropsMLMExtension`.
+
+    For extending :class:`pystac.Item`, :class:`pystac.Collection` or
+    :class:`pystac.ItemAssetDefinition` objects, use :class:`MLMExtension` instead.
+    """
+
     def apply(
         self,
         artifact_type: str | None = None,
@@ -1870,6 +1882,19 @@ class AssetNoPropsMLMExtension(
 
 
 class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
+    """A class that can be used to extend the properties of an
+    :class:`pystac.Asset` object with properties from the
+    :stac-ext:`Machine Learning Model Extension <mlm>`.
+
+    Use this class, if model metadata is provided by the asset. If model metadata is
+    provided by the asset's parent object
+    (i.e. :class:`pystac.Item` or :class:`pystac.Item`, use
+    :class:`AssetPropsMLMExtension`.
+
+    For extending :class:`pystac.Item`, :class:`pystac.Collection` or
+    :class:`pystac.ItemAssetDefinition` objects, use :class:`MLMExtension` instead.
+    """
+
     def __repr__(self) -> str:
         return f"<AssetMLMExtension Asset href={self.asset_href}>"
 
