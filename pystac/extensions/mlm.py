@@ -27,10 +27,9 @@ T = TypeVar(
 )
 AssetExtensionType = TypeVar("AssetExtensionType", bound="_AssetMLMExtension")
 
-# todo: support multiple version?
 SCHEMA_URI_PATTERN: str = "https://stac-extensions.github.io/mlm/v{version}/schema.json"
 DEFAULT_VERSION: str = "1.4.0"
-SUPPORTED_VERSIONS: list[str] = ["1.4.0"]
+SUPPORTED_VERSIONS: list[str] = ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]
 
 PREFIX: str = "mlm:"
 
@@ -659,7 +658,7 @@ class InputStructure:
     def apply(
         self,
         shape: list[int],
-        dim_order: list[str],  # todo: make Dimension Enum?
+        dim_order: list[str],
         data_type: DataType,
     ) -> None:
         """
@@ -1519,7 +1518,6 @@ class MLMExtension(
 
     @framework.setter
     def framework(self, v: str | None) -> None:
-        # todo: make enum?
         self._set_property(FRAMEWORK_PROP, v)
 
     @property
