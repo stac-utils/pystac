@@ -1,3 +1,11 @@
+"""Implements the :stac-ext:`Machine Learning Model (MLM) Extension <mlm>`.
+
+This documentation does not provide a full-detail description of the meaning of each
+parameter and how to use them. For an in-depth description of this extension, and the
+use of each property, please refer to the official
+:stac-ext:`documentation <mlm>`
+"""
+
 from __future__ import annotations
 
 from abc import ABC
@@ -97,6 +105,10 @@ ENTRYPOITN_ASSET_PROP = PREFIX + "entrypoint"
 
 
 class TaskType(StringEnum):
+    """
+    An enumeration of Tasks supported by the extension
+    """
+
     REGRESSION = ("regression",)
     CLASSIFICATION = ("classification",)
     SCENE_CLASSIFICATION = ("scene-classification",)
@@ -113,6 +125,10 @@ class TaskType(StringEnum):
 
 
 class AcceleratorType(StringEnum):
+    """
+    An enumeration of accelerators supported by the extension
+    """
+
     AMD64 = ("amd64",)
     CUDA = ("cuda",)
     XLA = ("xla",)
@@ -123,6 +139,10 @@ class AcceleratorType(StringEnum):
 
 
 class ResizeType(StringEnum):
+    """
+    An enumeration of Resize operations supported by the extension
+    """
+
     CROP = "crop"
     PAD = "pad"
     INTERPOLATION_NEAREST = "interpolate-nearest"
@@ -136,6 +156,10 @@ class ResizeType(StringEnum):
 
 
 class ValueScalingType(StringEnum):
+    """
+    An enumeratino of Value Scaling operations supported by the extension
+    """
+
     MIN_MAX = "min-max"
     Z_SCORE = "z-score"
     CLIP = "clip"
@@ -166,6 +190,7 @@ class ModelBand:
     ) -> None:
         """
         Set the properties for a new ModelBand.
+
         Args:
             name: Name of the band referring to an extended band definition
             format: The type of expression that is specified in the expression property
@@ -183,6 +208,7 @@ class ModelBand:
     ) -> ModelBand:
         """
         Create a new ModelBand.
+
         Args:
             name: Name of the band referring to an extended band definition
             format: The type of expression that is specified in the expression property
@@ -196,6 +222,9 @@ class ModelBand:
 
     @property
     def name(self) -> str:
+        """
+        Get or set the required name property of a ModelBand object
+        """
         return get_required(
             self.properties.get(NAME_MODEL_BAND_OBJECT_PROP),
             self,
@@ -208,6 +237,9 @@ class ModelBand:
 
     @property
     def format(self) -> str | None:
+        """
+        Get or set the optional format property of a ModelBand object
+        """
         return self.properties.get(FORMAT_MODEL_BAND_OBJECT_PROP)
 
     @format.setter
@@ -219,6 +251,9 @@ class ModelBand:
 
     @property
     def expression(self) -> Any:
+        """
+        Get or set the optional expression property of a ModelBand object
+        """
         return self.properties.get(EXPRESSION_MODEL_BAND_OBJECT_PROP)
 
     @expression.setter
@@ -229,6 +264,12 @@ class ModelBand:
             self.properties.pop(EXPRESSION_MODEL_BAND_OBJECT_PROP, None)
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Returns the dictionary encoding of this ModelBand object
+
+        Returns:
+            dict[str, Any
+        """
         return self.properties
 
 
@@ -247,6 +288,7 @@ class ProcessingExpression:
     def apply(self, format: str, expression: Any) -> None:
         """
         Set the properties for a new ProcessingExpression
+
         Args:
             format: The type of the expression that is specified in the expression
                 property.
@@ -259,21 +301,27 @@ class ProcessingExpression:
 
     @classmethod
     def create(cls, format: str, expression: Any) -> ProcessingExpression:
-        c = cls({})
         """
         Creates a new ProcessingExpression
+
         Args:
             format: The type of the expression that is specified in the expression
                 property.
-            expression: An expression compliant with the format specified. The 
+            expression: An expression compliant with the format specified. The
                 expression can be any data type and depends on the format given,
                 e.g. string or object.
+        Returns:
+            ProcessingExpression
         """
+        c = cls({})
         c.apply(format=format, expression=expression)
         return c
 
     @property
     def format(self) -> str:
+        """
+        Get or set the required format property of this ProcessingExpression
+        """
         return get_required(
             self.properties.get(FORMAT_PROCESSING_EXPRESSION_PROP),
             self,
@@ -286,6 +334,9 @@ class ProcessingExpression:
 
     @property
     def expression(self) -> Any:
+        """
+        Get or set the required expression property of this ProcessingExpression
+        """
         return get_required(
             self.properties.get(EXPRESSION_PROCESSING_EXPRESSION_PROP),
             self,
@@ -297,6 +348,11 @@ class ProcessingExpression:
         self.properties[EXPRESSION_PROCESSING_EXPRESSION_PROP] = v
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Returns the dictionary encoding of this ProcessingExpression
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -331,6 +387,22 @@ class ValueScaling:
         format: str | None = None,
         expression: str | None = None,
     ) -> None:
+        """
+        Creates new ValueScaling object. Depending on the type
+        parameter, different parameters are required. Consult STAC:MLM documentation
+        or use :meth:`~get_required_props` for details on what parameters are required
+        for which ValueScaling ``type``.
+
+        Args:
+            type: The type of ValueScaling object.
+            minimum: A minimum value
+            maximum: A maximum value
+            mean: A mean value
+            stddev: A standard deviation value
+            value: A scalar value
+            format: The format of the expression
+            expression: The expression itself
+        """
         self.validate_property_dict(type, locals())
 
         self.type = type
@@ -354,6 +426,25 @@ class ValueScaling:
         format: str | None = None,
         expression: str | None = None,
     ) -> ValueScaling:
+        """
+        Creates new ValueScaling object. Depending on the type
+        parameter, different parameters are required. Consult STAC:MLM documentation
+        or use :meth:`~get_required_props` for details on what parameters are required
+        for which ValueScaling ``type``.
+
+        Args:
+            type: The type of ValueScaling object.
+            minimum: A minimum value
+            maximum: A maximum value
+            mean: A mean value
+            stddev: A standard deviation value
+            value: A scalar value
+            format: The format of the expression
+            expression: The expression itself
+
+        Returns:
+            ValueScaling
+        """
         c = cls({})
         c.apply(
             type=type,
@@ -369,6 +460,16 @@ class ValueScaling:
 
     @classmethod
     def get_required_props(cls, type: ValueScalingType) -> list[str]:
+        """
+        Determines the parameters required for a certain ValueScaling operation.
+
+        Args:
+            type: The type of ValueScaling operation for which required proreties are
+                to be retrieved
+
+        Returns:
+            list[str]: names of proreties required for the given ``type``
+        """
         d: dict[str, list[str]] = {
             "min-max": ["minimum", "maximum"],
             "z-score": ["mean", "stddev"],
@@ -385,6 +486,20 @@ class ValueScaling:
     def validate_property_dict(
         cls, type: ValueScalingType, props: dict[str, Any]
     ) -> None:
+        """
+        Validate whether given properties satisfy the requiremts set by the ValueScaling
+            ``type`` parameter
+
+        Args:
+            type: The type of ValueScaling operation
+            props: The properties to validate. Keys in this dict are the property
+                names, values are the property values
+
+        Raises:
+            :class:``STACError``: if the given properties do not satisfy
+                the requirements of the ValueScaling ``type``
+
+        """
         required_props = cls.get_required_props(type)
         given_props = [
             prop_name
@@ -407,6 +522,9 @@ class ValueScaling:
 
     @property
     def type(self) -> str:
+        """
+        Get or set the required type property of this ValueScaling object
+        """
         return get_required(
             self.properties.get(TYPE_VALUE_SCALING_PROP), self, TYPE_VALUE_SCALING_PROP
         )
@@ -417,6 +535,9 @@ class ValueScaling:
 
     @property
     def minimum(self) -> int | float | None:
+        """
+        Get or set the minimum property of this ValueScaling object
+        """
         return self.properties.get(MINIMUM_VALUE_SCALING_PROP)
 
     @minimum.setter
@@ -428,6 +549,9 @@ class ValueScaling:
 
     @property
     def maximum(self) -> int | float | None:
+        """
+        Get or set the maximum property of this ValueScaling object
+        """
         return self.properties.get(MAXIMUM_VALUE_SCALING_PROP)
 
     @maximum.setter
@@ -439,6 +563,9 @@ class ValueScaling:
 
     @property
     def mean(self) -> int | float | None:
+        """
+        Get or set the mean property of this ValueScaling object
+        """
         return self.properties.get(MEAN_VALUE_SCALING_PROP)
 
     @mean.setter
@@ -450,6 +577,9 @@ class ValueScaling:
 
     @property
     def stddev(self) -> int | float | None:
+        """
+        Get or set the stddev (standard deviation) property of this ValueScaling object
+        """
         return self.properties.get(STDDEV_VALUE_SCALING_PROP)
 
     @stddev.setter
@@ -461,6 +591,9 @@ class ValueScaling:
 
     @property
     def value(self) -> int | float | None:
+        """
+        Get or set the value property of this ValueScaling object
+        """
         return self.properties.get(VALUE_VALUE_SCALING_PROP)
 
     @value.setter
@@ -472,6 +605,9 @@ class ValueScaling:
 
     @property
     def format(self) -> str | None:
+        """
+        Get or set the format property of this ValueScaling object
+        """
         return self.properties.get(FORMAT_VALUE_SCALING_PROP)
 
     @format.setter
@@ -483,6 +619,9 @@ class ValueScaling:
 
     @property
     def expression(self) -> str | None:
+        """
+        Get or set the expression property of this ValueScaling object
+        """
         return self.properties.get(EXPRESSION_VALUE_SCALING_PROP)
 
     @expression.setter
@@ -493,6 +632,12 @@ class ValueScaling:
             self.properties.pop(EXPRESSION_VALUE_SCALING_PROP, None)
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serialize a dict representation of this ValueScaling object
+
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -519,6 +664,7 @@ class InputStructure:
     ) -> None:
         """
         Set the properties for a new InputStructure.
+
         Args:
             shape: Shape of the input n-dimensional array (e.g.: B×C×H×W), including
                 the batch size dimension.
@@ -539,6 +685,7 @@ class InputStructure:
     ) -> InputStructure:
         """
         Create a new InputStructure.
+
         Args:
             shape: Shape of the input n-dimensional array (e.g.: B×C×H×W), including the
                 batch size dimension. Each dimension must either be greater than 0 or
@@ -548,6 +695,8 @@ class InputStructure:
             data_type: The data type of values in the n-dimensional array. For model
                 inputs, this should be the data type of the processed input supplied to
                 the model inference function, not the data type of the source bands.
+        Returns:
+            InputStructure
         """
         c = cls({})
         c.apply(shape=shape, dim_order=dim_order, data_type=data_type)
@@ -555,6 +704,9 @@ class InputStructure:
 
     @property
     def shape(self) -> list[int]:
+        """
+        Get or set the required shape property of this InputStructure object
+        """
         return get_required(
             self.properties.get(SHAPE_INPUT_STRUCTURE_PROP),
             self,
@@ -567,6 +719,9 @@ class InputStructure:
 
     @property
     def dim_order(self) -> list[str]:
+        """
+        Get or set the required dim_order property of this InputStructure object
+        """
         return get_required(
             self.properties.get(DIM_ORDER_INPUT_STRUCTURE_PROP),
             self,
@@ -579,6 +734,9 @@ class InputStructure:
 
     @property
     def data_type(self) -> DataType:
+        """
+        Get or set the required data_type property of this InputStructure object
+        """
         return get_required(
             self.properties.get(DATA_TYPE_INPUT_STRUCTURE_PROP),
             self,
@@ -590,6 +748,12 @@ class InputStructure:
         self.properties[DATA_TYPE_INPUT_STRUCTURE_PROP] = v
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serializes a dict representation of this InputStucture object
+
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -624,6 +788,7 @@ class ModelInput:
     ) -> None:
         """
         Sets the Properties for a new Input
+
         Args:
             name: Name of the input variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "RGB Time Series")
@@ -674,6 +839,7 @@ class ModelInput:
     ) -> ModelInput:
         """
         Creates a new Input
+
         Args:
             name: Name of the input variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "RGB Time Series")
@@ -717,6 +883,9 @@ class ModelInput:
 
     @property
     def name(self) -> str:
+        """
+        Gets or sets the required name property of this ModelInput object
+        """
         return get_required(
             self.properties.get(NAME_INPUT_OBJECT_PROP), self, NAME_INPUT_OBJECT_PROP
         )
@@ -727,6 +896,9 @@ class ModelInput:
 
     @property
     def bands(self) -> list[ModelBand] | list[str]:
+        """
+        Gets or sets the required bands property of this ModelInput object
+        """
         bands: list[str] | list[dict[str, Any]] = get_required(
             self.properties.get(BANDS_INPUT_OBJECT_PROP), self, BANDS_INPUT_OBJECT_PROP
         )
@@ -746,6 +918,9 @@ class ModelInput:
 
     @property
     def input(self) -> InputStructure:
+        """
+        Gets or sets the required input property of this ModelInput object
+        """
         return InputStructure(
             get_required(
                 self.properties.get(INPUT_INPUT_OBJECT_PROP),
@@ -760,6 +935,9 @@ class ModelInput:
 
     @property
     def description(self) -> str | None:
+        """
+        Gets or sets the description property of this ModelInput object
+        """
         return self.properties.get(DESCRIPTION_INPUT_OBJECT_PROP)
 
     @description.setter
@@ -771,6 +949,9 @@ class ModelInput:
 
     @property
     def value_scaling(self) -> ValueScaling | None:
+        """
+        Gets or sets the value_scaling property of this ModelInput object
+        """
         v = self.properties.get(VALUE_SCALING_INPUT_OBJECT_PROP)
         return ValueScaling(v) if v is not None else v
 
@@ -783,6 +964,9 @@ class ModelInput:
 
     @property
     def resize_type(self) -> ResizeType | None:
+        """
+        Gets or sets the resize_type property of this ModelInput object
+        """
         return self.properties.get(RESIZE_TYPE_INPUT_OBJECT_PROP)
 
     @resize_type.setter
@@ -792,6 +976,9 @@ class ModelInput:
 
     @property
     def pre_processing_function(self) -> ProcessingExpression | None:
+        """
+        Gets or sets the pre_processing_function property of this ModelInput object
+        """
         v = self.properties.get(PRE_PROCESSING_FUNCTION_INPUT_OBJECT_PROP)
         return ProcessingExpression(v) if v is not None else None
 
@@ -803,6 +990,12 @@ class ModelInput:
         )
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serializes this ModelInput object into its dict representation
+
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -826,6 +1019,7 @@ class ResultStructure:
     ) -> None:
         """
         Set the properties for a new ResultStructure.
+
         Args:
             shape: Shape of the n-dimensional result array (e.g.: B×H×W or B×C),
                 possibly including a batch size dimension. The dimensions must either
@@ -845,6 +1039,7 @@ class ResultStructure:
     ) -> ResultStructure:
         """
         Creates a new ResultStructure.
+
         Args:
             shape: Shape of the n-dimensional result array (e.g.: B×H×W or B×C),
                 possibly including a batch size dimension. The dimensions must either
@@ -853,6 +1048,9 @@ class ResultStructure:
             data_type: The data type of values in the n-dimensional array. For model
                 outputs, this should be the data type of the result of the model
                 inference without extra post processing.
+
+        Returns:
+            ResultStructure
         """
         c = cls({})
         c.apply(shape=shape, dim_order=dim_order, data_type=data_type)
@@ -860,6 +1058,9 @@ class ResultStructure:
 
     @property
     def shape(self) -> list[int]:
+        """
+        Gets or sets the required shape property of the ResultStructure object
+        """
         return get_required(
             self.properties.get(SHAPE_RESULT_STRUCTURE_PROP),
             self,
@@ -872,6 +1073,9 @@ class ResultStructure:
 
     @property
     def dim_order(self) -> list[str]:
+        """
+        Gets or sets the required dim_order property of the ResultStructure object
+        """
         return get_required(
             self.properties.get(DIM_ORDER_RESULT_STRUCTURE_PROP),
             self,
@@ -884,6 +1088,9 @@ class ResultStructure:
 
     @property
     def data_type(self) -> DataType:
+        """
+        Gets or sets the required data_type property of the ResultStructure object
+        """
         return get_required(
             self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
             self,
@@ -895,6 +1102,11 @@ class ResultStructure:
         self.properties[DATA_TYPE_RESULT_STRUCTURE_PROP] = v
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serilaizes this ResultStructure object to a dict
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -927,6 +1139,7 @@ class ModelOutput:
     ) -> None:
         """
         Sets the properties for a new Output
+
         Args:
             name:Name of the output variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "CLASSIFICATION")
@@ -963,6 +1176,7 @@ class ModelOutput:
     ) -> ModelOutput:
         """
         Creates a new Output
+
         Args:
             name:Name of the output variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "CLASSIFICATION")
@@ -977,6 +1191,9 @@ class ModelOutput:
             classes: A list of class objects adhering to the Classification Extension.
             post_processing_function: Custom postprocessing function where
             normalization, rescaling, or any other significant operations takes place.
+
+        Returns:
+            ModelOutput
         """
         c = cls({})
         c.apply(
@@ -991,6 +1208,9 @@ class ModelOutput:
 
     @property
     def name(self) -> str:
+        """
+        Gets or sets the required name property of this ModelOutput object
+        """
         return get_required(
             self.properties.get(NAME_RESULT_PROP), self, NAME_RESULT_PROP
         )
@@ -1001,6 +1221,9 @@ class ModelOutput:
 
     @property
     def tasks(self) -> list[TaskType]:
+        """
+        Gets or sets the required tasks property of this ModelOutput object
+        """
         return get_required(
             self.properties.get(TASKS_RESULT_PROP), self, TASKS_RESULT_PROP
         )
@@ -1011,6 +1234,9 @@ class ModelOutput:
 
     @property
     def result(self) -> ResultStructure:
+        """
+        Gets or sets the required results property of this ModelOutput object
+        """
         return ResultStructure(
             get_required(
                 self.properties.get(RESULT_RESULT_PROP), self, RESULT_RESULT_PROP
@@ -1023,6 +1249,9 @@ class ModelOutput:
 
     @property
     def description(self) -> str | None:
+        """
+        Gets or sets the description property of this ModelOutput object
+        """
         return self.properties.get(DESCRIPTION_RESULT_PROP)
 
     @description.setter
@@ -1034,6 +1263,9 @@ class ModelOutput:
 
     @property
     def classes(self) -> list[Classification] | None:
+        """
+        Gets or sets the classes property of this ModelOutput object
+        """
         classes = self.properties.get(CLASSES_RESULT_PROP)
         return [Classification(c) for c in classes] if classes is not None else None
 
@@ -1046,6 +1278,9 @@ class ModelOutput:
 
     @property
     def post_processing_function(self) -> ProcessingExpression | None:
+        """
+        Gets or sets the post_processing_function property of this ModelOutput object
+        """
         v = self.properties.get(POST_PROCESSING_FUNCTION_RESULT_PROP)
         return ProcessingExpression(v) if v is not None else None
 
@@ -1057,6 +1292,11 @@ class ModelOutput:
             self.properties.pop(POST_PROCESSING_FUNCTION_RESULT_PROP, None)
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serializes this ModelOutput object into a dict
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -1072,6 +1312,12 @@ class Hyperparameters:
         return self.properties == other.properties
 
     def apply(self, **kwargs: Any) -> None:
+        """
+        Sets the properties for a new Hyperparameters object. The stac:mlm specification
+        defines neither their names nor their values, so any key-value pair is allowed.
+        Args:
+            **kwargs: any model hyperparameter name and its value, as key-value paris
+        """
         self.properties.update(kwargs)
 
     @classmethod
@@ -1081,6 +1327,11 @@ class Hyperparameters:
         return c
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serializes this Hyperparameters object into a dictionary
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -1090,9 +1341,12 @@ class MLMExtension(
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend to properties of an
-    :class:`pystac.Item` or :class:`pystac.Collection`with properties from the
-    :stac-ext:`Machine Learning Model Extension <mlm>`. This class is generic over the
-    type of STAC Object to be extended.
+    :class:`pystac.Item` or :class:`pystac.Collection` with properties from the
+    :stac-ext:`Machine Learning Model Extension <mlm>`.
+
+    This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
+    and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
+    either :class:`~AssetNoPropsMLMExtension`: or :class:`AssetPropsMLMExtension`.
     """
 
     name: Literal["mlm"] = "mlm"
@@ -1120,6 +1374,39 @@ class MLMExtension(
         *args: Any,
         **kwargs: Any,
     ) -> None:
+        """
+        Sets the properties of a new MLMExtension
+
+        Args:
+            name:  name for the model
+            architecture: A generic and well established architecture name of the model
+            tasks: Specifies the Machine Learning tasks for which the model can be
+                used for
+            input: Describes the transformation between the EO data and the model input
+            output: Describes each model output and how to interpret it.
+            framework: Framework used to train the model
+            framework_version: The ``framework`` library version
+            memory_size: The in-memory size of the model on the accelerator during
+                inference (bytes)
+            total_parameters: Total number of model parameters, including trainable and
+                non-trainable parameters.
+            pretrained: Indicates if the model was pretrained. If the model was
+                pretrained, consider providing ``pretrained_source`` if it is known
+            pretrained_source: The source of the pretraining.
+            batch_size_suggestion: A suggested batch size for the accelerator and
+                summarized hardware.
+            accelerator: The intended computational hardware that runs inference
+            accelerator_constrained: Indicates if the intended ``accelerator`` is the
+                only accelerator that can run inference
+            accelerator_summary: A high level description of the ``accelerator``
+            accelerator_count: A minimum amount of ``accelerator`` instances required to
+                run the model
+            hyperparameters: Additional hyperparameters relevant for the model
+            *args: Unused (no effect, only here for signature compliance with apply
+                method in derived classes
+            **kwargs: Unused (no effect, only here for signature compliance with apply
+                method in derived classes
+        """
         self.mlm_name = name
         self.architecture = architecture
         self.tasks = tasks
@@ -1140,10 +1427,35 @@ class MLMExtension(
 
     @classmethod
     def get_schema_uri(cls) -> str:
+        """
+        Retrieves this extension's schema URI
+
+        Returns:
+            str: the schema URI
+        """
         return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> MLMExtension[T]:
+        """
+        Extend a STAC object (``obj``) with the MLMExtension
+
+        Args:
+            obj: The STAC object to be extended.
+            add_if_missing: Defines whether this extension's URI should be added to
+                this object's  (or its parent's) list of extensions if it is not already
+                listed there.
+
+        Returns:
+            MLMExtension[pystac.extensions.mlm.T]: The extended object
+
+        Raises:
+            pystac.STACError: When a :class:`pystac.Asset` object is apssed as the
+                `obj` parameter
+            pystac.ExtensionTypeError: When any unsupported object is passed as the
+                `obj` parameter. If you see this extension in this context, please
+                raise an issue on github.
+        """
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(MLMExtension[T], ItemMLMExtension(obj))
@@ -1164,6 +1476,10 @@ class MLMExtension(
 
     @property
     def mlm_name(self) -> str:
+        """
+        Get or set the required (mlm) name property. It is named mlm_name in this
+        context to not break convention and overwrite the extension name class property.
+        """
         return get_required(self.properties.get(NAME_PROP), self, NAME_PROP)
 
     @mlm_name.setter
@@ -1172,6 +1488,9 @@ class MLMExtension(
 
     @property
     def architecture(self) -> str:
+        """
+        Get or set the required architecture property
+        """
         return get_required(
             self.properties.get(ARCHITECTURE_PROP), self, ARCHITECTURE_PROP
         )
@@ -1182,6 +1501,9 @@ class MLMExtension(
 
     @property
     def tasks(self) -> list[TaskType]:
+        """
+        Get or set the required tasks property
+        """
         return get_required(self.properties.get(TASKS_PROP), self, TASKS_PROP)
 
     @tasks.setter
@@ -1190,6 +1512,9 @@ class MLMExtension(
 
     @property
     def framework(self) -> str | None:
+        """
+        Get or set the framework property
+        """
         return self._get_property(FRAMEWORK_PROP, str)
 
     @framework.setter
@@ -1199,6 +1524,9 @@ class MLMExtension(
 
     @property
     def framework_version(self) -> str | None:
+        """
+        Get or set the framework_version property
+        """
         return self._get_property(FRAMEWORK_VERSION_PROP, str)
 
     @framework_version.setter
@@ -1207,6 +1535,9 @@ class MLMExtension(
 
     @property
     def memory_size(self) -> int | None:
+        """
+        Get or set the memory_size property
+        """
         return self._get_property(MEMORY_SIZE_PROP, int)
 
     @memory_size.setter
@@ -1215,6 +1546,9 @@ class MLMExtension(
 
     @property
     def total_parameters(self) -> int | None:
+        """
+        Get or set the total_parameters property
+        """
         return self._get_property(TOTAL_PARAMETERS_PROP, int)
 
     @total_parameters.setter
@@ -1223,6 +1557,9 @@ class MLMExtension(
 
     @property
     def pretrained(self) -> bool | None:
+        """
+        Get or set the pretrained property
+        """
         return self._get_property(PRETRAINED_PROP, bool)
 
     @pretrained.setter
@@ -1231,6 +1568,9 @@ class MLMExtension(
 
     @property
     def pretrained_source(self) -> str | None:
+        """
+        Get or set the pretrained_source property
+        """
         return self._get_property(PRETRAINED_SOURCE_PROP, str)
 
     @pretrained_source.setter
@@ -1241,6 +1581,9 @@ class MLMExtension(
 
     @property
     def batch_size_suggestion(self) -> int | None:
+        """
+        Get or set the batch_size_suggestion property
+        """
         return self._get_property(BATCH_SIZE_SUGGESTION_PROP, int)
 
     @batch_size_suggestion.setter
@@ -1249,6 +1592,9 @@ class MLMExtension(
 
     @property
     def accelerator(self) -> AcceleratorType | None:
+        """
+        Get or set the accelerator property
+        """
         return self._get_property(ACCELERATOR_PROP, AcceleratorType)
 
     @accelerator.setter
@@ -1258,6 +1604,9 @@ class MLMExtension(
 
     @property
     def accelerator_constrained(self) -> bool | None:
+        """
+        Get or set the accelerator_constrianed property
+        """
         return self._get_property(ACCELERATOR_CONSTRAINED_PROP, bool)
 
     @accelerator_constrained.setter
@@ -1266,6 +1615,9 @@ class MLMExtension(
 
     @property
     def accelerator_summary(self) -> str | None:
+        """
+        Get or set the accelerator_summary property
+        """
         return self._get_property(ACCELERATOR_SUMMARY_PROP, str)
 
     @accelerator_summary.setter
@@ -1274,6 +1626,9 @@ class MLMExtension(
 
     @property
     def accelerator_count(self) -> int | None:
+        """
+        Get or set the accelerator_count property
+        """
         return self._get_property(ACCELERATOR_COUNT_PROP, int)
 
     @accelerator_count.setter
@@ -1282,6 +1637,9 @@ class MLMExtension(
 
     @property
     def input(self) -> list[ModelInput]:
+        """
+        Get or set the required input property
+        """
         return [
             ModelInput(inp)
             for inp in get_required(
@@ -1295,6 +1653,9 @@ class MLMExtension(
 
     @property
     def output(self) -> list[ModelOutput]:
+        """
+        Get or set the required output property
+        """
         return [
             ModelOutput(outp)
             for outp in get_required(
@@ -1308,6 +1669,9 @@ class MLMExtension(
 
     @property
     def hyperparameters(self) -> Hyperparameters | None:
+        """
+        Get or set the hyperparameters property
+        """
         prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
         return Hyperparameters(prop) if prop is not None else None
 
@@ -1316,6 +1680,12 @@ class MLMExtension(
         self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
 
     def to_dict(self) -> dict[str, Any]:
+        """
+        Serializes this MLMExtension object into a dict
+
+        Returns:
+            dict[str, Any]
+        """
         return self.properties
 
 
@@ -1346,6 +1716,10 @@ class CollectionMLMExtension(MLMExtension[pystac.Collection]):
 
 
 class _AssetMLMExtension(ABC):
+    """
+    Abstract base class for (derived) MLM asset extensions.
+    """
+
     asset: pystac.Asset
     asset_href: str
     properties: dict[str, Any]
@@ -1368,14 +1742,30 @@ class _AssetMLMExtension(ABC):
         return cls(obj)
 
     def to_dict(self) -> dict[str, Any]:
-        return self.properties  # todo: test this
+        """
+        Serializes the extended asset's properties into a dict
+
+        Returns:
+            dict[str, Any]
+        """
+        return self.properties
 
     @classmethod
     def get_schema_uri(cls) -> str:
+        """
+        Retrieve this extension's schema URI
+
+        Returns:
+            str: Schema URI
+        """
         return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
 
     @property
     def artifact_type(self) -> str | None:
+        """
+        Get or set the artifact_type property. This is required if ``mlm:model`` as one
+         of the asset's roles
+        """
         prop_value = self.properties.get(ARTIFACT_TYPE_ASSET_PROP)
         if isinstance(self.asset.roles, list) and "mlm:model" in self.asset.roles:
             return get_required(prop_value, self, ARTIFACT_TYPE_ASSET_PROP)
@@ -1401,6 +1791,9 @@ class _AssetMLMExtension(ABC):
 
     @property
     def compile_method(self) -> str | None:
+        """
+        Get or set this asset's compile_method property
+        """
         return self.properties.get(COMPILE_MDTHOD_ASSET_PROP)
 
     @compile_method.setter
@@ -1412,6 +1805,9 @@ class _AssetMLMExtension(ABC):
 
     @property
     def entrypoint(self) -> str | None:
+        """
+        Get or set this asset's entrypoint property asdfasdf
+        """
         return self.properties.get(ENTRYPOITN_ASSET_PROP)
 
     @entrypoint.setter
@@ -1437,6 +1833,18 @@ class AssetNoPropsMLMExtension(
         compile_method: str | None = None,
         entrypoint: str | None = None,
     ) -> None:
+        """
+        Sets the properties of a new AssetNoPropsMLMExtension
+
+        Args:
+            artifact_type: Specifies the kind of model artifact, any string is allowed.
+                Typically related to a particular ML framework. This property is
+                required when ``mlm:model`` is listed as a role of this asset
+            compile_method: Describes the method used to compile the ML model either
+                when the model is saved or at model runtime prior to inference
+            entrypoint: Specific entrypoint reference in the code to use for running
+                model inference.
+        """
         self.artifact_type = artifact_type
         self.compile_method = compile_method
         self.entrypoint = entrypoint
@@ -1445,6 +1853,18 @@ class AssetNoPropsMLMExtension(
     def ext(
         cls, obj: pystac.Asset, add_if_missing: bool = False
     ) -> AssetNoPropsMLMExtension[pystac.Asset]:
+        """
+        Extend a :class:`pystac.Asset` (``obj``) with the AssetNoPropsMLMExtension
+
+        Args:
+            obj: The Asset to be extended.
+            add_if_missing: Defines whether this extension's URI should be added to
+                this asset's parent's list of extensions if it is not already
+                listed there. Use ``False`` if the asset does not specify a parent
+
+        Returns:
+            AssetNoPropsMLMExtension[pystac.Asset]: The extended object
+        """
         cls.ensure_owner_has_extension(obj, add_if_missing)
         return AssetNoPropsMLMExtension._ext(obj)
 
@@ -1457,6 +1877,18 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     def ext(
         cls, obj: pystac.Asset, add_if_missing: bool = False
     ) -> AssetPropsMLMExtension:
+        """
+        Extend a :class:`pystac.Asset` (``obj``) with the AssetNoPropsMLMExtension
+
+        Args:
+            obj: The Asset to be extended.
+            add_if_missing: Defines whether this extension's URI should be added to
+                this asset's parent's list of extensions if it is not already
+                listed there. Use ``False`` if the asset does not specify a parent
+
+        Returns:
+            AssetPropsMLMExtension[pystac.Asset]: The extended object
+        """
         cls.ensure_owner_has_extension(obj, add_if_missing)
         return AssetPropsMLMExtension._ext(obj)
 
@@ -1483,6 +1915,42 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         compile_method: str | None = None,
         entrypoint: str | None = None,
     ) -> None:
+        """
+        Sets the properties of a new MLMExtension
+
+        Args:
+            name:  name for the model
+            architecture: A generic and well established architecture name of the model
+            tasks: Specifies the Machine Learning tasks for which the model can be
+                used for
+            input: Describes the transformation between the EO data and the model input
+            output: Describes each model output and how to interpret it.
+            framework: Framework used to train the model
+            framework_version: The ``framework`` library version
+            memory_size: The in-memory size of the model on the accelerator during
+                inference (bytes)
+            total_parameters: Total number of model parameters, including trainable and
+                non-trainable parameters.
+            pretrained: Indicates if the model was pretrained. If the model was
+                pretrained, consider providing ``pretrained_source`` if it is known
+            pretrained_source: The source of the pretraining.
+            batch_size_suggestion: A suggested batch size for the accelerator and
+                summarized hardware.
+            accelerator: The intended computational hardware that runs inference
+            accelerator_constrained: Indicates if the intended ``accelerator`` is the
+                only accelerator that can run inference
+            accelerator_summary: A high level description of the ``accelerator``
+            accelerator_count: A minimum amount of ``accelerator`` instances required to
+                run the model
+            hyperparameters: Additional hyperparameters relevant for the model
+            artifact_type: Specifies the kind of model artifact, any string is allowed.
+                Typically related to a particular ML framework. This property is
+                required when ``mlm:model`` is listed as a role of this asset
+            compile_method: Describes the method used to compile the ML model either
+                when the model is saved or at model runtime prior to inference
+            entrypoint: Specific entrypoint reference in the code to use for running
+                model inference.
+        """
         MLMExtension.apply(
             self,
             name=name,
