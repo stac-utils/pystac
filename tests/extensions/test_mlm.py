@@ -14,8 +14,8 @@ from pystac.extensions.mlm import (
     NAME_PROP,
     TASKS_PROP,
     AcceleratorType,
-    AssetNoPropsMLMExtension,
-    AssetPropsMLMExtension,
+    AssetDetailedMLMExtension,
+    AssetGeneralMLMExtension,
     Hyperparameters,
     InputStructure,
     ItemMLMExtension,
@@ -702,7 +702,7 @@ def test_add_to_asset(plain_item: Item) -> None:
     assert ARCHITECTURE_PROP not in asset.extra_fields.keys()
     assert TASKS_PROP not in asset.extra_fields.keys()
 
-    asset_ext = AssetPropsMLMExtension.ext(asset)
+    asset_ext = AssetDetailedMLMExtension.ext(asset)
     asset_ext.mlm_name = "asdf"
     asset_ext.architecture = "ResNet"
     asset_ext.tasks = [TaskType.CLASSIFICATION]
@@ -719,7 +719,7 @@ def test_add_to_asset(plain_item: Item) -> None:
 @pytest.mark.parametrize("is_model_asset", (True, False))
 def test_asset_props(plain_item: Item, is_model_asset: bool) -> None:
     asset = plain_item.assets["analytic"]
-    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=True)
+    asset_ext = AssetGeneralMLMExtension.ext(asset, add_if_missing=True)
 
     assert asset_ext.artifact_type is None
     assert asset_ext.compile_method is None
@@ -753,7 +753,7 @@ def test_add_to_generic_asset() -> None:
             "mlm:entrypoint": "baz",
         },
     )
-    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext = AssetGeneralMLMExtension.ext(asset, add_if_missing=False)
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
@@ -767,7 +767,7 @@ def test_apply_generic_asset() -> None:
         media_type="application/tiff",
         roles=["mlm:model"],
     )
-    asset_ext = AssetNoPropsMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext = AssetGeneralMLMExtension.ext(asset, add_if_missing=False)
     asset_ext.apply(artifact_type="foo", compile_method="bar", entrypoint="baz")
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
@@ -808,7 +808,7 @@ def test_add_to_detailled_asset() -> None:
         },
     )
 
-    asset_ext = AssetPropsMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
     assert asset_ext.mlm_name == "asdf"
     assert asset_ext.architecture == "ResNet"
@@ -828,7 +828,7 @@ def test_apply_detailled_asset() -> None:
         media_type="application/tiff",
         roles=["mlm:model"],
     )
-    asset_ext = AssetPropsMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
     model_input = ModelInput.create(
         name="model",

@@ -1346,7 +1346,7 @@ class MLMExtension(
 
     This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
     and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
-    either :class:`~AssetNoPropsMLMExtension`: or :class:`AssetPropsMLMExtension`.
+    either :class:`~AssetGeneralMLMExtension`: or :class:`AssetDetailedMLMExtension`.
     """
 
     name: Literal["mlm"] = "mlm"
@@ -1468,8 +1468,8 @@ class MLMExtension(
         elif isinstance(obj, pystac.Asset):
             raise pystac.STACError(
                 "This class cannot be used to extend STAC objects of type Assets. "
-                "To extend Asset objects, use either AssetNoPropsMLMExtension or "
-                "AssetMLMExtension"
+                "To extend Asset objects, use either AssetGeneralMLMExtension or "
+                "AssetDetailedMLMExtension"
             )
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
@@ -1821,7 +1821,7 @@ class _AssetMLMExtension(ABC):
         return f"<AssetMLMExtension Asset href={self.asset_href}>"
 
 
-class AssetNoPropsMLMExtension(
+class AssetGeneralMLMExtension(
     _AssetMLMExtension,
     Generic[T],
     PropertiesExtension,
@@ -1833,7 +1833,7 @@ class AssetNoPropsMLMExtension(
 
     Use this class, if model metadata is provided by by the asset's parent object
     (i.e. :class:`pystac.Item` or :class:`pystac.Item`. If Model metadata is provided
-    by the asset object itself, use :class:`AssetPropsMLMExtension`.
+    by the asset object itself, use :class:`AssetDetailedMLMExtension`.
 
     For extending :class:`pystac.Item`, :class:`pystac.Collection` or
     :class:`pystac.ItemAssetDefinition` objects, use :class:`MLMExtension` instead.
@@ -1846,7 +1846,7 @@ class AssetNoPropsMLMExtension(
         entrypoint: str | None = None,
     ) -> None:
         """
-        Sets the properties of a new AssetNoPropsMLMExtension
+        Sets the properties of a new AssetGeneralMLMExtension
 
         Args:
             artifact_type: Specifies the kind of model artifact, any string is allowed.
@@ -1864,9 +1864,9 @@ class AssetNoPropsMLMExtension(
     @classmethod
     def ext(
         cls, obj: pystac.Asset, add_if_missing: bool = False
-    ) -> AssetNoPropsMLMExtension[pystac.Asset]:
+    ) -> AssetGeneralMLMExtension[pystac.Asset]:
         """
-        Extend a :class:`pystac.Asset` (``obj``) with the AssetNoPropsMLMExtension
+        Extend a :class:`pystac.Asset` (``obj``) with the AssetGeneralMLMExtension
 
         Args:
             obj: The Asset to be extended.
@@ -1875,13 +1875,13 @@ class AssetNoPropsMLMExtension(
                 listed there. Use ``False`` if the asset does not specify a parent
 
         Returns:
-            AssetNoPropsMLMExtension[pystac.Asset]: The extended object
+            AssetGeneralMLMExtension[pystac.Asset]: The extended object
         """
         cls.ensure_owner_has_extension(obj, add_if_missing)
-        return AssetNoPropsMLMExtension._ext(obj)
+        return AssetGeneralMLMExtension._ext(obj)
 
 
-class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
+class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     """A class that can be used to extend the properties of an
     :class:`pystac.Asset` object with properties from the
     :stac-ext:`Machine Learning Model Extension <mlm>`.
@@ -1889,7 +1889,7 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     Use this class, if model metadata is provided by the asset. If model metadata is
     provided by the asset's parent object
     (i.e. :class:`pystac.Item` or :class:`pystac.Item`, use
-    :class:`AssetPropsMLMExtension`.
+    :class:`AssetGeneralMLMExtension`.
 
     For extending :class:`pystac.Item`, :class:`pystac.Collection` or
     :class:`pystac.ItemAssetDefinition` objects, use :class:`MLMExtension` instead.
@@ -1901,9 +1901,9 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     @classmethod
     def ext(
         cls, obj: pystac.Asset, add_if_missing: bool = False
-    ) -> AssetPropsMLMExtension:
+    ) -> AssetDetailedMLMExtension:
         """
-        Extend a :class:`pystac.Asset` (``obj``) with the AssetNoPropsMLMExtension
+        Extend a :class:`pystac.Asset` (``obj``) with the AssetDetailedMLMExtension
 
         Args:
             obj: The Asset to be extended.
@@ -1912,10 +1912,10 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
                 listed there. Use ``False`` if the asset does not specify a parent
 
         Returns:
-            AssetPropsMLMExtension[pystac.Asset]: The extended object
+            AssetDetailedMLMExtension[pystac.Asset]: The extended object
         """
         cls.ensure_owner_has_extension(obj, add_if_missing)
-        return AssetPropsMLMExtension._ext(obj)
+        return AssetDetailedMLMExtension._ext(obj)
 
     def apply(
         self,
@@ -1941,7 +1941,7 @@ class AssetPropsMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         entrypoint: str | None = None,
     ) -> None:
         """
-        Sets the properties of a new MLMExtension
+        Sets the properties of a new AssetDetailedMLMExtensions
 
         Args:
             name:  name for the model
