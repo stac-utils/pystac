@@ -19,7 +19,9 @@ from pystac.extensions.base import (
     PropertiesExtension,
 )
 from pystac.extensions.classification import Classification
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.raster import DataType
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required
 
 T = TypeVar(
@@ -1718,6 +1720,7 @@ class _AssetMLMExtension(ABC):
     Abstract base class for (derived) MLM asset extensions.
     """
 
+    name: Literal["mlm"] = "mlm"
     asset: pystac.Asset
     asset_href: str
     properties: dict[str, Any]
@@ -2009,3 +2012,41 @@ class ItemAssetMLMExtension(MLMExtension[pystac.ItemAssetDefinition]):
 
     def __repr__(self) -> str:
         return f"<ItemAssetsMLMExtension ItemAssetDefinition={self.asset_defn}"
+
+
+class MLMExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+    prev_extension_ids = {
+        SCHEMA_URI_PATTERN.format(version=v)
+        for v in SUPPORTED_VERSIONS
+        if v != DEFAULT_VERSION
+    }
+    stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
+
+    def migrate(
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        # migrate from 1.0.0 to 1.1.0
+        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
+            # no migrations needed
+            pass
+
+        # migrate from 1.1.0 to 1.2.0
+        if SCHEMA_URI_PATTERN.format(version="1.1.0") in info.extensions:
+            # no migrations needed
+            pass
+
+        # migrate from 1.2.0 to 1.3.0
+        if SCHEMA_URI_PATTERN.format(version="1.2.0") in info.extensions:
+            # no migration needed
+            pass
+
+        # migrate from 1.3.0 to 1.4.0
+        if SCHEMA_URI_PATTERN.format(version="1.3.0") in info.extensions:
+            # no migration needed
+            pass
+
+        super().migrate(obj, version, info)
+
+
+MLM_EXTENSION_HOOKS: ExtensionHooks = MLMExtensionHooks()

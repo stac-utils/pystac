@@ -100,6 +100,7 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     import pystac.extensions.label
 import pystac.extensions.mgrs
+import pystac.extensions.mlm
 import pystac.extensions.pointcloud
 import pystac.extensions.projection
 import pystac.extensions.raster
@@ -123,6 +124,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
         pystac.extensions.label.LABEL_EXTENSION_HOOKS,
         pystac.extensions.mgrs.MGRS_EXTENSION_HOOKS,
+        pystac.extensions.mlm.MLM_EXTENSION_HOOKS,
         pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
         pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
         pystac.extensions.raster.RASTER_EXTENSION_HOOKS,
