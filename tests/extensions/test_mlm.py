@@ -910,6 +910,19 @@ def test_add_to_detailled_asset() -> None:
 
     assert repr(asset_ext) == f"<AssetDetailedMLMExtension Asset href={asset.href}>"
 
+    with pytest.raises(pystac.errors.RequiredPropertyMissing):
+        asset_ext.artifact_type = None
+
+    asset_ext.compile_method = None
+    assert asset_ext.compile_method is None
+
+    asset_ext.entrypoint = None
+    assert asset_ext.entrypoint is None
+
+    asset.roles.remove("mlm:model") if isinstance(asset.roles, list) else None
+    asset_ext.artifact_type = None
+    assert asset_ext.artifact_type is None
+
 
 def test_apply_detailled_asset() -> None:
     asset = pystac.Asset(
