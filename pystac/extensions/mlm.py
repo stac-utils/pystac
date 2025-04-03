@@ -181,7 +181,7 @@ class ModelBand:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ModelBand):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.name == other.name
             and self.format == other.format
@@ -284,7 +284,7 @@ class ProcessingExpression:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ProcessingExpression):
-            return NotImplemented
+            raise NotImplementedError
         else:
             return self.format == other.format and self.expression == other.expression
 
@@ -367,7 +367,7 @@ class ValueScaling:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ValueScaling):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.type == other.type
             and self.minimum == other.minimum
@@ -652,7 +652,7 @@ class InputStructure:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, InputStructure):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.shape == other.shape
             and self.dim_order == other.dim_order
@@ -768,7 +768,7 @@ class ModelInput:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ModelInput):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.name == other.name
             and self.bands == other.bands
@@ -1010,7 +1010,7 @@ class ResultStructure:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ResultStructure):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.shape == other.shape
             and self.dim_order == other.dim_order
@@ -1121,7 +1121,7 @@ class ModelOutput:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, ModelOutput):
-            return NotImplemented
+            raise NotImplementedError
         return (
             self.name == other.name
             and self.tasks == other.tasks
@@ -1312,7 +1312,7 @@ class Hyperparameters:
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Hyperparameters):
-            return NotImplemented
+            raise NotImplementedError
         return self.properties == other.properties
 
     def apply(self, **kwargs: Any) -> None:
