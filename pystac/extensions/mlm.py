@@ -1715,7 +1715,7 @@ class CollectionMLMExtension(MLMExtension[pystac.Collection]):
         self.links = collection.links
 
     def __repr__(self) -> str:
-        return f"<CollectionMLMExtension Item id={self.collection.id}>"
+        return f"<CollectionMLMExtension Collection id={self.collection.id}>"
 
 
 class _AssetMLMExtension(ABC):
@@ -1821,9 +1821,6 @@ class _AssetMLMExtension(ABC):
         else:
             self.properties.pop(ENTRYPOITN_ASSET_PROP, None)
 
-    def __repr__(self) -> str:
-        return f"<AssetMLMExtension Asset href={self.asset_href}>"
-
 
 class AssetGeneralMLMExtension(
     _AssetMLMExtension,
@@ -1884,6 +1881,9 @@ class AssetGeneralMLMExtension(
         cls.ensure_owner_has_extension(obj, add_if_missing)
         return AssetGeneralMLMExtension._ext(obj)
 
+    def __repr__(self) -> str:
+        return f"<AssetGeneralMLMExtension Asset href={self.asset_href}>"
+
 
 class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     """A class that can be used to extend the properties of an
@@ -1900,7 +1900,7 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
     """
 
     def __repr__(self) -> str:
-        return f"<AssetMLMExtension Asset href={self.asset_href}>"
+        return f"<AssetDetailedMLMExtension Asset href={self.asset_href}>"
 
     @classmethod
     def ext(
