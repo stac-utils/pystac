@@ -1054,5 +1054,5 @@ def test_raise_exception_on_mlm_extension_and_asset() -> None:
         media_type="application/tiff",
         roles=["mlm:model"],
     )
-    with pytest.raises(pystac.errors.STACError):
+    with pytest.raises(TypeError):
         MLMExtension.ext(asset, add_if_missing=False)

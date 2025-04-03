@@ -912,7 +912,7 @@ class ModelInput:
         elif isinstance(bands, list) and all(isinstance(item, dict) for item in bands):
             return [ModelBand(band) for band in bands if isinstance(band, dict)]
 
-        raise STACError("Invalid bands property. Must list[str] or list[ModelBand]")
+        raise TypeError("Invalid bands property. Must list[str] or list[ModelBand]")
 
     @bands.setter
     def bands(self, v: list[ModelBand] | list[str]) -> None:
@@ -1454,7 +1454,7 @@ class MLMExtension(
             MLMExtension[T]: The extended object
 
         Raises:
-            pystac.STACError: When a :class:`pystac.Asset` object is apssed as the
+            pystac.TypeError: When a :class:`pystac.Asset` object is apssed as the
                 `obj` parameter
             pystac.ExtensionTypeError: When any unsupported object is passed as the
                 `obj` parameter. If you see this extension in this context, please
@@ -1470,7 +1470,7 @@ class MLMExtension(
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            raise pystac.STACError(
+            raise TypeError(
                 "This class cannot be used to extend STAC objects of type Assets. "
                 "To extend Asset objects, use either AssetGeneralMLMExtension or "
                 "AssetDetailedMLMExtension"
@@ -1739,7 +1739,7 @@ class _AssetMLMExtension(ABC):
     @classmethod
     def _ext(cls: type[AssetExtensionType], obj: pystac.Asset) -> AssetExtensionType:
         if not isinstance(obj, pystac.Asset):
-            raise STACError(
+            raise TypeError(
                 "This class can only be used to extend Assets. "
                 "For Items and Collections use MLMExtension."
             )
