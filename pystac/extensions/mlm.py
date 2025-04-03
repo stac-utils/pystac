@@ -24,6 +24,8 @@ from pystac.extensions.raster import DataType
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required
 
+#: Generalized version of :class:`pystac.Item`, :class:`pystac.ItemAssetDefinition`,
+#: :class:`pystac.Collection`, or :class:`pystac.Asset`
 T = TypeVar(
     "T", pystac.Item, pystac.ItemAssetDefinition, pystac.Collection, pystac.Asset
 )
@@ -1186,12 +1188,13 @@ class ModelOutput:
                 for. This can be a subset of mlm:tasks defined under the Item properties
                 as applicable.
             result: The structure that describes the resulting output arrays/tensors
-            from one model head. description: Additional details about the output such
-                as describing its purpose or expected result that cannot be represented
-                by other properties.
+                from one model head. description: Additional details about the output
+                such as describing its purpose or expected result that cannot be
+                represented by other properties.
             classes: A list of class objects adhering to the Classification Extension.
             post_processing_function: Custom postprocessing function where
-            normalization, rescaling, or any other significant operations takes place.
+                normalization, rescaling, or any other significant operations takes
+                place.
 
         Returns:
             ModelOutput
@@ -1448,7 +1451,7 @@ class MLMExtension(
                 listed there.
 
         Returns:
-            MLMExtension[pystac.extensions.mlm.T]: The extended object
+            MLMExtension[T]: The extended object
 
         Raises:
             pystac.STACError: When a :class:`pystac.Asset` object is apssed as the
