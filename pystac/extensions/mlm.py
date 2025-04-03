@@ -2026,26 +2026,8 @@ class MLMExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        # migrate from 1.0.0 to 1.1.0
-        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
-            # no migrations needed
-            pass
-
-        # migrate from 1.1.0 to 1.2.0
-        if SCHEMA_URI_PATTERN.format(version="1.1.0") in info.extensions:
-            # no migrations needed
-            pass
-
-        # migrate from 1.2.0 to 1.3.0
-        if SCHEMA_URI_PATTERN.format(version="1.2.0") in info.extensions:
-            # no migration needed
-            pass
-
-        # migrate from 1.3.0 to 1.4.0
-        if SCHEMA_URI_PATTERN.format(version="1.3.0") in info.extensions:
-            # no migration needed
-            pass
-
+        # mo adjustments to objects needed when migrating yet
+        # schema back to v1.0 is fully backwards compatible
         super().migrate(obj, version, info)
 
 
