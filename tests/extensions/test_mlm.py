@@ -75,6 +75,9 @@ def test_model_band() -> None:
 
     assert c.to_dict() == d
 
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
+
 
 def test_model_props() -> None:
     c = ModelBand({})
@@ -100,6 +103,9 @@ def test_processing_expression() -> None:
 
     assert c.to_dict() == d
 
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
+
 
 def test_processint_expression_props() -> None:
     c = ProcessingExpression({})
@@ -116,25 +122,43 @@ def test_processint_expression_props() -> None:
     assert c.expression == "B01 + B02"
 
 
-def test_valuescaling_object() -> None:
+@pytest.mark.parametrize(
+    "scale_type, min_val, max_val, mean, stddev, value, format_val, expression",
+    [
+        (ValueScalingType.MIN_MAX, 0, 4, 3, 3, 4, "asdf", "asdf"),
+        (ValueScalingType.MIN_MAX, 0.2, 4.3, 3.13, 3.2, 4.5, "asdf", "asdf"),
+        (ValueScalingType.MIN_MAX, 0, 4, None, None, None, None, None),
+        (ValueScalingType.SCALE, None, None, None, None, 2, None, None),
+    ],
+)
+def test_valuescaling_object(
+    scale_type: ValueScalingType,
+    min_val: int | float | None,
+    max_val: int | float | None,
+    mean: int | float | None,
+    stddev: int | float | None,
+    value: int | float | None,
+    format_val: str | None,
+    expression: str | None,
+) -> None:
     c = ValueScaling.create(
-        ValueScalingType.MIN_MAX,
-        minimum=0,
-        maximum=4,
-        mean=3,
-        stddev=3.141,
-        value=4,
-        format="asdf",
-        expression="asdf",
+        scale_type,
+        minimum=min_val,
+        maximum=max_val,
+        mean=mean,
+        stddev=stddev,
+        value=value,
+        format=format_val,
+        expression=expression,
     )
-    assert c.type == ValueScalingType.MIN_MAX
-    assert c.minimum == 0
-    assert c.maximum == 4
-    assert c.mean == 3
-    assert c.stddev == 3.141
-    assert c.value == 4
-    assert c.format == "asdf"
-    assert c.expression == "asdf"
+    assert c.type == scale_type
+    assert c.minimum == min_val
+    assert c.maximum == max_val
+    assert c.mean == mean
+    assert c.stddev == stddev
+    assert c.value == value
+    assert c.format == format_val
+    assert c.expression == expression
 
     with pytest.raises(STACError):
         ValueScaling.create(
@@ -143,6 +167,9 @@ def test_valuescaling_object() -> None:
 
     with pytest.raises(STACError):
         ValueScaling.create(ValueScalingType.Z_SCORE, mean=3)  # missing param stddev
+
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
 
 
 def test_valuescaling_required_params() -> None:
@@ -177,6 +204,9 @@ def test_input_structure() -> None:
     assert c.shape == [-1, 3, 64, 64]
     assert c.dim_order == ["batch", "channel", "width", "height"]
     assert c.data_type == DataType.FLOAT64
+
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
 
 
 def test_model_input_structure_props() -> None:
@@ -269,6 +299,9 @@ def test_model_input(
     assert "resize_type" in d_reverse
     assert "pre_processing_function" in d_reverse
 
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
+
 
 def test_model_input_props() -> None:
     c = ModelInput({})
@@ -313,6 +346,9 @@ def test_result_structure() -> None:
     assert c.shape == [1, 64, 64]
     assert c.dim_order == ["time", "width", "height"]
     assert c.data_type == DataType.FLOAT64
+
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
 
 
 def test_result_structure_props() -> None:
@@ -361,6 +397,9 @@ def test_model_output(post_proc_func: ProcessingExpression | None) -> None:
     ]
     assert c.post_processing_function == post_proc_func
 
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
+
 
 def test_model_output_props() -> None:
     c = ModelOutput({})
@@ -407,6 +446,9 @@ def test_hyperparameters() -> None:
     for key in d:
         assert key in c.to_dict()
         assert c.to_dict()[key] == d[key]
+
+    with pytest.raises(NotImplementedError):
+        _ = c == "blah"
 
 
 def teest_get_schema_uri(basic_mlm_item: Item) -> None:
@@ -570,6 +612,34 @@ def test_apply(plain_item: Item) -> None:
         MLMExtension.ext(plain_item).hyperparameters is not None
         and MLMExtension.ext(plain_item).hyperparameters == hyp
     )
+
+    d = {
+        **plain_item.properties,
+        "mlm:name": "asdf",
+        "mlm:architecture": "ResNet",
+        "mlm:tasks": [TaskType.CLASSIFICATION],
+        "mlm:framework": "PyTorch",
+        "mlm:framework_version": "1.2.3",
+        "mlm:memory_size": 3,
+        "mlm:total_parameters": 123,
+        "mlm:pretrained": True,
+        "mlm:pretrained_source": "asdfasdfasdf",
+        "mlm:batch_size_suggestion": 32,
+        "mlm:accelerator": AcceleratorType.CUDA,
+        "mlm:accelerator_constrained": False,
+        "mlm:accelerator_summary": "This is the summary",
+        "mlm:accelerator_count": 1,
+        "mlm:input": [inp.to_dict() for inp in model_input],
+        "mlm:output": [out.to_dict() for out in model_output],
+        "mlm:hyperparameters": hyp.to_dict(),
+    }
+
+    assert MLMExtension.ext(plain_item).to_dict() == d
+
+
+def test_apply_wrong_object() -> None:
+    with pytest.raises(pystac.ExtensionTypeError):
+        _ = MLMExtension.ext(1, False)
 
 
 def test_to_from_dict(basic_item_dict: dict[str, Any]) -> None:
@@ -774,6 +844,25 @@ def test_apply_generic_asset() -> None:
     assert asset_ext.entrypoint == "baz"
 
 
+def test_to_dict_asset_generic() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+    )
+    asset_ext = AssetGeneralMLMExtension.ext(asset, add_if_missing=False)
+    asset_ext.apply(artifact_type="foo", compile_method="bar", entrypoint="baz")
+
+    d = {
+        "mlm:artifact_type": "foo",
+        "mlm:compile_method": "bar",
+        "mlm:entrypoint": "baz",
+    }
+    assert asset_ext.to_dict() == d
+
+
 def test_add_to_detailled_asset() -> None:
     model_input = ModelInput.create(
         name="model",
@@ -818,6 +907,8 @@ def test_add_to_detailled_asset() -> None:
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
+
+    assert repr(asset_ext) == f"<AssetDetailedMLMExtension Asset href={asset.href}>"
 
 
 def test_apply_detailled_asset() -> None:
@@ -866,12 +957,68 @@ def test_apply_detailled_asset() -> None:
     assert asset_ext.entrypoint == "baz"
 
 
+def test_to_dict_detailed_asset() -> None:
+    asset = pystac.Asset(
+        href="http://example.com/test.tiff",
+        title="image",
+        description="asdf",
+        media_type="application/tiff",
+        roles=["mlm:model"],
+    )
+    asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
+
+    model_input = ModelInput.create(
+        name="model",
+        bands=["B02"],
+        input=InputStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+    model_output = ModelOutput.create(
+        name="output",
+        tasks=[TaskType.CLASSIFICATION],
+        result=ResultStructure.create(
+            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
+        ),
+    )
+
+    asset_ext.apply(
+        "asdf",
+        "ResNet",
+        [TaskType.CLASSIFICATION],
+        [model_input],
+        [model_output],
+        artifact_type="foo",
+        compile_method="bar",
+        entrypoint="baz",
+    )
+
+    d = {
+        "mlm:name": "asdf",
+        "mlm:architecture": "ResNet",
+        "mlm:tasks": [TaskType.CLASSIFICATION],
+        "mlm:input": [model_input.to_dict()],
+        "mlm:output": [model_output.to_dict()],
+        "mlm:artifact_type": "foo",
+        "mlm:compile_method": "bar",
+        "mlm:entrypoint": "baz",
+        "mlm:accelerator": None,
+        "mlm:pretrained_source": None,
+    }
+    assert asset_ext.to_dict() == d
+
+
 def test_item_asset_extension(mlm_collection: Collection) -> None:
     assert mlm_collection.item_assets
     item_asset = mlm_collection.item_assets["weights"]
-    MLMExtension.ext(item_asset, add_if_missing=True)
+    item_asset_ext = MLMExtension.ext(item_asset, add_if_missing=True)
     assert MLMExtension.get_schema_uri() in mlm_collection.stac_extensions
     assert mlm_collection.item_assets["weights"].ext.has("mlm")
+
+    assert (
+        repr(item_asset_ext)
+        == f"<ItemAssetsMLMExtension ItemAssetDefinition={item_asset}"
+    )
 
 
 def test_collection_extension(mlm_collection: Collection) -> None:
@@ -881,6 +1028,9 @@ def test_collection_extension(mlm_collection: Collection) -> None:
 
     coll_ext.mlm_name = "asdf"
     assert coll_ext.mlm_name == "asdf"
+    assert (
+        repr(coll_ext) == f"<CollectionMLMExtension Collection id={mlm_collection.id}>"
+    )
 
 
 def test_raise_exception_on_mlm_extension_and_asset() -> None:
