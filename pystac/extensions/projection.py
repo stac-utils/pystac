@@ -477,8 +477,7 @@ class ProjectionExtensionHooks(ExtensionHooks):
             return
 
         # proj:epsg moved to proj:code
-        if "proj:epsg" in obj["properties"]:
-            epsg = obj["properties"]["proj:epsg"]
+        if epsg := obj["properties"].get("proj:epsg"):
             obj["properties"]["proj:code"] = f"EPSG:{epsg}"
             del obj["properties"]["proj:epsg"]
 
