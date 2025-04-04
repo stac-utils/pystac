@@ -662,3 +662,15 @@ def test_v1_crs_string() -> None:
     item = pystac.Item.from_dict(data, migrate=False)
     assert item.ext.proj.epsg is not None
     assert item.ext.proj.crs_string == "EPSG:32617"
+
+
+def test_none_epsg(item: Item) -> None:
+    # https://github.com/stac-utils/pystac/issues/1543
+    d = item.to_dict(include_self_link=False, transform_hrefs=False)
+    d["stac_version"] = "1.0.0"
+    d["stac_extensions"] = [
+        "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    ]
+    d["properties"]["proj:epsg"] = None
+    item = Item.from_dict(d, migrate=True)
+    assert item.ext.proj.code is None
