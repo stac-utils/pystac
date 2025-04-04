@@ -9,6 +9,7 @@
 ### Fixed
 
 - `proj:epsg` migration when `None` ([#1544](https://github.com/stac-utils/pystac/pull/1544))
+- fixed missing parameter "title" in pystac.extensions.classification.Classification ([#1539](https://github.com/stac-utils/pystac/pull/1539))
 
 ## [v1.12.2]
 
