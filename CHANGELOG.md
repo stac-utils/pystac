@@ -8,9 +8,6 @@
 - `extensions.mlm` for supporting the [MLM](https://github.com/stac-extensions/mlm) extension ([1542](https://github.com/stac-utils/pystac/pull/1542))
 
 ### Fixed
-- fixed missing parameter "title" in pystac.extensions.classification.Classification ([#1539](https://github.com/stac-utils/pystac/pull/1539))
-
-### Fixed
 
 - `proj:epsg` migration when `None` ([#1544](https://github.com/stac-utils/pystac/pull/1544))
 - fixed missing parameter "title" in pystac.extensions.classification.Classification ([#1539](https://github.com/stac-utils/pystac/pull/1539))
