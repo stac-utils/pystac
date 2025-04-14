@@ -216,7 +216,7 @@ class ModelBand:
             name: Name of the band referring to an extended band definition
             format: The type of expression that is specified in the expression property
             expression: An expression compliant with the format specified.
-                The cxpression can be applied to any data type and depends on the
+                The expression can be applied to any data type and depends on the
                 format given
         """
         c = cls({})
