@@ -587,6 +587,12 @@ def test_migrate() -> None:
     assert item.ext.proj.epsg == 32614
     assert item.ext.proj.code == "EPSG:32614"
 
+    assert item.assets["B1"].ext.proj.epsg == 32614
+    assert item.assets["B1"].ext.proj.code == "EPSG:32614"
+
+    assert item.assets["B8"].ext.proj.epsg == 9999
+    assert item.assets["B8"].ext.proj.code == "EPSG:9999"
+
 
 def test_older_extension_version(projection_landsat8_item: Item) -> None:
     old = "https://stac-extensions.github.io/projection/v1.0.0/schema.json"
