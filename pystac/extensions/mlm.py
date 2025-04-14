@@ -1608,7 +1608,7 @@ class MLMExtension(
     @property
     def accelerator_constrained(self) -> bool | None:
         """
-        Get or set the accelerator_constrianed property
+        Get or set the accelerator_constrained property
         """
         return self._get_property(ACCELERATOR_CONSTRAINED_PROP, bool)
 
