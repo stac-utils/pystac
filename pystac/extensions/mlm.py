@@ -103,7 +103,7 @@ OUTPUT_PROP: str = PREFIX + "output"
 HYPERPARAMETERS_PROP: str = PREFIX + "hyperparameters"
 
 ARTIFACT_TYPE_ASSET_PROP = PREFIX + "artifact_type"
-COMPILE_MDTHOD_ASSET_PROP = PREFIX + "compile_method"
+COMPILE_METHOD_ASSET_PROP = PREFIX + "compile_method"
 ENTRYPOINT_ASSET_PROP = PREFIX + "entrypoint"
 
 
@@ -1798,14 +1798,14 @@ class _AssetMLMExtension(ABC):
         """
         Get or set this asset's compile_method property
         """
-        return self.properties.get(COMPILE_MDTHOD_ASSET_PROP)
+        return self.properties.get(COMPILE_METHOD_ASSET_PROP)
 
     @compile_method.setter
     def compile_method(self, v: str | None) -> None:
         if v is not None:
-            self.properties[COMPILE_MDTHOD_ASSET_PROP] = v
+            self.properties[COMPILE_METHOD_ASSET_PROP] = v
         else:
-            self.properties.pop(COMPILE_MDTHOD_ASSET_PROP, None)
+            self.properties.pop(COMPILE_METHOD_ASSET_PROP, None)
 
     @property
     def entrypoint(self) -> str | None:
