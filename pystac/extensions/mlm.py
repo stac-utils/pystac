@@ -1810,7 +1810,7 @@ class _AssetMLMExtension(ABC):
     @property
     def entrypoint(self) -> str | None:
         """
-        Get or set this asset's entrypoint property asdfasdf
+        Get or set this asset's entrypoint property
         """
         return self.properties.get(ENTRYPOINT_ASSET_PROP)
 
