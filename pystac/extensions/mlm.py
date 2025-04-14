@@ -467,11 +467,11 @@ class ValueScaling:
         Determines the parameters required for a certain ValueScaling operation.
 
         Args:
-            type: The type of ValueScaling operation for which required proreties are
+            type: The type of ValueScaling operation for which required properties are
                 to be retrieved
 
         Returns:
-            list[str]: names of proreties required for the given ``type``
+            list[str]: names of properties required for the given ``type``
         """
         d: dict[str, list[str]] = {
             "min-max": ["minimum", "maximum"],
