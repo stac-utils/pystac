@@ -490,8 +490,8 @@ class ValueScaling:
         cls, type: ValueScalingType, props: dict[str, Any]
     ) -> None:
         """
-        Validate whether given properties satisfy the requirements set by the ValueScaling
-            ``type`` parameter
+        Validate whether given properties satisfy the requirements set by the
+            ValueScaling ``type`` parameter
 
         Args:
             type: The type of ValueScaling operation
