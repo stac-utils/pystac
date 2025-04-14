@@ -112,18 +112,18 @@ class TaskType(StringEnum):
     An enumeration of Tasks supported by the extension
     """
 
-    REGRESSION = ("regression",)
-    CLASSIFICATION = ("classification",)
-    SCENE_CLASSIFICATION = ("scene-classification",)
-    DETECTION = ("detection",)
-    OBJECT_DETECTION = ("object-detection",)
-    SEGMENTATION = ("segmentation",)
-    SEMANTIC_SEGMENTATION = ("semantic-segmentation",)
-    INSTANCE_SEGMENTATION = ("instance-segmentation",)
-    PANOPTIC_SEGMENTATION = ("panoptic-segmentation",)
-    SIMILARITy_SEARCH = ("similarity-search",)
-    GENERATIVE = ("generative",)
-    IAMGE_CAPTIONING = ("image-captioning",)
+    REGRESSION = "regression"
+    CLASSIFICATION = "classification"
+    SCENE_CLASSIFICATION = "scene-classification"
+    DETECTION = "detection"
+    OBJECT_DETECTION = "object-detection"
+    SEGMENTATION = "segmentation"
+    SEMANTIC_SEGMENTATION = "semantic-segmentation"
+    INSTANCE_SEGMENTATION = "instance-segmentation"
+    PANOPTIC_SEGMENTATION = "panoptic-segmentation"
+    SIMILARITY_SEARCH = "similarity-search"
+    GENERATIVE = "generative"
+    IAMGE_CAPTIONING = "image-captioning"
     SUPER_RESOLUTION = "super-resolution"
 
 
@@ -132,12 +132,12 @@ class AcceleratorType(StringEnum):
     An enumeration of accelerators supported by the extension
     """
 
-    AMD64 = ("amd64",)
-    CUDA = ("cuda",)
-    XLA = ("xla",)
-    AMD_ROCM = ("amd-rocm",)
-    INTEL_IPEX_CPU = ("intel-ipex-cpu",)
-    INTEL_IPEX_GPU = ("intel-ipex-gpu",)
+    AMD64 = "amd64"
+    CUDA = "cuda"
+    XLA = "xla"
+    AMD_ROCM = "amd-rocm"
+    INTEL_IPEX_CPU = "intel-ipex-cpu"
+    INTEL_IPEX_GPU = "intel-ipex-gpu"
     MACOS_ARM = "macos-arm"
 
 
