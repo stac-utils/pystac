@@ -574,7 +574,7 @@ def test_get_set_code(projection_landsat8_item: Item) -> None:
     assert proj_item.properties["proj:code"] == "IAU_2015:30100"
 
 
-def test_migrate() -> None:
+def test_migrate_item() -> None:
     old = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
     current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
 
@@ -592,6 +592,21 @@ def test_migrate() -> None:
 
     assert item.assets["B8"].ext.proj.epsg == 9999
     assert item.assets["B8"].ext.proj.code == "EPSG:9999"
+
+
+def test_migrate_collection_item_assets() -> None:
+    old = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+
+    path = TestCases.get_path("data-files/projection/collection-with-summaries.json")
+    collection = pystac.Collection.from_file(path)
+
+    assert old not in collection.stac_extensions
+    assert current in collection.stac_extensions
+
+    for item_asset in collection.item_assets.values():
+        assert item_asset.ext.proj.epsg == 32659
+        assert item_asset.ext.proj.code == "EPSG:32659"
 
 
 def test_older_extension_version(projection_landsat8_item: Item) -> None:
