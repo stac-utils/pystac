@@ -104,7 +104,7 @@ HYPERPARAMETERS_PROP: str = PREFIX + "hyperparameters"
 
 ARTIFACT_TYPE_ASSET_PROP = PREFIX + "artifact_type"
 COMPILE_MDTHOD_ASSET_PROP = PREFIX + "compile_method"
-ENTRYPOITN_ASSET_PROP = PREFIX + "entrypoint"
+ENTRYPOINT_ASSET_PROP = PREFIX + "entrypoint"
 
 
 class TaskType(StringEnum):
@@ -1812,14 +1812,14 @@ class _AssetMLMExtension(ABC):
         """
         Get or set this asset's entrypoint property asdfasdf
         """
-        return self.properties.get(ENTRYPOITN_ASSET_PROP)
+        return self.properties.get(ENTRYPOINT_ASSET_PROP)
 
     @entrypoint.setter
     def entrypoint(self, v: str | None) -> None:
         if v is not None:
-            self.properties[ENTRYPOITN_ASSET_PROP] = v
+            self.properties[ENTRYPOINT_ASSET_PROP] = v
         else:
-            self.properties.pop(ENTRYPOITN_ASSET_PROP, None)
+            self.properties.pop(ENTRYPOINT_ASSET_PROP, None)
 
 
 class AssetGeneralMLMExtension(
