@@ -1454,7 +1454,7 @@ class MLMExtension(
             MLMExtension[T]: The extended object
 
         Raises:
-            TypeError: When a :class:`pystac.Asset` object is apssed as the
+            TypeError: When a :class:`pystac.Asset` object is passed as the
                 `obj` parameter
             pystac.ExtensionTypeError: When any unsupported object is passed as the
                 `obj` parameter. If you see this extension in this context, please
