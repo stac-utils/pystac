@@ -4,6 +4,7 @@
 
 ### Added
 
+- Projection extension: migrate Assets and Item-Assets ([#1549](https://github.com/stac-utils/pystac/pull/1549))
 - `Collection.from_items` for creating a `pystac.Collection` from an `ItemCollection` ([#1522](https://github.com/stac-utils/pystac/pull/1522))
 
 ### Fixed
