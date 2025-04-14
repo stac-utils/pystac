@@ -157,6 +157,10 @@ class CollectionExt(CatalogExt):
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
     @property
+    def mlm(self) -> MLMExtension[Collection]:
+        return MLMExtension.ext(self.stac_object)
+
+    @property
     def render(self) -> dict[str, Render]:
         return RenderExtension.ext(self.stac_object).renders
 
