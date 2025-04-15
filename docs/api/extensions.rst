@@ -20,6 +20,9 @@ pystac.extensions
     grid.GridExtension
     item_assets.ItemAssetsExtension
     mgrs.MgrsExtension
+    mlm.MLMExtension
+    mlm.AssetGeneralMLMExtension
+    mlm.AssetDetailedMLMExtension
     pointcloud.PointcloudExtension
     projection.ProjectionExtension
     raster.RasterExtension

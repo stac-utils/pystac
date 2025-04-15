@@ -5,6 +5,7 @@
 ### Added
 
 - `Collection.from_items` for creating a `pystac.Collection` from an `ItemCollection` ([#1522](https://github.com/stac-utils/pystac/pull/1522))
+- `extensions.mlm` for supporting the [MLM](https://github.com/stac-extensions/mlm) extension ([#1542](https://github.com/stac-utils/pystac/pull/1542))
 
 ### Fixed
 
