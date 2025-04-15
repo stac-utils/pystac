@@ -19,6 +19,11 @@ from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
+from pystac.extensions.mlm import (
+    AssetDetailedMLMExtension,
+    AssetGeneralMLMExtension,
+    MLMExtension,
+)
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
@@ -49,6 +54,7 @@ EXTENSION_NAMES = Literal[
     "grid",
     "item_assets",
     "mgrs",
+    "mlm",
     "pc",
     "proj",
     "raster",
@@ -73,6 +79,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     GridExtension.name: GridExtension,
     ItemAssetsExtension.name: ItemAssetsExtension,
     MgrsExtension.name: MgrsExtension,
+    MLMExtension.name: MLMExtension,
     PointcloudExtension.name: PointcloudExtension,
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
@@ -157,6 +164,10 @@ class CollectionExt(CatalogExt):
         return ItemAssetsExtension.ext(self.stac_object).item_assets
 
     @property
+    def mlm(self) -> MLMExtension[Collection]:
+        return MLMExtension.ext(self.stac_object)
+
+    @property
     def render(self) -> dict[str, Render]:
         return RenderExtension.ext(self.stac_object).renders
 
@@ -231,6 +242,10 @@ class ItemExt:
     @property
     def mgrs(self) -> MgrsExtension:
         return MgrsExtension.ext(self.stac_object)
+
+    @property
+    def mlm(self) -> MLMExtension[Item]:
+        return MLMExtension.ext(self.stac_object)
 
     @property
     def pc(self) -> PointcloudExtension[Item]:
@@ -405,6 +420,13 @@ class AssetExt(_AssetExt[Asset]):
         return FileExtension.ext(self.stac_object)
 
     @property
+    def mlm(self) -> AssetGeneralMLMExtension[Asset] | AssetDetailedMLMExtension:
+        if "mlm:name" in self.stac_object.extra_fields:
+            return AssetDetailedMLMExtension.ext(self.stac_object)
+        else:
+            return AssetGeneralMLMExtension.ext(self.stac_object)
+
+    @property
     def timestamps(self) -> TimestampsExtension[Asset]:
         return TimestampsExtension.ext(self.stac_object)
 
@@ -424,6 +446,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     """
 
     stac_object: ItemAssetDefinition
+
+    @property
+    def mlm(self) -> MLMExtension[ItemAssetDefinition]:
+        return MLMExtension.ext(self.stac_object)
 
 
 @dataclass
