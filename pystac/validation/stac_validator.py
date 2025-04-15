@@ -179,7 +179,7 @@ class JsonSchemaSTACValidator(STACValidator):
             return Resource.from_contents(self._get_schema(schema_uri))
 
         return Registry(retrieve=retrieve).with_resources(  # type: ignore
-            [(k, Resource.from_contents(v)) for k, v in self.schema_cache.items()]  # type: ignore
+            [(k, Resource.from_contents(v)) for k, v in self.schema_cache.items()]
         )
 
     def get_schema_from_uri(self, schema_uri: str) -> tuple[dict[str, Any], Any]:
