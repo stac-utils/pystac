@@ -6,7 +6,7 @@ from typing import Any, cast
 import pytest
 
 import pystac.errors
-from pystac import Asset, Collection, Item
+from pystac import Asset, Collection, Item, ItemAssetDefinition
 from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
@@ -922,6 +922,21 @@ def test_add_to_detailled_asset() -> None:
     asset.roles.remove("mlm:model") if isinstance(asset.roles, list) else None
     asset_ext.artifact_type = None
     assert asset_ext.artifact_type is None
+
+
+def test_correct_asset_extension_is_used() -> None:
+    asset = Asset("https://example.com")
+    assert isinstance(asset.ext.mlm, AssetGeneralMLMExtension)
+
+    asset.extra_fields["mlm:name"] = "asdf"
+    assert isinstance(asset.ext.mlm, AssetDetailedMLMExtension)
+
+
+def test_asset_accessor() -> None:
+    item_asset = ItemAssetDefinition.create(
+        title="asdf", description="asdf", media_type="asdf", roles=["asdf"]
+    )
+    assert isinstance(item_asset.ext.mlm, MLMExtension)
 
 
 def test_apply_detailled_asset() -> None:

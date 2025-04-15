@@ -19,7 +19,11 @@ from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
-from pystac.extensions.mlm import MLMExtension
+from pystac.extensions.mlm import (
+    AssetDetailedMLMExtension,
+    AssetGeneralMLMExtension,
+    MLMExtension,
+)
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
@@ -401,6 +405,13 @@ class AssetExt(_AssetExt[Asset]):
         return FileExtension.ext(self.stac_object)
 
     @property
+    def mlm(self) -> AssetGeneralMLMExtension[Asset] | AssetDetailedMLMExtension:
+        if "mlm:name" in self.stac_object.extra_fields:
+            return AssetDetailedMLMExtension.ext(self.stac_object)
+        else:
+            return AssetGeneralMLMExtension.ext(self.stac_object)
+
+    @property
     def timestamps(self) -> TimestampsExtension[Asset]:
         return TimestampsExtension.ext(self.stac_object)
 
@@ -416,6 +427,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     """
 
     stac_object: ItemAssetDefinition
+
+    @property
+    def mlm(self) -> MLMExtension[ItemAssetDefinition]:
+        return MLMExtension.ext(self.stac_object)
 
 
 @dataclass
