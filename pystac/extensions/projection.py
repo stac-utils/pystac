@@ -480,9 +480,10 @@ class ProjectionExtensionHooks(ExtensionHooks):
         if epsg := obj["properties"].pop("proj:epsg", None):
             obj["properties"]["proj:code"] = f"EPSG:{epsg}"
 
-        for asset in obj.get("assets", obj.get("item_assets", {})).values():
-            if epsg := asset.pop("proj:epsg", None):
-                asset["proj:code"] = f"EPSG:{epsg}"
+        for key in ["assets", "item_assets"]:
+            for asset in obj.get(key, {}).values():
+                if epsg := asset.pop("proj:epsg", None):
+                    asset["proj:code"] = f"EPSG:{epsg}"
 
         super().migrate(obj, version, info)
 
