@@ -89,7 +89,7 @@ def merge_common_properties(
                 collection_props = collection["properties"]
         else:
             raise ValueError(
-                "{} is expected to be a Collection or " "dict but is neither.".format(
+                "{} is expected to be a Collection or dict but is neither.".format(
                     collection
                 )
             )

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [v1.13.0] - 2025-04-15
+
 ### Added
 
 - Projection extension: migrate Assets and Item-Assets ([#1549](https://github.com/stac-utils/pystac/pull/1549))
@@ -13,13 +15,13 @@
 - `proj:epsg` migration when `None` ([#1544](https://github.com/stac-utils/pystac/pull/1544))
 - fixed missing parameter "title" in pystac.extensions.classification.Classification ([#1539](https://github.com/stac-utils/pystac/pull/1539))
 
-## [v1.12.2]
+## [v1.12.2] - 2025-02-19
 
 ### Fixed
 
 - Make sure that `VersionRange` has `VersionID`s rather than strings ([#1512](https://github.com/stac-utils/pystac/pull/1512))
 
-## [v1.12.1]
+## [v1.12.1] - 2025-01-27
 
 ### Changed
 
@@ -29,7 +31,7 @@
 
 - Fall back to `epsg` when `code` is not present in the Projection extension ([#1505](https://github.com/stac-utils/pystac/pull/1505), [#1510](https://github.com/stac-utils/pystac/pull/1510))
 
-## [v1.12.0]
+## [v1.12.0] - 2025-01-23
 
 ### Added
 
@@ -921,7 +923,8 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.12.2..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.13.0..main>
+[v1.13.0]: <https://github.com/stac-utils/pystac/compare/v1.12.2..v1.13.0>
 [v1.12.2]: <https://github.com/stac-utils/pystac/compare/v1.12.1..v1.12.2>
 [v1.12.1]: <https://github.com/stac-utils/pystac/compare/v1.12.0..v1.12.1>
 [v1.12.0]: <https://github.com/stac-utils/pystac/compare/v1.11.0..v1.12.0>

@@ -253,7 +253,7 @@ def test_summaries_adds_uri() -> None:
 def test_read_pre_09_fields_into_common_metadata() -> None:
     eo_item = pystac.Item.from_file(
         TestCases.get_path(
-            "data-files/examples/0.8.1/item-spec/examples/" "landsat8-sample.json"
+            "data-files/examples/0.8.1/item-spec/examples/landsat8-sample.json"
         )
     )
 
@@ -264,7 +264,7 @@ def test_read_pre_09_fields_into_common_metadata() -> None:
 def test_reads_asset_bands_in_pre_1_0_version() -> None:
     item = pystac.Item.from_file(
         TestCases.get_path(
-            "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
+            "data-files/examples/0.9.0/item-spec/examples/landsat8-sample.json"
         )
     )
 
@@ -277,7 +277,7 @@ def test_reads_asset_bands_in_pre_1_0_version() -> None:
 def test_reads_gsd_in_pre_1_0_version() -> None:
     eo_item = pystac.Item.from_file(
         TestCases.get_path(
-            "data-files/examples/0.9.0/item-spec/examples/" "landsat8-sample.json"
+            "data-files/examples/0.9.0/item-spec/examples/landsat8-sample.json"
         )
     )
 

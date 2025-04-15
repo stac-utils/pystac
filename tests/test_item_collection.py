@@ -156,26 +156,24 @@ def test_add_other_raises_error() -> None:
 
 def test_identify_0_8_itemcollection_type(stac_io: StacIO) -> None:
     itemcollection_path = TestCases.get_path(
-        "data-files/examples/0.8.1/item-spec/"
-        "examples/itemcollection-sample-full.json"
+        "data-files/examples/0.8.1/item-spec/examples/itemcollection-sample-full.json"
     )
     itemcollection_dict = stac_io.read_json(itemcollection_path)
 
-    assert pystac.ItemCollection.is_item_collection(
-        itemcollection_dict
-    ), "Did not correctly identify valid STAC 0.8 ItemCollection."
+    assert pystac.ItemCollection.is_item_collection(itemcollection_dict), (
+        "Did not correctly identify valid STAC 0.8 ItemCollection."
+    )
 
 
 def test_identify_0_9_itemcollection(stac_io: StacIO) -> None:
     itemcollection_path = TestCases.get_path(
-        "data-files/examples/0.9.0/item-spec/"
-        "examples/itemcollection-sample-full.json"
+        "data-files/examples/0.9.0/item-spec/examples/itemcollection-sample-full.json"
     )
     itemcollection_dict = stac_io.read_json(itemcollection_path)
 
-    assert pystac.ItemCollection.is_item_collection(
-        itemcollection_dict
-    ), "Did not correctly identify valid STAC 0.9 ItemCollection."
+    assert pystac.ItemCollection.is_item_collection(itemcollection_dict), (
+        "Did not correctly identify valid STAC 0.9 ItemCollection."
+    )
 
 
 def test_from_dict_preserves_dict(item_collection_dict: dict[str, Any]) -> None:
