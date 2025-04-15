@@ -20,8 +20,35 @@
       "type": "application/json"
     }
   ],
+  "item_assets": {
+    "analytic": {
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "4-Band Analytic",
+      "roles": [
+        "data"
+      ],
+      "gsd": 0.66,
+      "proj:code": "EPSG:32659",
+      "proj:shape": [
+        5558,
+        9559
+      ],
+      "proj:transform": [
+        0.5,
+        0,
+        712710,
+        0,
+        -0.5,
+        151406,
+        0,
+        0,
+        1
+      ]
+    }
+  },
   "stac_extensions": [
-    "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
   ],
   "summaries": {
     "proj:code": [
