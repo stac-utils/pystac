@@ -371,9 +371,9 @@ def test_clone_preserves_assets() -> None:
         assert key in cloned_collection.assets, f"Failed to Preserve {key} asset"
         cloned_asset = cloned_collection.assets.get(key)
         if cloned_asset is not None:
-            assert (
-                cloned_asset.owner is cloned_collection
-            ), f"Failed to set owner for {key}"
+            assert cloned_asset.owner is cloned_collection, (
+                f"Failed to set owner for {key}"
+            )
 
 
 def test_to_dict_no_self_href() -> None:

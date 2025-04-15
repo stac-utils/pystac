@@ -23,15 +23,13 @@ class TestValidate:
     @pytest.mark.vcr()
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
-            TestCases.get_path("data-files/catalogs/test-case-1/" "catalog.json")
+            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         catalog.validate()
 
         collection = pystac.read_file(
             TestCases.get_path(
-                "data-files/catalogs/test-case-1/"
-                "/country-1/area-1-1/"
-                "collection.json"
+                "data-files/catalogs/test-case-1//country-1/area-1-1/collection.json"
             )
         )
         collection.validate()

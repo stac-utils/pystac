@@ -420,9 +420,9 @@ class TestCatalog:
                     c.id for c in children
                 }, "Children unequal"
 
-                assert {c.id for c in root.get_items()} == {
-                    c.id for c in items
-                }, "Items unequal"
+                assert {c.id for c in root.get_items()} == {c.id for c in items}, (
+                    "Items unequal"
+                )
 
             assert actual_catalog_iterations == expected_catalog_iterations
 
@@ -460,10 +460,10 @@ class TestCatalog:
             actual_counts = actual_link_types_to_counts[obj_id]
             assert set(expected_counts.keys()) == set(actual_counts.keys())
             for rel in expected_counts:
-                assert (
-                    actual_counts[rel] == expected_counts[rel]
-                ), "Clone of {} has {} {} links, original has {}".format(
-                    obj_id, actual_counts[rel], rel, expected_counts[rel]
+                assert actual_counts[rel] == expected_counts[rel], (
+                    "Clone of {} has {} {} links, original has {}".format(
+                        obj_id, actual_counts[rel], rel, expected_counts[rel]
+                    )
                 )
 
     def test_save_uses_previous_catalog_type(self) -> None:
@@ -554,12 +554,12 @@ class TestCatalog:
 
             # Check the root catalog path
             expected_root_catalog_path = os.path.join(tmp_dir, "catalog.json")
-            assert os.path.exists(
-                expected_root_catalog_path
-            ), f"{expected_root_catalog_path} does not exist."
-            assert os.path.isfile(
-                expected_root_catalog_path
-            ), f"{expected_root_catalog_path} is not a file."
+            assert os.path.exists(expected_root_catalog_path), (
+                f"{expected_root_catalog_path} does not exist."
+            )
+            assert os.path.isfile(expected_root_catalog_path), (
+                f"{expected_root_catalog_path} is not a file."
+            )
 
             # Check each child catalog
             for child_catalog in catalog.get_children():
@@ -571,12 +571,12 @@ class TestCatalog:
                     expected_root_catalog_path,
                     start_is_dir=False,
                 )
-                assert os.path.exists(
-                    expected_child_path
-                ), f"{expected_child_path} does not exist."
-                assert os.path.isfile(
-                    expected_child_path
-                ), f"{expected_child_path} is not a file."
+                assert os.path.exists(expected_child_path), (
+                    f"{expected_child_path} does not exist."
+                )
+                assert os.path.isfile(expected_child_path), (
+                    f"{expected_child_path} is not a file."
+                )
 
             # Check each item
             for item in catalog.get_items(recursive=True):
@@ -588,12 +588,12 @@ class TestCatalog:
                     expected_root_catalog_path,
                     start_is_dir=False,
                 )
-                assert os.path.exists(
-                    expected_item_path
-                ), f"{expected_item_path} does not exist."
-                assert os.path.isfile(
-                    expected_item_path
-                ), f"{expected_item_path} is not a file."
+                assert os.path.exists(expected_item_path), (
+                    f"{expected_item_path} does not exist."
+                )
+                assert os.path.isfile(expected_item_path), (
+                    f"{expected_item_path} is not a file."
+                )
 
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.case_1()
@@ -613,10 +613,10 @@ class TestCatalog:
                     target_href = cast(pystac.STACObject, link.target).self_href
                 else:
                     target_href = link.absolute_href
-                assert (
-                    "http://example.com" in target_href
-                ), '[{}] {} does not contain "{}"'.format(
-                    link.rel, target_href, "http://example.com"
+                assert "http://example.com" in target_href, (
+                    '[{}] {} does not contain "{}"'.format(
+                        link.rel, target_href, "http://example.com"
+                    )
                 )
             for item in items:
                 assert "http://example.com" in item.self_href
@@ -748,9 +748,9 @@ class TestCatalog:
         assert len(result) == 0
         catalog.normalize_hrefs("/tmp")
         for item in catalog.get_items(recursive=True):
-            assert (
-                item.get_self_href() == expected_hrefs[item.id]
-            ), f" for item '{item.id}'"
+            assert item.get_self_href() == expected_hrefs[item.id], (
+                f" for item '{item.id}'"
+            )
 
     def test_generate_subcatalogs_works_after_adding_more_items(self) -> None:
         catalog = Catalog(id="test", description="Test")
@@ -1151,9 +1151,9 @@ class TestCatalog:
                     continue
 
                 href = link["href"]
-                assert not is_absolute_href(
-                    href
-                ), f"Link with rel={link['rel']} is absolute!"
+                assert not is_absolute_href(href), (
+                    f"Link with rel={link['rel']} is absolute!"
+                )
 
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
         cat = TestCases.case_3()

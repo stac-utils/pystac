@@ -58,7 +58,7 @@ class TestMigrate:
     def test_migrates_added_extension(self) -> None:
         item = pystac.Item.from_file(
             TestCases.get_path(
-                "data-files/examples/0.8.1/item-spec/" "examples/planet-sample.json"
+                "data-files/examples/0.8.1/item-spec/examples/planet-sample.json"
             )
         )
         assert ViewExtension.has_extension(item)

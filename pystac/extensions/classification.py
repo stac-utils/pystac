@@ -222,9 +222,9 @@ class Classification:
     def color_hint(self, v: str | None) -> None:
         if v is not None:
             match = COLOR_HINT_PATTERN.match(v)
-            assert (
-                v is None or match is not None and match.group() == v
-            ), "Must format color hints as '^([0-9A-F]{6})$'"
+            assert v is None or match is not None and match.group() == v, (
+                "Must format color hints as '^([0-9A-F]{6})$'"
+            )
             self.properties["color_hint"] = v
         else:
             self.properties.pop("color_hint", None)
@@ -343,9 +343,9 @@ class Bitfield:
         assert offset >= 0, "Non-negative offsets only"
         assert length >= 1, "Positive field lengths only"
         assert len(classes) > 0, "Must specify at least one class"
-        assert (
-            roles is None or len(roles) > 0
-        ), "When set, roles must contain at least one item"
+        assert roles is None or len(roles) > 0, (
+            "When set, roles must contain at least one item"
+        )
 
     @classmethod
     def create(

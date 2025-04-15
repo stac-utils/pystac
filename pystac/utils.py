@@ -464,12 +464,12 @@ def geometry_to_bbox(geometry: dict[str, Any]) -> list[float]:
         for x in coords:
             # This handles points
             if isinstance(x, float):
-                assert isinstance(
-                    coords[0], float
-                ), f"Type mismatch: {coords[0]} is not a float"
-                assert isinstance(
-                    coords[1], float
-                ), f"Type mismatch: {coords[1]} is not a float"
+                assert isinstance(coords[0], float), (
+                    f"Type mismatch: {coords[0]} is not a float"
+                )
+                assert isinstance(coords[1], float), (
+                    f"Type mismatch: {coords[1]} is not a float"
+                )
                 lats.append(coords[0])
                 lons.append(coords[1])
                 return

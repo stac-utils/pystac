@@ -61,19 +61,19 @@ extensions = [
 
 extlinks = {
     "tutorial": (
-        "https://github.com/stac-utils/pystac/" "tree/{}/docs/tutorials/%s".format(
+        "https://github.com/stac-utils/pystac/tree/{}/docs/tutorials/%s".format(
             git_branch
         ),
         "%s tutorial",
     ),
     "stac-spec": (
-        "https://github.com/radiantearth/stac-spec/tree/" "v{}/%s".format(
+        "https://github.com/radiantearth/stac-spec/tree/v{}/%s".format(
             STACVersion.DEFAULT_STAC_VERSION
         ),
         "%s path",
     ),
     "stac-api-spec": (
-        "https://github.com/radiantearth/stac-api-spec/tree/" "v{}/%s".format(
+        "https://github.com/radiantearth/stac-api-spec/tree/v{}/%s".format(
             STACVersion.DEFAULT_STAC_API_VERSION
         ),
         "%s path",
