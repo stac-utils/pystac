@@ -160,7 +160,7 @@ class ResizeType(StringEnum):
 
 class ValueScalingType(StringEnum):
     """
-    An enumeratino of Value Scaling operations supported by the extension
+    An enumeration of Value Scaling operations supported by the extension
     """
 
     MIN_MAX = "min-max"
