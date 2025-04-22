@@ -232,19 +232,19 @@ def test_model_input_structure_props() -> None:
 input_testdata = [
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         ProcessingExpression.create("python", "asdf"),
     ),
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         None,
         ProcessingExpression.create("python", "asdf"),
     ),
     (
         [ModelBand.create("B02"), ModelBand.create("B03"), ModelBand.create("B04")],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         ProcessingExpression.create("python", "asdf"),
     ),
@@ -256,7 +256,7 @@ input_testdata = [
     ),
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         None,
     ),
@@ -268,7 +268,7 @@ input_testdata = [
 )
 def test_model_input(
     bands: list[str] | list[ModelBand],
-    value_scaling: ValueScaling | None,
+    value_scaling: list[ValueScaling] | None,
     resize_type: ResizeType | None,
     pre_processing_function: ProcessingExpression | None,
 ) -> None:
@@ -323,7 +323,7 @@ def test_model_input_props() -> None:
     assert c.input == inp
 
     assert c.value_scaling is None
-    val_obj = ValueScaling.create(ValueScalingType.SCALE, value=3)
+    val_obj = [ValueScaling.create(ValueScalingType.SCALE, value=3)]
     c.value_scaling = val_obj
     assert c.value_scaling == val_obj
 
