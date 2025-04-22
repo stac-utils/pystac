@@ -148,8 +148,8 @@ class ResizeType(StringEnum):
 
     CROP = "crop"
     PAD = "pad"
-    INTERPOLATION_NEAREST = "interpolate-nearest"
-    INTERPOLATION_LINEAR = "interpolate-linear"
+    INTERPOLATION_NEAREST = "interpolation-nearest"
+    INTERPOLATION_LINEAR = "interpolation-linear"
     INTERPOLATION_CUBIC = "interpolation-cubic"
     INTERPOLATION_AREA = "interpolation-area"
     INTERPOLATION_LANCZOS4 = "interpolation-lanczos4"
