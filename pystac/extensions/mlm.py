@@ -573,7 +573,7 @@ class ValueScaling:
         if v is not None:
             self.properties[MAXIMUM_VALUE_SCALING_PROP] = v
         else:
-            self.properties.get(MAXIMUM_VALUE_SCALING_PROP, None)
+            self.properties.pop(MAXIMUM_VALUE_SCALING_PROP, None)
 
     @property
     def mean(self) -> int | float | None:
