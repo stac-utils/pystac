@@ -799,7 +799,7 @@ class ModelInput:
         bands: list[ModelBand] | list[str],
         input: InputStructure,
         description: str | None = None,
-        value_scaling: ValueScaling | None = None,
+        value_scaling: list[ValueScaling] | None = None,
         resize_type: ResizeType | None = None,
         pre_processing_function: ProcessingExpression | None = None,
     ) -> None:
@@ -850,7 +850,7 @@ class ModelInput:
         bands: list[ModelBand] | list[str],
         input: InputStructure,
         description: str | None = None,
-        value_scaling: ValueScaling | None = None,
+        value_scaling: list[ValueScaling] | None = None,
         resize_type: ResizeType | None = None,
         pre_processing_function: ProcessingExpression | None = None,
     ) -> ModelInput:
@@ -970,18 +970,18 @@ class ModelInput:
             self.properties.pop(DESCRIPTION_INPUT_OBJECT_PROP, None)
 
     @property
-    def value_scaling(self) -> ValueScaling | None:
+    def value_scaling(self) -> list[ValueScaling] | None:
         """
         Gets or sets the value_scaling property of this ModelInput object
         """
-        v = self.properties.get(VALUE_SCALING_INPUT_OBJECT_PROP)
-        return ValueScaling(v) if v is not None else v
+        v_list = self.properties.get(VALUE_SCALING_INPUT_OBJECT_PROP)
+        return [ValueScaling(v) for v in v_list] if v_list is not None else None
 
     @value_scaling.setter
-    def value_scaling(self, v: ValueScaling | None) -> None:
+    def value_scaling(self, v: list[ValueScaling] | None) -> None:
         # add None to properties dict and do not pop it, according to specification
         self.properties[VALUE_SCALING_INPUT_OBJECT_PROP] = (
-            None if v is None else v.to_dict()
+            None if v is None else [v_entry.to_dict() for v_entry in v]
         )
 
     @property
