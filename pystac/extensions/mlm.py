@@ -123,7 +123,7 @@ class TaskType(StringEnum):
     PANOPTIC_SEGMENTATION = "panoptic-segmentation"
     SIMILARITY_SEARCH = "similarity-search"
     GENERATIVE = "generative"
-    IAMGE_CAPTIONING = "image-captioning"
+    IMAGE_CAPTIONING = "image-captioning"
     SUPER_RESOLUTION = "super-resolution"
 
 
