@@ -1118,7 +1118,7 @@ class ResultStructure:
             get_required(
                 self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
                 self,
-                DIM_ORDER_RESULT_STRUCTURE_PROP,
+                DATA_TYPE_RESULT_STRUCTURE_PROP,
             ),
         )
 
