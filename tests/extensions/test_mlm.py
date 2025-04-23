@@ -20,6 +20,7 @@ from pystac.extensions.mlm import (
     InputStructure,
     ItemMLMExtension,
     MLMExtension,
+    MLMExtensionHooks,
     ModelBand,
     ModelInput,
     ModelOutput,
@@ -1071,3 +1072,127 @@ def test_raise_exception_on_mlm_extension_and_asset() -> None:
     )
     with pytest.raises(TypeError):
         MLMExtension.ext(asset, add_if_missing=False)
+
+
+@pytest.mark.parametrize(
+    "framework_old, framework_new",
+    ((None, None), ("Scikit-learn", "scikit-learn"), ("Huggingface", "Hugging Face")),
+)
+def test_migration_1_0_to_1_1(
+    framework_old: None | str, framework_new: None | str
+) -> None:
+    data: dict[str, Any] = {"properties": {}}
+
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert "mlm:framework" not in data["properties"]
+
+    data["properties"]["mlm:framework"] = framework_old
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert data["properties"]["mlm:framework"] == framework_new
+
+
+@pytest.mark.parametrize(
+    ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
+    (
+        (None, None, None, None, None),
+        (False, None, None, None, None),
+        (
+            False,
+            "z-score",
+            None,
+            [{"mean": 5, "stddev": 2}],
+            [ValueScaling.create(ValueScalingType.Z_SCORE, mean=5, stddev=2)],
+        ),
+        (
+            False,
+            "min-max",
+            None,
+            [{"minimum": 10, "maximum": 20}],
+            [ValueScaling.create(ValueScalingType.MIN_MAX, minimum=10, maximum=20)],
+        ),
+        (
+            True,
+            "z-score",
+            None,
+            [
+                {"mean": 5, "stddev": 2},
+                {"mean": 6, "stddev": 3},
+                {"mean": 10, "stddev": 1},
+            ],
+            [
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=5, stddev=2),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=6, stddev=3),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=10, stddev=1),
+            ],
+        ),
+        (
+            True,
+            "clip",
+            [3, 4, 5],
+            None,
+            [
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 3, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 4, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 5, 0, 1)",
+                ),
+            ],
+        ),
+    ),
+)
+def test_migration_1_3_to_1_4(
+    norm_by_channel: bool | None,
+    norm_type: str | None,
+    norm_clip: list[int] | None,
+    statistics: list[dict[str, Any]] | None,
+    value_scaling: list[ValueScaling] | None,
+) -> None:
+    data: dict[str, Any] = {"properties": {"mlm:input": []}}
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)  # nothing is supposed to happen here
+
+    input_obj: dict[str, Any] = {}
+    if norm_by_channel is not None:
+        input_obj["norm_by_channel"] = norm_by_channel
+    if norm_type is not None:
+        input_obj["norm_type"] = norm_type
+    if norm_clip is not None:
+        input_obj["norm_clip"] = norm_clip
+    if statistics is not None:
+        input_obj["statistics"] = statistics
+    data["properties"]["mlm:input"].append(input_obj)
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+    if norm_type is not None and value_scaling is not None:
+        assert len(data["properties"]["mlm:input"][0]["value_scaling"]) == len(
+            value_scaling
+        )
+        assert data["properties"]["mlm:input"][0]["value_scaling"] == [
+            obj.to_dict() for obj in value_scaling
+        ]
+
+    new_input_obj = data["properties"]["mlm:input"]
+    assert "norm_by_channel" not in new_input_obj
+    assert "norm_type" not in new_input_obj
+    assert "norm_clip" not in new_input_obj
+    assert "statistics" not in new_input_obj
+
+
+@pytest.mark.parametrize(
+    "norm_type",
+    ("l1", "l2", "l2sqr", "hamming", "hamming2", "type-mask", "relative", "inf"),
+)
+def test_migration_1_3_to_1_4_failure(norm_type: str) -> None:
+    data: dict[str, Any] = {"properties": {"mlm:input": [{"norm_type": norm_type}]}}
+
+    with pytest.raises(NotImplementedError):
+        MLMExtensionHooks._migrate_1_3_to_1_4(data)
