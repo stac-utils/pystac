@@ -2052,11 +2052,89 @@ class MLMExtensionHooks(ExtensionHooks):
     }
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
+    @staticmethod
+    def _migrate_1_0_to_1_1(obj: dict[str, Any]) -> None:
+        if "mlm:framework" in obj["properties"]:
+            if obj["properties"]["mlm:framework"] == "Scikit-learn":
+                obj["properties"]["mlm:framework"] = "scikit-learn"
+            if obj["properties"]["mlm:framework"] == "Huggingface":
+                obj["properties"]["mlm:framework"] = "Hugging Face"
+
+    @staticmethod
+    def _migrate_1_1_to_1_2(obj: dict[str, Any]) -> None:
+        pass
+
+    @staticmethod
+    def _migrate_1_2_to_1_3(obj: dict[str, Any]) -> None:
+        pass
+
+    @staticmethod
+    def _migrate_1_3_to_1_4(obj: dict[str, Any]) -> None:
+        for input_obj in obj["properties"]["mlm:input"]:
+            if "norm_type" in input_obj and input_obj["norm_type"] is not None:
+                norm_type = input_obj["norm_type"]
+                value_scaling_list = []
+                if norm_type == "min-max":
+                    for band_statistic in input_obj["statistics"]:
+                        value_scaling_obj = {
+                            "type": "min-max",
+                            "minimum": band_statistic["minimum"],
+                            "maximum": band_statistic["maximum"],
+                        }
+                        value_scaling_list.append(value_scaling_obj)
+                elif norm_type == "z-score":
+                    for band_statistic in input_obj["statistics"]:
+                        value_scaling_obj = {
+                            "type": "z-score",
+                            "mean": band_statistic["mean"],
+                            "stddev": band_statistic["stddev"],
+                        }
+                        value_scaling_list.append(value_scaling_obj)
+                elif norm_type == "clip":
+                    for clip_value in input_obj["norm_clip"]:
+                        value_scaling_obj = {
+                            "type": "processing",
+                            "format": "gdal-calc",
+                            "expression": f"numpy.clip(A / {clip_value}, 0, 1)",
+                        }
+                        value_scaling_list.append(value_scaling_obj)
+                else:
+                    raise NotImplementedError(
+                        f"Normalization type {norm_type} is not supported in stac:mlm"
+                        f" >= 1.3. Therefore an automatic migration is not possible. "
+                        f"Please migrate this normalization manually using "
+                        f'type="processing".'
+                    )
+                input_obj["value_scaling"] = value_scaling_list
+            input_obj.pop("norm_by_channel", None)
+            input_obj.pop("norm_type", None)
+            input_obj.pop("norm_clip", None)
+            input_obj.pop("statistics", None)
+
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         # mo adjustments to objects needed when migrating yet
         # schema back to v1.0 is fully backwards compatible
+
+        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
+            self._migrate_1_0_to_1_1(obj)
+            self._migrate_1_1_to_1_2(obj)
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.1.0") in info.extensions:
+            self._migrate_1_1_to_1_2(obj)
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.2.0") in info.extensions:
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.3.0") in info.extensions:
+            self._migrate_1_3_to_1_4(obj)
+
         super().migrate(obj, version, info)
 
 
