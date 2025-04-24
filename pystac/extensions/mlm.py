@@ -8,6 +8,7 @@ use of each property, please refer to the official
 
 from __future__ import annotations
 
+import warnings
 from abc import ABC
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
@@ -2055,10 +2056,39 @@ class MLMExtensionHooks(ExtensionHooks):
     @staticmethod
     def _migrate_1_0_to_1_1(obj: dict[str, Any]) -> None:
         if "mlm:framework" in obj["properties"]:
+            framework = obj["properties"]["mlm:framework"]
+            # remove invalid characters at beginning and end
+            forbidden_chars = [".", "_", "-", " ", "\t", "\n", "\r", "\f", "\v"]
+            if framework[0] in forbidden_chars or framework[-1] in forbidden_chars:
+                warnings.warn(
+                    "Value for mlm:framework is invalid in mlm>=1.1, as it must"
+                    "not start or end with one of the following characters: "
+                    "._- and whitespace. These characters are therefore removed while"
+                    "migrating the STAC object to v1.1.",
+                    SyntaxWarning,
+                )
+                while obj["properties"]["mlm:framework"][0] in forbidden_chars:
+                    new_str = obj["properties"]["mlm:framework"][1:]
+                    obj["properties"]["mlm:framework"] = new_str
+                while obj["properties"]["mlm:framework"][-1] in forbidden_chars:
+                    new_str = obj["properties"]["mlm:framework"][:-1]
+                    obj["properties"]["mlm:framework"] = new_str
+
+            # rename frameworks
             if obj["properties"]["mlm:framework"] == "Scikit-learn":
                 obj["properties"]["mlm:framework"] = "scikit-learn"
+                warnings.warn(
+                    "mlm:framework value Scikit-learn is no longer valid in mlm>=1.1. "
+                    "Renaming it to scikit-learn",
+                    SyntaxWarning,
+                )
             if obj["properties"]["mlm:framework"] == "Huggingface":
                 obj["properties"]["mlm:framework"] = "Hugging Face"
+                warnings.warn(
+                    "mlm:framework value Huggingface is no longer valid in mlm>=1.1. "
+                    "Renaming it to Hugging Face",
+                    SyntaxWarning,
+                )
 
     @staticmethod
     def _migrate_1_1_to_1_2(obj: dict[str, Any]) -> None:

@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from copy import deepcopy
 from typing import Any, cast
 
@@ -1075,20 +1076,35 @@ def test_raise_exception_on_mlm_extension_and_asset() -> None:
 
 
 @pytest.mark.parametrize(
-    "framework_old, framework_new",
-    ((None, None), ("Scikit-learn", "scikit-learn"), ("Huggingface", "Hugging Face")),
+    "framework_old, framework_new, valid",
+    (
+        ("Scikit-learn", "scikit-learn", False),
+        ("Huggingface", "Hugging Face", False),
+        ("-_ .asdf", "asdf", False),
+        ("asdf-_ .", "asdf", False),
+        ("-._   asdf-.", "asdf", False),
+        ("test_framework", "test_framework", True),
+    ),
 )
 def test_migration_1_0_to_1_1(
-    framework_old: None | str, framework_new: None | str
+    framework_old: None | str, framework_new: None | str, valid: bool
 ) -> None:
     data: dict[str, Any] = {"properties": {}}
 
     MLMExtensionHooks._migrate_1_0_to_1_1(data)
     assert "mlm:framework" not in data["properties"]
 
+    pattern = r"^(?=[^\s._\-]).*[^\s._\-]$"
     data["properties"]["mlm:framework"] = framework_old
-    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    if valid:
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    else:
+        with pytest.warns(SyntaxWarning):
+            MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
     assert data["properties"]["mlm:framework"] == framework_new
+    assert bool(re.match(pattern, data["properties"]["mlm:framework"]))
 
 
 @pytest.mark.parametrize(
