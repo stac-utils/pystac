@@ -1243,7 +1243,7 @@ def test_migration_1_2_to_1_3(
         ),
     ),
 )
-def test_migration_1_3_to_1_4(
+def test_migration_1_3_to_1_4_value_scaling(
     norm_by_channel: bool | None,
     norm_type: str | None,
     norm_clip: list[int] | None,
@@ -1289,3 +1289,34 @@ def test_migration_1_3_to_1_4_failure(norm_type: str) -> None:
 
     with pytest.raises(NotImplementedError):
         MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+
+def test_migration_1_3_to_1_4_assets() -> None:
+    data: dict[str, Any] = {
+        "properties": {},
+        "assets": {
+            "asset1": {
+                "mlm:name": "asdf",
+                "mlm:input": {},
+                "mlm:output": {},
+                "mlm:hyperparameters": {},
+                "roles": ["mlm:model"],
+            }
+        },
+    }
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+    assert "mlm:name" not in data["assets"]["asset1"]
+    assert "mlm:name" in data["properties"]
+
+    assert "mlm:input" not in data["assets"]["asset1"]
+    assert "mlm:input" in data["properties"]
+
+    assert "mlm:output" not in data["assets"]["asset1"]
+    assert "mlm:output" in data["properties"]
+
+    assert "mlm:hyperparameters" not in data["assets"]["asset1"]
+    assert "mlm:hyperparameters" in data["properties"]
+
+    assert "mlm:artifact_type" in data["assets"]["asset1"]

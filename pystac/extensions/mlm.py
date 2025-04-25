@@ -2135,46 +2135,70 @@ class MLMExtensionHooks(ExtensionHooks):
 
     @staticmethod
     def _migrate_1_3_to_1_4(obj: dict[str, Any]) -> None:
-        for input_obj in obj["properties"]["mlm:input"]:
-            if "norm_type" in input_obj and input_obj["norm_type"] is not None:
-                norm_type = input_obj["norm_type"]
-                value_scaling_list = []
-                if norm_type == "min-max":
-                    for band_statistic in input_obj["statistics"]:
-                        value_scaling_obj = {
-                            "type": "min-max",
-                            "minimum": band_statistic["minimum"],
-                            "maximum": band_statistic["maximum"],
-                        }
-                        value_scaling_list.append(value_scaling_obj)
-                elif norm_type == "z-score":
-                    for band_statistic in input_obj["statistics"]:
-                        value_scaling_obj = {
-                            "type": "z-score",
-                            "mean": band_statistic["mean"],
-                            "stddev": band_statistic["stddev"],
-                        }
-                        value_scaling_list.append(value_scaling_obj)
-                elif norm_type == "clip":
-                    for clip_value in input_obj["norm_clip"]:
-                        value_scaling_obj = {
-                            "type": "processing",
-                            "format": "gdal-calc",
-                            "expression": f"numpy.clip(A / {clip_value}, 0, 1)",
-                        }
-                        value_scaling_list.append(value_scaling_obj)
-                else:
-                    raise NotImplementedError(
-                        f"Normalization type {norm_type} is not supported in stac:mlm"
-                        f" >= 1.3. Therefore an automatic migration is not possible. "
-                        f"Please migrate this normalization manually using "
-                        f'type="processing".'
-                    )
-                input_obj["value_scaling"] = value_scaling_list
-            input_obj.pop("norm_by_channel", None)
-            input_obj.pop("norm_type", None)
-            input_obj.pop("norm_clip", None)
-            input_obj.pop("statistics", None)
+        # Migrate to value_scaling
+        if "mlm:input" in obj["properties"]:
+            for input_obj in obj["properties"]["mlm:input"]:
+                if "norm_type" in input_obj and input_obj["norm_type"] is not None:
+                    norm_type = input_obj["norm_type"]
+                    value_scaling_list = []
+                    if norm_type == "min-max":
+                        for band_statistic in input_obj["statistics"]:
+                            value_scaling_obj = {
+                                "type": "min-max",
+                                "minimum": band_statistic["minimum"],
+                                "maximum": band_statistic["maximum"],
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    elif norm_type == "z-score":
+                        for band_statistic in input_obj["statistics"]:
+                            value_scaling_obj = {
+                                "type": "z-score",
+                                "mean": band_statistic["mean"],
+                                "stddev": band_statistic["stddev"],
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    elif norm_type == "clip":
+                        for clip_value in input_obj["norm_clip"]:
+                            value_scaling_obj = {
+                                "type": "processing",
+                                "format": "gdal-calc",
+                                "expression": f"numpy.clip(A / {clip_value}, 0, 1)",
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    else:
+                        raise NotImplementedError(
+                            f"Normalization type {norm_type} is not supported in "
+                            f"stac:mlm >= 1.3. Therefore an automatic migration is not "
+                            f"possible. Please migrate this normalization manually "
+                            f'using type="processing".'
+                        )
+                    input_obj["value_scaling"] = value_scaling_list
+                input_obj.pop("norm_by_channel", None)
+                input_obj.pop("norm_type", None)
+                input_obj.pop("norm_clip", None)
+                input_obj.pop("statistics", None)
+
+        if "assets" in obj:
+            for asset in obj["assets"]:
+                # move forbidden fields from asset to properties
+                if "mlm:name" in obj["assets"][asset]:
+                    obj["properties"]["mlm:name"] = obj["assets"][asset]["mlm:name"]
+                    obj["assets"][asset].pop("mlm:name")
+                if "mlm:input" in obj["assets"][asset]:
+                    obj["properties"]["mlm:input"] = obj["assets"][asset]["mlm:input"]
+                    obj["assets"][asset].pop("mlm:input")
+                if "mlm:output" in obj["assets"][asset]:
+                    obj["properties"]["mlm:output"] = obj["assets"][asset]["mlm:output"]
+                    obj["assets"][asset].pop("mlm:output")
+                if "mlm:hyperparameters" in obj["assets"][asset]:
+                    obj["properties"]["mlm:hyperparameters"] = obj["assets"][asset][
+                        "mlm:hyperparameters"
+                    ]
+                    obj["assets"][asset].pop("mlm:hyperparameters")
+
+                # add new REQUIRED proretie mlm:artifact_type to asset
+                if "mlm:model" in obj["assets"][asset]["roles"]:
+                    obj["assets"][asset]["mlm:artifact_type"] = ""
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
