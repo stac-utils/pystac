@@ -2092,7 +2092,18 @@ class MLMExtensionHooks(ExtensionHooks):
 
     @staticmethod
     def _migrate_1_1_to_1_2(obj: dict[str, Any]) -> None:
-        pass
+        if "assets" not in obj:
+            return
+        assets = obj["assets"]
+        model_in_assets = any(
+            ["mlm:model" in assets[asset]["roles"] for asset in assets]
+        )
+        if not model_in_assets:
+            raise pystac.errors.STACError(
+                'Error migrating stac:mlm version: An asset with role "mlm:model" is '
+                "required in mlm>=1.2. Include at least one asset with role "
+                '"mlm:model" '
+            )
 
     @staticmethod
     def _migrate_1_2_to_1_3(obj: dict[str, Any]) -> None:

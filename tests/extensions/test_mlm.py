@@ -1107,6 +1107,20 @@ def test_migration_1_0_to_1_1(
     assert bool(re.match(pattern, data["properties"]["mlm:framework"]))
 
 
+def test_migration_1_1_to_1_2() -> None:
+    data: dict[str, Any] = {}
+    MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+    data["assets"] = {"asset1": {"roles": ["data"]}, "asset2": {"roles": ["labels"]}}
+
+    with pytest.raises(pystac.errors.STACError):
+        MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+    data["assets"]["asset3"] = {"roles": ["mlm:model"]}
+
+    MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+
 @pytest.mark.parametrize(
     ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
     (
