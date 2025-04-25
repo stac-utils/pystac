@@ -1122,6 +1122,69 @@ def test_migration_1_1_to_1_2() -> None:
 
 
 @pytest.mark.parametrize(
+    "inp_bands, raster_bands, valid",
+    (
+        ([], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "B03", "data_type": "float64"},
+            ],
+            True,
+        ),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "B02", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (["B02", "B03"], [{"data_type": "float64"}, {"data_type": "float64"}], False),
+    ),
+)
+def test_migration_1_2_to_1_3(
+    inp_bands: list[str], raster_bands: list[dict[str, Any]], valid: bool
+) -> None:
+    data: dict[str, Any] = {
+        "properties": {"mlm:input": {}},
+        "assets": {"asset1": {"roles": ["data"]}, "asset2": {"roles": ["mlm:model"]}},
+    }
+
+    if inp_bands:
+        data["properties"]["mlm:input"]["bands"] = inp_bands
+        data["properties"]["raster:bands"] = raster_bands
+
+    if valid:
+        MLMExtensionHooks._migrate_1_2_to_1_3(data)
+        if raster_bands:
+            assert "raster:bands" not in data["assets"]["asset1"]
+            assert "raster:bands" in data["assets"]["asset2"]
+    else:
+        with pytest.raises(STACError):
+            MLMExtensionHooks._migrate_1_2_to_1_3(data)
+
+
+@pytest.mark.parametrize(
     ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
     (
         (None, None, None, None, None),

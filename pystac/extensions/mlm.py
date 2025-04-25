@@ -2107,7 +2107,31 @@ class MLMExtensionHooks(ExtensionHooks):
 
     @staticmethod
     def _migrate_1_2_to_1_3(obj: dict[str, Any]) -> None:
-        pass
+        bands_obj = obj["properties"]["mlm:input"]
+
+        if not bands_obj:
+            return
+
+        if "raster:bands" not in obj["properties"]:
+            return
+        raster_bands = obj["properties"]["raster:bands"]
+
+        # make sure all raster_bands have a name prop with length>0
+        names_properties_valid = all(
+            "name" in band and len(band["name"]) > 0 for band in raster_bands
+        )
+        if not names_properties_valid:
+            raise STACError(
+                "Error migrating stac:mlm version: In mlm>=1.3, each band in "
+                'raster:bands is required to have a property "name"'
+            )
+
+        # copy the raster:bands to assets
+        for asset_name in obj["assets"]:
+            asset = obj["assets"][asset_name]
+            if "mlm:model" not in asset["roles"]:
+                continue
+            asset["raster:bands"] = raster_bands
 
     @staticmethod
     def _migrate_1_3_to_1_4(obj: dict[str, Any]) -> None:
