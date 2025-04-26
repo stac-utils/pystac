@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added to pystac.MediaType values VND_APACHE_PARQUET and VND_ZARR with the current standard
+  media type value for these types and new media types COPC and VND_PMTILES
+  ([#1554](https://github.com/stac-utils/pystac/pull/1554))
+
 ## [v1.13.0] - 2025-04-15
 
 ### Added
