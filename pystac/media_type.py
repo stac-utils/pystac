@@ -15,15 +15,39 @@ class MediaType(StringEnum):
     JPEG = "image/jpeg"
     JPEG2000 = "image/jp2"
     JSON = "application/json"
-    PARQUET = "application/x-parquet"  # https://github.com/opengeospatial/geoparquet/issues/115#issuecomment-1181549523
     PNG = "image/png"
     TEXT = "text/plain"
     TIFF = "image/tiff"
     KML = "application/vnd.google-earth.kml+xml"
     XML = "application/xml"
     PDF = "application/pdf"
-    ZARR = "application/vnd+zarr"  # https://github.com/openMetadataInitiative/openMINDS_core/blob/v4/instances/data/contentTypes/zarr.jsonld
-    NETCDF = "application/netcdf"  # https://github.com/Unidata/netcdf/issues/42#issuecomment-1007618822
+
+    # https://github.com/Unidata/netcdf/issues/42#issuecomment-1007618822
+    NETCDF = "application/netcdf"
+
+    # Cloud Optimized Point Cloud
+    COPC = "application/vnd.laszip+copc"
+
+    # https://github.com/protomaps/PMTiles/blob/main/spec/v3/spec.md#1-abstract
+    VND_PMTILES = "application/vnd.pmtiles"  # Protomaps PMTiles
+
+    # https://www.iana.org/assignments/media-types/application/vnd.apache.parquet
+    VND_APACHE_PARQUET = "application/vnd.apache.parquet"
+
+    # https://humanbrainproject.github.io/openMINDS/v3/core/v4/data/contentType.html
+    VND_ZARR = "application/vnd.zarr"
+
+    ##############
+    # DEPRECATED #
+    ##############
+
+    # https://github.com/opengeospatial/geoparquet/issues/115#issuecomment-1181549523
+    # deprecated, use VND_APACHE_PARQUET instead
+    PARQUET = "application/x-parquet"
+
+    # https://github.com/openMetadataInitiative/openMINDS_core/blob/v4/instances/data/contentTypes/zarr.jsonld
+    # deprecated, use VND_ZARR instead
+    ZARR = "application/vnd+zarr"
 
 
 #: Media types that can be resolved as STAC Objects
