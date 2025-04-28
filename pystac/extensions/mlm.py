@@ -1204,7 +1204,7 @@ class ModelOutput:
         Creates a new Output
 
         Args:
-            name:Name of the output variable defined by the model. If no explicit name
+            name: Name of the output variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "CLASSIFICATION")
                 can be used instead.
             tasks: Specifies the Machine Learning tasks for which the output can be used
@@ -1214,6 +1214,7 @@ class ModelOutput:
                 from one model head. description: Additional details about the output
                 such as describing its purpose or expected result that cannot be
                 represented by other properties.
+            description: Description of output.
             classes: A list of class objects adhering to the Classification Extension.
             post_processing_function: Custom postprocessing function where
                 normalization, rescaling, or any other significant operations takes
