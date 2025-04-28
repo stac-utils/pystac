@@ -1616,8 +1616,6 @@ class MLMExtension(
         accelerator_summary: str | None = None,
         accelerator_count: int | None = None,
         hyperparameters: Hyperparameters | None = None,
-        *args: Any,
-        **kwargs: Any,
     ) -> None:
         """
         Sets the properties of a new MLMExtension
@@ -1647,10 +1645,6 @@ class MLMExtension(
             accelerator_count: A minimum amount of ``accelerator`` instances required to
                 run the model
             hyperparameters: Additional hyperparameters relevant for the model
-            *args: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
-            **kwargs: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
         """
         self.mlm_name = name
         self.architecture = architecture
@@ -1922,7 +1916,11 @@ class AssetGeneralMLMExtension(
         return f"<AssetGeneralMLMExtension Asset href={self.asset_href}>"
 
 
-class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
+class AssetDetailedMLMExtension(
+    _AssetMLMExtension,
+    _IncludedInAssetProps,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
+):
     """A class that can be used to extend the properties of an
     :class:`pystac.Asset` object with properties from the
     :stac-ext:`Machine Learning Model Extension <mlm>`.
@@ -1960,11 +1958,8 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
 
     def apply(
         self,
-        name: str,
         architecture: str,
         tasks: list[TaskType],
-        input: list[ModelInput],
-        output: list[ModelOutput],
         framework: str | None = None,
         framework_version: str | None = None,
         memory_size: int | None = None,
@@ -1976,7 +1971,6 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         accelerator_constrained: bool | None = None,
         accelerator_summary: str | None = None,
         accelerator_count: int | None = None,
-        hyperparameters: Hyperparameters | None = None,
         artifact_type: str | None = None,
         compile_method: str | None = None,
         entrypoint: str | None = None,
@@ -1985,12 +1979,9 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         Sets the properties of a new AssetDetailedMLMExtensions
 
         Args:
-            name:  name for the model
             architecture: A generic and well established architecture name of the model
             tasks: Specifies the Machine Learning tasks for which the model can be
                 used for
-            input: Describes the transformation between the EO data and the model input
-            output: Describes each model output and how to interpret it.
             framework: Framework used to train the model
             framework_version: The ``framework`` library version
             memory_size: The in-memory size of the model on the accelerator during
@@ -2008,7 +1999,6 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
             accelerator_summary: A high level description of the ``accelerator``
             accelerator_count: A minimum amount of ``accelerator`` instances required to
                 run the model
-            hyperparameters: Additional hyperparameters relevant for the model
             artifact_type: Specifies the kind of model artifact, any string is allowed.
                 Typically related to a particular ML framework. This property is
                 required when ``mlm:model`` is listed as a role of this asset
@@ -2017,26 +2007,21 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
             entrypoint: Specific entrypoint reference in the code to use for running
                 model inference.
         """
-        MLMExtension.apply(
-            self,
-            name=name,
-            architecture=architecture,
-            tasks=tasks,
-            input=input,
-            output=output,
-            framework=framework,
-            framework_version=framework_version,
-            memory_size=memory_size,
-            total_parameters=total_parameters,
-            pretrained=pretrained,
-            pretrained_source=pretrained_source,
-            batch_size_suggestion=batch_size_suggestion,
-            accelerator=accelerator,
-            accelerator_constrained=accelerator_constrained,
-            accelerator_summary=accelerator_summary,
-            accelerator_count=accelerator_count,
-            hyperparameters=hyperparameters,
-        )
+
+        self.architecture = architecture
+        self.tasks = tasks
+        self.framework = framework
+        self.framework_version = framework_version
+        self.memory_size = memory_size
+        self.total_parameters = total_parameters
+        self.pretrained = pretrained
+        self.pretrained_source = pretrained_source
+        self.batch_size_suggestion = batch_size_suggestion
+        self.accelerator = accelerator
+        self.accelerator_constrained = accelerator_constrained
+        self.accelerator_summary = accelerator_summary
+        self.accelerator_count = accelerator_count
+
         self.artifact_type = artifact_type
         self.compile_method = compile_method
         self.entrypoint = entrypoint
