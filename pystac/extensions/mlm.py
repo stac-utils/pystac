@@ -1364,144 +1364,8 @@ class Hyperparameters:
         return self.properties
 
 
-class MLMExtension(
-    Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item | pystac.Collection],
-):
-    """An abstract class that can be used to extend to properties of an
-    :class:`pystac.Item` or :class:`pystac.Collection` with properties from the
-    :stac-ext:`Machine Learning Model Extension <mlm>`.
-
-    This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
-    and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
-    either :class:`~AssetGeneralMLMExtension`: or :class:`AssetDetailedMLMExtension`.
-    """
-
-    name: Literal["mlm"] = "mlm"
+class _ExcludedFromAssetProps(PropertiesExtension):
     properties: dict[str, Any]
-
-    def apply(
-        self,
-        name: str,
-        architecture: str,
-        tasks: list[TaskType],
-        input: list[ModelInput],
-        output: list[ModelOutput],
-        framework: str | None = None,
-        framework_version: str | None = None,
-        memory_size: int | None = None,
-        total_parameters: int | None = None,
-        pretrained: bool | None = None,
-        pretrained_source: str | None = None,
-        batch_size_suggestion: int | None = None,
-        accelerator: AcceleratorType | None = None,
-        accelerator_constrained: bool | None = None,
-        accelerator_summary: str | None = None,
-        accelerator_count: int | None = None,
-        hyperparameters: Hyperparameters | None = None,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Sets the properties of a new MLMExtension
-
-        Args:
-            name:  name for the model
-            architecture: A generic and well established architecture name of the model
-            tasks: Specifies the Machine Learning tasks for which the model can be
-                used for
-            input: Describes the transformation between the EO data and the model input
-            output: Describes each model output and how to interpret it.
-            framework: Framework used to train the model
-            framework_version: The ``framework`` library version
-            memory_size: The in-memory size of the model on the accelerator during
-                inference (bytes)
-            total_parameters: Total number of model parameters, including trainable and
-                non-trainable parameters.
-            pretrained: Indicates if the model was pretrained. If the model was
-                pretrained, consider providing ``pretrained_source`` if it is known
-            pretrained_source: The source of the pretraining.
-            batch_size_suggestion: A suggested batch size for the accelerator and
-                summarized hardware.
-            accelerator: The intended computational hardware that runs inference
-            accelerator_constrained: Indicates if the intended ``accelerator`` is the
-                only accelerator that can run inference
-            accelerator_summary: A high level description of the ``accelerator``
-            accelerator_count: A minimum amount of ``accelerator`` instances required to
-                run the model
-            hyperparameters: Additional hyperparameters relevant for the model
-            *args: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
-            **kwargs: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
-        """
-        self.mlm_name = name
-        self.architecture = architecture
-        self.tasks = tasks
-        self.input = input
-        self.output = output
-        self.framework = framework
-        self.framework_version = framework_version
-        self.memory_size = memory_size
-        self.total_parameters = total_parameters
-        self.pretrained = pretrained
-        self.pretrained_source = pretrained_source
-        self.batch_size_suggestion = batch_size_suggestion
-        self.accelerator = accelerator
-        self.accelerator_constrained = accelerator_constrained
-        self.accelerator_summary = accelerator_summary
-        self.accelerator_count = accelerator_count
-        self.hyperparameters = hyperparameters
-
-    @classmethod
-    def get_schema_uri(cls) -> str:
-        """
-        Retrieves this extension's schema URI
-
-        Returns:
-            str: the schema URI
-        """
-        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-
-    @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> MLMExtension[T]:
-        """
-        Extend a STAC object (``obj``) with the MLMExtension
-
-        Args:
-            obj: The STAC object to be extended.
-            add_if_missing: Defines whether this extension's URI should be added to
-                this object's  (or its parent's) list of extensions if it is not already
-                listed there.
-
-        Returns:
-            MLMExtension[T]: The extended object
-
-        Raises:
-            TypeError: When a :class:`pystac.Asset` object is passed as the
-                `obj` parameter
-            pystac.ExtensionTypeError: When any unsupported object is passed as the
-                `obj` parameter. If you see this extension in this context, please
-                raise an issue on github.
-        """
-        if isinstance(obj, pystac.Item):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], ItemMLMExtension(obj))
-        elif isinstance(obj, pystac.Collection):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], CollectionMLMExtension(obj))
-        elif isinstance(obj, pystac.ItemAssetDefinition):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            raise TypeError(
-                "This class cannot be used to extend STAC objects of type Assets. "
-                "To extend Asset objects, use either AssetGeneralMLMExtension or "
-                "AssetDetailedMLMExtension"
-            )
-        else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @property
     def mlm_name(self) -> str:
@@ -1514,6 +1378,54 @@ class MLMExtension(
     @mlm_name.setter
     def mlm_name(self, v: str) -> None:
         self._set_property(NAME_PROP, v)
+
+    @property
+    def input(self) -> list[ModelInput]:
+        """
+        Get or set the required input property
+        """
+        return [
+            ModelInput(inp)
+            for inp in get_required(
+                self._get_property(INPUT_PROP, list[dict[str, Any]]), self, INPUT_PROP
+            )
+        ]
+
+    @input.setter
+    def input(self, v: list[ModelInput]) -> None:
+        self._set_property(INPUT_PROP, [inp.to_dict() for inp in v])
+
+    @property
+    def output(self) -> list[ModelOutput]:
+        """
+        Get or set the required output property
+        """
+        return [
+            ModelOutput(outp)
+            for outp in get_required(
+                self._get_property(OUTPUT_PROP, list[dict[str, Any]]), self, OUTPUT_PROP
+            )
+        ]
+
+    @output.setter
+    def output(self, v: list[ModelOutput]) -> None:
+        self._set_property(OUTPUT_PROP, [outp.to_dict() for outp in v])
+
+    @property
+    def hyperparameters(self) -> Hyperparameters | None:
+        """
+        Get or set the hyperparameters property
+        """
+        prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
+        return Hyperparameters(prop) if prop is not None else None
+
+    @hyperparameters.setter
+    def hyperparameters(self, v: Hyperparameters | None) -> None:
+        self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
+
+
+class _IncludedInAssetProps(PropertiesExtension):
+    properties: dict[str, Any]
 
     @property
     def architecture(self) -> str:
@@ -1666,49 +1578,146 @@ class MLMExtension(
     def accelerator_count(self, v: int | None) -> None:
         self._set_property(ACCELERATOR_COUNT_PROP, v)
 
-    @property
-    def input(self) -> list[ModelInput]:
+
+class MLMExtension(
+    Generic[T],
+    _ExcludedFromAssetProps,
+    _IncludedInAssetProps,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
+):
+    """An abstract class that can be used to extend to properties of an
+    :class:`pystac.Item` or :class:`pystac.Collection` with properties from the
+    :stac-ext:`Machine Learning Model Extension <mlm>`.
+
+    This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
+    and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
+    either :class:`~AssetGeneralMLMExtension`: or :class:`AssetDetailedMLMExtension`.
+    """
+
+    name: Literal["mlm"] = "mlm"
+    properties: dict[str, Any]
+
+    def apply(
+        self,
+        name: str,
+        architecture: str,
+        tasks: list[TaskType],
+        input: list[ModelInput],
+        output: list[ModelOutput],
+        framework: str | None = None,
+        framework_version: str | None = None,
+        memory_size: int | None = None,
+        total_parameters: int | None = None,
+        pretrained: bool | None = None,
+        pretrained_source: str | None = None,
+        batch_size_suggestion: int | None = None,
+        accelerator: AcceleratorType | None = None,
+        accelerator_constrained: bool | None = None,
+        accelerator_summary: str | None = None,
+        accelerator_count: int | None = None,
+        hyperparameters: Hyperparameters | None = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         """
-        Get or set the required input property
+        Sets the properties of a new MLMExtension
+
+        Args:
+            name:  name for the model
+            architecture: A generic and well established architecture name of the model
+            tasks: Specifies the Machine Learning tasks for which the model can be
+                used for
+            input: Describes the transformation between the EO data and the model input
+            output: Describes each model output and how to interpret it.
+            framework: Framework used to train the model
+            framework_version: The ``framework`` library version
+            memory_size: The in-memory size of the model on the accelerator during
+                inference (bytes)
+            total_parameters: Total number of model parameters, including trainable and
+                non-trainable parameters.
+            pretrained: Indicates if the model was pretrained. If the model was
+                pretrained, consider providing ``pretrained_source`` if it is known
+            pretrained_source: The source of the pretraining.
+            batch_size_suggestion: A suggested batch size for the accelerator and
+                summarized hardware.
+            accelerator: The intended computational hardware that runs inference
+            accelerator_constrained: Indicates if the intended ``accelerator`` is the
+                only accelerator that can run inference
+            accelerator_summary: A high level description of the ``accelerator``
+            accelerator_count: A minimum amount of ``accelerator`` instances required to
+                run the model
+            hyperparameters: Additional hyperparameters relevant for the model
+            *args: Unused (no effect, only here for signature compliance with apply
+                method in derived classes
+            **kwargs: Unused (no effect, only here for signature compliance with apply
+                method in derived classes
         """
-        return [
-            ModelInput(inp)
-            for inp in get_required(
-                self._get_property(INPUT_PROP, list[dict[str, Any]]), self, INPUT_PROP
+        self.mlm_name = name
+        self.architecture = architecture
+        self.tasks = tasks
+        self.input = input
+        self.output = output
+        self.framework = framework
+        self.framework_version = framework_version
+        self.memory_size = memory_size
+        self.total_parameters = total_parameters
+        self.pretrained = pretrained
+        self.pretrained_source = pretrained_source
+        self.batch_size_suggestion = batch_size_suggestion
+        self.accelerator = accelerator
+        self.accelerator_constrained = accelerator_constrained
+        self.accelerator_summary = accelerator_summary
+        self.accelerator_count = accelerator_count
+        self.hyperparameters = hyperparameters
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        """
+        Retrieves this extension's schema URI
+
+        Returns:
+            str: the schema URI
+        """
+        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> MLMExtension[T]:
+        """
+        Extend a STAC object (``obj``) with the MLMExtension
+
+        Args:
+            obj: The STAC object to be extended.
+            add_if_missing: Defines whether this extension's URI should be added to
+                this object's  (or its parent's) list of extensions if it is not already
+                listed there.
+
+        Returns:
+            MLMExtension[T]: The extended object
+
+        Raises:
+            TypeError: When a :class:`pystac.Asset` object is passed as the
+                `obj` parameter
+            pystac.ExtensionTypeError: When any unsupported object is passed as the
+                `obj` parameter. If you see this extension in this context, please
+                raise an issue on github.
+        """
+        if isinstance(obj, pystac.Item):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], ItemMLMExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], CollectionMLMExtension(obj))
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            raise TypeError(
+                "This class cannot be used to extend STAC objects of type Assets. "
+                "To extend Asset objects, use either AssetGeneralMLMExtension or "
+                "AssetDetailedMLMExtension"
             )
-        ]
-
-    @input.setter
-    def input(self, v: list[ModelInput]) -> None:
-        self._set_property(INPUT_PROP, [inp.to_dict() for inp in v])
-
-    @property
-    def output(self) -> list[ModelOutput]:
-        """
-        Get or set the required output property
-        """
-        return [
-            ModelOutput(outp)
-            for outp in get_required(
-                self._get_property(OUTPUT_PROP, list[dict[str, Any]]), self, OUTPUT_PROP
-            )
-        ]
-
-    @output.setter
-    def output(self, v: list[ModelOutput]) -> None:
-        self._set_property(OUTPUT_PROP, [outp.to_dict() for outp in v])
-
-    @property
-    def hyperparameters(self) -> Hyperparameters | None:
-        """
-        Get or set the hyperparameters property
-        """
-        prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
-        return Hyperparameters(prop) if prop is not None else None
-
-    @hyperparameters.setter
-    def hyperparameters(self, v: Hyperparameters | None) -> None:
-        self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
+        else:
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     def to_dict(self) -> dict[str, Any]:
         """
