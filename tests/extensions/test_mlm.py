@@ -12,7 +12,6 @@ from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
     ARCHITECTURE_PROP,
-    NAME_PROP,
     TASKS_PROP,
     AcceleratorType,
     AssetDetailedMLMExtension,
@@ -770,20 +769,16 @@ def test_add_to_asset(plain_item: Item) -> None:
     MLMExtension.ext(plain_item, add_if_missing=True)
     asset = plain_item.assets["analytic"]
 
-    assert NAME_PROP not in asset.extra_fields.keys()
     assert ARCHITECTURE_PROP not in asset.extra_fields.keys()
     assert TASKS_PROP not in asset.extra_fields.keys()
 
     asset_ext = AssetDetailedMLMExtension.ext(asset)
-    asset_ext.mlm_name = "asdf"
     asset_ext.architecture = "ResNet"
     asset_ext.tasks = [TaskType.CLASSIFICATION]
 
-    assert NAME_PROP in asset.extra_fields.keys()
     assert ARCHITECTURE_PROP in asset.extra_fields.keys()
     assert TASKS_PROP in asset.extra_fields.keys()
 
-    assert asset.extra_fields[NAME_PROP] == "asdf"
     assert asset.extra_fields[ARCHITECTURE_PROP] == "ResNet"
     assert asset.extra_fields[TASKS_PROP] == [TaskType.CLASSIFICATION]
 
@@ -866,21 +861,6 @@ def test_to_dict_asset_generic() -> None:
 
 
 def test_add_to_detailled_asset() -> None:
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset = pystac.Asset(
         href="http://example.com/test.tiff",
         title="image",
@@ -888,11 +868,8 @@ def test_add_to_detailled_asset() -> None:
         media_type="application/tiff",
         roles=["mlm:model"],
         extra_fields={
-            "mlm:name": "asdf",
             "mlm:architecture": "ResNet",
             "mlm:tasks": [TaskType.CLASSIFICATION],
-            "mlm:input": [model_input.to_dict()],
-            "mlm:output": [model_output.to_dict()],
             "mlm:artifact_type": "foo",
             "mlm:compile_method": "bar",
             "mlm:entrypoint": "baz",
@@ -901,11 +878,8 @@ def test_add_to_detailled_asset() -> None:
 
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    assert asset_ext.mlm_name == "asdf"
     assert asset_ext.architecture == "ResNet"
     assert asset_ext.tasks == [TaskType.CLASSIFICATION]
-    assert asset_ext.input == [model_input]
-    assert asset_ext.output == [model_output]
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
@@ -930,7 +904,7 @@ def test_correct_asset_extension_is_used() -> None:
     asset = Asset("https://example.com")
     assert isinstance(asset.ext.mlm, AssetGeneralMLMExtension)
 
-    asset.extra_fields["mlm:name"] = "asdf"
+    asset.extra_fields["mlm:architecture"] = "ResNet"
     assert isinstance(asset.ext.mlm, AssetDetailedMLMExtension)
 
 
@@ -951,37 +925,16 @@ def test_apply_detailled_asset() -> None:
     )
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset_ext.apply(
-        "asdf",
         "ResNet",
         [TaskType.CLASSIFICATION],
-        [model_input],
-        [model_output],
         artifact_type="foo",
         compile_method="bar",
         entrypoint="baz",
     )
 
-    assert asset_ext.mlm_name == "asdf"
     assert asset_ext.architecture == "ResNet"
     assert asset_ext.tasks == [TaskType.CLASSIFICATION]
-    assert asset_ext.input == [model_input]
-    assert asset_ext.output == [model_output]
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
@@ -997,38 +950,17 @@ def test_to_dict_detailed_asset() -> None:
     )
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset_ext.apply(
-        "asdf",
         "ResNet",
         [TaskType.CLASSIFICATION],
-        [model_input],
-        [model_output],
         artifact_type="foo",
         compile_method="bar",
         entrypoint="baz",
     )
 
     d = {
-        "mlm:name": "asdf",
         "mlm:architecture": "ResNet",
         "mlm:tasks": [TaskType.CLASSIFICATION],
-        "mlm:input": [model_input.to_dict()],
-        "mlm:output": [model_output.to_dict()],
         "mlm:artifact_type": "foo",
         "mlm:compile_method": "bar",
         "mlm:entrypoint": "baz",
