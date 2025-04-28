@@ -2103,52 +2103,76 @@ class MLMExtensionHooks(ExtensionHooks):
 
     @staticmethod
     def _migrate_1_1_to_1_2(obj: dict[str, Any]) -> None:
-        if "assets" not in obj:
-            return
-        assets = obj["assets"]
-        model_in_assets = any(
-            ["mlm:model" in assets[asset]["roles"] for asset in assets]
-        )
-        if not model_in_assets:
-            raise pystac.errors.STACError(
-                'Error migrating stac:mlm version: An asset with role "mlm:model" is '
-                "required in mlm>=1.2. Include at least one asset with role "
-                '"mlm:model" '
+        def migrate(obj_assets: dict[str, Any]) -> None:
+            model_in_assets = any(
+                ["mlm:model" in obj_assets[asset]["roles"] for asset in obj_assets]
             )
+            if not model_in_assets:
+                raise pystac.errors.STACError(
+                    'Error migrating stac:mlm version: An asset with role "mlm:model" '
+                    "is required in mlm>=1.2. Include at least one asset with role "
+                    '"mlm:model" '
+                )
+
+        if "assets" in obj:
+            migrate(obj["assets"])
+        if "item_assets" in obj:
+            migrate(obj["item_assets"])
 
     @staticmethod
     def _migrate_1_2_to_1_3(obj: dict[str, Any]) -> None:
-        bands_obj = obj["properties"]["mlm:input"]
+        def migrate(props_obj: dict[str, Any]) -> None:
+            if "mlm:input" not in props_obj:
+                return
 
-        if not bands_obj:
-            return
+            bands_objs_present = any("bands" in inp for inp in props_obj["mlm:input"])
 
-        if "raster:bands" not in obj["properties"]:
-            return
-        raster_bands = obj["properties"]["raster:bands"]
+            if not bands_objs_present:
+                return
 
-        # make sure all raster_bands have a name prop with length>0
-        names_properties_valid = all(
-            "name" in band and len(band["name"]) > 0 for band in raster_bands
-        )
-        if not names_properties_valid:
-            raise STACError(
-                "Error migrating stac:mlm version: In mlm>=1.3, each band in "
-                'raster:bands is required to have a property "name"'
+            if "raster:bands" not in props_obj:
+                return
+            raster_bands = props_obj["raster:bands"]
+
+            # make sure all raster_bands have a name prop with length>0
+            names_properties_valid = all(
+                "name" in band and len(band["name"]) > 0 for band in raster_bands
             )
+            if not names_properties_valid:
+                raise STACError(
+                    "Error migrating stac:mlm version: In mlm>=1.3, each band in "
+                    'raster:bands is required to have a property "name"'
+                )
 
-        # copy the raster:bands to assets
-        for asset_name in obj["assets"]:
-            asset = obj["assets"][asset_name]
-            if "mlm:model" not in asset["roles"]:
-                continue
-            asset["raster:bands"] = raster_bands
+            # no need to perform the actions below if props_obj is an asset
+            # this is checked by the presence of "roles" prop
+            if "roles" in props_obj:
+                return
+
+            # copy the raster:bands to assets
+            for inner_asset_name in obj["assets"]:
+                inner_asset = obj["assets"][inner_asset_name]
+                if "mlm:model" not in inner_asset["roles"]:
+                    continue
+                inner_asset["raster:bands"] = raster_bands
+
+        if obj["type"] == "Feature" and "mlm:input" in obj["properties"]:
+            migrate(obj["properties"])
+        if obj["type"] == "Collection":
+            migrate(obj)
+        if "assets" in obj:
+            for asset_name in obj["assets"]:
+                asset = obj["assets"][asset_name]
+                migrate(asset)
 
     @staticmethod
     def _migrate_1_3_to_1_4(obj: dict[str, Any]) -> None:
-        # Migrate to value_scaling
-        if "mlm:input" in obj["properties"]:
-            for input_obj in obj["properties"]["mlm:input"]:
+        def migrate(props_obj: dict[str, Any]) -> None:
+            if "mlm:input" not in props_obj:
+                return
+
+            # Migrate to value_scaling
+            for input_obj in props_obj["mlm:input"]:
                 if "norm_type" in input_obj and input_obj["norm_type"] is not None:
                     norm_type = input_obj["norm_type"]
                     value_scaling_list = []
@@ -2189,22 +2213,43 @@ class MLMExtensionHooks(ExtensionHooks):
                 input_obj.pop("norm_clip", None)
                 input_obj.pop("statistics", None)
 
+        if obj["type"] == "Feature":
+            migrate(obj["properties"])
+        if obj["type"] == "Collection":
+            migrate(obj)
+
         if "assets" in obj:
             for asset in obj["assets"]:
+                migrate(obj["assets"][asset])
+
                 # move forbidden fields from asset to properties
                 if "mlm:name" in obj["assets"][asset]:
-                    obj["properties"]["mlm:name"] = obj["assets"][asset]["mlm:name"]
+                    mlm_name = obj["assets"][asset]["mlm:name"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:name"] = mlm_name
+                    if obj["type"] == "Collection":
+                        obj["mlm:name"] = mlm_name
                     obj["assets"][asset].pop("mlm:name")
                 if "mlm:input" in obj["assets"][asset]:
-                    obj["properties"]["mlm:input"] = obj["assets"][asset]["mlm:input"]
+                    inp = obj["assets"][asset]["mlm:input"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:input"] = inp
+                    if obj["type"] == "Collection":
+                        obj["mlm:input"] = inp
                     obj["assets"][asset].pop("mlm:input")
                 if "mlm:output" in obj["assets"][asset]:
-                    obj["properties"]["mlm:output"] = obj["assets"][asset]["mlm:output"]
+                    outp = obj["assets"][asset]["mlm:output"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:output"] = outp
+                    if obj["type"] == "Collection":
+                        obj["mlm:output"] = outp
                     obj["assets"][asset].pop("mlm:output")
                 if "mlm:hyperparameters" in obj["assets"][asset]:
-                    obj["properties"]["mlm:hyperparameters"] = obj["assets"][asset][
-                        "mlm:hyperparameters"
-                    ]
+                    hyp = obj["assets"][asset]["mlm:hyperparameters"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:hyperparameters"] = hyp
+                    if obj["type"] == "Collection":
+                        obj["mlm:hyperparameters"] = hyp
                     obj["assets"][asset].pop("mlm:hyperparameters")
 
                 # add new REQUIRED proretie mlm:artifact_type to asset
