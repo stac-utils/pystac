@@ -2086,6 +2086,59 @@ class MLMExtensionHooks(ExtensionHooks):
                         SyntaxWarning,
                     )
 
+            # if no bands definition is given in mlm:input (bands=[]),
+            # raster definitions are not allowed to be in the assets object that is
+            # stac:mlm
+            if "mlm:input" in props_obj:
+                no_bands_present = all(
+                    not inp["bands"] for inp in props_obj["mlm:input"]
+                )
+
+                if no_bands_present:
+                    for inner_asset_name in obj["assets"]:
+                        inner_asset = obj["assets"][inner_asset_name]
+
+                        if "mlm:model" not in inner_asset["roles"]:
+                            continue
+
+                        if "raster:bands" in inner_asset:
+                            bands_obj = inner_asset["raster:bands"]
+
+                            warnings.warn(
+                                "stac:mlm does not allow 'raster:bands' in mlm:model "
+                                "asset if mlm:input.bands is empty. Moving it to "
+                                "properties if it contains values, or deleting it if "
+                                "it does not contain any values.",
+                                SyntaxWarning,
+                            )
+
+                            # move the bands_obj if it is not an empty list
+                            if bands_obj:
+                                if obj["type"] == "Feature":
+                                    obj["properties"]["raster:bands"] = bands_obj
+                                if obj["type"] == "Collection":
+                                    obj["raster:bands"] = bands_obj
+                            inner_asset.pop("raster:bands")
+
+                        if "eo:bands" in inner_asset:
+                            bands_obj = inner_asset["eo:bands"]
+
+                            warnings.warn(
+                                "stac:mlm does not allow 'raster:bands' in mlm:model "
+                                "asset if mlm:input.bands is empty. Moving it to "
+                                "properties if it contains values, or deleting it if "
+                                "it does not contain any values.",
+                                SyntaxWarning,
+                            )
+
+                            # move the bands_obj if it is not an empty list
+                            if bands_obj:
+                                if obj["type"] == "Feature":
+                                    obj["properties"]["eo:bands"] = bands_obj
+                                if obj["type"] == "Collection":
+                                    obj["eo:bands"] = bands_obj
+                            inner_asset.pop("eo:bands")
+
         if obj["type"] == "Feature":
             migrate(obj["properties"])
         if obj["type"] == "Collection":
