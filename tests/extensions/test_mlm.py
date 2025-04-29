@@ -1140,6 +1140,92 @@ def test_migration_1_0_to_1_1_item_assets(
     assert bool(re.match(pattern, data["item_assets"]["asset1"]["mlm:framework"]))
 
 
+@pytest.mark.parametrize(
+    "bands_obj_name, bands_obj",
+    (
+        ("raster:bands", {"raster:bands": []}),
+        ("raster:bands", {"raster:bands": [{"name": "B01"}, {"name": "B02"}]}),
+        ("eo:bands", {"eo:bands": []}),
+        ("eo:bands", {"eo:bands": [{"name": "B01"}, {"name": "B02"}]}),
+    ),
+)
+def test_migration_1_0_to_1_1_asset_bands_item(
+    bands_obj_name: str, bands_obj: dict[str, Any]
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {"mlm:input": [{"bands": []}]},
+        "assets": {
+            "asset1": {"href": "https://example.com", "roles": ["analytic"]},
+            "asset2": {
+                "href": "https://example.com",
+                "roles": ["analytic"],
+                **bands_obj,
+            },
+            "asset3": {
+                "href": "https://example.com",
+                "roles": ["mlm:model"],
+                **bands_obj,
+            },
+        },
+    }
+
+    with pytest.warns(SyntaxWarning):
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    if bands_obj[bands_obj_name]:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name in data["properties"]
+    else:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name not in data["properties"]
+
+
+@pytest.mark.parametrize(
+    "bands_obj_name, bands_obj",
+    (
+        ("raster:bands", {"raster:bands": []}),
+        ("raster:bands", {"raster:bands": [{"name": "B01"}, {"name": "B02"}]}),
+        ("eo:bands", {"eo:bands": []}),
+        ("eo:bands", {"eo:bands": [{"name": "B01"}, {"name": "B02"}]}),
+    ),
+)
+def test_migration_1_0_to_1_1_asset_bands_collection(
+    bands_obj_name: str, bands_obj: dict[str, Any]
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Collection",
+        "mlm:input": [{"bands": []}],
+        "assets": {
+            "asset1": {"href": "https://example.com", "roles": ["analytic"]},
+            "asset2": {
+                "href": "https://example.com",
+                "roles": ["analytic"],
+                **bands_obj,
+            },
+            "asset3": {
+                "href": "https://example.com",
+                "roles": ["mlm:model"],
+                **bands_obj,
+            },
+        },
+    }
+
+    with pytest.warns(SyntaxWarning):
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    if bands_obj[bands_obj_name]:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name in data
+    else:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name not in data
+
+
 @pytest.mark.parametrize("asset_type", ("assets", "item_assets"))
 def test_migration_1_1_to_1_2(asset_type: str) -> None:
     data: dict[str, Any] = {}
