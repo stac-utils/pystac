@@ -1,0 +1,209 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/v1.3.0/examples/item_eo_bands.json
+  response:
+    body:
+      string: "{\n  \"$comment\": \"Demonstrate the use of MLM and EO for bands description,
+        with EO bands directly in the Model Asset.\",\n  \"stac_version\": \"1.0.0\",\n
+        \ \"stac_extensions\": [\n    \"https://crim-ca.github.io/mlm-extension/v1.3.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/eo/v1.1.0/schema.json\",\n    \"https://stac-extensions.github.io/raster/v1.1.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/file/v1.0.0/schema.json\",\n    \"https://stac-extensions.github.io/ml-aoi/v0.2.0/schema.json\"\n
+        \ ],\n  \"type\": \"Feature\",\n  \"id\": \"resnet-18_sentinel-2_all_moco_classification\",\n
+        \ \"collection\": \"ml-model-examples\",\n  \"geometry\": {\n    \"type\":
+        \"Polygon\",\n    \"coordinates\": [\n      [\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ]\n      ]\n    ]\n  },\n  \"bbox\":
+        [\n    -7.882190080512502,\n    37.13739173208318,\n    27.911651652899923,\n
+        \   58.21798141355221\n  ],\n  \"properties\": {\n    \"description\": \"Sourced
+        from torchgeo python library, identifier is ResNet18_Weights.SENTINEL2_ALL_MOCO\",\n
+        \   \"datetime\": null,\n    \"start_datetime\": \"1900-01-01T00:00:00Z\",\n
+        \   \"end_datetime\": \"9999-12-31T23:59:59Z\",\n    \"mlm:name\": \"Resnet-18
+        Sentinel-2 ALL MOCO\",\n    \"mlm:tasks\": [\n      \"classification\"\n    ],\n
+        \   \"mlm:architecture\": \"ResNet\",\n    \"mlm:framework\": \"pytorch\",\n
+        \   \"mlm:framework_version\": \"2.1.2+cu121\",\n    \"file:size\": 43000000,\n
+        \   \"mlm:memory_size\": 1,\n    \"mlm:total_parameters\": 11700000,\n    \"mlm:pretrained_source\":
+        \"EuroSat Sentinel-2\",\n    \"mlm:accelerator\": \"cuda\",\n    \"mlm:accelerator_constrained\":
+        false,\n    \"mlm:accelerator_summary\": \"Unknown\",\n    \"mlm:batch_size_suggestion\":
+        256,\n    \"mlm:input\": [\n      {\n        \"name\": \"13 Band Sentinel-2
+        Batch\",\n        \"bands\": [\n          \"B01\",\n          \"B02\",\n          \"B03\",\n
+        \         \"B04\",\n          \"B05\",\n          \"B06\",\n          \"B07\",\n
+        \         \"B08\",\n          \"B8A\",\n          \"B09\",\n          \"B10\",\n
+        \         \"B11\",\n          \"B12\"\n        ],\n        \"input\": {\n
+        \         \"shape\": [\n            -1,\n            13,\n            64,\n
+        \           64\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"channel\",\n            \"height\",\n            \"width\"\n
+        \         ],\n          \"data_type\": \"float32\"\n        },\n        \"norm_by_channel\":
+        true,\n        \"norm_type\": \"z-score\",\n        \"resize_type\": null,\n
+        \       \"statistics\": [\n          {\n            \"mean\": 1354.40546513,\n
+        \           \"stddev\": 245.71762908\n          },\n          {\n            \"mean\":
+        1118.24399958,\n            \"stddev\": 333.00778264\n          },\n          {\n
+        \           \"mean\": 1042.92983953,\n            \"stddev\": 395.09249139\n
+        \         },\n          {\n            \"mean\": 947.62620298,\n            \"stddev\":
+        593.75055589\n          },\n          {\n            \"mean\": 1199.47283961,\n
+        \           \"stddev\": 566.4170017\n          },\n          {\n            \"mean\":
+        1999.79090914,\n            \"stddev\": 861.18399006\n          },\n          {\n
+        \           \"mean\": 2369.22292565,\n            \"stddev\": 1086.63139075\n
+        \         },\n          {\n            \"mean\": 2296.82608323,\n            \"stddev\":
+        1117.98170791\n          },\n          {\n            \"mean\": 732.08340178,\n
+        \           \"stddev\": 404.91978886\n          },\n          {\n            \"mean\":
+        12.11327804,\n            \"stddev\": 4.77584468\n          },\n          {\n
+        \           \"mean\": 1819.01027855,\n            \"stddev\": 1002.58768311\n
+        \         },\n          {\n            \"mean\": 1118.92391149,\n            \"stddev\":
+        761.30323499\n          },\n          {\n            \"mean\": 2594.14080798,\n
+        \           \"stddev\": 1231.58581042\n          }\n        ],\n        \"pre_processing_function\":
+        {\n          \"format\": \"python\",\n          \"expression\": \"torchgeo.datamodules.eurosat.EuroSATDataModule.collate_fn\"\n
+        \       }\n      }\n    ],\n    \"mlm:output\": [\n      {\n        \"name\":
+        \"classification\",\n        \"tasks\": [\n          \"classification\"\n
+        \       ],\n        \"result\": {\n          \"shape\": [\n            -1,\n
+        \           10\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"class\"\n          ],\n          \"data_type\": \"float32\"\n
+        \       },\n        \"classification_classes\": [\n          {\n            \"value\":
+        0,\n            \"name\": \"Annual Crop\",\n            \"description\": null,\n
+        \           \"title\": null,\n            \"color_hint\": null,\n            \"nodata\":
+        false\n          },\n          {\n            \"value\": 1,\n            \"name\":
+        \"Forest\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 2,\n            \"name\": \"Herbaceous
+        Vegetation\",\n            \"description\": null,\n            \"title\":
+        null,\n            \"color_hint\": null,\n            \"nodata\": false\n
+        \         },\n          {\n            \"value\": 3,\n            \"name\":
+        \"Highway\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 4,\n            \"name\": \"Industrial
+        Buildings\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 5,\n            \"name\": \"Pasture\",\n
+        \           \"description\": null,\n            \"title\": null,\n            \"color_hint\":
+        null,\n            \"nodata\": false\n          },\n          {\n            \"value\":
+        6,\n            \"name\": \"Permanent Crop\",\n            \"description\":
+        null,\n            \"title\": null,\n            \"color_hint\": null,\n            \"nodata\":
+        false\n          },\n          {\n            \"value\": 7,\n            \"name\":
+        \"Residential Buildings\",\n            \"description\": null,\n            \"title\":
+        null,\n            \"color_hint\": null,\n            \"nodata\": false\n
+        \         },\n          {\n            \"value\": 8,\n            \"name\":
+        \"River\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 9,\n            \"name\": \"SeaLake\",\n
+        \           \"description\": null,\n            \"title\": null,\n            \"color_hint\":
+        null,\n            \"nodata\": false\n          }\n        ],\n        \"post_processing_function\":
+        null\n      }\n    ]\n  },\n  \"assets\": {\n    \"weights\": {\n      \"href\":
+        \"https://huggingface.co/torchgeo/resnet18_sentinel2_all_moco/resolve/main/resnet18_sentinel2_all_moco-59bfdff9.pth\",\n
+        \     \"title\": \"Pytorch weights checkpoint\",\n      \"description\": \"A
+        Resnet-18 classification model trained on normalized Sentinel-2 imagery with
+        Eurosat landcover labels with torchgeo\",\n      \"type\": \"application/octet-stream;
+        application=pytorch\",\n      \"roles\": [\n        \"mlm:model\",\n        \"mlm:weights\"\n
+        \     ],\n      \"$comment\": \"Following 'eo:bands' is required to fulfil
+        schema validation of 'eo' extension.\",\n      \"eo:bands\": [\n        {\n
+        \         \"name\": \"B01\",\n          \"common_name\": \"coastal\",\n          \"description\":
+        \"Coastal aerosol (band 1)\",\n          \"center_wavelength\": 0.443,\n          \"full_width_half_max\":
+        0.027\n        },\n        {\n          \"name\": \"B02\",\n          \"common_name\":
+        \"blue\",\n          \"description\": \"Blue (band 2)\",\n          \"center_wavelength\":
+        0.49,\n          \"full_width_half_max\": 0.098\n        },\n        {\n          \"name\":
+        \"B03\",\n          \"common_name\": \"green\",\n          \"description\":
+        \"Green (band 3)\",\n          \"center_wavelength\": 0.56,\n          \"full_width_half_max\":
+        0.045\n        },\n        {\n          \"name\": \"B04\",\n          \"common_name\":
+        \"red\",\n          \"description\": \"Red (band 4)\",\n          \"center_wavelength\":
+        0.665,\n          \"full_width_half_max\": 0.038\n        },\n        {\n
+        \         \"name\": \"B05\",\n          \"common_name\": \"rededge\",\n          \"description\":
+        \"Red edge 1 (band 5)\",\n          \"center_wavelength\": 0.704,\n          \"full_width_half_max\":
+        0.019\n        },\n        {\n          \"name\": \"B06\",\n          \"common_name\":
+        \"rededge\",\n          \"description\": \"Red edge 2 (band 6)\",\n          \"center_wavelength\":
+        0.74,\n          \"full_width_half_max\": 0.018\n        },\n        {\n          \"name\":
+        \"B07\",\n          \"common_name\": \"rededge\",\n          \"description\":
+        \"Red edge 3 (band 7)\",\n          \"center_wavelength\": 0.783,\n          \"full_width_half_max\":
+        0.028\n        },\n        {\n          \"name\": \"B08\",\n          \"common_name\":
+        \"nir\",\n          \"description\": \"NIR 1 (band 8)\",\n          \"center_wavelength\":
+        0.842,\n          \"full_width_half_max\": 0.145\n        },\n        {\n
+        \         \"name\": \"B8A\",\n          \"common_name\": \"nir08\",\n          \"description\":
+        \"NIR 2 (band 8A)\",\n          \"center_wavelength\": 0.865,\n          \"full_width_half_max\":
+        0.033\n        },\n        {\n          \"name\": \"B09\",\n          \"common_name\":
+        \"nir09\",\n          \"description\": \"NIR 3 (band 9)\",\n          \"center_wavelength\":
+        0.945,\n          \"full_width_half_max\": 0.026\n        },\n        {\n
+        \         \"name\": \"B10\",\n          \"common_name\": \"cirrus\",\n          \"description\":
+        \"SWIR - Cirrus (band 10)\",\n          \"center_wavelength\": 1.375,\n          \"full_width_half_max\":
+        0.026\n        },\n        {\n          \"name\": \"B11\",\n          \"common_name\":
+        \"swir16\",\n          \"description\": \"SWIR 1 (band 11)\",\n          \"center_wavelength\":
+        1.61,\n          \"full_width_half_max\": 0.143\n        },\n        {\n          \"name\":
+        \"B12\",\n          \"common_name\": \"swir22\",\n          \"description\":
+        \"SWIR 2 (band 12)\",\n          \"center_wavelength\": 2.19,\n          \"full_width_half_max\":
+        0.242\n        }\n      ]\n    },\n    \"source_code\": {\n      \"href\":
+        \"https://github.com/microsoft/torchgeo/blob/61efd2e2c4df7ebe3bd03002ebbaeaa3cfe9885a/torchgeo/models/resnet.py#L207\",\n
+        \     \"title\": \"Model implementation.\",\n      \"description\": \"Source
+        code to run the model.\",\n      \"type\": \"text/x-python\",\n      \"roles\":
+        [\n        \"mlm:source_code\",\n        \"code\",\n        \"metadata\"\n
+        \     ]\n    }\n  },\n  \"links\": [\n    {\n      \"rel\": \"collection\",\n
+        \     \"href\": \"./collection.json\",\n      \"type\": \"application/json\"\n
+        \   },\n    {\n      \"rel\": \"self\",\n      \"href\": \"./item_eo_bands.json\",\n
+        \     \"type\": \"application/geo+json\"\n    },\n    {\n      \"rel\": \"derived_from\",\n
+        \     \"href\": \"https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a\",\n
+        \     \"type\": \"application/json\",\n      \"ml-aoi:split\": \"train\"\n
+        \   }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '2481'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Tue, 29 Apr 2025 08:30:26 GMT
+      ETag:
+      - W/"a8e548ba2f956af68d095ed3395f558cd02489363df3b2b44052cc4a5a15653e"
+      Expires:
+      - Tue, 29 Apr 2025 08:35:26 GMT
+      Source-Age:
+      - '118'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 9f483102ad1f4e924b4bcd84a00606d99516dc4a
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - FCEF:117E:6F0439:7ED11A:68108DAC
+      X-Served-By:
+      - cache-fra-etou8220123-FRA
+      X-Timer:
+      - S1745915426.179302,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

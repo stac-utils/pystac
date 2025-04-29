@@ -1,0 +1,156 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/v1.0.0/examples/item_multi_io.json
+  response:
+    body:
+      string: "{\n  \"stac_version\": \"1.0.0\",\n  \"stac_extensions\": [\n    \"https://crim-ca.github.io/mlm-extension/v1.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/raster/v1.1.0/schema.json\",\n    \"https://stac-extensions.github.io/file/v1.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/ml-aoi/v0.2.0/schema.json\"\n  ],\n
+        \ \"type\": \"Feature\",\n  \"id\": \"resnet-18_sentinel-2_all_moco_classification\",\n
+        \ \"collection\": \"ml-model-examples\",\n  \"geometry\": {\n    \"type\":
+        \"Polygon\",\n    \"coordinates\": [\n      [\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ]\n      ]\n    ]\n  },\n  \"bbox\":
+        [\n    -7.882190080512502,\n    37.13739173208318,\n    27.911651652899923,\n
+        \   58.21798141355221\n  ],\n  \"properties\": {\n    \"description\": \"Sourced
+        from torchgeo python library, identifier is ResNet18_Weights.SENTINEL2_ALL_MOCO\",\n
+        \   \"datetime\": null,\n    \"start_datetime\": \"1900-01-01T00:00:00Z\",\n
+        \   \"end_datetime\": \"9999-12-31T23:59:59Z\",\n    \"mlm:name\": \"Resnet-18
+        Sentinel-2 ALL MOCO\",\n    \"mlm:tasks\": [\n      \"classification\"\n    ],\n
+        \   \"mlm:architecture\": \"ResNet\",\n    \"mlm:framework\": \"pytorch\",\n
+        \   \"mlm:framework_version\": \"2.1.2+cu121\",\n    \"file:size\": 43000000,\n
+        \   \"mlm:memory_size\": 1,\n    \"mlm:total_parameters\": 11700000,\n    \"mlm:pretrained_source\":
+        \"EuroSat Sentinel-2\",\n    \"mlm:accelerator\": \"cuda\",\n    \"mlm:accelerator_constrained\":
+        false,\n    \"mlm:accelerator_summary\": \"Unknown\",\n    \"mlm:batch_size_suggestion\":
+        256,\n    \"mlm:input\": [\n      {\n        \"name\": \"RGB\",\n        \"bands\":
+        [\n          \"B04\",\n          \"B03\",\n          \"B02\"\n        ],\n
+        \       \"input\": {\n          \"shape\": [\n            -1,\n            3,\n
+        \           64,\n            64\n          ],\n          \"dim_order\": [\n
+        \           \"batch\",\n            \"channel\",\n            \"height\",\n
+        \           \"width\"\n          ],\n          \"data_type\": \"uint16\"\n
+        \       },\n        \"norm_by_channel\": false,\n        \"norm_type\": null,\n
+        \       \"resize_type\": null\n      },\n      {\n        \"name\": \"NDVI\",\n
+        \       \"bands\": [\n          \"B04\",\n          \"B08\"\n        ],\n
+        \       \"pre_processing_function\": {\n          \"format\": \"gdal-calc\",\n
+        \         \"expression\": \"(A - B) / (A + B)\"\n        },\n        \"input\":
+        {\n          \"shape\": [\n            -1,\n            1,\n            64,\n
+        \           64\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"ndvi\",\n            \"height\",\n            \"width\"\n          ],\n
+        \         \"data_type\": \"uint16\"\n        }\n      }\n    ],\n    \"mlm:output\":
+        [\n      {\n        \"name\": \"vegetation-segmentation\",\n        \"tasks\":
+        [\n          \"semantic-segmentation\"\n        ],\n        \"result\": {\n
+        \         \"shape\": [\n            -1,\n            1\n          ],\n          \"dim_order\":
+        [\n            \"batch\",\n            \"class\"\n          ],\n          \"data_type\":
+        \"uint8\"\n        },\n        \"classification_classes\": [\n          {\n
+        \           \"value\": 0,\n            \"name\": \"NON_VEGETATION\",\n            \"description\":
+        \"background pixels\",\n            \"color_hint\": null\n          },\n          {\n
+        \           \"value\": 1,\n            \"name\": \"VEGETATION\",\n            \"description\":
+        \"pixels where vegetation was detected\",\n            \"color_hint\": [\n
+        \             0,\n              255,\n              0\n            ]\n          }\n
+        \       ],\n        \"post_processing_function\": null\n      },\n      {\n
+        \       \"name\": \"inverse-mask\",\n        \"tasks\": [\n          \"semantic-segmentation\"\n
+        \       ],\n        \"result\": {\n          \"shape\": [\n            -1,\n
+        \           1\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"class\"\n          ],\n          \"data_type\": \"uint8\"\n
+        \       },\n        \"classification_classes\": [\n          {\n            \"value\":
+        0,\n            \"name\": \"NON_VEGETATION\",\n            \"description\":
+        \"background pixels\",\n            \"color_hint\": [\n              255,\n
+        \             255,\n              255\n            ]\n          },\n          {\n
+        \           \"value\": 1,\n            \"name\": \"VEGETATION\",\n            \"description\":
+        \"pixels where vegetation was detected\",\n            \"color_hint\": [\n
+        \             0,\n              0,\n              0\n            ]\n          }\n
+        \       ],\n        \"post_processing_function\": {\n          \"format\":
+        \"gdal-calc\",\n          \"expression\": \"logical_not(A)\"\n        }\n
+        \     }\n    ],\n    \"raster:bands\": [\n      {\n        \"name\": \"B02
+        - blue\",\n        \"nodata\": 0,\n        \"data_type\": \"uint16\",\n        \"bits_per_sample\":
+        15,\n        \"spatial_resolution\": 10,\n        \"scale\": 0.0001,\n        \"offset\":
+        0,\n        \"unit\": \"m\"\n      },\n      {\n        \"name\": \"B03 -
+        green\",\n        \"nodata\": 0,\n        \"data_type\": \"uint16\",\n        \"bits_per_sample\":
+        15,\n        \"spatial_resolution\": 10,\n        \"scale\": 0.0001,\n        \"offset\":
+        0,\n        \"unit\": \"m\"\n      },\n      {\n        \"name\": \"B04 -
+        red\",\n        \"nodata\": 0,\n        \"data_type\": \"uint16\",\n        \"bits_per_sample\":
+        15,\n        \"spatial_resolution\": 10,\n        \"scale\": 0.0001,\n        \"offset\":
+        0,\n        \"unit\": \"m\"\n      },\n      {\n        \"name\": \"B08 -
+        nir\",\n        \"nodata\": 0,\n        \"data_type\": \"uint16\",\n        \"bits_per_sample\":
+        15,\n        \"spatial_resolution\": 10,\n        \"scale\": 0.0001,\n        \"offset\":
+        0,\n        \"unit\": \"m\"\n      }\n    ]\n  },\n  \"assets\": {\n    \"weights\":
+        {\n      \"href\": \"https://huggingface.co/torchgeo/resnet50_sentinel2_rgb_moco/blob/main/resnet50_sentinel2_rgb_moco.pth\",\n
+        \     \"title\": \"Pytorch weights checkpoint\",\n      \"description\": \"A
+        Resnet-50 classification model trained on Sentinel-2 RGB imagery with torchgeo.\",\n
+        \     \"type\": \"application/octet-stream; application=pytorch\",\n      \"roles\":
+        [\n        \"mlm:model\",\n        \"mlm:weights\"\n      ]\n    }\n  },\n
+        \ \"links\": [\n    {\n      \"rel\": \"collection\",\n      \"href\": \"./collection.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"self\",\n
+        \     \"href\": \"./item_multi_io.json\",\n      \"type\": \"application/geo+json\"\n
+        \   },\n    {\n      \"rel\": \"derived_from\",\n      \"href\": \"https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a\",\n
+        \     \"type\": \"application/json\",\n      \"ml-aoi:split\": \"train\"\n
+        \   }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1572'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Tue, 29 Apr 2025 08:30:26 GMT
+      ETag:
+      - W/"b8e68364828f14a588c33c8a9e49382d8e69c2bbe5052e997e7a039f612178aa"
+      Expires:
+      - Tue, 29 Apr 2025 08:35:26 GMT
+      Source-Age:
+      - '117'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 34f627f96ddccc8c605c63326973840c9edb02a9
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 7B49:230D29:B4D608:CD825C:681087AA
+      X-Served-By:
+      - cache-fra-etou8220118-FRA
+      X-Timer:
+      - S1745915426.247149,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

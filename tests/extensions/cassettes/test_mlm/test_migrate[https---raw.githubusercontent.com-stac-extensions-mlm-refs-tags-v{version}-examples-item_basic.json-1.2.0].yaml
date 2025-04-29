@@ -1,0 +1,110 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/v1.2.0/examples/item_basic.json
+  response:
+    body:
+      string: "{\n  \"stac_version\": \"1.0.0\",\n  \"stac_extensions\": [\n    \"https://crim-ca.github.io/mlm-extension/v1.2.0/schema.json\"\n
+        \ ],\n  \"type\": \"Feature\",\n  \"id\": \"example-model\",\n  \"collection\":
+        \"ml-model-examples\",\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\":
+        [\n      [\n        [\n          -7.882190080512502,\n          37.13739173208318\n
+        \       ],\n        [\n          -7.882190080512502,\n          58.21798141355221\n
+        \       ],\n        [\n          27.911651652899923,\n          58.21798141355221\n
+        \       ],\n        [\n          27.911651652899923,\n          37.13739173208318\n
+        \       ],\n        [\n          -7.882190080512502,\n          37.13739173208318\n
+        \       ]\n      ]\n    ]\n  },\n  \"bbox\": [\n    -7.882190080512502,\n
+        \   37.13739173208318,\n    27.911651652899923,\n    58.21798141355221\n  ],\n
+        \ \"properties\": {\n    \"description\": \"Basic STAC Item with only the
+        MLM extension and no other extension cross-references.\",\n    \"datetime\":
+        null,\n    \"start_datetime\": \"1900-01-01T00:00:00Z\",\n    \"end_datetime\":
+        \"9999-12-31T23:59:59Z\",\n    \"mlm:name\": \"example-model\",\n    \"mlm:tasks\":
+        [\n      \"classification\"\n    ],\n    \"mlm:architecture\": \"ResNet\",\n
+        \   \"mlm:input\": [\n      {\n        \"name\": \"Model with RGB input that
+        does not refer to any band.\",\n        \"bands\": [],\n        \"input\":
+        {\n          \"shape\": [\n            -1,\n            3,\n            64,\n
+        \           64\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"channel\",\n            \"height\",\n            \"width\"\n
+        \         ],\n          \"data_type\": \"float32\"\n        }\n      }\n    ],\n
+        \   \"mlm:output\": [\n      {\n        \"name\": \"classification\",\n        \"tasks\":
+        [\n          \"classification\"\n        ],\n        \"result\": {\n          \"shape\":
+        [\n            -1,\n            1\n          ],\n          \"dim_order\":
+        [\n            \"batch\",\n            \"class\"\n          ],\n          \"data_type\":
+        \"uint8\"\n        },\n        \"classification_classes\": [\n          {\n
+        \           \"value\": 0,\n            \"name\": \"BACKGROUND\",\n            \"description\":
+        \"Background non-city.\",\n            \"color_hint\": [\n              0,\n
+        \             0,\n              0\n            ]\n          },\n          {\n
+        \           \"value\": 1,\n            \"name\": \"CITY\",\n            \"description\":
+        \"A city is detected.\",\n            \"color_hint\": [\n              0,\n
+        \             0,\n              255\n            ]\n          }\n        ]\n
+        \     }\n    ]\n  },\n  \"assets\": {\n    \"model\": {\n      \"href\": \"https://huggingface.co/example/model-card\",\n
+        \     \"title\": \"Pytorch weights checkpoint\",\n      \"description\": \"Example
+        model.\",\n      \"type\": \"text/html\",\n      \"roles\": [\n        \"mlm:model\"\n
+        \     ]\n    }\n  },\n  \"links\": [\n    {\n      \"rel\": \"collection\",\n
+        \     \"href\": \"./collection.json\",\n      \"type\": \"application/json\"\n
+        \   },\n    {\n      \"rel\": \"self\",\n      \"href\": \"./item_basic.json\",\n
+        \     \"type\": \"application/geo+json\"\n    }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '934'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Tue, 29 Apr 2025 08:30:25 GMT
+      ETag:
+      - W/"4214e4c8a7e047eaff361f43a1e2ce58d4e403d064c4a0a9fc870a0f02f3ffd4"
+      Expires:
+      - Tue, 29 Apr 2025 08:35:25 GMT
+      Source-Age:
+      - '119'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - dea14443ef6f269978dd64c2bb7cf0811dcd3102
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 6822:112C:B53704:CD19F6:68108DA9
+      X-Served-By:
+      - cache-fra-etou8220154-FRA
+      X-Timer:
+      - S1745915426.841928,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

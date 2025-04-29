@@ -1,0 +1,201 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/v1.3.0/examples/item_raster_bands.json
+  response:
+    body:
+      string: "{\n  \"stac_version\": \"1.0.0\",\n  \"stac_extensions\": [\n    \"https://crim-ca.github.io/mlm-extension/v1.3.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/raster/v1.1.0/schema.json\",\n    \"https://stac-extensions.github.io/file/v1.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/ml-aoi/v0.2.0/schema.json\"\n  ],\n
+        \ \"type\": \"Feature\",\n  \"id\": \"resnet-18_sentinel-2_all_moco_classification\",\n
+        \ \"collection\": \"ml-model-examples\",\n  \"geometry\": {\n    \"type\":
+        \"Polygon\",\n    \"coordinates\": [\n      [\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         58.21798141355221\n        ],\n        [\n          27.911651652899923,\n
+        \         37.13739173208318\n        ],\n        [\n          -7.882190080512502,\n
+        \         37.13739173208318\n        ]\n      ]\n    ]\n  },\n  \"bbox\":
+        [\n    -7.882190080512502,\n    37.13739173208318,\n    27.911651652899923,\n
+        \   58.21798141355221\n  ],\n  \"properties\": {\n    \"description\": \"Sourced
+        from torchgeo python library, identifier is ResNet18_Weights.SENTINEL2_ALL_MOCO\",\n
+        \   \"datetime\": null,\n    \"start_datetime\": \"1900-01-01T00:00:00Z\",\n
+        \   \"end_datetime\": \"9999-12-31T23:59:59Z\",\n    \"mlm:name\": \"Resnet-18
+        Sentinel-2 ALL MOCO\",\n    \"mlm:tasks\": [\n      \"classification\"\n    ],\n
+        \   \"mlm:architecture\": \"ResNet\",\n    \"mlm:framework\": \"pytorch\",\n
+        \   \"mlm:framework_version\": \"2.1.2+cu121\",\n    \"file:size\": 43000000,\n
+        \   \"mlm:memory_size\": 1,\n    \"mlm:total_parameters\": 11700000,\n    \"mlm:pretrained_source\":
+        \"EuroSat Sentinel-2\",\n    \"mlm:accelerator\": \"cuda\",\n    \"mlm:accelerator_constrained\":
+        false,\n    \"mlm:accelerator_summary\": \"Unknown\",\n    \"mlm:batch_size_suggestion\":
+        256,\n    \"mlm:input\": [\n      {\n        \"name\": \"13 Band Sentinel-2
+        Batch\",\n        \"bands\": [\n          \"B01\",\n          \"B02\",\n          \"B03\",\n
+        \         \"B04\",\n          \"B05\",\n          \"B06\",\n          \"B07\",\n
+        \         \"B08\",\n          \"B8A\",\n          \"B09\",\n          \"B10\",\n
+        \         \"B11\",\n          \"B12\"\n        ],\n        \"input\": {\n
+        \         \"shape\": [\n            -1,\n            13,\n            64,\n
+        \           64\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"channel\",\n            \"height\",\n            \"width\"\n
+        \         ],\n          \"data_type\": \"float32\"\n        },\n        \"norm_type\":
+        null,\n        \"resize_type\": null,\n        \"pre_processing_function\":
+        {\n          \"format\": \"python\",\n          \"expression\": \"torchgeo.datamodules.eurosat.EuroSATDataModule.collate_fn\"\n
+        \       }\n      }\n    ],\n    \"mlm:output\": [\n      {\n        \"name\":
+        \"classification\",\n        \"tasks\": [\n          \"classification\"\n
+        \       ],\n        \"result\": {\n          \"shape\": [\n            -1,\n
+        \           10\n          ],\n          \"dim_order\": [\n            \"batch\",\n
+        \           \"class\"\n          ],\n          \"data_type\": \"float32\"\n
+        \       },\n        \"classification_classes\": [\n          {\n            \"value\":
+        0,\n            \"name\": \"Annual Crop\",\n            \"description\": null,\n
+        \           \"title\": null,\n            \"color_hint\": null,\n            \"nodata\":
+        false\n          },\n          {\n            \"value\": 1,\n            \"name\":
+        \"Forest\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 2,\n            \"name\": \"Herbaceous
+        Vegetation\",\n            \"description\": null,\n            \"title\":
+        null,\n            \"color_hint\": null,\n            \"nodata\": false\n
+        \         },\n          {\n            \"value\": 3,\n            \"name\":
+        \"Highway\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 4,\n            \"name\": \"Industrial
+        Buildings\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 5,\n            \"name\": \"Pasture\",\n
+        \           \"description\": null,\n            \"title\": null,\n            \"color_hint\":
+        null,\n            \"nodata\": false\n          },\n          {\n            \"value\":
+        6,\n            \"name\": \"Permanent Crop\",\n            \"description\":
+        null,\n            \"title\": null,\n            \"color_hint\": null,\n            \"nodata\":
+        false\n          },\n          {\n            \"value\": 7,\n            \"name\":
+        \"Residential Buildings\",\n            \"description\": null,\n            \"title\":
+        null,\n            \"color_hint\": null,\n            \"nodata\": false\n
+        \         },\n          {\n            \"value\": 8,\n            \"name\":
+        \"River\",\n            \"description\": null,\n            \"title\": null,\n
+        \           \"color_hint\": null,\n            \"nodata\": false\n          },\n
+        \         {\n            \"value\": 9,\n            \"name\": \"SeaLake\",\n
+        \           \"description\": null,\n            \"title\": null,\n            \"color_hint\":
+        null,\n            \"nodata\": false\n          }\n        ],\n        \"post_processing_function\":
+        null\n      }\n    ]\n  },\n  \"assets\": {\n    \"weights\": {\n      \"href\":
+        \"https://huggingface.co/torchgeo/resnet18_sentinel2_all_moco/resolve/main/resnet18_sentinel2_all_moco-59bfdff9.pth\",\n
+        \     \"title\": \"Pytorch weights checkpoint\",\n      \"description\": \"A
+        Resnet-18 classification model trained on normalized Sentinel-2 imagery with
+        Eurosat landcover labels with torchgeo\",\n      \"type\": \"application/octet-stream;
+        application=pytorch\",\n      \"roles\": [\n        \"mlm:model\",\n        \"mlm:weights\"\n
+        \     ],\n      \"raster:bands\": [\n        {\n          \"name\": \"B01\",\n
+        \         \"nodata\": 0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\":
+        15,\n          \"spatial_resolution\": 60,\n          \"scale\": 0.0001,\n
+        \         \"offset\": 0,\n          \"unit\": \"m\"\n        },\n        {\n
+        \         \"name\": \"B02\",\n          \"nodata\": 0,\n          \"data_type\":
+        \"uint16\",\n          \"bits_per_sample\": 15,\n          \"spatial_resolution\":
+        10,\n          \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B03\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 10,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        },\n        {\n          \"name\":
+        \"B04\",\n          \"nodata\": 0,\n          \"data_type\": \"uint16\",\n
+        \         \"bits_per_sample\": 15,\n          \"spatial_resolution\": 10,\n
+        \         \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B05\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 20,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        },\n        {\n          \"name\":
+        \"B06\",\n          \"nodata\": 0,\n          \"data_type\": \"uint16\",\n
+        \         \"bits_per_sample\": 15,\n          \"spatial_resolution\": 20,\n
+        \         \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B07\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 20,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        },\n        {\n          \"name\":
+        \"B08\",\n          \"nodata\": 0,\n          \"data_type\": \"uint16\",\n
+        \         \"bits_per_sample\": 15,\n          \"spatial_resolution\": 10,\n
+        \         \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B8A\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 20,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        },\n        {\n          \"name\":
+        \"B09\",\n          \"nodata\": 0,\n          \"data_type\": \"uint16\",\n
+        \         \"bits_per_sample\": 15,\n          \"spatial_resolution\": 60,\n
+        \         \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B10\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 60,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        },\n        {\n          \"name\":
+        \"B11\",\n          \"nodata\": 0,\n          \"data_type\": \"uint16\",\n
+        \         \"bits_per_sample\": 15,\n          \"spatial_resolution\": 20,\n
+        \         \"scale\": 0.0001,\n          \"offset\": 0,\n          \"unit\":
+        \"m\"\n        },\n        {\n          \"name\": \"B12\",\n          \"nodata\":
+        0,\n          \"data_type\": \"uint16\",\n          \"bits_per_sample\": 15,\n
+        \         \"spatial_resolution\": 20,\n          \"scale\": 0.0001,\n          \"offset\":
+        0,\n          \"unit\": \"m\"\n        }\n      ]\n    },\n    \"source_code\":
+        {\n      \"href\": \"https://github.com/microsoft/torchgeo/blob/61efd2e2c4df7ebe3bd03002ebbaeaa3cfe9885a/torchgeo/models/resnet.py#L207\",\n
+        \     \"title\": \"Model implementation.\",\n      \"description\": \"Source
+        code to run the model.\",\n      \"type\": \"text/x-python\",\n      \"roles\":
+        [\n        \"mlm:source_code\",\n        \"code\",\n        \"metadata\"\n
+        \     ]\n    }\n  },\n  \"links\": [\n    {\n      \"rel\": \"collection\",\n
+        \     \"href\": \"./collection.json\",\n      \"type\": \"application/json\"\n
+        \   },\n    {\n      \"rel\": \"self\",\n      \"href\": \"./item_raster_bands.json\",\n
+        \     \"type\": \"application/geo+json\"\n    },\n    {\n      \"rel\": \"derived_from\",\n
+        \     \"href\": \"https://earth-search.aws.element84.com/v1/collections/sentinel-2-l2a\",\n
+        \     \"type\": \"application/json\",\n      \"ml-aoi:split\": \"train\"\n
+        \   }\n  ]\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=300
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1803'
+      Content-Security-Policy:
+      - default-src 'none'; style-src 'unsafe-inline'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Cross-Origin-Resource-Policy:
+      - cross-origin
+      Date:
+      - Tue, 29 Apr 2025 08:30:29 GMT
+      ETag:
+      - W/"a27ee1f30298ca82fea5f599426403c50df7b1da816b19a0b602af5649b1531b"
+      Expires:
+      - Tue, 29 Apr 2025 08:35:29 GMT
+      Source-Age:
+      - '0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Authorization,Accept-Encoding,Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Fastly-Request-ID:
+      - 540e6adbd74fc013400f20084d209c94f3eb67ea
+      X-Frame-Options:
+      - deny
+      X-GitHub-Request-Id:
+      - 45A5:5B0FB:C4898F:DDDFF6:68108E25
+      X-Served-By:
+      - cache-fra-etou8220178-FRA
+      X-Timer:
+      - S1745915429.237875,VS0,VE295
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

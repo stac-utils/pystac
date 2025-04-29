@@ -1,3 +1,4 @@
+import itertools
 import json
 import logging
 import re
@@ -5,6 +6,7 @@ from copy import deepcopy
 from typing import Any, cast
 
 import pytest
+import requests
 
 import pystac.errors
 from pystac import Asset, Collection, Item, ItemAssetDefinition
@@ -1719,3 +1721,44 @@ def test_migration_1_3_to_1_4_collection() -> None:
     assert "mlm:hyperparameters" in data
 
     assert "mlm:artifact_type" in data["assets"]["asset1"]
+
+
+@pytest.mark.vcr
+@pytest.mark.parametrize(
+    "url_template, version",
+    tuple(
+        itertools.product(
+            (
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_basic.json",
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_eo_bands.json",
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_multi_io.json",
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_raster_bands.json",
+            ),
+            ("1.0.0", "1.1.0", "1.2.0", "1.3.0"),
+        )
+    ),
+)
+def test_migrate(url_template: str, version: str) -> None:
+    url = url_template.format(version=version)
+    r = requests.get(url)
+    data = r.json()
+
+    old_uri = f"https://crim-ca.github.io/mlm-extension/v{version}/schema.json"
+    new_uri = f"https://stac-extensions.github.io/mlm/v{version}/schema.json"
+
+    try:
+        i = data["stac_extensions"].index(old_uri)
+        data["stac_extensions"][i] = new_uri
+    except ValueError:
+        if new_uri not in data["stac_extensions"]:
+            raise Exception("Stac object does not list stac:mlm as extension")
+
+    item = pystac.Item.from_dict(data)
+
+    assert MLMExtension.get_schema_uri() in item.stac_extensions
+    assert old_uri not in item.stac_extensions
+    assert new_uri not in item.stac_extensions
