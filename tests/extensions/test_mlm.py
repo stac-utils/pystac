@@ -1839,7 +1839,9 @@ def test_migrate(url_template: str, version: str) -> None:
         data["stac_extensions"][i] = new_uri
     except ValueError:
         if new_uri not in data["stac_extensions"]:
-            raise Exception("Stac object does not list stac:mlm as extension")
+            raise Exception(
+                f"Stac object does not list stac:mlm v{version} as extension"
+            )
 
     item = pystac.Item.from_dict(data)
 
