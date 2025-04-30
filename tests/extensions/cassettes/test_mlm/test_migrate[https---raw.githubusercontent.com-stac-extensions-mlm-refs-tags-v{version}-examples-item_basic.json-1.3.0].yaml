@@ -73,13 +73,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Tue, 29 Apr 2025 08:30:25 GMT
+      - Wed, 30 Apr 2025 08:48:45 GMT
       ETag:
       - W/"2cdd4c4b8a96681920b5e858cc552b3b19ca2a40e211d9ef29e3863f040782c2"
       Expires:
-      - Tue, 29 Apr 2025 08:35:25 GMT
+      - Wed, 30 Apr 2025 08:53:45 GMT
       Source-Age:
-      - '118'
+      - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -87,23 +87,672 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - d9048815950a3df8944faf506270689c94e931a6
+      - c47fe1bd7eb6e2683b454f2e4dab7077cef1508b
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 6444:183F83:C9B8F0:E30245:68108DA9
+      - 0F29:112C:2960BD2:2D10907:6811E3EC
       X-Served-By:
-      - cache-fra-etou8220020-FRA
+      - cache-fra-etou8220083-FRA
       X-Timer:
-      - S1745915426.908529,VS0,VE1
+      - S1746002925.933909,VS0,VE204
       X-XSS-Protection:
       - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://stac-extensions.github.io/mlm/v1.4.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/mlm/v1.4.0/schema.json\",\n  \"title\":
+        \"Machine Learning Model STAC Extension Schema\",\n  \"description\": \"This
+        object represents the metadata for a Machine Learning Model (MLM) used in
+        STAC documents.\",\n  \"$comment\": \"Use 'allOf+if/then' for each 'type'
+        to allow implementations to report more specific messages about the exact
+        case in error (if any). Using only a 'oneOf/allOf' with the 'type' caused
+        any incompatible 'type' to be reported first with a minimal and poorly described
+        error by 'pystac'.\",\n  \"allOf\": [\n    {\n      \"description\": \"This
+        is the schema for STAC extension MLM in Items.\",\n      \"if\": {\n        \"required\":
+        [\n          \"type\"\n        ],\n        \"properties\": {\n          \"type\":
+        {\n            \"const\": \"Feature\"\n          }\n        }\n      },\n
+        \     \"then\": {\n        \"allOf\": [\n          {\n            \"description\":
+        \"Schema to validate the MLM fields permitted under Item properties or Assets
+        properties.\",\n            \"type\": \"object\",\n            \"required\":
+        [\n              \"properties\",\n              \"assets\"\n            ],\n
+        \           \"properties\": {\n              \"properties\": {\n                \"$comment\":
+        \"Schema to validate the MLM fields permitted under Item properties.\",\n
+        \               \"$ref\": \"#/$defs/mlmItemFields\"\n              },\n              \"assets\":
+        {\n                \"additionalProperties\": {\n                  \"$comment\":
+        \"Schema to validate the MLM fields permitted under Asset properties.\",\n
+        \                 \"$ref\": \"#/$defs/mlmAssetFields\"\n                }\n
+        \             }\n            }\n          },\n          {\n            \"$ref\":
+        \"#/$defs/stac_extensions_mlm\"\n          },\n          {\n            \"$comment\":
+        \"Schema to validate cross-references of bands between MLM inputs and any
+        'bands'-compliant section describing them using another STAC definition.\",\n
+        \           \"$ref\": \"#/$defs/AnyBandsRef\"\n          },\n          {\n
+        \           \"$comment\": \"Schema to validate that at least one Asset defines
+        a model role.\",\n            \"$ref\": \"#/$defs/AssetModelRoleMinimumOneDefinition\"\n
+        \         },\n          {\n            \"$comment\": \"Schema to validate
+        that the Asset model properties are mutually exclusive to the model role.\",\n
+        \           \"$ref\": \"#/$defs/AssetModelRequiredProperties\"\n          }\n
+        \       ]\n      }\n    },\n    {\n      \"description\": \"This is the schema
+        for STAC extension MLM in Collections.\",\n      \"if\": {\n        \"required\":
+        [\n          \"type\"\n        ],\n        \"properties\": {\n          \"type\":
+        {\n            \"const\": \"Collection\"\n          }\n        }\n      },\n
+        \     \"then\": {\n        \"allOf\": [\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"summaries\": {\n
+        \               \"type\": \"object\",\n                \"additionalProperties\":
+        {\n                  \"$ref\": \"#/$defs/mlmCollectionFields\"\n                }\n
+        \             },\n              \"assets\": {\n                \"type\": \"object\",\n
+        \               \"additionalProperties\": {\n                  \"$ref\": \"#/$defs/mlmAssetFields\"\n
+        \               }\n              },\n              \"item_assets\": {\n                \"type\":
+        \"object\",\n                \"additionalProperties\": {\n                  \"$ref\":
+        \"#/$defs/mlmAssetFields\"\n                }\n              }\n            }\n
+        \         },\n          {\n            \"$ref\": \"#/$defs/stac_extensions_mlm\"\n
+        \         }\n        ]\n      }\n    }\n  ],\n  \"$defs\": {\n    \"stac_extensions_mlm\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/mlm/v1.4.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"stac_extensions_eo\": {\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_extensions\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"type\": \"string\",\n
+        \           \"pattern\": \"https://stac-extensions\\\\.github\\\\.io/eo/v1(\\\\.[0-9]+){2}/schema\\\\.json\"\n
+        \         }\n        }\n      }\n    },\n    \"stac_extensions_eo_bands_item\":
+        {\n      \"$comment\": \"This is the JSON-object 'properties' definition,
+        which describes the STAC-Item field named 'properties' containing 'eo:bands'
+        as described in [https://github.com/stac-extensions/eo#item-properties-or-asset-fields].\",\n
+        \     \"properties\": {\n        \"properties\": {\n          \"required\":
+        [\n            \"eo:bands\"\n          ],\n          \"properties\": {\n            \"eo:bands\":
+        {\n              \"type\": \"array\",\n              \"minItems\": 1,\n              \"items\":
+        {\n                \"type\": \"object\"\n              }\n            }\n
+        \         }\n        }\n      }\n    },\n    \"stac_extensions_eo_bands_asset\":
+        {\n      \"required\": [\n        \"assets\"\n      ],\n      \"$comment\":
+        \"This is the JSON-object 'properties' definition, which describes the STAC-Asset
+        containing 'eo:bands' as described in [https://github.com/stac-extensions/eo#item-properties-or-asset-fields].\",\n
+        \     \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"if\": {\n              \"$ref\": \"#/$defs/AssetModelRole\"\n
+        \           },\n            \"then\": {\n              \"required\": [\n                \"eo:bands\"\n
+        \             ],\n              \"properties\": {\n                \"eo:bands\":
+        {\n                  \"type\": \"array\",\n                  \"minItems\":
+        1,\n                  \"items\": {\n                    \"type\": \"object\"\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       }\n      }\n    },\n    \"stac_extensions_raster\": {\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_extensions\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"type\": \"string\",\n
+        \           \"pattern\": \"https://stac-extensions\\\\.github\\\\.io/raster/v1(\\\\.[0-9]+){2}/schema\\\\.json\"\n
+        \         }\n        }\n      }\n    },\n    \"stac_extensions_raster_bands_asset\":
+        {\n      \"required\": [\n        \"assets\"\n      ],\n      \"$comment\":
+        \"This is the JSON-object 'properties' definition, which describes the STAC-Item
+        at least one Asset field containing 'raster:bands' as described in [https://github.com/stac-extensions/raster/tree/v1.1.0#item-asset-fields].\",\n
+        \     \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"if\": {\n              \"$ref\": \"#/$defs/AssetModelRole\"\n
+        \           },\n            \"then\": {\n              \"required\": [\n                \"raster:bands\"\n
+        \             ],\n              \"properties\": {\n                \"raster:bands\":
+        {\n                  \"type\": \"array\",\n                  \"minItems\":
+        1,\n                  \"items\": {\n                    \"$comment\": \"Raster
+        extension does not explicitly indicate a 'name', but one is needed for MLM.\",\n
+        \                   \"type\": \"object\",\n                    \"required\":
+        [\n                      \"name\"\n                    ],\n                    \"properties\":
+        {\n                      \"name\": {\n                        \"type\": \"string\",\n
+        \                       \"minLength\": 1\n                      }\n                    }\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       }\n      }\n    },\n    \"stac_version_1.1\": {\n      \"$comment\":
+        \"Requirement for STAC 1.1 or above.\",\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_version\"\n      ],\n      \"properties\": {\n        \"stac_version\":
+        {\n          \"pattern\": \"1\\\\.[1-9][0-9]*\\\\.[0-9]+(-.*)?\"\n        }\n
+        \     }\n    },\n    \"fields\": {\n      \"description\": \"All possible
+        MLM fields regardless of the level they apply (Collection, Item, Asset, Link).\",\n
+        \     \"type\": \"object\",\n      \"properties\": {\n        \"mlm:name\":
+        {\n          \"$ref\": \"#/$defs/mlm:name\"\n        },\n        \"mlm:architecture\":
+        {\n          \"$ref\": \"#/$defs/mlm:architecture\"\n        },\n        \"mlm:tasks\":
+        {\n          \"$ref\": \"#/$defs/mlm:tasks\"\n        },\n        \"mlm:framework\":
+        {\n          \"$ref\": \"#/$defs/mlm:framework\"\n        },\n        \"mlm:framework_version\":
+        {\n          \"$ref\": \"#/$defs/mlm:framework_version\"\n        },\n        \"mlm:memory_size\":
+        {\n          \"$ref\": \"#/$defs/mlm:memory_size\"\n        },\n        \"mlm:total_parameters\":
+        {\n          \"$ref\": \"#/$defs/mlm:total_parameters\"\n        },\n        \"mlm:pretrained\":
+        {\n          \"$ref\": \"#/$defs/mlm:pretrained\"\n        },\n        \"mlm:pretrained_source\":
+        {\n          \"$ref\": \"#/$defs/mlm:pretrained_source\"\n        },\n        \"mlm:batch_size_suggestion\":
+        {\n          \"$ref\": \"#/$defs/mlm:batch_size_suggestion\"\n        },\n
+        \       \"mlm:accelerator\": {\n          \"$ref\": \"#/$defs/mlm:accelerator\"\n
+        \       },\n        \"mlm:accelerator_constrained\": {\n          \"$ref\":
+        \"#/$defs/mlm:accelerator_constrained\"\n        },\n        \"mlm:accelerator_summary\":
+        {\n          \"$ref\": \"#/$defs/mlm:accelerator_summary\"\n        },\n        \"mlm:accelerator_count\":
+        {\n          \"$ref\": \"#/$defs/mlm:accelerator_count\"\n        },\n        \"mlm:input\":
+        {\n          \"$ref\": \"#/$defs/mlm:input\"\n        },\n        \"mlm:output\":
+        {\n          \"$ref\": \"#/$defs/mlm:output\"\n        },\n        \"mlm:hyperparameters\":
+        {\n          \"$ref\": \"#/$defs/mlm:hyperparameters\"\n        },\n        \"mlm:artifact_type\":
+        {\n          \"$ref\": \"#/$defs/mlm:artifact_type\"\n        },\n        \"mlm:compile_method\":
+        {\n          \"$ref\": \"#/$defs/mlm:compile_method\"\n        }\n      },\n
+        \     \"$comment\": \"Allow properties not defined by MLM prefix to work with
+        other extensions and attributes, but disallow undefined MLM fields.\",\n      \"patternProperties\":
+        {\n        \"^(?!mlm:)\": {}\n      },\n      \"additionalProperties\": false\n
+        \   },\n    \"mlmCollectionFields\": {\n      \"description\": \"Schema to
+        validate the MLM fields permitted under Collection summaries.\",\n      \"allOf\":
+        [\n        {\n          \"description\": \"Fields that are mandatory under
+        the Collection summaries.\",\n          \"type\": \"object\",\n          \"required\":
+        []\n        },\n        {\n          \"description\": \"Fields that are disallowed
+        under the Collection summaries.\",\n          \"not\": {\n            \"required\":
+        [\n              \"mlm:input\",\n              \"mlm:output\",\n              \"mlm:artifact_type\",\n
+        \             \"mlm:compile_method\"\n            ]\n          }\n        },\n
+        \       {\n          \"description\": \"Field with known definitions that
+        must be validated.\",\n          \"$ref\": \"#/$defs/fields\"\n        }\n
+        \     ]\n    },\n    \"mlmItemFields\": {\n      \"description\": \"Schema
+        to validate the MLM fields permitted under Item properties.\",\n      \"allOf\":
+        [\n        {\n          \"description\": \"Fields that are mandatory under
+        the Item properties.\",\n          \"required\": [\n            \"mlm:name\",\n
+        \           \"mlm:architecture\",\n            \"mlm:tasks\",\n            \"mlm:input\",\n
+        \           \"mlm:output\"\n          ]\n        },\n        {\n          \"description\":
+        \"Fields that are disallowed under the Item properties.\",\n          \"$comment\":
+        \"Particularity of the 'not/required' approach: they must be tested one by
+        one. Otherwise, it validates that they are all (simultaneously) not present.\",\n
+        \         \"not\": {\n            \"anyOf\": [\n              {\"required\":
+        [\"mlm:artifact_type\"]},\n              {\"required\": [\"mlm:compile_method\"]}\n
+        \           ]\n          }\n        },\n        {\n          \"description\":
+        \"Field with known definitions that must be validated.\",\n          \"$ref\":
+        \"#/$defs/fields\"\n        }\n      ]\n    },\n    \"mlmAssetFields\": {\n
+        \     \"description\": \"Schema to validate the MLM fields permitted under
+        Assets properties.\",\n      \"allOf\": [\n        {\n          \"description\":
+        \"Fields that are disallowed under the Asset properties.\",\n          \"$comment\":
+        \"Particularity of the 'not/required' approach: they must be tested one by
+        one. Otherwise, it validates that they are all (simultaneously) not present.\",\n
+        \         \"not\": {\n            \"anyOf\": [\n              {\n                \"required\":
+        [\n                  \"mlm:name\"\n                ]\n              },\n              {\n
+        \               \"required\": [\n                  \"mlm:input\"\n                ]\n
+        \             },\n              {\n                \"required\": [\n                  \"mlm:output\"\n
+        \               ]\n              },\n              {\n                \"required\":
+        [\n                  \"mlm:hyperparameters\"\n                ]\n              }\n
+        \           ]\n          }\n        },\n        {\n          \"description\":
+        \"Field with known definitions that must be validated.\",\n          \"$ref\":
+        \"#/$defs/fields\"\n        }\n      ]\n    },\n    \"mlm:name\": {\n      \"type\":
+        \"string\",\n      \"pattern\": \"^[a-zA-Z][a-zA-Z0-9_.\\\\-\\\\s]+[a-zA-Z0-9]$\"\n
+        \   },\n    \"mlm:architecture\": {\n      \"type\": \"string\",\n      \"title\":
+        \"Model Architecture\",\n      \"description\": \"A descriptive name of the
+        model architecture, typically a common name from the literature.\",\n      \"examples\":
+        [\n        \"ResNet\",\n        \"VGG\",\n        \"GAN\",\n        \"Vision
+        Transformer\"\n      ]\n    },\n    \"mlm:framework\": {\n      \"title\":
+        \"Name of the machine learning framework used.\",\n      \"anyOf\": [\n        {\n
+        \         \"$comment\": \"Add more entries here as needed, and repeat them
+        in the README.\",\n          \"description\": \"Notable predefined framework
+        names.\",\n          \"type\": \"string\",\n          \"enum\": [\n            \"PyTorch\",\n
+        \           \"TensorFlow\",\n            \"scikit-learn\",\n            \"Hugging
+        Face\",\n            \"Keras\",\n            \"ONNX\",\n            \"rgee\",\n
+        \           \"spatialRF\",\n            \"JAX\",\n            \"MXNet\",\n
+        \           \"Caffe\",\n            \"PyMC\",\n            \"Weka\"\n          ]\n
+        \       },\n        {\n          \"type\": \"string\",\n          \"minLength\":
+        1,\n          \"pattern\": \"^(?=[^\\\\s._\\\\-]).*[^\\\\s._\\\\-]$\",\n          \"description\":
+        \"Any other framework name to allow extension. Enum names should be preferred
+        when possible to allow better portability.\"\n        }\n      ]\n    },\n
+        \   \"mlm:framework_version\": {\n      \"title\": \"Framework version\",\n
+        \     \"type\": \"string\",\n      \"pattern\": \"^(0|[1-9]\\\\d*)\\\\.(0|[1-9]\\\\d*)\\\\.(0|[1-9]\\\\d*)(?:-((?:0|[1-9]\\\\d*|\\\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\\\.(?:0|[1-9]\\\\d*|\\\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\\\+([0-9a-zA-Z-]+(?:\\\\.[0-9a-zA-Z-]+)*))?$\"\n
+        \   },\n    \"mlm:artifact_type\": {\n      \"type\": \"string\",\n      \"minLength\":
+        1,\n      \"examples\": [\n        \"torch.save\",\n        \"torch.jit.save\",\n
+        \       \"torch.export.save\",\n        \"tf.keras.Model.save\",\n        \"tf.keras.Model.save_weights\",\n
+        \       \"tf.saved_model.export(format='tf_saved_model')\"\n      ]\n    },\n
+        \   \"mlm:compile_method\": {\n      \"type\": \"string\",\n      \"minLength\":
+        1,\n      \"examples\": [\n        \"aot\",\n        \"jit\"\n      ]\n    },\n
+        \   \"mlm:tasks\": {\n      \"type\": \"array\",\n      \"uniqueItems\": true,\n
+        \     \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"regression\",\n
+        \         \"classification\",\n          \"scene-classification\",\n          \"detection\",\n
+        \         \"object-detection\",\n          \"segmentation\",\n          \"semantic-segmentation\",\n
+        \         \"instance-segmentation\",\n          \"panoptic-segmentation\",\n
+        \         \"similarity-search\",\n          \"generative\",\n          \"image-captioning\",\n
+        \         \"super-resolution\"\n        ]\n      }\n    },\n    \"mlm:memory_size\":
+        {\n      \"description\": \"Memory size (in bytes) required to load the model
+        with the specified accelerator.\",\n      \"type\": \"integer\",\n      \"minimum\":
+        0\n    },\n    \"mlm:total_parameters\": {\n      \"description\": \"Total
+        number of model parameters (weights).\",\n      \"type\": \"integer\",\n      \"minimum\":
+        0\n    },\n    \"mlm:pretrained\": {\n      \"type\": \"boolean\",\n      \"$comment\":
+        \"If trained from scratch, the source should be explicitly 'null'. However,
+        omitting the source if pretrained is allowed.\",\n      \"if\": {\n        \"$comment\":
+        \"This is the JSON-object 'properties' definition, which describes the STAC-Item
+        field named 'properties'.\",\n        \"properties\": {\n          \"properties\":
+        {\n            \"$comment\": \"This is the JSON-object 'properties' definition
+        for the STAC MLM pretraining reference.\",\n            \"properties\": {\n
+        \             \"mlm:pretrained\": {\n                \"const\": false\n              }\n
+        \           }\n          }\n        }\n      },\n      \"then\": {\n        \"$comment\":
+        \"This is the JSON-object 'properties' definition, which describes the STAC-Item
+        field named 'properties'.\",\n        \"properties\": {\n          \"properties\":
+        {\n            \"$comment\": \"This is the JSON-object 'properties' definition
+        for the STAC MLM pretraining reference.\",\n            \"required\": [\n
+        \             \"mlm:pretrained_source\"\n            ],\n            \"properties\":
+        {\n              \"mlm:pretrained_source\": {\n                \"const\":
+        null\n              }\n            }\n          }\n        }\n      }\n    },\n
+        \   \"mlm:pretrained_source\": {\n      \"description\": \"Pre-training dataset
+        reference or training from scratch definition.\",\n      \"oneOf\": [\n        {\n
+        \         \"type\": \"string\",\n          \"description\": \"The name or
+        URI of the dataset used for pretraining the model.\",\n          \"examples\":
+        [\n            \"ImageNet\",\n            \"EuroSAT\"\n          ]\n        },\n
+        \       {\n          \"type\": \"null\",\n          \"description\": \"Explicit
+        mention that the model is trained from scratch.\"\n        }\n      ]\n    },\n
+        \   \"mlm:batch_size_suggestion\": {\n      \"description\": \"Recommended
+        batch size to employ the model with the accelerator.\",\n      \"type\": \"integer\",\n
+        \     \"minimum\": 0\n    },\n    \"mlm:accelerator\": {\n      \"oneOf\":
+        [\n        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"amd64\",\n
+        \           \"cuda\",\n            \"xla\",\n            \"amd-rocm\",\n            \"intel-ipex-cpu\",\n
+        \           \"intel-ipex-gpu\",\n            \"macos-arm\"\n          ]\n
+        \       },\n        {\n          \"type\": \"null\"\n        }\n      ],\n
+        \     \"default\": null\n    },\n    \"mlm:accelerator_constrained\": {\n
+        \     \"type\": \"boolean\",\n      \"default\": false\n    },\n    \"mlm:accelerator_summary\":
+        {\n      \"type\": \"string\"\n    },\n    \"mlm:accelerator_count\": {\n
+        \     \"type\": \"integer\",\n      \"minimum\": 1\n    },\n    \"mlm:input\":
+        {\n      \"type\": \"array\",\n      \"items\": {\n        \"$ref\": \"#/$defs/ModelInput\"\n
+        \     }\n    },\n    \"ModelInput\": {\n      \"title\": \"Model Input Object\",\n
+        \     \"type\": \"object\",\n      \"required\": [\n        \"name\",\n        \"bands\",\n
+        \       \"input\"\n      ],\n      \"properties\": {\n        \"name\": {\n
+        \         \"type\": \"string\",\n          \"minLength\": 1\n        },\n
+        \       \"bands\": {\n          \"$ref\": \"#/$defs/ModelBands\"\n        },\n
+        \       \"input\": {\n          \"$ref\": \"#/$defs/InputStructure\"\n        },\n
+        \       \"description\": {\n          \"type\": \"string\",\n          \"minLength\":
+        1\n        },\n        \"value_scaling\": {\n          \"$ref\": \"#/$defs/ValueScaling\"\n
+        \       },\n        \"resize_type\": {\n          \"$ref\": \"#/$defs/ResizeType\"\n
+        \       },\n        \"pre_processing_function\": {\n          \"$ref\": \"#/$defs/ProcessingExpression\"\n
+        \       }\n      }\n    },\n    \"mlm:output\": {\n      \"type\": \"array\",\n
+        \     \"items\": {\n        \"title\": \"Model Output Object\",\n        \"type\":
+        \"object\",\n        \"required\": [\n          \"name\",\n          \"tasks\",\n
+        \         \"result\"\n        ],\n        \"properties\": {\n          \"name\":
+        {\n            \"type\": \"string\",\n            \"minLength\": 1\n          },\n
+        \         \"tasks\": {\n            \"$ref\": \"#/$defs/mlm:tasks\"\n          },\n
+        \         \"result\": {\n            \"$ref\": \"#/$defs/ResultStructure\"\n
+        \         },\n          \"description\": {\n            \"type\": \"string\",\n
+        \           \"minLength\": 1\n          },\n          \"classification:classes\":
+        {\n            \"$ref\": \"#/$defs/ClassificationClasses\"\n          },\n
+        \         \"post_processing_function\": {\n            \"$ref\": \"#/$defs/ProcessingExpression\"\n
+        \         }\n        }\n      }\n    },\n    \"mlm:hyperparameters\": {\n
+        \     \"type\": \"object\",\n      \"minProperties\": 1,\n      \"patternProperties\":
+        {\n        \"^[0-9a-zA-Z_.-]+$\": true\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"InputStructure\": {\n      \"title\": \"Input Structure
+        Object\",\n      \"type\": \"object\",\n      \"required\": [\n        \"shape\",\n
+        \       \"dim_order\",\n        \"data_type\"\n      ],\n      \"properties\":
+        {\n        \"shape\": {\n          \"$ref\": \"#/$defs/DimensionShape\"\n
+        \       },\n        \"dim_order\": {\n          \"$ref\": \"#/$defs/DimensionOrder\"\n
+        \       },\n        \"data_type\": {\n          \"$ref\": \"#/$defs/DataType\"\n
+        \       }\n      }\n    },\n    \"ResultStructure\": {\n      \"title\": \"Result
+        Structure Object\",\n      \"type\": \"object\",\n      \"required\": [\n
+        \       \"shape\",\n        \"dim_order\",\n        \"data_type\"\n      ],\n
+        \     \"properties\": {\n        \"shape\": {\n          \"$ref\": \"#/$defs/DimensionShape\"\n
+        \       },\n        \"dim_order\": {\n          \"$ref\": \"#/$defs/DimensionOrder\"\n
+        \       },\n        \"data_type\": {\n          \"$ref\": \"#/$defs/DataType\"\n
+        \       }\n      }\n    },\n    \"DimensionShape\": {\n      \"type\": \"array\",\n
+        \     \"minItems\": 1,\n      \"items\": {\n        \"type\": \"integer\",\n
+        \       \"minimum\": -1\n      }\n    },\n    \"DimensionOrder\": {\n      \"type\":
+        \"array\",\n      \"minItems\": 1,\n      \"uniqueItems\": true,\n      \"items\":
+        {\n        \"type\": \"string\",\n        \"minLength\": 1,\n        \"pattern\":
+        \"^[a-z-_]+$\",\n        \"examples\": [\n          \"batch\",\n          \"channel\",\n
+        \         \"time\",\n          \"height\",\n          \"width\",\n          \"depth\",\n
+        \         \"token\",\n          \"class\",\n          \"score\",\n          \"confidence\"\n
+        \       ]\n      }\n    },\n    \"ValueScaling\": {\n      \"oneOf\": [\n
+        \       {\n          \"type\": \"null\"\n        },\n        {\n          \"type\":
+        \"array\",\n          \"minItems\": 1,\n          \"items\": {\n            \"$ref\":
+        \"#/$defs/ValueScalingObject\"\n          }\n        }\n      ]\n    },\n
+        \   \"ValueScalingObject\": {\n      \"oneOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"minimum\",\n
+        \           \"maximum\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"min-max\"\n            },\n            \"minimum\":
+        {\n              \"type\": \"number\"\n            },\n            \"maximum\":
+        {\n              \"type\": \"number\"\n            }\n          }\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"mean\",\n            \"stddev\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"z-score\"\n            },\n
+        \           \"mean\": {\n              \"type\": \"number\"\n            },\n
+        \           \"stddev\": {\n              \"type\": \"number\"\n            }\n
+        \         }\n        },\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"minimum\",\n            \"maximum\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"clip\"\n            },\n            \"minimum\": {\n              \"type\":
+        \"number\"\n            },\n            \"maximum\": {\n              \"type\":
+        \"number\"\n            }\n          }\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"minimum\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"clip-min\"\n            },\n            \"minimum\": {\n              \"type\":
+        \"number\"\n            },\n            \"maximum\": {\n              \"type\":
+        \"number\"\n            }\n          }\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"maximum\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"clip-max\"\n            },\n            \"maximum\": {\n              \"type\":
+        \"number\"\n            }\n          }\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"value\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"offset\"\n            },\n            \"value\": {\n              \"type\":
+        \"number\"\n            }\n          }\n        },\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"value\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"scale\"\n            },\n            \"value\": {\n              \"type\":
+        \"number\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/$defs/ValueScalingProcessingExpression\"\n        }\n      ]\n    },\n
+        \   \"ValueScalingProcessingExpression\": {\n      \"allOf\": [\n        {\n
+        \         \"type\": \"object\",\n          \"required\": [\n            \"type\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"processing\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/$defs/ProcessingExpression\"\n        }\n      ]\n    },\n    \"ResizeType\":
+        {\n      \"oneOf\": [\n        {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"crop\",\n            \"pad\",\n            \"interpolation-nearest\",\n
+        \           \"interpolation-linear\",\n            \"interpolation-cubic\",\n
+        \           \"interpolation-area\",\n            \"interpolation-lanczos4\",\n
+        \           \"interpolation-max\",\n            \"wrap-fill-outliers\",\n
+        \           \"wrap-inverse-map\"\n          ]\n        },\n        {\n          \"type\":
+        \"null\"\n        }\n      ]\n    },\n    \"ClassificationClasses\": {\n      \"$comment\":
+        \"Must allow empty array for outputs that provide other predictions than classes.\",\n
+        \     \"oneOf\": [\n        {\n          \"$ref\": \"https://stac-extensions.github.io/classification/v1.1.0/schema.json#/definitions/fields/properties/classification:classes\"\n
+        \       },\n        {\n          \"type\": \"array\",\n          \"maxItems\":
+        0\n        }\n      ]\n    },\n    \"ProcessingExpression\": {\n      \"oneOf\":
+        [\n        {\n          \"$ref\": \"https://stac-extensions.github.io/processing/v1.1.0/schema.json#/definitions/fields/properties/processing:expression\"\n
+        \       },\n        {\n          \"type\": \"null\"\n        }\n      ]\n
+        \   },\n    \"DataType\": {\n      \"$ref\": \"https://stac-extensions.github.io/raster/v1.1.0/schema.json#/definitions/bands/items/properties/data_type\"\n
+        \   },\n    \"HasArtifactType\": {\n      \"$comment\": \"Used to check the
+        artifact type property that is required by a Model Asset annotated by 'mlm:model'
+        role.\",\n      \"type\": \"object\",\n      \"required\": [\n        \"mlm:artifact_type\"\n
+        \     ],\n      \"properties\": {\n        \"mlm:artifact_type\": {\n          \"$ref\":
+        \"#/$defs/mlm:artifact_type\"\n        }\n      }\n    },\n    \"AssetModelRole\":
+        {\n      \"$comment\": \"Used to check the presence of 'mlm:model' role required
+        by a Model Asset.\",\n      \"type\": \"object\",\n      \"required\": [\n
+        \       \"roles\"\n      ],\n      \"properties\": {\n        \"roles\": {\n
+        \         \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"mlm:model\"\n          },\n          \"minItems\": 1\n        }\n      }\n
+        \   },\n    \"AssetModelRequiredProperties\": {\n      \"$comment\": \"Asset
+        containing the model definition must indicate both the 'mlm:model' role and
+        an artifact type.\",\n      \"required\": [\n        \"assets\"\n      ],\n
+        \     \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"if\": {\n              \"$ref\": \"#/$defs/AssetModelRole\"\n
+        \           },\n            \"then\": {\n              \"$ref\": \"#/$defs/HasArtifactType\"\n
+        \           },\n            \"else\": {\n              \"not\": {\n                \"$ref\":
+        \"#/$defs/HasArtifactType\"\n              }\n            }\n          }\n
+        \       }\n      }\n    },\n    \"AssetModelRoleMinimumOneDefinition\": {\n
+        \     \"$comment\": \"At least one Asset must provide the model definition
+        indicated by the 'mlm:model' role.\",\n      \"required\": [\n        \"assets\"\n
+        \     ],\n      \"anyOf\": [\n        {\n          \"properties\": {\n            \"assets\":
+        {\n              \"additionalProperties\": {\n                \"$ref\": \"#/$defs/AssetModelRole\"\n
+        \             }\n            }\n          }\n        },\n        {\n          \"not\":
+        {\n            \"properties\": {\n              \"assets\": {\n                \"additionalProperties\":
+        {\n                  \"properties\": {\n                    \"roles\": {\n
+        \                     \"type\": \"array\",\n                      \"items\":
+        {\n                        \"type\": \"string\",\n                        \"not\":
+        {\n                          \"const\": \"mlm:model\"\n                        }\n
+        \                     }\n                    }\n                  }\n                }\n
+        \             }\n            }\n          }\n        }\n      ]\n    },\n
+        \   \"ModelBands\": {\n      \"description\": \"List of bands (if any) that
+        compose the input. Band order represents the index position of the bands.\",\n
+        \     \"$comment\": \"No 'minItems' here to support model inputs not using
+        any band (other data source).\",\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"oneOf\": [\n          {\n            \"description\": \"Implied
+        named-band with the name directly provided.\",\n            \"type\": \"string\",\n
+        \           \"minLength\": 1\n          },\n          {\n            \"description\":
+        \"Explicit named-band with optional derived expression to obtain it.\",\n
+        \           \"type\": \"object\",\n            \"required\": [\n              \"name\"\n
+        \           ],\n            \"properties\": {\n              \"name\": {\n
+        \               \"type\": \"string\",\n                \"minLength\": 1\n
+        \             },\n              \"format\": {\n                \"description\":
+        \"Format to interpret the specified expression used to obtain the band.\",\n
+        \               \"type\": \"string\",\n                \"minLength\": 1\n
+        \             },\n              \"expression\": {\n                \"description\":
+        \"Any representation relevant for the specified 'format'.\"\n              }\n
+        \           },\n            \"dependencies\": {\n              \"format\":
+        [\n                \"expression\"\n              ],\n              \"expression\":
+        [\n                \"format\"\n              ]\n            },\n            \"additionalProperties\":
+        false\n          }\n        ]\n      }\n    },\n    \"AnyBandsRef\": {\n      \"$comment\":
+        \"This definition ensures that, if at least 1 named MLM input 'bands' is provided,
+        at least 1 of the supported references from EO, Raster or STAC Core 1.1 are
+        provided as well. Otherwise, 'bands' must be explicitly empty.\",\n      \"if\":
+        {\n        \"type\": \"object\",\n        \"$comment\": \"This is the JSON-object
+        'properties' definition, which describes the STAC-Item field named 'properties'.\",\n
+        \       \"properties\": {\n          \"properties\": {\n            \"type\":
+        \"object\",\n            \"required\": [\n              \"mlm:input\"\n            ],\n
+        \           \"$comment\": \"This is the JSON-object 'properties' definition
+        for the MLM input with bands listing referring to at least one band name.\",\n
+        \           \"properties\": {\n              \"mlm:input\": {\n                \"type\":
+        \"array\",\n                \"$comment\": \"Below 'minItems' ensures that
+        band check does not fail for explicitly empty 'mlm:inputs'.\",\n                \"minItems\":
+        1,\n                \"items\": {\n                  \"type\": \"object\",\n
+        \                 \"required\": [\n                    \"bands\"\n                  ],\n
+        \                 \"$comment\": \"This is the 'Model Input Object' properties.\",\n
+        \                 \"properties\": {\n                    \"bands\": {\n                      \"type\":
+        \"array\",\n                      \"minItems\": 1\n                    }\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       }\n      },\n      \"then\": {\n        \"$comment\": \"Need at least
+        one 'bands' definition, but multiple are allowed.\",\n        \"anyOf\": [\n
+        \         {\n            \"$comment\": \"Bands described by raster extension.\",\n
+        \           \"allOf\": [\n              {\n                \"$ref\": \"#/$defs/stac_extensions_raster\"\n
+        \             },\n              {\n                \"$ref\": \"#/$defs/stac_extensions_raster_bands_asset\"\n
+        \             }\n            ]\n          },\n          {\n            \"$comment\":
+        \"Bands described by eo extension.\",\n            \"allOf\": [\n              {\n
+        \               \"$ref\": \"#/$defs/stac_extensions_eo\"\n              },\n
+        \             {\n                \"anyOf\": [\n                  {\n                    \"$ref\":
+        \"#/$defs/stac_extensions_eo_bands_item\"\n                  },\n                  {\n
+        \                   \"$ref\": \"#/$defs/stac_extensions_eo_bands_asset\"\n
+        \                 }\n                ]\n              }\n            ]\n          },\n
+        \         {\n            \"$comment\": \"Bands described by STAC Core 1.1.\",\n
+        \           \"allOf\": [\n              {\n                \"$ref\": \"#/$defs/stac_version_1.1\"\n
+        \             },\n              {\n                \"$comment\": \"This is
+        the JSON-object 'properties' definition, which describes the STAC-Item field
+        named 'properties'.\",\n                \"properties\": {\n                  \"properties\":
+        {\n                    \"required\": [\n                      \"bands\"\n
+        \                   ],\n                    \"$comment\": \"This is the JSON-object
+        'properties' definition for the STAC Core 'bands' field defined by [https://github.com/radiantearth/stac-spec/blob/bands/item-spec/common-metadata.md#bands].\",\n
+        \                   \"properties\": {\n                      \"bands\": {\n
+        \                       \"type\": \"array\",\n                        \"minItems\":
+        1,\n                        \"items\": {\n                          \"type\":
+        \"object\"\n                        }\n                      }\n                    }\n
+        \                 }\n                }\n              }\n            ]\n          }\n
+        \       ]\n      },\n      \"else\": {\n        \"$comment\": \"Case where
+        no 'bands' (empty list) are referenced in the MLM input. Because models can
+        use a mixture of inputs with/without bands, we cannot enforce eo/raster/stac
+        bands references to be omitted. If bands are provided in the 'mlm:model',
+        it will simply be an odd case if none are used in any 'mlm:input' bands'.\"\n
+        \     }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '2'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '33494'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 30 Apr 2025 08:48:45 GMT
+      ETag:
+      - '"67a12887-82d6"'
+      Last-Modified:
+      - Mon, 03 Feb 2025 20:35:19 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - c9f3ae052220e429bc406f0dec0d36a862b0f614
+      X-GitHub-Request-Id:
+      - A3CF:119E:933E42:94ABEA:6811E3EB
+      X-Served-By:
+      - cache-fra-etou8220069-FRA
+      X-Timer:
+      - S1746002925.331941,VS0,VE2
+      expires:
+      - Wed, 30 Apr 2025 08:58:43 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - Python-urllib/3.10
+    method: GET
+    uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/raster/v1.1.0/schema.json#\",\n  \"title\":
+        \"raster Extension\",\n  \"description\": \"STAC Raster Extension for STAC
+        Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema
+        for STAC extension raster in Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/assetfields\"\n              }\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"https://stac-extensions.github.io/raster/v1.1.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"assetfields\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"raster:bands\": {\n          \"$ref\":
+        \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!raster:)\": {\n          \"$comment\": \"Above, change `template`
+        to the prefix of this extension\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\":
+        \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"title\":
+        \"Band\",\n        \"type\": \"object\",\n        \"minProperties\": 1,\n
+        \       \"additionalProperties\": true,\n        \"properties\": {\n          \"data_type\":
+        {\n            \"title\": \"Data type of the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"int8\",\n              \"int16\",\n
+        \             \"int32\",\n              \"int64\",\n              \"uint8\",\n
+        \             \"uint16\",\n              \"uint32\",\n              \"uint64\",\n
+        \             \"float16\",\n              \"float32\",\n              \"float64\",\n
+        \             \"cint16\",\n              \"cint32\",\n              \"cfloat32\",\n
+        \             \"cfloat64\",\n              \"other\"\n            ]\n          },\n
+        \         \"unit\": {\n            \"title\": \"Unit denomination of the pixel
+        value\",\n            \"type\": \"string\"\n          },\n          \"bits_per_sample\":
+        {\n            \"title\": \"The actual number of bits used for this band\",\n
+        \           \"type\": \"integer\"\n          },\n          \"sampling\": {\n
+        \           \"title\": \"Pixel sampling in the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"area\",\n              \"point\"\n
+        \           ]\n          },\n          \"nodata\": {\n            \"title\":
+        \"No data pixel value\",\n            \"oneOf\": [\n              {\n                \"type\":
+        \"number\"\n              },\n              {\n                \"type\": \"string\",\n
+        \               \"enum\": [\n                  \"nan\",\n                  \"inf\",\n
+        \                 \"-inf\"\n                ]\n              }\n            ]\n
+        \         },\n          \"scale\": {\n            \"title\": \"multiplicator
+        factor of the pixel value to transform into the value\",\n            \"type\":
+        \"number\"\n          },\n          \"offset\": {\n            \"title\":
+        \"number to be added to the pixel value to transform into the value\",\n            \"type\":
+        \"number\"\n          },\n          \"spatial_resolution\": {\n            \"title\":
+        \"Average spatial resolution (in meters) of the pixels in the band\",\n            \"type\":
+        \"number\"\n          },\n          \"statistics\": {\n            \"title\":
+        \"Statistics\",\n            \"type\": \"object\",\n            \"minProperties\":
+        1,\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"mean\": {\n                \"title\": \"Mean value of all
+        the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"minimum\": {\n                \"title\": \"Minimum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"maximum\": {\n                \"title\": \"Maximum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"stddev\": {\n                \"title\": \"Standard deviation
+        value of all the pixels in the band\",\n                \"type\": \"number\"\n
+        \             },\n              \"valid_percent\": {\n                \"title\":
+        \"Percentage of valid (not nodata) pixel\",\n                \"type\": \"number\"\n
+        \             }\n            }\n          },\n          \"histogram\": {\n
+        \           \"title\": \"Histogram\",\n            \"type\": \"object\",\n
+        \           \"additionalItems\": false,\n            \"required\": [\n              \"count\",\n
+        \             \"min\",\n              \"max\",\n              \"buckets\"\n
+        \           ],\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"count\": {\n                \"title\": \"number of buckets\",\n
+        \               \"type\": \"number\"\n              },\n              \"min\":
+        {\n                \"title\": \"Minimum value of the buckets\",\n                \"type\":
+        \"number\"\n              },\n              \"max\": {\n                \"title\":
+        \"Maximum value of the buckets\",\n                \"type\": \"number\"\n
+        \             },\n              \"buckets\": {\n                \"title\":
+        \"distribution buckets\",\n                \"type\": \"array\",\n                \"minItems\":
+        3,\n                \"items\": {\n                  \"title\": \"number of
+        pixels in the bucket\",\n                  \"type\": \"integer\"\n                }\n
+        \             }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '357'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - close
+      Content-Length:
+      - '6318'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 30 Apr 2025 08:48:45 GMT
+      ETag:
+      - '"66df5c80-18ae"'
+      Last-Modified:
+      - Mon, 09 Sep 2024 20:37:20 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 3177e6d1a3ce1848ca4ef432ae3e0f1d13ec176e
+      X-GitHub-Request-Id:
+      - 64B5:6EDF6:28F2EAC:295801B:681184F8
+      X-Served-By:
+      - cache-fra-etou8220059-FRA
+      X-Timer:
+      - S1746002925.456796,VS0,VE1
+      expires:
+      - Wed, 30 Apr 2025 02:13:36 GMT
+      permissions-policy:
+      - interest-cohort=()
+      x-proxy-cache:
+      - MISS
     status:
       code: 200
       message: OK

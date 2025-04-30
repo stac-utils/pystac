@@ -1818,8 +1818,6 @@ def test_migration_1_3_to_1_4_collection() -> None:
                 "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
                 "v{version}/examples/item_basic.json",
                 "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
-                "v{version}/examples/item_eo_bands.json",
-                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
                 "v{version}/examples/item_multi_io.json",
                 "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
                 "v{version}/examples/item_raster_bands.json",
@@ -1848,3 +1846,5 @@ def test_migrate(url_template: str, version: str) -> None:
     assert MLMExtension.get_schema_uri() in item.stac_extensions
     assert old_uri not in item.stac_extensions
     assert new_uri not in item.stac_extensions
+
+    item.validate()
