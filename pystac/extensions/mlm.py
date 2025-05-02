@@ -2338,7 +2338,10 @@ class MLMExtensionHooks(ExtensionHooks):
 
                 # add new REQUIRED proretie mlm:artifact_type to asset
                 if "mlm:model" in obj["assets"][asset]["roles"]:
-                    obj["assets"][asset]["mlm:artifact_type"] = "asdf"
+                    obj["assets"][asset]["mlm:artifact_type"] = (
+                        "Placeholder string to satisfy requirements when migrating "
+                        "from mlm v1.3 to v1.4"
+                    )
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
