@@ -2178,36 +2178,67 @@ class MLMExtensionHooks(ExtensionHooks):
             if "mlm:input" not in props_obj:
                 return
 
-            bands_objs_present = any("bands" in inp for inp in props_obj["mlm:input"])
+            # check if mlm:input.bands is present and contains items
+            bands_objs_present = [
+                "bands" in inp and len(inp["bands"]) > 0
+                for inp in props_obj["mlm:input"]
+            ]
 
-            if not bands_objs_present:
+            if not any(bands_objs_present):
                 return
 
-            if "raster:bands" not in props_obj:
+            if "eo:bands" in props_obj or "bands" in props_obj:
                 return
-            raster_bands = props_obj["raster:bands"]
 
-            # make sure all raster_bands have a name prop with length>0
-            names_properties_valid = all(
-                "name" in band and len(band["name"]) > 0 for band in raster_bands
-            )
-            if not names_properties_valid:
-                raise STACError(
-                    "Error migrating stac:mlm version: In mlm>=1.3, each band in "
-                    'raster:bands is required to have a property "name"'
+            if (
+                "raster:bands" in props_obj
+                and "eo:bands" not in props_obj
+                and "bands" not in props_obj
+            ):
+                raster_bands = props_obj["raster:bands"]
+
+                bands_valid = all(
+                    "name" in band and len(band["name"]) > 0 for band in raster_bands
                 )
 
-            # no need to perform the actions below if props_obj is an asset
-            # this is checked by the presence of "roles" prop
-            if "roles" in props_obj:
-                return
+                if not bands_valid:
+                    raise STACError(
+                        "Error migrating stac:mlm version: In mlm>=1.3, each band in "
+                        'raster:bands is required to have a property "name" with '
+                        "length > 0"
+                    )
 
-            # copy the raster:bands to assets
-            for inner_asset_name in obj["assets"]:
-                inner_asset = obj["assets"][inner_asset_name]
-                if "mlm:model" not in inner_asset["roles"]:
-                    continue
-                inner_asset["raster:bands"] = raster_bands
+                # no need to perform the actions below if props_obj is not an asset
+                # this is checked by the presence of "roles" prop
+                if "roles" in props_obj:
+                    return
+
+                # move raster:bands to assets that contain "mlm:model" role
+                for inner_asset_name in obj["assets"]:
+                    inner_asset = obj["assets"][inner_asset_name]
+                    if "mlm:model" not in inner_asset["roles"]:
+                        continue
+                    inner_asset["raster:bands"] = raster_bands
+                props_obj.pop("raster:bands")
+
+            # create new bands object from mlm:input.bands if none exist
+            if (
+                "raster:bands" not in props_obj
+                and "eo:bands" not in props_obj
+                and "bands" not in props_obj
+            ):
+                i = bands_objs_present.index(True)
+                bands = [
+                    {"name": band if type(band) is str else band["name"]}
+                    for band in props_obj["mlm:input"][i]["bands"]
+                ]
+
+                # copy the raster:bands to assets
+                for inner_asset_name in obj["assets"]:
+                    inner_asset = obj["assets"][inner_asset_name]
+                    if "mlm:model" not in inner_asset["roles"]:
+                        continue
+                    inner_asset["raster:bands"] = bands
 
         if obj["type"] == "Feature" and "mlm:input" in obj["properties"]:
             migrate(obj["properties"])
@@ -2307,7 +2338,7 @@ class MLMExtensionHooks(ExtensionHooks):
 
                 # add new REQUIRED proretie mlm:artifact_type to asset
                 if "mlm:model" in obj["assets"][asset]["roles"]:
-                    obj["assets"][asset]["mlm:artifact_type"] = ""
+                    obj["assets"][asset]["mlm:artifact_type"] = "asdf"
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
