@@ -14,7 +14,13 @@
 - Type of `proj:code` setter ([#1560](https://github.com/stac-utils/pystac/pull/1560))
 - Use `urllib3` to fix parsing non-ascii in urls ([#1566](https://github.com/stac-utils/pystac/pull/1566))
 - Some return types and other **mypy** nits ([#1569](https://github.com/stac-utils/pystac/pull/1569))
-
+- `extensions.mlm` various fixes
+  - Fixed ResizeType typos `interpolation-nearest` and `interpolation-linear` 
+  - Fixed displaying the correct property in error message for `ResultStructure.data_type` 
+  - Fixed `ValueScaling.maximum` setter to pop when None is given 
+  - Fixed `ModelInput.value_scaling` to be `list[ValueScaling]` instead of `ValueScaling`
+  - Fixed missing version migrations
+  
 ## [v1.13.0] - 2025-04-15
 
 ### Added
