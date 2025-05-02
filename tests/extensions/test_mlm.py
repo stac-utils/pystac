@@ -1253,6 +1253,7 @@ def test_migration_1_1_to_1_2(asset_type: str) -> None:
             ],
             True,
         ),
+        (["B02", "B03"], None, True),
         (
             ["B02", "B03"],
             [
@@ -1317,6 +1318,7 @@ def test_migration_1_2_to_1_3_item(
             ],
             True,
         ),
+        (["B02", "B03"], None, True),
         (
             ["B02", "B03"],
             [
@@ -1381,6 +1383,7 @@ def test_migration_1_2_to_1_3_collection(
             ],
             True,
         ),
+        (["B02", "B03"], None, True),
         (
             ["B02", "B03"],
             [
