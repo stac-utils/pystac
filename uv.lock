@@ -1989,6 +1989,7 @@ dev = [
     { name = "types-jsonschema" },
     { name = "types-orjson" },
     { name = "types-python-dateutil" },
+    { name = "types-requests" },
     { name = "types-urllib3" },
     { name = "virtualenv" },
 ]
@@ -2041,6 +2042,7 @@ dev = [
     { name = "types-jsonschema", specifier = ">=4.23.0.20240813" },
     { name = "types-orjson", specifier = ">=3.6.2" },
     { name = "types-python-dateutil", specifier = ">=2.9.0.20241003" },
+    { name = "types-requests", specifier = ">=2.32.0.20250328" },
     { name = "types-urllib3", specifier = ">=1.26.25.14" },
     { name = "virtualenv", specifier = ">=20.26.6" },
 ]
@@ -2921,6 +2923,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a9/60/47d92293d9bc521cd2301e423a358abfac0ad409b3a1606d8fbae1321961/types_python_dateutil-2.9.0.20241206.tar.gz", hash = "sha256:18f493414c26ffba692a72369fea7a154c502646301ebfe3d56a04b3767284cb", size = 13802 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0f/b3/ca41df24db5eb99b00d97f89d7674a90cb6b3134c52fb8121b6d8d30f15c/types_python_dateutil-2.9.0.20241206-py3-none-any.whl", hash = "sha256:e248a4bc70a486d3e3ec84d0dc30eec3a5f979d6e7ee4123ae043eedbb987f53", size = 14384 },
+]
+
+[[package]]
+name = "types-requests"
+version = "2.32.0.20250328"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/00/7d/eb174f74e3f5634eaacb38031bbe467dfe2e545bc255e5c90096ec46bc46/types_requests-2.32.0.20250328.tar.gz", hash = "sha256:c9e67228ea103bd811c96984fac36ed2ae8da87a36a633964a21f199d60baf32", size = 22995 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/15/3700282a9d4ea3b37044264d3e4d1b1f0095a4ebf860a99914fd544e3be3/types_requests-2.32.0.20250328-py3-none-any.whl", hash = "sha256:72ff80f84b15eb3aa7a8e2625fffb6a93f2ad5a0c20215fc1dcfa61117bcb2a2", size = 20663 },
 ]
 
 [[package]]

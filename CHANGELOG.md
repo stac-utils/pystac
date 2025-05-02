@@ -8,6 +8,15 @@
   media type value for these types and new media types COPC and VND_PMTILES
   ([#1554](https://github.com/stac-utils/pystac/pull/1554))
 
+### Fixed
+
+- `extensions.mlm` various fixes [#1556](https://github.com/stac-utils/pystac/pull/1556)
+  - Fixed ResizeType typos `interpolation-nearest` and `interpolation-linear` 
+  - Fixed displaying the correct property in error message for `ResultStructure.data_type` 
+  - Fixed `ValueScaling.maximum` setter to pop when None is given 
+  - Fixed `ModelInput.value_scaling` to be `list[ValueScaling]` instead of `ValueScaling`
+  - Fixed missing version migrations
+  
 ## [v1.13.0] - 2025-04-15
 
 ### Added
