@@ -8,6 +8,10 @@
   media type value for these types and new media types COPC and VND_PMTILES
   ([#1554](https://github.com/stac-utils/pystac/pull/1554))
 
+### Fixed
+
+- More permissive collection extent deserialization ([#1559](https://github.com/stac-utils/pystac/pull/1559))
+
 ## [v1.13.0] - 2025-04-15
 
 ### Added

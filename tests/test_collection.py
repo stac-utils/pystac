@@ -400,7 +400,7 @@ def test_temporal_extent_allows_single_interval() -> None:
     end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
     interval = [start_datetime, end_datetime]
-    temporal_extent = TemporalExtent(intervals=interval)  # type: ignore
+    temporal_extent = TemporalExtent(intervals=interval)
 
     assert temporal_extent.intervals == [interval]
 
@@ -820,3 +820,25 @@ def test_from_items_with_providers(sample_item_collection: ItemCollection) -> No
 
     provider = collection.providers[0]
     assert provider and provider.name == "pystac"
+
+
+def test_from_dict_null_extent(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1558
+    # https://github.com/EOPF-Sample-Service/eopf-stac/issues/18
+    d = collection.to_dict()
+    d["extent"] = None
+    with pytest.warns(UserWarning):
+        c = Collection.from_dict(d)
+
+    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
+
+
+def test_from_dict_missing_extent(collection: Collection) -> None:
+    d = collection.to_dict()
+    del d["extent"]
+    with pytest.warns(UserWarning):
+        c = Collection.from_dict(d)
+
+    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
