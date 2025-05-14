@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from copy import deepcopy
 from datetime import datetime, timezone
 from typing import (
@@ -71,7 +71,7 @@ class SpatialExtent:
 
     def __init__(
         self,
-        bboxes: Bboxes | list[float | int],
+        bboxes: Bboxes | Sequence[float | int],
         extra_fields: dict[str, Any] | None = None,
     ) -> None:
         if not isinstance(bboxes, list):
@@ -199,7 +199,7 @@ class TemporalExtent:
 
     def __init__(
         self,
-        intervals: TemporalIntervals | list[datetime | None],
+        intervals: TemporalIntervals | Sequence[datetime | None],
         extra_fields: dict[str, Any] | None = None,
     ):
         if not isinstance(intervals, list):
@@ -652,7 +652,17 @@ class Collection(Catalog, Assets):
         id = d.pop("id")
         description = d.pop("description")
         license = d.pop("license")
-        extent = Extent.from_dict(d.pop("extent"))
+        if extent_dict := d.pop("extent", None):
+            extent = Extent.from_dict(extent_dict)
+        else:
+            warnings.warn(
+                "Collection is missing extent, setting default spatial and "
+                "temporal extents"
+            )
+            extent = Extent(
+                spatial=SpatialExtent([-90, -180, 90, 180]),
+                temporal=TemporalExtent([None, None]),
+            )
         title = d.pop("title", None)
         stac_extensions = d.pop("stac_extensions", None)
         keywords = d.pop("keywords", None)
