@@ -11,6 +11,7 @@
 ### Fixed
 
 - More permissive collection extent deserialization ([#1559](https://github.com/stac-utils/pystac/pull/1559))
+- Type of `proj:code` setter ([#1560](https://github.com/stac-utils/pystac/pull/1560))
 
 ## [v1.13.0] - 2025-04-15
 
