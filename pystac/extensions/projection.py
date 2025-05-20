@@ -163,7 +163,7 @@ class ProjectionExtension(
         return self._get_property(CODE_PROP, str)
 
     @code.setter
-    def code(self, v: int | None) -> None:
+    def code(self, v: str | None) -> None:
         self._set_property(CODE_PROP, v, pop_if_none=False)
 
     @property
