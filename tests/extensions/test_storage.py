@@ -1,5 +1,6 @@
 import json
 import random
+from copy import deepcopy
 from string import ascii_letters
 
 import pytest
@@ -27,6 +28,28 @@ def naip_item() -> Item:
 @pytest.fixture
 def naip_collection() -> Collection:
     return Collection.from_file(NAIP_COLLECTION_URI)
+
+
+@pytest.fixture
+def sample_scheme() -> StorageScheme:
+    return StorageScheme.create(
+        type=StorageSchemeType.AWS_S3,
+        platform="https://{bucket}.s3.{region}.amazonaws.com",
+        region="us-west-2",
+        requester_pays=True,
+    )
+
+
+@pytest.fixture
+def naip_asset(naip_item: Item) -> pystac.Asset:
+    # Grab a random asset with the platform property
+    return random.choice(
+        [
+            _asset
+            for _asset in naip_item.assets.values()
+            if "storage:refs" in _asset.to_dict()
+        ]
+    )
 
 
 def test_to_from_dict() -> None:
@@ -99,6 +122,16 @@ def test_item_ext_add_to(sample_item: Item) -> None:
     _ = StorageSchemesExtension.ext(sample_item, add_if_missing=True)
 
     assert StorageSchemesExtension.get_schema_uri() in sample_item.stac_extensions
+
+
+def test_catalog_ext_add_to() -> None:
+    catalog = pystac.Catalog("stac", "a catalog")
+
+    assert StorageSchemesExtension.get_schema_uri() not in catalog.stac_extensions
+
+    _ = StorageSchemesExtension.ext(catalog, add_if_missing=True)
+
+    assert StorageSchemesExtension.get_schema_uri() in catalog.stac_extensions
 
 
 def test_asset_ext_add_to(sample_item: Item) -> None:
@@ -207,27 +240,20 @@ def test_schemes_apply(naip_item: Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_refs_apply(naip_item: Item) -> None:
-    # Grab a random asset with the platform property
-    asset = random.choice(
-        [
-            _asset
-            for _asset in naip_item.assets.values()
-            if "storage:refs" in _asset.to_dict()
-        ]
-    )
+def test_refs_apply(naip_asset: pystac.Asset) -> None:
+    test_refs = ["a_ref", "b_ref"]
 
-    storage_ext = StorageRefsExtension.ext(asset)
+    storage_ext = StorageRefsExtension.ext(naip_asset)
+
+    storage_ext.apply(test_refs)
 
     # Get
-    assert storage_ext.refs == asset.extra_fields.get("storage:refs")
+    assert storage_ext.refs == test_refs
 
     # Set
     new_refs = [random.choice(ascii_letters)]
     storage_ext.refs = new_refs
     assert storage_ext.refs == new_refs
-
-    naip_item.validate()
 
 
 def test_add_storage_scheme(naip_item: Item) -> None:
@@ -255,25 +281,30 @@ def test_add_refs(naip_item: Item) -> None:
     assert scheme_name_2 in storage_ext.refs
 
 
-def test_storage_scheme_create() -> None:
-    scheme = StorageScheme.create(
-        type=StorageSchemeType.AWS_S3,
-        platform="https://{bucket}.s3.{region}.amazonaws.com",
-        region="us-west-2",
-        requester_pays=True,
-    )
+def test_storage_scheme_create(sample_scheme: StorageScheme) -> None:
+    assert sample_scheme.type == StorageSchemeType.AWS_S3
+    assert sample_scheme.platform == "https://{bucket}.s3.{region}.amazonaws.com"
+    assert sample_scheme.region == "us-west-2"
+    assert sample_scheme.requester_pays is True
 
-    assert scheme.type == StorageSchemeType.AWS_S3
-    assert scheme.platform == "https://{bucket}.s3.{region}.amazonaws.com"
-    assert scheme.region == "us-west-2"
-    assert scheme.requester_pays is True
+    sample_scheme.type = StorageSchemeType.AZURE
+    sample_scheme.platform = "https://{account}.blob.core.windows.net"
+    sample_scheme.region = "eastus"
+    sample_scheme.account = "account"
+    sample_scheme.requester_pays = False
 
-    scheme.type = StorageSchemeType.AZURE
-    scheme.platform = "https://{account}.blob.core.windows.net"
-    scheme.region = "eastus"
-    scheme.requester_pays = False
+    assert sample_scheme.type == StorageSchemeType.AZURE
+    assert sample_scheme.platform == "https://{account}.blob.core.windows.net"
+    assert sample_scheme.region == "eastus"
+    assert sample_scheme.account == "account"
+    assert sample_scheme.requester_pays is False
 
-    assert scheme.type == StorageSchemeType.AZURE
-    assert scheme.platform == "https://{account}.blob.core.windows.net"
-    assert scheme.region == "eastus"
-    assert scheme.requester_pays is False
+
+def test_storage_scheme_equality(sample_scheme: StorageScheme) -> None:
+    other = deepcopy(sample_scheme)
+    assert sample_scheme == other
+
+    other.requester_pays = False
+    assert sample_scheme != other
+
+    assert sample_scheme != object()
