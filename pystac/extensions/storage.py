@@ -25,9 +25,11 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 
-#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
-#: :class:`~pystac.ItemAssetDefinition`
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Catalog` or
+#: :class:`~pystac.Collection`
 T = TypeVar("T", pystac.Item, pystac.Catalog, pystac.Collection)
+#: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link` or
+#: :class:`~pystac.ItemAssetDefinition`
 U = TypeVar("U", pystac.Asset, pystac.Link, pystac.ItemAssetDefinition)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
@@ -109,9 +111,9 @@ class StorageScheme:
             type (str): Type identifier for the platform.
             platform (str): The cloud provider where data is stored as URI or URI
                 template to the API.
-            region (str | None, optional): The region where the data is stored.
+            region (str | None): The region where the data is stored.
                 Defaults to None.
-            requester_pays (bool | None, optional): requester pays or data manager/cloud
+            requester_pays (bool | None): requester pays or data manager/cloud
                 provider pays. Defaults to None.
             kwargs (dict[str | Any]): Additional properties to set on scheme
 
@@ -216,13 +218,13 @@ class StorageSchemesExtension(
     This class is generic over the type of STAC Object to be extended (e.g.
     :class:`~pystac.Item`, :class:`~pystac.Collection`).
 
-    To create a concrete instance of :class:`StorageExtension`, use the
-    :meth:`StorageExtension.ext` method. For example:
+    To create a concrete instance of :class:`StorageSchemesExtension`, use the
+    :meth:`StorageSchemesExtension.ext` method. For example:
 
     .. code-block:: python
 
        >>> item: pystac.Item = ...
-       >>> storage_ext = StorageExtension.ext(item)
+       >>> storage_ext = StorageSchemesExtension.ext(item)
     """
 
     def apply(
@@ -472,7 +474,7 @@ class SummariesStorageExtension(SummariesExtension):
 
     @property
     def schemes(self) -> list[dict[str, StorageScheme]] | None:
-        """Get or sets the summary of :attr:`StorageExtension.platform` values
+        """Get or sets the summary of :attr:`StorageScheme.platform` values
         for this Collection.
         """
         v = map_opt(
