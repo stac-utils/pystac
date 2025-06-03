@@ -10,6 +10,7 @@ from typing import (
     Any,
     Generic,
     Literal,
+    SupportsIndex,
     TypeVar,
     cast,
 )
@@ -50,23 +51,31 @@ class StorageSchemeType(StringEnum):
 
 
 class StorageScheme:
-    properties: dict[str, Any]
+    _properties: dict[str, Any]
 
     def __init__(self, properties: dict[str, Any]):
-        super().__setattr__("properties", properties)
+        super().__setattr__("_properties", properties)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, StorageScheme):
-            raise NotImplementedError
-        return self.properties == other.properties
+            return NotImplemented
+
+        return bool(self.__dict__["_properties"] == other.__dict__["_properties"])
 
     def __getattr__(self, name: str) -> Any:
-        if name in self.properties:
-            return self.properties[name]
+        properties = self.__dict__["_properties"]
+        if name in properties:
+            return properties[name]
         raise AttributeError(f"StorageScheme does not have attribute '{name}'")
 
     def __setattr__(self, name: str, value: Any) -> None:
-        self.properties[name] = value
+        if name.startswith("_") or hasattr(type(self), name):
+            super().__setattr__(name, value)
+        else:
+            self._properties[name] = value
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> Any:
+        return (self.__class__, (self.__dict__["_properties"],), None)
 
     def apply(
         self,
@@ -80,7 +89,7 @@ class StorageScheme:
         self.platform = platform
         self.region = region
         self.requester_pays = requester_pays
-        self.properties.update(kwargs)
+        self._properties.update(kwargs)
 
     @classmethod
     def create(
@@ -125,14 +134,14 @@ class StorageScheme:
         Get or set the required type property
         """
         return get_required(
-            self.properties.get(TYPE_PROP),
+            self._properties.get(TYPE_PROP),
             self,
             TYPE_PROP,
         )
 
     @type.setter
     def type(self, v: str) -> None:
-        self.properties[TYPE_PROP] = v
+        self._properties[TYPE_PROP] = v
 
     @property
     def platform(self) -> str:
@@ -140,42 +149,42 @@ class StorageScheme:
         Get or set the required platform property
         """
         return get_required(
-            self.properties.get(PLATFORM_PROP),
+            self._properties.get(PLATFORM_PROP),
             self,
             PLATFORM_PROP,
         )
 
     @platform.setter
     def platform(self, v: str) -> None:
-        self.properties[PLATFORM_PROP] = v
+        self._properties[PLATFORM_PROP] = v
 
     @property
     def region(self) -> str | None:
         """
         Get or set the optional region property
         """
-        return self.properties.get(REGION_PROP)
+        return self._properties.get(REGION_PROP)
 
     @region.setter
     def region(self, v: str) -> None:
         if v is not None:
-            self.properties[REGION_PROP] = v
+            self._properties[REGION_PROP] = v
         else:
-            self.properties.pop(REGION_PROP, None)
+            self._properties.pop(REGION_PROP, None)
 
     @property
     def requester_pays(self) -> bool | None:
         """
         Get or set the optional requester_pays property
         """
-        return self.properties.get(REQUESTER_PAYS_PROP)
+        return self._properties.get(REQUESTER_PAYS_PROP)
 
     @requester_pays.setter
     def requester_pays(self, v: bool) -> None:
         if v is not None:
-            self.properties[REQUESTER_PAYS_PROP] = v
+            self._properties[REQUESTER_PAYS_PROP] = v
         else:
-            self.properties.pop(REQUESTER_PAYS_PROP, None)
+            self._properties.pop(REQUESTER_PAYS_PROP, None)
 
     def to_dict(self) -> dict[str, Any]:
         """
@@ -184,7 +193,7 @@ class StorageScheme:
         Returns:
             dict[str, Any
         """
-        return self.properties
+        return self._properties
 
 
 class _StorageExtension(ABC):
@@ -473,7 +482,6 @@ class SummariesStorageExtension(SummariesExtension):
             self.summaries.get_list(SCHEMES_PROP),
         )
 
-        print(v)
         return v
 
     @schemes.setter
