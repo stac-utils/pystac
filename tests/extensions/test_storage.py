@@ -6,7 +6,7 @@ from string import ascii_letters
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import ExtensionTypeError, Item, ItemAssetDefinition
 from pystac.collection import Collection
 from pystac.extensions.storage import (
     StorageRefsExtension,
@@ -69,12 +69,12 @@ def test_add_to(sample_item: Item) -> None:
     StorageSchemesExtension.add_to(sample_item)
     StorageSchemesExtension.add_to(sample_item)
 
-    eo_uris = [
+    uris = [
         uri
         for uri in sample_item.stac_extensions
         if uri == StorageSchemesExtension.get_schema_uri()
     ]
-    assert len(eo_uris) == 1
+    assert len(uris) == 1
 
 
 @pytest.mark.vcr()
@@ -271,6 +271,8 @@ def test_add_refs(naip_item: Item) -> None:
     scheme_name = random.choice(ascii_letters)
     asset = naip_item.assets["GEOTIFF_AZURE_RGBIR"]
     storage_ext = asset.ext.storage
+    assert isinstance(storage_ext, StorageRefsExtension)
+
     storage_ext.add_ref(scheme_name)
     assert scheme_name in storage_ext.refs
 
@@ -308,3 +310,10 @@ def test_storage_scheme_equality(sample_scheme: StorageScheme) -> None:
     assert sample_scheme != other
 
     assert sample_scheme != object()
+
+
+def test_item_asset_accessor() -> None:
+    item_asset = ItemAssetDefinition.create(
+        title="title", description="desc", media_type="media", roles=["a_role"]
+    )
+    assert isinstance(item_asset.ext.storage, StorageRefsExtension)
