@@ -45,7 +45,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         env:
-          TMPDIR: 'D:\\a\\_temp'
+          TMPDIR: 'C:\\a\\_temp'
         run: uv run pytest tests
       - name: Test
         if: runner.os != 'Windows'
