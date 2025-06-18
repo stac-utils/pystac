@@ -7,108 +7,6 @@ interactions:
       Host:
       - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
-    method: GET
-    uri: https://stac-extensions.github.io/storage/v1.0.0/schema.json
-  response:
-    body:
-      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/storage/v1.0.0/schema.json\",\n  \"title\":
-        \"Storage Extension\",\n  \"description\": \"STAC Storage Extension to a STAC
-        Item and STAC Assets.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This
-        is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
-        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
-        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
-        {\n              \"allOf\": [\n                {\n                  \"$comment\":
-        \"Require fields here for item properties.\",\n                  \"required\":
-        []\n                },\n                {\n                  \"$ref\": \"#/definitions/fields\"\n
-        \               }\n              ]\n            },\n            \"assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
-        for STAC Collections\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
-        \         \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    }\n  ],  \n  \"definitions\": {\n    \"stac_extensions\":
-        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
-        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/storage/v1.0.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"storage:platform\": {\n          \"title\":
-        \"Platform\",\n          \"type\": \"string\",\n          \"enum\": [\n            \"OTHER\",\n
-        \           \"AWS\",\n            \"GCP\",\n            \"AZURE\",\n            \"IBM\",\n
-        \           \"ALIBABA\",\n            \"ORACLE\"\n          ],\n          \"default\":
-        \"OTHER\"\n        },\n        \"storage:region\": {\n          \"title\":
-        \"Region\",\n          \"type\": \"string\"\n        },\n        \"storage:requester_pays\":
-        {\n          \"type\": \"boolean\",\n          \"title\": \"Requester pays\",\n
-        \         \"default\": false\n        },\n        \"storage:tier\": {\n          \"title\":
-        \"Tier\",\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '2963'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:16 GMT
-      ETag:
-      - '"6718ce4f-b93"'
-      Last-Modified:
-      - Wed, 23 Oct 2024 10:22:07 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - f5066e4d26e4d7461314910f1f9bb040c2843be9
-      X-GitHub-Request-Id:
-      - D7B8:13D22C:FC0AF0:119D558:67925A68
-      X-Served-By:
-      - cache-den-kden1300057-DEN
-      X-Timer:
-      - S1737644657.636492,VS0,VE57
-      expires:
-      - Thu, 23 Jan 2025 15:14:16 GMT
-      permissions-policy:
-      - interest-cohort=()
-      x-proxy-cache:
-      - MISS
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
-      User-Agent:
       - Python-urllib/3.10
     method: GET
     uri: https://stac-extensions.github.io/storage/v2.0.0/schema.json
@@ -205,15 +103,15 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 855a50e2b2d2411c04eaca800019a8413b70b9a8
+      - af64a991591f50737fadd2e89371cc12c8a2bb7d
       X-GitHub-Request-Id:
       - 591F:3B4DB0:4904A90:4C8204C:683CAF52
       X-Served-By:
-      - cache-iad-kiad7000152-IAD
+      - cache-iad-kcgs7200048-IAD
       X-Timer:
-      - S1748816208.373228,VS0,VE14
+      - S1748816209.717952,VS0,VE1
       expires:
       - Sun, 01 Jun 2025 20:01:47 GMT
       x-proxy-cache:
@@ -276,15 +174,15 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 278480db61c132221d05f66f4d67dd50f9669b9a
+      - 43d2b7092055b40e12b92793975aae512e94642f
       X-GitHub-Request-Id:
       - 87AB:3BCE73:4C312A6:4FAEA0D:683CAF53
       X-Served-By:
-      - cache-iad-kiad7000064-IAD
+      - cache-iad-kiad7000035-IAD
       X-Timer:
-      - S1748816208.451944,VS0,VE18
+      - S1748816209.780679,VS0,VE3
       expires:
       - Sun, 01 Jun 2025 20:01:47 GMT
       x-proxy-cache:
@@ -343,15 +241,15 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - 17cf88621af9473909a54f09b7280d23a8d03f5b
+      - c0e4c57aae853bd12f2127008255fb0d13a187fd
       X-GitHub-Request-Id:
       - 3461:2BF8CE:4BDFA81:4F5D0D4:683CAF53
       X-Served-By:
-      - cache-iad-kiad7000129-IAD
+      - cache-iad-kiad7000157-IAD
       X-Timer:
-      - S1748816209.531423,VS0,VE21
+      - S1748816209.846702,VS0,VE4
       expires:
       - Sun, 01 Jun 2025 20:01:47 GMT
       x-origin-cache:
@@ -413,15 +311,15 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '0'
+      - '1'
       X-Fastly-Request-ID:
-      - ff0d43db7da3291d7786a451b605ce5d2e96e1c4
+      - ea7c52a0de24dedf14c95d765216ad65b6bfa746
       X-GitHub-Request-Id:
       - D40E:3B1629:4B5EDFA:4EDC767:683CAF53
       X-Served-By:
-      - cache-iad-kiad7000060-IAD
+      - cache-iad-kiad7000135-IAD
       X-Timer:
-      - S1748816209.609643,VS0,VE15
+      - S1748816209.915699,VS0,VE2
       expires:
       - Sun, 01 Jun 2025 20:01:47 GMT
       x-origin-cache:
