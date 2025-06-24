@@ -244,7 +244,6 @@ def test_refs_apply(naip_asset: pystac.Asset) -> None:
     test_refs = ["a_ref", "b_ref"]
 
     storage_ext = StorageRefsExtension.ext(naip_asset)
-
     storage_ext.apply(test_refs)
 
     # Get
