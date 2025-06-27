@@ -35,7 +35,8 @@ python -m pip install 'pystac[orjson]'
 ```
 
 If you would like to use a custom `RetryStacIO` class for automatically retrying
-network requests when reading with PySTAC, you'll need
+network requests when reading with PySTAC, or if you have non-ASCII characters in
+your urls you'll need
 [`urllib3`](https://urllib3.readthedocs.io/en/stable/):
 
 ```shell
