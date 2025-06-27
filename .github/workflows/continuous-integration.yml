@@ -29,7 +29,7 @@ jobs:
           - "3.13"
         os:
           - ubuntu-latest
-          - windows-latest
+          - windows-2025
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +45,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         env:
-          TMPDIR: 'D:\\a\\_temp'
+          TMPDIR: 'C:\\a\\_temp'
         run: uv run pytest tests
       - name: Test
         if: runner.os != 'Windows'
