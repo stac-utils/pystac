@@ -23,7 +23,8 @@ C = TypeVar("C", bound="ItemCollection")
 
 class ItemCollection(Collection[pystac.Item]):
     """Implementation of a GeoJSON FeatureCollection whose features are all STAC
-    Items.
+    Items,
+    as defined by `STAC API - ItemCollection Fragment <https://github.com/radiantearth/stac-api-spec/blob/release/v1.0.0/fragments/itemcollection/README.md>`_.
 
     All :class:`~pystac.Item` instances passed to the :class:`ItemCollection` instance
     during instantiation are cloned and have their ``"root"`` URL cleared. Instances of
