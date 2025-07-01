@@ -5,144 +5,274 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from abc import ABC
 from typing import (
     Any,
     Generic,
     Literal,
+    SupportsIndex,
     TypeVar,
     cast,
 )
 
 import pystac
+from pystac.errors import RequiredPropertyMissing
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum
+from pystac.utils import StringEnum, get_required, map_opt
 
-#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Catalog` or
+#: :class:`~pystac.Collection`
+T = TypeVar("T", pystac.Item, pystac.Catalog, pystac.Collection)
+#: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link` or
 #: :class:`~pystac.ItemAssetDefinition`
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
+U = TypeVar("U", pystac.Asset, pystac.Link, pystac.ItemAssetDefinition)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
 PREFIX: str = "storage:"
 
 # Field names
-PLATFORM_PROP: str = PREFIX + "platform"
-REGION_PROP: str = PREFIX + "region"
-REQUESTER_PAYS_PROP: str = PREFIX + "requester_pays"
-TIER_PROP: str = PREFIX + "tier"
+REFS_PROP: str = PREFIX + "refs"
+SCHEMES_PROP: str = PREFIX + "schemes"
+
+# Storage scheme object names
+TYPE_PROP: str = "type"
+PLATFORM_PROP: str = "platform"
+REGION_PROP: str = "region"
+REQUESTER_PAYS_PROP: str = "requester_pays"
 
 
-class CloudPlatform(StringEnum):
-    ALIBABA = "ALIBABA"
-    AWS = "AWS"
-    AZURE = "AZURE"
-    GCP = "GCP"
-    IBM = "IBM"
-    ORACLE = "ORACLE"
-    OTHER = "OTHER"
+class StorageSchemeType(StringEnum):
+    AWS_S3 = "aws-s3"
+    CUSTOM_S3 = "custom-s3"
+    AZURE = "ms-azure"
 
 
-class StorageExtension(
-    Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item | pystac.Collection],
-):
-    """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
-    :stac-ext:`Storage Extension <storage>`. This class is generic over the type of
-    STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Asset`).
+class StorageScheme:
+    _properties: dict[str, Any]
 
-    To create a concrete instance of :class:`StorageExtension`, use the
-    :meth:`StorageExtension.ext` method. For example:
+    def __init__(self, properties: dict[str, Any]):
+        super().__setattr__("_properties", properties)
 
-    .. code-block:: python
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, StorageScheme):
+            return NotImplemented
 
-       >>> item: pystac.Item = ...
-       >>> storage_ext = StorageExtension.ext(item)
-    """
+        return bool(self.__dict__["_properties"] == other.__dict__["_properties"])
 
-    name: Literal["storage"] = "storage"
+    def __getattr__(self, name: str) -> Any:
+        properties = self.__dict__["_properties"]
+        if name in properties:
+            return properties[name]
+        raise AttributeError(f"StorageScheme does not have attribute '{name}'")
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.startswith("_") or hasattr(type(self), name):
+            super().__setattr__(name, value)
+        else:
+            self._properties[name] = value
+
+    def __reduce_ex__(self, protocol: SupportsIndex) -> Any:
+        return (self.__class__, (self.__dict__["_properties"],), None)
 
     def apply(
         self,
-        platform: CloudPlatform | None = None,
+        type: str,
+        platform: str,
         region: str | None = None,
         requester_pays: bool | None = None,
-        tier: str | None = None,
+        **kwargs: dict[str, Any],
     ) -> None:
-        """Applies Storage Extension properties to the extended :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
-
-        Args:
-            platform (str, CloudPlatform) : The cloud provider where data is stored.
-            region (str) : The region where the data is stored. Relevant to speed of
-                access and inter-region egress costs (as defined by PaaS provider).
-            requester_pays (bool) : Is the data requester pays or is it data
-                manager/cloud provider pays.
-            tier (str) : The title for the tier type (as defined by PaaS provider).
-        """
+        self.type = type
         self.platform = platform
         self.region = region
         self.requester_pays = requester_pays
-        self.tier = tier
+        self._properties.update(kwargs)
 
-    @property
-    def platform(self) -> CloudPlatform | None:
-        """Get or sets the cloud provider where data is stored.
+    @classmethod
+    def create(
+        cls,
+        type: str,
+        platform: str,
+        region: str | None = None,
+        requester_pays: bool | None = None,
+        **kwargs: dict[str, Any],
+    ) -> StorageScheme:
+        """Set the properties for a new StorageScheme object.
+
+        Additional properties can be set through kwargs to fulfill
+        any additional variables in a templated uri.
+
+        Args:
+            type (str): Type identifier for the platform.
+            platform (str): The cloud provider where data is stored as URI or URI
+                template to the API.
+            region (str | None): The region where the data is stored.
+                Defaults to None.
+            requester_pays (bool | None): requester pays or data manager/cloud
+                provider pays. Defaults to None.
+            kwargs (dict[str | Any]): Additional properties to set on scheme
 
         Returns:
-            str or None
+            StorageScheme: storage scheme
         """
-        return self._get_property(PLATFORM_PROP, CloudPlatform)
+        c = cls({})
+        c.apply(
+            type=type,
+            platform=platform,
+            region=region,
+            requester_pays=requester_pays,
+            **kwargs,
+        )
+        return c
+
+    @property
+    def type(self) -> str:
+        """
+        Get or set the required type property
+        """
+        return get_required(
+            self._properties.get(TYPE_PROP),
+            self,
+            TYPE_PROP,
+        )
+
+    @type.setter
+    def type(self, v: str) -> None:
+        self._properties[TYPE_PROP] = v
+
+    @property
+    def platform(self) -> str:
+        """
+        Get or set the required platform property
+        """
+        return get_required(
+            self._properties.get(PLATFORM_PROP),
+            self,
+            PLATFORM_PROP,
+        )
 
     @platform.setter
-    def platform(self, v: CloudPlatform | None) -> None:
-        self._set_property(PLATFORM_PROP, v)
+    def platform(self, v: str) -> None:
+        self._properties[PLATFORM_PROP] = v
 
     @property
     def region(self) -> str | None:
-        """Gets or sets the region where the data is stored. Relevant to speed of
-        access and inter-region egress costs (as defined by PaaS provider)."""
-        return self._get_property(REGION_PROP, str)
+        """
+        Get or set the optional region property
+        """
+        return self._properties.get(REGION_PROP)
 
     @region.setter
-    def region(self, v: str | None) -> None:
-        self._set_property(REGION_PROP, v)
+    def region(self, v: str) -> None:
+        if v is not None:
+            self._properties[REGION_PROP] = v
+        else:
+            self._properties.pop(REGION_PROP, None)
 
     @property
     def requester_pays(self) -> bool | None:
-        # This value "defaults to false", according to the extension spec.
-        return self._get_property(REQUESTER_PAYS_PROP, bool)
+        """
+        Get or set the optional requester_pays property
+        """
+        return self._properties.get(REQUESTER_PAYS_PROP)
 
     @requester_pays.setter
-    def requester_pays(self, v: bool | None) -> None:
-        self._set_property(REQUESTER_PAYS_PROP, v)
+    def requester_pays(self, v: bool) -> None:
+        if v is not None:
+            self._properties[REQUESTER_PAYS_PROP] = v
+        else:
+            self._properties.pop(REQUESTER_PAYS_PROP, None)
 
-    @property
-    def tier(self) -> str | None:
-        return self._get_property(TIER_PROP, str)
+    def to_dict(self) -> dict[str, Any]:
+        """
+        Returns the dictionary encoding of this object
 
-    @tier.setter
-    def tier(self, v: str | None) -> None:
-        self._set_property(TIER_PROP, v)
+        Returns:
+            dict[str, Any
+        """
+        return self._properties
+
+
+class _StorageExtension(ABC):
+    name: Literal["storage"] = "storage"
 
     @classmethod
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
+
+class StorageSchemesExtension(
+    _StorageExtension,
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog],
+):
+    """An abstract class that can be used to extend the properties of an
+    :class:`~pystac.Collection`, :class:`~pystac.Catalog`, or :class:`~pystac.Item`
+    with properties from the :stac-ext:`Storage Extension <storage>`.
+    This class is generic over the type of STAC Object to be extended (e.g.
+    :class:`~pystac.Item`, :class:`~pystac.Collection`).
+
+    To create a concrete instance of :class:`StorageSchemesExtension`, use the
+    :meth:`StorageSchemesExtension.ext` method. For example:
+
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> storage_ext = StorageSchemesExtension.ext(item)
+    """
+
+    def apply(
+        self,
+        schemes: dict[str, StorageScheme],
+    ) -> None:
+        """Applies Storage Extension properties to the extended
+        :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
+        or :class:`~pystac.Item`.
+
+        Args:
+            schemes (dict[str, StorageScheme]): Storage schemes used by Assets and Links
+                in the STAC Item, Catalog or Collection.
+        """
+        self.schemes = schemes
+
+    @property
+    def schemes(self) -> dict[str, StorageScheme]:
+        """Get or sets the schemes used by Assets and Links.
+
+        Returns:
+            dict[str, StorageScheme]: storage schemes
+        """
+        schemes: dict[str, dict[str, Any]] = get_required(
+            self.properties.get(SCHEMES_PROP),
+            self,
+            SCHEMES_PROP,
+        )
+        return {k: StorageScheme(v) for k, v in schemes.items()}
+
+    @schemes.setter
+    def schemes(self, v: dict[str, StorageScheme]) -> None:
+        v_trans = {k: c.to_dict() for k, c in v.items()}
+        self._set_property(SCHEMES_PROP, v_trans)
+
+    def add_scheme(self, key: str, scheme: StorageScheme) -> None:
+        try:
+            self.schemes = {**self.schemes, **{key: scheme}}
+        except RequiredPropertyMissing:
+            self.schemes = {key: scheme}
+
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> StorageExtension[T]:
+    def ext(cls, obj: T, add_if_missing: bool = False) -> StorageSchemesExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Storage
         Extension <storage>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        This extension can be applied to instances of :class:`~pystac.Catalog`,
+        :class:`~pystac.Collection`, or :class:`~pystac.Item`.
 
         Raises:
 
@@ -150,13 +280,13 @@ class StorageExtension(
         """
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
-            return cast(StorageExtension[T], ItemStorageExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(StorageExtension[T], AssetStorageExtension(obj))
-        elif isinstance(obj, pystac.ItemAssetDefinition):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(StorageExtension[T], ItemAssetsStorageExtension(obj))
+            return cast(StorageSchemesExtension[T], ItemStorageExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(StorageSchemesExtension[T], CollectionStorageExtension(obj))
+        elif isinstance(obj, pystac.Catalog):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(StorageSchemesExtension[T], CatalogStorageExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -169,13 +299,13 @@ class StorageExtension(
         return SummariesStorageExtension(obj)
 
 
-class ItemStorageExtension(StorageExtension[pystac.Item]):
-    """A concrete implementation of :class:`StorageExtension` on an
+class ItemStorageExtension(StorageSchemesExtension[pystac.Item]):
+    """A concrete implementation of :class:`StorageSchemesExtension` on an
     :class:`~pystac.Item` that extends the properties of the Item to include
     properties defined in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`StorageExtension.ext` on an :class:`~pystac.Item` to extend it.
+    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Item` to extend it.
     """
 
     item: pystac.Item
@@ -192,25 +322,122 @@ class ItemStorageExtension(StorageExtension[pystac.Item]):
         return f"<ItemStorageExtension Item id={self.item.id}>"
 
 
-class AssetStorageExtension(StorageExtension[pystac.Asset]):
-    """A concrete implementation of :class:`StorageExtension` on an
-    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
-    in the :stac-ext:`Storage Extension <storage>`.
+class CollectionStorageExtension(StorageSchemesExtension[pystac.Collection]):
+    """A concrete implementation of :class:`StorageSchemesExtension` on an
+    :class:`~pystac.Collection` that extends the properties of the Collection to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`StorageExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Collection` to extend it.
     """
 
-    asset_href: str
-    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+    collection: pystac.Collection
+    """The :class:`~pystac.Collection` being extended."""
 
     properties: dict[str, Any]
-    """The :class:`~pystac.Asset` fields, including extension properties."""
+    """The :class:`~pystac.Collection` properties, including extension properties."""
 
-    additional_read_properties: Iterable[dict[str, Any]] | None = None
-    """If present, this will be a list containing 1 dictionary representing the
-    properties of the owning :class:`~pystac.Item`."""
+    def __init__(self, collection: pystac.Collection):
+        self.collection = collection
+        self.properties = collection.extra_fields
 
+    def __repr__(self) -> str:
+        return f"<CollectionStorageExtension Collection id={self.collection.id}>"
+
+
+class CatalogStorageExtension(StorageSchemesExtension[pystac.Catalog]):
+    """A concrete implementation of :class:`StorageSchemesExtension` on an
+    :class:`~pystac.Catalog` that extends the properties of the Catalog to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Catalog` to extend it.
+    """
+
+    catalog: pystac.Catalog
+    """The :class:`~pystac.Catalog` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Catalog` properties, including extension properties."""
+
+    def __init__(self, catalog: pystac.Catalog):
+        self.catalog = catalog
+        self.properties = catalog.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<CatalogStorageExtension Collection id={self.catalog.id}>"
+
+
+class StorageRefsExtension(
+    _StorageExtension,
+    Generic[U],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog],
+):
+    def apply(
+        self,
+        refs: list[str],
+    ) -> None:
+        """Applies Storage Extension properties to the extended :class:`~pystac.Asset`,
+        :class:`~pystac.Link`, or :class:`~pystac.ItemAssetDefinition`.
+
+        Args:
+            refs (list[str]): specifies which schemes in storage:schemes may be used to
+                access an Asset or Link. Each value must be one of the keys defined in
+                storage:schemes.
+        """
+        self.refs = refs
+
+    @property
+    def refs(self) -> list[str]:
+        """Get or sets the keys of the schemes that may be used to access an Asset
+            or Link.
+
+        Returns:
+            list[str]
+        """
+        return get_required(
+            self.properties.get(REFS_PROP),
+            self,
+            REFS_PROP,
+        )
+
+    @refs.setter
+    def refs(self, v: list[str]) -> None:
+        self._set_property(REFS_PROP, v)
+
+    def add_ref(self, ref: str) -> None:
+        try:
+            self.refs.append(ref)
+        except RequiredPropertyMissing:
+            self.refs = [ref]
+
+    @classmethod
+    def ext(cls, obj: U, add_if_missing: bool = False) -> StorageRefsExtension[U]:
+        """Extends the given STAC Object with properties from the :stac-ext:`Storage
+        Extension <storage>`.
+
+        This extension can be applied to instances of :class:`~pystac.Item` or
+        :class:`~pystac.Asset`.
+
+        Raises:
+
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
+        if isinstance(obj, pystac.Asset):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return AssetStorageExtension(obj)
+        if isinstance(obj, pystac.Link):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return LinkStorageExtension(obj)
+        if isinstance(obj, pystac.ItemAssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return ItemAssetsStorageExtension(obj)
+        else:
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+
+
+class AssetStorageExtension(StorageRefsExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
@@ -221,13 +448,22 @@ class AssetStorageExtension(StorageExtension[pystac.Asset]):
         return f"<AssetStorageExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetsStorageExtension(StorageExtension[pystac.ItemAssetDefinition]):
+class ItemAssetsStorageExtension(StorageRefsExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
     asset_defn: pystac.ItemAssetDefinition
 
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
+
+
+class LinkStorageExtension(StorageRefsExtension[pystac.Link]):
+    properties: dict[str, Any]
+    link: pystac.Link
+
+    def __init__(self, link: pystac.Link):
+        self.link = link
+        self.properties = link.extra_fields
 
 
 class SummariesStorageExtension(SummariesExtension):
@@ -237,54 +473,37 @@ class SummariesStorageExtension(SummariesExtension):
     """
 
     @property
-    def platform(self) -> list[CloudPlatform] | None:
-        """Get or sets the summary of :attr:`StorageExtension.platform` values
+    def schemes(self) -> list[dict[str, StorageScheme]] | None:
+        """Get or sets the summary of :attr:`StorageScheme.platform` values
         for this Collection.
         """
-        return self.summaries.get_list(PLATFORM_PROP)
+        v = map_opt(
+            lambda schemes: [
+                {k: StorageScheme(v) for k, v in x.items()} for x in schemes
+            ],
+            self.summaries.get_list(SCHEMES_PROP),
+        )
 
-    @platform.setter
-    def platform(self, v: list[CloudPlatform] | None) -> None:
-        self._set_summary(PLATFORM_PROP, v)
+        return v
 
-    @property
-    def region(self) -> list[str] | None:
-        """Get or sets the summary of :attr:`StorageExtension.region` values
-        for this Collection.
-        """
-        return self.summaries.get_list(REGION_PROP)
-
-    @region.setter
-    def region(self, v: list[str] | None) -> None:
-        self._set_summary(REGION_PROP, v)
-
-    @property
-    def requester_pays(self) -> list[bool] | None:
-        """Get or sets the summary of :attr:`StorageExtension.requester_pays` values
-        for this Collection.
-        """
-        return self.summaries.get_list(REQUESTER_PAYS_PROP)
-
-    @requester_pays.setter
-    def requester_pays(self, v: list[bool] | None) -> None:
-        self._set_summary(REQUESTER_PAYS_PROP, v)
-
-    @property
-    def tier(self) -> list[str] | None:
-        """Get or sets the summary of :attr:`StorageExtension.tier` values
-        for this Collection.
-        """
-        return self.summaries.get_list(TIER_PROP)
-
-    @tier.setter
-    def tier(self, v: list[str] | None) -> None:
-        self._set_summary(TIER_PROP, v)
+    @schemes.setter
+    def schemes(self, v: list[dict[str, StorageScheme]] | None) -> None:
+        self._set_summary(
+            SCHEMES_PROP,
+            map_opt(
+                lambda schemes: [
+                    {k: c.to_dict() for k, c in x.items()} for x in schemes
+                ],
+                v,
+            ),
+        )
 
 
 class StorageExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: set[str] = set()
     stac_object_types = {
+        pystac.STACObjectType.CATALOG,
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.ITEM,
     }
