@@ -1,0 +1,85 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-mal%C3%A9/collection.json
+  response:
+    body:
+      string: "{\n  \"type\": \"Collection\",\n  \"id\": \"capella-open-data-mal\\u00e9\",\n
+        \ \"stac_version\": \"1.0.0\",\n  \"description\": \"Capella Open Data Mal\\u00e9\",\n
+        \ \"links\": [\n    {\n      \"rel\": \"root\",\n      \"href\": \"../../catalog.json\",\n
+        \     \"type\": \"application/json\",\n      \"title\": \"Capella Open Data\"\n
+        \   },\n    {\n      \"rel\": \"license\",\n      \"href\": \"https://creativecommons.org/licenses/by/4.0/\",\n
+        \     \"title\": \"CC BY 4.0\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_SLC_HH_20241130164247_20241130164315/CAPELLA_C09_SP_SLC_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"parent\",\n
+        \     \"href\": \"../catalog.json\",\n      \"type\": \"application/json\",\n
+        \     \"title\": \"By Capital\"\n    }\n  ],\n  \"stac_extensions\": [\n    \"https://stac-extensions.github.io/sat/v1.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/view/v1.0.0/schema.json\",\n    \"https://stac-extensions.github.io/processing/v1.1.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/projection/v1.1.0/schema.json\"\n
+        \ ],\n  \"item_assets\": {\n    \"HH\": {\n      \"title\": \"SAR file\",\n
+        \     \"type\": \"image/tiff; application=geotiff\",\n      \"roles\": [\n
+        \       \"data\"\n      ],\n      \"sar:polarizations\": [\n        \"HH\"\n
+        \     ]\n    },\n    \"VV\": {\n      \"title\": \"SAR file\",\n      \"type\":
+        \"image/tiff; application=geotiff\",\n      \"roles\": [\n        \"data\"\n
+        \     ],\n      \"sar:polarizations\": [\n        \"VV\"\n      ]\n    },\n
+        \   \"thumbnail\": {\n      \"title\": \"Thumbnail\",\n      \"type\": \"image/png\",\n
+        \     \"roles\": [\n        \"thumbnail\"\n      ]\n    },\n    \"preview\":
+        {\n      \"title\": \"Preview image\",\n      \"type\": \"image/tiff; application=geotiff;
+        profile=cloud-optimized\",\n      \"roles\": [\n        \"overview\"\n      ]\n
+        \   },\n    \"metadata\": {\n      \"title\": \"Extended metadata\",\n      \"type\":
+        \"application/json\",\n      \"roles\": [\n        \"metadata\"\n      ]\n
+        \   }\n  },\n  \"title\": \"Mal\\u00e9\",\n  \"extent\": {\n    \"spatial\":
+        {\n      \"bbox\": [\n        [\n          -180,\n          -90,\n          180,\n
+        \         90\n        ]\n      ]\n    },\n    \"temporal\": {\n      \"interval\":
+        [\n        [\n          \"2020-03-30T00:00:00Z\",\n          null\n        ]\n
+        \     ]\n    }\n  },\n  \"license\": \"proprietary\",\n  \"keywords\": [\n
+        \   \"sar\"\n  ],\n  \"providers\": [\n    {\n      \"name\": \"Capella Space\",\n
+        \     \"roles\": [\n        \"licensor\",\n        \"producer\",\n        \"processor\"\n
+        \     ],\n      \"url\": \"https://www.capellaspace.com\"\n    },\n    {\n
+        \     \"name\": \"AWS\",\n      \"roles\": [\n        \"host\"\n      ],\n
+        \     \"url\": \"http://www.amazonaws.com/\"\n    }\n  ],\n  \"summaries\":
+        {\n    \"constellation\": [\n      \"capella\"\n    ],\n    \"instruments\":
+        [\n      \"capella-radar-2\",\n      \"capella-radar-3\",\n      \"capella-radar-4\",\n
+        \     \"capella-radar-5\",\n      \"capella-radar-6\",\n      \"capella-radar-7\",\n
+        \     \"capella-radar-8\",\n      \"capella-radar-9\",\n      \"capella-radar-10\",\n
+        \     \"capella-radar-11\",\n      \"capella-radar-13\",\n      \"capella-radar-14\",\n
+        \     \"capella-radar-15\"\n    ],\n    \"sar:frequency_band\": [\n      \"X\"\n
+        \   ],\n    \"sar:product_type\": [\n      \"SLC\",\n      \"GEO\",\n      \"GEC\",\n
+        \     \"SICD\",\n      \"SIDD\",\n      \"CPHD\"\n    ],\n    \"sar:instrument_mode\":
+        [\n      \"stripmap\",\n      \"spotlight\",\n      \"sliding_spotlight\"\n
+        \   ],\n    \"sar:observation_direction\": [\n      \"left\",\n      \"right\"\n
+        \   ],\n    \"sar:polarizations\": [\n      \"HH\",\n      \"VV\"\n    ]\n
+        \ }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '4384'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 16 Jul 2025 14:27:08 GMT
+      ETag:
+      - '"3a7d18f018a5dc5e29af78ba91fb3a67"'
+      Last-Modified:
+      - Wed, 16 Jul 2025 07:07:12 GMT
+      Server:
+      - AmazonS3
+      x-amz-id-2:
+      - mS8cX+L1/uoMVhaC4ZTcrNLZb47iqTYwEXT52pFgbN9gFq3JRX17cTr8i0bTFOAaWWZ1DwnpogFTTAOAyjGj3Q==
+      x-amz-request-id:
+      - PWBXR28EN2M7DX2W
+      x-amz-server-side-encryption:
+      - AES256
+    status:
+      code: 200
+      message: OK
+version: 1

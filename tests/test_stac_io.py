@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 import pystac
+import pystac.errors
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
 
@@ -116,20 +117,20 @@ def test_report_duplicate_keys() -> None:
         assert str(excinfo.value), f'Found duplicate object name "key" in {src_href}'
 
 
-@unittest.mock.patch("pystac.stac_io.urlopen")
-def test_headers_stac_io(urlopen_mock: unittest.mock.MagicMock) -> None:
+@unittest.mock.patch("pystac.stac_io.urllib3.request")
+def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
 
     catalog = pystac.Catalog("an-id", "a description").to_dict()
     # required until https://github.com/stac-utils/pystac/pull/896 is merged
     catalog["links"] = []
-    urlopen_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
+    request_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
         catalog
     ).encode("utf-8")
     pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
 
-    request_obj = urlopen_mock.call_args[0][0]
-    assert request_obj.headers == stac_io.headers
+    headers = request_mock.call_args[1]["headers"]
+    assert headers == stac_io.headers
 
 
 @pytest.mark.vcr()
@@ -163,3 +164,16 @@ def test_save_http_href_errors(tmp_path: Path) -> None:
     catalog.set_self_href("http://pystac.test/catalog.json")
     with pytest.raises(NotImplementedError):
         catalog.save_object()
+
+
+@pytest.mark.vcr()
+def test_urls_with_non_ascii_characters() -> None:
+    from pystac.stac_io import HAS_URLLIB3
+
+    url = "https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-malé/collection.json"
+
+    if HAS_URLLIB3:
+        pystac.Collection.from_file(url)
+    else:
+        with pytest.raises(pystac.STACError):
+            pystac.Collection.from_file(url)
