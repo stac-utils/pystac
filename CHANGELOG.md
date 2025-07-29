@@ -13,6 +13,7 @@
 - More permissive collection extent deserialization ([#1559](https://github.com/stac-utils/pystac/pull/1559))
 - Type of `proj:code` setter ([#1560](https://github.com/stac-utils/pystac/pull/1560))
 - Use `urllib3` to fix parsing non-ascii in urls ([#1566](https://github.com/stac-utils/pystac/pull/1566))
+- Some return types and other **mypy** nits ([#1569](https://github.com/stac-utils/pystac/pull/1569))
 
 ## [v1.13.0] - 2025-04-15
 
