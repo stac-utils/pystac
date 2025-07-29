@@ -88,8 +88,11 @@ class Dimension(ABC):
         <datacube#temporal-dimension-object>`. May be an arbitrary string for
         :stac-ext:`Additional Dimension Objects
         <datacube#additional-dimension-object>`."""
-        return get_required(
-            self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(DIM_TYPE_PROP), "cube:dimension", DIM_TYPE_PROP
+            ),
         )
 
     @dim_type.setter
@@ -198,8 +201,11 @@ class HorizontalSpatialDimension(SpatialDimension):
     @property
     def axis(self) -> HorizontalSpatialDimensionAxis:
         """Axis of the spatial dimension. Must be one of ``"x"`` or ``"y"``."""
-        return get_required(
-            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+        return cast(
+            HorizontalSpatialDimensionAxis,
+            get_required(
+                self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+            ),
         )
 
     @axis.setter
@@ -211,8 +217,11 @@ class VerticalSpatialDimension(SpatialDimension):
     @property
     def axis(self) -> VerticalSpatialDimensionAxis:
         """Axis of the spatial dimension. Must be ``"z"``."""
-        return get_required(
-            self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+        return cast(
+            VerticalSpatialDimensionAxis,
+            get_required(
+                self.properties.get(DIM_AXIS_PROP), "cube:dimension", DIM_AXIS_PROP
+            ),
         )
 
     @axis.setter
@@ -453,8 +462,11 @@ class Variable:
     @property
     def var_type(self) -> VariableType | str:
         """Type of the variable, either ``data`` or ``auxiliary``"""
-        return get_required(
-            self.properties.get(VAR_TYPE_PROP), "cube:variable", VAR_TYPE_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(VAR_TYPE_PROP), "cube:variable", VAR_TYPE_PROP
+            ),
         )
 
     @var_type.setter

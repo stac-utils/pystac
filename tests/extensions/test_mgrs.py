@@ -113,7 +113,7 @@ def test_invalid_latitude_band_raises_informative_error(ext_item: pystac.Item) -
         MgrsExtension.ext(ext_item).latitude_band = 2  # type: ignore
 
     with pytest.raises(ValueError, match="must be str"):
-        MgrsExtension.ext(ext_item).latitude_band = None
+        MgrsExtension.ext(ext_item).latitude_band = None  # type: ignore
 
     with pytest.raises(ValueError, match="a is not in "):
         MgrsExtension.ext(ext_item).latitude_band = "a"
@@ -124,7 +124,7 @@ def test_invalid_grid_square_raises_informative_error(ext_item: pystac.Item) -> 
         MgrsExtension.ext(ext_item).grid_square = 2  # type: ignore
 
     with pytest.raises(ValueError, match="must be str"):
-        MgrsExtension.ext(ext_item).grid_square = None
+        MgrsExtension.ext(ext_item).grid_square = None  # type: ignore
 
     with pytest.raises(ValueError, match="nv does not match the regex "):
         MgrsExtension.ext(ext_item).grid_square = "nv"

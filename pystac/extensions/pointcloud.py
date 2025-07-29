@@ -98,7 +98,7 @@ class Schema:
     @property
     def size(self) -> int:
         """Gets or sets the size value."""
-        return get_required(self.properties.get("size"), self, "size")
+        return cast(int, get_required(self.properties.get("size"), self, "size"))
 
     @size.setter
     def size(self, v: int) -> None:
@@ -110,7 +110,7 @@ class Schema:
     @property
     def name(self) -> str:
         """Gets or sets the name property for this Schema."""
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
@@ -120,7 +120,7 @@ class Schema:
     def type(self) -> SchemaType:
         """Gets or sets the type property. Valid values are ``floating``, ``unsigned``,
         and ``signed``."""
-        return get_required(self.properties.get("type"), self, "type")
+        return cast(SchemaType, get_required(self.properties.get("type"), self, "type"))
 
     @type.setter
     def type(self, v: SchemaType) -> None:
@@ -221,7 +221,7 @@ class Statistic:
     @property
     def name(self) -> str:
         """Gets or sets the name property."""
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
