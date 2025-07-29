@@ -193,7 +193,7 @@ class LabelCount:
     @property
     def name(self) -> str:
         """Gets or sets the class that this count represents."""
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
@@ -202,7 +202,7 @@ class LabelCount:
     @property
     def count(self) -> int:
         """Get or sets the number of occurrences of the class."""
-        return get_required(self.properties.get("count"), self, "count")
+        return cast(int, get_required(self.properties.get("count"), self, "count"))
 
     @count.setter
     def count(self, v: int) -> None:
@@ -258,7 +258,7 @@ class LabelStatistics:
     @property
     def name(self) -> str:
         """Gets or sets the name of the statistic being reported."""
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
@@ -267,7 +267,7 @@ class LabelStatistics:
     @property
     def value(self) -> float:
         """Gets or sets the value of the statistic."""
-        return get_required(self.properties.get("value"), self, "value")
+        return cast(float, get_required(self.properties.get("value"), self, "value"))
 
     @value.setter
     def value(self, v: float) -> None:
@@ -506,8 +506,11 @@ class LabelExtension(ExtensionManagementMixin[pystac.Item | pystac.Collection]):
     def label_description(self) -> str:
         """Gets or sets a description of the label, how it was created,
         and what it is recommended for."""
-        return get_required(
-            self.obj.properties.get(DESCRIPTION_PROP), self.obj, DESCRIPTION_PROP
+        return cast(
+            str,
+            get_required(
+                self.obj.properties.get(DESCRIPTION_PROP), self.obj, DESCRIPTION_PROP
+            ),
         )
 
     @label_description.setter

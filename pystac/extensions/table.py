@@ -45,8 +45,11 @@ class Column:
     @property
     def name(self) -> str:
         """The column name"""
-        return get_required(
-            self.properties.get(COL_NAME_PROP), "table:column", COL_NAME_PROP
+        return cast(
+            str,
+            get_required(
+                self.properties.get(COL_NAME_PROP), "table:column", COL_NAME_PROP
+            ),
         )
 
     @name.setter
@@ -95,7 +98,9 @@ class Table:
     @property
     def name(self) -> str:
         """The table name"""
-        return get_required(self.properties.get(TBL_NAME_PROP), self, TBL_NAME_PROP)
+        return cast(
+            str, get_required(self.properties.get(TBL_NAME_PROP), self, TBL_NAME_PROP)
+        )
 
     @name.setter
     def name(self, v: str) -> None:

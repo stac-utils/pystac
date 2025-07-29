@@ -134,7 +134,7 @@ class Band:
         Returns:
             str
         """
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
