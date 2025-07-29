@@ -298,7 +298,7 @@ class Histogram:
         Returns:
             int
         """
-        return get_required(self.properties.get("count"), self, "count")
+        return cast(int, get_required(self.properties.get("count"), self, "count"))
 
     @count.setter
     def count(self, v: int) -> None:
@@ -311,7 +311,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties.get("min"), self, "min")
+        return cast(float, get_required(self.properties.get("min"), self, "min"))
 
     @min.setter
     def min(self, v: float) -> None:
@@ -324,7 +324,7 @@ class Histogram:
         Returns:
             float
         """
-        return get_required(self.properties.get("max"), self, "max")
+        return cast(float, get_required(self.properties.get("max"), self, "max"))
 
     @max.setter
     def max(self, v: float) -> None:

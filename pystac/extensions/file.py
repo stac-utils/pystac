@@ -90,7 +90,7 @@ class MappingObject:
     @property
     def summary(self) -> str:
         """Gets or sets the short description of the value(s)."""
-        return get_required(self.properties.get("summary"), self, "summary")
+        return cast(str, get_required(self.properties.get("summary"), self, "summary"))
 
     @summary.setter
     def summary(self, v: str) -> None:

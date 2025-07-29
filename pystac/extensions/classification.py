@@ -155,7 +155,7 @@ class Classification:
         Returns:
             int
         """
-        return get_required(self.properties.get("value"), self, "value")
+        return cast(int, get_required(self.properties.get("value"), self, "value"))
 
     @value.setter
     def value(self, v: int) -> None:
@@ -184,7 +184,7 @@ class Classification:
         Returns:
             Optional[str]
         """
-        return get_required(self.properties.get("name"), self, "name")
+        return cast(str, get_required(self.properties.get("name"), self, "name"))
 
     @name.setter
     def name(self, v: str) -> None:
@@ -200,7 +200,7 @@ class Classification:
         return self.properties.get("title")
 
     @title.setter
-    def title(self, v: str) -> None:
+    def title(self, v: str | None) -> None:
         if v is not None:
             self.properties["title"] = v
         else:
@@ -392,7 +392,7 @@ class Bitfield:
         Returns:
             int
         """
-        return get_required(self.properties.get("offset"), self, "offset")
+        return cast(int, get_required(self.properties.get("offset"), self, "offset"))
 
     @offset.setter
     def offset(self, v: int) -> None:
@@ -405,7 +405,7 @@ class Bitfield:
         Returns:
             int
         """
-        return get_required(self.properties.get("length"), self, "length")
+        return cast(int, get_required(self.properties.get("length"), self, "length"))
 
     @length.setter
     def length(self, v: int) -> None:

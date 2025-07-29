@@ -102,7 +102,7 @@ class BaseVersionExtension(
         return self._get_property(VERSION, str)
 
     @version.setter
-    def version(self, v: str) -> None:
+    def version(self, v: str | None) -> None:
         self._set_property(VERSION, v, pop_if_none=True)
 
     @property
