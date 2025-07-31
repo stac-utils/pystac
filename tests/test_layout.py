@@ -405,7 +405,7 @@ class TestAsIsLayoutStrategy:
     def test_catalog(self) -> None:
         strategy = AsIsLayoutStrategy()
         expected_local_href = (
-            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+            "/an/href" if not path_includes_drive_letter() else "C:/an/href"
         )
         cat = pystac.Catalog(id="test", description="test desc")
         with pytest.raises(ValueError):
@@ -417,7 +417,7 @@ class TestAsIsLayoutStrategy:
     def test_collection(self) -> None:
         strategy = AsIsLayoutStrategy()
         expected_local_href = (
-            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+            "/an/href" if not path_includes_drive_letter() else "C:/an/href"
         )
         collection = TestCases.case_8()
         collection.set_self_href(None)
@@ -432,7 +432,7 @@ class TestAsIsLayoutStrategy:
     def test_item(self) -> None:
         strategy = AsIsLayoutStrategy()
         expected_local_href = (
-            "/an/href" if not path_includes_drive_letter() else "D:/an/href"
+            "/an/href" if not path_includes_drive_letter() else "C:/an/href"
         )
         collection = TestCases.case_8()
         item = next(collection.get_items(recursive=True))
