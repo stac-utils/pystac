@@ -16,7 +16,7 @@ jobs:
       id-token: write
     if: ${{ github.repository }} == 'stac-utils/pystac'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python 3.x
         uses: actions/setup-python@v5
         with:
