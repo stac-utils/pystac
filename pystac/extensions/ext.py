@@ -31,7 +31,7 @@ from pystac.extensions.render import Render, RenderExtension
 from pystac.extensions.sar import SarExtension
 from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
-from pystac.extensions.storage import StorageExtension
+from pystac.extensions.storage import StorageRefsExtension, StorageSchemesExtension
 from pystac.extensions.table import TableExtension
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.extensions.version import BaseVersionExtension, VersionExtension
@@ -85,7 +85,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     SarExtension.name: SarExtension,
     SatExtension.name: SatExtension,
     ScientificExtension.name: ScientificExtension,
-    StorageExtension.name: StorageExtension,
+    StorageSchemesExtension.name: StorageSchemesExtension,
     TableExtension.name: TableExtension,
     TimestampsExtension.name: TimestampsExtension,
     VersionExtension.name: VersionExtension,
@@ -171,6 +171,10 @@ class CollectionExt(CatalogExt):
     @property
     def sci(self) -> ScientificExtension[Collection]:
         return ScientificExtension.ext(self.stac_object)
+
+    @property
+    def storage(self) -> StorageSchemesExtension[Collection]:
+        return StorageSchemesExtension.ext(self.stac_object)
 
     @property
     def table(self) -> TableExtension[Collection]:
@@ -265,8 +269,8 @@ class ItemExt:
         return ScientificExtension.ext(self.stac_object)
 
     @property
-    def storage(self) -> StorageExtension[Item]:
-        return StorageExtension.ext(self.stac_object)
+    def storage(self) -> StorageSchemesExtension[Item]:
+        return StorageSchemesExtension.ext(self.stac_object)
 
     @property
     def table(self) -> TableExtension[Item]:
@@ -376,8 +380,8 @@ class _AssetExt(_AssetsExt[U]):
         return SatExtension.ext(self.stac_object)
 
     @property
-    def storage(self) -> StorageExtension[U]:
-        return StorageExtension.ext(self.stac_object)
+    def storage(self) -> StorageRefsExtension[U]:
+        return StorageRefsExtension.ext(self.stac_object)
 
     @property
     def table(self) -> TableExtension[U]:
@@ -432,6 +436,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
 
+    @property
+    def storage(self) -> StorageRefsExtension[ItemAssetDefinition]:
+        return StorageRefsExtension.ext(self.stac_object)
+
 
 @dataclass
 class LinkExt(_AssetsExt[Link]):
@@ -444,3 +452,7 @@ class LinkExt(_AssetsExt[Link]):
     @property
     def file(self) -> FileExtension[Link]:
         return FileExtension.ext(self.stac_object)
+
+    @property
+    def storage(self) -> StorageRefsExtension[Link]:
+        return StorageRefsExtension.ext(self.stac_object)
