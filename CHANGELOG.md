@@ -11,6 +11,7 @@
 ### Changed
 
 - Pass "User-Agent": "pystac/3.13.0" in request headers to work around urllib's default "User-Agent" being blocked by readthedocs ([#1576](https://github.com/stac-utils/pystac/pull/1576))
+- Include a plain text repr in notebooks so untrusted notebooks look better ([#1577](https://github.com/stac-utils/pystac/pull/1577))
 
 ### Fixed
 
@@ -940,6 +941,7 @@ use `Band.create`
 
 Initial release.
 
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.14.0..main>
 [v1.14.0]: <https://github.com/stac-utils/pystac/compare/v1.13.0..v1.14.0>
 [v1.13.0]: <https://github.com/stac-utils/pystac/compare/v1.12.2..v1.13.0>
 [v1.12.2]: <https://github.com/stac-utils/pystac/compare/v1.12.1..v1.12.2>
