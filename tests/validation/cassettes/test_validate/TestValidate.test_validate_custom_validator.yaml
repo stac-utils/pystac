@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -58,9 +54,9 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '336'
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '9379'
       Content-Security-Policy:
@@ -69,7 +65,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:05:02 GMT
+      - Thu, 11 Sep 2025 15:52:51 GMT
       ETag:
       - '"64d39a40-24a3"'
       Server:
@@ -81,19 +77,17 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - b23137f65dca3efce34d84f19c6a2ec1ddac89db
+      - b96d8ff0fa27c9981a95595ca9c6fcf166a3eb6e
       X-GitHub-Request-Id:
-      - CFEA:26BEBB:12DC6C0:15685DF:67925A9D
+      - 5CA9:FA1FD:1EE767D:22450FC:68C2EF03
       X-Served-By:
-      - cache-den-kden1300070-DEN
+      - cache-bos4664-BOS
       X-Timer:
-      - S1737644703.639919,VS0,VE57
-      permissions-policy:
-      - interest-cohort=()
+      - S1757605972.802315,VS0,VE1
       x-proxy-cache:
       - MISS
     status:
@@ -102,12 +96,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -158,9 +148,9 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '336'
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '9379'
       Content-Security-Policy:
@@ -169,7 +159,7 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:05:02 GMT
+      - Thu, 11 Sep 2025 15:52:51 GMT
       ETag:
       - '"64d39a40-24a3"'
       Server:
@@ -185,15 +175,13 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - d92f06f6243de0361be0f4ec98db350a8280dfb4
+      - 5d0f5a8400c75769e6b3d09a041d222a14a7228b
       X-GitHub-Request-Id:
-      - CFEA:26BEBB:12DC6C0:15685DF:67925A9D
+      - 5CA9:FA1FD:1EE767D:22450FC:68C2EF03
       X-Served-By:
-      - cache-den-kden1300053-DEN
+      - cache-bos4633-BOS
       X-Timer:
-      - S1737644703.726936,VS0,VE1
-      permissions-policy:
-      - interest-cohort=()
+      - S1757605972.892075,VS0,VE2
       x-proxy-cache:
       - MISS
     status:
