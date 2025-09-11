@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/grid/v1.1.0/schema.json
   response:
@@ -41,17 +37,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '344'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '1752'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:12 GMT
+      - Thu, 11 Sep 2025 15:51:05 GMT
       ETag:
       - '"638a24f0-6d8"'
       Last-Modified:
@@ -69,17 +65,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 2ddc0fdf93a92fd06b1f64f7e474d7df933bb2c1
+      - ddbcc271cf043ca387b3976600a6afa4a664a525
       X-GitHub-Request-Id:
-      - B1FB:338B06:10BAFA4:12979CF:67925A67
+      - 621C:19FF07:BB26AA:D6C48C:68C2EE91
       X-Served-By:
-      - cache-den-kden1300031-DEN
+      - cache-bos4651-BOS
       X-Timer:
-      - S1737644653.736859,VS0,VE1
+      - S1757605866.508436,VS0,VE2
       expires:
-      - Thu, 23 Jan 2025 15:14:12 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 11 Sep 2025 15:55:21 GMT
       x-proxy-cache:
       - MISS
     status:

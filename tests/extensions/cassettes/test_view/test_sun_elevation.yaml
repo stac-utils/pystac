@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -65,21 +61,21 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '8'
+      - '365'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '3583'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:17 GMT
+      - Thu, 11 Sep 2025 15:51:19 GMT
       ETag:
-      - '"60635220-dff"'
+      - '"689f5434-dff"'
       Last-Modified:
-      - Tue, 30 Mar 2021 16:30:24 GMT
+      - Fri, 15 Aug 2025 15:37:24 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -91,19 +87,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 1f22f7638370d01025d4a418e7745652d3d4f576
+      - 9c455742885a4586227aa974964836c72d1193e9
       X-GitHub-Request-Id:
-      - 4FF0:3D3696:110AB38:1372E73:6792474C
+      - EACF:1C0114:1BE6594:1F22786:68C2EE8A
       X-Served-By:
-      - cache-den-kden1300022-DEN
+      - cache-bos4622-BOS
       X-Timer:
-      - S1737644658.686290,VS0,VE0
+      - S1757605879.349683,VS0,VE2
       expires:
-      - Thu, 23 Jan 2025 13:52:36 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 11 Sep 2025 15:55:14 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -112,12 +106,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
   response:
@@ -177,17 +167,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '350'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '3714'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:17 GMT
+      - Thu, 11 Sep 2025 15:51:19 GMT
       ETag:
       - '"67627e9d-e82"'
       Last-Modified:
@@ -205,17 +195,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 52323fb600a38567338770afb6fe9a075e6f0f66
+      - c3dbeeed12e3e1b96094bb47fe8a9f724193b5be
       X-GitHub-Request-Id:
-      - 3137:3D3696:110B8D9:1373E1E:6792475B
+      - 621C:19FF07:BB2CFC:D6CBD0:68C2EE98
       X-Served-By:
-      - cache-den-kden1300034-DEN
+      - cache-bos4653-BOS
       X-Timer:
-      - S1737644658.704913,VS0,VE1
+      - S1757605879.423264,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 13:52:53 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 11 Sep 2025 15:55:28 GMT
       x-proxy-cache:
       - MISS
     status:

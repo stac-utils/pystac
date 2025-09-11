@@ -302,12 +302,21 @@ class DefaultStacIO(StacIO):
                     with urllib3.request(
                         "GET",
                         href,
-                        headers=self.headers,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
                         preload_content=False,  # type: ignore
                     ) as f:
                         href_contents = f.read().decode("utf-8")
                 else:
-                    req = Request(href, headers=self.headers)
+                    req = Request(
+                        href,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
+                    )
                     with urlopen(req) as f:
                         href_contents = f.read().decode("utf-8")
 
@@ -448,6 +457,10 @@ if HAS_URLLIB3:
                     response = http.request(
                         "GET",
                         href,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
                         retries=self.retry,  # type: ignore
                     )
                     return cast(str, response.data.decode("utf-8"))

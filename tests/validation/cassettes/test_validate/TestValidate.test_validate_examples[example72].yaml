@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -89,17 +85,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '340'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '5346'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:46 GMT
+      - Thu, 11 Sep 2025 15:52:08 GMT
       ETag:
       - '"66e1651c-14e2"'
       Last-Modified:
@@ -111,19 +107,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 2b690a4b4a57de73f637743e7bb9f30dce787d9e
+      - 6e9e369e10903c61510f234a0bfa4a054cc0e672
       X-GitHub-Request-Id:
-      - 368C:140E8C:1273062:14FED41:67925A8E
+      - 3C0F:3556F2:2104189:236964E:68C2EED2
       X-Served-By:
-      - cache-den-kden1300063-DEN
+      - cache-bos4658-BOS
       X-Timer:
-      - S1737644686.483637,VS0,VE67
+      - S1757605929.676622,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:46 GMT
+      - Thu, 11 Sep 2025 15:56:28 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -132,12 +128,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -179,17 +171,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '341'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2126'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:46 GMT
+      - Thu, 11 Sep 2025 15:52:08 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -203,17 +195,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - c176895840d1781f4d9902235c15cc098d207d5b
+      - ad5da1bee8b2277935d077bfb16771c510e46754
       X-GitHub-Request-Id:
-      - CFED:106179:120411D:148FDE8:67925A8E
+      - 6A55:180028:223E696:24A38DD:68C2EED2
       X-Served-By:
-      - cache-den-kden1300048-DEN
+      - cache-bos4664-BOS
       X-Timer:
-      - S1737644687.575603,VS0,VE1
+      - S1757605929.764057,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:46 GMT
+      - Thu, 11 Sep 2025 15:56:27 GMT
       x-proxy-cache:
       - MISS
     status:

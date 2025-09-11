@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
@@ -89,17 +85,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '348'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '5346'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:49 GMT
+      - Thu, 11 Sep 2025 15:52:16 GMT
       ETag:
       - '"66e1651c-14e2"'
       Last-Modified:
@@ -115,15 +111,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - be6ef2938120b34c644b1142894bafbfe9303367
+      - 9ea490b4ddd366c7e03fb57f62dc57a3fa6edbb0
       X-GitHub-Request-Id:
-      - 368C:140E8C:1273062:14FED41:67925A8E
+      - 3C0F:3556F2:2104189:236964E:68C2EED2
       X-Served-By:
-      - cache-den-kden1300076-DEN
+      - cache-bos4658-BOS
       X-Timer:
-      - S1737644689.122008,VS0,VE1
+      - S1757605937.572481,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:46 GMT
+      - Thu, 11 Sep 2025 15:56:28 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -132,12 +128,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -179,17 +171,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '3'
+      - '349'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2126'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:49 GMT
+      - Thu, 11 Sep 2025 15:52:16 GMT
       ETag:
       - '"66e1651c-84e"'
       Last-Modified:
@@ -203,17 +195,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 3b682e77e6ce6468af19edf56e7987e529e7c7b0
+      - a2d529a5a4438335e1b1ea6318fed1c6519e176e
       X-GitHub-Request-Id:
-      - CFED:106179:120411D:148FDE8:67925A8E
+      - 6A55:180028:223E696:24A38DD:68C2EED2
       X-Served-By:
-      - cache-den-kden1300044-DEN
+      - cache-bos4676-BOS
       X-Timer:
-      - S1737644689.148606,VS0,VE0
+      - S1757605937.665896,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:46 GMT
+      - Thu, 11 Sep 2025 15:56:27 GMT
       x-proxy-cache:
       - MISS
     status:
