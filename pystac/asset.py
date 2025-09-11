@@ -185,7 +185,7 @@ class Asset:
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
-            return str(template.render(dict=self.to_dict()))
+            return str(template.render(dict=self.to_dict(), plain=escape(repr(self))))
         else:
             return escape(repr(self))
 

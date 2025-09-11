@@ -29,8 +29,19 @@
     color: rgb(0, 128, 0);
     font-weight: 700;
 }
+.pystac-wrap {
+  display: block !important;
+}
+.pystac-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
 </style>
-<div class="jp-RenderedJSON jp-mod-trusted jp-OutputArea-output">
+<div>
+<div class="pystac-text-repr-fallback">
+    {{ plain }}
+</div>
+<div class="jp-RenderedJSON jp-mod-trusted jp-OutputArea-output pystac-wrap" style='display:none'>
     <div class="container" style="line-height: normal;">
         <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
             {% for key, value in dict.items() %}
@@ -42,4 +53,5 @@
             {% endfor %}
         </ul>
     </div>
+</div>
 </div>
