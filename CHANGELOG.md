@@ -8,6 +8,11 @@
   media type value for these types and new media types COPC and VND_PMTILES
   ([#1554](https://github.com/stac-utils/pystac/pull/1554))
 
+### Changed
+
+- Pass "User-Agent": "pystac/3.13.0" in request headers to work around urllib's default "User-Agent" being blocked by readthedocs ([#1576](https://github.com/stac-utils/pystac/pull/1576))
+
+
 ### Fixed
 
 - More permissive collection extent deserialization ([#1559](https://github.com/stac-utils/pystac/pull/1559))

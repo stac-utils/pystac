@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.13.0
     method: GET
     uri: https://stac-extensions.github.io/mgrs/v1.0.0/schema.json
   response:
@@ -57,17 +53,17 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '344'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2889'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:12 GMT
+      - Thu, 11 Sep 2025 15:51:05 GMT
       ETag:
       - '"60c20ce1-b49"'
       Last-Modified:
@@ -85,17 +81,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - c2f511ade005d2f31b398cb47a9b5993a1a6a0a4
+      - ab2ffc59b0fac9becf6981293657456e53fd7a77
       X-GitHub-Request-Id:
-      - FF3A:188222:F9CE3F:11796FF:67925A6C
+      - 8146:41371:C197CC:DD3EA9:68C2EE91
       X-Served-By:
-      - cache-den-kden1300062-DEN
+      - cache-bos4656-BOS
       X-Timer:
-      - S1737644653.888300,VS0,VE1
+      - S1757605866.787161,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:12 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 11 Sep 2025 15:55:22 GMT
       x-proxy-cache:
       - MISS
     status:
