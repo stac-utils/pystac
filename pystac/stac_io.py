@@ -457,6 +457,10 @@ if HAS_URLLIB3:
                     response = http.request(
                         "GET",
                         href,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
                         retries=self.retry,  # type: ignore
                     )
                     return cast(str, response.data.decode("utf-8"))
