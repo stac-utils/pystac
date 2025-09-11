@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://planetarycomputer.microsoft.com/api/stac/v1
   response:

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/catalog-spec/json-schema/catalog.json
   response:
