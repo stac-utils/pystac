@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json
   response:
@@ -154,7 +154,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json
   response:
@@ -301,7 +301,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/basics.json
   response:
@@ -366,7 +366,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json
   response:
@@ -444,7 +444,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/instrument.json
   response:
@@ -509,7 +509,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/licensing.json
   response:
@@ -569,7 +569,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/provider.json
   response:
@@ -642,7 +642,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -766,7 +766,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:
@@ -884,7 +884,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.13.0
+      - pystac/1.14.0
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
