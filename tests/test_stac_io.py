@@ -130,7 +130,7 @@ def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
 
     headers = request_mock.call_args[1]["headers"]
-    assert headers == stac_io.headers
+    assert headers == {"User-Agent": "pystac", **stac_io.headers}
 
 
 @pytest.mark.vcr()
