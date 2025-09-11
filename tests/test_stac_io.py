@@ -177,3 +177,13 @@ def test_urls_with_non_ascii_characters() -> None:
     else:
         with pytest.raises(pystac.STACError):
             pystac.Collection.from_file(url)
+
+
+@pytest.mark.vcr()
+def test_proj_json_schema_is_readable() -> None:
+    from pystac.stac_io import DefaultStacIO
+
+    stac_io = DefaultStacIO()
+    _ = stac_io.read_text_from_href(
+        "https://proj.org/schemas/v0.7/projjson.schema.json"
+    )
