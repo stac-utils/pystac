@@ -406,7 +406,7 @@ class AssetExt(_AssetExt[Asset]):
 
     @property
     def mlm(self) -> AssetGeneralMLMExtension[Asset] | AssetDetailedMLMExtension:
-        if "mlm:name" in self.stac_object.extra_fields:
+        if "mlm:architecture" in self.stac_object.extra_fields:
             return AssetDetailedMLMExtension.ext(self.stac_object)
         else:
             return AssetGeneralMLMExtension.ext(self.stac_object)

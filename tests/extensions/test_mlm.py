@@ -1,9 +1,12 @@
+import itertools
 import json
 import logging
+import re
 from copy import deepcopy
 from typing import Any, cast
 
 import pytest
+import requests
 
 import pystac.errors
 from pystac import Asset, Collection, Item, ItemAssetDefinition
@@ -11,7 +14,6 @@ from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
     ARCHITECTURE_PROP,
-    NAME_PROP,
     TASKS_PROP,
     AcceleratorType,
     AssetDetailedMLMExtension,
@@ -20,6 +22,7 @@ from pystac.extensions.mlm import (
     InputStructure,
     ItemMLMExtension,
     MLMExtension,
+    MLMExtensionHooks,
     ModelBand,
     ModelInput,
     ModelOutput,
@@ -232,19 +235,19 @@ def test_model_input_structure_props() -> None:
 input_testdata = [
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         ProcessingExpression.create("python", "asdf"),
     ),
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         None,
         ProcessingExpression.create("python", "asdf"),
     ),
     (
         [ModelBand.create("B02"), ModelBand.create("B03"), ModelBand.create("B04")],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         ProcessingExpression.create("python", "asdf"),
     ),
@@ -256,7 +259,7 @@ input_testdata = [
     ),
     (
         ["B02", "B03", "B04"],
-        ValueScaling.create(ValueScalingType.SCALE, value=3),
+        [ValueScaling.create(ValueScalingType.SCALE, value=3)],
         ResizeType.CROP,
         None,
     ),
@@ -268,7 +271,7 @@ input_testdata = [
 )
 def test_model_input(
     bands: list[str] | list[ModelBand],
-    value_scaling: ValueScaling | None,
+    value_scaling: list[ValueScaling] | None,
     resize_type: ResizeType | None,
     pre_processing_function: ProcessingExpression | None,
 ) -> None:
@@ -323,7 +326,7 @@ def test_model_input_props() -> None:
     assert c.input == inp
 
     assert c.value_scaling is None
-    val_obj = ValueScaling.create(ValueScalingType.SCALE, value=3)
+    val_obj = [ValueScaling.create(ValueScalingType.SCALE, value=3)]
     c.value_scaling = val_obj
     assert c.value_scaling == val_obj
 
@@ -768,20 +771,16 @@ def test_add_to_asset(plain_item: Item) -> None:
     MLMExtension.ext(plain_item, add_if_missing=True)
     asset = plain_item.assets["analytic"]
 
-    assert NAME_PROP not in asset.extra_fields.keys()
     assert ARCHITECTURE_PROP not in asset.extra_fields.keys()
     assert TASKS_PROP not in asset.extra_fields.keys()
 
     asset_ext = AssetDetailedMLMExtension.ext(asset)
-    asset_ext.mlm_name = "asdf"
     asset_ext.architecture = "ResNet"
     asset_ext.tasks = [TaskType.CLASSIFICATION]
 
-    assert NAME_PROP in asset.extra_fields.keys()
     assert ARCHITECTURE_PROP in asset.extra_fields.keys()
     assert TASKS_PROP in asset.extra_fields.keys()
 
-    assert asset.extra_fields[NAME_PROP] == "asdf"
     assert asset.extra_fields[ARCHITECTURE_PROP] == "ResNet"
     assert asset.extra_fields[TASKS_PROP] == [TaskType.CLASSIFICATION]
 
@@ -864,21 +863,6 @@ def test_to_dict_asset_generic() -> None:
 
 
 def test_add_to_detailled_asset() -> None:
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset = pystac.Asset(
         href="http://example.com/test.tiff",
         title="image",
@@ -886,11 +870,8 @@ def test_add_to_detailled_asset() -> None:
         media_type="application/tiff",
         roles=["mlm:model"],
         extra_fields={
-            "mlm:name": "asdf",
             "mlm:architecture": "ResNet",
             "mlm:tasks": [TaskType.CLASSIFICATION],
-            "mlm:input": [model_input.to_dict()],
-            "mlm:output": [model_output.to_dict()],
             "mlm:artifact_type": "foo",
             "mlm:compile_method": "bar",
             "mlm:entrypoint": "baz",
@@ -899,11 +880,8 @@ def test_add_to_detailled_asset() -> None:
 
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    assert asset_ext.mlm_name == "asdf"
     assert asset_ext.architecture == "ResNet"
     assert asset_ext.tasks == [TaskType.CLASSIFICATION]
-    assert asset_ext.input == [model_input]
-    assert asset_ext.output == [model_output]
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
@@ -928,7 +906,7 @@ def test_correct_asset_extension_is_used() -> None:
     asset = Asset("https://example.com")
     assert isinstance(asset.ext.mlm, AssetGeneralMLMExtension)
 
-    asset.extra_fields["mlm:name"] = "asdf"
+    asset.extra_fields["mlm:architecture"] = "ResNet"
     assert isinstance(asset.ext.mlm, AssetDetailedMLMExtension)
 
 
@@ -949,37 +927,16 @@ def test_apply_detailled_asset() -> None:
     )
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset_ext.apply(
-        "asdf",
         "ResNet",
         [TaskType.CLASSIFICATION],
-        [model_input],
-        [model_output],
         artifact_type="foo",
         compile_method="bar",
         entrypoint="baz",
     )
 
-    assert asset_ext.mlm_name == "asdf"
     assert asset_ext.architecture == "ResNet"
     assert asset_ext.tasks == [TaskType.CLASSIFICATION]
-    assert asset_ext.input == [model_input]
-    assert asset_ext.output == [model_output]
     assert asset_ext.artifact_type == "foo"
     assert asset_ext.compile_method == "bar"
     assert asset_ext.entrypoint == "baz"
@@ -995,38 +952,17 @@ def test_to_dict_detailed_asset() -> None:
     )
     asset_ext = AssetDetailedMLMExtension.ext(asset, add_if_missing=False)
 
-    model_input = ModelInput.create(
-        name="model",
-        bands=["B02"],
-        input=InputStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-    model_output = ModelOutput.create(
-        name="output",
-        tasks=[TaskType.CLASSIFICATION],
-        result=ResultStructure.create(
-            shape=[1], dim_order=["batch"], data_type=DataType.FLOAT64
-        ),
-    )
-
     asset_ext.apply(
-        "asdf",
         "ResNet",
         [TaskType.CLASSIFICATION],
-        [model_input],
-        [model_output],
         artifact_type="foo",
         compile_method="bar",
         entrypoint="baz",
     )
 
     d = {
-        "mlm:name": "asdf",
         "mlm:architecture": "ResNet",
         "mlm:tasks": [TaskType.CLASSIFICATION],
-        "mlm:input": [model_input.to_dict()],
-        "mlm:output": [model_output.to_dict()],
         "mlm:artifact_type": "foo",
         "mlm:compile_method": "bar",
         "mlm:entrypoint": "baz",
@@ -1071,3 +1007,849 @@ def test_raise_exception_on_mlm_extension_and_asset() -> None:
     )
     with pytest.raises(TypeError):
         MLMExtension.ext(asset, add_if_missing=False)
+
+
+@pytest.mark.parametrize(
+    "framework_old, framework_new, valid",
+    (
+        ("Scikit-learn", "scikit-learn", False),
+        ("Huggingface", "Hugging Face", False),
+        ("-_ .asdf", "asdf", False),
+        ("asdf-_ .", "asdf", False),
+        ("-._   asdf-.", "asdf", False),
+        ("test_framework", "test_framework", True),
+    ),
+)
+def test_migration_1_0_to_1_1_item(
+    framework_old: None | str, framework_new: None | str, valid: bool
+) -> None:
+    data: dict[str, Any] = {"type": "Feature", "properties": {}}
+
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert "mlm:framework" not in data["properties"]
+
+    pattern = r"^(?=[^\s._\-]).*[^\s._\-]$"
+    data["properties"]["mlm:framework"] = framework_old
+
+    if valid:
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    else:
+        with pytest.warns(SyntaxWarning):
+            MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    assert data["properties"]["mlm:framework"] == framework_new
+    assert bool(re.match(pattern, data["properties"]["mlm:framework"]))
+
+
+@pytest.mark.parametrize(
+    "framework_old, framework_new, valid",
+    (
+        ("Scikit-learn", "scikit-learn", False),
+        ("Huggingface", "Hugging Face", False),
+        ("-_ .asdf", "asdf", False),
+        ("asdf-_ .", "asdf", False),
+        ("-._   asdf-.", "asdf", False),
+        ("test_framework", "test_framework", True),
+    ),
+)
+def test_migration_1_0_to_1_1_collection(
+    framework_old: None | str, framework_new: None | str, valid: bool
+) -> None:
+    data: dict[str, Any] = {"type": "Collection"}
+
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert "mlm:framework" not in data
+
+    pattern = r"^(?=[^\s._\-]).*[^\s._\-]$"
+    data["mlm:framework"] = framework_old
+
+    if valid:
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    else:
+        with pytest.warns(SyntaxWarning):
+            MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    assert data["mlm:framework"] == framework_new
+    assert bool(re.match(pattern, data["mlm:framework"]))
+
+
+@pytest.mark.parametrize(
+    "framework_old, framework_new, valid",
+    (
+        ("Scikit-learn", "scikit-learn", False),
+        ("Huggingface", "Hugging Face", False),
+        ("-_ .asdf", "asdf", False),
+        ("asdf-_ .", "asdf", False),
+        ("-._   asdf-.", "asdf", False),
+        ("test_framework", "test_framework", True),
+    ),
+)
+def test_migration_1_0_to_1_1_asset(
+    framework_old: None | str, framework_new: None | str, valid: bool
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Item",
+        "assets": {"asset1": Asset("https://asdf.com").to_dict()},
+    }
+
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert "mlm:framework" not in data["assets"]["asset1"]
+
+    pattern = r"^(?=[^\s._\-]).*[^\s._\-]$"
+    data["assets"]["asset1"]["mlm:framework"] = framework_old
+
+    if valid:
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    else:
+        with pytest.warns(SyntaxWarning):
+            MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    assert data["assets"]["asset1"]["mlm:framework"] == framework_new
+    assert bool(re.match(pattern, data["assets"]["asset1"]["mlm:framework"]))
+
+
+@pytest.mark.parametrize(
+    "framework_old, framework_new, valid",
+    (
+        ("Scikit-learn", "scikit-learn", False),
+        ("Huggingface", "Hugging Face", False),
+        ("-_ .asdf", "asdf", False),
+        ("asdf-_ .", "asdf", False),
+        ("-._   asdf-.", "asdf", False),
+        ("test_framework", "test_framework", True),
+    ),
+)
+def test_migration_1_0_to_1_1_item_assets(
+    framework_old: None | str, framework_new: None | str, valid: bool
+) -> None:
+    data: dict[str, Any] = {"type": "Collection", "item_assets": {"asset1": {}}}
+
+    MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    assert "mlm:framework" not in data
+
+    pattern = r"^(?=[^\s._\-]).*[^\s._\-]$"
+    data["item_assets"]["asset1"]["mlm:framework"] = framework_old
+
+    if valid:
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+    else:
+        with pytest.warns(SyntaxWarning):
+            MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    assert data["item_assets"]["asset1"]["mlm:framework"] == framework_new
+    assert bool(re.match(pattern, data["item_assets"]["asset1"]["mlm:framework"]))
+
+
+@pytest.mark.parametrize(
+    "bands_obj_name, bands_obj",
+    (
+        ("raster:bands", {"raster:bands": []}),
+        ("raster:bands", {"raster:bands": [{"name": "B01"}, {"name": "B02"}]}),
+        ("eo:bands", {"eo:bands": []}),
+        ("eo:bands", {"eo:bands": [{"name": "B01"}, {"name": "B02"}]}),
+    ),
+)
+def test_migration_1_0_to_1_1_asset_bands_item(
+    bands_obj_name: str, bands_obj: dict[str, Any]
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {"mlm:input": [{"bands": []}]},
+        "assets": {
+            "asset1": {"href": "https://example.com", "roles": ["analytic"]},
+            "asset2": {
+                "href": "https://example.com",
+                "roles": ["analytic"],
+                **bands_obj,
+            },
+            "asset3": {
+                "href": "https://example.com",
+                "roles": ["mlm:model"],
+                **bands_obj,
+            },
+        },
+    }
+
+    with pytest.warns(SyntaxWarning):
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    if bands_obj[bands_obj_name]:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name in data["properties"]
+    else:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name not in data["properties"]
+
+
+@pytest.mark.parametrize(
+    "bands_obj_name, bands_obj",
+    (
+        ("raster:bands", {"raster:bands": []}),
+        ("raster:bands", {"raster:bands": [{"name": "B01"}, {"name": "B02"}]}),
+        ("eo:bands", {"eo:bands": []}),
+        ("eo:bands", {"eo:bands": [{"name": "B01"}, {"name": "B02"}]}),
+    ),
+)
+def test_migration_1_0_to_1_1_asset_bands_collection(
+    bands_obj_name: str, bands_obj: dict[str, Any]
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Collection",
+        "mlm:input": [{"bands": []}],
+        "assets": {
+            "asset1": {"href": "https://example.com", "roles": ["analytic"]},
+            "asset2": {
+                "href": "https://example.com",
+                "roles": ["analytic"],
+                **bands_obj,
+            },
+            "asset3": {
+                "href": "https://example.com",
+                "roles": ["mlm:model"],
+                **bands_obj,
+            },
+        },
+    }
+
+    with pytest.warns(SyntaxWarning):
+        MLMExtensionHooks._migrate_1_0_to_1_1(data)
+
+    if bands_obj[bands_obj_name]:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name in data
+    else:
+        assert bands_obj_name in data["assets"]["asset2"]
+        assert bands_obj_name not in data["assets"]["asset3"]
+        assert bands_obj_name not in data
+
+
+@pytest.mark.parametrize("asset_type", ("assets", "item_assets"))
+def test_migration_1_1_to_1_2(asset_type: str) -> None:
+    data: dict[str, Any] = {}
+    MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+    data[asset_type] = {"asset1": {"roles": ["data"]}, "asset2": {"roles": ["labels"]}}
+
+    with pytest.raises(pystac.errors.STACError):
+        MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+    data[asset_type]["asset3"] = {"roles": ["mlm:model"]}
+
+    MLMExtensionHooks._migrate_1_1_to_1_2(data)
+
+
+@pytest.mark.parametrize(
+    "inp_bands, raster_bands, valid",
+    (
+        ([], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "B03", "data_type": "float64"},
+            ],
+            True,
+        ),
+        (["B02", "B03"], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "B02", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (["B02", "B03"], [{"data_type": "float64"}, {"data_type": "float64"}], False),
+    ),
+)
+def test_migration_1_2_to_1_3_item(
+    inp_bands: list[str], raster_bands: list[dict[str, Any]], valid: bool
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {"mlm:input": [{}]},
+        "assets": {"asset1": {"roles": ["data"]}, "asset2": {"roles": ["mlm:model"]}},
+    }
+
+    data["properties"]["mlm:input"][0]["bands"] = inp_bands
+    if raster_bands:
+        data["properties"]["raster:bands"] = raster_bands
+
+    if valid:
+        MLMExtensionHooks._migrate_1_2_to_1_3(data)
+        if raster_bands:
+            assert "raster:bands" not in data["assets"]["asset1"]
+            assert "raster:bands" in data["assets"]["asset2"]
+    else:
+        with pytest.raises(STACError):
+            MLMExtensionHooks._migrate_1_2_to_1_3(data)
+
+
+@pytest.mark.parametrize(
+    "inp_bands, raster_bands, valid",
+    (
+        ([], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "B03", "data_type": "float64"},
+            ],
+            True,
+        ),
+        (["B02", "B03"], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "B02", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (["B02", "B03"], [{"data_type": "float64"}, {"data_type": "float64"}], False),
+    ),
+)
+def test_migration_1_2_to_1_3_collection(
+    inp_bands: list[str], raster_bands: list[dict[str, Any]], valid: bool
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Collection",
+        "mlm:input": [{}],
+        "assets": {"asset1": {"roles": ["data"]}, "asset2": {"roles": ["mlm:model"]}},
+    }
+
+    data["mlm:input"][0]["bands"] = inp_bands
+    if raster_bands:
+        data["raster:bands"] = raster_bands
+
+    if valid:
+        MLMExtensionHooks._migrate_1_2_to_1_3(data)
+        if raster_bands:
+            assert "raster:bands" not in data["assets"]["asset1"]
+            assert "raster:bands" in data["assets"]["asset2"]
+    else:
+        with pytest.raises(STACError):
+            MLMExtensionHooks._migrate_1_2_to_1_3(data)
+
+
+@pytest.mark.parametrize(
+    "inp_bands, raster_bands, valid",
+    (
+        ([], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "B03", "data_type": "float64"},
+            ],
+            True,
+        ),
+        (["B02", "B03"], None, True),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [
+                {"name": "B02", "data_type": "float64"},
+                {"name": "", "data_type": "float64"},
+            ],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "B02", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (
+            ["B02", "B03"],
+            [{"name": "", "data_type": "float64"}, {"data_type": "float64"}],
+            False,
+        ),
+        (["B02", "B03"], [{"data_type": "float64"}, {"data_type": "float64"}], False),
+    ),
+)
+def test_migration_1_2_to_1_3_asset(
+    inp_bands: list[str], raster_bands: list[dict[str, Any]], valid: bool
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": [],
+        "assets": {
+            "asset1": {"roles": ["data"]},
+            "asset2": {"roles": ["mlm:model"], "mlm:input": [{}]},
+        },
+    }
+
+    data["assets"]["asset2"]["mlm:input"][0]["bands"] = inp_bands
+    if raster_bands:
+        data["assets"]["asset2"]["raster:bands"] = raster_bands
+
+    if valid:
+        MLMExtensionHooks._migrate_1_2_to_1_3(data)
+        if raster_bands:
+            assert "raster:bands" not in data["assets"]["asset1"]
+            assert "raster:bands" in data["assets"]["asset2"]
+    else:
+        with pytest.raises(STACError):
+            MLMExtensionHooks._migrate_1_2_to_1_3(data)
+
+
+@pytest.mark.parametrize(
+    ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
+    (
+        (None, None, None, None, None),
+        (False, None, None, None, None),
+        (
+            False,
+            "z-score",
+            None,
+            [{"mean": 5, "stddev": 2}],
+            [ValueScaling.create(ValueScalingType.Z_SCORE, mean=5, stddev=2)],
+        ),
+        (
+            False,
+            "min-max",
+            None,
+            [{"minimum": 10, "maximum": 20}],
+            [ValueScaling.create(ValueScalingType.MIN_MAX, minimum=10, maximum=20)],
+        ),
+        (
+            True,
+            "z-score",
+            None,
+            [
+                {"mean": 5, "stddev": 2},
+                {"mean": 6, "stddev": 3},
+                {"mean": 10, "stddev": 1},
+            ],
+            [
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=5, stddev=2),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=6, stddev=3),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=10, stddev=1),
+            ],
+        ),
+        (
+            True,
+            "clip",
+            [3, 4, 5],
+            None,
+            [
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 3, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 4, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 5, 0, 1)",
+                ),
+            ],
+        ),
+    ),
+)
+def test_migration_1_3_to_1_4_value_scaling_item(
+    norm_by_channel: bool | None,
+    norm_type: str | None,
+    norm_clip: list[int] | None,
+    statistics: list[dict[str, Any]] | None,
+    value_scaling: list[ValueScaling] | None,
+) -> None:
+    data: dict[str, Any] = {"type": "Feature", "properties": {"mlm:input": []}}
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)  # nothing is supposed to happen here
+
+    input_obj: dict[str, Any] = {}
+    if norm_by_channel is not None:
+        input_obj["norm_by_channel"] = norm_by_channel
+    if norm_type is not None:
+        input_obj["norm_type"] = norm_type
+    if norm_clip is not None:
+        input_obj["norm_clip"] = norm_clip
+    if statistics is not None:
+        input_obj["statistics"] = statistics
+    data["properties"]["mlm:input"].append(input_obj)
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+    if norm_type is not None and value_scaling is not None:
+        assert len(data["properties"]["mlm:input"][0]["value_scaling"]) == len(
+            value_scaling
+        )
+        assert data["properties"]["mlm:input"][0]["value_scaling"] == [
+            obj.to_dict() for obj in value_scaling
+        ]
+
+    new_input_obj = data["properties"]["mlm:input"][0]
+    assert "norm_by_channel" not in new_input_obj
+    assert "norm_type" not in new_input_obj
+    assert "norm_clip" not in new_input_obj
+    assert "statistics" not in new_input_obj
+
+
+@pytest.mark.parametrize(
+    ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
+    (
+        (None, None, None, None, None),
+        (False, None, None, None, None),
+        (
+            False,
+            "z-score",
+            None,
+            [{"mean": 5, "stddev": 2}],
+            [ValueScaling.create(ValueScalingType.Z_SCORE, mean=5, stddev=2)],
+        ),
+        (
+            False,
+            "min-max",
+            None,
+            [{"minimum": 10, "maximum": 20}],
+            [ValueScaling.create(ValueScalingType.MIN_MAX, minimum=10, maximum=20)],
+        ),
+        (
+            True,
+            "z-score",
+            None,
+            [
+                {"mean": 5, "stddev": 2},
+                {"mean": 6, "stddev": 3},
+                {"mean": 10, "stddev": 1},
+            ],
+            [
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=5, stddev=2),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=6, stddev=3),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=10, stddev=1),
+            ],
+        ),
+        (
+            True,
+            "clip",
+            [3, 4, 5],
+            None,
+            [
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 3, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 4, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 5, 0, 1)",
+                ),
+            ],
+        ),
+    ),
+)
+def test_migration_1_3_to_1_4_value_scaling_collection(
+    norm_by_channel: bool | None,
+    norm_type: str | None,
+    norm_clip: list[int] | None,
+    statistics: list[dict[str, Any]] | None,
+    value_scaling: list[ValueScaling] | None,
+) -> None:
+    data: dict[str, Any] = {"type": "Collection", "mlm:input": []}
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)  # nothing is supposed to happen here
+
+    input_obj: dict[str, Any] = {}
+    if norm_by_channel is not None:
+        input_obj["norm_by_channel"] = norm_by_channel
+    if norm_type is not None:
+        input_obj["norm_type"] = norm_type
+    if norm_clip is not None:
+        input_obj["norm_clip"] = norm_clip
+    if statistics is not None:
+        input_obj["statistics"] = statistics
+    data["mlm:input"].append(input_obj)
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+    if norm_type is not None and value_scaling is not None:
+        assert len(data["mlm:input"][0]["value_scaling"]) == len(value_scaling)
+        assert data["mlm:input"][0]["value_scaling"] == [
+            obj.to_dict() for obj in value_scaling
+        ]
+
+    new_input_obj = data["mlm:input"][0]
+    assert "norm_by_channel" not in new_input_obj
+    assert "norm_type" not in new_input_obj
+    assert "norm_clip" not in new_input_obj
+    assert "statistics" not in new_input_obj
+
+
+@pytest.mark.parametrize(
+    ("norm_by_channel", "norm_type", "norm_clip", "statistics", "value_scaling"),
+    (
+        (None, None, None, None, None),
+        (False, None, None, None, None),
+        (
+            False,
+            "z-score",
+            None,
+            [{"mean": 5, "stddev": 2}],
+            [ValueScaling.create(ValueScalingType.Z_SCORE, mean=5, stddev=2)],
+        ),
+        (
+            False,
+            "min-max",
+            None,
+            [{"minimum": 10, "maximum": 20}],
+            [ValueScaling.create(ValueScalingType.MIN_MAX, minimum=10, maximum=20)],
+        ),
+        (
+            True,
+            "z-score",
+            None,
+            [
+                {"mean": 5, "stddev": 2},
+                {"mean": 6, "stddev": 3},
+                {"mean": 10, "stddev": 1},
+            ],
+            [
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=5, stddev=2),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=6, stddev=3),
+                ValueScaling.create(type=ValueScalingType.Z_SCORE, mean=10, stddev=1),
+            ],
+        ),
+        (
+            True,
+            "clip",
+            [3, 4, 5],
+            None,
+            [
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 3, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 4, 0, 1)",
+                ),
+                ValueScaling.create(
+                    type=ValueScalingType.PROCESSING,
+                    format="gdal-calc",
+                    expression="numpy.clip(A / 5, 0, 1)",
+                ),
+            ],
+        ),
+    ),
+)
+def test_migration_1_3_to_1_4_value_scaling_asset(
+    norm_by_channel: bool | None,
+    norm_type: str | None,
+    norm_clip: list[int] | None,
+    statistics: list[dict[str, Any]] | None,
+    value_scaling: list[ValueScaling] | None,
+) -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {},
+        "assets": {"asset1": {"href": "https://example.com", "roles": ["mlm:model"]}},
+    }
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)  # nothing is supposed to happen here
+
+    input_obj: dict[str, Any] = {}
+    if norm_by_channel is not None:
+        input_obj["norm_by_channel"] = norm_by_channel
+    if norm_type is not None:
+        input_obj["norm_type"] = norm_type
+    if norm_clip is not None:
+        input_obj["norm_clip"] = norm_clip
+    if statistics is not None:
+        input_obj["statistics"] = statistics
+
+    data["assets"]["asset1"]["mlm:input"] = []
+    data["assets"]["asset1"]["mlm:input"].append(input_obj)
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+    assert "mlm:input" not in data["assets"]["asset1"]
+
+    if norm_type is not None and value_scaling is not None:
+        assert len(data["properties"]["mlm:input"][0]["value_scaling"]) == len(
+            value_scaling
+        )
+        assert data["properties"]["mlm:input"][0]["value_scaling"] == [
+            obj.to_dict() for obj in value_scaling
+        ]
+
+    new_input_obj = data["properties"]["mlm:input"][0]
+    assert "norm_by_channel" not in new_input_obj
+    assert "norm_type" not in new_input_obj
+    assert "norm_clip" not in new_input_obj
+    assert "statistics" not in new_input_obj
+
+
+@pytest.mark.parametrize(
+    "norm_type",
+    ("l1", "l2", "l2sqr", "hamming", "hamming2", "type-mask", "relative", "inf"),
+)
+def test_migration_1_3_to_1_4_failure(norm_type: str) -> None:
+    # test that previously supported but now unsupported types raise an error
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {"mlm:input": [{"norm_type": norm_type}]},
+    }
+
+    with pytest.raises(NotImplementedError):
+        MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+
+def test_migration_1_3_to_1_4_assets_item() -> None:
+    data: dict[str, Any] = {
+        "type": "Feature",
+        "properties": {},
+        "assets": {
+            "asset1": {
+                "mlm:name": "asdf",
+                "mlm:input": {},
+                "mlm:output": {},
+                "mlm:hyperparameters": {},
+                "roles": ["mlm:model"],
+            }
+        },
+    }
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+    assert "mlm:name" not in data["assets"]["asset1"]
+    assert "mlm:name" in data["properties"]
+
+    assert "mlm:input" not in data["assets"]["asset1"]
+    assert "mlm:input" in data["properties"]
+
+    assert "mlm:output" not in data["assets"]["asset1"]
+    assert "mlm:output" in data["properties"]
+
+    assert "mlm:hyperparameters" not in data["assets"]["asset1"]
+    assert "mlm:hyperparameters" in data["properties"]
+
+    assert "mlm:artifact_type" in data["assets"]["asset1"]
+
+
+def test_migration_1_3_to_1_4_collection() -> None:
+    data: dict[str, Any] = {
+        "type": "Collection",
+        "assets": {
+            "asset1": {
+                "mlm:name": "asdf",
+                "mlm:input": {},
+                "mlm:output": {},
+                "mlm:hyperparameters": {},
+                "roles": ["mlm:model"],
+            }
+        },
+    }
+
+    MLMExtensionHooks._migrate_1_3_to_1_4(data)
+
+    assert "mlm:name" not in data["assets"]["asset1"]
+    assert "mlm:name" in data
+
+    assert "mlm:input" not in data["assets"]["asset1"]
+    assert "mlm:input" in data
+
+    assert "mlm:output" not in data["assets"]["asset1"]
+    assert "mlm:output" in data
+
+    assert "mlm:hyperparameters" not in data["assets"]["asset1"]
+    assert "mlm:hyperparameters" in data
+
+    assert "mlm:artifact_type" in data["assets"]["asset1"]
+
+
+@pytest.mark.vcr
+@pytest.mark.parametrize(
+    "url_template, version",
+    tuple(
+        itertools.product(
+            (
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_basic.json",
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_multi_io.json",
+                "https://raw.githubusercontent.com/stac-extensions/mlm/refs/tags/"
+                "v{version}/examples/item_raster_bands.json",
+            ),
+            ("1.0.0", "1.1.0", "1.2.0", "1.3.0"),
+        )
+    ),
+)
+def test_migrate(url_template: str, version: str) -> None:
+    url = url_template.format(version=version)
+    r = requests.get(url)
+    data = r.json()
+
+    old_uri = f"https://crim-ca.github.io/mlm-extension/v{version}/schema.json"
+    new_uri = f"https://stac-extensions.github.io/mlm/v{version}/schema.json"
+
+    try:
+        i = data["stac_extensions"].index(old_uri)
+        data["stac_extensions"][i] = new_uri
+    except ValueError:
+        if new_uri not in data["stac_extensions"]:
+            raise Exception(
+                f"Stac object does not list stac:mlm v{version} as extension"
+            )
+
+    item = pystac.Item.from_dict(data)
+
+    assert MLMExtension.get_schema_uri() in item.stac_extensions
+    assert old_uri not in item.stac_extensions
+    assert new_uri not in item.stac_extensions
+
+    item.validate()
