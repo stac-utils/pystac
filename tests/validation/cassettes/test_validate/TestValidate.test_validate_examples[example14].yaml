@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
   response:
@@ -85,11 +85,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:44 GMT
+      - Thu, 18 Sep 2025 14:56:03 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:44 GMT
+      - Thu, 18 Sep 2025 15:01:03 GMT
       Source-Age:
       - '2'
       Strict-Transport-Security:
@@ -101,19 +101,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '18'
+      - '3'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 57ca208525a453112d908c48469cf16331537cbf
+      - c51d67818dbbf68615b37b90d8c4867fbc884629
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 48D2:9DF63:14B8DC:192D3D:68C2EEB6
+      - EAA4:3C3312:A80AF:D3151:68CC1D7F
       X-Served-By:
       - cache-bos4634-BOS
       X-Timer:
-      - S1757605904.247823,VS0,VE0
+      - S1758207363.369232,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -123,7 +123,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
   response:
@@ -184,11 +184,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:44 GMT
+      - Thu, 18 Sep 2025 14:56:03 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:44 GMT
+      - Thu, 18 Sep 2025 15:01:03 GMT
       Source-Age:
       - '2'
       Strict-Transport-Security:
@@ -204,15 +204,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - ede77bf599298addc5a9d621a69895b788fa9d2e
+      - 2f316ce369749013bcad6614d977f07b5c7e09fe
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 4D53:1CB1E4:12EBE4:17599A:68C2EEB7
+      - BCE7:388807:C697B:F1BF7:68CC1D7C
       X-Served-By:
-      - cache-bos4634-BOS
+      - cache-bos4643-BOS
       X-Timer:
-      - S1757605904.310193,VS0,VE1
+      - S1758207363.431202,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

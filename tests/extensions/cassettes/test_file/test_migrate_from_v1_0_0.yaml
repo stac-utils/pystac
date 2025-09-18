@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/file/v1.0.0/examples/item.json
   response:
@@ -61,11 +61,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:05 GMT
+      - Thu, 18 Sep 2025 14:55:22 GMT
       ETag:
       - '"d86613d81195c6b4fdebc2055d91ce4921bbc44d99ad6206c5ffdf7518eb89f2"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:05 GMT
+      - Thu, 18 Sep 2025 15:00:22 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -75,21 +75,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 91d7d08ab0879cfc8fe4b6846360baef07eefa9f
+      - fa669480f9dbc6ddfa2a1532880d58adca212cce
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 7EDA:286B02:100D847:13F5656:68C2EE8E
+      - E90D:B9EE0:781D6F:967D97:68CC1D59
       X-Served-By:
-      - cache-bos4650-BOS
+      - cache-bos4640-BOS
       X-Timer:
-      - S1757605865.263788,VS0,VE54
+      - S1758207322.049362,VS0,VE111
       X-XSS-Protection:
       - 1; mode=block
     status:
